@@ -1,0 +1,21 @@
+schema_id: sage-language-profile-registry-0.02
+purpose: Route project-bound language guidance by canonical language tag and optional role variant.
+namespace_key: canonical_bcp47_language_tag
+required_per_namespace:
+  - script
+  - variants
+variant_required_fields:
+  - file
+  - role
+constraints:
+  language_tag: preferred_bcp47_form
+  script: iso15924_four_letter_code
+  variant_id: lowercase_letters_digits_hyphens
+  project_language_code_equals_profile_namespace: true
+  workflow_profile_selection: derived_from_bound_project
+  workflow_level_grammar_bindings: prohibited
+  target_profile_role: may_bind_GENERATED_TARGET_or_WIP
+resolution:
+  - project.language.profile
+  - project.language.variant
+  - workflow_binding_role_compatibility

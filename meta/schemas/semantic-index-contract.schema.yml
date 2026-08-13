@@ -1,0 +1,43 @@
+schema_id: sage-semantic-index-contract-2.0
+language_identity:
+  namespace_separate_from_scripture_project_id: true
+  example_binding: idKKHv0 -> KKH
+lexical_identity:
+  primary: BASE_LEMMA_OR_GOVERNED_HEADWORD_CANDIDATE
+  morphology_in_primary_identity: false
+  preserve_surface_forms: true
+  seed_headword_is_not_morphology_proof: true
+sense_identity:
+  primary: PROJECT_OR_REFERENCE_SENSE_ID
+  semdom_is_unique_sense_id: false
+semdom:
+  role: CLASSIFICATION_AND_RETRIEVAL
+  translation_authority: false
+rapidwords_folders:
+  role: PROCESSING_AND_SPECIFIC_FIRST_TRAVERSAL
+  translation_authority: false
+freshness:
+  manifest: index-manifest.json
+  required_state_for_bound_bic_saw_or_export: CURRENT
+  fingerprint_inputs:
+  - active_import_content
+  - selected_semdom_authority
+  - selected_rapidwords_folders
+  - reviewed_evidence_state
+reconciliation:
+  automatic_identity_basis: STABLE_EXTERNAL_LIFT_SENSE_ID_ONLY
+  string_similarity_auto_merge: prohibited
+  conflicting_stable_identity: TRIAGE_ONLY
+indexes:
+- lemma.json
+- lexical-head.json
+- sense-semdom.json
+- surface-form.json
+- key-terms.json
+- semdom-catalog.json
+- reconciliation.json
+- correspondence.json
+- construction.json
+- decisions.json
+- coverage.json
+- index-manifest.json

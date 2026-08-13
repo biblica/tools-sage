@@ -1,0 +1,96 @@
+setup_guidance:
+  canonical_surface: sage launcher guided setup
+  normal_launch: ./sage
+  windows_launch: sage.cmd
+  setup_surface: TERMINAL_MENU
+  provider_surface: SEALED_GOVERNED_TASK_ONLY
+  manual_recalibration: Main menu option 5
+  recovery_surface: Main menu option 6
+ecosystem:
+  schema_version: '0.04'
+  id: sage
+  name: Scripture Analysis and Generation Ecosystem
+  configured: false
+paths:
+  internal_scripture_root: workspace-data/scripture-projects
+  base_vrs_root: resources/scripture
+  cache_root: cache
+  workspace_data_root: workspace-data
+human_output:
+  operator_language: en
+  logs_and_reports:
+    primary_language: en
+    secondary_language: uk
+    bilingual: true
+    verbosity: normal
+  translation_challenges:
+    primary_language: uk
+    secondary_language: en
+    bilingual: true
+    minimum_individual_urgency: 2
+    aggregate_lower_levels: true
+    consolidate_repeated_cause: true
+    render_only_material_fields: true
+  machine_records:
+    language: canonical
+    localise_codes: false
+versification:
+  canonical_file: org.vrs
+  base_files:
+  - eng.vrs
+  - org.vrs
+  custom_file_default: custom.vrs
+language_profiles:
+  id:
+    script: Latn
+    variants:
+      source:
+        file: profiles/languages/id/source.yml
+        role: CONTENT_SOURCE
+  en:
+    script: Latn
+    variants:
+      bol-target:
+        file: profiles/languages/en/bol-target.yml
+        role: TARGET
+  uk:
+    script: Cyrl
+    variants:
+      wip:
+        file: profiles/languages/uk/wip.yml
+        role: WIP
+  fa:
+    script: Arab
+    variants:
+      wip:
+        file: profiles/languages/fa/wip.yml
+        role: WIP
+  grc:
+    script: Grek
+    variants: {}
+  hbo:
+    script: Hebr
+    variants: {}
+  pes:
+    script: Arab
+    profile_alias: fa
+projects: {}
+workflows:
+  bic:
+    profile: workflows/bic/profile.yml
+    state_root: workspace-data/bic/state
+    lock_root: workspace-data/bic/locks
+    transaction_root: workspace-data/bic/transactions
+    output_root: workspace-data/bic/output
+    publication_root: workspace-data/bic/output/published-targets
+  saw:
+    profile: workflows/saw/profile.yml
+    state_root: workspace-data/saw/state
+    lock_root: workspace-data/saw/locks
+    transaction_root: workspace-data/saw/transactions
+    output_root: workspace-data/saw/output
+evaluation_sets: {}
+project_codes:
+  type_codes:
+    v: TRANSLATION
+    x: BACKTRANSLATION

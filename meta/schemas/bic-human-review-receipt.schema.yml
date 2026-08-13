@@ -1,0 +1,16 @@
+schema_id: sage-bic-human-review-receipt-1.0
+required:
+- schema_version
+- review_id
+- reviewer
+- decision
+- scope
+- operation_id
+- resource_fingerprints
+decision_values:
+- APPROVED_FOR_REWRITE
+- RETURN_FOR_REVIEW
+- REJECTED
+controls:
+  latest_committed_inspect_only: true
+  rewrite_requires_approved_receipt: true

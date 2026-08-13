@@ -1,0 +1,3 @@
+interface:
+  display_name: "BIC Rewrite"
+  short_description: "Rewrite one bounded target scope under protected source-authority rules."

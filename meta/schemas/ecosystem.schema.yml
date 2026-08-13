@@ -1,0 +1,56 @@
+schema_id: sage-ecosystem-0.04
+required:
+  ecosystem: [schema_version, id, name, configured]
+  paths: [internal_scripture_root, base_vrs_root, cache_root, workspace_data_root]
+  versification: [canonical_file, base_files, custom_file_default]
+  language_profiles: mapping_keyed_by_canonical_language_tag
+  projects: mapping
+  workflows: [bic, saw]
+  human_output: [operator_language, logs_and_reports, translation_challenges, machine_records]
+optional:
+  project_resource_mount: [external_path, external_access_mode]
+  setup_guidance: [canonical_document, normal_launch, windows_launch, setup_surface, provider_surface, manual_recalibration]
+  workflow_project_paths: [memory_root, publication_root]
+constraints:
+  ecosystem.id: sage
+  ecosystem.schema_version: '0.04'
+  every_file_reference_includes_extension: true
+  vrs_filenames_end_with_case_insensitive: .vrs
+  extensionless_vrs_aliases: prohibited
+  language_profile_key: canonical_bcp47_tag
+  language_profile_alias: explicit_operator_approved_namespace_reference_with_matching_script
+  project_language_code_must_match_profile: true
+  project_path: relative_directory_not_file
+  project_external_path: absolute_Paratext_or_PTLite_project_folder
+  external_read_extensions_case_insensitive: [.sfm, .vrs]
+  external_access_modes: [READ_ONLY_SCRIPTURE, READ_WRITE_SCRIPTURE, READ_WRITE_TARGET]
+  READ_WRITE_SCRIPTURE: project_inventory_maximum_capability_only
+  READ_WRITE_TARGET_allowed_only_for: effective_BIC_GENERATED_TARGET_job_binding
+  external_vrs_writes: prohibited
+  base_vrs_root: configurable_directory
+  base_vrs_resolution: project_local_then_configured_base_vrs_root
+  custom_vrs: inside_own_project_root
+  project_scope: compatible_canon_testament_expected_books_roles
+  project_content_state: required_LOCKED_or_UNDER_REVIEW
+  sage_project_roles: job_scoped_only
+  effective_project_roles: explicit_from_job_bindings_never_inferred_from_project_code
+  auto_resolution: reported_during_INIT_without_rewriting_source_yaml
+  project_code_grammar: lowercase_language_code_plus_uppercase_project_abbreviation_plus_lowercase_type_plus_iteration_digit_max_8_chars
+  project_code_type_does_not_imply_workflow_role: true
+  iteration_and_scripture_scope_are_independent: true
+  evaluation_execution: sequential_single_output_project_tasks
+
+human_output_contract:
+  operator_language: en_fixed_for_rc7
+  per_project_reporting_override: state/project-inventory.json
+  logs_and_reports:
+    independent_language_pair: true
+    verbosity_values: [quiet, normal, verbose, debug]
+  translation_challenges:
+    independent_language_pair: true
+    minimum_individual_urgency: 0-4
+    aggregate_lower_levels: true
+    consolidate_repeated_cause: true
+  machine_records:
+    language: canonical
+    localise_codes: false

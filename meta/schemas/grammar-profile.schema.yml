@@ -1,0 +1,62 @@
+schema_id: sage-language-grammar-variant-2.0
+required:
+  profile:
+  - schema_version
+  - id
+  - language
+  - script
+  - role
+  - status
+  - purpose
+  - owner_role
+  - last_reviewed
+  checks: list
+constraints:
+  profile_id: matches_registered_variant_id
+  language: canonical_bcp47_tag_matching_namespace_and_project
+  script: iso15924_four_letter_code
+  rule_ids: unique
+  workflow_binding_language: derived_from_bound_project
+  target_role: may_bind_GENERATED_TARGET_or_WIP
+  target_minimum_substantive_checks: 8
+  target_required_sections:
+  - governance
+  - evidence_priority
+  - usage
+  - finding_requirements
+  - restrictions
+  status_values:
+  - ACTIVE
+  - PROJECT_REVIEW_REQUIRED
+  - AI_DRAFTED
+  - INACTIVE
+  AI_DRAFTED: accepted_operational_state_with_LLM_general_target_language_knowledge_provenance_not_human_approval
+  automatic_approval: prohibited
+  AI_DRAFTED_provenance:
+    type: LLM_GENERAL_LANGUAGE_KNOWLEDGE
+    provider: required_nonempty
+    model: optional
+    project_validated: false
+contract_fields:
+- profile_id
+- language
+- script
+- role
+- status
+- purpose
+- owner_role
+- last_reviewed
+- profile_sha256
+- provenance
+- governance
+- evidence_priority
+- normalization
+- rules
+- usage
+- finding_requirements
+- restrictions
+- project_decisions
+- approved_exceptions
+
+field_types:
+  last_reviewed: required_nullable_iso_date_string

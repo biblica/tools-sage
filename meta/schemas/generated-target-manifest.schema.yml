@@ -1,0 +1,37 @@
+schema_id: sage-generated-target-manifest-1.0
+required:
+- schema_version
+- generation_id
+- generation_fingerprint
+- project_id
+- producer
+- status
+- immutable
+- created_utc
+- sage_version
+- resource_sha256
+- published_files_sha256
+- file_hashes
+- source_fingerprints
+- grammar_contracts
+- effective_vrs
+- project_scope
+- validation_provenance
+- project_subdirectory
+- publication_basis
+- published_usfm_sha256
+- published_custom_vrs
+- content_state
+- roles
+controls:
+  producer: bic
+  status: COMMITTED
+  immutable: true
+  project_files: strict_utf8_and_usj_validated
+  empty_or_note_only_verse: blocked
+  current_pointer: resolves_to_exact_generation_id
+  generation_identity: target_plus_sources_plus_grammar_plus_vrs_plus_scope_plus_structure_policy_plus_usj_compiler_plus_sage_version
+  source_fingerprints: resource_plus_vrs_plus_structure_policy_plus_usj_compiler
+  publication_basis: VALIDATED_WORKFLOW_or_explicit_DEVELOPMENT_OVERRIDE
+  publication_snapshot: validated_usfm_and_project_local_custom_vrs_rehashed_after_copy
+  roles_and_content_state: included_in_project_scope_and_generation_identity

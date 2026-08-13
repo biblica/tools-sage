@@ -1,0 +1,26 @@
+schema_version: '1.0'
+type: object
+required:
+  - profile
+  - split_markers
+  - ignored_split_headers
+  - continuation_markers
+  - marker_patterns
+  - scores
+properties:
+  profile:
+    type: object
+    required: [schema_version, id, status, purpose]
+  split_markers:
+    type: object
+    required: [section, poetry]
+  ignored_split_headers:
+    type: array
+  continuation_markers:
+    type: array
+  marker_patterns:
+    type: object
+    required: [headers, body_paragraphs, poetry_lines]
+  scores:
+    type: object
+    required: [paragraph, chapter, chapter_continuation, verse]

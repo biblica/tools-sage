@@ -1,0 +1,13 @@
+contract:
+  id: BIC4_PROTECTED_REWRITE_DETAIL_RULES
+  baseline: '4.00'
+  status: PINNED
+  canonical_file: skills/bic-rewrite/references/PROTECTED-REWRITE-DETAIL-RULES.md
+  mirror_files:
+  - skills/bic-self-check/references/PROTECTED-REWRITE-DETAIL-RULES.md
+  sha256: be82c2d71e0dd0c52096099c5b2b0dfef252785960abe5addcc9c07c135c791d
+  permitted_adaptations:
+  - BRITISH_PROJECT_SPELLING
+  - CANONICAL_REWRITE_ACTION_VOCABULARY
+  - GENERATED_LAYOUT_MARKER_POLICY_EXCEPTION
+  release: 0.01-rc2b

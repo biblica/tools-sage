@@ -1,0 +1,18 @@
+schema_id: sage-transaction-journal-1.0
+states:
+  - OPEN
+  - PREPARED
+  - COMMITTING
+  - COMMITTED
+  - ROLLED_BACK
+required:
+  - transaction_id
+  - operation
+  - state
+  - created_at
+  - updated_at
+  - files
+recovery:
+  committed_hashes_match: mark_committed
+  staged_or_backup_files_available: rollback_safely
+  unrecoverable_state: block_and_require_operator_review

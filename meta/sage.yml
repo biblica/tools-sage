@@ -1,0 +1,128 @@
+release:
+  id: sage
+  name: Scripture Analysis and Generation Ecosystem
+  version: 0.01-rc7.04
+  status: RELEASE_CANDIDATE
+vocabularies:
+  operation_states:
+  - NOT_RUN
+  - READY
+  - IN_PROGRESS
+  - COMPLETE
+  - STALE
+  - READY_WITH_ACTIONS
+  - READY_WITH_LIMITATIONS
+  - COMPLETED_WITH_CHALLENGES
+  - STAGED_VALIDATED
+  - STAGED_VALIDATED_WITH_CHALLENGES
+  - COMMITTED
+  - BLOCKED
+  - ERROR
+  - ABANDONED
+  capability_states:
+  - CONFIGURED
+  - AVAILABLE
+  - VALIDATED
+  - RESTRICTED
+  - NOT_IMPLEMENTED
+  resource_roles:
+  - CONTENT_SOURCE
+  - REFERENCE
+  - AUXILIARY_SCRIPTURE
+  - LEXICAL_DONOR
+  - ORIGINAL_LANGUAGE_GREEK
+  - ORIGINAL_LANGUAGE_HEBREW
+  - GENERATED_TARGET
+  - WIP
+  resource_states:
+  - READY
+  - READY_WITH_WARNINGS
+  - NOT_GENERATED
+  - NOT_APPLICABLE
+  - BLOCKED
+  coordinate_states:
+  - PRESENT
+  - PRESENT_BRACKETED
+  - PRESENT_NOTE_ONLY
+  - EXCLUDED
+  - MISSING
+  - EMPTY
+  - MAPPED
+  - MERGED
+  - SPLIT
+  memory_states:
+  - PROPOSED
+  - REVIEWED
+  - APPROVED_FOR_USE
+  - REJECTED
+  - SUPERSEDED
+  - INACTIVE
+  transaction_states:
+  - OPEN
+  - PREPARED
+  - COMMITTING
+  - COMMITTED
+  - ROLLED_BACK
+  result_states:
+  - FINDINGS
+  - NO_FINDINGS
+  - INSUFFICIENT_DATA
+  - NOT_ASSESSED
+  coverage_states:
+  - COMPLETE
+  - COMPLETE_WITH_RESTRICTIONS
+  - PARTIAL
+  - NOT_ASSESSED
+  evidence_confidence_states:
+  - FULL
+  - LIMITED
+  content_states:
+  - LOCKED
+  - UNDER_REVIEW
+  testament_scopes:
+  - FB
+  - OT
+  - NT
+  - PORTIONS
+  cardinality_terms:
+  - exactly_one
+  - zero_or_one
+  - one_or_more
+  - zero_or_more
+  - exactly_one_of
+terms:
+  operation: Public workflow action requested by the Operator.
+  pass: One isolated model-analysis pass inside an operation.
+  task: One governed runtime unit executed through the provider-neutral sealed task
+    interface.
+  scope: Operator-requested Scripture coordinate range.
+  work_unit: Internal bounded subdivision of a scope.
+  packet: Exact serialized evidence supplied to one pass or task.
+  context_only: Evidence routed for interpretation but excluded from ordinary finding
+    locations.
+  equivalence_group: Resource-local coordinates that map to the same canonical semantic
+    span.
+  action: Human decision or edit required.
+  finding: Supported QA conclusion, primarily used by SAW.
+  challenge: Translation difficulty or unresolved decision, primarily used by BIC.
+  memory: Durable Operator-governed relational knowledge.
+  language_profile: Canonical language-code namespace selected by a project.
+  profile_variant: Optional role-specific guidance selected inside a language profile.
+  grammar_contract: Content-addressed compact rules derived from the project-selected
+    language-profile variant.
+  target_generation: Immutable committed BIC publication selected by exact generation
+    ID.
+  derived_output: Reproducible generated data that is not authority.
+  content_state: 'Explicit trust and mutability flag: LOCKED or UNDER_REVIEW; never
+    inferred.'
+  project_role: Explicit authorized project use declared in scope.roles; never inferred.
+boundaries:
+  one_ecosystem: true
+  one_resource_registry: true
+  separate_workflow_states: true
+  separate_workflow_locks: true
+  separate_workflow_outputs: true
+  shared_writable_target_folder: false
+  saw_target_write_permission: false
+  direct_saw_to_bic_memory_write: false
+  custom_vrs_centralization: false

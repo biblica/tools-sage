@@ -1,0 +1,18 @@
+schema_id: sage-project-manifest-0.03
+purpose: Optional immutable publication and provenance manifest for a project generation.
+required:
+  - project_id
+  - generation_id
+  - producer
+  - producer_version
+  - source_resources
+  - effective_vrs
+  - project_scope
+  - content_state
+  - roles
+  - project_sha256
+  - status
+status_values: [COMMITTED, SUPERSEDED]
+content_state_values: [LOCKED, UNDER_REVIEW]
+immutability:
+  committed_generation_content_may_change: false

@@ -1,0 +1,30 @@
+schema_version: '1.0'
+controlled_terms:
+  SAGE: Scripture Analysis and Generation Ecosystem
+  BIC: BIC translation workflow
+  SAW: Scripture Analysis Workbench
+  Operator: Human authorized to configure, approve, reset, commit, publish, or pin governed data.
+  Paratext project: Project directory containing USFM and its project-local custom.vrs when applicable.
+  projects root: Paratext projects directory containing eng.vrs, org.vrs, and project folders.
+  operation: Public workflow action requested by the Operator.
+  work unit: Internal bounded subdivision of one Operator scope.
+  packet: Exact serialized evidence for one work unit.
+  context-only evidence: Adjacent evidence supplied for interpretation but excluded from ordinary finding locations.
+  structure policy: Governed USFM marker classes and boundary scores used for work-unit planning.
+  poetry block: Body span introduced or separated by a governed poetry boundary such as qa or b.
+  TARGET generation: Immutable committed BIC project snapshot selected by exact generation ID.
+  BIC SOURCE: The sole BIC content and translation authority; formal binding CONTENT_SOURCE.
+  BIC DONOR: A lexical/vocabulary donor only; formal binding LEXICAL_DONOR. It never supplies BIC content authority.
+  BIC TARGET: The generated-project write destination; formal binding GENERATED_TARGET. Existing target Scripture is not BIC input evidence.
+  SAW WIP: The work-in-progress translation being analysed by SAW; formal binding `WIP`.
+  SAW REFERENCE: The authorised LWC benchmark used by SAW; formal binding `REFERENCE`.
+prohibited_ambiguities:
+  - Do not use bare REFERENCE without a qualified resource role.
+  - ACT.md is a governed task instruction artifact; model-provider UI modes are not controller concepts.
+  - Do not call generated TARGET output authoritative memory.
+  - Do not describe a work-unit plan as completed analysis.
+  - Do not describe context-only evidence as a normal finding location.
+  - Do not call the BIC lexical donor a REFERENCE; use DONOR or LEXICAL_DONOR.
+  - Do not route existing BIC GENERATED_TARGET Scripture as INSPECT or REWRITE evidence.
+  - Do not expose BIC DONOR verse sequence or passage wording to the model; route only derived lexical evidence.
+  - Do not describe SAW as a generic LRL checker; its primary object is an LWC work-in-progress translation.

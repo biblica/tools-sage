@@ -1,0 +1,78 @@
+schema_id: sage-job-1.0
+required:
+- schema_version
+- job_id
+- tool
+- display_name
+- status
+- bindings
+- profiles
+- defaults
+- configuration_revision
+controls:
+  schema_version: '1.0'
+  job_id:
+    BIC: BIC_<SOURCE>-<DONOR>-<TARGET>
+    SAW: SAW_<WIP>-<REFERENCE>
+    separators:
+    - underscore
+    - hyphen
+    project_codes_preserved: true
+  tool:
+  - bic
+  - saw
+  status:
+  - ACTIVE
+  - INACTIVE
+  - ARCHIVED
+  ownership:
+    cardinality: exactly_one
+    object: job_directory
+  bindings:
+    bic:
+      content_source: exactly_one
+      lexical_donor: exactly_one
+      generated_target: exactly_one
+      original_language_greek: zero_or_one
+      original_language_hebrew: zero_or_one
+    saw:
+      wip: exactly_one
+      reference: exactly_one
+      original_language_greek: zero_or_one
+      original_language_hebrew: zero_or_one
+  project_inventory_roles: none_role_neutral
+  effective_roles: assigned_by_job_binding
+  access_policy:
+    non_target_bindings: READ_ONLY_SCRIPTURE
+    bic_target: READ_WRITE_TARGET_only_when_project_inventory_capability_allows
+    vrs_writes: prohibited
+  configuration_revision: positive_integer_incremented_on_change
+  runtime_files: derived_not_authoritative
+  bic_memory_boundary: job_local
+  bic_generation_boundary: job_local
+  bic_saw_interface: prohibited
+  bic_cardinality:
+    SOURCE: exactly_one
+    DONOR: exactly_one
+    TARGET: exactly_one
+  bic_target_storage:
+    cardinality: exactly_one_of
+    options:
+    - SAGE_INTERNAL
+    - PARATEXT_PROJECT
+  original_language_bindings:
+    GRK: zero_or_one
+    HEB: zero_or_one
+  grammar_profile_selection:
+    BIC_SOURCE_GRAMMAR: exactly_one_active
+    BIC_TARGET_GRAMMAR: exactly_one_active
+    SAW_WIP_GRAMMAR: exactly_one_active
+  effective_vrs:
+    cardinality: exactly_one
+    after_resolution: true
+cardinality_vocabulary:
+- exactly_one
+- zero_or_one
+- one_or_more
+- zero_or_more
+- exactly_one_of

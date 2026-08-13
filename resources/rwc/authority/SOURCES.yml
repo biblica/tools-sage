@@ -1,0 +1,14 @@
+sources:
+  sil_semantic_domains:
+    role: SEMANTIC_CLASSIFICATION_AUTHORITY
+    translation_authority: false
+    expected_format: JSON
+    source_url: https://semdom.org/data/semdom.json
+    metadata_url: https://semdom.org/bibliography/
+    import_command: sage rwc authority semdom --file SemDom.json
+  rapidwords_specific_first:
+    role: PROCESSING_AND_TRAVERSAL_METADATA
+    translation_authority: false
+    expected_format: DOCX
+    source_url: https://rapidwords.net/sites/default/files/docs/folder_divisions_specific_first.docx
+    import_command: sage rwc authority folders --file folder_divisions_specific_first.docx

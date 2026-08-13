@@ -1,0 +1,101 @@
+schema_id: sage-bic-translation-challenges-1.2
+required:
+- schema_version
+- task_id
+- operation
+- scope
+- output_sha256
+- reporting_languages
+- challenges
+challenge_required:
+- challenge_id
+- scripture_reference
+- category
+- summary
+- confidence
+- candidates
+- recommended_candidate_id
+- risk
+- ol_referral
+- inherited_challenge_ids
+- recommended_action
+- messages
+candidate_required:
+- candidate_id
+- form
+- meaning_features
+- tone_and_force
+- register
+- lexical_burden
+- frequency_evidence
+- main_risk
+candidate_derived:
+- lexical_burden.overall
+high_risk_rejected_candidate_required:
+- rejection_code
+- rejection_reason
+localised_message_required:
+- summary
+- risk
+- evidence
+- action
+minor_summary:
+  optional: true
+  fields:
+  - total
+  - by_category
+  - notes
+human_reporting:
+  risk_0: normally_silent
+  risk_1: aggregate
+  risk_2: review_item
+  risk_3: elevated_review_item
+  risk_4: critical_review_item
+  candidate_change_below_material_threshold: aggregate
+  repeated_cause: consolidate
+  full_machine_record_retained: true
+  rejected_alternative_limits:
+    risk_2: 2
+    risk_3: 3
+    risk_4: 4
+lexical_burden_scale:
+- 0
+- 1
+- 2
+- 3
+- 4
+longman_familiarity_mapping:
+  S1: 0
+  W1: 0
+  S2: 1
+  W2: 1
+  S3: 2
+  W3: 2
+  L3000: 2
+  L6000: 3
+  L9000: 4
+  UNLISTED: 4
+  spoken_band_precedence: true
+  licensed_evidence_required: true
+lexical_burden_formula:
+  owner: LOCAL_CONTROLLER
+  familiarity: 0.4
+  register_markedness: 0.15
+  sense_ambiguity: 0.15
+  construction_burden: 0.15
+  specialist_load: 0.15
+ol_policy:
+  owner: LOCAL_CONTROLLER
+  normal_levels:
+  - 0
+  - 1
+  conditional_read_from_level: 2
+  requires_material_trigger: true
+  lexical_difficulty_alone: false
+  performed_must_equal_controller_requirement: true
+  no_ol_means_no_ol_evidence_fields: true
+  risk_3_behavior: REPORT_AND_CONTINUE
+  risk_4_behavior: CRITICAL_REPORT_AND_CONTINUE
+  operator_input_during_rewrite: prohibited
+  self_check_required: true
+  linguistic_uncertainty_blocks_current_operation: false
