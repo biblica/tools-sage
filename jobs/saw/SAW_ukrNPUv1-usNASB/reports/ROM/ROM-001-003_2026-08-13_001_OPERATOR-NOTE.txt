@@ -1,0 +1,132 @@
+REFERENCE: ROM 1:5
+TYPE: MEANING
+ACTION LEVEL: CHANGE
+CONFIDENCE: HIGH
+ISSUE:
+«привести до послуху віри всі народи» makes all nations the direct object to be brought into obedience. The reference describes bringing about the obedience of faith among all the Gentiles, not an assertion that every nation is brought into that obedience.
+
+EVIDENCE:
+WIP, REFERENCE
+
+RECOMMENDATION:
+Revise the clause so that «послух віри» is brought about among/all the nations, without making «всі народи» the direct object of «привести».
+
+------------------------------------------------------------------------
+
+REFERENCE: ROM 1:11
+TYPE: MEANING
+ACTION LEVEL: CHANGE
+CONFIDENCE: HIGH
+ISSUE:
+«розділити з вами якийсь духовний дар» means to share a spiritual gift with the Romans. The reference states that Paul wants to impart a gift to them for their strengthening; the direction of the gift is lost.
+
+EVIDENCE:
+WIP, REFERENCE
+
+RECOMMENDATION:
+Replace «розділити з вами» with wording that clearly conveys giving or imparting a spiritual gift to the Romans.
+
+------------------------------------------------------------------------
+
+REFERENCE: ROM 1:27
+TYPE: TERMINOLOGY
+ACTION LEVEL: CHANGE
+CONFIDENCE: HIGH
+ISSUE:
+«належне покарання за свої збочення» renders the stated «error» as «perversions», adding a more specific and evaluative characterization than the reference expresses for the basis of the penalty.
+
+EVIDENCE:
+WIP, REFERENCE
+
+RECOMMENDATION:
+Use a Ukrainian term corresponding to «error»/«wrongdoing» that does not add the specific characterization «збочення».
+
+------------------------------------------------------------------------
+
+REFERENCE: ROM 1:29
+TYPE: MEANING
+ACTION LEVEL: CHANGE
+CONFIDENCE: HIGH
+ISSUE:
+The list has «розпусти» where the reference includes «evil». «Розпуста» introduces sexual debauchery, which is not the listed item in the reference, and the reference’s distinct item «evil» is consequently absent.
+
+EVIDENCE:
+WIP, REFERENCE
+
+RECOMMENDATION:
+Revise the first list so its four items correspond to unrighteousness, wickedness, greed, and evil, without adding «розпуста».
+
+------------------------------------------------------------------------
+
+REFERENCE: ROM 2:15
+TYPE: MEANING
+ACTION LEVEL: CHANGE
+CONFIDENCE: HIGH
+ISSUE:
+The WIP says the thoughts "звинувачують, то виправдовують одна одну" (accuse or justify one another). The reference says that the Gentiles' thoughts alternately accuse or defend them. The target changes the object of accusation/defense from the people to the thoughts themselves.
+
+EVIDENCE:
+WIP, REFERENCE
+
+RECOMMENDATION:
+Revise the clause so that the alternating thoughts accuse or defend the Gentiles/them, while retaining the intended alternation.
+
+------------------------------------------------------------------------
+
+REFERENCE: ROM 3:4
+TYPE: QUOTATION
+ACTION LEVEL: CHANGE
+CONFIDENCE: HIGH
+ISSUE:
+The quotation is materially recast. "Ти справедливо виконуєш Свій вирок" replaces being justified in God's words, and "бездоганно здійснюєш Твій суд" replaces prevailing when God is judged. This changes both quoted assertions and removes the passive circumstance of God being judged.
+
+EVIDENCE:
+WIP, REFERENCE
+
+RECOMMENDATION:
+Rework the quotation to preserve justification in God's words and prevailing when He is judged, using Ukrainian quotation wording appropriate to project policy.
+
+------------------------------------------------------------------------
+
+REFERENCE: ROM 3:9
+TYPE: MEANING
+ACTION LEVEL: CHANGE
+CONFIDENCE: HIGH
+ISSUE:
+"Чи є в нас якась перевага?" asks whether Jews have any advantage, whereas the reference asks whether "we" are better than others. In the immediate argument, Jews have already been said to possess an advantage (3:2); the intended question denies moral superiority, not every advantage.
+
+EVIDENCE:
+WIP, REFERENCE
+
+RECOMMENDATION:
+Revise the question to express whether "we" are better/superior to others, preserving the following denial and the universal charge of sin.
+
+------------------------------------------------------------------------
+
+REFERENCE: ROM 3:25
+TYPE: MEANING
+ACTION LEVEL: CHANGE
+CONFIDENCE: MEDIUM
+ISSUE:
+The WIP attaches "через віру" to God's appointment of Christ and places "в Його крові" with the demonstration of righteousness. The reference presents Christ as the propitiation in His blood through faith. This restructuring obscures or changes the stated relation of Christ's blood and faith to the propitiation.
+
+EVIDENCE:
+WIP, REFERENCE
+
+RECOMMENDATION:
+Revise the sentence so that Christ's blood and faith are clearly connected to the means of propitiation/reconciliation, while preserving the subsequent purpose of demonstrating God's righteousness.
+
+------------------------------------------------------------------------
+
+REFERENCE: ROM 3:28
+TYPE: MEANING
+ACTION LEVEL: CHANGE
+CONFIDENCE: MEDIUM
+ISSUE:
+"Людина може бути виправдана вірою" can express mere possibility ('can be justified'), while the reference is Paul's declarative conclusion that a person is justified by faith apart from works of the Law.
+
+EVIDENCE:
+WIP, REFERENCE
+
+RECOMMENDATION:
+Use an unambiguously declarative Ukrainian formulation that states justification by faith apart from works of the Law rather than only its possibility.

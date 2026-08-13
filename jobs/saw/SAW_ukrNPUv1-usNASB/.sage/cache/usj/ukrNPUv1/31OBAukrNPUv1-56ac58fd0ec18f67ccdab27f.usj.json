@@ -1,0 +1,2319 @@
+{
+  "content": [
+    {
+      "code": "OBA",
+      "content": [
+        "- New Ukrainian Translation ver.1"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 2022 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "Авдія",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Книга пророка Авдія",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Авдія",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Авд.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Книга пророка Авдія",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вступ",
+        "\n"
+      ],
+      "marker": "iot",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Книга пророка Авдія є найкоротшою в Старому Завіті. Вона не містить прямих вказівок на час написання, але зі змісту книги та схожістю з фрагментом із Книги пророка Єремії (пор. ",
+        {
+          "content": [
+            "1:1–9"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        " із ",
+        {
+          "content": [
+            "Єр. 49:7, 9–10, 14–16, 22"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ") можна зробити висновок, що йдеться про час після падіння Єрусалима (586 р. до Р. Х.).",
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Основна думка книги – осуд Едому, сусіднього й спорідненого з євреями народу, який скористався зруйнуванням Єрусалима Навуходоносором і пограбував залишок його мешканців, що лишився після загибелі та депортації населення Юдеї (",
+        {
+          "content": [
+            "1:1–14"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). Авдій пророкує про настання дня ",
+        {
+          "content": [
+            "Господнього"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", коли Бог судитиме ворогів Свого народу, а Єрусалим та Ізраїль визволить і відновить (",
+        {
+          "content": [
+            "1:15–21"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ").",
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "OBA 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "Видіння пророка Авдія",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "OBA 1:1",
+          "type": "verse"
+        },
+        "Видіння Авдія.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Так говорить Володар ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " про Едом:",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "«Ми почули повідомлення від ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "звістку до народів послано:",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "„Устаньте! Вирушімо на війну проти нього!“».",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "OBA 1:2",
+          "type": "verse"
+        },
+        "«Ось Я зроблю тебе малим серед народів,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "осоромленим дуже ти будеш.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "OBA 1:3",
+          "type": "verse"
+        },
+        "Зухвалість твого серця звела тебе,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "мешканцю ущелин скельних",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:3 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Або: ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "Села",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "; столиця Едому."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "чиє помешкання – на висоті!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Ти казав у своєму серці:",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "„Хто зможе спустити мене на землю?“.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "OBA 1:4",
+          "type": "verse"
+        },
+        "Навіть якби ти піднявся високо, мов орел,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і звив своє гніздо між зірками,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Я й звідти скину тебе! –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "промовив ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ". –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "OBA 1:5",
+          "type": "verse"
+        },
+        "Якби вдерлися до тебе крадії чи грабіжники нічні,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хіба вони не взяли б лише те, що їм потрібно?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Якби прийшли до тебе збирачі винограду,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хіба вони не залишили б кілька грон?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "О, яке спустошення чекає на тебе!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "OBA 1:6",
+          "type": "verse"
+        },
+        "Ісав буде ",
+        {
+          "content": [
+            "повністю"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " пограбований,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а його приховані скарби – розшукані!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "OBA 1:7",
+          "type": "verse"
+        },
+        "До самої межі гнатимуть тебе всі, з ким ти маєш завіт;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "твої друзі обмануть і здолають тебе.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Ті, хто їсть твій хліб, поставлять на тебе пастку,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "але ти цього й не помітиш.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "OBA 1:8",
+          "type": "verse"
+        },
+        "Хіба в той день, – проголошує ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Я не погублю мудреців Едому,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "розумних із гори Ісава?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "OBA 1:9",
+          "type": "verse"
+        },
+        "Твої могутні воїни, Теймане, будуть тремтіти,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і всі на горі Ісава",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "будуть знищені в різанині.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "OBA 1:10",
+          "type": "verse"
+        },
+        "Через насильство над твоїм братом Яковом",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ти будеш покритий ганьбою,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ти будеш знищений навіки.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "OBA 1:11",
+          "type": "verse"
+        },
+        "Ти стояв осторонь того дня,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "коли чужинці забирали його багатство,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "коли чужоземці входили в його ворота",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й кидали жереб про Єрусалим.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Ти був як один з них.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "OBA 1:12",
+          "type": "verse"
+        },
+        "Не слід було зловтішатися зі свого брата",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:12 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Або: ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "дивитися на свого брата."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "в день його нещастя,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "не слід було радіти",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "в день знищення народу Юди,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "не слід було тобі нахвалятися своїми устами",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "в день ",
+        {
+          "content": [
+            "їхнього"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " лиха.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "OBA 1:13",
+          "type": "verse"
+        },
+        "Тобі не слід було входити у ворота Мого народу",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "в день його біди,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і зловтішатися над ним",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "у день його лиха,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і захоплювати його багатство",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "в день його біди.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "OBA 1:14",
+          "type": "verse"
+        },
+        "Не слід було тобі чекати на роздоріжжі,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб убити їхніх утікачів",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і видавати їхніх уцілілих",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "у день їхньої біди.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "OBA 1:15",
+          "type": "verse"
+        },
+        "Бо близько вже день ",
+        {
+          "content": [
+            "Господній"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "для всіх народів.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Як ти чинив, так і з тобою вчинять;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "твоя відплата повернеться на твою голову.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "OBA 1:16",
+          "type": "verse"
+        },
+        "Як ви пили на Моїй святій горі,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "так і всі народи будуть пити без упину;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "вони питимуть і напʼються,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "зникнуть, наче їх ніколи не було.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "OBA 1:17",
+          "type": "verse"
+        },
+        "Але на горі Сіон буде спасіння;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і буде вона святим місцем,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а дім Якова заволодіє своїм майном.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "OBA 1:18",
+          "type": "verse"
+        },
+        "Дім Якова буде вогнем,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і дім Йосифа – полумʼям,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а дім Ісава – соломою.",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вони запалять і знищать його.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Не буде вцілілого",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "в домі Ісава».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Промовив ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "OBA 1:19",
+          "type": "verse"
+        },
+        "Люди з Неґеву заволодіють",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "горою Ісава,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а люди низовин –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "землею филистимлян.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вони займуть поля Єфрема та Самарії,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а Веніамін заволодіє Ґілеадом.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "OBA 1:20",
+          "type": "verse"
+        },
+        "Вигнанцям Ізраїлю належатиме це укріплення",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ханаанців аж до Сарепти,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і вигнанці з Єрусалима, які перебувають у Сефараді,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "заволодіють містами Неґеву.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "21",
+          "sid": "OBA 1:21",
+          "type": "verse"
+        },
+        "Тоді зійдуть визволителі на гору Сіон,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб судити гору Ісава.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "І буде царювання ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "OBA",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "31OBAukrNPUv1.SFM",
+    "source_sha256": "5038d2b4c39c10d8dddc3ab0457b2ed34d6fccde0346b1b8aa44fe5d11c2ee60",
+    "source_size": 7250,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Видіння Авдія.\nТак говорить Володар Господь про Едом:\n«Ми почули повідомлення від Господа,\nзвістку до народів послано:\n„Устаньте! Вирушімо на війну проти нього!“».",
+        "body_text_exact": "Видіння Авдія.\nТак говорить Володар Господь про Едом:\n«Ми почули повідомлення від Господа,\nзвістку до народів послано:\n„Устаньте! Вирушімо на війну проти нього!“».",
+        "body_text_normalized": "Видіння Авдія. Так говорить Володар Господь про Едом: «Ми почули повідомлення від Господа, звістку до народів послано: „Устаньте! Вирушімо на війну проти нього!“».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Видіння Авдія.",
+          "\n",
+          "Так говорить Володар ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " про Едом:",
+          "\n",
+          "«Ми почули повідомлення від ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "звістку до народів послано:",
+          "\n",
+          "„Устаньте! Вирушімо на війну проти нього!“»."
+        ],
+        "discourse_unit_id": "OBA-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 21,
+        "line_start": 15,
+        "lines": [
+          "\\v 1 Видіння Авдія.",
+          "\\p Так говорить Володар \\nd Господь\\nd* про Едом:",
+          "\\q1 «Ми почули повідомлення від \\nd Господа\\nd*,",
+          "\\q2 звістку до народів послано:",
+          "\\q1 „Устаньте! Вирушімо на війну проти нього!“»."
+        ],
+        "number": "1",
+        "paragraph_id": "OBA-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Видіння Авдія.\n\\p Так говорить Володар \\nd Господь\\nd* про Едом:\n\\q1 «Ми почули повідомлення від \\nd Господа\\nd*,\n\\q2 звістку до народів послано:\n\\q1 „Устаньте! Вирушімо на війну проти нього!“».",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "«Ось Я зроблю тебе малим серед народів,\nосоромленим дуже ти будеш.",
+        "body_text_exact": "«Ось Я зроблю тебе малим серед народів,\nосоромленим дуже ти будеш.",
+        "body_text_normalized": "«Ось Я зроблю тебе малим серед народів, осоромленим дуже ти будеш.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "«Ось Я зроблю тебе малим серед народів,",
+          "\n",
+          "осоромленим дуже ти будеш."
+        ],
+        "discourse_unit_id": "OBA-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 25,
+        "line_start": 24,
+        "lines": [
+          "\\v 2 «Ось Я зроблю тебе малим серед народів,",
+          "\\q2 осоромленим дуже ти будеш."
+        ],
+        "number": "2",
+        "paragraph_id": "OBA-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 «Ось Я зроблю тебе малим серед народів,\n\\q2 осоромленим дуже ти будеш.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Зухвалість твого серця звела тебе,\nмешканцю ущелин скельних,\nчиє помешкання – на висоті!\nТи казав у своєму серці:\n„Хто зможе спустити мене на землю?“.",
+        "body_text_exact": "Зухвалість твого серця звела тебе,\nмешканцю ущелин скельних,\nчиє помешкання – на висоті!\nТи казав у своєму серці:\n„Хто зможе спустити мене на землю?“.",
+        "body_text_normalized": "Зухвалість твого серця звела тебе, мешканцю ущелин скельних, чиє помешкання – на висоті! Ти казав у своєму серці: „Хто зможе спустити мене на землю?“.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Зухвалість твого серця звела тебе,",
+          "\n",
+          "мешканцю ущелин скельних",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:3 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Або: ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "Села",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "; столиця Едому."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          ",",
+          "\n",
+          "чиє помешкання – на висоті!",
+          "\n",
+          "Ти казав у своєму серці:",
+          "\n",
+          "„Хто зможе спустити мене на землю?“."
+        ],
+        "discourse_unit_id": "OBA-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 31,
+        "line_start": 27,
+        "lines": [
+          "\\v 3 Зухвалість твого серця звела тебе,",
+          "\\q2 мешканцю ущелин скельних\\f + \\fr 1:3 \\ft Або: \\fqa Села\\ft ; столиця Едому.\\f*,",
+          "\\q2 чиє помешкання – на висоті!",
+          "\\q1 Ти казав у своєму серці:",
+          "\\q2 „Хто зможе спустити мене на землю?“."
+        ],
+        "number": "3",
+        "paragraph_id": "OBA-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Зухвалість твого серця звела тебе,\n\\q2 мешканцю ущелин скельних\\f + \\fr 1:3 \\ft Або: \\fqa Села\\ft ; столиця Едому.\\f*,\n\\q2 чиє помешкання – на висоті!\n\\q1 Ти казав у своєму серці:\n\\q2 „Хто зможе спустити мене на землю?“.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Навіть якби ти піднявся високо, мов орел,\nі звив своє гніздо між зірками,\nЯ й звідти скину тебе! –\nпромовив Господь. –",
+        "body_text_exact": "Навіть якби ти піднявся високо, мов орел,\nі звив своє гніздо між зірками,\nЯ й звідти скину тебе! –\nпромовив Господь. –",
+        "body_text_normalized": "Навіть якби ти піднявся високо, мов орел, і звив своє гніздо між зірками, Я й звідти скину тебе! – промовив Господь. –",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Навіть якби ти піднявся високо, мов орел,",
+          "\n",
+          "і звив своє гніздо між зірками,",
+          "\n",
+          "Я й звідти скину тебе! –",
+          "\n",
+          "промовив ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ". –"
+        ],
+        "discourse_unit_id": "OBA-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 36,
+        "line_start": 33,
+        "lines": [
+          "\\v 4 Навіть якби ти піднявся високо, мов орел,",
+          "\\q2 і звив своє гніздо між зірками,",
+          "\\q2 Я й звідти скину тебе! –",
+          "\\q2 промовив \\nd Господь\\nd*. –"
+        ],
+        "number": "4",
+        "paragraph_id": "OBA-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Навіть якби ти піднявся високо, мов орел,\n\\q2 і звив своє гніздо між зірками,\n\\q2 Я й звідти скину тебе! –\n\\q2 промовив \\nd Господь\\nd*. –",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Якби вдерлися до тебе крадії чи грабіжники нічні,\nхіба вони не взяли б лише те, що їм потрібно?\nЯкби прийшли до тебе збирачі винограду,\nхіба вони не залишили б кілька грон?\nО, яке спустошення чекає на тебе!",
+        "body_text_exact": "Якби вдерлися до тебе крадії чи грабіжники нічні,\nхіба вони не взяли б лише те, що їм потрібно?\nЯкби прийшли до тебе збирачі винограду,\nхіба вони не залишили б кілька грон?\nО, яке спустошення чекає на тебе!",
+        "body_text_normalized": "Якби вдерлися до тебе крадії чи грабіжники нічні, хіба вони не взяли б лише те, що їм потрібно? Якби прийшли до тебе збирачі винограду, хіба вони не залишили б кілька грон? О, яке спустошення чекає на тебе!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Якби вдерлися до тебе крадії чи грабіжники нічні,",
+          "\n",
+          "хіба вони не взяли б лише те, що їм потрібно?",
+          "\n",
+          "Якби прийшли до тебе збирачі винограду,",
+          "\n",
+          "хіба вони не залишили б кілька грон?",
+          "\n",
+          "О, яке спустошення чекає на тебе!"
+        ],
+        "discourse_unit_id": "OBA-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 42,
+        "line_start": 38,
+        "lines": [
+          "\\v 5 Якби вдерлися до тебе крадії чи грабіжники нічні,",
+          "\\q2 хіба вони не взяли б лише те, що їм потрібно?",
+          "\\q1 Якби прийшли до тебе збирачі винограду,",
+          "\\q2 хіба вони не залишили б кілька грон?",
+          "\\q2 О, яке спустошення чекає на тебе!"
+        ],
+        "number": "5",
+        "paragraph_id": "OBA-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Якби вдерлися до тебе крадії чи грабіжники нічні,\n\\q2 хіба вони не взяли б лише те, що їм потрібно?\n\\q1 Якби прийшли до тебе збирачі винограду,\n\\q2 хіба вони не залишили б кілька грон?\n\\q2 О, яке спустошення чекає на тебе!",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "Ісав буде повністю пограбований,\nа його приховані скарби – розшукані!",
+        "body_text_exact": "Ісав буде повністю пограбований,\nа його приховані скарби – розшукані!",
+        "body_text_normalized": "Ісав буде повністю пограбований, а його приховані скарби – розшукані!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Ісав буде ",
+          {
+            "content": [
+              "повністю"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " пограбований,",
+          "\n",
+          "а його приховані скарби – розшукані!"
+        ],
+        "discourse_unit_id": "OBA-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 45,
+        "line_start": 44,
+        "lines": [
+          "\\v 6 Ісав буде \\add повністю\\add* пограбований,",
+          "\\q2 а його приховані скарби – розшукані!"
+        ],
+        "number": "6",
+        "paragraph_id": "OBA-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 Ісав буде \\add повністю\\add* пограбований,\n\\q2 а його приховані скарби – розшукані!",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "До самої межі гнатимуть тебе всі, з ким ти маєш завіт;\nтвої друзі обмануть і здолають тебе.\nТі, хто їсть твій хліб, поставлять на тебе пастку,\nале ти цього й не помітиш.",
+        "body_text_exact": "До самої межі гнатимуть тебе всі, з ким ти маєш завіт;\nтвої друзі обмануть і здолають тебе.\nТі, хто їсть твій хліб, поставлять на тебе пастку,\nале ти цього й не помітиш.",
+        "body_text_normalized": "До самої межі гнатимуть тебе всі, з ким ти маєш завіт; твої друзі обмануть і здолають тебе. Ті, хто їсть твій хліб, поставлять на тебе пастку, але ти цього й не помітиш.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "До самої межі гнатимуть тебе всі, з ким ти маєш завіт;",
+          "\n",
+          "твої друзі обмануть і здолають тебе.",
+          "\n",
+          "Ті, хто їсть твій хліб, поставлять на тебе пастку,",
+          "\n",
+          "але ти цього й не помітиш."
+        ],
+        "discourse_unit_id": "OBA-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 50,
+        "line_start": 47,
+        "lines": [
+          "\\v 7 До самої межі гнатимуть тебе всі, з ким ти маєш завіт;",
+          "\\q2 твої друзі обмануть і здолають тебе.",
+          "\\q1 Ті, хто їсть твій хліб, поставлять на тебе пастку,",
+          "\\q2 але ти цього й не помітиш."
+        ],
+        "number": "7",
+        "paragraph_id": "OBA-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 До самої межі гнатимуть тебе всі, з ким ти маєш завіт;\n\\q2 твої друзі обмануть і здолають тебе.\n\\q1 Ті, хто їсть твій хліб, поставлять на тебе пастку,\n\\q2 але ти цього й не помітиш.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Хіба в той день, – проголошує Господь, –\nЯ не погублю мудреців Едому,\nрозумних із гори Ісава?",
+        "body_text_exact": "Хіба в той день, – проголошує Господь, –\nЯ не погублю мудреців Едому,\nрозумних із гори Ісава?",
+        "body_text_normalized": "Хіба в той день, – проголошує Господь, – Я не погублю мудреців Едому, розумних із гори Ісава?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Хіба в той день, – проголошує ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", –",
+          "\n",
+          "Я не погублю мудреців Едому,",
+          "\n",
+          "розумних із гори Ісава?"
+        ],
+        "discourse_unit_id": "OBA-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 55,
+        "line_start": 53,
+        "lines": [
+          "\\v 8 Хіба в той день, – проголошує \\nd Господь\\nd*, –",
+          "\\q2 Я не погублю мудреців Едому,",
+          "\\q2 розумних із гори Ісава?"
+        ],
+        "number": "8",
+        "paragraph_id": "OBA-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Хіба в той день, – проголошує \\nd Господь\\nd*, –\n\\q2 Я не погублю мудреців Едому,\n\\q2 розумних із гори Ісава?",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Твої могутні воїни, Теймане, будуть тремтіти,\nі всі на горі Ісава\nбудуть знищені в різанині.",
+        "body_text_exact": "Твої могутні воїни, Теймане, будуть тремтіти,\nі всі на горі Ісава\nбудуть знищені в різанині.",
+        "body_text_normalized": "Твої могутні воїни, Теймане, будуть тремтіти, і всі на горі Ісава будуть знищені в різанині.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Твої могутні воїни, Теймане, будуть тремтіти,",
+          "\n",
+          "і всі на горі Ісава",
+          "\n",
+          "будуть знищені в різанині."
+        ],
+        "discourse_unit_id": "OBA-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 59,
+        "line_start": 57,
+        "lines": [
+          "\\v 9 Твої могутні воїни, Теймане, будуть тремтіти,",
+          "\\q2 і всі на горі Ісава",
+          "\\q2 будуть знищені в різанині."
+        ],
+        "number": "9",
+        "paragraph_id": "OBA-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Твої могутні воїни, Теймане, будуть тремтіти,\n\\q2 і всі на горі Ісава\n\\q2 будуть знищені в різанині.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Через насильство над твоїм братом Яковом\nти будеш покритий ганьбою,\nти будеш знищений навіки.",
+        "body_text_exact": "Через насильство над твоїм братом Яковом\nти будеш покритий ганьбою,\nти будеш знищений навіки.",
+        "body_text_normalized": "Через насильство над твоїм братом Яковом ти будеш покритий ганьбою, ти будеш знищений навіки.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Через насильство над твоїм братом Яковом",
+          "\n",
+          "ти будеш покритий ганьбою,",
+          "\n",
+          "ти будеш знищений навіки."
+        ],
+        "discourse_unit_id": "OBA-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 63,
+        "line_start": 61,
+        "lines": [
+          "\\v 10 Через насильство над твоїм братом Яковом",
+          "\\q2 ти будеш покритий ганьбою,",
+          "\\q2 ти будеш знищений навіки."
+        ],
+        "number": "10",
+        "paragraph_id": "OBA-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Через насильство над твоїм братом Яковом\n\\q2 ти будеш покритий ганьбою,\n\\q2 ти будеш знищений навіки.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Ти стояв осторонь того дня,\nколи чужинці забирали його багатство,\nколи чужоземці входили в його ворота\nй кидали жереб про Єрусалим.\nТи був як один з них.",
+        "body_text_exact": "Ти стояв осторонь того дня,\nколи чужинці забирали його багатство,\nколи чужоземці входили в його ворота\nй кидали жереб про Єрусалим.\nТи був як один з них.",
+        "body_text_normalized": "Ти стояв осторонь того дня, коли чужинці забирали його багатство, коли чужоземці входили в його ворота й кидали жереб про Єрусалим. Ти був як один з них.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Ти стояв осторонь того дня,",
+          "\n",
+          "коли чужинці забирали його багатство,",
+          "\n",
+          "коли чужоземці входили в його ворота",
+          "\n",
+          "й кидали жереб про Єрусалим.",
+          "\n",
+          "Ти був як один з них."
+        ],
+        "discourse_unit_id": "OBA-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 69,
+        "line_start": 65,
+        "lines": [
+          "\\v 11 Ти стояв осторонь того дня,",
+          "\\q2 коли чужинці забирали його багатство,",
+          "\\q1 коли чужоземці входили в його ворота",
+          "\\q2 й кидали жереб про Єрусалим.",
+          "\\q2 Ти був як один з них."
+        ],
+        "number": "11",
+        "paragraph_id": "OBA-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Ти стояв осторонь того дня,\n\\q2 коли чужинці забирали його багатство,\n\\q1 коли чужоземці входили в його ворота\n\\q2 й кидали жереб про Єрусалим.\n\\q2 Ти був як один з них.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Не слід було зловтішатися зі свого брата\nв день його нещастя,\nне слід було радіти\nв день знищення народу Юди,\nне слід було тобі нахвалятися своїми устами\nв день їхнього лиха.",
+        "body_text_exact": "Не слід було зловтішатися зі свого брата\nв день його нещастя,\nне слід було радіти\nв день знищення народу Юди,\nне слід було тобі нахвалятися своїми устами\nв день їхнього лиха.",
+        "body_text_normalized": "Не слід було зловтішатися зі свого брата в день його нещастя, не слід було радіти в день знищення народу Юди, не слід було тобі нахвалятися своїми устами в день їхнього лиха.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Не слід було зловтішатися зі свого брата",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:12 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Або: ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "дивитися на свого брата."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "\n",
+          "в день його нещастя,",
+          "\n",
+          "не слід було радіти",
+          "\n",
+          "в день знищення народу Юди,",
+          "\n",
+          "не слід було тобі нахвалятися своїми устами",
+          "\n",
+          "в день ",
+          {
+            "content": [
+              "їхнього"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " лиха."
+        ],
+        "discourse_unit_id": "OBA-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 76,
+        "line_start": 71,
+        "lines": [
+          "\\v 12 Не слід було зловтішатися зі свого брата\\f + \\fr 1:12 \\ft Або: \\fqa дивитися на свого брата.\\f*",
+          "\\q2 в день його нещастя,",
+          "\\q1 не слід було радіти",
+          "\\q2 в день знищення народу Юди,",
+          "\\q1 не слід було тобі нахвалятися своїми устами",
+          "\\q2 в день \\add їхнього\\add* лиха."
+        ],
+        "number": "12",
+        "paragraph_id": "OBA-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Не слід було зловтішатися зі свого брата\\f + \\fr 1:12 \\ft Або: \\fqa дивитися на свого брата.\\f*\n\\q2 в день його нещастя,\n\\q1 не слід було радіти\n\\q2 в день знищення народу Юди,\n\\q1 не слід було тобі нахвалятися своїми устами\n\\q2 в день \\add їхнього\\add* лиха.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Тобі не слід було входити у ворота Мого народу\nв день його біди,\nі зловтішатися над ним\nу день його лиха,\nі захоплювати його багатство\nв день його біди.",
+        "body_text_exact": "Тобі не слід було входити у ворота Мого народу\nв день його біди,\nі зловтішатися над ним\nу день його лиха,\nі захоплювати його багатство\nв день його біди.",
+        "body_text_normalized": "Тобі не слід було входити у ворота Мого народу в день його біди, і зловтішатися над ним у день його лиха, і захоплювати його багатство в день його біди.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Тобі не слід було входити у ворота Мого народу",
+          "\n",
+          "в день його біди,",
+          "\n",
+          "і зловтішатися над ним",
+          "\n",
+          "у день його лиха,",
+          "\n",
+          "і захоплювати його багатство",
+          "\n",
+          "в день його біди."
+        ],
+        "discourse_unit_id": "OBA-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 83,
+        "line_start": 78,
+        "lines": [
+          "\\v 13 Тобі не слід було входити у ворота Мого народу",
+          "\\q2 в день його біди,",
+          "\\q1 і зловтішатися над ним",
+          "\\q2 у день його лиха,",
+          "\\q1 і захоплювати його багатство",
+          "\\q2 в день його біди."
+        ],
+        "number": "13",
+        "paragraph_id": "OBA-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Тобі не слід було входити у ворота Мого народу\n\\q2 в день його біди,\n\\q1 і зловтішатися над ним\n\\q2 у день його лиха,\n\\q1 і захоплювати його багатство\n\\q2 в день його біди.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Не слід було тобі чекати на роздоріжжі,\nщоб убити їхніх утікачів\nі видавати їхніх уцілілих\nу день їхньої біди.",
+        "body_text_exact": "Не слід було тобі чекати на роздоріжжі,\nщоб убити їхніх утікачів\nі видавати їхніх уцілілих\nу день їхньої біди.",
+        "body_text_normalized": "Не слід було тобі чекати на роздоріжжі, щоб убити їхніх утікачів і видавати їхніх уцілілих у день їхньої біди.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Не слід було тобі чекати на роздоріжжі,",
+          "\n",
+          "щоб убити їхніх утікачів",
+          "\n",
+          "і видавати їхніх уцілілих",
+          "\n",
+          "у день їхньої біди."
+        ],
+        "discourse_unit_id": "OBA-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 88,
+        "line_start": 85,
+        "lines": [
+          "\\v 14 Не слід було тобі чекати на роздоріжжі,",
+          "\\q2 щоб убити їхніх утікачів",
+          "\\q1 і видавати їхніх уцілілих",
+          "\\q2 у день їхньої біди."
+        ],
+        "number": "14",
+        "paragraph_id": "OBA-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Не слід було тобі чекати на роздоріжжі,\n\\q2 щоб убити їхніх утікачів\n\\q1 і видавати їхніх уцілілих\n\\q2 у день їхньої біди.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Бо близько вже день Господній\nдля всіх народів.\nЯк ти чинив, так і з тобою вчинять;\nтвоя відплата повернеться на твою голову.",
+        "body_text_exact": "Бо близько вже день Господній\nдля всіх народів.\nЯк ти чинив, так і з тобою вчинять;\nтвоя відплата повернеться на твою голову.",
+        "body_text_normalized": "Бо близько вже день Господній для всіх народів. Як ти чинив, так і з тобою вчинять; твоя відплата повернеться на твою голову.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Бо близько вже день ",
+          {
+            "content": [
+              "Господній"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "\n",
+          "для всіх народів.",
+          "\n",
+          "Як ти чинив, так і з тобою вчинять;",
+          "\n",
+          "твоя відплата повернеться на твою голову."
+        ],
+        "discourse_unit_id": "OBA-D006",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 94,
+        "line_start": 91,
+        "lines": [
+          "\\v 15 Бо близько вже день \\nd Господній\\nd*",
+          "\\q2 для всіх народів.",
+          "\\q1 Як ти чинив, так і з тобою вчинять;",
+          "\\q2 твоя відплата повернеться на твою голову."
+        ],
+        "number": "15",
+        "paragraph_id": "OBA-P005",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B006",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Бо близько вже день \\nd Господній\\nd*\n\\q2 для всіх народів.\n\\q1 Як ти чинив, так і з тобою вчинять;\n\\q2 твоя відплата повернеться на твою голову.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Як ви пили на Моїй святій горі,\nтак і всі народи будуть пити без упину;\nвони питимуть і напʼються,\nзникнуть, наче їх ніколи не було.",
+        "body_text_exact": "Як ви пили на Моїй святій горі,\nтак і всі народи будуть пити без упину;\nвони питимуть і напʼються,\nзникнуть, наче їх ніколи не було.",
+        "body_text_normalized": "Як ви пили на Моїй святій горі, так і всі народи будуть пити без упину; вони питимуть і напʼються, зникнуть, наче їх ніколи не було.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Як ви пили на Моїй святій горі,",
+          "\n",
+          "так і всі народи будуть пити без упину;",
+          "\n",
+          "вони питимуть і напʼються,",
+          "\n",
+          "зникнуть, наче їх ніколи не було."
+        ],
+        "discourse_unit_id": "OBA-D006",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 99,
+        "line_start": 96,
+        "lines": [
+          "\\v 16 Як ви пили на Моїй святій горі,",
+          "\\q2 так і всі народи будуть пити без упину;",
+          "\\q1 вони питимуть і напʼються,",
+          "\\q2 зникнуть, наче їх ніколи не було."
+        ],
+        "number": "16",
+        "paragraph_id": "OBA-P005",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B006",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 Як ви пили на Моїй святій горі,\n\\q2 так і всі народи будуть пити без упину;\n\\q1 вони питимуть і напʼються,\n\\q2 зникнуть, наче їх ніколи не було.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Але на горі Сіон буде спасіння;\nі буде вона святим місцем,\nа дім Якова заволодіє своїм майном.",
+        "body_text_exact": "Але на горі Сіон буде спасіння;\nі буде вона святим місцем,\nа дім Якова заволодіє своїм майном.",
+        "body_text_normalized": "Але на горі Сіон буде спасіння; і буде вона святим місцем, а дім Якова заволодіє своїм майном.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Але на горі Сіон буде спасіння;",
+          "\n",
+          "і буде вона святим місцем,",
+          "\n",
+          "а дім Якова заволодіє своїм майном."
+        ],
+        "discourse_unit_id": "OBA-D006",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 103,
+        "line_start": 101,
+        "lines": [
+          "\\v 17 Але на горі Сіон буде спасіння;",
+          "\\q2 і буде вона святим місцем,",
+          "\\q2 а дім Якова заволодіє своїм майном."
+        ],
+        "number": "17",
+        "paragraph_id": "OBA-P005",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B006",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Але на горі Сіон буде спасіння;\n\\q2 і буде вона святим місцем,\n\\q2 а дім Якова заволодіє своїм майном.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "Дім Якова буде вогнем,\nі дім Йосифа – полумʼям,\nа дім Ісава – соломою.\nВони запалять і знищать його.\nНе буде вцілілого\nв домі Ісава».\nПромовив Господь.",
+        "body_text_exact": "Дім Якова буде вогнем,\nі дім Йосифа – полумʼям,\nа дім Ісава – соломою.\nВони запалять і знищать його.\nНе буде вцілілого\nв домі Ісава».\nПромовив Господь.",
+        "body_text_normalized": "Дім Якова буде вогнем, і дім Йосифа – полумʼям, а дім Ісава – соломою. Вони запалять і знищать його. Не буде вцілілого в домі Ісава». Промовив Господь.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Дім Якова буде вогнем,",
+          "\n",
+          "і дім Йосифа – полумʼям,",
+          "\n",
+          "а дім Ісава – соломою.",
+          "\n",
+          "Вони запалять і знищать його.",
+          "\n",
+          "Не буде вцілілого",
+          "\n",
+          "в домі Ісава».",
+          "\n",
+          "Промовив ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "OBA-D006",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 111,
+        "line_start": 105,
+        "lines": [
+          "\\v 18 Дім Якова буде вогнем,",
+          "\\q2 і дім Йосифа – полумʼям,",
+          "\\q1 а дім Ісава – соломою.",
+          "\\q2 Вони запалять і знищать його.",
+          "\\q1 Не буде вцілілого",
+          "\\q2 в домі Ісава».",
+          "\\q1 Промовив \\nd Господь\\nd*."
+        ],
+        "number": "18",
+        "paragraph_id": "OBA-P005",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B006",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 Дім Якова буде вогнем,\n\\q2 і дім Йосифа – полумʼям,\n\\q1 а дім Ісава – соломою.\n\\q2 Вони запалять і знищать його.\n\\q1 Не буде вцілілого\n\\q2 в домі Ісава».\n\\q1 Промовив \\nd Господь\\nd*.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "Люди з Неґеву заволодіють\nгорою Ісава,\nа люди низовин –\nземлею филистимлян.\nВони займуть поля Єфрема та Самарії,\nа Веніамін заволодіє Ґілеадом.",
+        "body_text_exact": "Люди з Неґеву заволодіють\nгорою Ісава,\nа люди низовин –\nземлею филистимлян.\nВони займуть поля Єфрема та Самарії,\nа Веніамін заволодіє Ґілеадом.",
+        "body_text_normalized": "Люди з Неґеву заволодіють горою Ісава, а люди низовин – землею филистимлян. Вони займуть поля Єфрема та Самарії, а Веніамін заволодіє Ґілеадом.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Люди з Неґеву заволодіють",
+          "\n",
+          "горою Ісава,",
+          "\n",
+          "а люди низовин –",
+          "\n",
+          "землею филистимлян.",
+          "\n",
+          "Вони займуть поля Єфрема та Самарії,",
+          "\n",
+          "а Веніамін заволодіє Ґілеадом."
+        ],
+        "discourse_unit_id": "OBA-D007",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 119,
+        "line_start": 114,
+        "lines": [
+          "\\v 19 Люди з Неґеву заволодіють",
+          "\\q2 горою Ісава,",
+          "\\q1 а люди низовин –",
+          "\\q2 землею филистимлян.",
+          "\\q1 Вони займуть поля Єфрема та Самарії,",
+          "\\q2 а Веніамін заволодіє Ґілеадом."
+        ],
+        "number": "19",
+        "paragraph_id": "OBA-P006",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B007",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 Люди з Неґеву заволодіють\n\\q2 горою Ісава,\n\\q1 а люди низовин –\n\\q2 землею филистимлян.\n\\q1 Вони займуть поля Єфрема та Самарії,\n\\q2 а Веніамін заволодіє Ґілеадом.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "Вигнанцям Ізраїлю належатиме це укріплення\nханаанців аж до Сарепти,\nі вигнанці з Єрусалима, які перебувають у Сефараді,\nзаволодіють містами Неґеву.",
+        "body_text_exact": "Вигнанцям Ізраїлю належатиме це укріплення\nханаанців аж до Сарепти,\nі вигнанці з Єрусалима, які перебувають у Сефараді,\nзаволодіють містами Неґеву.",
+        "body_text_normalized": "Вигнанцям Ізраїлю належатиме це укріплення ханаанців аж до Сарепти, і вигнанці з Єрусалима, які перебувають у Сефараді, заволодіють містами Неґеву.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Вигнанцям Ізраїлю належатиме це укріплення",
+          "\n",
+          "ханаанців аж до Сарепти,",
+          "\n",
+          "і вигнанці з Єрусалима, які перебувають у Сефараді,",
+          "\n",
+          "заволодіють містами Неґеву."
+        ],
+        "discourse_unit_id": "OBA-D007",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 124,
+        "line_start": 121,
+        "lines": [
+          "\\v 20 Вигнанцям Ізраїлю належатиме це укріплення",
+          "\\q2 ханаанців аж до Сарепти,",
+          "\\q1 і вигнанці з Єрусалима, які перебувають у Сефараді,",
+          "\\q2 заволодіють містами Неґеву."
+        ],
+        "number": "20",
+        "paragraph_id": "OBA-P006",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B007",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 Вигнанцям Ізраїлю належатиме це укріплення\n\\q2 ханаанців аж до Сарепти,\n\\q1 і вигнанці з Єрусалима, які перебувають у Сефараді,\n\\q2 заволодіють містами Неґеву.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 20,
+        "verse_start": 20
+      },
+      {
+        "body_text": "Тоді зійдуть визволителі на гору Сіон,\nщоб судити гору Ісава.\nІ буде царювання Господа.",
+        "body_text_exact": "Тоді зійдуть визволителі на гору Сіон,\nщоб судити гору Ісава.\nІ буде царювання Господа.",
+        "body_text_normalized": "Тоді зійдуть визволителі на гору Сіон, щоб судити гору Ісава. І буде царювання Господа.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Тоді зійдуть визволителі на гору Сіон,",
+          "\n",
+          "щоб судити гору Ісава.",
+          "\n",
+          "І буде царювання ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "OBA-D007",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 128,
+        "line_start": 126,
+        "lines": [
+          "\\v 21 Тоді зійдуть визволителі на гору Сіон,",
+          "\\q2 щоб судити гору Ісава.",
+          "\\q2 І буде царювання \\nd Господа\\nd*."
+        ],
+        "number": "21",
+        "paragraph_id": "OBA-P006",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "OBA-B007",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 21 Тоді зійдуть визволителі на гору Сіон,\n\\q2 щоб судити гору Ісава.\n\\q2 І буде царювання \\nd Господа\\nd*.",
+        "section_id": "OBA-S001",
+        "section_marker": "s1",
+        "section_title": "Видіння пророка Авдія",
+        "verse_end": 21,
+        "verse_start": 21
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

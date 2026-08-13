@@ -1,0 +1,1 @@
+# SAW Aggregate: SAW-QA-ROM-E9648D1221\n\n- Status: `FINALIZED`\n- Scope: `ROM 1-3`\n- Work units: `2`\n- Reviewed coordinates: `92`\n- Review receipts: `2`\n- Findings: `9`\n

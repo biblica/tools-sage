@@ -1,0 +1,18 @@
+schema_id: sage-bic-grammar-assessment-1.0
+required:
+  - schema_version
+  - task_id
+  - scope
+  - profile_id
+  - profile_sha256
+  - output_sha256
+  - rules
+  - unresolved
+rule_required: [rule_id, status, evidence]
+status_values: [PASS, NOT_APPLICABLE, ISSUE]
+controls:
+  exact_profile_rule_coverage: true
+  duplicate_rule_ids: prohibited
+  unknown_rule_ids: prohibited
+  issue_requires_evidence: true
+  assessment_bound_to_output_sha256: true

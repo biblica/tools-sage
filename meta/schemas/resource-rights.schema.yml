@@ -1,0 +1,34 @@
+schema_id: sage-resource-rights-1.0
+required:
+  - schema_version
+  - project_id
+  - provenance
+  - rights
+provenance_required:
+  - source_name
+  - source_version
+  - source_archive_sha256
+  - import_authority_id
+  - imported_utc
+rights_required:
+  - status
+  - copyright_holder
+  - license_identifier
+  - authority_record_id
+  - import_authorized
+  - redistribution_authorized
+  - distribution_scope
+  - reviewed_utc
+rights_statuses:
+  - CONFIRMED
+  - RESTRICTED
+  - NOT_APPLICABLE_GENERATED
+  - UNKNOWN
+generated_resource_additional_required:
+  - generation_authority_record_id
+validation_rules:
+  project_id_must_match_registry: true
+  source_archive_sha256: lowercase_sha256
+  import_authorized_for_ready: true
+  redistribution_authorized_for_ready: true
+  authority_must_be_external_or_human_recorded: true

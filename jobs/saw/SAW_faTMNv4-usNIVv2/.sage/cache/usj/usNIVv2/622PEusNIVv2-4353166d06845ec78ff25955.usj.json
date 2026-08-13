@@ -1,0 +1,3946 @@
+{
+  "content": [
+    {
+      "code": "2PE",
+      "content": [
+        "- English-US: New International Version® NIV® 2011, updated 2016"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 1973, 1978, 1984, 2011 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "2 Peter",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "2 Peter",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "2 Peter",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "2Pe",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "2 Peter",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Introduction",
+        "\n"
+      ],
+      "marker": "imt",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Around AD 65 the apostle Peter was imprisoned in Rome by the emperor Nero, and he realized that he would soon be executed. Since he was an eyewitness of the ministry of Jesus, he decided to write another letter to the believers he had written to before, confirming what they had been taught about Jesus. False teachers were proposing that, since Jesus hadnʼt returned already, his return couldnʼt be expected at all. Because they didnʼt expect any future judgment, they were living immoral lives. (Peter likely learned about the threat of these teachers from a letter sent by Jude, a brother of Jesus, to warn believers against them. Peterʼs letter echoes Judeʼs, but in shorter form. See ",
+        {
+          "content": [
+            "Jude"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ".)",
+        "\n"
+      ],
+      "marker": "im",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Peter answers the false teachers by stressing that he personally saw the glory and majesty of Jesus ",
+        {
+          "content": [
+            "on the sacred mountain"
+          ],
+          "marker": "qt",
+          "type": "char"
+        },
+        " (see ",
+        {
+          "content": [
+            "Mark 9:2‑13"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). Everyone will see this glory when Jesus returns. In powerful imagery Peter describes the false teachersʼ destructive effect on the community and the judgment that awaits them. In the final section of his letter, Peter explains that the Messiahʼs return has been delayed because God wants everyone to repent. Our proper response is to live good lives filled with hope, since ",
+        {
+          "content": [
+            "we are looking forward to a new heaven and a new earth, where righteousness dwells."
+          ],
+          "marker": "qt",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "2PE 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "2PE 1:1",
+          "type": "verse"
+        },
+        "Simon Peter, a servant and apostle of Jesus Christ,",
+        "\n"
+      ],
+      "marker": "po",
+      "type": "para"
+    },
+    {
+      "content": [
+        "To those who through the righteousness of our God and Savior Jesus Christ have received a faith as precious as ours:",
+        "\n"
+      ],
+      "marker": "po",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "2PE 1:2",
+          "type": "verse"
+        },
+        "Grace and peace be yours in abundance through the knowledge of God and of Jesus our Lord.",
+        "\n"
+      ],
+      "marker": "po",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Confirming Oneʼs Calling and Election",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "2PE 1:3",
+          "type": "verse"
+        },
+        "His divine power has given us everything we need for a godly life through our knowledge of him who called us by his own glory and goodness.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "2PE 1:4",
+          "type": "verse"
+        },
+        "Through these he has given us his very great and precious promises, so that through them you may participate in the divine nature, having escaped the corruption in the world caused by evil desires.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "2PE 1:5",
+          "type": "verse"
+        },
+        "For this very reason, make every effort to add to your faith goodness; and to goodness, knowledge;",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "2PE 1:6",
+          "type": "verse"
+        },
+        "and to knowledge, self-control; and to self-control, perseverance; and to perseverance, godliness;",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "2PE 1:7",
+          "type": "verse"
+        },
+        "and to godliness, mutual affection; and to mutual affection, love.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "2PE 1:8",
+          "type": "verse"
+        },
+        "For if you possess these qualities in increasing measure, they will keep you from being ineffective and unproductive in your knowledge of our Lord Jesus Christ.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "2PE 1:9",
+          "type": "verse"
+        },
+        "But whoever does not have them is nearsighted and blind, forgetting that they have been cleansed from their past sins.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "2PE 1:10",
+          "type": "verse"
+        },
+        "Therefore, my brothers and sisters,",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:10 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "The Greek word for ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "brothers and sisters ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "(",
+            {
+              "closing": false,
+              "marker": "tl",
+              "type": "marker"
+            },
+            "adelphoi",
+            {
+              "closing": true,
+              "marker": "tl",
+              "type": "marker"
+            },
+            ") refers here to believers, both men and women, as part of Godʼs family."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " make every effort to confirm your calling and election. For if you do these things, you will never stumble,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "2PE 1:11",
+          "type": "verse"
+        },
+        "and you will receive a rich welcome into the eternal kingdom of our Lord and Savior Jesus Christ.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Prophecy of Scripture",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "2PE 1:12",
+          "type": "verse"
+        },
+        "So I will always remind you of these things, even though you know them and are firmly established in the truth you now have.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "2PE 1:13",
+          "type": "verse"
+        },
+        "I think it is right to refresh your memory as long as I live in the tent of this body,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "2PE 1:14",
+          "type": "verse"
+        },
+        "because I know that I will soon put it aside, as our Lord Jesus Christ has made clear to me.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "2PE 1:15",
+          "type": "verse"
+        },
+        "And I will make every effort to see that after my departure you will always be able to remember these things.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "2PE 1:16",
+          "type": "verse"
+        },
+        "For we did not follow cleverly devised stories when we told you about the coming of our Lord Jesus Christ in power, but we were eyewitnesses of his majesty.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "2PE 1:17",
+          "type": "verse"
+        },
+        "He received honor and glory from God the Father when the voice came to him from the Majestic Glory, saying, “This is my Son, whom I love; with him I am well pleased.”",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:17 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "Matt. 17:5; Mark 9:7; Luke 9:35",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "2PE 1:18",
+          "type": "verse"
+        },
+        "We ourselves heard this voice that came from heaven when we were with him on the sacred mountain.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "2PE 1:19",
+          "type": "verse"
+        },
+        "We also have the prophetic message as something completely reliable, and you will do well to pay attention to it, as to a light shining in a dark place, until the day dawns and the morning star rises in your hearts.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "2PE 1:20",
+          "type": "verse"
+        },
+        "Above all, you must understand that no prophecy of Scripture came about by the prophetʼs own interpretation of things.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "21",
+          "sid": "2PE 1:21",
+          "type": "verse"
+        },
+        "For prophecy never had its origin in the human will, but prophets, though human, spoke from God as they were carried along by the Holy Spirit.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "2",
+      "sid": "2PE 2",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "False Teachers and Their Destruction",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "2PE 2:1",
+          "type": "verse"
+        },
+        "But there were also false prophets among the people, just as there will be false teachers among you. They will secretly introduce destructive heresies, even denying the sovereign Lord who bought them—bringing swift destruction on themselves.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "2PE 2:2",
+          "type": "verse"
+        },
+        "Many will follow their depraved conduct and will bring the way of truth into disrepute.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "2PE 2:3",
+          "type": "verse"
+        },
+        "In their greed these teachers will exploit you with fabricated stories. Their condemnation has long been hanging over them, and their destruction has not been sleeping.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "2PE 2:4",
+          "type": "verse"
+        },
+        "For if God did not spare angels when they sinned, but sent them to hell,",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:4 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Greek ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "Tartarus"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " putting them in chains of darkness",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:4 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Some manuscripts ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "in ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "gloomy dungeons"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " to be held for judgment;",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "2PE 2:5",
+          "type": "verse"
+        },
+        "if he did not spare the ancient world when he brought the flood on its ungodly people, but protected Noah, a preacher of righteousness, and seven others;",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "2PE 2:6",
+          "type": "verse"
+        },
+        "if he condemned the cities of Sodom and Gomorrah by burning them to ashes, and made them an example of what is going to happen to the ungodly;",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "2PE 2:7",
+          "type": "verse"
+        },
+        "and if he rescued Lot, a righteous man, who was distressed by the depraved conduct of the lawless",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "2PE 2:8",
+          "type": "verse"
+        },
+        "(for that righteous man, living among them day after day, was tormented in his righteous soul by the lawless deeds he saw and heard)—",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "2PE 2:9",
+          "type": "verse"
+        },
+        "if this is so, then the Lord knows how to rescue the godly from trials and to hold the unrighteous for punishment on the day of judgment.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "2PE 2:10",
+          "type": "verse"
+        },
+        "This is especially true of those who follow the corrupt desire of the flesh",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:10 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "In contexts like this, the Greek word for ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "flesh ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "(",
+            {
+              "closing": false,
+              "marker": "tl",
+              "type": "marker"
+            },
+            "sarx",
+            {
+              "closing": true,
+              "marker": "tl",
+              "type": "marker"
+            },
+            ") refers to the sinful state of human beings, often presented as a power in opposition to the Spirit; also in ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "verse 18|2PE 2:18",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " and despise authority.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Bold and arrogant, they are not afraid to heap abuse on celestial beings;",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "2PE 2:11",
+          "type": "verse"
+        },
+        "yet even angels, although they are stronger and more powerful, do not heap abuse on such beings when bringing judgment on them from",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:11 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Many manuscripts ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "beings ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "in the presence of"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " the Lord.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "2PE 2:12",
+          "type": "verse"
+        },
+        "But these people blaspheme in matters they do not understand. They are like unreasoning animals, creatures of instinct, born only to be caught and destroyed, and like animals they too will perish.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "2PE 2:13",
+          "type": "verse"
+        },
+        "They will be paid back with harm for the harm they have done. Their idea of pleasure is to carouse in broad daylight. They are blots and blemishes, reveling in their pleasures while they feast with you.",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:13 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Some manuscripts ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "in their ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "love feasts"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "2PE 2:14",
+          "type": "verse"
+        },
+        "With eyes full of adultery, they never stop sinning; they seduce the unstable; they are experts in greed—an accursed brood!",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "2PE 2:15",
+          "type": "verse"
+        },
+        "They have left the straight way and wandered off to follow the way of Balaam son of Bezer,",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:15 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Greek ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "Bosor"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " who loved the wages of wickedness.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "2PE 2:16",
+          "type": "verse"
+        },
+        "But he was rebuked for his wrongdoing by a donkey—an animal without speech—who spoke with a human voice and restrained the prophetʼs madness.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "2PE 2:17",
+          "type": "verse"
+        },
+        "These people are springs without water and mists driven by a storm. Blackest darkness is reserved for them.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "2PE 2:18",
+          "type": "verse"
+        },
+        "For they mouth empty, boastful words and, by appealing to the lustful desires of the flesh, they entice people who are just escaping from those who live in error.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "2PE 2:19",
+          "type": "verse"
+        },
+        "They promise them freedom, while they themselves are slaves of depravity—for “people are slaves to whatever has mastered them.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "2PE 2:20",
+          "type": "verse"
+        },
+        "If they have escaped the corruption of the world by knowing our Lord and Savior Jesus Christ and are again entangled in it and are overcome, they are worse off at the end than they were at the beginning.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "21",
+          "sid": "2PE 2:21",
+          "type": "verse"
+        },
+        "It would have been better for them not to have known the way of righteousness, than to have known it and then to turn their backs on the sacred command that was passed on to them.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "22",
+          "sid": "2PE 2:22",
+          "type": "verse"
+        },
+        "Of them the proverbs are true: “A dog returns to its vomit,”",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:22 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "Prov. 26:11",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " and, “A sow that is washed returns to her wallowing in the mud.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "3",
+      "sid": "2PE 3",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "The Day of the Lord",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "2PE 3:1",
+          "type": "verse"
+        },
+        "Dear friends, this is now my second letter to you. I have written both of them as reminders to stimulate you to wholesome thinking.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "2PE 3:2",
+          "type": "verse"
+        },
+        "I want you to recall the words spoken in the past by the holy prophets and the command given by our Lord and Savior through your apostles.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "2PE 3:3",
+          "type": "verse"
+        },
+        "Above all, you must understand that in the last days scoffers will come, scoffing and following their own evil desires.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "2PE 3:4",
+          "type": "verse"
+        },
+        "They will say, “Where is this ‘coming’ he promised? Ever since our ancestors died, everything goes on as it has since the beginning of creation.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "2PE 3:5",
+          "type": "verse"
+        },
+        "But they deliberately forget that long ago by Godʼs word the heavens came into being and the earth was formed out of water and by water.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "2PE 3:6",
+          "type": "verse"
+        },
+        "By these waters also the world of that time was deluged and destroyed.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "2PE 3:7",
+          "type": "verse"
+        },
+        "By the same word the present heavens and earth are reserved for fire, being kept for the day of judgment and destruction of the ungodly.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "2PE 3:8",
+          "type": "verse"
+        },
+        "But do not forget this one thing, dear friends: With the Lord a day is like a thousand years, and a thousand years are like a day.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "2PE 3:9",
+          "type": "verse"
+        },
+        "The Lord is not slow in keeping his promise, as some understand slowness. Instead he is patient with you, not wanting anyone to perish, but everyone to come to repentance.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "2PE 3:10",
+          "type": "verse"
+        },
+        "But the day of the Lord will come like a thief. The heavens will disappear with a roar; the elements will be destroyed by fire, and the earth and everything done in it will be laid bare.",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:10 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Some manuscripts ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "be ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "burned up"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "2PE 3:11",
+          "type": "verse"
+        },
+        "Since everything will be destroyed in this way, what kind of people ought you to be? You ought to live holy and godly lives",
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "2PE 3:12",
+          "type": "verse"
+        },
+        "as you look forward to the day of God and speed its coming.",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:12 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "as you ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "wait eagerly for the day of God to come"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " That day will bring about the destruction of the heavens by fire, and the elements will melt in the heat.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "2PE 3:13",
+          "type": "verse"
+        },
+        "But in keeping with his promise we are looking forward to a new heaven and a new earth, where righteousness dwells.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "2PE 3:14",
+          "type": "verse"
+        },
+        "So then, dear friends, since you are looking forward to this, make every effort to be found spotless, blameless and at peace with him.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "2PE 3:15",
+          "type": "verse"
+        },
+        "Bear in mind that our Lordʼs patience means salvation, just as our dear brother Paul also wrote you with the wisdom that God gave him.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "2PE 3:16",
+          "type": "verse"
+        },
+        "He writes the same way in all his letters, speaking in them of these matters. His letters contain some things that are hard to understand, which ignorant and unstable people distort, as they do the other Scriptures, to their own destruction.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "2PE 3:17",
+          "type": "verse"
+        },
+        "Therefore, dear friends, since you have been forewarned, be on your guard so that you may not be carried away by the error of the lawless and fall from your secure position.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "2PE 3:18",
+          "type": "verse"
+        },
+        "But grow in the grace and knowledge of our Lord and Savior Jesus Christ.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "To him be glory both now and forever! Amen.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "2PE",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "622PEusNIVv2.SFM",
+    "source_sha256": "11b6c5082899c66d80f921605662ef0ac60c1a7fa8e79f5ac3f03f7d7f967dbb",
+    "source_size": 11775,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Simon Peter, a servant and apostle of Jesus Christ,\nTo those who through the righteousness of our God and Savior Jesus Christ have received a faith as precious as ours:",
+        "body_text_exact": "Simon Peter, a servant and apostle of Jesus Christ,\nTo those who through the righteousness of our God and Savior Jesus Christ have received a faith as precious as ours:",
+        "body_text_normalized": "Simon Peter, a servant and apostle of Jesus Christ, To those who through the righteousness of our God and Savior Jesus Christ have received a faith as precious as ours:",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "po",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Simon Peter, a servant and apostle of Jesus Christ,",
+          "\n",
+          "To those who through the righteousness of our God and Savior Jesus Christ have received a faith as precious as ours:"
+        ],
+        "discourse_unit_id": "2PE-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "po",
+        "line_end": 15,
+        "line_start": 14,
+        "lines": [
+          "\\v 1 Simon Peter, a servant and apostle of Jesus Christ,",
+          "\\po To those who through the righteousness of our God and Savior Jesus Christ have received a faith as precious as ours:"
+        ],
+        "number": "1",
+        "paragraph_id": "2PE-P001",
+        "paragraph_marker": "po",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Simon Peter, a servant and apostle of Jesus Christ,\n\\po To those who through the righteousness of our God and Savior Jesus Christ have received a faith as precious as ours:",
+        "section_id": "2PE-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Grace and peace be yours in abundance through the knowledge of God and of Jesus our Lord.",
+        "body_text_exact": "Grace and peace be yours in abundance through the knowledge of God and of Jesus our Lord.",
+        "body_text_normalized": "Grace and peace be yours in abundance through the knowledge of God and of Jesus our Lord.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "po",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Grace and peace be yours in abundance through the knowledge of God and of Jesus our Lord."
+        ],
+        "discourse_unit_id": "2PE-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "po",
+        "line_end": 17,
+        "line_start": 17,
+        "lines": [
+          "\\v 2 Grace and peace be yours in abundance through the knowledge of God and of Jesus our Lord."
+        ],
+        "number": "2",
+        "paragraph_id": "2PE-P003",
+        "paragraph_marker": "po",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Grace and peace be yours in abundance through the knowledge of God and of Jesus our Lord.",
+        "section_id": "2PE-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "His divine power has given us everything we need for a godly life through our knowledge of him who called us by his own glory and goodness.",
+        "body_text_exact": "His divine power has given us everything we need for a godly life through our knowledge of him who called us by his own glory and goodness.",
+        "body_text_normalized": "His divine power has given us everything we need for a godly life through our knowledge of him who called us by his own glory and goodness.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "His divine power has given us everything we need for a godly life through our knowledge of him who called us by his own glory and goodness."
+        ],
+        "discourse_unit_id": "2PE-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 20,
+        "line_start": 20,
+        "lines": [
+          "\\v 3 His divine power has given us everything we need for a godly life through our knowledge of him who called us by his own glory and goodness."
+        ],
+        "number": "3",
+        "paragraph_id": "2PE-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 His divine power has given us everything we need for a godly life through our knowledge of him who called us by his own glory and goodness.",
+        "section_id": "2PE-S001",
+        "section_marker": "s1",
+        "section_title": "Confirming Oneʼs Calling and Election",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Through these he has given us his very great and precious promises, so that through them you may participate in the divine nature, having escaped the corruption in the world caused by evil desires.",
+        "body_text_exact": "Through these he has given us his very great and precious promises, so that through them you may participate in the divine nature, having escaped the corruption in the world caused by evil desires.",
+        "body_text_normalized": "Through these he has given us his very great and precious promises, so that through them you may participate in the divine nature, having escaped the corruption in the world caused by evil desires.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Through these he has given us his very great and precious promises, so that through them you may participate in the divine nature, having escaped the corruption in the world caused by evil desires."
+        ],
+        "discourse_unit_id": "2PE-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 21,
+        "line_start": 21,
+        "lines": [
+          "\\v 4 Through these he has given us his very great and precious promises, so that through them you may participate in the divine nature, having escaped the corruption in the world caused by evil desires."
+        ],
+        "number": "4",
+        "paragraph_id": "2PE-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Through these he has given us his very great and precious promises, so that through them you may participate in the divine nature, having escaped the corruption in the world caused by evil desires.",
+        "section_id": "2PE-S001",
+        "section_marker": "s1",
+        "section_title": "Confirming Oneʼs Calling and Election",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "For this very reason, make every effort to add to your faith goodness; and to goodness, knowledge;",
+        "body_text_exact": "For this very reason, make every effort to add to your faith goodness; and to goodness, knowledge;",
+        "body_text_normalized": "For this very reason, make every effort to add to your faith goodness; and to goodness, knowledge;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "For this very reason, make every effort to add to your faith goodness; and to goodness, knowledge;"
+        ],
+        "discourse_unit_id": "2PE-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 23,
+        "line_start": 23,
+        "lines": [
+          "\\v 5 For this very reason, make every effort to add to your faith goodness; and to goodness, knowledge;"
+        ],
+        "number": "5",
+        "paragraph_id": "2PE-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 For this very reason, make every effort to add to your faith goodness; and to goodness, knowledge;",
+        "section_id": "2PE-S001",
+        "section_marker": "s1",
+        "section_title": "Confirming Oneʼs Calling and Election",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "and to knowledge, self-control; and to self-control, perseverance; and to perseverance, godliness;",
+        "body_text_exact": "and to knowledge, self-control; and to self-control, perseverance; and to perseverance, godliness;",
+        "body_text_normalized": "and to knowledge, self-control; and to self-control, perseverance; and to perseverance, godliness;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "and to knowledge, self-control; and to self-control, perseverance; and to perseverance, godliness;"
+        ],
+        "discourse_unit_id": "2PE-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 24,
+        "line_start": 24,
+        "lines": [
+          "\\v 6 and to knowledge, self-control; and to self-control, perseverance; and to perseverance, godliness;"
+        ],
+        "number": "6",
+        "paragraph_id": "2PE-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 and to knowledge, self-control; and to self-control, perseverance; and to perseverance, godliness;",
+        "section_id": "2PE-S001",
+        "section_marker": "s1",
+        "section_title": "Confirming Oneʼs Calling and Election",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "and to godliness, mutual affection; and to mutual affection, love.",
+        "body_text_exact": "and to godliness, mutual affection; and to mutual affection, love.",
+        "body_text_normalized": "and to godliness, mutual affection; and to mutual affection, love.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "and to godliness, mutual affection; and to mutual affection, love."
+        ],
+        "discourse_unit_id": "2PE-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 25,
+        "line_start": 25,
+        "lines": [
+          "\\v 7 and to godliness, mutual affection; and to mutual affection, love."
+        ],
+        "number": "7",
+        "paragraph_id": "2PE-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 and to godliness, mutual affection; and to mutual affection, love.",
+        "section_id": "2PE-S001",
+        "section_marker": "s1",
+        "section_title": "Confirming Oneʼs Calling and Election",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "For if you possess these qualities in increasing measure, they will keep you from being ineffective and unproductive in your knowledge of our Lord Jesus Christ.",
+        "body_text_exact": "For if you possess these qualities in increasing measure, they will keep you from being ineffective and unproductive in your knowledge of our Lord Jesus Christ.",
+        "body_text_normalized": "For if you possess these qualities in increasing measure, they will keep you from being ineffective and unproductive in your knowledge of our Lord Jesus Christ.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "For if you possess these qualities in increasing measure, they will keep you from being ineffective and unproductive in your knowledge of our Lord Jesus Christ."
+        ],
+        "discourse_unit_id": "2PE-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 26,
+        "line_start": 26,
+        "lines": [
+          "\\v 8 For if you possess these qualities in increasing measure, they will keep you from being ineffective and unproductive in your knowledge of our Lord Jesus Christ."
+        ],
+        "number": "8",
+        "paragraph_id": "2PE-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 For if you possess these qualities in increasing measure, they will keep you from being ineffective and unproductive in your knowledge of our Lord Jesus Christ.",
+        "section_id": "2PE-S001",
+        "section_marker": "s1",
+        "section_title": "Confirming Oneʼs Calling and Election",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "But whoever does not have them is nearsighted and blind, forgetting that they have been cleansed from their past sins.",
+        "body_text_exact": "But whoever does not have them is nearsighted and blind, forgetting that they have been cleansed from their past sins.",
+        "body_text_normalized": "But whoever does not have them is nearsighted and blind, forgetting that they have been cleansed from their past sins.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "But whoever does not have them is nearsighted and blind, forgetting that they have been cleansed from their past sins."
+        ],
+        "discourse_unit_id": "2PE-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 27,
+        "line_start": 27,
+        "lines": [
+          "\\v 9 But whoever does not have them is nearsighted and blind, forgetting that they have been cleansed from their past sins."
+        ],
+        "number": "9",
+        "paragraph_id": "2PE-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 But whoever does not have them is nearsighted and blind, forgetting that they have been cleansed from their past sins.",
+        "section_id": "2PE-S001",
+        "section_marker": "s1",
+        "section_title": "Confirming Oneʼs Calling and Election",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Therefore, my brothers and sisters, make every effort to confirm your calling and election. For if you do these things, you will never stumble,",
+        "body_text_exact": "Therefore, my brothers and sisters, make every effort to confirm your calling and election. For if you do these things, you will never stumble,",
+        "body_text_normalized": "Therefore, my brothers and sisters, make every effort to confirm your calling and election. For if you do these things, you will never stumble,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Therefore, my brothers and sisters,",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:10 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "The Greek word for ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "brothers and sisters ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "(",
+              {
+                "closing": false,
+                "marker": "tl",
+                "type": "marker"
+              },
+              "adelphoi",
+              {
+                "closing": true,
+                "marker": "tl",
+                "type": "marker"
+              },
+              ") refers here to believers, both men and women, as part of Godʼs family."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " make every effort to confirm your calling and election. For if you do these things, you will never stumble,"
+        ],
+        "discourse_unit_id": "2PE-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 29,
+        "line_start": 29,
+        "lines": [
+          "\\v 10 Therefore, my brothers and sisters,\\f + \\fr 1:10 \\ft The Greek word for \\fq brothers and sisters \\ft (\\+tl adelphoi\\+tl*) refers here to believers, both men and women, as part of Godʼs family.\\f* make every effort to confirm your calling and election. For if you do these things, you will never stumble,"
+        ],
+        "number": "10",
+        "paragraph_id": "2PE-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Therefore, my brothers and sisters,\\f + \\fr 1:10 \\ft The Greek word for \\fq brothers and sisters \\ft (\\+tl adelphoi\\+tl*) refers here to believers, both men and women, as part of Godʼs family.\\f* make every effort to confirm your calling and election. For if you do these things, you will never stumble,",
+        "section_id": "2PE-S001",
+        "section_marker": "s1",
+        "section_title": "Confirming Oneʼs Calling and Election",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "and you will receive a rich welcome into the eternal kingdom of our Lord and Savior Jesus Christ.",
+        "body_text_exact": "and you will receive a rich welcome into the eternal kingdom of our Lord and Savior Jesus Christ.",
+        "body_text_normalized": "and you will receive a rich welcome into the eternal kingdom of our Lord and Savior Jesus Christ.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "and you will receive a rich welcome into the eternal kingdom of our Lord and Savior Jesus Christ."
+        ],
+        "discourse_unit_id": "2PE-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 30,
+        "line_start": 30,
+        "lines": [
+          "\\v 11 and you will receive a rich welcome into the eternal kingdom of our Lord and Savior Jesus Christ."
+        ],
+        "number": "11",
+        "paragraph_id": "2PE-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 and you will receive a rich welcome into the eternal kingdom of our Lord and Savior Jesus Christ.",
+        "section_id": "2PE-S001",
+        "section_marker": "s1",
+        "section_title": "Confirming Oneʼs Calling and Election",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "So I will always remind you of these things, even though you know them and are firmly established in the truth you now have.",
+        "body_text_exact": "So I will always remind you of these things, even though you know them and are firmly established in the truth you now have.",
+        "body_text_normalized": "So I will always remind you of these things, even though you know them and are firmly established in the truth you now have.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "So I will always remind you of these things, even though you know them and are firmly established in the truth you now have."
+        ],
+        "discourse_unit_id": "2PE-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 33,
+        "line_start": 33,
+        "lines": [
+          "\\v 12 So I will always remind you of these things, even though you know them and are firmly established in the truth you now have."
+        ],
+        "number": "12",
+        "paragraph_id": "2PE-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 So I will always remind you of these things, even though you know them and are firmly established in the truth you now have.",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "I think it is right to refresh your memory as long as I live in the tent of this body,",
+        "body_text_exact": "I think it is right to refresh your memory as long as I live in the tent of this body,",
+        "body_text_normalized": "I think it is right to refresh your memory as long as I live in the tent of this body,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "I think it is right to refresh your memory as long as I live in the tent of this body,"
+        ],
+        "discourse_unit_id": "2PE-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 34,
+        "line_start": 34,
+        "lines": [
+          "\\v 13 I think it is right to refresh your memory as long as I live in the tent of this body,"
+        ],
+        "number": "13",
+        "paragraph_id": "2PE-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 I think it is right to refresh your memory as long as I live in the tent of this body,",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "because I know that I will soon put it aside, as our Lord Jesus Christ has made clear to me.",
+        "body_text_exact": "because I know that I will soon put it aside, as our Lord Jesus Christ has made clear to me.",
+        "body_text_normalized": "because I know that I will soon put it aside, as our Lord Jesus Christ has made clear to me.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "because I know that I will soon put it aside, as our Lord Jesus Christ has made clear to me."
+        ],
+        "discourse_unit_id": "2PE-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 35,
+        "line_start": 35,
+        "lines": [
+          "\\v 14 because I know that I will soon put it aside, as our Lord Jesus Christ has made clear to me."
+        ],
+        "number": "14",
+        "paragraph_id": "2PE-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 because I know that I will soon put it aside, as our Lord Jesus Christ has made clear to me.",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "And I will make every effort to see that after my departure you will always be able to remember these things.",
+        "body_text_exact": "And I will make every effort to see that after my departure you will always be able to remember these things.",
+        "body_text_normalized": "And I will make every effort to see that after my departure you will always be able to remember these things.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "And I will make every effort to see that after my departure you will always be able to remember these things."
+        ],
+        "discourse_unit_id": "2PE-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 36,
+        "line_start": 36,
+        "lines": [
+          "\\v 15 And I will make every effort to see that after my departure you will always be able to remember these things."
+        ],
+        "number": "15",
+        "paragraph_id": "2PE-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 And I will make every effort to see that after my departure you will always be able to remember these things.",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "For we did not follow cleverly devised stories when we told you about the coming of our Lord Jesus Christ in power, but we were eyewitnesses of his majesty.",
+        "body_text_exact": "For we did not follow cleverly devised stories when we told you about the coming of our Lord Jesus Christ in power, but we were eyewitnesses of his majesty.",
+        "body_text_normalized": "For we did not follow cleverly devised stories when we told you about the coming of our Lord Jesus Christ in power, but we were eyewitnesses of his majesty.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "For we did not follow cleverly devised stories when we told you about the coming of our Lord Jesus Christ in power, but we were eyewitnesses of his majesty."
+        ],
+        "discourse_unit_id": "2PE-D008",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 38,
+        "line_start": 38,
+        "lines": [
+          "\\v 16 For we did not follow cleverly devised stories when we told you about the coming of our Lord Jesus Christ in power, but we were eyewitnesses of his majesty."
+        ],
+        "number": "16",
+        "paragraph_id": "2PE-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 For we did not follow cleverly devised stories when we told you about the coming of our Lord Jesus Christ in power, but we were eyewitnesses of his majesty.",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "He received honor and glory from God the Father when the voice came to him from the Majestic Glory, saying, “This is my Son, whom I love; with him I am well pleased.”",
+        "body_text_exact": "He received honor and glory from God the Father when the voice came to him from the Majestic Glory, saying, “This is my Son, whom I love; with him I am well pleased.”",
+        "body_text_normalized": "He received honor and glory from God the Father when the voice came to him from the Majestic Glory, saying, “This is my Son, whom I love; with him I am well pleased.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "He received honor and glory from God the Father when the voice came to him from the Majestic Glory, saying, “This is my Son, whom I love; with him I am well pleased.”",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:17 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "Matt. 17:5; Mark 9:7; Luke 9:35",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          }
+        ],
+        "discourse_unit_id": "2PE-D008",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 39,
+        "line_start": 39,
+        "lines": [
+          "\\v 17 He received honor and glory from God the Father when the voice came to him from the Majestic Glory, saying, “This is my Son, whom I love; with him I am well pleased.”\\f + \\fr 1:17 \\ft \\+xt Matt. 17:5; Mark 9:7; Luke 9:35\\+xt*\\f*"
+        ],
+        "number": "17",
+        "paragraph_id": "2PE-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 He received honor and glory from God the Father when the voice came to him from the Majestic Glory, saying, “This is my Son, whom I love; with him I am well pleased.”\\f + \\fr 1:17 \\ft \\+xt Matt. 17:5; Mark 9:7; Luke 9:35\\+xt*\\f*",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "We ourselves heard this voice that came from heaven when we were with him on the sacred mountain.",
+        "body_text_exact": "We ourselves heard this voice that came from heaven when we were with him on the sacred mountain.",
+        "body_text_normalized": "We ourselves heard this voice that came from heaven when we were with him on the sacred mountain.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "We ourselves heard this voice that came from heaven when we were with him on the sacred mountain."
+        ],
+        "discourse_unit_id": "2PE-D008",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 40,
+        "line_start": 40,
+        "lines": [
+          "\\v 18 We ourselves heard this voice that came from heaven when we were with him on the sacred mountain."
+        ],
+        "number": "18",
+        "paragraph_id": "2PE-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 We ourselves heard this voice that came from heaven when we were with him on the sacred mountain.",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "We also have the prophetic message as something completely reliable, and you will do well to pay attention to it, as to a light shining in a dark place, until the day dawns and the morning star rises in your hearts.",
+        "body_text_exact": "We also have the prophetic message as something completely reliable, and you will do well to pay attention to it, as to a light shining in a dark place, until the day dawns and the morning star rises in your hearts.",
+        "body_text_normalized": "We also have the prophetic message as something completely reliable, and you will do well to pay attention to it, as to a light shining in a dark place, until the day dawns and the morning star rises in your hearts.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "We also have the prophetic message as something completely reliable, and you will do well to pay attention to it, as to a light shining in a dark place, until the day dawns and the morning star rises in your hearts."
+        ],
+        "discourse_unit_id": "2PE-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 42,
+        "line_start": 42,
+        "lines": [
+          "\\v 19 We also have the prophetic message as something completely reliable, and you will do well to pay attention to it, as to a light shining in a dark place, until the day dawns and the morning star rises in your hearts."
+        ],
+        "number": "19",
+        "paragraph_id": "2PE-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 We also have the prophetic message as something completely reliable, and you will do well to pay attention to it, as to a light shining in a dark place, until the day dawns and the morning star rises in your hearts.",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "Above all, you must understand that no prophecy of Scripture came about by the prophetʼs own interpretation of things.",
+        "body_text_exact": "Above all, you must understand that no prophecy of Scripture came about by the prophetʼs own interpretation of things.",
+        "body_text_normalized": "Above all, you must understand that no prophecy of Scripture came about by the prophetʼs own interpretation of things.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Above all, you must understand that no prophecy of Scripture came about by the prophetʼs own interpretation of things."
+        ],
+        "discourse_unit_id": "2PE-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 43,
+        "line_start": 43,
+        "lines": [
+          "\\v 20 Above all, you must understand that no prophecy of Scripture came about by the prophetʼs own interpretation of things."
+        ],
+        "number": "20",
+        "paragraph_id": "2PE-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 Above all, you must understand that no prophecy of Scripture came about by the prophetʼs own interpretation of things.",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 20,
+        "verse_start": 20
+      },
+      {
+        "body_text": "For prophecy never had its origin in the human will, but prophets, though human, spoke from God as they were carried along by the Holy Spirit.",
+        "body_text_exact": "For prophecy never had its origin in the human will, but prophets, though human, spoke from God as they were carried along by the Holy Spirit.",
+        "body_text_normalized": "For prophecy never had its origin in the human will, but prophets, though human, spoke from God as they were carried along by the Holy Spirit.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "For prophecy never had its origin in the human will, but prophets, though human, spoke from God as they were carried along by the Holy Spirit."
+        ],
+        "discourse_unit_id": "2PE-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 44,
+        "line_start": 44,
+        "lines": [
+          "\\v 21 For prophecy never had its origin in the human will, but prophets, though human, spoke from God as they were carried along by the Holy Spirit."
+        ],
+        "number": "21",
+        "paragraph_id": "2PE-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 21 For prophecy never had its origin in the human will, but prophets, though human, spoke from God as they were carried along by the Holy Spirit.",
+        "section_id": "2PE-S002",
+        "section_marker": "s1",
+        "section_title": "Prophecy of Scripture",
+        "verse_end": 21,
+        "verse_start": 21
+      },
+      {
+        "body_text": "But there were also false prophets among the people, just as there will be false teachers among you. They will secretly introduce destructive heresies, even denying the sovereign Lord who bought them—bringing swift destruction on themselves.",
+        "body_text_exact": "But there were also false prophets among the people, just as there will be false teachers among you. They will secretly introduce destructive heresies, even denying the sovereign Lord who bought them—bringing swift destruction on themselves.",
+        "body_text_normalized": "But there were also false prophets among the people, just as there will be false teachers among you. They will secretly introduce destructive heresies, even denying the sovereign Lord who bought them—bringing swift destruction on themselves.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "But there were also false prophets among the people, just as there will be false teachers among you. They will secretly introduce destructive heresies, even denying the sovereign Lord who bought them—bringing swift destruction on themselves."
+        ],
+        "discourse_unit_id": "2PE-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 48,
+        "line_start": 48,
+        "lines": [
+          "\\v 1 But there were also false prophets among the people, just as there will be false teachers among you. They will secretly introduce destructive heresies, even denying the sovereign Lord who bought them—bringing swift destruction on themselves."
+        ],
+        "number": "1",
+        "paragraph_id": "2PE-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 But there were also false prophets among the people, just as there will be false teachers among you. They will secretly introduce destructive heresies, even denying the sovereign Lord who bought them—bringing swift destruction on themselves.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Many will follow their depraved conduct and will bring the way of truth into disrepute.",
+        "body_text_exact": "Many will follow their depraved conduct and will bring the way of truth into disrepute.",
+        "body_text_normalized": "Many will follow their depraved conduct and will bring the way of truth into disrepute.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Many will follow their depraved conduct and will bring the way of truth into disrepute."
+        ],
+        "discourse_unit_id": "2PE-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 49,
+        "line_start": 49,
+        "lines": [
+          "\\v 2 Many will follow their depraved conduct and will bring the way of truth into disrepute."
+        ],
+        "number": "2",
+        "paragraph_id": "2PE-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Many will follow their depraved conduct and will bring the way of truth into disrepute.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "In their greed these teachers will exploit you with fabricated stories. Their condemnation has long been hanging over them, and their destruction has not been sleeping.",
+        "body_text_exact": "In their greed these teachers will exploit you with fabricated stories. Their condemnation has long been hanging over them, and their destruction has not been sleeping.",
+        "body_text_normalized": "In their greed these teachers will exploit you with fabricated stories. Their condemnation has long been hanging over them, and their destruction has not been sleeping.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "In their greed these teachers will exploit you with fabricated stories. Their condemnation has long been hanging over them, and their destruction has not been sleeping."
+        ],
+        "discourse_unit_id": "2PE-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 50,
+        "line_start": 50,
+        "lines": [
+          "\\v 3 In their greed these teachers will exploit you with fabricated stories. Their condemnation has long been hanging over them, and their destruction has not been sleeping."
+        ],
+        "number": "3",
+        "paragraph_id": "2PE-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 In their greed these teachers will exploit you with fabricated stories. Their condemnation has long been hanging over them, and their destruction has not been sleeping.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "For if God did not spare angels when they sinned, but sent them to hell, putting them in chains of darkness to be held for judgment;",
+        "body_text_exact": "For if God did not spare angels when they sinned, but sent them to hell, putting them in chains of darkness to be held for judgment;",
+        "body_text_normalized": "For if God did not spare angels when they sinned, but sent them to hell, putting them in chains of darkness to be held for judgment;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "For if God did not spare angels when they sinned, but sent them to hell,",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:4 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Greek ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "Tartarus"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " putting them in chains of darkness",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:4 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Some manuscripts ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "in ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "gloomy dungeons"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " to be held for judgment;"
+        ],
+        "discourse_unit_id": "2PE-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 52,
+        "line_start": 52,
+        "lines": [
+          "\\v 4 For if God did not spare angels when they sinned, but sent them to hell,\\f + \\fr 2:4 \\ft Greek \\fqa Tartarus\\f* putting them in chains of darkness\\f + \\fr 2:4 \\ft Some manuscripts \\fq in \\fqa gloomy dungeons\\f* to be held for judgment;"
+        ],
+        "number": "4",
+        "paragraph_id": "2PE-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 For if God did not spare angels when they sinned, but sent them to hell,\\f + \\fr 2:4 \\ft Greek \\fqa Tartarus\\f* putting them in chains of darkness\\f + \\fr 2:4 \\ft Some manuscripts \\fq in \\fqa gloomy dungeons\\f* to be held for judgment;",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "if he did not spare the ancient world when he brought the flood on its ungodly people, but protected Noah, a preacher of righteousness, and seven others;",
+        "body_text_exact": "if he did not spare the ancient world when he brought the flood on its ungodly people, but protected Noah, a preacher of righteousness, and seven others;",
+        "body_text_normalized": "if he did not spare the ancient world when he brought the flood on its ungodly people, but protected Noah, a preacher of righteousness, and seven others;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "if he did not spare the ancient world when he brought the flood on its ungodly people, but protected Noah, a preacher of righteousness, and seven others;"
+        ],
+        "discourse_unit_id": "2PE-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 53,
+        "line_start": 53,
+        "lines": [
+          "\\v 5 if he did not spare the ancient world when he brought the flood on its ungodly people, but protected Noah, a preacher of righteousness, and seven others;"
+        ],
+        "number": "5",
+        "paragraph_id": "2PE-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 if he did not spare the ancient world when he brought the flood on its ungodly people, but protected Noah, a preacher of righteousness, and seven others;",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "if he condemned the cities of Sodom and Gomorrah by burning them to ashes, and made them an example of what is going to happen to the ungodly;",
+        "body_text_exact": "if he condemned the cities of Sodom and Gomorrah by burning them to ashes, and made them an example of what is going to happen to the ungodly;",
+        "body_text_normalized": "if he condemned the cities of Sodom and Gomorrah by burning them to ashes, and made them an example of what is going to happen to the ungodly;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "if he condemned the cities of Sodom and Gomorrah by burning them to ashes, and made them an example of what is going to happen to the ungodly;"
+        ],
+        "discourse_unit_id": "2PE-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 54,
+        "line_start": 54,
+        "lines": [
+          "\\v 6 if he condemned the cities of Sodom and Gomorrah by burning them to ashes, and made them an example of what is going to happen to the ungodly;"
+        ],
+        "number": "6",
+        "paragraph_id": "2PE-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 if he condemned the cities of Sodom and Gomorrah by burning them to ashes, and made them an example of what is going to happen to the ungodly;",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "and if he rescued Lot, a righteous man, who was distressed by the depraved conduct of the lawless",
+        "body_text_exact": "and if he rescued Lot, a righteous man, who was distressed by the depraved conduct of the lawless",
+        "body_text_normalized": "and if he rescued Lot, a righteous man, who was distressed by the depraved conduct of the lawless",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "and if he rescued Lot, a righteous man, who was distressed by the depraved conduct of the lawless"
+        ],
+        "discourse_unit_id": "2PE-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 55,
+        "line_start": 55,
+        "lines": [
+          "\\v 7 and if he rescued Lot, a righteous man, who was distressed by the depraved conduct of the lawless"
+        ],
+        "number": "7",
+        "paragraph_id": "2PE-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 and if he rescued Lot, a righteous man, who was distressed by the depraved conduct of the lawless",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "(for that righteous man, living among them day after day, was tormented in his righteous soul by the lawless deeds he saw and heard)—",
+        "body_text_exact": "(for that righteous man, living among them day after day, was tormented in his righteous soul by the lawless deeds he saw and heard)—",
+        "body_text_normalized": "(for that righteous man, living among them day after day, was tormented in his righteous soul by the lawless deeds he saw and heard)—",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "(for that righteous man, living among them day after day, was tormented in his righteous soul by the lawless deeds he saw and heard)—"
+        ],
+        "discourse_unit_id": "2PE-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 56,
+        "line_start": 56,
+        "lines": [
+          "\\v 8 (for that righteous man, living among them day after day, was tormented in his righteous soul by the lawless deeds he saw and heard)—"
+        ],
+        "number": "8",
+        "paragraph_id": "2PE-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 (for that righteous man, living among them day after day, was tormented in his righteous soul by the lawless deeds he saw and heard)—",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "if this is so, then the Lord knows how to rescue the godly from trials and to hold the unrighteous for punishment on the day of judgment.",
+        "body_text_exact": "if this is so, then the Lord knows how to rescue the godly from trials and to hold the unrighteous for punishment on the day of judgment.",
+        "body_text_normalized": "if this is so, then the Lord knows how to rescue the godly from trials and to hold the unrighteous for punishment on the day of judgment.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "if this is so, then the Lord knows how to rescue the godly from trials and to hold the unrighteous for punishment on the day of judgment."
+        ],
+        "discourse_unit_id": "2PE-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 57,
+        "line_start": 57,
+        "lines": [
+          "\\v 9 if this is so, then the Lord knows how to rescue the godly from trials and to hold the unrighteous for punishment on the day of judgment."
+        ],
+        "number": "9",
+        "paragraph_id": "2PE-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 if this is so, then the Lord knows how to rescue the godly from trials and to hold the unrighteous for punishment on the day of judgment.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "This is especially true of those who follow the corrupt desire of the flesh and despise authority.\nBold and arrogant, they are not afraid to heap abuse on celestial beings;",
+        "body_text_exact": "This is especially true of those who follow the corrupt desire of the flesh and despise authority.\nBold and arrogant, they are not afraid to heap abuse on celestial beings;",
+        "body_text_normalized": "This is especially true of those who follow the corrupt desire of the flesh and despise authority. Bold and arrogant, they are not afraid to heap abuse on celestial beings;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "This is especially true of those who follow the corrupt desire of the flesh",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:10 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "In contexts like this, the Greek word for ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "flesh ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "(",
+              {
+                "closing": false,
+                "marker": "tl",
+                "type": "marker"
+              },
+              "sarx",
+              {
+                "closing": true,
+                "marker": "tl",
+                "type": "marker"
+              },
+              ") refers to the sinful state of human beings, often presented as a power in opposition to the Spirit; also in ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "verse 18|2PE 2:18",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " and despise authority.",
+          "\n",
+          "Bold and arrogant, they are not afraid to heap abuse on celestial beings;"
+        ],
+        "discourse_unit_id": "2PE-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 59,
+        "line_start": 58,
+        "lines": [
+          "\\v 10 This is especially true of those who follow the corrupt desire of the flesh\\f + \\fr 2:10 \\ft In contexts like this, the Greek word for \\fq flesh \\ft (\\+tl sarx\\+tl*) refers to the sinful state of human beings, often presented as a power in opposition to the Spirit; also in \\+xt verse 18|2PE 2:18\\+xt*.\\f* and despise authority.",
+          "\\p Bold and arrogant, they are not afraid to heap abuse on celestial beings;"
+        ],
+        "number": "10",
+        "paragraph_id": "2PE-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 This is especially true of those who follow the corrupt desire of the flesh\\f + \\fr 2:10 \\ft In contexts like this, the Greek word for \\fq flesh \\ft (\\+tl sarx\\+tl*) refers to the sinful state of human beings, often presented as a power in opposition to the Spirit; also in \\+xt verse 18|2PE 2:18\\+xt*.\\f* and despise authority.\n\\p Bold and arrogant, they are not afraid to heap abuse on celestial beings;",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "yet even angels, although they are stronger and more powerful, do not heap abuse on such beings when bringing judgment on them from the Lord.",
+        "body_text_exact": "yet even angels, although they are stronger and more powerful, do not heap abuse on such beings when bringing judgment on them from the Lord.",
+        "body_text_normalized": "yet even angels, although they are stronger and more powerful, do not heap abuse on such beings when bringing judgment on them from the Lord.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "yet even angels, although they are stronger and more powerful, do not heap abuse on such beings when bringing judgment on them from",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:11 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Many manuscripts ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "beings ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "in the presence of"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " the Lord."
+        ],
+        "discourse_unit_id": "2PE-D012",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 60,
+        "line_start": 60,
+        "lines": [
+          "\\v 11 yet even angels, although they are stronger and more powerful, do not heap abuse on such beings when bringing judgment on them from\\f + \\fr 2:11 \\ft Many manuscripts \\fq beings \\fqa in the presence of\\f* the Lord."
+        ],
+        "number": "11",
+        "paragraph_id": "2PE-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 yet even angels, although they are stronger and more powerful, do not heap abuse on such beings when bringing judgment on them from\\f + \\fr 2:11 \\ft Many manuscripts \\fq beings \\fqa in the presence of\\f* the Lord.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "But these people blaspheme in matters they do not understand. They are like unreasoning animals, creatures of instinct, born only to be caught and destroyed, and like animals they too will perish.",
+        "body_text_exact": "But these people blaspheme in matters they do not understand. They are like unreasoning animals, creatures of instinct, born only to be caught and destroyed, and like animals they too will perish.",
+        "body_text_normalized": "But these people blaspheme in matters they do not understand. They are like unreasoning animals, creatures of instinct, born only to be caught and destroyed, and like animals they too will perish.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "But these people blaspheme in matters they do not understand. They are like unreasoning animals, creatures of instinct, born only to be caught and destroyed, and like animals they too will perish."
+        ],
+        "discourse_unit_id": "2PE-D012",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 61,
+        "line_start": 61,
+        "lines": [
+          "\\v 12 But these people blaspheme in matters they do not understand. They are like unreasoning animals, creatures of instinct, born only to be caught and destroyed, and like animals they too will perish."
+        ],
+        "number": "12",
+        "paragraph_id": "2PE-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 But these people blaspheme in matters they do not understand. They are like unreasoning animals, creatures of instinct, born only to be caught and destroyed, and like animals they too will perish.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "They will be paid back with harm for the harm they have done. Their idea of pleasure is to carouse in broad daylight. They are blots and blemishes, reveling in their pleasures while they feast with you.",
+        "body_text_exact": "They will be paid back with harm for the harm they have done. Their idea of pleasure is to carouse in broad daylight. They are blots and blemishes, reveling in their pleasures while they feast with you.",
+        "body_text_normalized": "They will be paid back with harm for the harm they have done. Their idea of pleasure is to carouse in broad daylight. They are blots and blemishes, reveling in their pleasures while they feast with you.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "They will be paid back with harm for the harm they have done. Their idea of pleasure is to carouse in broad daylight. They are blots and blemishes, reveling in their pleasures while they feast with you.",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:13 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Some manuscripts ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "in their ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "love feasts"
+            ],
+            "marker": "f",
+            "type": "note"
+          }
+        ],
+        "discourse_unit_id": "2PE-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 63,
+        "line_start": 63,
+        "lines": [
+          "\\v 13 They will be paid back with harm for the harm they have done. Their idea of pleasure is to carouse in broad daylight. They are blots and blemishes, reveling in their pleasures while they feast with you.\\f + \\fr 2:13 \\ft Some manuscripts \\fq in their \\fqa love feasts\\f*"
+        ],
+        "number": "13",
+        "paragraph_id": "2PE-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 They will be paid back with harm for the harm they have done. Their idea of pleasure is to carouse in broad daylight. They are blots and blemishes, reveling in their pleasures while they feast with you.\\f + \\fr 2:13 \\ft Some manuscripts \\fq in their \\fqa love feasts\\f*",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "With eyes full of adultery, they never stop sinning; they seduce the unstable; they are experts in greed—an accursed brood!",
+        "body_text_exact": "With eyes full of adultery, they never stop sinning; they seduce the unstable; they are experts in greed—an accursed brood!",
+        "body_text_normalized": "With eyes full of adultery, they never stop sinning; they seduce the unstable; they are experts in greed—an accursed brood!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "With eyes full of adultery, they never stop sinning; they seduce the unstable; they are experts in greed—an accursed brood!"
+        ],
+        "discourse_unit_id": "2PE-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 64,
+        "line_start": 64,
+        "lines": [
+          "\\v 14 With eyes full of adultery, they never stop sinning; they seduce the unstable; they are experts in greed—an accursed brood!"
+        ],
+        "number": "14",
+        "paragraph_id": "2PE-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 With eyes full of adultery, they never stop sinning; they seduce the unstable; they are experts in greed—an accursed brood!",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "They have left the straight way and wandered off to follow the way of Balaam son of Bezer, who loved the wages of wickedness.",
+        "body_text_exact": "They have left the straight way and wandered off to follow the way of Balaam son of Bezer, who loved the wages of wickedness.",
+        "body_text_normalized": "They have left the straight way and wandered off to follow the way of Balaam son of Bezer, who loved the wages of wickedness.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "They have left the straight way and wandered off to follow the way of Balaam son of Bezer,",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:15 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Greek ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "Bosor"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " who loved the wages of wickedness."
+        ],
+        "discourse_unit_id": "2PE-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 65,
+        "line_start": 65,
+        "lines": [
+          "\\v 15 They have left the straight way and wandered off to follow the way of Balaam son of Bezer,\\f + \\fr 2:15 \\ft Greek \\fqa Bosor\\f* who loved the wages of wickedness."
+        ],
+        "number": "15",
+        "paragraph_id": "2PE-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 They have left the straight way and wandered off to follow the way of Balaam son of Bezer,\\f + \\fr 2:15 \\ft Greek \\fqa Bosor\\f* who loved the wages of wickedness.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "But he was rebuked for his wrongdoing by a donkey—an animal without speech—who spoke with a human voice and restrained the prophetʼs madness.",
+        "body_text_exact": "But he was rebuked for his wrongdoing by a donkey—an animal without speech—who spoke with a human voice and restrained the prophetʼs madness.",
+        "body_text_normalized": "But he was rebuked for his wrongdoing by a donkey—an animal without speech—who spoke with a human voice and restrained the prophetʼs madness.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "But he was rebuked for his wrongdoing by a donkey—an animal without speech—who spoke with a human voice and restrained the prophetʼs madness."
+        ],
+        "discourse_unit_id": "2PE-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 66,
+        "line_start": 66,
+        "lines": [
+          "\\v 16 But he was rebuked for his wrongdoing by a donkey—an animal without speech—who spoke with a human voice and restrained the prophetʼs madness."
+        ],
+        "number": "16",
+        "paragraph_id": "2PE-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 But he was rebuked for his wrongdoing by a donkey—an animal without speech—who spoke with a human voice and restrained the prophetʼs madness.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "These people are springs without water and mists driven by a storm. Blackest darkness is reserved for them.",
+        "body_text_exact": "These people are springs without water and mists driven by a storm. Blackest darkness is reserved for them.",
+        "body_text_normalized": "These people are springs without water and mists driven by a storm. Blackest darkness is reserved for them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "These people are springs without water and mists driven by a storm. Blackest darkness is reserved for them."
+        ],
+        "discourse_unit_id": "2PE-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 68,
+        "line_start": 68,
+        "lines": [
+          "\\v 17 These people are springs without water and mists driven by a storm. Blackest darkness is reserved for them."
+        ],
+        "number": "17",
+        "paragraph_id": "2PE-P014",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 These people are springs without water and mists driven by a storm. Blackest darkness is reserved for them.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "For they mouth empty, boastful words and, by appealing to the lustful desires of the flesh, they entice people who are just escaping from those who live in error.",
+        "body_text_exact": "For they mouth empty, boastful words and, by appealing to the lustful desires of the flesh, they entice people who are just escaping from those who live in error.",
+        "body_text_normalized": "For they mouth empty, boastful words and, by appealing to the lustful desires of the flesh, they entice people who are just escaping from those who live in error.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "For they mouth empty, boastful words and, by appealing to the lustful desires of the flesh, they entice people who are just escaping from those who live in error."
+        ],
+        "discourse_unit_id": "2PE-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 69,
+        "line_start": 69,
+        "lines": [
+          "\\v 18 For they mouth empty, boastful words and, by appealing to the lustful desires of the flesh, they entice people who are just escaping from those who live in error."
+        ],
+        "number": "18",
+        "paragraph_id": "2PE-P014",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 For they mouth empty, boastful words and, by appealing to the lustful desires of the flesh, they entice people who are just escaping from those who live in error.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "They promise them freedom, while they themselves are slaves of depravity—for “people are slaves to whatever has mastered them.”",
+        "body_text_exact": "They promise them freedom, while they themselves are slaves of depravity—for “people are slaves to whatever has mastered them.”",
+        "body_text_normalized": "They promise them freedom, while they themselves are slaves of depravity—for “people are slaves to whatever has mastered them.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "They promise them freedom, while they themselves are slaves of depravity—for “people are slaves to whatever has mastered them.”"
+        ],
+        "discourse_unit_id": "2PE-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 70,
+        "line_start": 70,
+        "lines": [
+          "\\v 19 They promise them freedom, while they themselves are slaves of depravity—for “people are slaves to whatever has mastered them.”"
+        ],
+        "number": "19",
+        "paragraph_id": "2PE-P014",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 They promise them freedom, while they themselves are slaves of depravity—for “people are slaves to whatever has mastered them.”",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "If they have escaped the corruption of the world by knowing our Lord and Savior Jesus Christ and are again entangled in it and are overcome, they are worse off at the end than they were at the beginning.",
+        "body_text_exact": "If they have escaped the corruption of the world by knowing our Lord and Savior Jesus Christ and are again entangled in it and are overcome, they are worse off at the end than they were at the beginning.",
+        "body_text_normalized": "If they have escaped the corruption of the world by knowing our Lord and Savior Jesus Christ and are again entangled in it and are overcome, they are worse off at the end than they were at the beginning.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "If they have escaped the corruption of the world by knowing our Lord and Savior Jesus Christ and are again entangled in it and are overcome, they are worse off at the end than they were at the beginning."
+        ],
+        "discourse_unit_id": "2PE-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 71,
+        "line_start": 71,
+        "lines": [
+          "\\v 20 If they have escaped the corruption of the world by knowing our Lord and Savior Jesus Christ and are again entangled in it and are overcome, they are worse off at the end than they were at the beginning."
+        ],
+        "number": "20",
+        "paragraph_id": "2PE-P014",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 If they have escaped the corruption of the world by knowing our Lord and Savior Jesus Christ and are again entangled in it and are overcome, they are worse off at the end than they were at the beginning.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 20,
+        "verse_start": 20
+      },
+      {
+        "body_text": "It would have been better for them not to have known the way of righteousness, than to have known it and then to turn their backs on the sacred command that was passed on to them.",
+        "body_text_exact": "It would have been better for them not to have known the way of righteousness, than to have known it and then to turn their backs on the sacred command that was passed on to them.",
+        "body_text_normalized": "It would have been better for them not to have known the way of righteousness, than to have known it and then to turn their backs on the sacred command that was passed on to them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "It would have been better for them not to have known the way of righteousness, than to have known it and then to turn their backs on the sacred command that was passed on to them."
+        ],
+        "discourse_unit_id": "2PE-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 72,
+        "line_start": 72,
+        "lines": [
+          "\\v 21 It would have been better for them not to have known the way of righteousness, than to have known it and then to turn their backs on the sacred command that was passed on to them."
+        ],
+        "number": "21",
+        "paragraph_id": "2PE-P014",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 21 It would have been better for them not to have known the way of righteousness, than to have known it and then to turn their backs on the sacred command that was passed on to them.",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 21,
+        "verse_start": 21
+      },
+      {
+        "body_text": "Of them the proverbs are true: “A dog returns to its vomit,” and, “A sow that is washed returns to her wallowing in the mud.”",
+        "body_text_exact": "Of them the proverbs are true: “A dog returns to its vomit,” and, “A sow that is washed returns to her wallowing in the mud.”",
+        "body_text_normalized": "Of them the proverbs are true: “A dog returns to its vomit,” and, “A sow that is washed returns to her wallowing in the mud.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Of them the proverbs are true: “A dog returns to its vomit,”",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:22 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "Prov. 26:11",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " and, “A sow that is washed returns to her wallowing in the mud.”"
+        ],
+        "discourse_unit_id": "2PE-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 73,
+        "line_start": 73,
+        "lines": [
+          "\\v 22 Of them the proverbs are true: “A dog returns to its vomit,”\\f + \\fr 2:22 \\ft \\+xt Prov. 26:11\\+xt*\\f* and, “A sow that is washed returns to her wallowing in the mud.”"
+        ],
+        "number": "22",
+        "paragraph_id": "2PE-P014",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 22 Of them the proverbs are true: “A dog returns to its vomit,”\\f + \\fr 2:22 \\ft \\+xt Prov. 26:11\\+xt*\\f* and, “A sow that is washed returns to her wallowing in the mud.”",
+        "section_id": "2PE-S003",
+        "section_marker": "s1",
+        "section_title": "False Teachers and Their Destruction",
+        "verse_end": 22,
+        "verse_start": 22
+      },
+      {
+        "body_text": "Dear friends, this is now my second letter to you. I have written both of them as reminders to stimulate you to wholesome thinking.",
+        "body_text_exact": "Dear friends, this is now my second letter to you. I have written both of them as reminders to stimulate you to wholesome thinking.",
+        "body_text_normalized": "Dear friends, this is now my second letter to you. I have written both of them as reminders to stimulate you to wholesome thinking.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Dear friends, this is now my second letter to you. I have written both of them as reminders to stimulate you to wholesome thinking."
+        ],
+        "discourse_unit_id": "2PE-D015",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 77,
+        "line_start": 77,
+        "lines": [
+          "\\v 1 Dear friends, this is now my second letter to you. I have written both of them as reminders to stimulate you to wholesome thinking."
+        ],
+        "number": "1",
+        "paragraph_id": "2PE-P015",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Dear friends, this is now my second letter to you. I have written both of them as reminders to stimulate you to wholesome thinking.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "I want you to recall the words spoken in the past by the holy prophets and the command given by our Lord and Savior through your apostles.",
+        "body_text_exact": "I want you to recall the words spoken in the past by the holy prophets and the command given by our Lord and Savior through your apostles.",
+        "body_text_normalized": "I want you to recall the words spoken in the past by the holy prophets and the command given by our Lord and Savior through your apostles.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "I want you to recall the words spoken in the past by the holy prophets and the command given by our Lord and Savior through your apostles."
+        ],
+        "discourse_unit_id": "2PE-D015",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 78,
+        "line_start": 78,
+        "lines": [
+          "\\v 2 I want you to recall the words spoken in the past by the holy prophets and the command given by our Lord and Savior through your apostles."
+        ],
+        "number": "2",
+        "paragraph_id": "2PE-P015",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 I want you to recall the words spoken in the past by the holy prophets and the command given by our Lord and Savior through your apostles.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Above all, you must understand that in the last days scoffers will come, scoffing and following their own evil desires.",
+        "body_text_exact": "Above all, you must understand that in the last days scoffers will come, scoffing and following their own evil desires.",
+        "body_text_normalized": "Above all, you must understand that in the last days scoffers will come, scoffing and following their own evil desires.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Above all, you must understand that in the last days scoffers will come, scoffing and following their own evil desires."
+        ],
+        "discourse_unit_id": "2PE-D016",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 80,
+        "line_start": 80,
+        "lines": [
+          "\\v 3 Above all, you must understand that in the last days scoffers will come, scoffing and following their own evil desires."
+        ],
+        "number": "3",
+        "paragraph_id": "2PE-P016",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Above all, you must understand that in the last days scoffers will come, scoffing and following their own evil desires.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "They will say, “Where is this ‘coming’ he promised? Ever since our ancestors died, everything goes on as it has since the beginning of creation.”",
+        "body_text_exact": "They will say, “Where is this ‘coming’ he promised? Ever since our ancestors died, everything goes on as it has since the beginning of creation.”",
+        "body_text_normalized": "They will say, “Where is this ‘coming’ he promised? Ever since our ancestors died, everything goes on as it has since the beginning of creation.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "They will say, “Where is this ‘coming’ he promised? Ever since our ancestors died, everything goes on as it has since the beginning of creation.”"
+        ],
+        "discourse_unit_id": "2PE-D016",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 81,
+        "line_start": 81,
+        "lines": [
+          "\\v 4 They will say, “Where is this ‘coming’ he promised? Ever since our ancestors died, everything goes on as it has since the beginning of creation.”"
+        ],
+        "number": "4",
+        "paragraph_id": "2PE-P016",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 They will say, “Where is this ‘coming’ he promised? Ever since our ancestors died, everything goes on as it has since the beginning of creation.”",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "But they deliberately forget that long ago by Godʼs word the heavens came into being and the earth was formed out of water and by water.",
+        "body_text_exact": "But they deliberately forget that long ago by Godʼs word the heavens came into being and the earth was formed out of water and by water.",
+        "body_text_normalized": "But they deliberately forget that long ago by Godʼs word the heavens came into being and the earth was formed out of water and by water.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "But they deliberately forget that long ago by Godʼs word the heavens came into being and the earth was formed out of water and by water."
+        ],
+        "discourse_unit_id": "2PE-D016",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 82,
+        "line_start": 82,
+        "lines": [
+          "\\v 5 But they deliberately forget that long ago by Godʼs word the heavens came into being and the earth was formed out of water and by water."
+        ],
+        "number": "5",
+        "paragraph_id": "2PE-P016",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 But they deliberately forget that long ago by Godʼs word the heavens came into being and the earth was formed out of water and by water.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "By these waters also the world of that time was deluged and destroyed.",
+        "body_text_exact": "By these waters also the world of that time was deluged and destroyed.",
+        "body_text_normalized": "By these waters also the world of that time was deluged and destroyed.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "By these waters also the world of that time was deluged and destroyed."
+        ],
+        "discourse_unit_id": "2PE-D016",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 83,
+        "line_start": 83,
+        "lines": [
+          "\\v 6 By these waters also the world of that time was deluged and destroyed."
+        ],
+        "number": "6",
+        "paragraph_id": "2PE-P016",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 By these waters also the world of that time was deluged and destroyed.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "By the same word the present heavens and earth are reserved for fire, being kept for the day of judgment and destruction of the ungodly.",
+        "body_text_exact": "By the same word the present heavens and earth are reserved for fire, being kept for the day of judgment and destruction of the ungodly.",
+        "body_text_normalized": "By the same word the present heavens and earth are reserved for fire, being kept for the day of judgment and destruction of the ungodly.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "By the same word the present heavens and earth are reserved for fire, being kept for the day of judgment and destruction of the ungodly."
+        ],
+        "discourse_unit_id": "2PE-D016",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 84,
+        "line_start": 84,
+        "lines": [
+          "\\v 7 By the same word the present heavens and earth are reserved for fire, being kept for the day of judgment and destruction of the ungodly."
+        ],
+        "number": "7",
+        "paragraph_id": "2PE-P016",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 By the same word the present heavens and earth are reserved for fire, being kept for the day of judgment and destruction of the ungodly.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "But do not forget this one thing, dear friends: With the Lord a day is like a thousand years, and a thousand years are like a day.",
+        "body_text_exact": "But do not forget this one thing, dear friends: With the Lord a day is like a thousand years, and a thousand years are like a day.",
+        "body_text_normalized": "But do not forget this one thing, dear friends: With the Lord a day is like a thousand years, and a thousand years are like a day.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "But do not forget this one thing, dear friends: With the Lord a day is like a thousand years, and a thousand years are like a day."
+        ],
+        "discourse_unit_id": "2PE-D017",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 86,
+        "line_start": 86,
+        "lines": [
+          "\\v 8 But do not forget this one thing, dear friends: With the Lord a day is like a thousand years, and a thousand years are like a day."
+        ],
+        "number": "8",
+        "paragraph_id": "2PE-P017",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 But do not forget this one thing, dear friends: With the Lord a day is like a thousand years, and a thousand years are like a day.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "The Lord is not slow in keeping his promise, as some understand slowness. Instead he is patient with you, not wanting anyone to perish, but everyone to come to repentance.",
+        "body_text_exact": "The Lord is not slow in keeping his promise, as some understand slowness. Instead he is patient with you, not wanting anyone to perish, but everyone to come to repentance.",
+        "body_text_normalized": "The Lord is not slow in keeping his promise, as some understand slowness. Instead he is patient with you, not wanting anyone to perish, but everyone to come to repentance.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "The Lord is not slow in keeping his promise, as some understand slowness. Instead he is patient with you, not wanting anyone to perish, but everyone to come to repentance."
+        ],
+        "discourse_unit_id": "2PE-D017",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 87,
+        "line_start": 87,
+        "lines": [
+          "\\v 9 The Lord is not slow in keeping his promise, as some understand slowness. Instead he is patient with you, not wanting anyone to perish, but everyone to come to repentance."
+        ],
+        "number": "9",
+        "paragraph_id": "2PE-P017",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 The Lord is not slow in keeping his promise, as some understand slowness. Instead he is patient with you, not wanting anyone to perish, but everyone to come to repentance.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "But the day of the Lord will come like a thief. The heavens will disappear with a roar; the elements will be destroyed by fire, and the earth and everything done in it will be laid bare.",
+        "body_text_exact": "But the day of the Lord will come like a thief. The heavens will disappear with a roar; the elements will be destroyed by fire, and the earth and everything done in it will be laid bare.",
+        "body_text_normalized": "But the day of the Lord will come like a thief. The heavens will disappear with a roar; the elements will be destroyed by fire, and the earth and everything done in it will be laid bare.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "But the day of the Lord will come like a thief. The heavens will disappear with a roar; the elements will be destroyed by fire, and the earth and everything done in it will be laid bare.",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:10 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Some manuscripts ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "be ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "burned up"
+            ],
+            "marker": "f",
+            "type": "note"
+          }
+        ],
+        "discourse_unit_id": "2PE-D018",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 89,
+        "line_start": 89,
+        "lines": [
+          "\\v 10 But the day of the Lord will come like a thief. The heavens will disappear with a roar; the elements will be destroyed by fire, and the earth and everything done in it will be laid bare.\\f + \\fr 3:10 \\ft Some manuscripts \\fq be \\fqa burned up\\f*"
+        ],
+        "number": "10",
+        "paragraph_id": "2PE-P018",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 But the day of the Lord will come like a thief. The heavens will disappear with a roar; the elements will be destroyed by fire, and the earth and everything done in it will be laid bare.\\f + \\fr 3:10 \\ft Some manuscripts \\fq be \\fqa burned up\\f*",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Since everything will be destroyed in this way, what kind of people ought you to be? You ought to live holy and godly lives",
+        "body_text_exact": "Since everything will be destroyed in this way, what kind of people ought you to be? You ought to live holy and godly lives",
+        "body_text_normalized": "Since everything will be destroyed in this way, what kind of people ought you to be? You ought to live holy and godly lives",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Since everything will be destroyed in this way, what kind of people ought you to be? You ought to live holy and godly lives"
+        ],
+        "discourse_unit_id": "2PE-D019",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 91,
+        "line_start": 91,
+        "lines": [
+          "\\v 11 Since everything will be destroyed in this way, what kind of people ought you to be? You ought to live holy and godly lives"
+        ],
+        "number": "11",
+        "paragraph_id": "2PE-P019",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Since everything will be destroyed in this way, what kind of people ought you to be? You ought to live holy and godly lives",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "as you look forward to the day of God and speed its coming. That day will bring about the destruction of the heavens by fire, and the elements will melt in the heat.",
+        "body_text_exact": "as you look forward to the day of God and speed its coming. That day will bring about the destruction of the heavens by fire, and the elements will melt in the heat.",
+        "body_text_normalized": "as you look forward to the day of God and speed its coming. That day will bring about the destruction of the heavens by fire, and the elements will melt in the heat.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "as you look forward to the day of God and speed its coming.",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:12 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "as you ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "wait eagerly for the day of God to come"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " That day will bring about the destruction of the heavens by fire, and the elements will melt in the heat."
+        ],
+        "discourse_unit_id": "2PE-D019",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 92,
+        "line_start": 92,
+        "lines": [
+          "\\v 12 as you look forward to the day of God and speed its coming.\\f + \\fr 3:12 \\ft Or \\fq as you \\fqa wait eagerly for the day of God to come\\f* That day will bring about the destruction of the heavens by fire, and the elements will melt in the heat."
+        ],
+        "number": "12",
+        "paragraph_id": "2PE-P019",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 as you look forward to the day of God and speed its coming.\\f + \\fr 3:12 \\ft Or \\fq as you \\fqa wait eagerly for the day of God to come\\f* That day will bring about the destruction of the heavens by fire, and the elements will melt in the heat.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "But in keeping with his promise we are looking forward to a new heaven and a new earth, where righteousness dwells.",
+        "body_text_exact": "But in keeping with his promise we are looking forward to a new heaven and a new earth, where righteousness dwells.",
+        "body_text_normalized": "But in keeping with his promise we are looking forward to a new heaven and a new earth, where righteousness dwells.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "But in keeping with his promise we are looking forward to a new heaven and a new earth, where righteousness dwells."
+        ],
+        "discourse_unit_id": "2PE-D019",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 93,
+        "line_start": 93,
+        "lines": [
+          "\\v 13 But in keeping with his promise we are looking forward to a new heaven and a new earth, where righteousness dwells."
+        ],
+        "number": "13",
+        "paragraph_id": "2PE-P019",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 But in keeping with his promise we are looking forward to a new heaven and a new earth, where righteousness dwells.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "So then, dear friends, since you are looking forward to this, make every effort to be found spotless, blameless and at peace with him.",
+        "body_text_exact": "So then, dear friends, since you are looking forward to this, make every effort to be found spotless, blameless and at peace with him.",
+        "body_text_normalized": "So then, dear friends, since you are looking forward to this, make every effort to be found spotless, blameless and at peace with him.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "So then, dear friends, since you are looking forward to this, make every effort to be found spotless, blameless and at peace with him."
+        ],
+        "discourse_unit_id": "2PE-D020",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 95,
+        "line_start": 95,
+        "lines": [
+          "\\v 14 So then, dear friends, since you are looking forward to this, make every effort to be found spotless, blameless and at peace with him."
+        ],
+        "number": "14",
+        "paragraph_id": "2PE-P020",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 So then, dear friends, since you are looking forward to this, make every effort to be found spotless, blameless and at peace with him.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Bear in mind that our Lordʼs patience means salvation, just as our dear brother Paul also wrote you with the wisdom that God gave him.",
+        "body_text_exact": "Bear in mind that our Lordʼs patience means salvation, just as our dear brother Paul also wrote you with the wisdom that God gave him.",
+        "body_text_normalized": "Bear in mind that our Lordʼs patience means salvation, just as our dear brother Paul also wrote you with the wisdom that God gave him.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Bear in mind that our Lordʼs patience means salvation, just as our dear brother Paul also wrote you with the wisdom that God gave him."
+        ],
+        "discourse_unit_id": "2PE-D020",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 96,
+        "line_start": 96,
+        "lines": [
+          "\\v 15 Bear in mind that our Lordʼs patience means salvation, just as our dear brother Paul also wrote you with the wisdom that God gave him."
+        ],
+        "number": "15",
+        "paragraph_id": "2PE-P020",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Bear in mind that our Lordʼs patience means salvation, just as our dear brother Paul also wrote you with the wisdom that God gave him.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "He writes the same way in all his letters, speaking in them of these matters. His letters contain some things that are hard to understand, which ignorant and unstable people distort, as they do the other Scriptures, to their own destruction.",
+        "body_text_exact": "He writes the same way in all his letters, speaking in them of these matters. His letters contain some things that are hard to understand, which ignorant and unstable people distort, as they do the other Scriptures, to their own destruction.",
+        "body_text_normalized": "He writes the same way in all his letters, speaking in them of these matters. His letters contain some things that are hard to understand, which ignorant and unstable people distort, as they do the other Scriptures, to their own destruction.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "He writes the same way in all his letters, speaking in them of these matters. His letters contain some things that are hard to understand, which ignorant and unstable people distort, as they do the other Scriptures, to their own destruction."
+        ],
+        "discourse_unit_id": "2PE-D020",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 97,
+        "line_start": 97,
+        "lines": [
+          "\\v 16 He writes the same way in all his letters, speaking in them of these matters. His letters contain some things that are hard to understand, which ignorant and unstable people distort, as they do the other Scriptures, to their own destruction."
+        ],
+        "number": "16",
+        "paragraph_id": "2PE-P020",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 He writes the same way in all his letters, speaking in them of these matters. His letters contain some things that are hard to understand, which ignorant and unstable people distort, as they do the other Scriptures, to their own destruction.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Therefore, dear friends, since you have been forewarned, be on your guard so that you may not be carried away by the error of the lawless and fall from your secure position.",
+        "body_text_exact": "Therefore, dear friends, since you have been forewarned, be on your guard so that you may not be carried away by the error of the lawless and fall from your secure position.",
+        "body_text_normalized": "Therefore, dear friends, since you have been forewarned, be on your guard so that you may not be carried away by the error of the lawless and fall from your secure position.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Therefore, dear friends, since you have been forewarned, be on your guard so that you may not be carried away by the error of the lawless and fall from your secure position."
+        ],
+        "discourse_unit_id": "2PE-D021",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 99,
+        "line_start": 99,
+        "lines": [
+          "\\v 17 Therefore, dear friends, since you have been forewarned, be on your guard so that you may not be carried away by the error of the lawless and fall from your secure position."
+        ],
+        "number": "17",
+        "paragraph_id": "2PE-P021",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Therefore, dear friends, since you have been forewarned, be on your guard so that you may not be carried away by the error of the lawless and fall from your secure position.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "But grow in the grace and knowledge of our Lord and Savior Jesus Christ.\nTo him be glory both now and forever! Amen.",
+        "body_text_exact": "But grow in the grace and knowledge of our Lord and Savior Jesus Christ.\nTo him be glory both now and forever! Amen.",
+        "body_text_normalized": "But grow in the grace and knowledge of our Lord and Savior Jesus Christ. To him be glory both now and forever! Amen.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "But grow in the grace and knowledge of our Lord and Savior Jesus Christ.",
+          "\n",
+          "To him be glory both now and forever! Amen."
+        ],
+        "discourse_unit_id": "2PE-D021",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 103,
+        "line_start": 100,
+        "lines": [
+          "\\v 18 But grow in the grace and knowledge of our Lord and Savior Jesus Christ.",
+          "\\p To him be glory both now and forever! Amen."
+        ],
+        "number": "18",
+        "paragraph_id": "2PE-P021",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 But grow in the grace and knowledge of our Lord and Savior Jesus Christ.\n\\p To him be glory both now and forever! Amen.",
+        "section_id": "2PE-S004",
+        "section_marker": "s1",
+        "section_title": "The Day of the Lord",
+        "verse_end": 18,
+        "verse_start": 18
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

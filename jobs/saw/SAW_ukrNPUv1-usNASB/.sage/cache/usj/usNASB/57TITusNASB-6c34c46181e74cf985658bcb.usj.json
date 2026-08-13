@@ -1,0 +1,4486 @@
+{
+  "content": [
+    {
+      "code": "TIT",
+      "content": [
+        "NASB20"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Titus",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Titus",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Titus",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The Letter of Paul to",
+        "\n"
+      ],
+      "marker": "mt2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "TITUS",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "TIT 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Salutation"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "TIT 1:1",
+          "type": "verse"
+        },
+        "Paul, a bond-servant of God and an apostle of Jesus Christ, ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:1 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "according to",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "for the faith of those chosen of God and the knowledge of the truth which is according to godliness,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "TIT 1:2",
+          "type": "verse"
+        },
+        "in the hope of eternal life, which God, who cannot lie, promised ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:2 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "before eternal times",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "long ages ago,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "TIT 1:3",
+          "type": "verse"
+        },
+        "but at the proper time revealed His word in the proclamation with which I was entrusted according to the commandment of God our Savior;",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "TIT 1:4",
+          "type": "verse"
+        },
+        "To Titus, my true ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:4 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "child",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "son ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:4 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "according to",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "in a common faith: Grace and peace from God the Father and Christ Jesus our Savior.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Qualifications of Elders"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "TIT 1:5",
+          "type": "verse"
+        },
+        "For this reason I left you in Crete, that you would set in order what remains and appoint elders in every city as I directed you,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "TIT 1:6",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "namely,"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " if any man is beyond reproach, the husband of one wife, having children who believe, not accused of indecent behavior or rebellion.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "TIT 1:7",
+          "type": "verse"
+        },
+        "For the ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:7 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "bishop",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "overseer must be beyond reproach as God’s steward, not self-willed, not quick-tempered, not overindulging in wine, not ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:7 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "combative",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "a bully, not greedy for money,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "TIT 1:8",
+          "type": "verse"
+        },
+        "but hospitable, loving what is good, self-controlled, righteous, holy, disciplined,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "TIT 1:9",
+          "type": "verse"
+        },
+        "holding firmly the faithful word which is in accordance with the teaching, so that he will be able both to ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:9 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "encourage",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "exhort in sound doctrine and to refute those who contradict ",
+        {
+          "content": [
+            "it."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "TIT 1:10",
+          "type": "verse"
+        },
+        "For there are many rebellious people, empty talkers and deceivers, especially those of the circumcision,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "TIT 1:11",
+          "type": "verse"
+        },
+        "who must be silenced because they are upsetting whole families, teaching things they should not ",
+        {
+          "content": [
+            "teach"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " for the sake of ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:11 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "disgraceful",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "dishonest gain.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "TIT 1:12",
+          "type": "verse"
+        },
+        "One of them, a prophet of their own, said, “Cretans are always liars, evil beasts, lazy gluttons.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "TIT 1:13",
+          "type": "verse"
+        },
+        "This testimony is true. For this reason reprimand them severely so that they may be sound in the faith,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "TIT 1:14",
+          "type": "verse"
+        },
+        "not paying attention to Jewish myths and commandments of men who turn away from the truth.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "TIT 1:15",
+          "type": "verse"
+        },
+        "To the pure, all things are pure; but to those who are defiled and unbelieving, nothing is pure, but both their mind and their conscience are defiled.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "TIT 1:16",
+          "type": "verse"
+        },
+        "They profess to know God, but by ",
+        {
+          "content": [
+            "their"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " deeds they deny ",
+        {
+          "content": [
+            "Him,"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " being detestable and disobedient and worthless for any good deed.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "2",
+      "sid": "TIT 2",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Proclaim Sound Doctrine"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "TIT 2:1",
+          "type": "verse"
+        },
+        "But ",
+        {
+          "content": [
+            "as for"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " you, proclaim the things which are fitting for sound doctrine.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "TIT 2:2",
+          "type": "verse"
+        },
+        "Older men are to be ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:2 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "level-headed",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "temperate, dignified, self-controlled, sound in faith, in love, in ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:2 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "steadfastness",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "perseverance.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "TIT 2:3",
+          "type": "verse"
+        },
+        "Older women likewise ",
+        {
+          "content": [
+            "are to be"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " reverent in their behavior, not malicious gossips nor enslaved to much wine, teaching what is good,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "TIT 2:4",
+          "type": "verse"
+        },
+        "so that they may ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:4 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "train",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "encourage the young women to love their husbands, to love their children,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "TIT 2:5",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "to be"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " sensible, pure, workers at home, kind, being subject to their own husbands, so that the word of God will not be dishonored.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "TIT 2:6",
+          "type": "verse"
+        },
+        "Likewise urge the young men to be ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:6 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "sensible in all things; show",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "sensible;",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "TIT 2:7",
+          "type": "verse"
+        },
+        "in all things show yourself ",
+        {
+          "content": [
+            "to be"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " an example of good deeds, ",
+        {
+          "content": [
+            "with"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:7 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "soundness;",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            "lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "uncorruptness",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "purity in doctrine, dignified,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "TIT 2:8",
+          "type": "verse"
+        },
+        "sound ",
+        {
+          "content": [
+            "in"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " speech which is beyond reproach, so that the opponent will be put to shame, having nothing bad to say about us.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "TIT 2:9",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Urge"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:9 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "I.e., slaves in first-century Roman culture",
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "slaves to be subject to their own masters in everything, to be pleasing, not ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:9 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "contradicting",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "argumentative,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "TIT 2:10",
+          "type": "verse"
+        },
+        "not stealing, but showing all good faith so that they will adorn the doctrine of God our Savior in every respect.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "TIT 2:11",
+          "type": "verse"
+        },
+        "For the grace of God has appeared, ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:11 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "to all mankind, bringing",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "bringing salvation to all people,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "TIT 2:12",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:12 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "disciplining",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "instructing us to deny ungodliness and worldly desires and to live sensibly, righteously, and in a godly manner in the present age,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "TIT 2:13",
+          "type": "verse"
+        },
+        "looking for the blessed hope and the appearing of the glory of ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:13 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "the great God and our Savior",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "our great God and Savior, Christ Jesus,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "TIT 2:14",
+          "type": "verse"
+        },
+        "who gave Himself for us to redeem us from every lawless deed, and to purify for Himself a people for His own possession, eager for good deeds.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "TIT 2:15",
+          "type": "verse"
+        },
+        "These things speak and ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:15 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "encourage",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "exhort, and rebuke with all authority. No one is to disregard you.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "3",
+      "sid": "TIT 3",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Godly Living"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "TIT 3:1",
+          "type": "verse"
+        },
+        "Remind them to be subject to rulers, to authorities, to be obedient, to be ready for every good deed,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "TIT 3:2",
+          "type": "verse"
+        },
+        "to slander no one, not to be contentious, ",
+        {
+          "content": [
+            "to be"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " gentle, showing every consideration for all people.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "TIT 3:3",
+          "type": "verse"
+        },
+        "For we too were once foolish, disobedient, deceived, enslaved to various lusts and pleasures, spending our life in malice and envy, hateful, hating one another.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "TIT 3:4",
+          "type": "verse"
+        },
+        "But when the kindness of God our Savior and ",
+        {
+          "content": [
+            "His"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " love for mankind appeared,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "TIT 3:5",
+          "type": "verse"
+        },
+        "He saved us, not on the basis of deeds which we did in righteousness, but in accordance with His mercy, by the washing of regeneration and renewing by the Holy Spirit,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "TIT 3:6",
+          "type": "verse"
+        },
+        "whom He richly poured out upon us through Jesus Christ our Savior,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "TIT 3:7",
+          "type": "verse"
+        },
+        "so that being justified by His grace we would be made heirs ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:7 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "of eternal life according to hope",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "according to ",
+        {
+          "content": [
+            "the"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " hope of eternal life.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "TIT 3:8",
+          "type": "verse"
+        },
+        "This statement is trustworthy; and concerning these things I want you to speak confidently, so that those who have believed God will be careful to engage in good deeds. These things are good and beneficial for people.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "TIT 3:9",
+          "type": "verse"
+        },
+        "But avoid foolish controversies and genealogies and strife and disputes about the Law, for they are useless and worthless.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "TIT 3:10",
+          "type": "verse"
+        },
+        "Reject a ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:10 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "factious",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "divisive person after a first and second warning,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "TIT 3:11",
+          "type": "verse"
+        },
+        "knowing that such a person has deviated from what is right and is sinning, being self-condemned.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Personal Concerns"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "TIT 3:12",
+          "type": "verse"
+        },
+        "When I send Artemas or Tychicus to you, make every effort to come to me at Nicopolis, for I have decided to spend the winter there.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "TIT 3:13",
+          "type": "verse"
+        },
+        "Diligently help Zenas the lawyer and Apollos on their way so that nothing is lacking for them.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "TIT 3:14",
+          "type": "verse"
+        },
+        "Our people must also learn to engage in good ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:14 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "occupations",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "deeds to meet pressing needs, so that they will not be unproductive.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "TIT 3:15",
+          "type": "verse"
+        },
+        "All who are with me greet you. Greet those who love us in ",
+        {
+          "content": [
+            "the"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " faith.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "G"
+          ],
+          "marker": "bd",
+          "type": "char"
+        },
+        "race be with you all.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "TIT",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "57TITusNASB.SFM",
+    "source_sha256": "6f0e3d8240ed7365d59545ca744a45d95d95cff6155a4060f768756089fad751",
+    "source_size": 7231,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Paul, a bond-servant of God and an apostle of Jesus Christ, for the faith of those chosen of God and the knowledge of the truth which is according to godliness,",
+        "body_text_exact": "Paul, a bond-servant of God and an apostle of Jesus Christ, for the faith of those chosen of God and the knowledge of the truth which is according to godliness,",
+        "body_text_normalized": "Paul, a bond-servant of God and an apostle of Jesus Christ, for the faith of those chosen of God and the knowledge of the truth which is according to godliness,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Paul, a bond-servant of God and an apostle of Jesus Christ, ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:1 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "according to",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "for the faith of those chosen of God and the knowledge of the truth which is according to godliness,"
+        ],
+        "discourse_unit_id": "TIT-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 10,
+        "line_start": 10,
+        "lines": [
+          "\\v 1 Paul, a bond-servant of God and an apostle of Jesus Christ, \\f 1 \\fr 1:1 \\fr*\\ft Or \\+it according to\\+it*\\ft*\\f*for the faith of those chosen of God and the knowledge of the truth which is according to godliness,"
+        ],
+        "number": "1",
+        "paragraph_id": "TIT-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Paul, a bond-servant of God and an apostle of Jesus Christ, \\f 1 \\fr 1:1 \\fr*\\ft Or \\+it according to\\+it*\\ft*\\f*for the faith of those chosen of God and the knowledge of the truth which is according to godliness,",
+        "section_id": "TIT-S001",
+        "section_marker": "s1",
+        "section_title": "Salutation",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "in the hope of eternal life, which God, who cannot lie, promised long ages ago,",
+        "body_text_exact": "in the hope of eternal life, which God, who cannot lie, promised long ages ago,",
+        "body_text_normalized": "in the hope of eternal life, which God, who cannot lie, promised long ages ago,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "in the hope of eternal life, which God, who cannot lie, promised ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:2 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "before eternal times",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "long ages ago,"
+        ],
+        "discourse_unit_id": "TIT-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 11,
+        "line_start": 11,
+        "lines": [
+          "\\v 2 in the hope of eternal life, which God, who cannot lie, promised \\f 1 \\fr 1:2 \\fr*\\ft Lit \\+it before eternal times\\+it*\\ft*\\f*long ages ago,"
+        ],
+        "number": "2",
+        "paragraph_id": "TIT-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 in the hope of eternal life, which God, who cannot lie, promised \\f 1 \\fr 1:2 \\fr*\\ft Lit \\+it before eternal times\\+it*\\ft*\\f*long ages ago,",
+        "section_id": "TIT-S001",
+        "section_marker": "s1",
+        "section_title": "Salutation",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "but at the proper time revealed His word in the proclamation with which I was entrusted according to the commandment of God our Savior;",
+        "body_text_exact": "but at the proper time revealed His word in the proclamation with which I was entrusted according to the commandment of God our Savior;",
+        "body_text_normalized": "but at the proper time revealed His word in the proclamation with which I was entrusted according to the commandment of God our Savior;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "but at the proper time revealed His word in the proclamation with which I was entrusted according to the commandment of God our Savior;"
+        ],
+        "discourse_unit_id": "TIT-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 12,
+        "line_start": 12,
+        "lines": [
+          "\\v 3 but at the proper time revealed His word in the proclamation with which I was entrusted according to the commandment of God our Savior;"
+        ],
+        "number": "3",
+        "paragraph_id": "TIT-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 but at the proper time revealed His word in the proclamation with which I was entrusted according to the commandment of God our Savior;",
+        "section_id": "TIT-S001",
+        "section_marker": "s1",
+        "section_title": "Salutation",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "To Titus, my true son in a common faith: Grace and peace from God the Father and Christ Jesus our Savior.",
+        "body_text_exact": "To Titus, my true son in a common faith: Grace and peace from God the Father and Christ Jesus our Savior.",
+        "body_text_normalized": "To Titus, my true son in a common faith: Grace and peace from God the Father and Christ Jesus our Savior.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "To Titus, my true ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:4 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "child",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "son ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:4 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "according to",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "in a common faith: Grace and peace from God the Father and Christ Jesus our Savior."
+        ],
+        "discourse_unit_id": "TIT-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 14,
+        "line_start": 14,
+        "lines": [
+          "\\v 4 To Titus, my true \\f 1 \\fr 1:4 \\fr*\\ft Or \\+it child\\+it*\\ft*\\f*son \\f 2 \\fr 1:4 \\fr*\\ft Lit \\+it according to\\+it*\\ft*\\f*in a common faith: Grace and peace from God the Father and Christ Jesus our Savior."
+        ],
+        "number": "4",
+        "paragraph_id": "TIT-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 To Titus, my true \\f 1 \\fr 1:4 \\fr*\\ft Or \\+it child\\+it*\\ft*\\f*son \\f 2 \\fr 1:4 \\fr*\\ft Lit \\+it according to\\+it*\\ft*\\f*in a common faith: Grace and peace from God the Father and Christ Jesus our Savior.",
+        "section_id": "TIT-S001",
+        "section_marker": "s1",
+        "section_title": "Salutation",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "For this reason I left you in Crete, that you would set in order what remains and appoint elders in every city as I directed you,",
+        "body_text_exact": "For this reason I left you in Crete, that you would set in order what remains and appoint elders in every city as I directed you,",
+        "body_text_normalized": "For this reason I left you in Crete, that you would set in order what remains and appoint elders in every city as I directed you,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "For this reason I left you in Crete, that you would set in order what remains and appoint elders in every city as I directed you,"
+        ],
+        "discourse_unit_id": "TIT-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 17,
+        "line_start": 17,
+        "lines": [
+          "\\v 5 For this reason I left you in Crete, that you would set in order what remains and appoint elders in every city as I directed you,"
+        ],
+        "number": "5",
+        "paragraph_id": "TIT-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 For this reason I left you in Crete, that you would set in order what remains and appoint elders in every city as I directed you,",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "namely, if any man is beyond reproach, the husband of one wife, having children who believe, not accused of indecent behavior or rebellion.",
+        "body_text_exact": "namely, if any man is beyond reproach, the husband of one wife, having children who believe, not accused of indecent behavior or rebellion.",
+        "body_text_normalized": "namely, if any man is beyond reproach, the husband of one wife, having children who believe, not accused of indecent behavior or rebellion.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "namely,"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " if any man is beyond reproach, the husband of one wife, having children who believe, not accused of indecent behavior or rebellion."
+        ],
+        "discourse_unit_id": "TIT-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 18,
+        "line_start": 18,
+        "lines": [
+          "\\v 6 \\it namely,\\it* if any man is beyond reproach, the husband of one wife, having children who believe, not accused of indecent behavior or rebellion."
+        ],
+        "number": "6",
+        "paragraph_id": "TIT-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 \\it namely,\\it* if any man is beyond reproach, the husband of one wife, having children who believe, not accused of indecent behavior or rebellion.",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "For the overseer must be beyond reproach as God’s steward, not self-willed, not quick-tempered, not overindulging in wine, not a bully, not greedy for money,",
+        "body_text_exact": "For the overseer must be beyond reproach as God’s steward, not self-willed, not quick-tempered, not overindulging in wine, not a bully, not greedy for money,",
+        "body_text_normalized": "For the overseer must be beyond reproach as God’s steward, not self-willed, not quick-tempered, not overindulging in wine, not a bully, not greedy for money,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "For the ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:7 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "bishop",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "overseer must be beyond reproach as God’s steward, not self-willed, not quick-tempered, not overindulging in wine, not ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:7 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "combative",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "a bully, not greedy for money,"
+        ],
+        "discourse_unit_id": "TIT-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 19,
+        "line_start": 19,
+        "lines": [
+          "\\v 7 For the \\f 1 \\fr 1:7 \\fr*\\ft Or \\+it bishop\\+it*\\ft*\\f*overseer must be beyond reproach as God’s steward, not self-willed, not quick-tempered, not overindulging in wine, not \\f 2 \\fr 1:7 \\fr*\\ft Or \\+it combative\\+it*\\ft*\\f*a bully, not greedy for money,"
+        ],
+        "number": "7",
+        "paragraph_id": "TIT-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 For the \\f 1 \\fr 1:7 \\fr*\\ft Or \\+it bishop\\+it*\\ft*\\f*overseer must be beyond reproach as God’s steward, not self-willed, not quick-tempered, not overindulging in wine, not \\f 2 \\fr 1:7 \\fr*\\ft Or \\+it combative\\+it*\\ft*\\f*a bully, not greedy for money,",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "but hospitable, loving what is good, self-controlled, righteous, holy, disciplined,",
+        "body_text_exact": "but hospitable, loving what is good, self-controlled, righteous, holy, disciplined,",
+        "body_text_normalized": "but hospitable, loving what is good, self-controlled, righteous, holy, disciplined,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "but hospitable, loving what is good, self-controlled, righteous, holy, disciplined,"
+        ],
+        "discourse_unit_id": "TIT-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 20,
+        "line_start": 20,
+        "lines": [
+          "\\v 8 but hospitable, loving what is good, self-controlled, righteous, holy, disciplined,"
+        ],
+        "number": "8",
+        "paragraph_id": "TIT-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 but hospitable, loving what is good, self-controlled, righteous, holy, disciplined,",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "holding firmly the faithful word which is in accordance with the teaching, so that he will be able both to exhort in sound doctrine and to refute those who contradict it.",
+        "body_text_exact": "holding firmly the faithful word which is in accordance with the teaching, so that he will be able both to exhort in sound doctrine and to refute those who contradict it.",
+        "body_text_normalized": "holding firmly the faithful word which is in accordance with the teaching, so that he will be able both to exhort in sound doctrine and to refute those who contradict it.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "holding firmly the faithful word which is in accordance with the teaching, so that he will be able both to ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:9 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "encourage",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "exhort in sound doctrine and to refute those who contradict ",
+          {
+            "content": [
+              "it."
+            ],
+            "marker": "it",
+            "type": "char"
+          }
+        ],
+        "discourse_unit_id": "TIT-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 21,
+        "line_start": 21,
+        "lines": [
+          "\\v 9 holding firmly the faithful word which is in accordance with the teaching, so that he will be able both to \\f 1 \\fr 1:9 \\fr*\\ft Or \\+it encourage\\+it*\\ft*\\f*exhort in sound doctrine and to refute those who contradict \\it it.\\it*"
+        ],
+        "number": "9",
+        "paragraph_id": "TIT-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 holding firmly the faithful word which is in accordance with the teaching, so that he will be able both to \\f 1 \\fr 1:9 \\fr*\\ft Or \\+it encourage\\+it*\\ft*\\f*exhort in sound doctrine and to refute those who contradict \\it it.\\it*",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "For there are many rebellious people, empty talkers and deceivers, especially those of the circumcision,",
+        "body_text_exact": "For there are many rebellious people, empty talkers and deceivers, especially those of the circumcision,",
+        "body_text_normalized": "For there are many rebellious people, empty talkers and deceivers, especially those of the circumcision,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "For there are many rebellious people, empty talkers and deceivers, especially those of the circumcision,"
+        ],
+        "discourse_unit_id": "TIT-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 23,
+        "line_start": 23,
+        "lines": [
+          "\\v 10 For there are many rebellious people, empty talkers and deceivers, especially those of the circumcision,"
+        ],
+        "number": "10",
+        "paragraph_id": "TIT-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 For there are many rebellious people, empty talkers and deceivers, especially those of the circumcision,",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "who must be silenced because they are upsetting whole families, teaching things they should not teach for the sake of dishonest gain.",
+        "body_text_exact": "who must be silenced because they are upsetting whole families, teaching things they should not teach for the sake of dishonest gain.",
+        "body_text_normalized": "who must be silenced because they are upsetting whole families, teaching things they should not teach for the sake of dishonest gain.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "who must be silenced because they are upsetting whole families, teaching things they should not ",
+          {
+            "content": [
+              "teach"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " for the sake of ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:11 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "disgraceful",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "dishonest gain."
+        ],
+        "discourse_unit_id": "TIT-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 24,
+        "line_start": 24,
+        "lines": [
+          "\\v 11 who must be silenced because they are upsetting whole families, teaching things they should not \\it teach\\it* for the sake of \\f 1 \\fr 1:11 \\fr*\\ft Or \\+it disgraceful\\+it*\\ft*\\f*dishonest gain."
+        ],
+        "number": "11",
+        "paragraph_id": "TIT-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 who must be silenced because they are upsetting whole families, teaching things they should not \\it teach\\it* for the sake of \\f 1 \\fr 1:11 \\fr*\\ft Or \\+it disgraceful\\+it*\\ft*\\f*dishonest gain.",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "One of them, a prophet of their own, said, “Cretans are always liars, evil beasts, lazy gluttons.”",
+        "body_text_exact": "One of them, a prophet of their own, said, “Cretans are always liars, evil beasts, lazy gluttons.”",
+        "body_text_normalized": "One of them, a prophet of their own, said, “Cretans are always liars, evil beasts, lazy gluttons.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "One of them, a prophet of their own, said, “Cretans are always liars, evil beasts, lazy gluttons.”"
+        ],
+        "discourse_unit_id": "TIT-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 25,
+        "line_start": 25,
+        "lines": [
+          "\\v 12 One of them, a prophet of their own, said, “Cretans are always liars, evil beasts, lazy gluttons.”"
+        ],
+        "number": "12",
+        "paragraph_id": "TIT-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 One of them, a prophet of their own, said, “Cretans are always liars, evil beasts, lazy gluttons.”",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "This testimony is true. For this reason reprimand them severely so that they may be sound in the faith,",
+        "body_text_exact": "This testimony is true. For this reason reprimand them severely so that they may be sound in the faith,",
+        "body_text_normalized": "This testimony is true. For this reason reprimand them severely so that they may be sound in the faith,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "This testimony is true. For this reason reprimand them severely so that they may be sound in the faith,"
+        ],
+        "discourse_unit_id": "TIT-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 26,
+        "line_start": 26,
+        "lines": [
+          "\\v 13 This testimony is true. For this reason reprimand them severely so that they may be sound in the faith,"
+        ],
+        "number": "13",
+        "paragraph_id": "TIT-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 This testimony is true. For this reason reprimand them severely so that they may be sound in the faith,",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "not paying attention to Jewish myths and commandments of men who turn away from the truth.",
+        "body_text_exact": "not paying attention to Jewish myths and commandments of men who turn away from the truth.",
+        "body_text_normalized": "not paying attention to Jewish myths and commandments of men who turn away from the truth.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "not paying attention to Jewish myths and commandments of men who turn away from the truth."
+        ],
+        "discourse_unit_id": "TIT-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 27,
+        "line_start": 27,
+        "lines": [
+          "\\v 14 not paying attention to Jewish myths and commandments of men who turn away from the truth."
+        ],
+        "number": "14",
+        "paragraph_id": "TIT-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 not paying attention to Jewish myths and commandments of men who turn away from the truth.",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "To the pure, all things are pure; but to those who are defiled and unbelieving, nothing is pure, but both their mind and their conscience are defiled.",
+        "body_text_exact": "To the pure, all things are pure; but to those who are defiled and unbelieving, nothing is pure, but both their mind and their conscience are defiled.",
+        "body_text_normalized": "To the pure, all things are pure; but to those who are defiled and unbelieving, nothing is pure, but both their mind and their conscience are defiled.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "To the pure, all things are pure; but to those who are defiled and unbelieving, nothing is pure, but both their mind and their conscience are defiled."
+        ],
+        "discourse_unit_id": "TIT-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 28,
+        "line_start": 28,
+        "lines": [
+          "\\v 15 To the pure, all things are pure; but to those who are defiled and unbelieving, nothing is pure, but both their mind and their conscience are defiled."
+        ],
+        "number": "15",
+        "paragraph_id": "TIT-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 To the pure, all things are pure; but to those who are defiled and unbelieving, nothing is pure, but both their mind and their conscience are defiled.",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "They profess to know God, but by their deeds they deny Him, being detestable and disobedient and worthless for any good deed.",
+        "body_text_exact": "They profess to know God, but by their deeds they deny Him, being detestable and disobedient and worthless for any good deed.",
+        "body_text_normalized": "They profess to know God, but by their deeds they deny Him, being detestable and disobedient and worthless for any good deed.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "They profess to know God, but by ",
+          {
+            "content": [
+              "their"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " deeds they deny ",
+          {
+            "content": [
+              "Him,"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " being detestable and disobedient and worthless for any good deed."
+        ],
+        "discourse_unit_id": "TIT-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 29,
+        "line_start": 29,
+        "lines": [
+          "\\v 16 They profess to know God, but by \\it their\\it* deeds they deny \\it Him,\\it* being detestable and disobedient and worthless for any good deed."
+        ],
+        "number": "16",
+        "paragraph_id": "TIT-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 They profess to know God, but by \\it their\\it* deeds they deny \\it Him,\\it* being detestable and disobedient and worthless for any good deed.",
+        "section_id": "TIT-S002",
+        "section_marker": "s1",
+        "section_title": "Qualifications of Elders",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "But as for you, proclaim the things which are fitting for sound doctrine.",
+        "body_text_exact": "But as for you, proclaim the things which are fitting for sound doctrine.",
+        "body_text_normalized": "But as for you, proclaim the things which are fitting for sound doctrine.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "But ",
+          {
+            "content": [
+              "as for"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " you, proclaim the things which are fitting for sound doctrine."
+        ],
+        "discourse_unit_id": "TIT-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 33,
+        "line_start": 33,
+        "lines": [
+          "\\v 1 But \\it as for\\it* you, proclaim the things which are fitting for sound doctrine."
+        ],
+        "number": "1",
+        "paragraph_id": "TIT-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 But \\it as for\\it* you, proclaim the things which are fitting for sound doctrine.",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Older men are to be temperate, dignified, self-controlled, sound in faith, in love, in perseverance.",
+        "body_text_exact": "Older men are to be temperate, dignified, self-controlled, sound in faith, in love, in perseverance.",
+        "body_text_normalized": "Older men are to be temperate, dignified, self-controlled, sound in faith, in love, in perseverance.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Older men are to be ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:2 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "level-headed",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "temperate, dignified, self-controlled, sound in faith, in love, in ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:2 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "steadfastness",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "perseverance."
+        ],
+        "discourse_unit_id": "TIT-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 34,
+        "line_start": 34,
+        "lines": [
+          "\\v 2 Older men are to be \\f 1 \\fr 2:2 \\fr*\\ft Or \\+it level-headed\\+it*\\ft*\\f*temperate, dignified, self-controlled, sound in faith, in love, in \\f 2 \\fr 2:2 \\fr*\\ft Or \\+it steadfastness\\+it*\\ft*\\f*perseverance."
+        ],
+        "number": "2",
+        "paragraph_id": "TIT-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Older men are to be \\f 1 \\fr 2:2 \\fr*\\ft Or \\+it level-headed\\+it*\\ft*\\f*temperate, dignified, self-controlled, sound in faith, in love, in \\f 2 \\fr 2:2 \\fr*\\ft Or \\+it steadfastness\\+it*\\ft*\\f*perseverance.",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Older women likewise are to be reverent in their behavior, not malicious gossips nor enslaved to much wine, teaching what is good,",
+        "body_text_exact": "Older women likewise are to be reverent in their behavior, not malicious gossips nor enslaved to much wine, teaching what is good,",
+        "body_text_normalized": "Older women likewise are to be reverent in their behavior, not malicious gossips nor enslaved to much wine, teaching what is good,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Older women likewise ",
+          {
+            "content": [
+              "are to be"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " reverent in their behavior, not malicious gossips nor enslaved to much wine, teaching what is good,"
+        ],
+        "discourse_unit_id": "TIT-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 36,
+        "line_start": 36,
+        "lines": [
+          "\\v 3 Older women likewise \\it are to be\\it* reverent in their behavior, not malicious gossips nor enslaved to much wine, teaching what is good,"
+        ],
+        "number": "3",
+        "paragraph_id": "TIT-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Older women likewise \\it are to be\\it* reverent in their behavior, not malicious gossips nor enslaved to much wine, teaching what is good,",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "so that they may encourage the young women to love their husbands, to love their children,",
+        "body_text_exact": "so that they may encourage the young women to love their husbands, to love their children,",
+        "body_text_normalized": "so that they may encourage the young women to love their husbands, to love their children,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "so that they may ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:4 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "train",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "encourage the young women to love their husbands, to love their children,"
+        ],
+        "discourse_unit_id": "TIT-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 37,
+        "line_start": 37,
+        "lines": [
+          "\\v 4 so that they may \\f 1 \\fr 2:4 \\fr*\\ft Or \\+it train\\+it*\\ft*\\f*encourage the young women to love their husbands, to love their children,"
+        ],
+        "number": "4",
+        "paragraph_id": "TIT-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 so that they may \\f 1 \\fr 2:4 \\fr*\\ft Or \\+it train\\+it*\\ft*\\f*encourage the young women to love their husbands, to love their children,",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "to be sensible, pure, workers at home, kind, being subject to their own husbands, so that the word of God will not be dishonored.",
+        "body_text_exact": "to be sensible, pure, workers at home, kind, being subject to their own husbands, so that the word of God will not be dishonored.",
+        "body_text_normalized": "to be sensible, pure, workers at home, kind, being subject to their own husbands, so that the word of God will not be dishonored.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          {
+            "content": [
+              "to be"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " sensible, pure, workers at home, kind, being subject to their own husbands, so that the word of God will not be dishonored."
+        ],
+        "discourse_unit_id": "TIT-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 38,
+        "line_start": 38,
+        "lines": [
+          "\\v 5 \\it to be\\it* sensible, pure, workers at home, kind, being subject to their own husbands, so that the word of God will not be dishonored."
+        ],
+        "number": "5",
+        "paragraph_id": "TIT-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 \\it to be\\it* sensible, pure, workers at home, kind, being subject to their own husbands, so that the word of God will not be dishonored.",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "Likewise urge the young men to be sensible;",
+        "body_text_exact": "Likewise urge the young men to be sensible;",
+        "body_text_normalized": "Likewise urge the young men to be sensible;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Likewise urge the young men to be ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:6 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "sensible in all things; show",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "sensible;"
+        ],
+        "discourse_unit_id": "TIT-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 40,
+        "line_start": 40,
+        "lines": [
+          "\\v 6 Likewise urge the young men to be \\f 1 \\fr 2:6 \\fr*\\ft Or \\+it sensible in all things; show\\+it*\\ft*\\f*sensible;"
+        ],
+        "number": "6",
+        "paragraph_id": "TIT-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 Likewise urge the young men to be \\f 1 \\fr 2:6 \\fr*\\ft Or \\+it sensible in all things; show\\+it*\\ft*\\f*sensible;",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "in all things show yourself to be an example of good deeds, with purity in doctrine, dignified,",
+        "body_text_exact": "in all things show yourself to be an example of good deeds, with purity in doctrine, dignified,",
+        "body_text_normalized": "in all things show yourself to be an example of good deeds, with purity in doctrine, dignified,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "in all things show yourself ",
+          {
+            "content": [
+              "to be"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " an example of good deeds, ",
+          {
+            "content": [
+              "with"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:7 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "soundness;",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              "lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "uncorruptness",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "purity in doctrine, dignified,"
+        ],
+        "discourse_unit_id": "TIT-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 41,
+        "line_start": 41,
+        "lines": [
+          "\\v 7 in all things show yourself \\it to be\\it* an example of good deeds, \\it with\\it* \\f 1 \\fr 2:7 \\fr*\\ft Or \\+it soundness;\\+it* lit \\+it uncorruptness\\+it*\\ft*\\f*purity in doctrine, dignified,"
+        ],
+        "number": "7",
+        "paragraph_id": "TIT-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 in all things show yourself \\it to be\\it* an example of good deeds, \\it with\\it* \\f 1 \\fr 2:7 \\fr*\\ft Or \\+it soundness;\\+it* lit \\+it uncorruptness\\+it*\\ft*\\f*purity in doctrine, dignified,",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "sound in speech which is beyond reproach, so that the opponent will be put to shame, having nothing bad to say about us.",
+        "body_text_exact": "sound in speech which is beyond reproach, so that the opponent will be put to shame, having nothing bad to say about us.",
+        "body_text_normalized": "sound in speech which is beyond reproach, so that the opponent will be put to shame, having nothing bad to say about us.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "sound ",
+          {
+            "content": [
+              "in"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " speech which is beyond reproach, so that the opponent will be put to shame, having nothing bad to say about us."
+        ],
+        "discourse_unit_id": "TIT-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 42,
+        "line_start": 42,
+        "lines": [
+          "\\v 8 sound \\it in\\it* speech which is beyond reproach, so that the opponent will be put to shame, having nothing bad to say about us."
+        ],
+        "number": "8",
+        "paragraph_id": "TIT-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 sound \\it in\\it* speech which is beyond reproach, so that the opponent will be put to shame, having nothing bad to say about us.",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Urge slaves to be subject to their own masters in everything, to be pleasing, not argumentative,",
+        "body_text_exact": "Urge slaves to be subject to their own masters in everything, to be pleasing, not argumentative,",
+        "body_text_normalized": "Urge slaves to be subject to their own masters in everything, to be pleasing, not argumentative,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          {
+            "content": [
+              "Urge"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:9 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "I.e., slaves in first-century Roman culture",
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "slaves to be subject to their own masters in everything, to be pleasing, not ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:9 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "contradicting",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "argumentative,"
+        ],
+        "discourse_unit_id": "TIT-D008",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 44,
+        "line_start": 44,
+        "lines": [
+          "\\v 9 \\it Urge\\it* \\f 1 \\fr 2:9 \\fr*\\ft I.e., slaves in first-century Roman culture\\ft*\\f*slaves to be subject to their own masters in everything, to be pleasing, not \\f 2 \\fr 2:9 \\fr*\\ft Lit \\+it contradicting\\+it*\\ft*\\f*argumentative,"
+        ],
+        "number": "9",
+        "paragraph_id": "TIT-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 \\it Urge\\it* \\f 1 \\fr 2:9 \\fr*\\ft I.e., slaves in first-century Roman culture\\ft*\\f*slaves to be subject to their own masters in everything, to be pleasing, not \\f 2 \\fr 2:9 \\fr*\\ft Lit \\+it contradicting\\+it*\\ft*\\f*argumentative,",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "not stealing, but showing all good faith so that they will adorn the doctrine of God our Savior in every respect.",
+        "body_text_exact": "not stealing, but showing all good faith so that they will adorn the doctrine of God our Savior in every respect.",
+        "body_text_normalized": "not stealing, but showing all good faith so that they will adorn the doctrine of God our Savior in every respect.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "not stealing, but showing all good faith so that they will adorn the doctrine of God our Savior in every respect."
+        ],
+        "discourse_unit_id": "TIT-D008",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 45,
+        "line_start": 45,
+        "lines": [
+          "\\v 10 not stealing, but showing all good faith so that they will adorn the doctrine of God our Savior in every respect."
+        ],
+        "number": "10",
+        "paragraph_id": "TIT-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 not stealing, but showing all good faith so that they will adorn the doctrine of God our Savior in every respect.",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "For the grace of God has appeared, bringing salvation to all people,",
+        "body_text_exact": "For the grace of God has appeared, bringing salvation to all people,",
+        "body_text_normalized": "For the grace of God has appeared, bringing salvation to all people,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "For the grace of God has appeared, ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:11 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "to all mankind, bringing",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "bringing salvation to all people,"
+        ],
+        "discourse_unit_id": "TIT-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 47,
+        "line_start": 47,
+        "lines": [
+          "\\v 11 For the grace of God has appeared, \\f 1 \\fr 2:11 \\fr*\\ft Or \\+it to all mankind, bringing\\+it*\\ft*\\f*bringing salvation to all people,"
+        ],
+        "number": "11",
+        "paragraph_id": "TIT-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 For the grace of God has appeared, \\f 1 \\fr 2:11 \\fr*\\ft Or \\+it to all mankind, bringing\\+it*\\ft*\\f*bringing salvation to all people,",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "instructing us to deny ungodliness and worldly desires and to live sensibly, righteously, and in a godly manner in the present age,",
+        "body_text_exact": "instructing us to deny ungodliness and worldly desires and to live sensibly, righteously, and in a godly manner in the present age,",
+        "body_text_normalized": "instructing us to deny ungodliness and worldly desires and to live sensibly, righteously, and in a godly manner in the present age,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:12 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "disciplining",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "instructing us to deny ungodliness and worldly desires and to live sensibly, righteously, and in a godly manner in the present age,"
+        ],
+        "discourse_unit_id": "TIT-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 48,
+        "line_start": 48,
+        "lines": [
+          "\\v 12 \\f 1 \\fr 2:12 \\fr*\\ft Or \\+it disciplining\\+it*\\ft*\\f*instructing us to deny ungodliness and worldly desires and to live sensibly, righteously, and in a godly manner in the present age,"
+        ],
+        "number": "12",
+        "paragraph_id": "TIT-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 \\f 1 \\fr 2:12 \\fr*\\ft Or \\+it disciplining\\+it*\\ft*\\f*instructing us to deny ungodliness and worldly desires and to live sensibly, righteously, and in a godly manner in the present age,",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "looking for the blessed hope and the appearing of the glory of our great God and Savior, Christ Jesus,",
+        "body_text_exact": "looking for the blessed hope and the appearing of the glory of our great God and Savior, Christ Jesus,",
+        "body_text_normalized": "looking for the blessed hope and the appearing of the glory of our great God and Savior, Christ Jesus,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "looking for the blessed hope and the appearing of the glory of ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:13 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "the great God and our Savior",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "our great God and Savior, Christ Jesus,"
+        ],
+        "discourse_unit_id": "TIT-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 49,
+        "line_start": 49,
+        "lines": [
+          "\\v 13 looking for the blessed hope and the appearing of the glory of \\f 1 \\fr 2:13 \\fr*\\ft Or \\+it the great God and our Savior\\+it*\\ft*\\f*our great God and Savior, Christ Jesus,"
+        ],
+        "number": "13",
+        "paragraph_id": "TIT-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 looking for the blessed hope and the appearing of the glory of \\f 1 \\fr 2:13 \\fr*\\ft Or \\+it the great God and our Savior\\+it*\\ft*\\f*our great God and Savior, Christ Jesus,",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "who gave Himself for us to redeem us from every lawless deed, and to purify for Himself a people for His own possession, eager for good deeds.",
+        "body_text_exact": "who gave Himself for us to redeem us from every lawless deed, and to purify for Himself a people for His own possession, eager for good deeds.",
+        "body_text_normalized": "who gave Himself for us to redeem us from every lawless deed, and to purify for Himself a people for His own possession, eager for good deeds.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "who gave Himself for us to redeem us from every lawless deed, and to purify for Himself a people for His own possession, eager for good deeds."
+        ],
+        "discourse_unit_id": "TIT-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 50,
+        "line_start": 50,
+        "lines": [
+          "\\v 14 who gave Himself for us to redeem us from every lawless deed, and to purify for Himself a people for His own possession, eager for good deeds."
+        ],
+        "number": "14",
+        "paragraph_id": "TIT-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 who gave Himself for us to redeem us from every lawless deed, and to purify for Himself a people for His own possession, eager for good deeds.",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "These things speak and exhort, and rebuke with all authority. No one is to disregard you.",
+        "body_text_exact": "These things speak and exhort, and rebuke with all authority. No one is to disregard you.",
+        "body_text_normalized": "These things speak and exhort, and rebuke with all authority. No one is to disregard you.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "These things speak and ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:15 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "encourage",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "exhort, and rebuke with all authority. No one is to disregard you."
+        ],
+        "discourse_unit_id": "TIT-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 52,
+        "line_start": 52,
+        "lines": [
+          "\\v 15 These things speak and \\f 1 \\fr 2:15 \\fr*\\ft Or \\+it encourage\\+it*\\ft*\\f*exhort, and rebuke with all authority. No one is to disregard you."
+        ],
+        "number": "15",
+        "paragraph_id": "TIT-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 These things speak and \\f 1 \\fr 2:15 \\fr*\\ft Or \\+it encourage\\+it*\\ft*\\f*exhort, and rebuke with all authority. No one is to disregard you.",
+        "section_id": "TIT-S003",
+        "section_marker": "s1",
+        "section_title": "Proclaim Sound Doctrine",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Remind them to be subject to rulers, to authorities, to be obedient, to be ready for every good deed,",
+        "body_text_exact": "Remind them to be subject to rulers, to authorities, to be obedient, to be ready for every good deed,",
+        "body_text_normalized": "Remind them to be subject to rulers, to authorities, to be obedient, to be ready for every good deed,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Remind them to be subject to rulers, to authorities, to be obedient, to be ready for every good deed,"
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 56,
+        "line_start": 56,
+        "lines": [
+          "\\v 1 Remind them to be subject to rulers, to authorities, to be obedient, to be ready for every good deed,"
+        ],
+        "number": "1",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Remind them to be subject to rulers, to authorities, to be obedient, to be ready for every good deed,",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "to slander no one, not to be contentious, to be gentle, showing every consideration for all people.",
+        "body_text_exact": "to slander no one, not to be contentious, to be gentle, showing every consideration for all people.",
+        "body_text_normalized": "to slander no one, not to be contentious, to be gentle, showing every consideration for all people.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "to slander no one, not to be contentious, ",
+          {
+            "content": [
+              "to be"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " gentle, showing every consideration for all people."
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 57,
+        "line_start": 57,
+        "lines": [
+          "\\v 2 to slander no one, not to be contentious, \\it to be\\it* gentle, showing every consideration for all people."
+        ],
+        "number": "2",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 to slander no one, not to be contentious, \\it to be\\it* gentle, showing every consideration for all people.",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "For we too were once foolish, disobedient, deceived, enslaved to various lusts and pleasures, spending our life in malice and envy, hateful, hating one another.",
+        "body_text_exact": "For we too were once foolish, disobedient, deceived, enslaved to various lusts and pleasures, spending our life in malice and envy, hateful, hating one another.",
+        "body_text_normalized": "For we too were once foolish, disobedient, deceived, enslaved to various lusts and pleasures, spending our life in malice and envy, hateful, hating one another.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "For we too were once foolish, disobedient, deceived, enslaved to various lusts and pleasures, spending our life in malice and envy, hateful, hating one another."
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 58,
+        "line_start": 58,
+        "lines": [
+          "\\v 3 For we too were once foolish, disobedient, deceived, enslaved to various lusts and pleasures, spending our life in malice and envy, hateful, hating one another."
+        ],
+        "number": "3",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 For we too were once foolish, disobedient, deceived, enslaved to various lusts and pleasures, spending our life in malice and envy, hateful, hating one another.",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "But when the kindness of God our Savior and His love for mankind appeared,",
+        "body_text_exact": "But when the kindness of God our Savior and His love for mankind appeared,",
+        "body_text_normalized": "But when the kindness of God our Savior and His love for mankind appeared,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "But when the kindness of God our Savior and ",
+          {
+            "content": [
+              "His"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " love for mankind appeared,"
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 59,
+        "line_start": 59,
+        "lines": [
+          "\\v 4 But when the kindness of God our Savior and \\it His\\it* love for mankind appeared,"
+        ],
+        "number": "4",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 But when the kindness of God our Savior and \\it His\\it* love for mankind appeared,",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "He saved us, not on the basis of deeds which we did in righteousness, but in accordance with His mercy, by the washing of regeneration and renewing by the Holy Spirit,",
+        "body_text_exact": "He saved us, not on the basis of deeds which we did in righteousness, but in accordance with His mercy, by the washing of regeneration and renewing by the Holy Spirit,",
+        "body_text_normalized": "He saved us, not on the basis of deeds which we did in righteousness, but in accordance with His mercy, by the washing of regeneration and renewing by the Holy Spirit,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "He saved us, not on the basis of deeds which we did in righteousness, but in accordance with His mercy, by the washing of regeneration and renewing by the Holy Spirit,"
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 60,
+        "line_start": 60,
+        "lines": [
+          "\\v 5 He saved us, not on the basis of deeds which we did in righteousness, but in accordance with His mercy, by the washing of regeneration and renewing by the Holy Spirit,"
+        ],
+        "number": "5",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 He saved us, not on the basis of deeds which we did in righteousness, but in accordance with His mercy, by the washing of regeneration and renewing by the Holy Spirit,",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "whom He richly poured out upon us through Jesus Christ our Savior,",
+        "body_text_exact": "whom He richly poured out upon us through Jesus Christ our Savior,",
+        "body_text_normalized": "whom He richly poured out upon us through Jesus Christ our Savior,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "whom He richly poured out upon us through Jesus Christ our Savior,"
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 61,
+        "line_start": 61,
+        "lines": [
+          "\\v 6 whom He richly poured out upon us through Jesus Christ our Savior,"
+        ],
+        "number": "6",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 whom He richly poured out upon us through Jesus Christ our Savior,",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "so that being justified by His grace we would be made heirs according to the hope of eternal life.",
+        "body_text_exact": "so that being justified by His grace we would be made heirs according to the hope of eternal life.",
+        "body_text_normalized": "so that being justified by His grace we would be made heirs according to the hope of eternal life.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "so that being justified by His grace we would be made heirs ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:7 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "of eternal life according to hope",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "according to ",
+          {
+            "content": [
+              "the"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " hope of eternal life."
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 62,
+        "line_start": 62,
+        "lines": [
+          "\\v 7 so that being justified by His grace we would be made heirs \\f 1 \\fr 3:7 \\fr*\\ft Or \\+it of eternal life according to hope\\+it*\\ft*\\f*according to \\it the\\it* hope of eternal life."
+        ],
+        "number": "7",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 so that being justified by His grace we would be made heirs \\f 1 \\fr 3:7 \\fr*\\ft Or \\+it of eternal life according to hope\\+it*\\ft*\\f*according to \\it the\\it* hope of eternal life.",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "This statement is trustworthy; and concerning these things I want you to speak confidently, so that those who have believed God will be careful to engage in good deeds. These things are good and beneficial for people.",
+        "body_text_exact": "This statement is trustworthy; and concerning these things I want you to speak confidently, so that those who have believed God will be careful to engage in good deeds. These things are good and beneficial for people.",
+        "body_text_normalized": "This statement is trustworthy; and concerning these things I want you to speak confidently, so that those who have believed God will be careful to engage in good deeds. These things are good and beneficial for people.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "This statement is trustworthy; and concerning these things I want you to speak confidently, so that those who have believed God will be careful to engage in good deeds. These things are good and beneficial for people."
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 63,
+        "line_start": 63,
+        "lines": [
+          "\\v 8 This statement is trustworthy; and concerning these things I want you to speak confidently, so that those who have believed God will be careful to engage in good deeds. These things are good and beneficial for people."
+        ],
+        "number": "8",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 This statement is trustworthy; and concerning these things I want you to speak confidently, so that those who have believed God will be careful to engage in good deeds. These things are good and beneficial for people.",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "But avoid foolish controversies and genealogies and strife and disputes about the Law, for they are useless and worthless.",
+        "body_text_exact": "But avoid foolish controversies and genealogies and strife and disputes about the Law, for they are useless and worthless.",
+        "body_text_normalized": "But avoid foolish controversies and genealogies and strife and disputes about the Law, for they are useless and worthless.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "But avoid foolish controversies and genealogies and strife and disputes about the Law, for they are useless and worthless."
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 64,
+        "line_start": 64,
+        "lines": [
+          "\\v 9 But avoid foolish controversies and genealogies and strife and disputes about the Law, for they are useless and worthless."
+        ],
+        "number": "9",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 But avoid foolish controversies and genealogies and strife and disputes about the Law, for they are useless and worthless.",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Reject a divisive person after a first and second warning,",
+        "body_text_exact": "Reject a divisive person after a first and second warning,",
+        "body_text_normalized": "Reject a divisive person after a first and second warning,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Reject a ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:10 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "factious",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "divisive person after a first and second warning,"
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 65,
+        "line_start": 65,
+        "lines": [
+          "\\v 10 Reject a \\f 1 \\fr 3:10 \\fr*\\ft Or \\+it factious\\+it*\\ft*\\f*divisive person after a first and second warning,"
+        ],
+        "number": "10",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Reject a \\f 1 \\fr 3:10 \\fr*\\ft Or \\+it factious\\+it*\\ft*\\f*divisive person after a first and second warning,",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "knowing that such a person has deviated from what is right and is sinning, being self-condemned.",
+        "body_text_exact": "knowing that such a person has deviated from what is right and is sinning, being self-condemned.",
+        "body_text_normalized": "knowing that such a person has deviated from what is right and is sinning, being self-condemned.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "knowing that such a person has deviated from what is right and is sinning, being self-condemned."
+        ],
+        "discourse_unit_id": "TIT-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 66,
+        "line_start": 66,
+        "lines": [
+          "\\v 11 knowing that such a person has deviated from what is right and is sinning, being self-condemned."
+        ],
+        "number": "11",
+        "paragraph_id": "TIT-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 knowing that such a person has deviated from what is right and is sinning, being self-condemned.",
+        "section_id": "TIT-S004",
+        "section_marker": "s1",
+        "section_title": "Godly Living",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "When I send Artemas or Tychicus to you, make every effort to come to me at Nicopolis, for I have decided to spend the winter there.",
+        "body_text_exact": "When I send Artemas or Tychicus to you, make every effort to come to me at Nicopolis, for I have decided to spend the winter there.",
+        "body_text_normalized": "When I send Artemas or Tychicus to you, make every effort to come to me at Nicopolis, for I have decided to spend the winter there.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "When I send Artemas or Tychicus to you, make every effort to come to me at Nicopolis, for I have decided to spend the winter there."
+        ],
+        "discourse_unit_id": "TIT-D012",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 69,
+        "line_start": 69,
+        "lines": [
+          "\\v 12 When I send Artemas or Tychicus to you, make every effort to come to me at Nicopolis, for I have decided to spend the winter there."
+        ],
+        "number": "12",
+        "paragraph_id": "TIT-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 When I send Artemas or Tychicus to you, make every effort to come to me at Nicopolis, for I have decided to spend the winter there.",
+        "section_id": "TIT-S005",
+        "section_marker": "s1",
+        "section_title": "Personal Concerns",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Diligently help Zenas the lawyer and Apollos on their way so that nothing is lacking for them.",
+        "body_text_exact": "Diligently help Zenas the lawyer and Apollos on their way so that nothing is lacking for them.",
+        "body_text_normalized": "Diligently help Zenas the lawyer and Apollos on their way so that nothing is lacking for them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Diligently help Zenas the lawyer and Apollos on their way so that nothing is lacking for them."
+        ],
+        "discourse_unit_id": "TIT-D012",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 70,
+        "line_start": 70,
+        "lines": [
+          "\\v 13 Diligently help Zenas the lawyer and Apollos on their way so that nothing is lacking for them."
+        ],
+        "number": "13",
+        "paragraph_id": "TIT-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Diligently help Zenas the lawyer and Apollos on their way so that nothing is lacking for them.",
+        "section_id": "TIT-S005",
+        "section_marker": "s1",
+        "section_title": "Personal Concerns",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Our people must also learn to engage in good deeds to meet pressing needs, so that they will not be unproductive.",
+        "body_text_exact": "Our people must also learn to engage in good deeds to meet pressing needs, so that they will not be unproductive.",
+        "body_text_normalized": "Our people must also learn to engage in good deeds to meet pressing needs, so that they will not be unproductive.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Our people must also learn to engage in good ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:14 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "occupations",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "deeds to meet pressing needs, so that they will not be unproductive."
+        ],
+        "discourse_unit_id": "TIT-D012",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 71,
+        "line_start": 71,
+        "lines": [
+          "\\v 14 Our people must also learn to engage in good \\f 1 \\fr 3:14 \\fr*\\ft Or \\+it occupations\\+it*\\ft*\\f*deeds to meet pressing needs, so that they will not be unproductive."
+        ],
+        "number": "14",
+        "paragraph_id": "TIT-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Our people must also learn to engage in good \\f 1 \\fr 3:14 \\fr*\\ft Or \\+it occupations\\+it*\\ft*\\f*deeds to meet pressing needs, so that they will not be unproductive.",
+        "section_id": "TIT-S005",
+        "section_marker": "s1",
+        "section_title": "Personal Concerns",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "All who are with me greet you. Greet those who love us in the faith.\nGrace be with you all.",
+        "body_text_exact": "All who are with me greet you. Greet those who love us in the faith.\nGrace be with you all.",
+        "body_text_normalized": "All who are with me greet you. Greet those who love us in the faith. Grace be with you all.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "All who are with me greet you. Greet those who love us in ",
+          {
+            "content": [
+              "the"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " faith.",
+          "\n",
+          {
+            "content": [
+              "G"
+            ],
+            "marker": "bd",
+            "type": "char"
+          },
+          "race be with you all."
+        ],
+        "discourse_unit_id": "TIT-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 74,
+        "line_start": 73,
+        "lines": [
+          "\\v 15 All who are with me greet you. Greet those who love us in \\it the\\it* faith.",
+          "\\p \\bd G\\bd*race be with you all."
+        ],
+        "number": "15",
+        "paragraph_id": "TIT-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 All who are with me greet you. Greet those who love us in \\it the\\it* faith.\n\\p \\bd G\\bd*race be with you all.",
+        "section_id": "TIT-S005",
+        "section_marker": "s1",
+        "section_title": "Personal Concerns",
+        "verse_end": 15,
+        "verse_start": 15
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

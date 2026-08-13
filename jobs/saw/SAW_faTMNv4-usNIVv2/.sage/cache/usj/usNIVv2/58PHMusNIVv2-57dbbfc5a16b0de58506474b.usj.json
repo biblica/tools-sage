@@ -1,0 +1,1579 @@
+{
+  "content": [
+    {
+      "code": "PHM",
+      "content": [
+        "- English-US: New International Version® NIV® 2011, updated 2016"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 1973, 1978, 1984, 2011 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "Philemon",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Philemon",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Philemon",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Phm",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Philemon",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Introduction",
+        "\n"
+      ],
+      "marker": "imt",
+      "type": "para"
+    },
+    {
+      "content": [
+        "One of the people Paul chose to deliver the letters we know as Colossians and Ephesians was a man named Onesimus. Onesimus was originally from Colossae, and would have been known to the people there. But Paul was compelled to write a separate letter for him. This was because Onesimus had been the slave of a wealthy Colossian named Philemon, in whose home the church met. Onesimus had run away, probably robbing Philemon in the process. In Rome he had become a follower of Jesus. Heʼd been helping Paul in prison, but now Paul needed him to return to Colossae. Paulʼs hope was that Philemon would not only forgive Onesimus, but welcome him as a brother and no longer a slave.",
+        "\n"
+      ],
+      "marker": "im",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Paulʼs brief letter to Philemon stresses the change in Onesimusʼs life. His name meant ",
+        {
+          "content": [
+            "useful"
+          ],
+          "marker": "tl",
+          "type": "char"
+        },
+        " in Greek, and Paul tells Philemon that while he had formerly been ",
+        {
+          "content": [
+            "useless"
+          ],
+          "marker": "qt",
+          "type": "char"
+        },
+        " (a servant Philemon couldnʼt count on), now he could be useful to both of them. Paul doesnʼt put Philemon under any obligation. His appeal is on the basis of love, and he promises to honor the demands of justice by making restitution himself if necessary.",
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Most likely Paulʼs appeal was successful, or this letter would not have been preserved. In the life of Onesimus we have a clear example of the kind of transformation that occurred in thousands of lives as the gospel message spread throughout the Roman Empire.",
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "PHM 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "PHM 1:1",
+          "type": "verse"
+        },
+        "Paul, a prisoner of Christ Jesus, and Timothy our brother,",
+        "\n"
+      ],
+      "marker": "po",
+      "type": "para"
+    },
+    {
+      "content": [
+        "To Philemon our dear friend and fellow worker—",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "PHM 1:2",
+          "type": "verse"
+        },
+        "also to Apphia our sister and Archippus our fellow soldier—and to the church that meets in your home:",
+        "\n"
+      ],
+      "marker": "po",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "PHM 1:3",
+          "type": "verse"
+        },
+        "Grace and peace to you",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:3 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "The Greek is plural; also in ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "verses 22|PHM 1:22",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "and ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "25|PHM 1:25",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "; elsewhere in this letter “you” is singular."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " from God our Father and the Lord Jesus Christ.",
+        "\n"
+      ],
+      "marker": "po",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Thanksgiving and Prayer",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "PHM 1:4",
+          "type": "verse"
+        },
+        "I always thank my God as I remember you in my prayers,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "PHM 1:5",
+          "type": "verse"
+        },
+        "because I hear about your love for all his holy people and your faith in the Lord Jesus.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "PHM 1:6",
+          "type": "verse"
+        },
+        "I pray that your partnership with us in the faith may be effective in deepening your understanding of every good thing we share for the sake of Christ.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "PHM 1:7",
+          "type": "verse"
+        },
+        "Your love has given me great joy and encouragement, because you, brother, have refreshed the hearts of the Lordʼs people.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Paulʼs Plea for Onesimus",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "PHM 1:8",
+          "type": "verse"
+        },
+        "Therefore, although in Christ I could be bold and order you to do what you ought to do,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "PHM 1:9",
+          "type": "verse"
+        },
+        "yet I prefer to appeal to you on the basis of love. It is as none other than Paul—an old man and now also a prisoner of Christ Jesus—",
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "PHM 1:10",
+          "type": "verse"
+        },
+        "that I appeal to you for my son Onesimus,",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:10 ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "Onesimus ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "means ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "useful."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " who became my son while I was in chains.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "PHM 1:11",
+          "type": "verse"
+        },
+        "Formerly he was useless to you, but now he has become useful both to you and to me.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "PHM 1:12",
+          "type": "verse"
+        },
+        "I am sending him—who is my very heart—back to you.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "PHM 1:13",
+          "type": "verse"
+        },
+        "I would have liked to keep him with me so that he could take your place in helping me while I am in chains for the gospel.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "PHM 1:14",
+          "type": "verse"
+        },
+        "But I did not want to do anything without your consent, so that any favor you do would not seem forced but would be voluntary.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "PHM 1:15",
+          "type": "verse"
+        },
+        "Perhaps the reason he was separated from you for a little while was that you might have him back forever—",
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "PHM 1:16",
+          "type": "verse"
+        },
+        "no longer as a slave, but better than a slave, as a dear brother. He is very dear to me but even dearer to you, both as a fellow man and as a brother in the Lord.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "PHM 1:17",
+          "type": "verse"
+        },
+        "So if you consider me a partner, welcome him as you would welcome me.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "PHM 1:18",
+          "type": "verse"
+        },
+        "If he has done you any wrong or owes you anything, charge it to me.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "PHM 1:19",
+          "type": "verse"
+        },
+        "I, Paul, am writing this with my own hand. I will pay it back—not to mention that you owe me your very self.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "PHM 1:20",
+          "type": "verse"
+        },
+        "I do wish, brother, that I may have some benefit from you in the Lord; refresh my heart in Christ.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "21",
+          "sid": "PHM 1:21",
+          "type": "verse"
+        },
+        "Confident of your obedience, I write to you, knowing that you will do even more than I ask.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "22",
+          "sid": "PHM 1:22",
+          "type": "verse"
+        },
+        "And one thing more: Prepare a guest room for me, because I hope to be restored to you in answer to your prayers.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "23",
+          "sid": "PHM 1:23",
+          "type": "verse"
+        },
+        "Epaphras, my fellow prisoner in Christ Jesus, sends you greetings.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "24",
+          "sid": "PHM 1:24",
+          "type": "verse"
+        },
+        "And so do Mark, Aristarchus, Demas and Luke, my fellow workers.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "25",
+          "sid": "PHM 1:25",
+          "type": "verse"
+        },
+        "The grace of the Lord Jesus Christ be with your spirit.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "PHM",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "58PHMusNIVv2.SFM",
+    "source_sha256": "140108eca24f1f4197ace5660eb5bc87f0eb3c98da69beb1edbd2343d9cc847a",
+    "source_size": 4534,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Paul, a prisoner of Christ Jesus, and Timothy our brother,\nTo Philemon our dear friend and fellow worker—",
+        "body_text_exact": "Paul, a prisoner of Christ Jesus, and Timothy our brother,\nTo Philemon our dear friend and fellow worker—",
+        "body_text_normalized": "Paul, a prisoner of Christ Jesus, and Timothy our brother, To Philemon our dear friend and fellow worker—",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "po",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Paul, a prisoner of Christ Jesus, and Timothy our brother,",
+          "\n",
+          "To Philemon our dear friend and fellow worker—"
+        ],
+        "discourse_unit_id": "PHM-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "po",
+        "line_end": 16,
+        "line_start": 15,
+        "lines": [
+          "\\v 1 Paul, a prisoner of Christ Jesus, and Timothy our brother,",
+          "\\po To Philemon our dear friend and fellow worker—"
+        ],
+        "number": "1",
+        "paragraph_id": "PHM-P001",
+        "paragraph_marker": "po",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Paul, a prisoner of Christ Jesus, and Timothy our brother,\n\\po To Philemon our dear friend and fellow worker—",
+        "section_id": "PHM-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "also to Apphia our sister and Archippus our fellow soldier—and to the church that meets in your home:",
+        "body_text_exact": "also to Apphia our sister and Archippus our fellow soldier—and to the church that meets in your home:",
+        "body_text_normalized": "also to Apphia our sister and Archippus our fellow soldier—and to the church that meets in your home:",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "po",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "also to Apphia our sister and Archippus our fellow soldier—and to the church that meets in your home:"
+        ],
+        "discourse_unit_id": "PHM-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "po",
+        "line_end": 17,
+        "line_start": 17,
+        "lines": [
+          "\\v 2 also to Apphia our sister and Archippus our fellow soldier—and to the church that meets in your home:"
+        ],
+        "number": "2",
+        "paragraph_id": "PHM-P002",
+        "paragraph_marker": "po",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 also to Apphia our sister and Archippus our fellow soldier—and to the church that meets in your home:",
+        "section_id": "PHM-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Grace and peace to you from God our Father and the Lord Jesus Christ.",
+        "body_text_exact": "Grace and peace to you from God our Father and the Lord Jesus Christ.",
+        "body_text_normalized": "Grace and peace to you from God our Father and the Lord Jesus Christ.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "po",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Grace and peace to you",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:3 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "The Greek is plural; also in ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "verses 22|PHM 1:22",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "and ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "25|PHM 1:25",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "; elsewhere in this letter “you” is singular."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " from God our Father and the Lord Jesus Christ."
+        ],
+        "discourse_unit_id": "PHM-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "po",
+        "line_end": 19,
+        "line_start": 19,
+        "lines": [
+          "\\v 3 Grace and peace to you\\f + \\fr 1:3 \\ft The Greek is plural; also in \\+xt verses 22|PHM 1:22\\+xt* and \\+xt 25|PHM 1:25\\+xt*; elsewhere in this letter “you” is singular.\\f* from God our Father and the Lord Jesus Christ."
+        ],
+        "number": "3",
+        "paragraph_id": "PHM-P003",
+        "paragraph_marker": "po",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Grace and peace to you\\f + \\fr 1:3 \\ft The Greek is plural; also in \\+xt verses 22|PHM 1:22\\+xt* and \\+xt 25|PHM 1:25\\+xt*; elsewhere in this letter “you” is singular.\\f* from God our Father and the Lord Jesus Christ.",
+        "section_id": "PHM-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "I always thank my God as I remember you in my prayers,",
+        "body_text_exact": "I always thank my God as I remember you in my prayers,",
+        "body_text_normalized": "I always thank my God as I remember you in my prayers,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "I always thank my God as I remember you in my prayers,"
+        ],
+        "discourse_unit_id": "PHM-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 22,
+        "line_start": 22,
+        "lines": [
+          "\\v 4 I always thank my God as I remember you in my prayers,"
+        ],
+        "number": "4",
+        "paragraph_id": "PHM-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 I always thank my God as I remember you in my prayers,",
+        "section_id": "PHM-S001",
+        "section_marker": "s1",
+        "section_title": "Thanksgiving and Prayer",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "because I hear about your love for all his holy people and your faith in the Lord Jesus.",
+        "body_text_exact": "because I hear about your love for all his holy people and your faith in the Lord Jesus.",
+        "body_text_normalized": "because I hear about your love for all his holy people and your faith in the Lord Jesus.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "because I hear about your love for all his holy people and your faith in the Lord Jesus."
+        ],
+        "discourse_unit_id": "PHM-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 23,
+        "line_start": 23,
+        "lines": [
+          "\\v 5 because I hear about your love for all his holy people and your faith in the Lord Jesus."
+        ],
+        "number": "5",
+        "paragraph_id": "PHM-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 because I hear about your love for all his holy people and your faith in the Lord Jesus.",
+        "section_id": "PHM-S001",
+        "section_marker": "s1",
+        "section_title": "Thanksgiving and Prayer",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "I pray that your partnership with us in the faith may be effective in deepening your understanding of every good thing we share for the sake of Christ.",
+        "body_text_exact": "I pray that your partnership with us in the faith may be effective in deepening your understanding of every good thing we share for the sake of Christ.",
+        "body_text_normalized": "I pray that your partnership with us in the faith may be effective in deepening your understanding of every good thing we share for the sake of Christ.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "I pray that your partnership with us in the faith may be effective in deepening your understanding of every good thing we share for the sake of Christ."
+        ],
+        "discourse_unit_id": "PHM-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 24,
+        "line_start": 24,
+        "lines": [
+          "\\v 6 I pray that your partnership with us in the faith may be effective in deepening your understanding of every good thing we share for the sake of Christ."
+        ],
+        "number": "6",
+        "paragraph_id": "PHM-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 I pray that your partnership with us in the faith may be effective in deepening your understanding of every good thing we share for the sake of Christ.",
+        "section_id": "PHM-S001",
+        "section_marker": "s1",
+        "section_title": "Thanksgiving and Prayer",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Your love has given me great joy and encouragement, because you, brother, have refreshed the hearts of the Lordʼs people.",
+        "body_text_exact": "Your love has given me great joy and encouragement, because you, brother, have refreshed the hearts of the Lordʼs people.",
+        "body_text_normalized": "Your love has given me great joy and encouragement, because you, brother, have refreshed the hearts of the Lordʼs people.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Your love has given me great joy and encouragement, because you, brother, have refreshed the hearts of the Lordʼs people."
+        ],
+        "discourse_unit_id": "PHM-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 25,
+        "line_start": 25,
+        "lines": [
+          "\\v 7 Your love has given me great joy and encouragement, because you, brother, have refreshed the hearts of the Lordʼs people."
+        ],
+        "number": "7",
+        "paragraph_id": "PHM-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Your love has given me great joy and encouragement, because you, brother, have refreshed the hearts of the Lordʼs people.",
+        "section_id": "PHM-S001",
+        "section_marker": "s1",
+        "section_title": "Thanksgiving and Prayer",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Therefore, although in Christ I could be bold and order you to do what you ought to do,",
+        "body_text_exact": "Therefore, although in Christ I could be bold and order you to do what you ought to do,",
+        "body_text_normalized": "Therefore, although in Christ I could be bold and order you to do what you ought to do,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Therefore, although in Christ I could be bold and order you to do what you ought to do,"
+        ],
+        "discourse_unit_id": "PHM-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 28,
+        "line_start": 28,
+        "lines": [
+          "\\v 8 Therefore, although in Christ I could be bold and order you to do what you ought to do,"
+        ],
+        "number": "8",
+        "paragraph_id": "PHM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Therefore, although in Christ I could be bold and order you to do what you ought to do,",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "yet I prefer to appeal to you on the basis of love. It is as none other than Paul—an old man and now also a prisoner of Christ Jesus—",
+        "body_text_exact": "yet I prefer to appeal to you on the basis of love. It is as none other than Paul—an old man and now also a prisoner of Christ Jesus—",
+        "body_text_normalized": "yet I prefer to appeal to you on the basis of love. It is as none other than Paul—an old man and now also a prisoner of Christ Jesus—",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "yet I prefer to appeal to you on the basis of love. It is as none other than Paul—an old man and now also a prisoner of Christ Jesus—"
+        ],
+        "discourse_unit_id": "PHM-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 29,
+        "line_start": 29,
+        "lines": [
+          "\\v 9 yet I prefer to appeal to you on the basis of love. It is as none other than Paul—an old man and now also a prisoner of Christ Jesus—"
+        ],
+        "number": "9",
+        "paragraph_id": "PHM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 yet I prefer to appeal to you on the basis of love. It is as none other than Paul—an old man and now also a prisoner of Christ Jesus—",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "that I appeal to you for my son Onesimus, who became my son while I was in chains.",
+        "body_text_exact": "that I appeal to you for my son Onesimus, who became my son while I was in chains.",
+        "body_text_normalized": "that I appeal to you for my son Onesimus, who became my son while I was in chains.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "that I appeal to you for my son Onesimus,",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:10 ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "Onesimus ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "means ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "useful."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " who became my son while I was in chains."
+        ],
+        "discourse_unit_id": "PHM-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 30,
+        "line_start": 30,
+        "lines": [
+          "\\v 10 that I appeal to you for my son Onesimus,\\f + \\fr 1:10 \\fq Onesimus \\ft means \\fqa useful.\\f* who became my son while I was in chains."
+        ],
+        "number": "10",
+        "paragraph_id": "PHM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 that I appeal to you for my son Onesimus,\\f + \\fr 1:10 \\fq Onesimus \\ft means \\fqa useful.\\f* who became my son while I was in chains.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Formerly he was useless to you, but now he has become useful both to you and to me.",
+        "body_text_exact": "Formerly he was useless to you, but now he has become useful both to you and to me.",
+        "body_text_normalized": "Formerly he was useless to you, but now he has become useful both to you and to me.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Formerly he was useless to you, but now he has become useful both to you and to me."
+        ],
+        "discourse_unit_id": "PHM-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 31,
+        "line_start": 31,
+        "lines": [
+          "\\v 11 Formerly he was useless to you, but now he has become useful both to you and to me."
+        ],
+        "number": "11",
+        "paragraph_id": "PHM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Formerly he was useless to you, but now he has become useful both to you and to me.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "I am sending him—who is my very heart—back to you.",
+        "body_text_exact": "I am sending him—who is my very heart—back to you.",
+        "body_text_normalized": "I am sending him—who is my very heart—back to you.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "I am sending him—who is my very heart—back to you."
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 33,
+        "line_start": 33,
+        "lines": [
+          "\\v 12 I am sending him—who is my very heart—back to you."
+        ],
+        "number": "12",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 I am sending him—who is my very heart—back to you.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "I would have liked to keep him with me so that he could take your place in helping me while I am in chains for the gospel.",
+        "body_text_exact": "I would have liked to keep him with me so that he could take your place in helping me while I am in chains for the gospel.",
+        "body_text_normalized": "I would have liked to keep him with me so that he could take your place in helping me while I am in chains for the gospel.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "I would have liked to keep him with me so that he could take your place in helping me while I am in chains for the gospel."
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 34,
+        "line_start": 34,
+        "lines": [
+          "\\v 13 I would have liked to keep him with me so that he could take your place in helping me while I am in chains for the gospel."
+        ],
+        "number": "13",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 I would have liked to keep him with me so that he could take your place in helping me while I am in chains for the gospel.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "But I did not want to do anything without your consent, so that any favor you do would not seem forced but would be voluntary.",
+        "body_text_exact": "But I did not want to do anything without your consent, so that any favor you do would not seem forced but would be voluntary.",
+        "body_text_normalized": "But I did not want to do anything without your consent, so that any favor you do would not seem forced but would be voluntary.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "But I did not want to do anything without your consent, so that any favor you do would not seem forced but would be voluntary."
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 35,
+        "line_start": 35,
+        "lines": [
+          "\\v 14 But I did not want to do anything without your consent, so that any favor you do would not seem forced but would be voluntary."
+        ],
+        "number": "14",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 But I did not want to do anything without your consent, so that any favor you do would not seem forced but would be voluntary.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Perhaps the reason he was separated from you for a little while was that you might have him back forever—",
+        "body_text_exact": "Perhaps the reason he was separated from you for a little while was that you might have him back forever—",
+        "body_text_normalized": "Perhaps the reason he was separated from you for a little while was that you might have him back forever—",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Perhaps the reason he was separated from you for a little while was that you might have him back forever—"
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 36,
+        "line_start": 36,
+        "lines": [
+          "\\v 15 Perhaps the reason he was separated from you for a little while was that you might have him back forever—"
+        ],
+        "number": "15",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Perhaps the reason he was separated from you for a little while was that you might have him back forever—",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "no longer as a slave, but better than a slave, as a dear brother. He is very dear to me but even dearer to you, both as a fellow man and as a brother in the Lord.",
+        "body_text_exact": "no longer as a slave, but better than a slave, as a dear brother. He is very dear to me but even dearer to you, both as a fellow man and as a brother in the Lord.",
+        "body_text_normalized": "no longer as a slave, but better than a slave, as a dear brother. He is very dear to me but even dearer to you, both as a fellow man and as a brother in the Lord.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "no longer as a slave, but better than a slave, as a dear brother. He is very dear to me but even dearer to you, both as a fellow man and as a brother in the Lord."
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 37,
+        "line_start": 37,
+        "lines": [
+          "\\v 16 no longer as a slave, but better than a slave, as a dear brother. He is very dear to me but even dearer to you, both as a fellow man and as a brother in the Lord."
+        ],
+        "number": "16",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 no longer as a slave, but better than a slave, as a dear brother. He is very dear to me but even dearer to you, both as a fellow man and as a brother in the Lord.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "So if you consider me a partner, welcome him as you would welcome me.",
+        "body_text_exact": "So if you consider me a partner, welcome him as you would welcome me.",
+        "body_text_normalized": "So if you consider me a partner, welcome him as you would welcome me.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "So if you consider me a partner, welcome him as you would welcome me."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 39,
+        "line_start": 39,
+        "lines": [
+          "\\v 17 So if you consider me a partner, welcome him as you would welcome me."
+        ],
+        "number": "17",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 So if you consider me a partner, welcome him as you would welcome me.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "If he has done you any wrong or owes you anything, charge it to me.",
+        "body_text_exact": "If he has done you any wrong or owes you anything, charge it to me.",
+        "body_text_normalized": "If he has done you any wrong or owes you anything, charge it to me.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "If he has done you any wrong or owes you anything, charge it to me."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 40,
+        "line_start": 40,
+        "lines": [
+          "\\v 18 If he has done you any wrong or owes you anything, charge it to me."
+        ],
+        "number": "18",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 If he has done you any wrong or owes you anything, charge it to me.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "I, Paul, am writing this with my own hand. I will pay it back—not to mention that you owe me your very self.",
+        "body_text_exact": "I, Paul, am writing this with my own hand. I will pay it back—not to mention that you owe me your very self.",
+        "body_text_normalized": "I, Paul, am writing this with my own hand. I will pay it back—not to mention that you owe me your very self.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "I, Paul, am writing this with my own hand. I will pay it back—not to mention that you owe me your very self."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 41,
+        "line_start": 41,
+        "lines": [
+          "\\v 19 I, Paul, am writing this with my own hand. I will pay it back—not to mention that you owe me your very self."
+        ],
+        "number": "19",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 I, Paul, am writing this with my own hand. I will pay it back—not to mention that you owe me your very self.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "I do wish, brother, that I may have some benefit from you in the Lord; refresh my heart in Christ.",
+        "body_text_exact": "I do wish, brother, that I may have some benefit from you in the Lord; refresh my heart in Christ.",
+        "body_text_normalized": "I do wish, brother, that I may have some benefit from you in the Lord; refresh my heart in Christ.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "I do wish, brother, that I may have some benefit from you in the Lord; refresh my heart in Christ."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 42,
+        "line_start": 42,
+        "lines": [
+          "\\v 20 I do wish, brother, that I may have some benefit from you in the Lord; refresh my heart in Christ."
+        ],
+        "number": "20",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 I do wish, brother, that I may have some benefit from you in the Lord; refresh my heart in Christ.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 20,
+        "verse_start": 20
+      },
+      {
+        "body_text": "Confident of your obedience, I write to you, knowing that you will do even more than I ask.",
+        "body_text_exact": "Confident of your obedience, I write to you, knowing that you will do even more than I ask.",
+        "body_text_normalized": "Confident of your obedience, I write to you, knowing that you will do even more than I ask.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Confident of your obedience, I write to you, knowing that you will do even more than I ask."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 43,
+        "line_start": 43,
+        "lines": [
+          "\\v 21 Confident of your obedience, I write to you, knowing that you will do even more than I ask."
+        ],
+        "number": "21",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 21 Confident of your obedience, I write to you, knowing that you will do even more than I ask.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 21,
+        "verse_start": 21
+      },
+      {
+        "body_text": "And one thing more: Prepare a guest room for me, because I hope to be restored to you in answer to your prayers.",
+        "body_text_exact": "And one thing more: Prepare a guest room for me, because I hope to be restored to you in answer to your prayers.",
+        "body_text_normalized": "And one thing more: Prepare a guest room for me, because I hope to be restored to you in answer to your prayers.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "And one thing more: Prepare a guest room for me, because I hope to be restored to you in answer to your prayers."
+        ],
+        "discourse_unit_id": "PHM-D008",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 45,
+        "line_start": 45,
+        "lines": [
+          "\\v 22 And one thing more: Prepare a guest room for me, because I hope to be restored to you in answer to your prayers."
+        ],
+        "number": "22",
+        "paragraph_id": "PHM-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 22 And one thing more: Prepare a guest room for me, because I hope to be restored to you in answer to your prayers.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 22,
+        "verse_start": 22
+      },
+      {
+        "body_text": "Epaphras, my fellow prisoner in Christ Jesus, sends you greetings.",
+        "body_text_exact": "Epaphras, my fellow prisoner in Christ Jesus, sends you greetings.",
+        "body_text_normalized": "Epaphras, my fellow prisoner in Christ Jesus, sends you greetings.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Epaphras, my fellow prisoner in Christ Jesus, sends you greetings."
+        ],
+        "discourse_unit_id": "PHM-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 49,
+        "line_start": 49,
+        "lines": [
+          "\\v 23 Epaphras, my fellow prisoner in Christ Jesus, sends you greetings."
+        ],
+        "number": "23",
+        "paragraph_id": "PHM-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 23 Epaphras, my fellow prisoner in Christ Jesus, sends you greetings.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 23,
+        "verse_start": 23
+      },
+      {
+        "body_text": "And so do Mark, Aristarchus, Demas and Luke, my fellow workers.",
+        "body_text_exact": "And so do Mark, Aristarchus, Demas and Luke, my fellow workers.",
+        "body_text_normalized": "And so do Mark, Aristarchus, Demas and Luke, my fellow workers.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "And so do Mark, Aristarchus, Demas and Luke, my fellow workers."
+        ],
+        "discourse_unit_id": "PHM-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 51,
+        "line_start": 51,
+        "lines": [
+          "\\v 24 And so do Mark, Aristarchus, Demas and Luke, my fellow workers."
+        ],
+        "number": "24",
+        "paragraph_id": "PHM-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 24 And so do Mark, Aristarchus, Demas and Luke, my fellow workers.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 24,
+        "verse_start": 24
+      },
+      {
+        "body_text": "The grace of the Lord Jesus Christ be with your spirit.",
+        "body_text_exact": "The grace of the Lord Jesus Christ be with your spirit.",
+        "body_text_normalized": "The grace of the Lord Jesus Christ be with your spirit.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "The grace of the Lord Jesus Christ be with your spirit."
+        ],
+        "discourse_unit_id": "PHM-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 54,
+        "line_start": 54,
+        "lines": [
+          "\\v 25 The grace of the Lord Jesus Christ be with your spirit."
+        ],
+        "number": "25",
+        "paragraph_id": "PHM-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 25 The grace of the Lord Jesus Christ be with your spirit.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Paulʼs Plea for Onesimus",
+        "verse_end": 25,
+        "verse_start": 25
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

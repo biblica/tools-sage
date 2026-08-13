@@ -1,0 +1,3 @@
+interface:
+  display_name: "BIC Self Check"
+  short_description: "Independently check and commit one staged BIC rewrite."

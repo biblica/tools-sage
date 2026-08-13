@@ -1,0 +1,38 @@
+{
+  "aggregate_path": "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/plans/SAW-QA-GEN-B251F6EABF-final.json",
+  "contemporary_source": "usNIVv2",
+  "created_utc": "2026-08-13T21:48:39+00:00",
+  "grammar_override_id": null,
+  "job_id": "SAW_faTMNv4-usNIVv2",
+  "operation": "qa",
+  "operator_note_text_path": "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/reports/GEN/GEN-001-011_2026-08-13_001_OPERATOR-NOTE.txt",
+  "output_project": "faTMNv4",
+  "plan_id": "SAW-QA-GEN-B251F6EABF",
+  "plan_type": "SAW_QA_COMPOSITE",
+  "report_path": "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/reports/GEN/GEN-001-011_2026-08-13_001_ACTION-REPORT.md",
+  "requested_scope": "GEN 1-11",
+  "run_id": "SAW_faTMNv4-usNIVv2-20260813-001",
+  "schema_version": "1.0",
+  "stage_results": [
+    {
+      "result_path": "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/plans/SAW-QA-GEN-3F13C16F37-aggregate.json",
+      "stage": "TRANSLATION_AND_MEANING_QA"
+    }
+  ],
+  "stages": [
+    {
+      "kind": "PARTITIONED_PLAN",
+      "plan_path": "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/plans/SAW-QA-GEN-3F13C16F37.json",
+      "stage": "TRANSLATION_AND_MEANING_QA",
+      "task_manifests": [
+        "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/tasks/saw-qa-gen-04f1fbce0918/task-manifest.json",
+        "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/tasks/saw-qa-gen-5952a66fec58/task-manifest.json",
+        "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/tasks/saw-qa-gen-0d458947fd83/task-manifest.json",
+        "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/tasks/saw-qa-gen-03b26e6be1b6/task-manifest.json"
+      ]
+    }
+  ],
+  "status": "FINALIZED",
+  "structural_stage_required": false,
+  "workflow": "saw"
+}

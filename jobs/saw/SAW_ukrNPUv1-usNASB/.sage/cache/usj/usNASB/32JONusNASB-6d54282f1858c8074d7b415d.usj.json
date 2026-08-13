@@ -1,0 +1,5816 @@
+{
+  "content": [
+    {
+      "code": "JON",
+      "content": [
+        "NASB20"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Jonah",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Jonah",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Jon",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The Book of",
+        "\n"
+      ],
+      "marker": "mt2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "JONAH",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "JON 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Jonah’s Disobedience"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "JON 1:1",
+          "type": "verse"
+        },
+        "The word of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " came to Jonah the son of Amittai, saying,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "JON 1:2",
+          "type": "verse"
+        },
+        "“Arise, go to Nineveh, the great city, and cry out against it, because their wickedness has come up before Me.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "JON 1:3",
+          "type": "verse"
+        },
+        "But Jonah got up to flee to Tarshish from the presence of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ". So he went down to Joppa, found a ship that was going to Tarshish, paid the fare, and ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:3 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "went down in",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "boarded it to go with them to Tarshish away from the presence of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "JON 1:4",
+          "type": "verse"
+        },
+        "However, the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " hurled a great wind on the sea and there was a great storm on the sea, so that the ship was about to ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:4 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "be broken",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "break up.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "JON 1:5",
+          "type": "verse"
+        },
+        "Then the sailors became afraid and every man cried out to his ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:5 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "gods",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "god, and they hurled the ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:5 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "vessels",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "cargo which was in the ship into the sea to lighten ",
+        {
+          "content": [
+            "it"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " ",
+        {
+          "content": [
+            "3 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:5 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "from upon them",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "for them. But Jonah had gone below into the stern of the ship, had lain down, and fallen sound asleep.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "JON 1:6",
+          "type": "verse"
+        },
+        "So the captain approached him and said, “How is it that you are sleeping? Get up, call on your god! Perhaps ",
+        {
+          "content": [
+            "your"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " god will be concerned about us so that we will not perish.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "JON 1:7",
+          "type": "verse"
+        },
+        "And each man said to his mate, “Come, let’s cast lots so that we may ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:7 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "know",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "find out on whose account this catastrophe ",
+        {
+          "content": [
+            "has struck"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " us.” So they cast lots, and the lot fell on Jonah.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "JON 1:8",
+          "type": "verse"
+        },
+        "Then they said to him, “Tell us, now! On whose account ",
+        {
+          "content": [
+            "has"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " this catastrophe ",
+        {
+          "content": [
+            "struck"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " us? What is your occupation, and where do you come from? What is your country, and from what people are you?”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "JON 1:9",
+          "type": "verse"
+        },
+        "So he said to them, “I am a Hebrew, and I fear the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " God of heaven who made the sea and the dry land.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "JON 1:10",
+          "type": "verse"
+        },
+        "Then the men became extremely afraid, and they said to him, “",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:10 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "What is this you have done",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "How could you do this?” For the men knew that he was fleeing from the presence of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", because he had told them.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "JON 1:11",
+          "type": "verse"
+        },
+        "So they said to him, “What should we do to you so that the sea will become calm ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:11 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "from upon us",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "for us?”—for the sea was becoming increasingly stormy.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "JON 1:12",
+          "type": "verse"
+        },
+        "And he said to them, “Pick me up and hurl me into the sea. Then the sea will become calm ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:12 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "from upon you",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "for you, because I know that on account of me this great storm ",
+        {
+          "content": [
+            "has come"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " upon you.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "JON 1:13",
+          "type": "verse"
+        },
+        "However, the men ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:13 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "dug their oars into the water",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "rowed ",
+        {
+          "content": [
+            "desperately"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " to return to land, but they could not, because the sea was becoming ",
+        {
+          "content": [
+            "even"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " stormier against them.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "JON 1:14",
+          "type": "verse"
+        },
+        "Then they cried out to the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " and said, “We earnestly pray, O L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", do not let us perish on account of this man’s life, and do not put innocent blood on us; for You, L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", have done as You pleased.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "JON 1:15",
+          "type": "verse"
+        },
+        "So they picked up Jonah and hurled him into the sea, and the sea stopped its raging.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "JON 1:16",
+          "type": "verse"
+        },
+        "Then the men became extremely afraid of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", and they offered a sacrifice to the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " and made vows.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "JON 1:17",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:17 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Ch 2:1 in Heb",
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "And the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " designated a great fish to swallow Jonah, and Jonah was in the stomach of the fish for three days and three nights.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "2",
+      "sid": "JON 2",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Jonah’s Prayer"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "JON 2:1",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:1 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Ch 2:2 in Heb",
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "Then Jonah prayed to the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " his God from the stomach of the fish,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "JON 2:2",
+          "type": "verse"
+        },
+        "and he said,",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "“I called out of my distress to the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "And He answered me.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "I called for help from the ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:2 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "belly",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "depth of Sheol;",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "You heard my voice.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "JON 2:3",
+          "type": "verse"
+        },
+        "“For You threw me into the deep,",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Into the heart of the seas,",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "And the current flowed around me.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "All Your breakers and waves passed over me.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "JON 2:4",
+          "type": "verse"
+        },
+        "“So I said, ‘I have been cast out ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:4 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "from Your eyes",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "of Your sight.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Nevertheless I will look again toward Your holy temple.’",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "JON 2:5",
+          "type": "verse"
+        },
+        "“Water encompassed me to the ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:5 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "soul",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "point of death.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The deep flowed around me,",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Seaweed was wrapped around my head.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "JON 2:6",
+          "type": "verse"
+        },
+        "“I descended to the base of the mountains.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The earth ",
+        {
+          "content": [
+            "with"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " its bars ",
+        {
+          "content": [
+            "was"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " around me forever,",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "But You have brought up my life from ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:6 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "corruption",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "the pit, L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " my God.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "JON 2:7",
+          "type": "verse"
+        },
+        "“While ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:7 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "my soul within me was",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "I was fainting away,",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "I remembered the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "And my prayer came to You,",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Into Your holy temple.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "JON 2:8",
+          "type": "verse"
+        },
+        "“Those who are followers of worthless ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:8 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "futilities",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "idols",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Abandon their faithfulness,",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "JON 2:9",
+          "type": "verse"
+        },
+        "But I will sacrifice to You",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "With a voice of thanksgiving.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "That which I have vowed I will pay.",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Salvation is from the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ".”",
+        "\n"
+      ],
+      "marker": "q",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "JON 2:10",
+          "type": "verse"
+        },
+        "Then the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " commanded the fish, and it vomited Jonah up onto the dry land.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "3",
+      "sid": "JON 3",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Nineveh Repents"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "JON 3:1",
+          "type": "verse"
+        },
+        "Now the word of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " came to Jonah the second time, saying,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "JON 3:2",
+          "type": "verse"
+        },
+        "“Arise, go to Nineveh, the great city, and proclaim to it the proclamation which I am going to tell you.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "JON 3:3",
+          "type": "verse"
+        },
+        "So Jonah got up and went to Nineveh according to the word of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ". Now Nineveh was ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:3 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "a great city to God",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "an exceedingly large city, a three days’ walk.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "JON 3:4",
+          "type": "verse"
+        },
+        "Then Jonah began to go through the city one day’s walk; and he cried out and said, “Forty more days, and Nineveh will be overthrown.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "JON 3:5",
+          "type": "verse"
+        },
+        "Then the people of Nineveh believed in God; and they called a fast and put on sackcloth, from the greatest to the least of them.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "JON 3:6",
+          "type": "verse"
+        },
+        "When the word reached the king of Nineveh, he got up from his throne, removed his robe from himself, covered ",
+        {
+          "content": [
+            "himself"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " with sackcloth, and sat on the ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:6 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "ashes",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "dust.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "JON 3:7",
+          "type": "verse"
+        },
+        "And he issued a proclamation, and it said, “In Nineveh by the decree of the king and his nobles: No person, animal, herd, or flock is to taste anything. They are not to eat, or drink water.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "JON 3:8",
+          "type": "verse"
+        },
+        "But ",
+        {
+          "content": [
+            "every"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " person and animal must be covered with sackcloth; and ",
+        {
+          "content": [
+            "people"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " are to call on God vehemently, and they are to turn, each one from his evil way, and from the violence which is in their hands.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "JON 3:9",
+          "type": "verse"
+        },
+        "Who knows, God may turn and relent, and turn from His burning anger so that we will not perish.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "JON 3:10",
+          "type": "verse"
+        },
+        "When God saw their deeds, that they turned from their evil way, then God relented of the disaster which He had declared He would ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:10 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "do to",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "bring on them. So He did not do ",
+        {
+          "content": [
+            "it."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "4",
+      "sid": "JON 4",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Jonah’s Displeasure Rebuked"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "JON 4:1",
+          "type": "verse"
+        },
+        "But it greatly displeased Jonah, and he became angry.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "JON 4:2",
+          "type": "verse"
+        },
+        "Then he prayed to the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " and said, “Please L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", was this not ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "4:2 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "my word",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "what I said when I was still in my ",
+        {
+          "content": [
+            "own"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " country? Therefore in anticipation ",
+        {
+          "content": [
+            "of this"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " I fled to Tarshish, since I knew that You are a gracious and compassionate God, slow to anger and abundant in mercy, and One who relents of disaster.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "JON 4:3",
+          "type": "verse"
+        },
+        "So now, L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", please take my ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "4:3 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "soul",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "life from me, for death is better to me than life.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "JON 4:4",
+          "type": "verse"
+        },
+        "But the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " said, “Do you have a good reason to be angry?”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "JON 4:5",
+          "type": "verse"
+        },
+        "Then Jonah left the city and sat down east of ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "4:5 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "the city",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "it. There he made a shelter for himself and sat under it in the shade, until he could see what would happen in the city.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "JON 4:6",
+          "type": "verse"
+        },
+        "So the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " God designated a ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "4:6 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Prob. a castor oil plant, and so throughout the ch",
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "plant, and it grew up over Jonah to be a shade over his head, to ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "4:6 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "save him from",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "relieve him of his discomfort. And Jonah ",
+        {
+          "content": [
+            "3 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "4:6 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "rejoiced with great joy",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "was overjoyed about the plant.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "JON 4:7",
+          "type": "verse"
+        },
+        "But God designated a worm when dawn came the next day, and it attacked the plant and it withered.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "JON 4:8",
+          "type": "verse"
+        },
+        "And when the sun came up God designated a scorching east wind, and the sun beat down on Jonah’s head so that he became faint, and he begged with ",
+        {
+          "content": [
+            "all"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " his soul to die, saying, “Death is better to me than life!”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "JON 4:9",
+          "type": "verse"
+        },
+        "But God said to Jonah, “Do you have a good reason to be angry about the plant?” And he said, “I have good reason to be angry, ",
+        {
+          "content": [
+            "even"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " to the point of death!”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "JON 4:10",
+          "type": "verse"
+        },
+        "Then the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " said, “You had compassion on the plant, for which you did not work and ",
+        {
+          "content": [
+            "which"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " you did not cause to grow, which ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "4:10 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "was a son of a night",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "came up overnight and perished ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "4:10 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "a son of a night",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "overnight.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "JON 4:11",
+          "type": "verse"
+        },
+        "Should I not also have compassion on Nineveh, the great city in which there are more than 120,000 people, who do not know ",
+        {
+          "content": [
+            "the difference"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " between their right hand and their left, ",
+        {
+          "content": [
+            "as well as"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " many animals?”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "JON",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "32JONusNASB.SFM",
+    "source_sha256": "bfb8353a166575848be415eb0a6a389e1975531b877c57aeff5cae5bcceeb525",
+    "source_size": 9423,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "The word of the Lord came to Jonah the son of Amittai, saying,",
+        "body_text_exact": "The word of the Lord came to Jonah the son of Amittai, saying,",
+        "body_text_normalized": "The word of the Lord came to Jonah the son of Amittai, saying,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "The word of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " came to Jonah the son of Amittai, saying,"
+        ],
+        "discourse_unit_id": "JON-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 10,
+        "line_start": 10,
+        "lines": [
+          "\\v 1 The word of the L\\sc ord\\sc* came to Jonah the son of Amittai, saying,"
+        ],
+        "number": "1",
+        "paragraph_id": "JON-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 The word of the L\\sc ord\\sc* came to Jonah the son of Amittai, saying,",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "“Arise, go to Nineveh, the great city, and cry out against it, because their wickedness has come up before Me.”",
+        "body_text_exact": "“Arise, go to Nineveh, the great city, and cry out against it, because their wickedness has come up before Me.”",
+        "body_text_normalized": "“Arise, go to Nineveh, the great city, and cry out against it, because their wickedness has come up before Me.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "“Arise, go to Nineveh, the great city, and cry out against it, because their wickedness has come up before Me.”"
+        ],
+        "discourse_unit_id": "JON-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 11,
+        "line_start": 11,
+        "lines": [
+          "\\v 2 “Arise, go to Nineveh, the great city, and cry out against it, because their wickedness has come up before Me.”"
+        ],
+        "number": "2",
+        "paragraph_id": "JON-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 “Arise, go to Nineveh, the great city, and cry out against it, because their wickedness has come up before Me.”",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "But Jonah got up to flee to Tarshish from the presence of the Lord. So he went down to Joppa, found a ship that was going to Tarshish, paid the fare, and boarded it to go with them to Tarshish away from the presence of the Lord.",
+        "body_text_exact": "But Jonah got up to flee to Tarshish from the presence of the Lord. So he went down to Joppa, found a ship that was going to Tarshish, paid the fare, and boarded it to go with them to Tarshish away from the presence of the Lord.",
+        "body_text_normalized": "But Jonah got up to flee to Tarshish from the presence of the Lord. So he went down to Joppa, found a ship that was going to Tarshish, paid the fare, and boarded it to go with them to Tarshish away from the presence of the Lord.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "But Jonah got up to flee to Tarshish from the presence of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ". So he went down to Joppa, found a ship that was going to Tarshish, paid the fare, and ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:3 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "went down in",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "boarded it to go with them to Tarshish away from the presence of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "JON-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 12,
+        "line_start": 12,
+        "lines": [
+          "\\v 3 But Jonah got up to flee to Tarshish from the presence of the L\\sc ord\\sc*. So he went down to Joppa, found a ship that was going to Tarshish, paid the fare, and \\f 1 \\fr 1:3 \\fr*\\ft Lit \\+it went down in\\+it*\\ft*\\f*boarded it to go with them to Tarshish away from the presence of the L\\sc ord\\sc*."
+        ],
+        "number": "3",
+        "paragraph_id": "JON-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 But Jonah got up to flee to Tarshish from the presence of the L\\sc ord\\sc*. So he went down to Joppa, found a ship that was going to Tarshish, paid the fare, and \\f 1 \\fr 1:3 \\fr*\\ft Lit \\+it went down in\\+it*\\ft*\\f*boarded it to go with them to Tarshish away from the presence of the L\\sc ord\\sc*.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "However, the Lord hurled a great wind on the sea and there was a great storm on the sea, so that the ship was about to break up.",
+        "body_text_exact": "However, the Lord hurled a great wind on the sea and there was a great storm on the sea, so that the ship was about to break up.",
+        "body_text_normalized": "However, the Lord hurled a great wind on the sea and there was a great storm on the sea, so that the ship was about to break up.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "However, the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " hurled a great wind on the sea and there was a great storm on the sea, so that the ship was about to ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:4 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "be broken",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "break up."
+        ],
+        "discourse_unit_id": "JON-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 14,
+        "line_start": 14,
+        "lines": [
+          "\\v 4 However, the L\\sc ord\\sc* hurled a great wind on the sea and there was a great storm on the sea, so that the ship was about to \\f 1 \\fr 1:4 \\fr*\\ft Lit \\+it be broken\\+it*\\ft*\\f*break up."
+        ],
+        "number": "4",
+        "paragraph_id": "JON-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 However, the L\\sc ord\\sc* hurled a great wind on the sea and there was a great storm on the sea, so that the ship was about to \\f 1 \\fr 1:4 \\fr*\\ft Lit \\+it be broken\\+it*\\ft*\\f*break up.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Then the sailors became afraid and every man cried out to his god, and they hurled the cargo which was in the ship into the sea to lighten it for them. But Jonah had gone below into the stern of the ship, had lain down, and fallen sound asleep.",
+        "body_text_exact": "Then the sailors became afraid and every man cried out to his god, and they hurled the cargo which was in the ship into the sea to lighten it for them. But Jonah had gone below into the stern of the ship, had lain down, and fallen sound asleep.",
+        "body_text_normalized": "Then the sailors became afraid and every man cried out to his god, and they hurled the cargo which was in the ship into the sea to lighten it for them. But Jonah had gone below into the stern of the ship, had lain down, and fallen sound asleep.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Then the sailors became afraid and every man cried out to his ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:5 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "gods",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "god, and they hurled the ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:5 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "vessels",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "cargo which was in the ship into the sea to lighten ",
+          {
+            "content": [
+              "it"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " ",
+          {
+            "content": [
+              "3 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:5 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "from upon them",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "for them. But Jonah had gone below into the stern of the ship, had lain down, and fallen sound asleep."
+        ],
+        "discourse_unit_id": "JON-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 15,
+        "line_start": 15,
+        "lines": [
+          "\\v 5 Then the sailors became afraid and every man cried out to his \\f 1 \\fr 1:5 \\fr*\\ft Or \\+it gods\\+it*\\ft*\\f*god, and they hurled the \\f 2 \\fr 1:5 \\fr*\\ft Lit \\+it vessels\\+it*\\ft*\\f*cargo which was in the ship into the sea to lighten \\it it\\it* \\f 3 \\fr 1:5 \\fr*\\ft Lit \\+it from upon them\\+it*\\ft*\\f*for them. But Jonah had gone below into the stern of the ship, had lain down, and fallen sound asleep."
+        ],
+        "number": "5",
+        "paragraph_id": "JON-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Then the sailors became afraid and every man cried out to his \\f 1 \\fr 1:5 \\fr*\\ft Or \\+it gods\\+it*\\ft*\\f*god, and they hurled the \\f 2 \\fr 1:5 \\fr*\\ft Lit \\+it vessels\\+it*\\ft*\\f*cargo which was in the ship into the sea to lighten \\it it\\it* \\f 3 \\fr 1:5 \\fr*\\ft Lit \\+it from upon them\\+it*\\ft*\\f*for them. But Jonah had gone below into the stern of the ship, had lain down, and fallen sound asleep.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "So the captain approached him and said, “How is it that you are sleeping? Get up, call on your god! Perhaps your god will be concerned about us so that we will not perish.”",
+        "body_text_exact": "So the captain approached him and said, “How is it that you are sleeping? Get up, call on your god! Perhaps your god will be concerned about us so that we will not perish.”",
+        "body_text_normalized": "So the captain approached him and said, “How is it that you are sleeping? Get up, call on your god! Perhaps your god will be concerned about us so that we will not perish.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "So the captain approached him and said, “How is it that you are sleeping? Get up, call on your god! Perhaps ",
+          {
+            "content": [
+              "your"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " god will be concerned about us so that we will not perish.”"
+        ],
+        "discourse_unit_id": "JON-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 16,
+        "line_start": 16,
+        "lines": [
+          "\\v 6 So the captain approached him and said, “How is it that you are sleeping? Get up, call on your god! Perhaps \\it your\\it* god will be concerned about us so that we will not perish.”"
+        ],
+        "number": "6",
+        "paragraph_id": "JON-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 So the captain approached him and said, “How is it that you are sleeping? Get up, call on your god! Perhaps \\it your\\it* god will be concerned about us so that we will not perish.”",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "And each man said to his mate, “Come, let’s cast lots so that we may find out on whose account this catastrophe has struck us.” So they cast lots, and the lot fell on Jonah.",
+        "body_text_exact": "And each man said to his mate, “Come, let’s cast lots so that we may find out on whose account this catastrophe has struck us.” So they cast lots, and the lot fell on Jonah.",
+        "body_text_normalized": "And each man said to his mate, “Come, let’s cast lots so that we may find out on whose account this catastrophe has struck us.” So they cast lots, and the lot fell on Jonah.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "And each man said to his mate, “Come, let’s cast lots so that we may ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:7 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "know",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "find out on whose account this catastrophe ",
+          {
+            "content": [
+              "has struck"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " us.” So they cast lots, and the lot fell on Jonah."
+        ],
+        "discourse_unit_id": "JON-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 18,
+        "line_start": 18,
+        "lines": [
+          "\\v 7 And each man said to his mate, “Come, let’s cast lots so that we may \\f 1 \\fr 1:7 \\fr*\\ft Lit \\+it know\\+it*\\ft*\\f*find out on whose account this catastrophe \\it has struck\\it* us.” So they cast lots, and the lot fell on Jonah."
+        ],
+        "number": "7",
+        "paragraph_id": "JON-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 And each man said to his mate, “Come, let’s cast lots so that we may \\f 1 \\fr 1:7 \\fr*\\ft Lit \\+it know\\+it*\\ft*\\f*find out on whose account this catastrophe \\it has struck\\it* us.” So they cast lots, and the lot fell on Jonah.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Then they said to him, “Tell us, now! On whose account has this catastrophe struck us? What is your occupation, and where do you come from? What is your country, and from what people are you?”",
+        "body_text_exact": "Then they said to him, “Tell us, now! On whose account has this catastrophe struck us? What is your occupation, and where do you come from? What is your country, and from what people are you?”",
+        "body_text_normalized": "Then they said to him, “Tell us, now! On whose account has this catastrophe struck us? What is your occupation, and where do you come from? What is your country, and from what people are you?”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Then they said to him, “Tell us, now! On whose account ",
+          {
+            "content": [
+              "has"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " this catastrophe ",
+          {
+            "content": [
+              "struck"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " us? What is your occupation, and where do you come from? What is your country, and from what people are you?”"
+        ],
+        "discourse_unit_id": "JON-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 19,
+        "line_start": 19,
+        "lines": [
+          "\\v 8 Then they said to him, “Tell us, now! On whose account \\it has\\it* this catastrophe \\it struck\\it* us? What is your occupation, and where do you come from? What is your country, and from what people are you?”"
+        ],
+        "number": "8",
+        "paragraph_id": "JON-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Then they said to him, “Tell us, now! On whose account \\it has\\it* this catastrophe \\it struck\\it* us? What is your occupation, and where do you come from? What is your country, and from what people are you?”",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "So he said to them, “I am a Hebrew, and I fear the Lord God of heaven who made the sea and the dry land.”",
+        "body_text_exact": "So he said to them, “I am a Hebrew, and I fear the Lord God of heaven who made the sea and the dry land.”",
+        "body_text_normalized": "So he said to them, “I am a Hebrew, and I fear the Lord God of heaven who made the sea and the dry land.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "So he said to them, “I am a Hebrew, and I fear the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " God of heaven who made the sea and the dry land.”"
+        ],
+        "discourse_unit_id": "JON-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 20,
+        "line_start": 20,
+        "lines": [
+          "\\v 9 So he said to them, “I am a Hebrew, and I fear the L\\sc ord\\sc* God of heaven who made the sea and the dry land.”"
+        ],
+        "number": "9",
+        "paragraph_id": "JON-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 So he said to them, “I am a Hebrew, and I fear the L\\sc ord\\sc* God of heaven who made the sea and the dry land.”",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Then the men became extremely afraid, and they said to him, “How could you do this?” For the men knew that he was fleeing from the presence of the Lord, because he had told them.",
+        "body_text_exact": "Then the men became extremely afraid, and they said to him, “How could you do this?” For the men knew that he was fleeing from the presence of the Lord, because he had told them.",
+        "body_text_normalized": "Then the men became extremely afraid, and they said to him, “How could you do this?” For the men knew that he was fleeing from the presence of the Lord, because he had told them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Then the men became extremely afraid, and they said to him, “",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:10 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "What is this you have done",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "How could you do this?” For the men knew that he was fleeing from the presence of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", because he had told them."
+        ],
+        "discourse_unit_id": "JON-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 22,
+        "line_start": 22,
+        "lines": [
+          "\\v 10 Then the men became extremely afraid, and they said to him, “\\f 1 \\fr 1:10 \\fr*\\ft Lit \\+it What is this you have done\\+it*\\ft*\\f*How could you do this?” For the men knew that he was fleeing from the presence of the L\\sc ord\\sc*, because he had told them."
+        ],
+        "number": "10",
+        "paragraph_id": "JON-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Then the men became extremely afraid, and they said to him, “\\f 1 \\fr 1:10 \\fr*\\ft Lit \\+it What is this you have done\\+it*\\ft*\\f*How could you do this?” For the men knew that he was fleeing from the presence of the L\\sc ord\\sc*, because he had told them.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "So they said to him, “What should we do to you so that the sea will become calm for us?”—for the sea was becoming increasingly stormy.",
+        "body_text_exact": "So they said to him, “What should we do to you so that the sea will become calm for us?”—for the sea was becoming increasingly stormy.",
+        "body_text_normalized": "So they said to him, “What should we do to you so that the sea will become calm for us?”—for the sea was becoming increasingly stormy.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "So they said to him, “What should we do to you so that the sea will become calm ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:11 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "from upon us",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "for us?”—for the sea was becoming increasingly stormy."
+        ],
+        "discourse_unit_id": "JON-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 23,
+        "line_start": 23,
+        "lines": [
+          "\\v 11 So they said to him, “What should we do to you so that the sea will become calm \\f 1 \\fr 1:11 \\fr*\\ft Lit \\+it from upon us\\+it*\\ft*\\f*for us?”—for the sea was becoming increasingly stormy."
+        ],
+        "number": "11",
+        "paragraph_id": "JON-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 So they said to him, “What should we do to you so that the sea will become calm \\f 1 \\fr 1:11 \\fr*\\ft Lit \\+it from upon us\\+it*\\ft*\\f*for us?”—for the sea was becoming increasingly stormy.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "And he said to them, “Pick me up and hurl me into the sea. Then the sea will become calm for you, because I know that on account of me this great storm has come upon you.”",
+        "body_text_exact": "And he said to them, “Pick me up and hurl me into the sea. Then the sea will become calm for you, because I know that on account of me this great storm has come upon you.”",
+        "body_text_normalized": "And he said to them, “Pick me up and hurl me into the sea. Then the sea will become calm for you, because I know that on account of me this great storm has come upon you.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "And he said to them, “Pick me up and hurl me into the sea. Then the sea will become calm ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:12 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "from upon you",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "for you, because I know that on account of me this great storm ",
+          {
+            "content": [
+              "has come"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " upon you.”"
+        ],
+        "discourse_unit_id": "JON-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 24,
+        "line_start": 24,
+        "lines": [
+          "\\v 12 And he said to them, “Pick me up and hurl me into the sea. Then the sea will become calm \\f 1 \\fr 1:12 \\fr*\\ft Lit \\+it from upon you\\+it*\\ft*\\f*for you, because I know that on account of me this great storm \\it has come\\it* upon you.”"
+        ],
+        "number": "12",
+        "paragraph_id": "JON-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 And he said to them, “Pick me up and hurl me into the sea. Then the sea will become calm \\f 1 \\fr 1:12 \\fr*\\ft Lit \\+it from upon you\\+it*\\ft*\\f*for you, because I know that on account of me this great storm \\it has come\\it* upon you.”",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "However, the men rowed desperately to return to land, but they could not, because the sea was becoming even stormier against them.",
+        "body_text_exact": "However, the men rowed desperately to return to land, but they could not, because the sea was becoming even stormier against them.",
+        "body_text_normalized": "However, the men rowed desperately to return to land, but they could not, because the sea was becoming even stormier against them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "However, the men ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:13 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "dug their oars into the water",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "rowed ",
+          {
+            "content": [
+              "desperately"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " to return to land, but they could not, because the sea was becoming ",
+          {
+            "content": [
+              "even"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " stormier against them."
+        ],
+        "discourse_unit_id": "JON-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 25,
+        "line_start": 25,
+        "lines": [
+          "\\v 13 However, the men \\f 1 \\fr 1:13 \\fr*\\ft Lit \\+it dug their oars into the water\\+it*\\ft*\\f*rowed \\it desperately\\it* to return to land, but they could not, because the sea was becoming \\it even\\it* stormier against them."
+        ],
+        "number": "13",
+        "paragraph_id": "JON-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 However, the men \\f 1 \\fr 1:13 \\fr*\\ft Lit \\+it dug their oars into the water\\+it*\\ft*\\f*rowed \\it desperately\\it* to return to land, but they could not, because the sea was becoming \\it even\\it* stormier against them.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Then they cried out to the Lord and said, “We earnestly pray, O Lord, do not let us perish on account of this man’s life, and do not put innocent blood on us; for You, Lord, have done as You pleased.”",
+        "body_text_exact": "Then they cried out to the Lord and said, “We earnestly pray, O Lord, do not let us perish on account of this man’s life, and do not put innocent blood on us; for You, Lord, have done as You pleased.”",
+        "body_text_normalized": "Then they cried out to the Lord and said, “We earnestly pray, O Lord, do not let us perish on account of this man’s life, and do not put innocent blood on us; for You, Lord, have done as You pleased.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Then they cried out to the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " and said, “We earnestly pray, O L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", do not let us perish on account of this man’s life, and do not put innocent blood on us; for You, L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", have done as You pleased.”"
+        ],
+        "discourse_unit_id": "JON-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 26,
+        "line_start": 26,
+        "lines": [
+          "\\v 14 Then they cried out to the L\\sc ord\\sc* and said, “We earnestly pray, O L\\sc ord\\sc*, do not let us perish on account of this man’s life, and do not put innocent blood on us; for You, L\\sc ord\\sc*, have done as You pleased.”"
+        ],
+        "number": "14",
+        "paragraph_id": "JON-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Then they cried out to the L\\sc ord\\sc* and said, “We earnestly pray, O L\\sc ord\\sc*, do not let us perish on account of this man’s life, and do not put innocent blood on us; for You, L\\sc ord\\sc*, have done as You pleased.”",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "So they picked up Jonah and hurled him into the sea, and the sea stopped its raging.",
+        "body_text_exact": "So they picked up Jonah and hurled him into the sea, and the sea stopped its raging.",
+        "body_text_normalized": "So they picked up Jonah and hurled him into the sea, and the sea stopped its raging.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "So they picked up Jonah and hurled him into the sea, and the sea stopped its raging."
+        ],
+        "discourse_unit_id": "JON-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 28,
+        "line_start": 28,
+        "lines": [
+          "\\v 15 So they picked up Jonah and hurled him into the sea, and the sea stopped its raging."
+        ],
+        "number": "15",
+        "paragraph_id": "JON-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 So they picked up Jonah and hurled him into the sea, and the sea stopped its raging.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Then the men became extremely afraid of the Lord, and they offered a sacrifice to the Lord and made vows.",
+        "body_text_exact": "Then the men became extremely afraid of the Lord, and they offered a sacrifice to the Lord and made vows.",
+        "body_text_normalized": "Then the men became extremely afraid of the Lord, and they offered a sacrifice to the Lord and made vows.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Then the men became extremely afraid of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", and they offered a sacrifice to the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " and made vows."
+        ],
+        "discourse_unit_id": "JON-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 29,
+        "line_start": 29,
+        "lines": [
+          "\\v 16 Then the men became extremely afraid of the L\\sc ord\\sc*, and they offered a sacrifice to the L\\sc ord\\sc* and made vows."
+        ],
+        "number": "16",
+        "paragraph_id": "JON-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 Then the men became extremely afraid of the L\\sc ord\\sc*, and they offered a sacrifice to the L\\sc ord\\sc* and made vows.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "And the Lord designated a great fish to swallow Jonah, and Jonah was in the stomach of the fish for three days and three nights.",
+        "body_text_exact": "And the Lord designated a great fish to swallow Jonah, and Jonah was in the stomach of the fish for three days and three nights.",
+        "body_text_normalized": "And the Lord designated a great fish to swallow Jonah, and Jonah was in the stomach of the fish for three days and three nights.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:17 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Ch 2:1 in Heb",
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "And the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " designated a great fish to swallow Jonah, and Jonah was in the stomach of the fish for three days and three nights."
+        ],
+        "discourse_unit_id": "JON-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 31,
+        "line_start": 31,
+        "lines": [
+          "\\v 17 \\f 1 \\fr 1:17 \\fr*\\ft Ch 2:1 in Heb\\ft*\\f*And the L\\sc ord\\sc* designated a great fish to swallow Jonah, and Jonah was in the stomach of the fish for three days and three nights."
+        ],
+        "number": "17",
+        "paragraph_id": "JON-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 \\f 1 \\fr 1:17 \\fr*\\ft Ch 2:1 in Heb\\ft*\\f*And the L\\sc ord\\sc* designated a great fish to swallow Jonah, and Jonah was in the stomach of the fish for three days and three nights.",
+        "section_id": "JON-S001",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Disobedience",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "Then Jonah prayed to the Lord his God from the stomach of the fish,",
+        "body_text_exact": "Then Jonah prayed to the Lord his God from the stomach of the fish,",
+        "body_text_normalized": "Then Jonah prayed to the Lord his God from the stomach of the fish,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:1 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Ch 2:2 in Heb",
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "Then Jonah prayed to the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " his God from the stomach of the fish,"
+        ],
+        "discourse_unit_id": "JON-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 35,
+        "line_start": 35,
+        "lines": [
+          "\\v 1 \\f 1 \\fr 2:1 \\fr*\\ft Ch 2:2 in Heb\\ft*\\f*Then Jonah prayed to the L\\sc ord\\sc* his God from the stomach of the fish,"
+        ],
+        "number": "1",
+        "paragraph_id": "JON-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 \\f 1 \\fr 2:1 \\fr*\\ft Ch 2:2 in Heb\\ft*\\f*Then Jonah prayed to the L\\sc ord\\sc* his God from the stomach of the fish,",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "and he said,\n“I called out of my distress to the Lord,\nAnd He answered me.\nI called for help from the depth of Sheol;\nYou heard my voice.",
+        "body_text_exact": "and he said,\n“I called out of my distress to the Lord,\nAnd He answered me.\nI called for help from the depth of Sheol;\nYou heard my voice.",
+        "body_text_normalized": "and he said, “I called out of my distress to the Lord, And He answered me. I called for help from the depth of Sheol; You heard my voice.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "and he said,",
+          "\n",
+          "“I called out of my distress to the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "And He answered me.",
+          "\n",
+          "I called for help from the ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:2 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "belly",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "depth of Sheol;",
+          "\n",
+          "You heard my voice."
+        ],
+        "discourse_unit_id": "JON-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 40,
+        "line_start": 36,
+        "lines": [
+          "\\v 2 and he said,",
+          "\\q “I called out of my distress to the L\\sc ord\\sc*,",
+          "\\q And He answered me.",
+          "\\q I called for help from the \\f 1 \\fr 2:2 \\fr*\\ft Lit \\+it belly\\+it*\\ft*\\f*depth of Sheol;",
+          "\\q You heard my voice."
+        ],
+        "number": "2",
+        "paragraph_id": "JON-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 and he said,\n\\q “I called out of my distress to the L\\sc ord\\sc*,\n\\q And He answered me.\n\\q I called for help from the \\f 1 \\fr 2:2 \\fr*\\ft Lit \\+it belly\\+it*\\ft*\\f*depth of Sheol;\n\\q You heard my voice.",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "“For You threw me into the deep,\nInto the heart of the seas,\nAnd the current flowed around me.\nAll Your breakers and waves passed over me.",
+        "body_text_exact": "“For You threw me into the deep,\nInto the heart of the seas,\nAnd the current flowed around me.\nAll Your breakers and waves passed over me.",
+        "body_text_normalized": "“For You threw me into the deep, Into the heart of the seas, And the current flowed around me. All Your breakers and waves passed over me.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“For You threw me into the deep,",
+          "\n",
+          "Into the heart of the seas,",
+          "\n",
+          "And the current flowed around me.",
+          "\n",
+          "All Your breakers and waves passed over me."
+        ],
+        "discourse_unit_id": "JON-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q",
+        "line_end": 45,
+        "line_start": 42,
+        "lines": [
+          "\\v 3 “For You threw me into the deep,",
+          "\\q Into the heart of the seas,",
+          "\\q And the current flowed around me.",
+          "\\q All Your breakers and waves passed over me."
+        ],
+        "number": "3",
+        "paragraph_id": "JON-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "JON-B001",
+        "poetry_block_marker": "q",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 “For You threw me into the deep,\n\\q Into the heart of the seas,\n\\q And the current flowed around me.\n\\q All Your breakers and waves passed over me.",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "“So I said, ‘I have been cast out of Your sight.\nNevertheless I will look again toward Your holy temple.’",
+        "body_text_exact": "“So I said, ‘I have been cast out of Your sight.\nNevertheless I will look again toward Your holy temple.’",
+        "body_text_normalized": "“So I said, ‘I have been cast out of Your sight. Nevertheless I will look again toward Your holy temple.’",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“So I said, ‘I have been cast out ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:4 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "from Your eyes",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "of Your sight.",
+          "\n",
+          "Nevertheless I will look again toward Your holy temple.’"
+        ],
+        "discourse_unit_id": "JON-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q",
+        "line_end": 48,
+        "line_start": 47,
+        "lines": [
+          "\\v 4 “So I said, ‘I have been cast out \\f 1 \\fr 2:4 \\fr*\\ft Lit \\+it from Your eyes\\+it*\\ft*\\f*of Your sight.",
+          "\\q Nevertheless I will look again toward Your holy temple.’"
+        ],
+        "number": "4",
+        "paragraph_id": "JON-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "JON-B001",
+        "poetry_block_marker": "q",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 “So I said, ‘I have been cast out \\f 1 \\fr 2:4 \\fr*\\ft Lit \\+it from Your eyes\\+it*\\ft*\\f*of Your sight.\n\\q Nevertheless I will look again toward Your holy temple.’",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "“Water encompassed me to the point of death.\nThe deep flowed around me,\nSeaweed was wrapped around my head.",
+        "body_text_exact": "“Water encompassed me to the point of death.\nThe deep flowed around me,\nSeaweed was wrapped around my head.",
+        "body_text_normalized": "“Water encompassed me to the point of death. The deep flowed around me, Seaweed was wrapped around my head.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“Water encompassed me to the ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:5 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "soul",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "point of death.",
+          "\n",
+          "The deep flowed around me,",
+          "\n",
+          "Seaweed was wrapped around my head."
+        ],
+        "discourse_unit_id": "JON-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q",
+        "line_end": 52,
+        "line_start": 50,
+        "lines": [
+          "\\v 5 “Water encompassed me to the \\f 1 \\fr 2:5 \\fr*\\ft Lit \\+it soul\\+it*\\ft*\\f*point of death.",
+          "\\q The deep flowed around me,",
+          "\\q Seaweed was wrapped around my head."
+        ],
+        "number": "5",
+        "paragraph_id": "JON-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "JON-B001",
+        "poetry_block_marker": "q",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 “Water encompassed me to the \\f 1 \\fr 2:5 \\fr*\\ft Lit \\+it soul\\+it*\\ft*\\f*point of death.\n\\q The deep flowed around me,\n\\q Seaweed was wrapped around my head.",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "“I descended to the base of the mountains.\nThe earth with its bars was around me forever,\nBut You have brought up my life from the pit, Lord my God.",
+        "body_text_exact": "“I descended to the base of the mountains.\nThe earth with its bars was around me forever,\nBut You have brought up my life from the pit, Lord my God.",
+        "body_text_normalized": "“I descended to the base of the mountains. The earth with its bars was around me forever, But You have brought up my life from the pit, Lord my God.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“I descended to the base of the mountains.",
+          "\n",
+          "The earth ",
+          {
+            "content": [
+              "with"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " its bars ",
+          {
+            "content": [
+              "was"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " around me forever,",
+          "\n",
+          "But You have brought up my life from ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:6 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "corruption",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "the pit, L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " my God."
+        ],
+        "discourse_unit_id": "JON-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q",
+        "line_end": 56,
+        "line_start": 54,
+        "lines": [
+          "\\v 6 “I descended to the base of the mountains.",
+          "\\q The earth \\it with\\it* its bars \\it was\\it* around me forever,",
+          "\\q But You have brought up my life from \\f 1 \\fr 2:6 \\fr*\\ft Or \\+it corruption\\+it*\\ft*\\f*the pit, L\\sc ord\\sc* my God."
+        ],
+        "number": "6",
+        "paragraph_id": "JON-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "JON-B001",
+        "poetry_block_marker": "q",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 “I descended to the base of the mountains.\n\\q The earth \\it with\\it* its bars \\it was\\it* around me forever,\n\\q But You have brought up my life from \\f 1 \\fr 2:6 \\fr*\\ft Or \\+it corruption\\+it*\\ft*\\f*the pit, L\\sc ord\\sc* my God.",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "“While I was fainting away,\nI remembered the Lord,\nAnd my prayer came to You,\nInto Your holy temple.",
+        "body_text_exact": "“While I was fainting away,\nI remembered the Lord,\nAnd my prayer came to You,\nInto Your holy temple.",
+        "body_text_normalized": "“While I was fainting away, I remembered the Lord, And my prayer came to You, Into Your holy temple.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“While ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:7 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "my soul within me was",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "I was fainting away,",
+          "\n",
+          "I remembered the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "And my prayer came to You,",
+          "\n",
+          "Into Your holy temple."
+        ],
+        "discourse_unit_id": "JON-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q",
+        "line_end": 61,
+        "line_start": 58,
+        "lines": [
+          "\\v 7 “While \\f 1 \\fr 2:7 \\fr*\\ft Lit \\+it my soul within me was\\+it*\\ft*\\f*I was fainting away,",
+          "\\q I remembered the L\\sc ord\\sc*,",
+          "\\q And my prayer came to You,",
+          "\\q Into Your holy temple."
+        ],
+        "number": "7",
+        "paragraph_id": "JON-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "JON-B001",
+        "poetry_block_marker": "q",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 “While \\f 1 \\fr 2:7 \\fr*\\ft Lit \\+it my soul within me was\\+it*\\ft*\\f*I was fainting away,\n\\q I remembered the L\\sc ord\\sc*,\n\\q And my prayer came to You,\n\\q Into Your holy temple.",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "“Those who are followers of worthless idols\nAbandon their faithfulness,",
+        "body_text_exact": "“Those who are followers of worthless idols\nAbandon their faithfulness,",
+        "body_text_normalized": "“Those who are followers of worthless idols Abandon their faithfulness,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“Those who are followers of worthless ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:8 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "futilities",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "idols",
+          "\n",
+          "Abandon their faithfulness,"
+        ],
+        "discourse_unit_id": "JON-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q",
+        "line_end": 64,
+        "line_start": 63,
+        "lines": [
+          "\\v 8 “Those who are followers of worthless \\f 1 \\fr 2:8 \\fr*\\ft Lit \\+it futilities\\+it*\\ft*\\f*idols",
+          "\\q Abandon their faithfulness,"
+        ],
+        "number": "8",
+        "paragraph_id": "JON-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "JON-B001",
+        "poetry_block_marker": "q",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 “Those who are followers of worthless \\f 1 \\fr 2:8 \\fr*\\ft Lit \\+it futilities\\+it*\\ft*\\f*idols\n\\q Abandon their faithfulness,",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "But I will sacrifice to You\nWith a voice of thanksgiving.\nThat which I have vowed I will pay.\nSalvation is from the Lord.”",
+        "body_text_exact": "But I will sacrifice to You\nWith a voice of thanksgiving.\nThat which I have vowed I will pay.\nSalvation is from the Lord.”",
+        "body_text_normalized": "But I will sacrifice to You With a voice of thanksgiving. That which I have vowed I will pay. Salvation is from the Lord.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "But I will sacrifice to You",
+          "\n",
+          "With a voice of thanksgiving.",
+          "\n",
+          "That which I have vowed I will pay.",
+          "\n",
+          "Salvation is from the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ".”"
+        ],
+        "discourse_unit_id": "JON-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q",
+        "line_end": 69,
+        "line_start": 66,
+        "lines": [
+          "\\v 9 But I will sacrifice to You",
+          "\\q With a voice of thanksgiving.",
+          "\\q That which I have vowed I will pay.",
+          "\\q Salvation is from the L\\sc ord\\sc*.”"
+        ],
+        "number": "9",
+        "paragraph_id": "JON-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "JON-B001",
+        "poetry_block_marker": "q",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 But I will sacrifice to You\n\\q With a voice of thanksgiving.\n\\q That which I have vowed I will pay.\n\\q Salvation is from the L\\sc ord\\sc*.”",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Then the Lord commanded the fish, and it vomited Jonah up onto the dry land.",
+        "body_text_exact": "Then the Lord commanded the fish, and it vomited Jonah up onto the dry land.",
+        "body_text_normalized": "Then the Lord commanded the fish, and it vomited Jonah up onto the dry land.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Then the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " commanded the fish, and it vomited Jonah up onto the dry land."
+        ],
+        "discourse_unit_id": "JON-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 71,
+        "line_start": 71,
+        "lines": [
+          "\\v 10 Then the L\\sc ord\\sc* commanded the fish, and it vomited Jonah up onto the dry land."
+        ],
+        "number": "10",
+        "paragraph_id": "JON-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Then the L\\sc ord\\sc* commanded the fish, and it vomited Jonah up onto the dry land.",
+        "section_id": "JON-S002",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Prayer",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Now the word of the Lord came to Jonah the second time, saying,",
+        "body_text_exact": "Now the word of the Lord came to Jonah the second time, saying,",
+        "body_text_normalized": "Now the word of the Lord came to Jonah the second time, saying,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Now the word of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " came to Jonah the second time, saying,"
+        ],
+        "discourse_unit_id": "JON-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 75,
+        "line_start": 75,
+        "lines": [
+          "\\v 1 Now the word of the L\\sc ord\\sc* came to Jonah the second time, saying,"
+        ],
+        "number": "1",
+        "paragraph_id": "JON-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Now the word of the L\\sc ord\\sc* came to Jonah the second time, saying,",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "“Arise, go to Nineveh, the great city, and proclaim to it the proclamation which I am going to tell you.”",
+        "body_text_exact": "“Arise, go to Nineveh, the great city, and proclaim to it the proclamation which I am going to tell you.”",
+        "body_text_normalized": "“Arise, go to Nineveh, the great city, and proclaim to it the proclamation which I am going to tell you.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "“Arise, go to Nineveh, the great city, and proclaim to it the proclamation which I am going to tell you.”"
+        ],
+        "discourse_unit_id": "JON-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 76,
+        "line_start": 76,
+        "lines": [
+          "\\v 2 “Arise, go to Nineveh, the great city, and proclaim to it the proclamation which I am going to tell you.”"
+        ],
+        "number": "2",
+        "paragraph_id": "JON-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 “Arise, go to Nineveh, the great city, and proclaim to it the proclamation which I am going to tell you.”",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "So Jonah got up and went to Nineveh according to the word of the Lord. Now Nineveh was an exceedingly large city, a three days’ walk.",
+        "body_text_exact": "So Jonah got up and went to Nineveh according to the word of the Lord. Now Nineveh was an exceedingly large city, a three days’ walk.",
+        "body_text_normalized": "So Jonah got up and went to Nineveh according to the word of the Lord. Now Nineveh was an exceedingly large city, a three days’ walk.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "So Jonah got up and went to Nineveh according to the word of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ". Now Nineveh was ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:3 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "a great city to God",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "an exceedingly large city, a three days’ walk."
+        ],
+        "discourse_unit_id": "JON-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 77,
+        "line_start": 77,
+        "lines": [
+          "\\v 3 So Jonah got up and went to Nineveh according to the word of the L\\sc ord\\sc*. Now Nineveh was \\f 1 \\fr 3:3 \\fr*\\ft Lit \\+it a great city to God\\+it*\\ft*\\f*an exceedingly large city, a three days’ walk."
+        ],
+        "number": "3",
+        "paragraph_id": "JON-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 So Jonah got up and went to Nineveh according to the word of the L\\sc ord\\sc*. Now Nineveh was \\f 1 \\fr 3:3 \\fr*\\ft Lit \\+it a great city to God\\+it*\\ft*\\f*an exceedingly large city, a three days’ walk.",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Then Jonah began to go through the city one day’s walk; and he cried out and said, “Forty more days, and Nineveh will be overthrown.”",
+        "body_text_exact": "Then Jonah began to go through the city one day’s walk; and he cried out and said, “Forty more days, and Nineveh will be overthrown.”",
+        "body_text_normalized": "Then Jonah began to go through the city one day’s walk; and he cried out and said, “Forty more days, and Nineveh will be overthrown.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Then Jonah began to go through the city one day’s walk; and he cried out and said, “Forty more days, and Nineveh will be overthrown.”"
+        ],
+        "discourse_unit_id": "JON-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 78,
+        "line_start": 78,
+        "lines": [
+          "\\v 4 Then Jonah began to go through the city one day’s walk; and he cried out and said, “Forty more days, and Nineveh will be overthrown.”"
+        ],
+        "number": "4",
+        "paragraph_id": "JON-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Then Jonah began to go through the city one day’s walk; and he cried out and said, “Forty more days, and Nineveh will be overthrown.”",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Then the people of Nineveh believed in God; and they called a fast and put on sackcloth, from the greatest to the least of them.",
+        "body_text_exact": "Then the people of Nineveh believed in God; and they called a fast and put on sackcloth, from the greatest to the least of them.",
+        "body_text_normalized": "Then the people of Nineveh believed in God; and they called a fast and put on sackcloth, from the greatest to the least of them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Then the people of Nineveh believed in God; and they called a fast and put on sackcloth, from the greatest to the least of them."
+        ],
+        "discourse_unit_id": "JON-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 80,
+        "line_start": 80,
+        "lines": [
+          "\\v 5 Then the people of Nineveh believed in God; and they called a fast and put on sackcloth, from the greatest to the least of them."
+        ],
+        "number": "5",
+        "paragraph_id": "JON-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Then the people of Nineveh believed in God; and they called a fast and put on sackcloth, from the greatest to the least of them.",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "When the word reached the king of Nineveh, he got up from his throne, removed his robe from himself, covered himself with sackcloth, and sat on the dust.",
+        "body_text_exact": "When the word reached the king of Nineveh, he got up from his throne, removed his robe from himself, covered himself with sackcloth, and sat on the dust.",
+        "body_text_normalized": "When the word reached the king of Nineveh, he got up from his throne, removed his robe from himself, covered himself with sackcloth, and sat on the dust.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "When the word reached the king of Nineveh, he got up from his throne, removed his robe from himself, covered ",
+          {
+            "content": [
+              "himself"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " with sackcloth, and sat on the ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:6 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "ashes",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "dust."
+        ],
+        "discourse_unit_id": "JON-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 81,
+        "line_start": 81,
+        "lines": [
+          "\\v 6 When the word reached the king of Nineveh, he got up from his throne, removed his robe from himself, covered \\it himself\\it* with sackcloth, and sat on the \\f 1 \\fr 3:6 \\fr*\\ft Or \\+it ashes\\+it*\\ft*\\f*dust."
+        ],
+        "number": "6",
+        "paragraph_id": "JON-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 When the word reached the king of Nineveh, he got up from his throne, removed his robe from himself, covered \\it himself\\it* with sackcloth, and sat on the \\f 1 \\fr 3:6 \\fr*\\ft Or \\+it ashes\\+it*\\ft*\\f*dust.",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "And he issued a proclamation, and it said, “In Nineveh by the decree of the king and his nobles: No person, animal, herd, or flock is to taste anything. They are not to eat, or drink water.",
+        "body_text_exact": "And he issued a proclamation, and it said, “In Nineveh by the decree of the king and his nobles: No person, animal, herd, or flock is to taste anything. They are not to eat, or drink water.",
+        "body_text_normalized": "And he issued a proclamation, and it said, “In Nineveh by the decree of the king and his nobles: No person, animal, herd, or flock is to taste anything. They are not to eat, or drink water.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "And he issued a proclamation, and it said, “In Nineveh by the decree of the king and his nobles: No person, animal, herd, or flock is to taste anything. They are not to eat, or drink water."
+        ],
+        "discourse_unit_id": "JON-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 82,
+        "line_start": 82,
+        "lines": [
+          "\\v 7 And he issued a proclamation, and it said, “In Nineveh by the decree of the king and his nobles: No person, animal, herd, or flock is to taste anything. They are not to eat, or drink water."
+        ],
+        "number": "7",
+        "paragraph_id": "JON-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 And he issued a proclamation, and it said, “In Nineveh by the decree of the king and his nobles: No person, animal, herd, or flock is to taste anything. They are not to eat, or drink water.",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "But every person and animal must be covered with sackcloth; and people are to call on God vehemently, and they are to turn, each one from his evil way, and from the violence which is in their hands.",
+        "body_text_exact": "But every person and animal must be covered with sackcloth; and people are to call on God vehemently, and they are to turn, each one from his evil way, and from the violence which is in their hands.",
+        "body_text_normalized": "But every person and animal must be covered with sackcloth; and people are to call on God vehemently, and they are to turn, each one from his evil way, and from the violence which is in their hands.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "But ",
+          {
+            "content": [
+              "every"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " person and animal must be covered with sackcloth; and ",
+          {
+            "content": [
+              "people"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " are to call on God vehemently, and they are to turn, each one from his evil way, and from the violence which is in their hands."
+        ],
+        "discourse_unit_id": "JON-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 83,
+        "line_start": 83,
+        "lines": [
+          "\\v 8 But \\it every\\it* person and animal must be covered with sackcloth; and \\it people\\it* are to call on God vehemently, and they are to turn, each one from his evil way, and from the violence which is in their hands."
+        ],
+        "number": "8",
+        "paragraph_id": "JON-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 But \\it every\\it* person and animal must be covered with sackcloth; and \\it people\\it* are to call on God vehemently, and they are to turn, each one from his evil way, and from the violence which is in their hands.",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Who knows, God may turn and relent, and turn from His burning anger so that we will not perish.”",
+        "body_text_exact": "Who knows, God may turn and relent, and turn from His burning anger so that we will not perish.”",
+        "body_text_normalized": "Who knows, God may turn and relent, and turn from His burning anger so that we will not perish.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Who knows, God may turn and relent, and turn from His burning anger so that we will not perish.”"
+        ],
+        "discourse_unit_id": "JON-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 84,
+        "line_start": 84,
+        "lines": [
+          "\\v 9 Who knows, God may turn and relent, and turn from His burning anger so that we will not perish.”"
+        ],
+        "number": "9",
+        "paragraph_id": "JON-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Who knows, God may turn and relent, and turn from His burning anger so that we will not perish.”",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "When God saw their deeds, that they turned from their evil way, then God relented of the disaster which He had declared He would bring on them. So He did not do it.",
+        "body_text_exact": "When God saw their deeds, that they turned from their evil way, then God relented of the disaster which He had declared He would bring on them. So He did not do it.",
+        "body_text_normalized": "When God saw their deeds, that they turned from their evil way, then God relented of the disaster which He had declared He would bring on them. So He did not do it.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "When God saw their deeds, that they turned from their evil way, then God relented of the disaster which He had declared He would ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:10 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "do to",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "bring on them. So He did not do ",
+          {
+            "content": [
+              "it."
+            ],
+            "marker": "it",
+            "type": "char"
+          }
+        ],
+        "discourse_unit_id": "JON-D012",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 86,
+        "line_start": 86,
+        "lines": [
+          "\\v 10 When God saw their deeds, that they turned from their evil way, then God relented of the disaster which He had declared He would \\f 1 \\fr 3:10 \\fr*\\ft Lit \\+it do to\\+it*\\ft*\\f*bring on them. So He did not do \\it it.\\it*"
+        ],
+        "number": "10",
+        "paragraph_id": "JON-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 When God saw their deeds, that they turned from their evil way, then God relented of the disaster which He had declared He would \\f 1 \\fr 3:10 \\fr*\\ft Lit \\+it do to\\+it*\\ft*\\f*bring on them. So He did not do \\it it.\\it*",
+        "section_id": "JON-S003",
+        "section_marker": "s1",
+        "section_title": "Nineveh Repents",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "But it greatly displeased Jonah, and he became angry.",
+        "body_text_exact": "But it greatly displeased Jonah, and he became angry.",
+        "body_text_normalized": "But it greatly displeased Jonah, and he became angry.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "But it greatly displeased Jonah, and he became angry."
+        ],
+        "discourse_unit_id": "JON-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 90,
+        "line_start": 90,
+        "lines": [
+          "\\v 1 But it greatly displeased Jonah, and he became angry."
+        ],
+        "number": "1",
+        "paragraph_id": "JON-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 But it greatly displeased Jonah, and he became angry.",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Then he prayed to the Lord and said, “Please Lord, was this not what I said when I was still in my own country? Therefore in anticipation of this I fled to Tarshish, since I knew that You are a gracious and compassionate God, slow to anger and abundant in mercy, and One who relents of disaster.",
+        "body_text_exact": "Then he prayed to the Lord and said, “Please Lord, was this not what I said when I was still in my own country? Therefore in anticipation of this I fled to Tarshish, since I knew that You are a gracious and compassionate God, slow to anger and abundant in mercy, and One who relents of disaster.",
+        "body_text_normalized": "Then he prayed to the Lord and said, “Please Lord, was this not what I said when I was still in my own country? Therefore in anticipation of this I fled to Tarshish, since I knew that You are a gracious and compassionate God, slow to anger and abundant in mercy, and One who relents of disaster.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "Then he prayed to the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " and said, “Please L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", was this not ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "4:2 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "my word",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "what I said when I was still in my ",
+          {
+            "content": [
+              "own"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " country? Therefore in anticipation ",
+          {
+            "content": [
+              "of this"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " I fled to Tarshish, since I knew that You are a gracious and compassionate God, slow to anger and abundant in mercy, and One who relents of disaster."
+        ],
+        "discourse_unit_id": "JON-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 91,
+        "line_start": 91,
+        "lines": [
+          "\\v 2 Then he prayed to the L\\sc ord\\sc* and said, “Please L\\sc ord\\sc*, was this not \\f 1 \\fr 4:2 \\fr*\\ft Lit \\+it my word\\+it*\\ft*\\f*what I said when I was still in my \\it own\\it* country? Therefore in anticipation \\it of this\\it* I fled to Tarshish, since I knew that You are a gracious and compassionate God, slow to anger and abundant in mercy, and One who relents of disaster."
+        ],
+        "number": "2",
+        "paragraph_id": "JON-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Then he prayed to the L\\sc ord\\sc* and said, “Please L\\sc ord\\sc*, was this not \\f 1 \\fr 4:2 \\fr*\\ft Lit \\+it my word\\+it*\\ft*\\f*what I said when I was still in my \\it own\\it* country? Therefore in anticipation \\it of this\\it* I fled to Tarshish, since I knew that You are a gracious and compassionate God, slow to anger and abundant in mercy, and One who relents of disaster.",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "So now, Lord, please take my life from me, for death is better to me than life.”",
+        "body_text_exact": "So now, Lord, please take my life from me, for death is better to me than life.”",
+        "body_text_normalized": "So now, Lord, please take my life from me, for death is better to me than life.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "So now, L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", please take my ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "4:3 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "soul",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "life from me, for death is better to me than life.”"
+        ],
+        "discourse_unit_id": "JON-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 92,
+        "line_start": 92,
+        "lines": [
+          "\\v 3 So now, L\\sc ord\\sc*, please take my \\f 1 \\fr 4:3 \\fr*\\ft Lit \\+it soul\\+it*\\ft*\\f*life from me, for death is better to me than life.”"
+        ],
+        "number": "3",
+        "paragraph_id": "JON-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 So now, L\\sc ord\\sc*, please take my \\f 1 \\fr 4:3 \\fr*\\ft Lit \\+it soul\\+it*\\ft*\\f*life from me, for death is better to me than life.”",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "But the Lord said, “Do you have a good reason to be angry?”",
+        "body_text_exact": "But the Lord said, “Do you have a good reason to be angry?”",
+        "body_text_normalized": "But the Lord said, “Do you have a good reason to be angry?”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "But the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " said, “Do you have a good reason to be angry?”"
+        ],
+        "discourse_unit_id": "JON-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 93,
+        "line_start": 93,
+        "lines": [
+          "\\v 4 But the L\\sc ord\\sc* said, “Do you have a good reason to be angry?”"
+        ],
+        "number": "4",
+        "paragraph_id": "JON-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 But the L\\sc ord\\sc* said, “Do you have a good reason to be angry?”",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Then Jonah left the city and sat down east of it. There he made a shelter for himself and sat under it in the shade, until he could see what would happen in the city.",
+        "body_text_exact": "Then Jonah left the city and sat down east of it. There he made a shelter for himself and sat under it in the shade, until he could see what would happen in the city.",
+        "body_text_normalized": "Then Jonah left the city and sat down east of it. There he made a shelter for himself and sat under it in the shade, until he could see what would happen in the city.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "Then Jonah left the city and sat down east of ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "4:5 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "the city",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "it. There he made a shelter for himself and sat under it in the shade, until he could see what would happen in the city."
+        ],
+        "discourse_unit_id": "JON-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 95,
+        "line_start": 95,
+        "lines": [
+          "\\v 5 Then Jonah left the city and sat down east of \\f 1 \\fr 4:5 \\fr*\\ft Lit \\+it the city\\+it*\\ft*\\f*it. There he made a shelter for himself and sat under it in the shade, until he could see what would happen in the city."
+        ],
+        "number": "5",
+        "paragraph_id": "JON-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Then Jonah left the city and sat down east of \\f 1 \\fr 4:5 \\fr*\\ft Lit \\+it the city\\+it*\\ft*\\f*it. There he made a shelter for himself and sat under it in the shade, until he could see what would happen in the city.",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "So the Lord God designated a plant, and it grew up over Jonah to be a shade over his head, to relieve him of his discomfort. And Jonah was overjoyed about the plant.",
+        "body_text_exact": "So the Lord God designated a plant, and it grew up over Jonah to be a shade over his head, to relieve him of his discomfort. And Jonah was overjoyed about the plant.",
+        "body_text_normalized": "So the Lord God designated a plant, and it grew up over Jonah to be a shade over his head, to relieve him of his discomfort. And Jonah was overjoyed about the plant.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "So the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " God designated a ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "4:6 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Prob. a castor oil plant, and so throughout the ch",
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "plant, and it grew up over Jonah to be a shade over his head, to ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "4:6 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "save him from",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "relieve him of his discomfort. And Jonah ",
+          {
+            "content": [
+              "3 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "4:6 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "rejoiced with great joy",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "was overjoyed about the plant."
+        ],
+        "discourse_unit_id": "JON-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 96,
+        "line_start": 96,
+        "lines": [
+          "\\v 6 So the L\\sc ord\\sc* God designated a \\f 1 \\fr 4:6 \\fr*\\ft Prob. a castor oil plant, and so throughout the ch\\ft*\\f*plant, and it grew up over Jonah to be a shade over his head, to \\f 2 \\fr 4:6 \\fr*\\ft Lit \\+it save him from\\+it*\\ft*\\f*relieve him of his discomfort. And Jonah \\f 3 \\fr 4:6 \\fr*\\ft Lit \\+it rejoiced with great joy\\+it*\\ft*\\f*was overjoyed about the plant."
+        ],
+        "number": "6",
+        "paragraph_id": "JON-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 So the L\\sc ord\\sc* God designated a \\f 1 \\fr 4:6 \\fr*\\ft Prob. a castor oil plant, and so throughout the ch\\ft*\\f*plant, and it grew up over Jonah to be a shade over his head, to \\f 2 \\fr 4:6 \\fr*\\ft Lit \\+it save him from\\+it*\\ft*\\f*relieve him of his discomfort. And Jonah \\f 3 \\fr 4:6 \\fr*\\ft Lit \\+it rejoiced with great joy\\+it*\\ft*\\f*was overjoyed about the plant.",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "But God designated a worm when dawn came the next day, and it attacked the plant and it withered.",
+        "body_text_exact": "But God designated a worm when dawn came the next day, and it attacked the plant and it withered.",
+        "body_text_normalized": "But God designated a worm when dawn came the next day, and it attacked the plant and it withered.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "But God designated a worm when dawn came the next day, and it attacked the plant and it withered."
+        ],
+        "discourse_unit_id": "JON-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 97,
+        "line_start": 97,
+        "lines": [
+          "\\v 7 But God designated a worm when dawn came the next day, and it attacked the plant and it withered."
+        ],
+        "number": "7",
+        "paragraph_id": "JON-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 But God designated a worm when dawn came the next day, and it attacked the plant and it withered.",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "And when the sun came up God designated a scorching east wind, and the sun beat down on Jonah’s head so that he became faint, and he begged with all his soul to die, saying, “Death is better to me than life!”",
+        "body_text_exact": "And when the sun came up God designated a scorching east wind, and the sun beat down on Jonah’s head so that he became faint, and he begged with all his soul to die, saying, “Death is better to me than life!”",
+        "body_text_normalized": "And when the sun came up God designated a scorching east wind, and the sun beat down on Jonah’s head so that he became faint, and he begged with all his soul to die, saying, “Death is better to me than life!”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "And when the sun came up God designated a scorching east wind, and the sun beat down on Jonah’s head so that he became faint, and he begged with ",
+          {
+            "content": [
+              "all"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " his soul to die, saying, “Death is better to me than life!”"
+        ],
+        "discourse_unit_id": "JON-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 98,
+        "line_start": 98,
+        "lines": [
+          "\\v 8 And when the sun came up God designated a scorching east wind, and the sun beat down on Jonah’s head so that he became faint, and he begged with \\it all\\it* his soul to die, saying, “Death is better to me than life!”"
+        ],
+        "number": "8",
+        "paragraph_id": "JON-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 And when the sun came up God designated a scorching east wind, and the sun beat down on Jonah’s head so that he became faint, and he begged with \\it all\\it* his soul to die, saying, “Death is better to me than life!”",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "But God said to Jonah, “Do you have a good reason to be angry about the plant?” And he said, “I have good reason to be angry, even to the point of death!”",
+        "body_text_exact": "But God said to Jonah, “Do you have a good reason to be angry about the plant?” And he said, “I have good reason to be angry, even to the point of death!”",
+        "body_text_normalized": "But God said to Jonah, “Do you have a good reason to be angry about the plant?” And he said, “I have good reason to be angry, even to the point of death!”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "But God said to Jonah, “Do you have a good reason to be angry about the plant?” And he said, “I have good reason to be angry, ",
+          {
+            "content": [
+              "even"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " to the point of death!”"
+        ],
+        "discourse_unit_id": "JON-D015",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 100,
+        "line_start": 100,
+        "lines": [
+          "\\v 9 But God said to Jonah, “Do you have a good reason to be angry about the plant?” And he said, “I have good reason to be angry, \\it even\\it* to the point of death!”"
+        ],
+        "number": "9",
+        "paragraph_id": "JON-P014",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 But God said to Jonah, “Do you have a good reason to be angry about the plant?” And he said, “I have good reason to be angry, \\it even\\it* to the point of death!”",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Then the Lord said, “You had compassion on the plant, for which you did not work and which you did not cause to grow, which came up overnight and perished overnight.",
+        "body_text_exact": "Then the Lord said, “You had compassion on the plant, for which you did not work and which you did not cause to grow, which came up overnight and perished overnight.",
+        "body_text_normalized": "Then the Lord said, “You had compassion on the plant, for which you did not work and which you did not cause to grow, which came up overnight and perished overnight.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "Then the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " said, “You had compassion on the plant, for which you did not work and ",
+          {
+            "content": [
+              "which"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " you did not cause to grow, which ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "4:10 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "was a son of a night",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "came up overnight and perished ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "4:10 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "a son of a night",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "overnight."
+        ],
+        "discourse_unit_id": "JON-D015",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 101,
+        "line_start": 101,
+        "lines": [
+          "\\v 10 Then the L\\sc ord\\sc* said, “You had compassion on the plant, for which you did not work and \\it which\\it* you did not cause to grow, which \\f 1 \\fr 4:10 \\fr*\\ft Lit \\+it was a son of a night\\+it*\\ft*\\f*came up overnight and perished \\f 2 \\fr 4:10 \\fr*\\ft Lit \\+it a son of a night\\+it*\\ft*\\f*overnight."
+        ],
+        "number": "10",
+        "paragraph_id": "JON-P014",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Then the L\\sc ord\\sc* said, “You had compassion on the plant, for which you did not work and \\it which\\it* you did not cause to grow, which \\f 1 \\fr 4:10 \\fr*\\ft Lit \\+it was a son of a night\\+it*\\ft*\\f*came up overnight and perished \\f 2 \\fr 4:10 \\fr*\\ft Lit \\+it a son of a night\\+it*\\ft*\\f*overnight.",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Should I not also have compassion on Nineveh, the great city in which there are more than 120,000 people, who do not know the difference between their right hand and their left, as well as many animals?”",
+        "body_text_exact": "Should I not also have compassion on Nineveh, the great city in which there are more than 120,000 people, who do not know the difference between their right hand and their left, as well as many animals?”",
+        "body_text_normalized": "Should I not also have compassion on Nineveh, the great city in which there are more than 120,000 people, who do not know the difference between their right hand and their left, as well as many animals?”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 4,
+        "content": [
+          "Should I not also have compassion on Nineveh, the great city in which there are more than 120,000 people, who do not know ",
+          {
+            "content": [
+              "the difference"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " between their right hand and their left, ",
+          {
+            "content": [
+              "as well as"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " many animals?”"
+        ],
+        "discourse_unit_id": "JON-D015",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 102,
+        "line_start": 102,
+        "lines": [
+          "\\v 11 Should I not also have compassion on Nineveh, the great city in which there are more than 120,000 people, who do not know \\it the difference\\it* between their right hand and their left, \\it as well as\\it* many animals?”"
+        ],
+        "number": "11",
+        "paragraph_id": "JON-P014",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Should I not also have compassion on Nineveh, the great city in which there are more than 120,000 people, who do not know \\it the difference\\it* between their right hand and their left, \\it as well as\\it* many animals?”",
+        "section_id": "JON-S004",
+        "section_marker": "s1",
+        "section_title": "Jonah’s Displeasure Rebuked",
+        "verse_end": 11,
+        "verse_start": 11
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

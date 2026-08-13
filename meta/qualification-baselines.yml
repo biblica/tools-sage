@@ -1,0 +1,26 @@
+schema_version: '1.0'
+baselines:
+  bic_source_v4_00:
+    file: bic-source-structured-v4.00.zip
+    sha256: 730654278438de06df2dd9184619240bde60d44bf5221119423254f8d2c62fc6
+  bic_qualification_v4_00:
+    file: bic-v4.00-development-qualification-bundle.zip
+    sha256: 445580a1fba2e6dc081d559a5fb8e63d5b0cb7949038264c80d29d216676d7fa
+  bic_release_v4_00:
+    file: bic-v4.00-complete-release-bundle.zip
+    sha256: 9744512a68e1685f74bdb264eff118f0680be999cf5d9f30e9d9835020acd113
+  saw_snapshot_a0002_r6:
+    file: SAW-A0002-r6-Development-Snapshot.zip
+    sha256: e9a61c03aad9c8960cbec273281b20832b0b06053d3db65a82241222b7e48643
+  saw_release_a0002_r6:
+    file: SAW-A0002-r6.zip
+    sha256: 8ffdbd509d065e3da19c838346fde9b2bd148c8ee05b6f001e8b49456db6b0a8
+  comparison_review:
+    file: BIC-SAW-Comparison-and-Harmonization-Review.zip
+    sha256: f9374e6df3da21fbe9c4cb4b2f5fa0d8485efb29811a55b34b0d0f966617f0b5
+  saw_r7_update_plan:
+    file: SAW-A0002-r7-Update-Plan.md
+    sha256: 991f29712d796c11b71b37fa40f45092f50a0546c5ab3e0c5b66aa72f8554df7
+  saw_final_deep_analysis:
+    file: SAW-A0002-r6-Final-Deep-Refinement-Analysis.md
+    sha256: 43be95b4abd96332ec26440ee1e309695144700e610efb4f24191d4a4b2c214c

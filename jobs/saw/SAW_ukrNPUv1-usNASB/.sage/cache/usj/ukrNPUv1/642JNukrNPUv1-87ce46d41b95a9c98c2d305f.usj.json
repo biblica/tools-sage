@@ -1,0 +1,1080 @@
+{
+  "content": [
+    {
+      "code": "2JN",
+      "content": [
+        "- New Ukrainian Translation ver.1"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 2022 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "2 Івана",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Друге послання Івана",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "2 Івана",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "2 Ів.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Друге послання Івана",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вступ",
+        "\n"
+      ],
+      "marker": "iot",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Друге послання апостола Івана, імовірно, було написане невдовзі після першого (див. Вступ до Першого послання Івана). На перший погляд видається, що автор, який називає себе «старійшиною», звертається до однієї людини – «обраної пані». Утім, чимало дослідників вважають, що це образне звертання до церковної громади (див. ",
+        {
+          "content": [
+            "Еф. 5:22–23"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        " та ",
+        {
+          "content": [
+            "Об. 21:9"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ", де церква представлена в образі жінки), а «діти її» – це брати і сестри у Христі. Згадані в посланні «діти твоєї обраної сестри» – це християни з іншої церковної громади. Саме тому це послання теж вважають «соборним», тобто таким, що стосується Церкви в цілому, а не лише конкретної спільноти вірних.",
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Як і в Першому посланні Івана, головною темою тут є любов між братами та сестрами у Христі (",
+        {
+          "content": [
+            "1:4–6"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ", пор. з ",
+        {
+          "content": [
+            "1 Ів. 3:11–18"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ") та застереження щодо лжевчителів, які заперечували тілесну природу Христа (",
+        {
+          "content": [
+            "1:7–10"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ", пор. з ",
+        {
+          "content": [
+            "1 Ів. 4:2–3"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). Апостол закликає до справжньої, дієвої побожності у Христі. Незважаючи на стислість, Друге послання Івана повторює основні тези його першого послання.",
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "2JN 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "Привітання",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "2JN 1:1",
+          "type": "verse"
+        },
+        "Старійшина.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Обраній пані та її дітям, яких я люблю в істині, і не тільки я, але й усі, хто пізнав істину,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "2JN 1:2",
+          "type": "verse"
+        },
+        "бо істина залишилася в нас і буде з нами повік.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "2JN 1:3",
+          "type": "verse"
+        },
+        "Благодать, милість і мир від Бога Отця й від Ісуса Христа, Сина Отця, нехай буде з нами в істині й любові.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Істина та любов",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "2JN 1:4",
+          "type": "verse"
+        },
+        "Я сильно зрадів, тому що знайшов серед твоїх дітей тих, хто ходить в істині, згідно із заповіддю, яку ми отримали від Отця.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "2JN 1:5",
+          "type": "verse"
+        },
+        "І тепер прошу тебе, пані, не так, ніби пишу тобі нову заповідь, але ту, яку маємо від початку: любімо одне одного!",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "2JN 1:6",
+          "type": "verse"
+        },
+        "І в цьому полягає любов: щоб ми жили за Його заповідями. Як ви чули із самого початку, Його заповідь полягає в тому, щоб ви ходили в любові!",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Залишайтеся вірними Христу",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "2JN 1:7",
+          "type": "verse"
+        },
+        "Тому що у світі зʼявилося багато тих, хто вводить в оману й не визнає Ісуса Христа, Який прийшов у тілі. Це є антихрист і ошуканець.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "2JN 1:8",
+          "type": "verse"
+        },
+        "Пильнуйте себе, щоб ви",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:8 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Деякі рукописи містять слово ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "ми",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "; також у другій половині речення."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " не загубили того, що ми напрацювали, але щоб ви отримали повну винагороду.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "2JN 1:9",
+          "type": "verse"
+        },
+        "Кожен, хто віддаляється й не залишається у вченні Христа, не має Бога. Той, хто залишається у вченні",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:9 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Або: ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "у вченні Його",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            ", або: ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "у вченні Ісуса Христа."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        ", має Отця і Сина.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "2JN 1:10",
+          "type": "verse"
+        },
+        "Якщо хтось приходить до вас і не приносить цього вчення, не приймайте його до вашого дому й не кажіть йому: «Вітаю!».",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "2JN 1:11",
+          "type": "verse"
+        },
+        "Бо той, хто каже: «Вітаю!», розділяє його лихі вчинки.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "2JN 1:12",
+          "type": "verse"
+        },
+        "Я мав би багато чого вам написати, але не хочу ",
+        {
+          "content": [
+            "цього робити"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " чорнилом на папері. Я сподіваюся прийти до вас, і ми поговоримо віч-на-віч, щоб наша радість була повна.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "2JN 1:13",
+          "type": "verse"
+        },
+        "Діти твоєї обраної сестри вітають тебе!",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "2JN",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "642JNukrNPUv1.SFM",
+    "source_sha256": "5b050868274de168be242de5c33dc0fa1062039019a90310dae8e07c22209fb0",
+    "source_size": 5092,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Старійшина.\nОбраній пані та її дітям, яких я люблю в істині, і не тільки я, але й усі, хто пізнав істину,",
+        "body_text_exact": "Старійшина.\nОбраній пані та її дітям, яких я люблю в істині, і не тільки я, але й усі, хто пізнав істину,",
+        "body_text_normalized": "Старійшина. Обраній пані та її дітям, яких я люблю в істині, і не тільки я, але й усі, хто пізнав істину,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Старійшина.",
+          "\n",
+          "Обраній пані та її дітям, яких я люблю в істині, і не тільки я, але й усі, хто пізнав істину,"
+        ],
+        "discourse_unit_id": "2JN-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 17,
+        "line_start": 15,
+        "lines": [
+          "\\v 1 Старійшина.",
+          "\\p Обраній пані та її дітям, яких я люблю в істині, і не тільки я, але й усі, хто пізнав істину,"
+        ],
+        "number": "1",
+        "paragraph_id": "2JN-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Старійшина.\n\\p Обраній пані та її дітям, яких я люблю в істині, і не тільки я, але й усі, хто пізнав істину,",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Привітання",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "бо істина залишилася в нас і буде з нами повік.",
+        "body_text_exact": "бо істина залишилася в нас і буде з нами повік.",
+        "body_text_normalized": "бо істина залишилася в нас і буде з нами повік.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "бо істина залишилася в нас і буде з нами повік."
+        ],
+        "discourse_unit_id": "2JN-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 18,
+        "line_start": 18,
+        "lines": [
+          "\\v 2 бо істина залишилася в нас і буде з нами повік."
+        ],
+        "number": "2",
+        "paragraph_id": "2JN-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 бо істина залишилася в нас і буде з нами повік.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Привітання",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Благодать, милість і мир від Бога Отця й від Ісуса Христа, Сина Отця, нехай буде з нами в істині й любові.",
+        "body_text_exact": "Благодать, милість і мир від Бога Отця й від Ісуса Христа, Сина Отця, нехай буде з нами в істині й любові.",
+        "body_text_normalized": "Благодать, милість і мир від Бога Отця й від Ісуса Христа, Сина Отця, нехай буде з нами в істині й любові.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Благодать, милість і мир від Бога Отця й від Ісуса Христа, Сина Отця, нехай буде з нами в істині й любові."
+        ],
+        "discourse_unit_id": "2JN-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 21,
+        "line_start": 21,
+        "lines": [
+          "\\v 3 Благодать, милість і мир від Бога Отця й від Ісуса Христа, Сина Отця, нехай буде з нами в істині й любові."
+        ],
+        "number": "3",
+        "paragraph_id": "2JN-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Благодать, милість і мир від Бога Отця й від Ісуса Христа, Сина Отця, нехай буде з нами в істині й любові.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Привітання",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Я сильно зрадів, тому що знайшов серед твоїх дітей тих, хто ходить в істині, згідно із заповіддю, яку ми отримали від Отця.",
+        "body_text_exact": "Я сильно зрадів, тому що знайшов серед твоїх дітей тих, хто ходить в істині, згідно із заповіддю, яку ми отримали від Отця.",
+        "body_text_normalized": "Я сильно зрадів, тому що знайшов серед твоїх дітей тих, хто ходить в істині, згідно із заповіддю, яку ми отримали від Отця.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я сильно зрадів, тому що знайшов серед твоїх дітей тих, хто ходить в істині, згідно із заповіддю, яку ми отримали від Отця."
+        ],
+        "discourse_unit_id": "2JN-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 25,
+        "line_start": 25,
+        "lines": [
+          "\\v 4 Я сильно зрадів, тому що знайшов серед твоїх дітей тих, хто ходить в істині, згідно із заповіддю, яку ми отримали від Отця."
+        ],
+        "number": "4",
+        "paragraph_id": "2JN-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Я сильно зрадів, тому що знайшов серед твоїх дітей тих, хто ходить в істині, згідно із заповіддю, яку ми отримали від Отця.",
+        "section_id": "2JN-S002",
+        "section_marker": "s1",
+        "section_title": "Істина та любов",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "І тепер прошу тебе, пані, не так, ніби пишу тобі нову заповідь, але ту, яку маємо від початку: любімо одне одного!",
+        "body_text_exact": "І тепер прошу тебе, пані, не так, ніби пишу тобі нову заповідь, але ту, яку маємо від початку: любімо одне одного!",
+        "body_text_normalized": "І тепер прошу тебе, пані, не так, ніби пишу тобі нову заповідь, але ту, яку маємо від початку: любімо одне одного!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "І тепер прошу тебе, пані, не так, ніби пишу тобі нову заповідь, але ту, яку маємо від початку: любімо одне одного!"
+        ],
+        "discourse_unit_id": "2JN-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 26,
+        "line_start": 26,
+        "lines": [
+          "\\v 5 І тепер прошу тебе, пані, не так, ніби пишу тобі нову заповідь, але ту, яку маємо від початку: любімо одне одного!"
+        ],
+        "number": "5",
+        "paragraph_id": "2JN-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 І тепер прошу тебе, пані, не так, ніби пишу тобі нову заповідь, але ту, яку маємо від початку: любімо одне одного!",
+        "section_id": "2JN-S002",
+        "section_marker": "s1",
+        "section_title": "Істина та любов",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "І в цьому полягає любов: щоб ми жили за Його заповідями. Як ви чули із самого початку, Його заповідь полягає в тому, щоб ви ходили в любові!",
+        "body_text_exact": "І в цьому полягає любов: щоб ми жили за Його заповідями. Як ви чули із самого початку, Його заповідь полягає в тому, щоб ви ходили в любові!",
+        "body_text_normalized": "І в цьому полягає любов: щоб ми жили за Його заповідями. Як ви чули із самого початку, Його заповідь полягає в тому, щоб ви ходили в любові!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "І в цьому полягає любов: щоб ми жили за Його заповідями. Як ви чули із самого початку, Його заповідь полягає в тому, щоб ви ходили в любові!"
+        ],
+        "discourse_unit_id": "2JN-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 27,
+        "line_start": 27,
+        "lines": [
+          "\\v 6 І в цьому полягає любов: щоб ми жили за Його заповідями. Як ви чули із самого початку, Його заповідь полягає в тому, щоб ви ходили в любові!"
+        ],
+        "number": "6",
+        "paragraph_id": "2JN-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 І в цьому полягає любов: щоб ми жили за Його заповідями. Як ви чули із самого початку, Його заповідь полягає в тому, щоб ви ходили в любові!",
+        "section_id": "2JN-S002",
+        "section_marker": "s1",
+        "section_title": "Істина та любов",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Тому що у світі зʼявилося багато тих, хто вводить в оману й не визнає Ісуса Христа, Який прийшов у тілі. Це є антихрист і ошуканець.",
+        "body_text_exact": "Тому що у світі зʼявилося багато тих, хто вводить в оману й не визнає Ісуса Христа, Який прийшов у тілі. Це є антихрист і ошуканець.",
+        "body_text_normalized": "Тому що у світі зʼявилося багато тих, хто вводить в оману й не визнає Ісуса Христа, Який прийшов у тілі. Це є антихрист і ошуканець.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Тому що у світі зʼявилося багато тих, хто вводить в оману й не визнає Ісуса Христа, Який прийшов у тілі. Це є антихрист і ошуканець."
+        ],
+        "discourse_unit_id": "2JN-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 30,
+        "line_start": 30,
+        "lines": [
+          "\\v 7 Тому що у світі зʼявилося багато тих, хто вводить в оману й не визнає Ісуса Христа, Який прийшов у тілі. Це є антихрист і ошуканець."
+        ],
+        "number": "7",
+        "paragraph_id": "2JN-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Тому що у світі зʼявилося багато тих, хто вводить в оману й не визнає Ісуса Христа, Який прийшов у тілі. Це є антихрист і ошуканець.",
+        "section_id": "2JN-S003",
+        "section_marker": "s1",
+        "section_title": "Залишайтеся вірними Христу",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Пильнуйте себе, щоб ви не загубили того, що ми напрацювали, але щоб ви отримали повну винагороду.",
+        "body_text_exact": "Пильнуйте себе, щоб ви не загубили того, що ми напрацювали, але щоб ви отримали повну винагороду.",
+        "body_text_normalized": "Пильнуйте себе, щоб ви не загубили того, що ми напрацювали, але щоб ви отримали повну винагороду.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Пильнуйте себе, щоб ви",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:8 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Деякі рукописи містять слово ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "ми",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "; також у другій половині речення."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " не загубили того, що ми напрацювали, але щоб ви отримали повну винагороду."
+        ],
+        "discourse_unit_id": "2JN-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 31,
+        "line_start": 31,
+        "lines": [
+          "\\v 8 Пильнуйте себе, щоб ви\\f + \\fr 1:8 \\ft Деякі рукописи містять слово \\fqa ми\\ft ; також у другій половині речення.\\f* не загубили того, що ми напрацювали, але щоб ви отримали повну винагороду."
+        ],
+        "number": "8",
+        "paragraph_id": "2JN-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Пильнуйте себе, щоб ви\\f + \\fr 1:8 \\ft Деякі рукописи містять слово \\fqa ми\\ft ; також у другій половині речення.\\f* не загубили того, що ми напрацювали, але щоб ви отримали повну винагороду.",
+        "section_id": "2JN-S003",
+        "section_marker": "s1",
+        "section_title": "Залишайтеся вірними Христу",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Кожен, хто віддаляється й не залишається у вченні Христа, не має Бога. Той, хто залишається у вченні, має Отця і Сина.",
+        "body_text_exact": "Кожен, хто віддаляється й не залишається у вченні Христа, не має Бога. Той, хто залишається у вченні, має Отця і Сина.",
+        "body_text_normalized": "Кожен, хто віддаляється й не залишається у вченні Христа, не має Бога. Той, хто залишається у вченні, має Отця і Сина.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Кожен, хто віддаляється й не залишається у вченні Христа, не має Бога. Той, хто залишається у вченні",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:9 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Або: ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "у вченні Його",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              ", або: ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "у вченні Ісуса Христа."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          ", має Отця і Сина."
+        ],
+        "discourse_unit_id": "2JN-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 32,
+        "line_start": 32,
+        "lines": [
+          "\\v 9 Кожен, хто віддаляється й не залишається у вченні Христа, не має Бога. Той, хто залишається у вченні\\f + \\fr 1:9 \\ft Або: \\fqa у вченні Його\\ft , або: \\fqa у вченні Ісуса Христа.\\f*, має Отця і Сина."
+        ],
+        "number": "9",
+        "paragraph_id": "2JN-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Кожен, хто віддаляється й не залишається у вченні Христа, не має Бога. Той, хто залишається у вченні\\f + \\fr 1:9 \\ft Або: \\fqa у вченні Його\\ft , або: \\fqa у вченні Ісуса Христа.\\f*, має Отця і Сина.",
+        "section_id": "2JN-S003",
+        "section_marker": "s1",
+        "section_title": "Залишайтеся вірними Христу",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Якщо хтось приходить до вас і не приносить цього вчення, не приймайте його до вашого дому й не кажіть йому: «Вітаю!».",
+        "body_text_exact": "Якщо хтось приходить до вас і не приносить цього вчення, не приймайте його до вашого дому й не кажіть йому: «Вітаю!».",
+        "body_text_normalized": "Якщо хтось приходить до вас і не приносить цього вчення, не приймайте його до вашого дому й не кажіть йому: «Вітаю!».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Якщо хтось приходить до вас і не приносить цього вчення, не приймайте його до вашого дому й не кажіть йому: «Вітаю!»."
+        ],
+        "discourse_unit_id": "2JN-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 33,
+        "line_start": 33,
+        "lines": [
+          "\\v 10 Якщо хтось приходить до вас і не приносить цього вчення, не приймайте його до вашого дому й не кажіть йому: «Вітаю!»."
+        ],
+        "number": "10",
+        "paragraph_id": "2JN-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Якщо хтось приходить до вас і не приносить цього вчення, не приймайте його до вашого дому й не кажіть йому: «Вітаю!».",
+        "section_id": "2JN-S003",
+        "section_marker": "s1",
+        "section_title": "Залишайтеся вірними Христу",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Бо той, хто каже: «Вітаю!», розділяє його лихі вчинки.",
+        "body_text_exact": "Бо той, хто каже: «Вітаю!», розділяє його лихі вчинки.",
+        "body_text_normalized": "Бо той, хто каже: «Вітаю!», розділяє його лихі вчинки.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Бо той, хто каже: «Вітаю!», розділяє його лихі вчинки."
+        ],
+        "discourse_unit_id": "2JN-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 34,
+        "line_start": 34,
+        "lines": [
+          "\\v 11 Бо той, хто каже: «Вітаю!», розділяє його лихі вчинки."
+        ],
+        "number": "11",
+        "paragraph_id": "2JN-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Бо той, хто каже: «Вітаю!», розділяє його лихі вчинки.",
+        "section_id": "2JN-S003",
+        "section_marker": "s1",
+        "section_title": "Залишайтеся вірними Христу",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Я мав би багато чого вам написати, але не хочу цього робити чорнилом на папері. Я сподіваюся прийти до вас, і ми поговоримо віч-на-віч, щоб наша радість була повна.",
+        "body_text_exact": "Я мав би багато чого вам написати, але не хочу цього робити чорнилом на папері. Я сподіваюся прийти до вас, і ми поговоримо віч-на-віч, щоб наша радість була повна.",
+        "body_text_normalized": "Я мав би багато чого вам написати, але не хочу цього робити чорнилом на папері. Я сподіваюся прийти до вас, і ми поговоримо віч-на-віч, щоб наша радість була повна.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я мав би багато чого вам написати, але не хочу ",
+          {
+            "content": [
+              "цього робити"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " чорнилом на папері. Я сподіваюся прийти до вас, і ми поговоримо віч-на-віч, щоб наша радість була повна."
+        ],
+        "discourse_unit_id": "2JN-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 38,
+        "line_start": 38,
+        "lines": [
+          "\\v 12 Я мав би багато чого вам написати, але не хочу \\add цього робити\\add* чорнилом на папері. Я сподіваюся прийти до вас, і ми поговоримо віч-на-віч, щоб наша радість була повна."
+        ],
+        "number": "12",
+        "paragraph_id": "2JN-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Я мав би багато чого вам написати, але не хочу \\add цього робити\\add* чорнилом на папері. Я сподіваюся прийти до вас, і ми поговоримо віч-на-віч, щоб наша радість була повна.",
+        "section_id": "2JN-S003",
+        "section_marker": "s1",
+        "section_title": "Залишайтеся вірними Христу",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Діти твоєї обраної сестри вітають тебе!",
+        "body_text_exact": "Діти твоєї обраної сестри вітають тебе!",
+        "body_text_normalized": "Діти твоєї обраної сестри вітають тебе!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Діти твоєї обраної сестри вітають тебе!"
+        ],
+        "discourse_unit_id": "2JN-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 41,
+        "line_start": 41,
+        "lines": [
+          "\\v 13 Діти твоєї обраної сестри вітають тебе!"
+        ],
+        "number": "13",
+        "paragraph_id": "2JN-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Діти твоєї обраної сестри вітають тебе!",
+        "section_id": "2JN-S003",
+        "section_marker": "s1",
+        "section_title": "Залишайтеся вірними Христу",
+        "verse_end": 13,
+        "verse_start": 13
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

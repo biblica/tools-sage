@@ -1,0 +1,5900 @@
+{
+  "content": [
+    {
+      "code": "HAG",
+      "content": [
+        "NASB20"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Haggai",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Haggai",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Hag",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The Book of",
+        "\n"
+      ],
+      "marker": "mt2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "HAGGAI",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "HAG 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Haggai Begins Temple Building"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "HAG 1:1",
+          "type": "verse"
+        },
+        "In the second year of Darius the king, on the first day of the sixth month, the word of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " came by the prophet Haggai to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, saying,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "HAG 1:2",
+          "type": "verse"
+        },
+        "“This is what the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:2 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "says, saying",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "says: ‘This people says, “The time has not come, the time for the house of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " to be rebuilt.” ’ ”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "HAG 1:3",
+          "type": "verse"
+        },
+        "Then the word of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " came by Haggai the prophet, saying,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "HAG 1:4",
+          "type": "verse"
+        },
+        "“Is it time for you yourselves to live in your paneled houses while this house ",
+        {
+          "content": [
+            "remains"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " desolate?”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "HAG 1:5",
+          "type": "verse"
+        },
+        "Now then, the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies says this: “",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:5 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "Set your heart on",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "Consider your ways!",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "HAG 1:6",
+          "type": "verse"
+        },
+        "You have sown much, ",
+        {
+          "content": [
+            "only to"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:6 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "bring in",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "harvest little; ",
+        {
+          "content": [
+            "you"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " eat, but there is not ",
+        {
+          "content": [
+            "enough"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " to be satisfied; ",
+        {
+          "content": [
+            "you"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " drink, but there is not ",
+        {
+          "content": [
+            "enough"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " to become drunk; ",
+        {
+          "content": [
+            "you"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " put on clothing, but there is not ",
+        {
+          "content": [
+            "enough"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " for ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:6 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "him",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "anyone to get warm; and the one who earns, earns wages ",
+        {
+          "content": [
+            "to put"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " into a money bag full of holes.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "HAG 1:7",
+          "type": "verse"
+        },
+        "The L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies says this: “",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:7 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "Set your heart on",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "Consider your ways!",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "HAG 1:8",
+          "type": "verse"
+        },
+        "Go up to the ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:8 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "mountain",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "mountains, bring wood, and rebuild the ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:8 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "house",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "temple, that I may be pleased with it and be honored,” says the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ".",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "HAG 1:9",
+          "type": "verse"
+        },
+        "“",
+        {
+          "content": [
+            "You"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:9 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "turn to much",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "start an ambitious project, but behold, ",
+        {
+          "content": [
+            "it comes"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " to little; when you bring ",
+        {
+          "content": [
+            "it"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " home, I blow it ",
+        {
+          "content": [
+            "away."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " Why?” declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies. “",
+        {
+          "content": [
+            "It is"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " because of My house which ",
+        {
+          "content": [
+            "remains"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " desolate, while each of you runs to his own house.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "HAG 1:10",
+          "type": "verse"
+        },
+        "Therefore, because of you the sky has withheld ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:10 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "from dew",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "its dew, and the earth has withheld its produce.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "HAG 1:11",
+          "type": "verse"
+        },
+        "And I called for a drought on the land, on the mountains, on the grain, on the new wine, on the oil, on what the ground produces, on mankind, on cattle, and on all the products of the labor of ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:11 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "palms",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "your hands.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "HAG 1:12",
+          "type": "verse"
+        },
+        "Then Zerubbabel the son of Shealtiel, and Joshua the son of Jehozadak, the high priest, with all the remnant of the people, obeyed the voice of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " their God and the words of Haggai the prophet, just as the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " their God had sent him. And the people ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:12 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "feared before",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "showed reverence for the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ".",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "HAG 1:13",
+          "type": "verse"
+        },
+        "Then Haggai, the messenger of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", spoke ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:13 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "with the commissioned message",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "by the commission of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " to the people, saying, “ ‘I am with you,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ".”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "HAG 1:14",
+          "type": "verse"
+        },
+        "So the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " stirred up the spirit of Zerubbabel the son of Shealtiel, governor of Judah, and the spirit of Joshua the son of Jehozadak, the high priest, and the spirit of all the remnant of the people; and they came and worked on the house of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies, their God,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "HAG 1:15",
+          "type": "verse"
+        },
+        "on the twenty-fourth day of the sixth month in the second year of Darius the king.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "2",
+      "sid": "HAG 2",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "The Builders Encouraged"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "HAG 2:1",
+          "type": "verse"
+        },
+        "On the twenty-first of the seventh month, the word of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " came by Haggai the prophet, saying,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "HAG 2:2",
+          "type": "verse"
+        },
+        "“Speak now to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, and to the remnant of the people, saying,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "HAG 2:3",
+          "type": "verse"
+        },
+        "‘Who is left among you who saw this ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:3 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "house",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "temple in its former glory? And how do you see it now? ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:3 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "Is it not in your eyes like",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "Does it not seem to you like nothing ",
+        {
+          "content": [
+            "3 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:3 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "like it",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "in comparison?",
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "HAG 2:4",
+          "type": "verse"
+        },
+        "But now ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:4 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "be strong",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "take courage, Zerubbabel,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", ‘take courage also, Joshua son of Jehozadak, the high priest, and all you people of the land take courage,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", ‘and work; for I am with you,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "HAG 2:5",
+          "type": "verse"
+        },
+        "‘As for the ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:5 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "word",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "promise which I ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:5 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "cut with",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "made you when you came out of Egypt, ",
+        {
+          "content": [
+            "3 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:5 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "while My Spirit was standing",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "My Spirit remains in your midst; do not fear!’",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "HAG 2:6",
+          "type": "verse"
+        },
+        "For this is what the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies says: ‘Once more ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:6 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "it is a little",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "in a little while, I am going to shake the heavens and the earth, the sea also and the dry land.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "HAG 2:7",
+          "type": "verse"
+        },
+        "I will shake all the nations; and ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:7 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Another reading is ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "the wealth of all nations will come",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "they will come ",
+        {
+          "content": [
+            "with"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " the wealth of all nations, and I will fill this house with glory,’ says the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "HAG 2:8",
+          "type": "verse"
+        },
+        "‘The silver is Mine and the gold is Mine,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "HAG 2:9",
+          "type": "verse"
+        },
+        "‘The latter glory of this house will be greater than the former,’ says the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies, ‘and in this place I will give peace,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "HAG 2:10",
+          "type": "verse"
+        },
+        "On the twenty-fourth of the ninth ",
+        {
+          "content": [
+            "month,"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " in the second year of Darius, the word of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " came to Haggai the prophet, saying,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "HAG 2:11",
+          "type": "verse"
+        },
+        "“The L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies says this: ‘Now ask the priests ",
+        {
+          "content": [
+            "for"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " a ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:11 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "law;",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            "or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "saying",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "ruling:",
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "HAG 2:12",
+          "type": "verse"
+        },
+        "If someone carries holy meat in the ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:12 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "wing",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "fold of his garment, and touches bread with ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:12 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "his wing",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "this fold, or ",
+        {
+          "content": [
+            "touches"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " cooked food, wine, oil, or any ",
+        {
+          "content": [
+            "other"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " food, will it become holy?’ ” And the priests answered, “No.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "HAG 2:13",
+          "type": "verse"
+        },
+        "Then Haggai said, “If one who is unclean from a ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:13 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "soul",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "corpse touches any of these ",
+        {
+          "content": [
+            "things,"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " will ",
+        {
+          "content": [
+            "the latter"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " become unclean?” And the priests answered, “It will become unclean.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "HAG 2:14",
+          "type": "verse"
+        },
+        "Then Haggai responded and said, “ ‘So is this people. And so is this nation before Me,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", ‘and so is every work of their hands; and what they offer there is unclean.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "HAG 2:15",
+          "type": "verse"
+        },
+        "But now, do ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:15 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "set your heart",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "consider from this day ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:15 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "backward",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "onward: before one stone was placed on another in the temple of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ",",
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "HAG 2:16",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:16 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "since they were",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "from that time ",
+        {
+          "content": [
+            "when"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " one came to a grain heap of twenty ",
+        {
+          "content": [
+            "measures,"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " there would be ",
+        {
+          "content": [
+            "only"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " ten; ",
+        {
+          "content": [
+            "and when"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " one came to the wine vat to draw fifty ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:16 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "troughs",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "measures, there would be ",
+        {
+          "content": [
+            "only"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " twenty.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "HAG 2:17",
+          "type": "verse"
+        },
+        "I struck you ",
+        {
+          "content": [
+            "and"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " every work of your hands with scorching wind, mildew, and hail; ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:17 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "As in LXX; MT ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "but you were not to Me",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "yet you did not come back to Me,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ".",
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "HAG 2:18",
+          "type": "verse"
+        },
+        "‘Do ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:18 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "set your heart",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "consider from this day ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:18 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "backward",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "onward, from the twenty-fourth day of the ninth ",
+        {
+          "content": [
+            "month;"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " from the day when the temple of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " was founded, ",
+        {
+          "content": [
+            "3 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:18 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "set your heart",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "consider:",
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "HAG 2:19",
+          "type": "verse"
+        },
+        "Is the seed still in the barn? Even including the vine, the fig tree, the pomegranate, and the olive tree, it has not produced ",
+        {
+          "content": [
+            "fruit. Yet"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " from this day ",
+        {
+          "content": [
+            "on"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " I will bless ",
+        {
+          "content": [
+            "you."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "’ ”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "HAG 2:20",
+          "type": "verse"
+        },
+        "Then the word of the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " came a second time to Haggai on the twenty-fourth ",
+        {
+          "content": [
+            "day"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " of the month, saying,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "21",
+          "sid": "HAG 2:21",
+          "type": "verse"
+        },
+        "“Speak to Zerubbabel governor of Judah, saying, ‘I am going to shake the heavens and the earth.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "22",
+          "sid": "HAG 2:22",
+          "type": "verse"
+        },
+        "And I will overthrow the thrones of kingdoms and destroy the power of the kingdoms of the ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:22 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "Gentiles",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "nations; and I will overthrow the chariots and their riders, and the horses and their riders will go down, every one by the sword of another.’",
+        "\n",
+        {
+          "marker": "v",
+          "number": "23",
+          "sid": "HAG 2:23",
+          "type": "verse"
+        },
+        "‘On that day,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies, ‘I will take you, Zerubbabel, son of Shealtiel, My servant,’ declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        ", ‘and I will make you like a ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:23 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "seal",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "signet ring, for I have chosen you,’ ” declares the L",
+        {
+          "content": [
+            "ord"
+          ],
+          "marker": "sc",
+          "type": "char"
+        },
+        " of armies.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "HAG",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "37HAGusNASB.SFM",
+    "source_sha256": "b53b02ac0c4133543d75406a6d33dda7b488b819d6c69fa85e1b7ec9e78e9c24",
+    "source_size": 8873,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "In the second year of Darius the king, on the first day of the sixth month, the word of the Lord came by the prophet Haggai to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, saying,",
+        "body_text_exact": "In the second year of Darius the king, on the first day of the sixth month, the word of the Lord came by the prophet Haggai to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, saying,",
+        "body_text_normalized": "In the second year of Darius the king, on the first day of the sixth month, the word of the Lord came by the prophet Haggai to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, saying,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "In the second year of Darius the king, on the first day of the sixth month, the word of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " came by the prophet Haggai to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, saying,"
+        ],
+        "discourse_unit_id": "HAG-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 10,
+        "line_start": 10,
+        "lines": [
+          "\\v 1 In the second year of Darius the king, on the first day of the sixth month, the word of the L\\sc ord\\sc* came by the prophet Haggai to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, saying,"
+        ],
+        "number": "1",
+        "paragraph_id": "HAG-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 In the second year of Darius the king, on the first day of the sixth month, the word of the L\\sc ord\\sc* came by the prophet Haggai to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, saying,",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "“This is what the Lord of armies says: ‘This people says, “The time has not come, the time for the house of the Lord to be rebuilt.” ’ ”",
+        "body_text_exact": "“This is what the Lord of armies says: ‘This people says, “The time has not come, the time for the house of the Lord to be rebuilt.” ’ ”",
+        "body_text_normalized": "“This is what the Lord of armies says: ‘This people says, “The time has not come, the time for the house of the Lord to be rebuilt.” ’ ”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "“This is what the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:2 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "says, saying",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "says: ‘This people says, “The time has not come, the time for the house of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " to be rebuilt.” ’ ”"
+        ],
+        "discourse_unit_id": "HAG-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 11,
+        "line_start": 11,
+        "lines": [
+          "\\v 2 “This is what the L\\sc ord\\sc* of armies \\f 1 \\fr 1:2 \\fr*\\ft Lit \\+it says, saying\\+it*\\ft*\\f*says: ‘This people says, “The time has not come, the time for the house of the L\\sc ord\\sc* to be rebuilt.” ’ ”"
+        ],
+        "number": "2",
+        "paragraph_id": "HAG-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 “This is what the L\\sc ord\\sc* of armies \\f 1 \\fr 1:2 \\fr*\\ft Lit \\+it says, saying\\+it*\\ft*\\f*says: ‘This people says, “The time has not come, the time for the house of the L\\sc ord\\sc* to be rebuilt.” ’ ”",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Then the word of the Lord came by Haggai the prophet, saying,",
+        "body_text_exact": "Then the word of the Lord came by Haggai the prophet, saying,",
+        "body_text_normalized": "Then the word of the Lord came by Haggai the prophet, saying,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Then the word of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " came by Haggai the prophet, saying,"
+        ],
+        "discourse_unit_id": "HAG-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 12,
+        "line_start": 12,
+        "lines": [
+          "\\v 3 Then the word of the L\\sc ord\\sc* came by Haggai the prophet, saying,"
+        ],
+        "number": "3",
+        "paragraph_id": "HAG-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Then the word of the L\\sc ord\\sc* came by Haggai the prophet, saying,",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "“Is it time for you yourselves to live in your paneled houses while this house remains desolate?”",
+        "body_text_exact": "“Is it time for you yourselves to live in your paneled houses while this house remains desolate?”",
+        "body_text_normalized": "“Is it time for you yourselves to live in your paneled houses while this house remains desolate?”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "“Is it time for you yourselves to live in your paneled houses while this house ",
+          {
+            "content": [
+              "remains"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " desolate?”"
+        ],
+        "discourse_unit_id": "HAG-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 13,
+        "line_start": 13,
+        "lines": [
+          "\\v 4 “Is it time for you yourselves to live in your paneled houses while this house \\it remains\\it* desolate?”"
+        ],
+        "number": "4",
+        "paragraph_id": "HAG-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 “Is it time for you yourselves to live in your paneled houses while this house \\it remains\\it* desolate?”",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Now then, the Lord of armies says this: “Consider your ways!",
+        "body_text_exact": "Now then, the Lord of armies says this: “Consider your ways!",
+        "body_text_normalized": "Now then, the Lord of armies says this: “Consider your ways!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Now then, the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies says this: “",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:5 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "Set your heart on",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "Consider your ways!"
+        ],
+        "discourse_unit_id": "HAG-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 14,
+        "line_start": 14,
+        "lines": [
+          "\\v 5 Now then, the L\\sc ord\\sc* of armies says this: “\\f 1 \\fr 1:5 \\fr*\\ft Lit \\+it Set your heart on\\+it*\\ft*\\f*Consider your ways!"
+        ],
+        "number": "5",
+        "paragraph_id": "HAG-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Now then, the L\\sc ord\\sc* of armies says this: “\\f 1 \\fr 1:5 \\fr*\\ft Lit \\+it Set your heart on\\+it*\\ft*\\f*Consider your ways!",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "You have sown much, only to harvest little; you eat, but there is not enough to be satisfied; you drink, but there is not enough to become drunk; you put on clothing, but there is not enough for anyone to get warm; and the one who earns, earns wages to put into a money bag full of holes.”",
+        "body_text_exact": "You have sown much, only to harvest little; you eat, but there is not enough to be satisfied; you drink, but there is not enough to become drunk; you put on clothing, but there is not enough for anyone to get warm; and the one who earns, earns wages to put into a money bag full of holes.”",
+        "body_text_normalized": "You have sown much, only to harvest little; you eat, but there is not enough to be satisfied; you drink, but there is not enough to become drunk; you put on clothing, but there is not enough for anyone to get warm; and the one who earns, earns wages to put into a money bag full of holes.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "You have sown much, ",
+          {
+            "content": [
+              "only to"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:6 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "bring in",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "harvest little; ",
+          {
+            "content": [
+              "you"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " eat, but there is not ",
+          {
+            "content": [
+              "enough"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " to be satisfied; ",
+          {
+            "content": [
+              "you"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " drink, but there is not ",
+          {
+            "content": [
+              "enough"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " to become drunk; ",
+          {
+            "content": [
+              "you"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " put on clothing, but there is not ",
+          {
+            "content": [
+              "enough"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " for ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:6 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "him",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "anyone to get warm; and the one who earns, earns wages ",
+          {
+            "content": [
+              "to put"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " into a money bag full of holes.”"
+        ],
+        "discourse_unit_id": "HAG-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 15,
+        "line_start": 15,
+        "lines": [
+          "\\v 6 You have sown much, \\it only to\\it* \\f 1 \\fr 1:6 \\fr*\\ft Lit \\+it bring in\\+it*\\ft*\\f*harvest little; \\it you\\it* eat, but there is not \\it enough\\it* to be satisfied; \\it you\\it* drink, but there is not \\it enough\\it* to become drunk; \\it you\\it* put on clothing, but there is not \\it enough\\it* for \\f 2 \\fr 1:6 \\fr*\\ft Lit \\+it him\\+it*\\ft*\\f*anyone to get warm; and the one who earns, earns wages \\it to put\\it* into a money bag full of holes.”"
+        ],
+        "number": "6",
+        "paragraph_id": "HAG-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 You have sown much, \\it only to\\it* \\f 1 \\fr 1:6 \\fr*\\ft Lit \\+it bring in\\+it*\\ft*\\f*harvest little; \\it you\\it* eat, but there is not \\it enough\\it* to be satisfied; \\it you\\it* drink, but there is not \\it enough\\it* to become drunk; \\it you\\it* put on clothing, but there is not \\it enough\\it* for \\f 2 \\fr 1:6 \\fr*\\ft Lit \\+it him\\+it*\\ft*\\f*anyone to get warm; and the one who earns, earns wages \\it to put\\it* into a money bag full of holes.”",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "The Lord of armies says this: “Consider your ways!",
+        "body_text_exact": "The Lord of armies says this: “Consider your ways!",
+        "body_text_normalized": "The Lord of armies says this: “Consider your ways!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "The L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies says this: “",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:7 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "Set your heart on",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "Consider your ways!"
+        ],
+        "discourse_unit_id": "HAG-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 17,
+        "line_start": 17,
+        "lines": [
+          "\\v 7 The L\\sc ord\\sc* of armies says this: “\\f 1 \\fr 1:7 \\fr*\\ft Lit \\+it Set your heart on\\+it*\\ft*\\f*Consider your ways!"
+        ],
+        "number": "7",
+        "paragraph_id": "HAG-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 The L\\sc ord\\sc* of armies says this: “\\f 1 \\fr 1:7 \\fr*\\ft Lit \\+it Set your heart on\\+it*\\ft*\\f*Consider your ways!",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Go up to the mountains, bring wood, and rebuild the temple, that I may be pleased with it and be honored,” says the Lord.",
+        "body_text_exact": "Go up to the mountains, bring wood, and rebuild the temple, that I may be pleased with it and be honored,” says the Lord.",
+        "body_text_normalized": "Go up to the mountains, bring wood, and rebuild the temple, that I may be pleased with it and be honored,” says the Lord.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Go up to the ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:8 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "mountain",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "mountains, bring wood, and rebuild the ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:8 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "house",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "temple, that I may be pleased with it and be honored,” says the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "HAG-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 18,
+        "line_start": 18,
+        "lines": [
+          "\\v 8 Go up to the \\f 1 \\fr 1:8 \\fr*\\ft Lit \\+it mountain\\+it*\\ft*\\f*mountains, bring wood, and rebuild the \\f 2 \\fr 1:8 \\fr*\\ft Lit \\+it house\\+it*\\ft*\\f*temple, that I may be pleased with it and be honored,” says the L\\sc ord\\sc*."
+        ],
+        "number": "8",
+        "paragraph_id": "HAG-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Go up to the \\f 1 \\fr 1:8 \\fr*\\ft Lit \\+it mountain\\+it*\\ft*\\f*mountains, bring wood, and rebuild the \\f 2 \\fr 1:8 \\fr*\\ft Lit \\+it house\\+it*\\ft*\\f*temple, that I may be pleased with it and be honored,” says the L\\sc ord\\sc*.",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "“You start an ambitious project, but behold, it comes to little; when you bring it home, I blow it away. Why?” declares the Lord of armies. “It is because of My house which remains desolate, while each of you runs to his own house.",
+        "body_text_exact": "“You start an ambitious project, but behold, it comes to little; when you bring it home, I blow it away. Why?” declares the Lord of armies. “It is because of My house which remains desolate, while each of you runs to his own house.",
+        "body_text_normalized": "“You start an ambitious project, but behold, it comes to little; when you bring it home, I blow it away. Why?” declares the Lord of armies. “It is because of My house which remains desolate, while each of you runs to his own house.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "“",
+          {
+            "content": [
+              "You"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:9 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "turn to much",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "start an ambitious project, but behold, ",
+          {
+            "content": [
+              "it comes"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " to little; when you bring ",
+          {
+            "content": [
+              "it"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " home, I blow it ",
+          {
+            "content": [
+              "away."
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " Why?” declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies. “",
+          {
+            "content": [
+              "It is"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " because of My house which ",
+          {
+            "content": [
+              "remains"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " desolate, while each of you runs to his own house."
+        ],
+        "discourse_unit_id": "HAG-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 19,
+        "line_start": 19,
+        "lines": [
+          "\\v 9 “\\it You\\it* \\f 1 \\fr 1:9 \\fr*\\ft Lit \\+it turn to much\\+it*\\ft*\\f*start an ambitious project, but behold, \\it it comes\\it* to little; when you bring \\it it\\it* home, I blow it \\it away.\\it* Why?” declares the L\\sc ord\\sc* of armies. “\\it It is\\it* because of My house which \\it remains\\it* desolate, while each of you runs to his own house."
+        ],
+        "number": "9",
+        "paragraph_id": "HAG-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 “\\it You\\it* \\f 1 \\fr 1:9 \\fr*\\ft Lit \\+it turn to much\\+it*\\ft*\\f*start an ambitious project, but behold, \\it it comes\\it* to little; when you bring \\it it\\it* home, I blow it \\it away.\\it* Why?” declares the L\\sc ord\\sc* of armies. “\\it It is\\it* because of My house which \\it remains\\it* desolate, while each of you runs to his own house.",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Therefore, because of you the sky has withheld its dew, and the earth has withheld its produce.",
+        "body_text_exact": "Therefore, because of you the sky has withheld its dew, and the earth has withheld its produce.",
+        "body_text_normalized": "Therefore, because of you the sky has withheld its dew, and the earth has withheld its produce.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Therefore, because of you the sky has withheld ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:10 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "from dew",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "its dew, and the earth has withheld its produce."
+        ],
+        "discourse_unit_id": "HAG-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 20,
+        "line_start": 20,
+        "lines": [
+          "\\v 10 Therefore, because of you the sky has withheld \\f 1 \\fr 1:10 \\fr*\\ft Lit \\+it from dew\\+it*\\ft*\\f*its dew, and the earth has withheld its produce."
+        ],
+        "number": "10",
+        "paragraph_id": "HAG-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Therefore, because of you the sky has withheld \\f 1 \\fr 1:10 \\fr*\\ft Lit \\+it from dew\\+it*\\ft*\\f*its dew, and the earth has withheld its produce.",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "And I called for a drought on the land, on the mountains, on the grain, on the new wine, on the oil, on what the ground produces, on mankind, on cattle, and on all the products of the labor of your hands.”",
+        "body_text_exact": "And I called for a drought on the land, on the mountains, on the grain, on the new wine, on the oil, on what the ground produces, on mankind, on cattle, and on all the products of the labor of your hands.”",
+        "body_text_normalized": "And I called for a drought on the land, on the mountains, on the grain, on the new wine, on the oil, on what the ground produces, on mankind, on cattle, and on all the products of the labor of your hands.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "And I called for a drought on the land, on the mountains, on the grain, on the new wine, on the oil, on what the ground produces, on mankind, on cattle, and on all the products of the labor of ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:11 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "palms",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "your hands.”"
+        ],
+        "discourse_unit_id": "HAG-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 21,
+        "line_start": 21,
+        "lines": [
+          "\\v 11 And I called for a drought on the land, on the mountains, on the grain, on the new wine, on the oil, on what the ground produces, on mankind, on cattle, and on all the products of the labor of \\f 1 \\fr 1:11 \\fr*\\ft Lit \\+it palms\\+it*\\ft*\\f*your hands.”"
+        ],
+        "number": "11",
+        "paragraph_id": "HAG-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 And I called for a drought on the land, on the mountains, on the grain, on the new wine, on the oil, on what the ground produces, on mankind, on cattle, and on all the products of the labor of \\f 1 \\fr 1:11 \\fr*\\ft Lit \\+it palms\\+it*\\ft*\\f*your hands.”",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Then Zerubbabel the son of Shealtiel, and Joshua the son of Jehozadak, the high priest, with all the remnant of the people, obeyed the voice of the Lord their God and the words of Haggai the prophet, just as the Lord their God had sent him. And the people showed reverence for the Lord.",
+        "body_text_exact": "Then Zerubbabel the son of Shealtiel, and Joshua the son of Jehozadak, the high priest, with all the remnant of the people, obeyed the voice of the Lord their God and the words of Haggai the prophet, just as the Lord their God had sent him. And the people showed reverence for the Lord.",
+        "body_text_normalized": "Then Zerubbabel the son of Shealtiel, and Joshua the son of Jehozadak, the high priest, with all the remnant of the people, obeyed the voice of the Lord their God and the words of Haggai the prophet, just as the Lord their God had sent him. And the people showed reverence for the Lord.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Then Zerubbabel the son of Shealtiel, and Joshua the son of Jehozadak, the high priest, with all the remnant of the people, obeyed the voice of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " their God and the words of Haggai the prophet, just as the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " their God had sent him. And the people ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:12 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "feared before",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "showed reverence for the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "HAG-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 23,
+        "line_start": 23,
+        "lines": [
+          "\\v 12 Then Zerubbabel the son of Shealtiel, and Joshua the son of Jehozadak, the high priest, with all the remnant of the people, obeyed the voice of the L\\sc ord\\sc* their God and the words of Haggai the prophet, just as the L\\sc ord\\sc* their God had sent him. And the people \\f 1 \\fr 1:12 \\fr*\\ft Lit \\+it feared before\\+it*\\ft*\\f*showed reverence for the L\\sc ord\\sc*."
+        ],
+        "number": "12",
+        "paragraph_id": "HAG-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Then Zerubbabel the son of Shealtiel, and Joshua the son of Jehozadak, the high priest, with all the remnant of the people, obeyed the voice of the L\\sc ord\\sc* their God and the words of Haggai the prophet, just as the L\\sc ord\\sc* their God had sent him. And the people \\f 1 \\fr 1:12 \\fr*\\ft Lit \\+it feared before\\+it*\\ft*\\f*showed reverence for the L\\sc ord\\sc*.",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Then Haggai, the messenger of the Lord, spoke by the commission of the Lord to the people, saying, “ ‘I am with you,’ declares the Lord.”",
+        "body_text_exact": "Then Haggai, the messenger of the Lord, spoke by the commission of the Lord to the people, saying, “ ‘I am with you,’ declares the Lord.”",
+        "body_text_normalized": "Then Haggai, the messenger of the Lord, spoke by the commission of the Lord to the people, saying, “ ‘I am with you,’ declares the Lord.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Then Haggai, the messenger of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", spoke ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:13 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "with the commissioned message",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "by the commission of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " to the people, saying, “ ‘I am with you,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ".”"
+        ],
+        "discourse_unit_id": "HAG-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 24,
+        "line_start": 24,
+        "lines": [
+          "\\v 13 Then Haggai, the messenger of the L\\sc ord\\sc*, spoke \\f 1 \\fr 1:13 \\fr*\\ft Or \\+it with the commissioned message\\+it*\\ft*\\f*by the commission of the L\\sc ord\\sc* to the people, saying, “ ‘I am with you,’ declares the L\\sc ord\\sc*.”"
+        ],
+        "number": "13",
+        "paragraph_id": "HAG-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Then Haggai, the messenger of the L\\sc ord\\sc*, spoke \\f 1 \\fr 1:13 \\fr*\\ft Or \\+it with the commissioned message\\+it*\\ft*\\f*by the commission of the L\\sc ord\\sc* to the people, saying, “ ‘I am with you,’ declares the L\\sc ord\\sc*.”",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "So the Lord stirred up the spirit of Zerubbabel the son of Shealtiel, governor of Judah, and the spirit of Joshua the son of Jehozadak, the high priest, and the spirit of all the remnant of the people; and they came and worked on the house of the Lord of armies, their God,",
+        "body_text_exact": "So the Lord stirred up the spirit of Zerubbabel the son of Shealtiel, governor of Judah, and the spirit of Joshua the son of Jehozadak, the high priest, and the spirit of all the remnant of the people; and they came and worked on the house of the Lord of armies, their God,",
+        "body_text_normalized": "So the Lord stirred up the spirit of Zerubbabel the son of Shealtiel, governor of Judah, and the spirit of Joshua the son of Jehozadak, the high priest, and the spirit of all the remnant of the people; and they came and worked on the house of the Lord of armies, their God,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "So the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " stirred up the spirit of Zerubbabel the son of Shealtiel, governor of Judah, and the spirit of Joshua the son of Jehozadak, the high priest, and the spirit of all the remnant of the people; and they came and worked on the house of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies, their God,"
+        ],
+        "discourse_unit_id": "HAG-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 25,
+        "line_start": 25,
+        "lines": [
+          "\\v 14 So the L\\sc ord\\sc* stirred up the spirit of Zerubbabel the son of Shealtiel, governor of Judah, and the spirit of Joshua the son of Jehozadak, the high priest, and the spirit of all the remnant of the people; and they came and worked on the house of the L\\sc ord\\sc* of armies, their God,"
+        ],
+        "number": "14",
+        "paragraph_id": "HAG-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 So the L\\sc ord\\sc* stirred up the spirit of Zerubbabel the son of Shealtiel, governor of Judah, and the spirit of Joshua the son of Jehozadak, the high priest, and the spirit of all the remnant of the people; and they came and worked on the house of the L\\sc ord\\sc* of armies, their God,",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "on the twenty-fourth day of the sixth month in the second year of Darius the king.",
+        "body_text_exact": "on the twenty-fourth day of the sixth month in the second year of Darius the king.",
+        "body_text_normalized": "on the twenty-fourth day of the sixth month in the second year of Darius the king.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "on the twenty-fourth day of the sixth month in the second year of Darius the king."
+        ],
+        "discourse_unit_id": "HAG-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 26,
+        "line_start": 26,
+        "lines": [
+          "\\v 15 on the twenty-fourth day of the sixth month in the second year of Darius the king."
+        ],
+        "number": "15",
+        "paragraph_id": "HAG-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 on the twenty-fourth day of the sixth month in the second year of Darius the king.",
+        "section_id": "HAG-S001",
+        "section_marker": "s1",
+        "section_title": "Haggai Begins Temple Building",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "On the twenty-first of the seventh month, the word of the Lord came by Haggai the prophet, saying,",
+        "body_text_exact": "On the twenty-first of the seventh month, the word of the Lord came by Haggai the prophet, saying,",
+        "body_text_normalized": "On the twenty-first of the seventh month, the word of the Lord came by Haggai the prophet, saying,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "On the twenty-first of the seventh month, the word of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " came by Haggai the prophet, saying,"
+        ],
+        "discourse_unit_id": "HAG-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 30,
+        "line_start": 30,
+        "lines": [
+          "\\v 1 On the twenty-first of the seventh month, the word of the L\\sc ord\\sc* came by Haggai the prophet, saying,"
+        ],
+        "number": "1",
+        "paragraph_id": "HAG-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 On the twenty-first of the seventh month, the word of the L\\sc ord\\sc* came by Haggai the prophet, saying,",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "“Speak now to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, and to the remnant of the people, saying,",
+        "body_text_exact": "“Speak now to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, and to the remnant of the people, saying,",
+        "body_text_normalized": "“Speak now to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, and to the remnant of the people, saying,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“Speak now to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, and to the remnant of the people, saying,"
+        ],
+        "discourse_unit_id": "HAG-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 31,
+        "line_start": 31,
+        "lines": [
+          "\\v 2 “Speak now to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, and to the remnant of the people, saying,"
+        ],
+        "number": "2",
+        "paragraph_id": "HAG-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 “Speak now to Zerubbabel the son of Shealtiel, governor of Judah, and to Joshua the son of Jehozadak, the high priest, and to the remnant of the people, saying,",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "‘Who is left among you who saw this temple in its former glory? And how do you see it now? Does it not seem to you like nothing in comparison?",
+        "body_text_exact": "‘Who is left among you who saw this temple in its former glory? And how do you see it now? Does it not seem to you like nothing in comparison?",
+        "body_text_normalized": "‘Who is left among you who saw this temple in its former glory? And how do you see it now? Does it not seem to you like nothing in comparison?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "‘Who is left among you who saw this ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:3 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "house",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "temple in its former glory? And how do you see it now? ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:3 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "Is it not in your eyes like",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "Does it not seem to you like nothing ",
+          {
+            "content": [
+              "3 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:3 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "like it",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "in comparison?"
+        ],
+        "discourse_unit_id": "HAG-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 32,
+        "line_start": 32,
+        "lines": [
+          "\\v 3 ‘Who is left among you who saw this \\f 1 \\fr 2:3 \\fr*\\ft Lit \\+it house\\+it*\\ft*\\f*temple in its former glory? And how do you see it now? \\f 2 \\fr 2:3 \\fr*\\ft Lit \\+it Is it not in your eyes like\\+it*\\ft*\\f*Does it not seem to you like nothing \\f 3 \\fr 2:3 \\fr*\\ft Lit \\+it like it\\+it*\\ft*\\f*in comparison?"
+        ],
+        "number": "3",
+        "paragraph_id": "HAG-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 ‘Who is left among you who saw this \\f 1 \\fr 2:3 \\fr*\\ft Lit \\+it house\\+it*\\ft*\\f*temple in its former glory? And how do you see it now? \\f 2 \\fr 2:3 \\fr*\\ft Lit \\+it Is it not in your eyes like\\+it*\\ft*\\f*Does it not seem to you like nothing \\f 3 \\fr 2:3 \\fr*\\ft Lit \\+it like it\\+it*\\ft*\\f*in comparison?",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "But now take courage, Zerubbabel,’ declares the Lord, ‘take courage also, Joshua son of Jehozadak, the high priest, and all you people of the land take courage,’ declares the Lord, ‘and work; for I am with you,’ declares the Lord of armies.",
+        "body_text_exact": "But now take courage, Zerubbabel,’ declares the Lord, ‘take courage also, Joshua son of Jehozadak, the high priest, and all you people of the land take courage,’ declares the Lord, ‘and work; for I am with you,’ declares the Lord of armies.",
+        "body_text_normalized": "But now take courage, Zerubbabel,’ declares the Lord, ‘take courage also, Joshua son of Jehozadak, the high priest, and all you people of the land take courage,’ declares the Lord, ‘and work; for I am with you,’ declares the Lord of armies.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "But now ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:4 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "be strong",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "take courage, Zerubbabel,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", ‘take courage also, Joshua son of Jehozadak, the high priest, and all you people of the land take courage,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", ‘and work; for I am with you,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies."
+        ],
+        "discourse_unit_id": "HAG-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 33,
+        "line_start": 33,
+        "lines": [
+          "\\v 4 But now \\f 1 \\fr 2:4 \\fr*\\ft Lit \\+it be strong\\+it*\\ft*\\f*take courage, Zerubbabel,’ declares the L\\sc ord\\sc*, ‘take courage also, Joshua son of Jehozadak, the high priest, and all you people of the land take courage,’ declares the L\\sc ord\\sc*, ‘and work; for I am with you,’ declares the L\\sc ord\\sc* of armies."
+        ],
+        "number": "4",
+        "paragraph_id": "HAG-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 But now \\f 1 \\fr 2:4 \\fr*\\ft Lit \\+it be strong\\+it*\\ft*\\f*take courage, Zerubbabel,’ declares the L\\sc ord\\sc*, ‘take courage also, Joshua son of Jehozadak, the high priest, and all you people of the land take courage,’ declares the L\\sc ord\\sc*, ‘and work; for I am with you,’ declares the L\\sc ord\\sc* of armies.",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "‘As for the promise which I made you when you came out of Egypt, My Spirit remains in your midst; do not fear!’",
+        "body_text_exact": "‘As for the promise which I made you when you came out of Egypt, My Spirit remains in your midst; do not fear!’",
+        "body_text_normalized": "‘As for the promise which I made you when you came out of Egypt, My Spirit remains in your midst; do not fear!’",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "‘As for the ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:5 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "word",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "promise which I ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:5 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "cut with",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "made you when you came out of Egypt, ",
+          {
+            "content": [
+              "3 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:5 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "while My Spirit was standing",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "My Spirit remains in your midst; do not fear!’"
+        ],
+        "discourse_unit_id": "HAG-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 34,
+        "line_start": 34,
+        "lines": [
+          "\\v 5 ‘As for the \\f 1 \\fr 2:5 \\fr*\\ft Lit \\+it word\\+it*\\ft*\\f*promise which I \\f 2 \\fr 2:5 \\fr*\\ft Lit \\+it cut with\\+it*\\ft*\\f*made you when you came out of Egypt, \\f 3 \\fr 2:5 \\fr*\\ft Or \\+it while My Spirit was standing\\+it*\\ft*\\f*My Spirit remains in your midst; do not fear!’"
+        ],
+        "number": "5",
+        "paragraph_id": "HAG-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 ‘As for the \\f 1 \\fr 2:5 \\fr*\\ft Lit \\+it word\\+it*\\ft*\\f*promise which I \\f 2 \\fr 2:5 \\fr*\\ft Lit \\+it cut with\\+it*\\ft*\\f*made you when you came out of Egypt, \\f 3 \\fr 2:5 \\fr*\\ft Or \\+it while My Spirit was standing\\+it*\\ft*\\f*My Spirit remains in your midst; do not fear!’",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "For this is what the Lord of armies says: ‘Once more in a little while, I am going to shake the heavens and the earth, the sea also and the dry land.",
+        "body_text_exact": "For this is what the Lord of armies says: ‘Once more in a little while, I am going to shake the heavens and the earth, the sea also and the dry land.",
+        "body_text_normalized": "For this is what the Lord of armies says: ‘Once more in a little while, I am going to shake the heavens and the earth, the sea also and the dry land.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "For this is what the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies says: ‘Once more ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:6 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "it is a little",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "in a little while, I am going to shake the heavens and the earth, the sea also and the dry land."
+        ],
+        "discourse_unit_id": "HAG-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 35,
+        "line_start": 35,
+        "lines": [
+          "\\v 6 For this is what the L\\sc ord\\sc* of armies says: ‘Once more \\f 1 \\fr 2:6 \\fr*\\ft Lit \\+it it is a little\\+it*\\ft*\\f*in a little while, I am going to shake the heavens and the earth, the sea also and the dry land."
+        ],
+        "number": "6",
+        "paragraph_id": "HAG-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 For this is what the L\\sc ord\\sc* of armies says: ‘Once more \\f 1 \\fr 2:6 \\fr*\\ft Lit \\+it it is a little\\+it*\\ft*\\f*in a little while, I am going to shake the heavens and the earth, the sea also and the dry land.",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "I will shake all the nations; and they will come with the wealth of all nations, and I will fill this house with glory,’ says the Lord of armies.",
+        "body_text_exact": "I will shake all the nations; and they will come with the wealth of all nations, and I will fill this house with glory,’ says the Lord of armies.",
+        "body_text_normalized": "I will shake all the nations; and they will come with the wealth of all nations, and I will fill this house with glory,’ says the Lord of armies.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "I will shake all the nations; and ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:7 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Another reading is ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "the wealth of all nations will come",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "they will come ",
+          {
+            "content": [
+              "with"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " the wealth of all nations, and I will fill this house with glory,’ says the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies."
+        ],
+        "discourse_unit_id": "HAG-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 36,
+        "line_start": 36,
+        "lines": [
+          "\\v 7 I will shake all the nations; and \\f 1 \\fr 2:7 \\fr*\\ft Another reading is \\+it the wealth of all nations will come\\+it*\\ft*\\f*they will come \\it with\\it* the wealth of all nations, and I will fill this house with glory,’ says the L\\sc ord\\sc* of armies."
+        ],
+        "number": "7",
+        "paragraph_id": "HAG-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 I will shake all the nations; and \\f 1 \\fr 2:7 \\fr*\\ft Another reading is \\+it the wealth of all nations will come\\+it*\\ft*\\f*they will come \\it with\\it* the wealth of all nations, and I will fill this house with glory,’ says the L\\sc ord\\sc* of armies.",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "‘The silver is Mine and the gold is Mine,’ declares the Lord of armies.",
+        "body_text_exact": "‘The silver is Mine and the gold is Mine,’ declares the Lord of armies.",
+        "body_text_normalized": "‘The silver is Mine and the gold is Mine,’ declares the Lord of armies.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "‘The silver is Mine and the gold is Mine,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies."
+        ],
+        "discourse_unit_id": "HAG-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 37,
+        "line_start": 37,
+        "lines": [
+          "\\v 8 ‘The silver is Mine and the gold is Mine,’ declares the L\\sc ord\\sc* of armies."
+        ],
+        "number": "8",
+        "paragraph_id": "HAG-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 ‘The silver is Mine and the gold is Mine,’ declares the L\\sc ord\\sc* of armies.",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "‘The latter glory of this house will be greater than the former,’ says the Lord of armies, ‘and in this place I will give peace,’ declares the Lord of armies.”",
+        "body_text_exact": "‘The latter glory of this house will be greater than the former,’ says the Lord of armies, ‘and in this place I will give peace,’ declares the Lord of armies.”",
+        "body_text_normalized": "‘The latter glory of this house will be greater than the former,’ says the Lord of armies, ‘and in this place I will give peace,’ declares the Lord of armies.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "‘The latter glory of this house will be greater than the former,’ says the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies, ‘and in this place I will give peace,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies.”"
+        ],
+        "discourse_unit_id": "HAG-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 38,
+        "line_start": 38,
+        "lines": [
+          "\\v 9 ‘The latter glory of this house will be greater than the former,’ says the L\\sc ord\\sc* of armies, ‘and in this place I will give peace,’ declares the L\\sc ord\\sc* of armies.”"
+        ],
+        "number": "9",
+        "paragraph_id": "HAG-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 ‘The latter glory of this house will be greater than the former,’ says the L\\sc ord\\sc* of armies, ‘and in this place I will give peace,’ declares the L\\sc ord\\sc* of armies.”",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "On the twenty-fourth of the ninth month, in the second year of Darius, the word of the Lord came to Haggai the prophet, saying,",
+        "body_text_exact": "On the twenty-fourth of the ninth month, in the second year of Darius, the word of the Lord came to Haggai the prophet, saying,",
+        "body_text_normalized": "On the twenty-fourth of the ninth month, in the second year of Darius, the word of the Lord came to Haggai the prophet, saying,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "On the twenty-fourth of the ninth ",
+          {
+            "content": [
+              "month,"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " in the second year of Darius, the word of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " came to Haggai the prophet, saying,"
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 40,
+        "line_start": 40,
+        "lines": [
+          "\\v 10 On the twenty-fourth of the ninth \\it month,\\it* in the second year of Darius, the word of the L\\sc ord\\sc* came to Haggai the prophet, saying,"
+        ],
+        "number": "10",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 On the twenty-fourth of the ninth \\it month,\\it* in the second year of Darius, the word of the L\\sc ord\\sc* came to Haggai the prophet, saying,",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "“The Lord of armies says this: ‘Now ask the priests for a ruling:",
+        "body_text_exact": "“The Lord of armies says this: ‘Now ask the priests for a ruling:",
+        "body_text_normalized": "“The Lord of armies says this: ‘Now ask the priests for a ruling:",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“The L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies says this: ‘Now ask the priests ",
+          {
+            "content": [
+              "for"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " a ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:11 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "law;",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              "or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "saying",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "ruling:"
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 41,
+        "line_start": 41,
+        "lines": [
+          "\\v 11 “The L\\sc ord\\sc* of armies says this: ‘Now ask the priests \\it for\\it* a \\f 1 \\fr 2:11 \\fr*\\ft Lit \\+it law;\\+it* or \\+it saying\\+it*\\ft*\\f*ruling:"
+        ],
+        "number": "11",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 “The L\\sc ord\\sc* of armies says this: ‘Now ask the priests \\it for\\it* a \\f 1 \\fr 2:11 \\fr*\\ft Lit \\+it law;\\+it* or \\+it saying\\+it*\\ft*\\f*ruling:",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "If someone carries holy meat in the fold of his garment, and touches bread with this fold, or touches cooked food, wine, oil, or any other food, will it become holy?’ ” And the priests answered, “No.”",
+        "body_text_exact": "If someone carries holy meat in the fold of his garment, and touches bread with this fold, or touches cooked food, wine, oil, or any other food, will it become holy?’ ” And the priests answered, “No.”",
+        "body_text_normalized": "If someone carries holy meat in the fold of his garment, and touches bread with this fold, or touches cooked food, wine, oil, or any other food, will it become holy?’ ” And the priests answered, “No.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "If someone carries holy meat in the ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:12 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "wing",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "fold of his garment, and touches bread with ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:12 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "his wing",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "this fold, or ",
+          {
+            "content": [
+              "touches"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " cooked food, wine, oil, or any ",
+          {
+            "content": [
+              "other"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " food, will it become holy?’ ” And the priests answered, “No.”"
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 42,
+        "line_start": 42,
+        "lines": [
+          "\\v 12 If someone carries holy meat in the \\f 1 \\fr 2:12 \\fr*\\ft Lit \\+it wing\\+it*\\ft*\\f*fold of his garment, and touches bread with \\f 2 \\fr 2:12 \\fr*\\ft Lit \\+it his wing\\+it*\\ft*\\f*this fold, or \\it touches\\it* cooked food, wine, oil, or any \\it other\\it* food, will it become holy?’ ” And the priests answered, “No.”"
+        ],
+        "number": "12",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 If someone carries holy meat in the \\f 1 \\fr 2:12 \\fr*\\ft Lit \\+it wing\\+it*\\ft*\\f*fold of his garment, and touches bread with \\f 2 \\fr 2:12 \\fr*\\ft Lit \\+it his wing\\+it*\\ft*\\f*this fold, or \\it touches\\it* cooked food, wine, oil, or any \\it other\\it* food, will it become holy?’ ” And the priests answered, “No.”",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Then Haggai said, “If one who is unclean from a corpse touches any of these things, will the latter become unclean?” And the priests answered, “It will become unclean.”",
+        "body_text_exact": "Then Haggai said, “If one who is unclean from a corpse touches any of these things, will the latter become unclean?” And the priests answered, “It will become unclean.”",
+        "body_text_normalized": "Then Haggai said, “If one who is unclean from a corpse touches any of these things, will the latter become unclean?” And the priests answered, “It will become unclean.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Then Haggai said, “If one who is unclean from a ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:13 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "soul",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "corpse touches any of these ",
+          {
+            "content": [
+              "things,"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " will ",
+          {
+            "content": [
+              "the latter"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " become unclean?” And the priests answered, “It will become unclean.”"
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 43,
+        "line_start": 43,
+        "lines": [
+          "\\v 13 Then Haggai said, “If one who is unclean from a \\f 1 \\fr 2:13 \\fr*\\ft Lit \\+it soul\\+it*\\ft*\\f*corpse touches any of these \\it things,\\it* will \\it the latter\\it* become unclean?” And the priests answered, “It will become unclean.”"
+        ],
+        "number": "13",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Then Haggai said, “If one who is unclean from a \\f 1 \\fr 2:13 \\fr*\\ft Lit \\+it soul\\+it*\\ft*\\f*corpse touches any of these \\it things,\\it* will \\it the latter\\it* become unclean?” And the priests answered, “It will become unclean.”",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Then Haggai responded and said, “ ‘So is this people. And so is this nation before Me,’ declares the Lord, ‘and so is every work of their hands; and what they offer there is unclean.",
+        "body_text_exact": "Then Haggai responded and said, “ ‘So is this people. And so is this nation before Me,’ declares the Lord, ‘and so is every work of their hands; and what they offer there is unclean.",
+        "body_text_normalized": "Then Haggai responded and said, “ ‘So is this people. And so is this nation before Me,’ declares the Lord, ‘and so is every work of their hands; and what they offer there is unclean.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Then Haggai responded and said, “ ‘So is this people. And so is this nation before Me,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", ‘and so is every work of their hands; and what they offer there is unclean."
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 44,
+        "line_start": 44,
+        "lines": [
+          "\\v 14 Then Haggai responded and said, “ ‘So is this people. And so is this nation before Me,’ declares the L\\sc ord\\sc*, ‘and so is every work of their hands; and what they offer there is unclean."
+        ],
+        "number": "14",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Then Haggai responded and said, “ ‘So is this people. And so is this nation before Me,’ declares the L\\sc ord\\sc*, ‘and so is every work of their hands; and what they offer there is unclean.",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "But now, do consider from this day onward: before one stone was placed on another in the temple of the Lord,",
+        "body_text_exact": "But now, do consider from this day onward: before one stone was placed on another in the temple of the Lord,",
+        "body_text_normalized": "But now, do consider from this day onward: before one stone was placed on another in the temple of the Lord,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "But now, do ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:15 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "set your heart",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "consider from this day ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:15 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "backward",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "onward: before one stone was placed on another in the temple of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ","
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 45,
+        "line_start": 45,
+        "lines": [
+          "\\v 15 But now, do \\f 1 \\fr 2:15 \\fr*\\ft Lit \\+it set your heart\\+it*\\ft*\\f*consider from this day \\f 2 \\fr 2:15 \\fr*\\ft Or \\+it backward\\+it*\\ft*\\f*onward: before one stone was placed on another in the temple of the L\\sc ord\\sc*,"
+        ],
+        "number": "15",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 But now, do \\f 1 \\fr 2:15 \\fr*\\ft Lit \\+it set your heart\\+it*\\ft*\\f*consider from this day \\f 2 \\fr 2:15 \\fr*\\ft Or \\+it backward\\+it*\\ft*\\f*onward: before one stone was placed on another in the temple of the L\\sc ord\\sc*,",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "from that time when one came to a grain heap of twenty measures, there would be only ten; and when one came to the wine vat to draw fifty measures, there would be only twenty.",
+        "body_text_exact": "from that time when one came to a grain heap of twenty measures, there would be only ten; and when one came to the wine vat to draw fifty measures, there would be only twenty.",
+        "body_text_normalized": "from that time when one came to a grain heap of twenty measures, there would be only ten; and when one came to the wine vat to draw fifty measures, there would be only twenty.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:16 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "since they were",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "from that time ",
+          {
+            "content": [
+              "when"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " one came to a grain heap of twenty ",
+          {
+            "content": [
+              "measures,"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " there would be ",
+          {
+            "content": [
+              "only"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " ten; ",
+          {
+            "content": [
+              "and when"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " one came to the wine vat to draw fifty ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:16 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "troughs",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "measures, there would be ",
+          {
+            "content": [
+              "only"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " twenty."
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 46,
+        "line_start": 46,
+        "lines": [
+          "\\v 16 \\f 1 \\fr 2:16 \\fr*\\ft Lit \\+it since they were\\+it*\\ft*\\f*from that time \\it when\\it* one came to a grain heap of twenty \\it measures,\\it* there would be \\it only\\it* ten; \\it and when\\it* one came to the wine vat to draw fifty \\f 2 \\fr 2:16 \\fr*\\ft Lit \\+it troughs\\+it*\\ft*\\f*measures, there would be \\it only\\it* twenty."
+        ],
+        "number": "16",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 \\f 1 \\fr 2:16 \\fr*\\ft Lit \\+it since they were\\+it*\\ft*\\f*from that time \\it when\\it* one came to a grain heap of twenty \\it measures,\\it* there would be \\it only\\it* ten; \\it and when\\it* one came to the wine vat to draw fifty \\f 2 \\fr 2:16 \\fr*\\ft Lit \\+it troughs\\+it*\\ft*\\f*measures, there would be \\it only\\it* twenty.",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "I struck you and every work of your hands with scorching wind, mildew, and hail; yet you did not come back to Me,’ declares the Lord.",
+        "body_text_exact": "I struck you and every work of your hands with scorching wind, mildew, and hail; yet you did not come back to Me,’ declares the Lord.",
+        "body_text_normalized": "I struck you and every work of your hands with scorching wind, mildew, and hail; yet you did not come back to Me,’ declares the Lord.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "I struck you ",
+          {
+            "content": [
+              "and"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " every work of your hands with scorching wind, mildew, and hail; ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:17 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "As in LXX; MT ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "but you were not to Me",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "yet you did not come back to Me,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 47,
+        "line_start": 47,
+        "lines": [
+          "\\v 17 I struck you \\it and\\it* every work of your hands with scorching wind, mildew, and hail; \\f 1 \\fr 2:17 \\fr*\\ft As in LXX; MT \\+it but you were not to Me\\+it*\\ft*\\f*yet you did not come back to Me,’ declares the L\\sc ord\\sc*."
+        ],
+        "number": "17",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 I struck you \\it and\\it* every work of your hands with scorching wind, mildew, and hail; \\f 1 \\fr 2:17 \\fr*\\ft As in LXX; MT \\+it but you were not to Me\\+it*\\ft*\\f*yet you did not come back to Me,’ declares the L\\sc ord\\sc*.",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "‘Do consider from this day onward, from the twenty-fourth day of the ninth month; from the day when the temple of the Lord was founded, consider:",
+        "body_text_exact": "‘Do consider from this day onward, from the twenty-fourth day of the ninth month; from the day when the temple of the Lord was founded, consider:",
+        "body_text_normalized": "‘Do consider from this day onward, from the twenty-fourth day of the ninth month; from the day when the temple of the Lord was founded, consider:",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "‘Do ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:18 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "set your heart",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "consider from this day ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:18 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "backward",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "onward, from the twenty-fourth day of the ninth ",
+          {
+            "content": [
+              "month;"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " from the day when the temple of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " was founded, ",
+          {
+            "content": [
+              "3 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:18 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "set your heart",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "consider:"
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 48,
+        "line_start": 48,
+        "lines": [
+          "\\v 18 ‘Do \\f 1 \\fr 2:18 \\fr*\\ft Lit \\+it set your heart\\+it*\\ft*\\f*consider from this day \\f 2 \\fr 2:18 \\fr*\\ft Or \\+it backward\\+it*\\ft*\\f*onward, from the twenty-fourth day of the ninth \\it month;\\it* from the day when the temple of the L\\sc ord\\sc* was founded, \\f 3 \\fr 2:18 \\fr*\\ft Lit \\+it set your heart\\+it*\\ft*\\f*consider:"
+        ],
+        "number": "18",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 ‘Do \\f 1 \\fr 2:18 \\fr*\\ft Lit \\+it set your heart\\+it*\\ft*\\f*consider from this day \\f 2 \\fr 2:18 \\fr*\\ft Or \\+it backward\\+it*\\ft*\\f*onward, from the twenty-fourth day of the ninth \\it month;\\it* from the day when the temple of the L\\sc ord\\sc* was founded, \\f 3 \\fr 2:18 \\fr*\\ft Lit \\+it set your heart\\+it*\\ft*\\f*consider:",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "Is the seed still in the barn? Even including the vine, the fig tree, the pomegranate, and the olive tree, it has not produced fruit. Yet from this day on I will bless you.’ ”",
+        "body_text_exact": "Is the seed still in the barn? Even including the vine, the fig tree, the pomegranate, and the olive tree, it has not produced fruit. Yet from this day on I will bless you.’ ”",
+        "body_text_normalized": "Is the seed still in the barn? Even including the vine, the fig tree, the pomegranate, and the olive tree, it has not produced fruit. Yet from this day on I will bless you.’ ”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Is the seed still in the barn? Even including the vine, the fig tree, the pomegranate, and the olive tree, it has not produced ",
+          {
+            "content": [
+              "fruit. Yet"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " from this day ",
+          {
+            "content": [
+              "on"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " I will bless ",
+          {
+            "content": [
+              "you."
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          "’ ”"
+        ],
+        "discourse_unit_id": "HAG-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 49,
+        "line_start": 49,
+        "lines": [
+          "\\v 19 Is the seed still in the barn? Even including the vine, the fig tree, the pomegranate, and the olive tree, it has not produced \\it fruit. Yet\\it* from this day \\it on\\it* I will bless \\it you.\\it*’ ”"
+        ],
+        "number": "19",
+        "paragraph_id": "HAG-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 Is the seed still in the barn? Even including the vine, the fig tree, the pomegranate, and the olive tree, it has not produced \\it fruit. Yet\\it* from this day \\it on\\it* I will bless \\it you.\\it*’ ”",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "Then the word of the Lord came a second time to Haggai on the twenty-fourth day of the month, saying,",
+        "body_text_exact": "Then the word of the Lord came a second time to Haggai on the twenty-fourth day of the month, saying,",
+        "body_text_normalized": "Then the word of the Lord came a second time to Haggai on the twenty-fourth day of the month, saying,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Then the word of the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " came a second time to Haggai on the twenty-fourth ",
+          {
+            "content": [
+              "day"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " of the month, saying,"
+        ],
+        "discourse_unit_id": "HAG-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 51,
+        "line_start": 51,
+        "lines": [
+          "\\v 20 Then the word of the L\\sc ord\\sc* came a second time to Haggai on the twenty-fourth \\it day\\it* of the month, saying,"
+        ],
+        "number": "20",
+        "paragraph_id": "HAG-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 Then the word of the L\\sc ord\\sc* came a second time to Haggai on the twenty-fourth \\it day\\it* of the month, saying,",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 20,
+        "verse_start": 20
+      },
+      {
+        "body_text": "“Speak to Zerubbabel governor of Judah, saying, ‘I am going to shake the heavens and the earth.",
+        "body_text_exact": "“Speak to Zerubbabel governor of Judah, saying, ‘I am going to shake the heavens and the earth.",
+        "body_text_normalized": "“Speak to Zerubbabel governor of Judah, saying, ‘I am going to shake the heavens and the earth.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“Speak to Zerubbabel governor of Judah, saying, ‘I am going to shake the heavens and the earth."
+        ],
+        "discourse_unit_id": "HAG-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 52,
+        "line_start": 52,
+        "lines": [
+          "\\v 21 “Speak to Zerubbabel governor of Judah, saying, ‘I am going to shake the heavens and the earth."
+        ],
+        "number": "21",
+        "paragraph_id": "HAG-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 21 “Speak to Zerubbabel governor of Judah, saying, ‘I am going to shake the heavens and the earth.",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 21,
+        "verse_start": 21
+      },
+      {
+        "body_text": "And I will overthrow the thrones of kingdoms and destroy the power of the kingdoms of the nations; and I will overthrow the chariots and their riders, and the horses and their riders will go down, every one by the sword of another.’",
+        "body_text_exact": "And I will overthrow the thrones of kingdoms and destroy the power of the kingdoms of the nations; and I will overthrow the chariots and their riders, and the horses and their riders will go down, every one by the sword of another.’",
+        "body_text_normalized": "And I will overthrow the thrones of kingdoms and destroy the power of the kingdoms of the nations; and I will overthrow the chariots and their riders, and the horses and their riders will go down, every one by the sword of another.’",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "And I will overthrow the thrones of kingdoms and destroy the power of the kingdoms of the ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:22 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "Gentiles",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "nations; and I will overthrow the chariots and their riders, and the horses and their riders will go down, every one by the sword of another.’"
+        ],
+        "discourse_unit_id": "HAG-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 53,
+        "line_start": 53,
+        "lines": [
+          "\\v 22 And I will overthrow the thrones of kingdoms and destroy the power of the kingdoms of the \\f 1 \\fr 2:22 \\fr*\\ft Or \\+it Gentiles\\+it*\\ft*\\f*nations; and I will overthrow the chariots and their riders, and the horses and their riders will go down, every one by the sword of another.’"
+        ],
+        "number": "22",
+        "paragraph_id": "HAG-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 22 And I will overthrow the thrones of kingdoms and destroy the power of the kingdoms of the \\f 1 \\fr 2:22 \\fr*\\ft Or \\+it Gentiles\\+it*\\ft*\\f*nations; and I will overthrow the chariots and their riders, and the horses and their riders will go down, every one by the sword of another.’",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 22,
+        "verse_start": 22
+      },
+      {
+        "body_text": "‘On that day,’ declares the Lord of armies, ‘I will take you, Zerubbabel, son of Shealtiel, My servant,’ declares the Lord, ‘and I will make you like a signet ring, for I have chosen you,’ ” declares the Lord of armies.",
+        "body_text_exact": "‘On that day,’ declares the Lord of armies, ‘I will take you, Zerubbabel, son of Shealtiel, My servant,’ declares the Lord, ‘and I will make you like a signet ring, for I have chosen you,’ ” declares the Lord of armies.",
+        "body_text_normalized": "‘On that day,’ declares the Lord of armies, ‘I will take you, Zerubbabel, son of Shealtiel, My servant,’ declares the Lord, ‘and I will make you like a signet ring, for I have chosen you,’ ” declares the Lord of armies.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "‘On that day,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies, ‘I will take you, Zerubbabel, son of Shealtiel, My servant,’ declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          ", ‘and I will make you like a ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:23 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "seal",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "signet ring, for I have chosen you,’ ” declares the L",
+          {
+            "content": [
+              "ord"
+            ],
+            "marker": "sc",
+            "type": "char"
+          },
+          " of armies."
+        ],
+        "discourse_unit_id": "HAG-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 54,
+        "line_start": 54,
+        "lines": [
+          "\\v 23 ‘On that day,’ declares the L\\sc ord\\sc* of armies, ‘I will take you, Zerubbabel, son of Shealtiel, My servant,’ declares the L\\sc ord\\sc*, ‘and I will make you like a \\f 1 \\fr 2:23 \\fr*\\ft Or \\+it seal\\+it*\\ft*\\f*signet ring, for I have chosen you,’ ” declares the L\\sc ord\\sc* of armies."
+        ],
+        "number": "23",
+        "paragraph_id": "HAG-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 23 ‘On that day,’ declares the L\\sc ord\\sc* of armies, ‘I will take you, Zerubbabel, son of Shealtiel, My servant,’ declares the L\\sc ord\\sc*, ‘and I will make you like a \\f 1 \\fr 2:23 \\fr*\\ft Or \\+it seal\\+it*\\ft*\\f*signet ring, for I have chosen you,’ ” declares the L\\sc ord\\sc* of armies.",
+        "section_id": "HAG-S002",
+        "section_marker": "s1",
+        "section_title": "The Builders Encouraged",
+        "verse_end": 23,
+        "verse_start": 23
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

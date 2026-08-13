@@ -1,0 +1,3062 @@
+{
+  "book": "1JN",
+  "records": [
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 15,
+      "line_start": 15,
+      "paragraph_id": "1JN-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:1",
+      "section_id": "1JN-S001",
+      "section_marker": "s1",
+      "section_title": "The Incarnation of the Word of Life",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 16,
+      "line_start": 16,
+      "paragraph_id": "1JN-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:2",
+      "section_id": "1JN-S001",
+      "section_marker": "s1",
+      "section_title": "The Incarnation of the Word of Life",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 17,
+      "line_start": 17,
+      "paragraph_id": "1JN-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:3",
+      "section_id": "1JN-S001",
+      "section_marker": "s1",
+      "section_title": "The Incarnation of the Word of Life",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 18,
+      "line_start": 18,
+      "paragraph_id": "1JN-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:4",
+      "section_id": "1JN-S001",
+      "section_marker": "s1",
+      "section_title": "The Incarnation of the Word of Life",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D002",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 21,
+      "line_start": 21,
+      "paragraph_id": "1JN-P002",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:5",
+      "section_id": "1JN-S002",
+      "section_marker": "s1",
+      "section_title": "Light and Darkness, Sin and Forgiveness",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D002",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 22,
+      "line_start": 22,
+      "paragraph_id": "1JN-P002",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:6",
+      "section_id": "1JN-S002",
+      "section_marker": "s1",
+      "section_title": "Light and Darkness, Sin and Forgiveness",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D002",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 23,
+      "line_start": 23,
+      "paragraph_id": "1JN-P002",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:7",
+      "section_id": "1JN-S002",
+      "section_marker": "s1",
+      "section_title": "Light and Darkness, Sin and Forgiveness",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 25,
+      "line_start": 25,
+      "paragraph_id": "1JN-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:8",
+      "section_id": "1JN-S002",
+      "section_marker": "s1",
+      "section_title": "Light and Darkness, Sin and Forgiveness",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 26,
+      "line_start": 26,
+      "paragraph_id": "1JN-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:9",
+      "section_id": "1JN-S002",
+      "section_marker": "s1",
+      "section_title": "Light and Darkness, Sin and Forgiveness",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1JN-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 27,
+      "line_start": 27,
+      "paragraph_id": "1JN-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 1:10",
+      "section_id": "1JN-S002",
+      "section_marker": "s1",
+      "section_title": "Light and Darkness, Sin and Forgiveness",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 30,
+      "line_start": 30,
+      "paragraph_id": "1JN-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:1",
+      "section_id": "1JN-S002",
+      "section_marker": "s1",
+      "section_title": "Light and Darkness, Sin and Forgiveness",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 31,
+      "line_start": 31,
+      "paragraph_id": "1JN-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:2",
+      "section_id": "1JN-S002",
+      "section_marker": "s1",
+      "section_title": "Light and Darkness, Sin and Forgiveness",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 34,
+      "line_start": 34,
+      "paragraph_id": "1JN-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:3",
+      "section_id": "1JN-S003",
+      "section_marker": "s1",
+      "section_title": "Love and Hatred for Fellow Believers",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 35,
+      "line_start": 35,
+      "paragraph_id": "1JN-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:4",
+      "section_id": "1JN-S003",
+      "section_marker": "s1",
+      "section_title": "Love and Hatred for Fellow Believers",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 36,
+      "line_start": 36,
+      "paragraph_id": "1JN-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:5",
+      "section_id": "1JN-S003",
+      "section_marker": "s1",
+      "section_title": "Love and Hatred for Fellow Believers",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 37,
+      "line_start": 37,
+      "paragraph_id": "1JN-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:6",
+      "section_id": "1JN-S003",
+      "section_marker": "s1",
+      "section_title": "Love and Hatred for Fellow Believers",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 39,
+      "line_start": 39,
+      "paragraph_id": "1JN-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:7",
+      "section_id": "1JN-S003",
+      "section_marker": "s1",
+      "section_title": "Love and Hatred for Fellow Believers",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 40,
+      "line_start": 40,
+      "paragraph_id": "1JN-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:8",
+      "section_id": "1JN-S003",
+      "section_marker": "s1",
+      "section_title": "Love and Hatred for Fellow Believers",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 42,
+      "line_start": 42,
+      "paragraph_id": "1JN-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:9",
+      "section_id": "1JN-S003",
+      "section_marker": "s1",
+      "section_title": "Love and Hatred for Fellow Believers",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 43,
+      "line_start": 43,
+      "paragraph_id": "1JN-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:10",
+      "section_id": "1JN-S003",
+      "section_marker": "s1",
+      "section_title": "Love and Hatred for Fellow Believers",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 44,
+      "line_start": 44,
+      "paragraph_id": "1JN-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:11",
+      "section_id": "1JN-S003",
+      "section_marker": "s1",
+      "section_title": "Love and Hatred for Fellow Believers",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 48,
+      "line_start": 47,
+      "paragraph_id": "1JN-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "1JN-B001",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1JN 2:12",
+      "section_id": "1JN-S004",
+      "section_marker": "s1",
+      "section_title": "Reasons for Writing",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 53,
+      "line_start": 50,
+      "paragraph_id": "1JN-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "1JN-B001",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1JN 2:13",
+      "section_id": "1JN-S004",
+      "section_marker": "s1",
+      "section_title": "Reasons for Writing",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 63,
+      "line_start": 56,
+      "paragraph_id": "1JN-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "1JN-B002",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "1JN 2:14",
+      "section_id": "1JN-S004",
+      "section_marker": "s1",
+      "section_title": "Reasons for Writing",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 66,
+      "line_start": 66,
+      "paragraph_id": "1JN-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:15",
+      "section_id": "1JN-S005",
+      "section_marker": "s1",
+      "section_title": "On Not Loving the World",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 67,
+      "line_start": 67,
+      "paragraph_id": "1JN-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:16",
+      "section_id": "1JN-S005",
+      "section_marker": "s1",
+      "section_title": "On Not Loving the World",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 68,
+      "line_start": 68,
+      "paragraph_id": "1JN-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:17",
+      "section_id": "1JN-S005",
+      "section_marker": "s1",
+      "section_title": "On Not Loving the World",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 71,
+      "line_start": 71,
+      "paragraph_id": "1JN-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:18",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 72,
+      "line_start": 72,
+      "paragraph_id": "1JN-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:19",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 74,
+      "line_start": 74,
+      "paragraph_id": "1JN-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:20",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 75,
+      "line_start": 75,
+      "paragraph_id": "1JN-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:21",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 76,
+      "line_start": 76,
+      "paragraph_id": "1JN-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:22",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 77,
+      "line_start": 77,
+      "paragraph_id": "1JN-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:23",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 79,
+      "line_start": 79,
+      "paragraph_id": "1JN-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:24",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 80,
+      "line_start": 80,
+      "paragraph_id": "1JN-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:25",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 82,
+      "line_start": 82,
+      "paragraph_id": "1JN-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:26",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 26,
+      "verse_start": 26
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 83,
+      "line_start": 83,
+      "paragraph_id": "1JN-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:27",
+      "section_id": "1JN-S006",
+      "section_marker": "s1",
+      "section_title": "Warnings Against Denying the Son",
+      "verse_end": 27,
+      "verse_start": 27
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 86,
+      "line_start": 86,
+      "paragraph_id": "1JN-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:28",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 28,
+      "verse_start": 28
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1JN-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 88,
+      "line_start": 88,
+      "paragraph_id": "1JN-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 2:29",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 29,
+      "verse_start": 29
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 91,
+      "line_start": 91,
+      "paragraph_id": "1JN-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:1",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 92,
+      "line_start": 92,
+      "paragraph_id": "1JN-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:2",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 93,
+      "line_start": 93,
+      "paragraph_id": "1JN-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:3",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 95,
+      "line_start": 95,
+      "paragraph_id": "1JN-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:4",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 96,
+      "line_start": 96,
+      "paragraph_id": "1JN-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:5",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 97,
+      "line_start": 97,
+      "paragraph_id": "1JN-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:6",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 99,
+      "line_start": 99,
+      "paragraph_id": "1JN-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:7",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 100,
+      "line_start": 100,
+      "paragraph_id": "1JN-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:8",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 101,
+      "line_start": 101,
+      "paragraph_id": "1JN-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:9",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 102,
+      "line_start": 102,
+      "paragraph_id": "1JN-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:10",
+      "section_id": "1JN-S007",
+      "section_marker": "s1",
+      "section_title": "Godʼs Children and Sin",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 105,
+      "line_start": 105,
+      "paragraph_id": "1JN-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:11",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 106,
+      "line_start": 106,
+      "paragraph_id": "1JN-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:12",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 107,
+      "line_start": 107,
+      "paragraph_id": "1JN-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:13",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 108,
+      "line_start": 108,
+      "paragraph_id": "1JN-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:14",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 109,
+      "line_start": 109,
+      "paragraph_id": "1JN-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:15",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 111,
+      "line_start": 111,
+      "paragraph_id": "1JN-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:16",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 112,
+      "line_start": 112,
+      "paragraph_id": "1JN-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:17",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 113,
+      "line_start": 113,
+      "paragraph_id": "1JN-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:18",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 115,
+      "line_start": 115,
+      "paragraph_id": "1JN-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:19",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 116,
+      "line_start": 116,
+      "paragraph_id": "1JN-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:20",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 117,
+      "line_start": 117,
+      "paragraph_id": "1JN-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:21",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 118,
+      "line_start": 118,
+      "paragraph_id": "1JN-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:22",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 119,
+      "line_start": 119,
+      "paragraph_id": "1JN-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:23",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1JN-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 120,
+      "line_start": 120,
+      "paragraph_id": "1JN-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 3:24",
+      "section_id": "1JN-S008",
+      "section_marker": "s1",
+      "section_title": "More on Love and Hatred",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 124,
+      "line_start": 124,
+      "paragraph_id": "1JN-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:1",
+      "section_id": "1JN-S009",
+      "section_marker": "s1",
+      "section_title": "On Denying the Incarnation",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 125,
+      "line_start": 125,
+      "paragraph_id": "1JN-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:2",
+      "section_id": "1JN-S009",
+      "section_marker": "s1",
+      "section_title": "On Denying the Incarnation",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 126,
+      "line_start": 126,
+      "paragraph_id": "1JN-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:3",
+      "section_id": "1JN-S009",
+      "section_marker": "s1",
+      "section_title": "On Denying the Incarnation",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 128,
+      "line_start": 128,
+      "paragraph_id": "1JN-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:4",
+      "section_id": "1JN-S009",
+      "section_marker": "s1",
+      "section_title": "On Denying the Incarnation",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 129,
+      "line_start": 129,
+      "paragraph_id": "1JN-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:5",
+      "section_id": "1JN-S009",
+      "section_marker": "s1",
+      "section_title": "On Denying the Incarnation",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 130,
+      "line_start": 130,
+      "paragraph_id": "1JN-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:6",
+      "section_id": "1JN-S009",
+      "section_marker": "s1",
+      "section_title": "On Denying the Incarnation",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 133,
+      "line_start": 133,
+      "paragraph_id": "1JN-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:7",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 134,
+      "line_start": 134,
+      "paragraph_id": "1JN-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:8",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 135,
+      "line_start": 135,
+      "paragraph_id": "1JN-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:9",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 136,
+      "line_start": 136,
+      "paragraph_id": "1JN-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:10",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 137,
+      "line_start": 137,
+      "paragraph_id": "1JN-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:11",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 138,
+      "line_start": 138,
+      "paragraph_id": "1JN-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:12",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 140,
+      "line_start": 140,
+      "paragraph_id": "1JN-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:13",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 141,
+      "line_start": 141,
+      "paragraph_id": "1JN-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:14",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 142,
+      "line_start": 142,
+      "paragraph_id": "1JN-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:15",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 144,
+      "line_start": 143,
+      "paragraph_id": "1JN-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:16",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 145,
+      "line_start": 145,
+      "paragraph_id": "1JN-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:17",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 146,
+      "line_start": 146,
+      "paragraph_id": "1JN-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:18",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 148,
+      "line_start": 148,
+      "paragraph_id": "1JN-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:19",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 149,
+      "line_start": 149,
+      "paragraph_id": "1JN-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:20",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1JN-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 150,
+      "line_start": 150,
+      "paragraph_id": "1JN-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 4:21",
+      "section_id": "1JN-S010",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love and Ours",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 154,
+      "line_start": 154,
+      "paragraph_id": "1JN-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:1",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 155,
+      "line_start": 155,
+      "paragraph_id": "1JN-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:2",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 156,
+      "line_start": 156,
+      "paragraph_id": "1JN-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:3",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 157,
+      "line_start": 157,
+      "paragraph_id": "1JN-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:4",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 158,
+      "line_start": 158,
+      "paragraph_id": "1JN-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:5",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 160,
+      "line_start": 160,
+      "paragraph_id": "1JN-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:6",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 161,
+      "line_start": 161,
+      "paragraph_id": "1JN-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:7",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 162,
+      "line_start": 162,
+      "paragraph_id": "1JN-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:8",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 163,
+      "line_start": 163,
+      "paragraph_id": "1JN-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:9",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 164,
+      "line_start": 164,
+      "paragraph_id": "1JN-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:10",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 165,
+      "line_start": 165,
+      "paragraph_id": "1JN-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:11",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 166,
+      "line_start": 166,
+      "paragraph_id": "1JN-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:12",
+      "section_id": "1JN-S011",
+      "section_marker": "s1",
+      "section_title": "Faith in the Incarnate Son of God",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D031",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 169,
+      "line_start": 169,
+      "paragraph_id": "1JN-P031",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:13",
+      "section_id": "1JN-S012",
+      "section_marker": "s1",
+      "section_title": "Concluding Affirmations",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D031",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 170,
+      "line_start": 170,
+      "paragraph_id": "1JN-P031",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:14",
+      "section_id": "1JN-S012",
+      "section_marker": "s1",
+      "section_title": "Concluding Affirmations",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D031",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 171,
+      "line_start": 171,
+      "paragraph_id": "1JN-P031",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:15",
+      "section_id": "1JN-S012",
+      "section_marker": "s1",
+      "section_title": "Concluding Affirmations",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 173,
+      "line_start": 173,
+      "paragraph_id": "1JN-P032",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:16",
+      "section_id": "1JN-S012",
+      "section_marker": "s1",
+      "section_title": "Concluding Affirmations",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 174,
+      "line_start": 174,
+      "paragraph_id": "1JN-P032",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:17",
+      "section_id": "1JN-S012",
+      "section_marker": "s1",
+      "section_title": "Concluding Affirmations",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D033",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 176,
+      "line_start": 176,
+      "paragraph_id": "1JN-P033",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:18",
+      "section_id": "1JN-S012",
+      "section_marker": "s1",
+      "section_title": "Concluding Affirmations",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D033",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 177,
+      "line_start": 177,
+      "paragraph_id": "1JN-P033",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:19",
+      "section_id": "1JN-S012",
+      "section_marker": "s1",
+      "section_title": "Concluding Affirmations",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D033",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 178,
+      "line_start": 178,
+      "paragraph_id": "1JN-P033",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:20",
+      "section_id": "1JN-S012",
+      "section_marker": "s1",
+      "section_title": "Concluding Affirmations",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1JN",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1JN-D034",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 182,
+      "line_start": 182,
+      "paragraph_id": "1JN-P034",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1JN 5:21",
+      "section_id": "1JN-S012",
+      "section_marker": "s1",
+      "section_title": "Concluding Affirmations",
+      "verse_end": 21,
+      "verse_start": 21
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "f0f4f9ce8a5266c5c2d9b2f3206a2dfcff11b241354b9c46600f774c93fe4ea7",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 2,
+    "discourse_units": 34,
+    "paragraphs": 34,
+    "poetry_blocks": 2,
+    "sections": 12,
+    "verse_records": 105
+  }
+}

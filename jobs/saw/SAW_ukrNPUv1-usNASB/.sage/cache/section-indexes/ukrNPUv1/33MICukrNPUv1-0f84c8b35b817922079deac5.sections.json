@@ -1,0 +1,3020 @@
+{
+  "book": "MIC",
+  "records": [
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 16,
+      "line_start": 16,
+      "paragraph_id": "MIC-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 1:1",
+      "section_id": "MIC-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 23,
+      "line_start": 20,
+      "paragraph_id": "MIC-P002",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B002",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 1:2",
+      "section_id": "MIC-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 27,
+      "line_start": 26,
+      "paragraph_id": "MIC-P003",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B003",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:3",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Суд проти Самарії та Єрусалима",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 32,
+      "line_start": 29,
+      "paragraph_id": "MIC-P003",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B003",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:4",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Суд проти Самарії та Єрусалима",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 39,
+      "line_start": 34,
+      "paragraph_id": "MIC-P003",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B003",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:5",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Суд проти Самарії та Єрусалима",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D004",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 45,
+      "line_start": 42,
+      "paragraph_id": "MIC-P004",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B004",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 1:6",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Суд проти Самарії та Єрусалима",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D004",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 51,
+      "line_start": 47,
+      "paragraph_id": "MIC-P004",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B004",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 1:7",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Суд проти Самарії та Єрусалима",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 57,
+      "line_start": 54,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:8",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Плач і ридання",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 62,
+      "line_start": 59,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:9",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Плач і ридання",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 67,
+      "line_start": 64,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:10",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Плач і ридання",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 74,
+      "line_start": 69,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:11",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Плач і ридання",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 79,
+      "line_start": 76,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:12",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Плач і ридання",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 84,
+      "line_start": 81,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:13",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Плач і ридання",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 89,
+      "line_start": 86,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:14",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Плач і ридання",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 94,
+      "line_start": 91,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:15",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Плач і ридання",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 99,
+      "line_start": 96,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:16",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Плач і ридання",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D006",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 106,
+      "line_start": 103,
+      "paragraph_id": "MIC-P006",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B006",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:1",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Людські плани та Божі плани",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D006",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 111,
+      "line_start": 108,
+      "paragraph_id": "MIC-P006",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B006",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:2",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Людські плани та Божі плани",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 117,
+      "line_start": 113,
+      "paragraph_id": "MIC-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 2:3",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Людські плани та Божі плани",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 124,
+      "line_start": 119,
+      "paragraph_id": "MIC-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B007",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:4",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Людські плани та Божі плани",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 128,
+      "line_start": 127,
+      "paragraph_id": "MIC-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B008",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:5",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Людські плани та Божі плани",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D010",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 133,
+      "line_start": 131,
+      "paragraph_id": "MIC-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B009",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:6",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "Лжепророки",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D010",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 140,
+      "line_start": 135,
+      "paragraph_id": "MIC-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B009",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:7",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "Лжепророки",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 146,
+      "line_start": 142,
+      "paragraph_id": "MIC-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:8",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "Лжепророки",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 151,
+      "line_start": 148,
+      "paragraph_id": "MIC-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:9",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "Лжепророки",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 156,
+      "line_start": 153,
+      "paragraph_id": "MIC-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:10",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "Лжепророки",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 160,
+      "line_start": 158,
+      "paragraph_id": "MIC-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:11",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "Лжепророки",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D012",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 167,
+      "line_start": 163,
+      "paragraph_id": "MIC-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B011",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:12",
+      "section_id": "MIC-S005",
+      "section_marker": "s1",
+      "section_title": "Обітниця визволення",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D012",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 172,
+      "line_start": 169,
+      "paragraph_id": "MIC-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B011",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:13",
+      "section_id": "MIC-S005",
+      "section_marker": "s1",
+      "section_title": "Обітниця визволення",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 179,
+      "line_start": 176,
+      "paragraph_id": "MIC-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 3:1",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D014",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 183,
+      "line_start": 181,
+      "paragraph_id": "MIC-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B012",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:2",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D014",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 189,
+      "line_start": 185,
+      "paragraph_id": "MIC-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B012",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:3",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D015",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 195,
+      "line_start": 192,
+      "paragraph_id": "MIC-P013",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B013",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:4",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 202,
+      "line_start": 197,
+      "paragraph_id": "MIC-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 3:5",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 207,
+      "line_start": 204,
+      "paragraph_id": "MIC-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B014",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:6",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 212,
+      "line_start": 209,
+      "paragraph_id": "MIC-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B014",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:7",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 217,
+      "line_start": 214,
+      "paragraph_id": "MIC-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B014",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:8",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 223,
+      "line_start": 220,
+      "paragraph_id": "MIC-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:9",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 226,
+      "line_start": 225,
+      "paragraph_id": "MIC-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:10",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 233,
+      "line_start": 228,
+      "paragraph_id": "MIC-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:11",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 238,
+      "line_start": 235,
+      "paragraph_id": "MIC-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:12",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Докір керівникам і пророкам",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 246,
+      "line_start": 242,
+      "paragraph_id": "MIC-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 4:1",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "Господнягора",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 254,
+      "line_start": 248,
+      "paragraph_id": "MIC-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 4:2",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "Господнягора",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 261,
+      "line_start": 256,
+      "paragraph_id": "MIC-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B017",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:3",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "Господнягора",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 266,
+      "line_start": 263,
+      "paragraph_id": "MIC-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B017",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:4",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "Господнягора",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 271,
+      "line_start": 268,
+      "paragraph_id": "MIC-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B017",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:5",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "Господнягора",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D023",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 277,
+      "line_start": 274,
+      "paragraph_id": "MIC-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B018",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:6",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "Господнійзадум",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D023",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 282,
+      "line_start": 279,
+      "paragraph_id": "MIC-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B018",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:7",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "Господнійзадум",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D023",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 287,
+      "line_start": 284,
+      "paragraph_id": "MIC-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B018",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:8",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "Господнійзадум",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D024",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 293,
+      "line_start": 290,
+      "paragraph_id": "MIC-P019",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:9",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "Господнійзадум",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D024",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 302,
+      "line_start": 295,
+      "paragraph_id": "MIC-P019",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:10",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "Господнійзадум",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 308,
+      "line_start": 305,
+      "paragraph_id": "MIC-P020",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B020",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:11",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "Господнійзадум",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 313,
+      "line_start": 310,
+      "paragraph_id": "MIC-P020",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B020",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:12",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "Господнійзадум",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 320,
+      "line_start": 315,
+      "paragraph_id": "MIC-P020",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B020",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:13",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "Господнійзадум",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D026",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 327,
+      "line_start": 324,
+      "paragraph_id": "MIC-P021",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B021",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:1",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D027",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 335,
+      "line_start": 330,
+      "paragraph_id": "MIC-P022",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B022",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:2",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 341,
+      "line_start": 338,
+      "paragraph_id": "MIC-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B023",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:3",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D029",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 348,
+      "line_start": 344,
+      "paragraph_id": "MIC-P024",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B024",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:4",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D030",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 355,
+      "line_start": 351,
+      "paragraph_id": "MIC-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B025",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:5",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D030",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 361,
+      "line_start": 357,
+      "paragraph_id": "MIC-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B025",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:6",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 369,
+      "line_start": 364,
+      "paragraph_id": "MIC-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:7",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 376,
+      "line_start": 371,
+      "paragraph_id": "MIC-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:8",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 379,
+      "line_start": 378,
+      "paragraph_id": "MIC-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:9",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 383,
+      "line_start": 381,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 5:10",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 386,
+      "line_start": 385,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:11",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 389,
+      "line_start": 388,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:12",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 394,
+      "line_start": 391,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:13",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 397,
+      "line_start": 396,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:14",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 400,
+      "line_start": 399,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:15",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "Обіцяний правитель із Віфлеєма",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D034",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 406,
+      "line_start": 404,
+      "paragraph_id": "MIC-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 6:1",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "Господнійсуд проти Ізраїля",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 412,
+      "line_start": 409,
+      "paragraph_id": "MIC-P029",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B029",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:2",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "Господнійсуд проти Ізраїля",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 417,
+      "line_start": 415,
+      "paragraph_id": "MIC-P030",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:3",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "Господнійсуд проти Ізраїля",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 422,
+      "line_start": 419,
+      "paragraph_id": "MIC-P030",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:4",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "Господнійсуд проти Ізраїля",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 428,
+      "line_start": 424,
+      "paragraph_id": "MIC-P030",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:5",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "Господнійсуд проти Ізраїля",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 434,
+      "line_start": 431,
+      "paragraph_id": "MIC-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B031",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:6",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "Господнійсуд проти Ізраїля",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 439,
+      "line_start": 436,
+      "paragraph_id": "MIC-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B031",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:7",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "Господнійсуд проти Ізраїля",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 444,
+      "line_start": 441,
+      "paragraph_id": "MIC-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B031",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:8",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "Господнійсуд проти Ізраїля",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 449,
+      "line_start": 447,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:9",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Вина та покарання Ізраїля",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 452,
+      "line_start": 451,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:10",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Вина та покарання Ізраїля",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 455,
+      "line_start": 454,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:11",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Вина та покарання Ізраїля",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 459,
+      "line_start": 457,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:12",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Вина та покарання Ізраїля",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 462,
+      "line_start": 461,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:13",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Вина та покарання Ізраїля",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 467,
+      "line_start": 464,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:14",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Вина та покарання Ізраїля",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 471,
+      "line_start": 469,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:15",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Вина та покарання Ізраїля",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 478,
+      "line_start": 473,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:16",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Вина та покарання Ізраїля",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 486,
+      "line_start": 482,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:1",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Злидні Ізраїля",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 491,
+      "line_start": 488,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:2",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Злидні Ізраїля",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 497,
+      "line_start": 493,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:3",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Злидні Ізраїля",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 503,
+      "line_start": 499,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:4",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Злидні Ізраїля",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 508,
+      "line_start": 505,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:5",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Злидні Ізраїля",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 513,
+      "line_start": 510,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:6",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Злидні Ізраїля",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D041",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 518,
+      "line_start": 516,
+      "paragraph_id": "MIC-P034",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B034",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:7",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Злидні Ізраїля",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D042",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 524,
+      "line_start": 521,
+      "paragraph_id": "MIC-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B035",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:8",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Ізраїль підніметься",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D042",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 531,
+      "line_start": 526,
+      "paragraph_id": "MIC-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B035",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:9",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Ізраїль підніметься",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D042",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 539,
+      "line_start": 533,
+      "paragraph_id": "MIC-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B035",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:10",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Ізраїль підніметься",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D043",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 543,
+      "line_start": 542,
+      "paragraph_id": "MIC-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:11",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Ізраїль підніметься",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D043",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 549,
+      "line_start": 545,
+      "paragraph_id": "MIC-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:12",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Ізраїль підніметься",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D043",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 552,
+      "line_start": 551,
+      "paragraph_id": "MIC-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:13",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Ізраїль підніметься",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D044",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 560,
+      "line_start": 555,
+      "paragraph_id": "MIC-P037",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B037",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:14",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Молитва та прославлення",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 564,
+      "line_start": 563,
+      "paragraph_id": "MIC-P038",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B038",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:15",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Молитва та прославлення",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 570,
+      "line_start": 567,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:16",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Молитва та прославлення",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 576,
+      "line_start": 572,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:17",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Молитва та прославлення",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 582,
+      "line_start": 578,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:18",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Молитва та прославлення",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 586,
+      "line_start": 584,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:19",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Молитва та прославлення",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 591,
+      "line_start": 588,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:20",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Молитва та прославлення",
+      "verse_end": 20,
+      "verse_start": 20
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "5f7e453981b39f43f89c89c31eff265efbcca04959323da351c4defb655e512f",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 0,
+    "discourse_units": 44,
+    "paragraphs": 39,
+    "poetry_blocks": 36,
+    "sections": 15,
+    "verse_records": 105
+  }
+}

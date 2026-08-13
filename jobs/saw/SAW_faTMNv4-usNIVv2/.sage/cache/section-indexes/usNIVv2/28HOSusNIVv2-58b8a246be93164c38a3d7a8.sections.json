@@ -1,0 +1,5632 @@
+{
+  "book": "HOS",
+  "records": [
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 15,
+      "line_start": 15,
+      "paragraph_id": "HOS-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:1",
+      "section_id": "HOS-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D002",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 19,
+      "line_start": 19,
+      "paragraph_id": "HOS-P002",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:2",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D002",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 20,
+      "line_start": 20,
+      "paragraph_id": "HOS-P002",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:3",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 22,
+      "line_start": 22,
+      "paragraph_id": "HOS-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:4",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 23,
+      "line_start": 23,
+      "paragraph_id": "HOS-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:5",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 25,
+      "line_start": 25,
+      "paragraph_id": "HOS-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:6",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 26,
+      "line_start": 26,
+      "paragraph_id": "HOS-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:7",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 28,
+      "line_start": 28,
+      "paragraph_id": "HOS-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:8",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 29,
+      "line_start": 29,
+      "paragraph_id": "HOS-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:9",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 31,
+      "line_start": 31,
+      "paragraph_id": "HOS-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:10",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HOS-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 32,
+      "line_start": 32,
+      "paragraph_id": "HOS-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 1:11",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 35,
+      "line_start": 35,
+      "paragraph_id": "HOS-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 2:1",
+      "section_id": "HOS-S001",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Wife and Children",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 42,
+      "line_start": 38,
+      "paragraph_id": "HOS-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B002",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 2:2",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 48,
+      "line_start": 44,
+      "paragraph_id": "HOS-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B002",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 2:3",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 51,
+      "line_start": 50,
+      "paragraph_id": "HOS-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B002",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 2:4",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 57,
+      "line_start": 53,
+      "paragraph_id": "HOS-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B002",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 2:5",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 60,
+      "line_start": 59,
+      "paragraph_id": "HOS-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B002",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 2:6",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 66,
+      "line_start": 62,
+      "paragraph_id": "HOS-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B002",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 2:7",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 71,
+      "line_start": 68,
+      "paragraph_id": "HOS-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B002",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 2:8",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 77,
+      "line_start": 74,
+      "paragraph_id": "HOS-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B003",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:9",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 81,
+      "line_start": 79,
+      "paragraph_id": "HOS-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B003",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:10",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 85,
+      "line_start": 83,
+      "paragraph_id": "HOS-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B003",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:11",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 90,
+      "line_start": 87,
+      "paragraph_id": "HOS-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B003",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:12",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 96,
+      "line_start": 92,
+      "paragraph_id": "HOS-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B003",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:13",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D010",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 101,
+      "line_start": 99,
+      "paragraph_id": "HOS-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B004",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:14",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D010",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 106,
+      "line_start": 103,
+      "paragraph_id": "HOS-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B004",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:15",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 111,
+      "line_start": 109,
+      "paragraph_id": "HOS-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B005",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:16",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 114,
+      "line_start": 113,
+      "paragraph_id": "HOS-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B005",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:17",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 121,
+      "line_start": 116,
+      "paragraph_id": "HOS-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B005",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:18",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 125,
+      "line_start": 123,
+      "paragraph_id": "HOS-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B005",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:19",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 128,
+      "line_start": 127,
+      "paragraph_id": "HOS-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B005",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:20",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D012",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 134,
+      "line_start": 131,
+      "paragraph_id": "HOS-P012",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B006",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:21",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D012",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 138,
+      "line_start": 136,
+      "paragraph_id": "HOS-P012",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B006",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:22",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HOS-D012",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 143,
+      "line_start": 140,
+      "paragraph_id": "HOS-P012",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B006",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 2:23",
+      "section_id": "HOS-S002",
+      "section_marker": "s1",
+      "section_title": "Israel Punished and Restored",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HOS-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 147,
+      "line_start": 147,
+      "paragraph_id": "HOS-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 3:1",
+      "section_id": "HOS-S003",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Reconciliation With His Wife",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HOS-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 149,
+      "line_start": 149,
+      "paragraph_id": "HOS-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 3:2",
+      "section_id": "HOS-S003",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Reconciliation With His Wife",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HOS-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 150,
+      "line_start": 150,
+      "paragraph_id": "HOS-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 3:3",
+      "section_id": "HOS-S003",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Reconciliation With His Wife",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HOS-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 152,
+      "line_start": 152,
+      "paragraph_id": "HOS-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 3:4",
+      "section_id": "HOS-S003",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Reconciliation With His Wife",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HOS-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 153,
+      "line_start": 153,
+      "paragraph_id": "HOS-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HOS 3:5",
+      "section_id": "HOS-S003",
+      "section_marker": "s1",
+      "section_title": "Hoseaʼs Reconciliation With His Wife",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D016",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 161,
+      "line_start": 157,
+      "paragraph_id": "HOS-P016",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B007",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 4:1",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D016",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 166,
+      "line_start": 163,
+      "paragraph_id": "HOS-P016",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B007",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 4:2",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D016",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 171,
+      "line_start": 168,
+      "paragraph_id": "HOS-P016",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B007",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 4:3",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 177,
+      "line_start": 174,
+      "paragraph_id": "HOS-P017",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B008",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:4",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 181,
+      "line_start": 179,
+      "paragraph_id": "HOS-P017",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B008",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:5",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 188,
+      "line_start": 183,
+      "paragraph_id": "HOS-P017",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B008",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:6",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 192,
+      "line_start": 190,
+      "paragraph_id": "HOS-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B009",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:7",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 195,
+      "line_start": 194,
+      "paragraph_id": "HOS-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B009",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:8",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 199,
+      "line_start": 197,
+      "paragraph_id": "HOS-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B009",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:9",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D019",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 205,
+      "line_start": 202,
+      "paragraph_id": "HOS-P019",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:10",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D019",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 208,
+      "line_start": 206,
+      "paragraph_id": "HOS-P019",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:11",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D019",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 213,
+      "line_start": 210,
+      "paragraph_id": "HOS-P019",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:12",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D019",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 220,
+      "line_start": 215,
+      "paragraph_id": "HOS-P019",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:13",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D020",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 229,
+      "line_start": 223,
+      "paragraph_id": "HOS-P020",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B011",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:14",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D021",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 237,
+      "line_start": 232,
+      "paragraph_id": "HOS-P021",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B012",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:15",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 242,
+      "line_start": 239,
+      "paragraph_id": "HOS-P022",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B013",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:16",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 245,
+      "line_start": 244,
+      "paragraph_id": "HOS-P022",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B013",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:17",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 249,
+      "line_start": 247,
+      "paragraph_id": "HOS-P022",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B013",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:18",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "HOS-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 252,
+      "line_start": 251,
+      "paragraph_id": "HOS-P022",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B013",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 4:19",
+      "section_id": "HOS-S004",
+      "section_marker": "s1",
+      "section_title": "The Charge Against Israel",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D023",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 261,
+      "line_start": 256,
+      "paragraph_id": "HOS-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B014",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 5:1",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D023",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 264,
+      "line_start": 263,
+      "paragraph_id": "HOS-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B014",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 5:2",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D023",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 269,
+      "line_start": 266,
+      "paragraph_id": "HOS-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B014",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 5:3",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D024",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 275,
+      "line_start": 272,
+      "paragraph_id": "HOS-P024",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:4",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D024",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 279,
+      "line_start": 277,
+      "paragraph_id": "HOS-P024",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:5",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D024",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 284,
+      "line_start": 281,
+      "paragraph_id": "HOS-P024",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:6",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D024",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 289,
+      "line_start": 286,
+      "paragraph_id": "HOS-P024",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:7",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 295,
+      "line_start": 292,
+      "paragraph_id": "HOS-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B016",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:8",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 300,
+      "line_start": 297,
+      "paragraph_id": "HOS-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B016",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:9",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 305,
+      "line_start": 302,
+      "paragraph_id": "HOS-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B016",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:10",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 309,
+      "line_start": 307,
+      "paragraph_id": "HOS-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B016",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:11",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 312,
+      "line_start": 311,
+      "paragraph_id": "HOS-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B016",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:12",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D026",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 320,
+      "line_start": 315,
+      "paragraph_id": "HOS-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B017",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:13",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D026",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 325,
+      "line_start": 322,
+      "paragraph_id": "HOS-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B017",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:14",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "HOS-D026",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 331,
+      "line_start": 327,
+      "paragraph_id": "HOS-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B017",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 5:15",
+      "section_id": "HOS-S005",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Israel",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D027",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 339,
+      "line_start": 335,
+      "paragraph_id": "HOS-P027",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B018",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 6:1",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D027",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 343,
+      "line_start": 341,
+      "paragraph_id": "HOS-P027",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B018",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 6:2",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D027",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 350,
+      "line_start": 345,
+      "paragraph_id": "HOS-P027",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B018",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 6:3",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 356,
+      "line_start": 353,
+      "paragraph_id": "HOS-P028",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 6:4",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 360,
+      "line_start": 358,
+      "paragraph_id": "HOS-P028",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 6:5",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 363,
+      "line_start": 362,
+      "paragraph_id": "HOS-P028",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 6:6",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 366,
+      "line_start": 365,
+      "paragraph_id": "HOS-P028",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 6:7",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 369,
+      "line_start": 368,
+      "paragraph_id": "HOS-P028",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 6:8",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 374,
+      "line_start": 371,
+      "paragraph_id": "HOS-P028",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 6:9",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 378,
+      "line_start": 376,
+      "paragraph_id": "HOS-P028",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 6:10",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "HOS-D029",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 384,
+      "line_start": 381,
+      "paragraph_id": "HOS-P029",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B020",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 6:11",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": true,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": -20
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D030",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 392,
+      "line_start": 387,
+      "paragraph_id": "HOS-P030",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B021",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:1",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D030",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 397,
+      "line_start": 394,
+      "paragraph_id": "HOS-P030",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B021",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:2",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 401,
+      "line_start": 400,
+      "paragraph_id": "HOS-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B022",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:3",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 406,
+      "line_start": 403,
+      "paragraph_id": "HOS-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B022",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:4",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 410,
+      "line_start": 408,
+      "paragraph_id": "HOS-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B022",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:5",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 415,
+      "line_start": 412,
+      "paragraph_id": "HOS-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B022",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:6",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 420,
+      "line_start": 417,
+      "paragraph_id": "HOS-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B022",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:7",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D032",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 424,
+      "line_start": 423,
+      "paragraph_id": "HOS-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B023",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:8",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D032",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 429,
+      "line_start": 426,
+      "paragraph_id": "HOS-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B023",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:9",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D032",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 434,
+      "line_start": 431,
+      "paragraph_id": "HOS-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B023",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:10",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 440,
+      "line_start": 437,
+      "paragraph_id": "HOS-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B024",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:11",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 445,
+      "line_start": 442,
+      "paragraph_id": "HOS-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B024",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:12",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 452,
+      "line_start": 447,
+      "paragraph_id": "HOS-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B024",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:13",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 458,
+      "line_start": 454,
+      "paragraph_id": "HOS-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B024",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:14",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 461,
+      "line_start": 460,
+      "paragraph_id": "HOS-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B024",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:15",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "HOS-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 468,
+      "line_start": 463,
+      "paragraph_id": "HOS-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B024",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 7:16",
+      "section_id": "HOS-S006",
+      "section_marker": "s1",
+      "section_title": "Israel Unrepentant",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D034",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 475,
+      "line_start": 472,
+      "paragraph_id": "HOS-P034",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B025",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 8:1",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D034",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 478,
+      "line_start": 477,
+      "paragraph_id": "HOS-P034",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B025",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 8:2",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D034",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 481,
+      "line_start": 480,
+      "paragraph_id": "HOS-P034",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B025",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 8:3",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D034",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 487,
+      "line_start": 483,
+      "paragraph_id": "HOS-P034",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B025",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 8:4",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D034",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 491,
+      "line_start": 489,
+      "paragraph_id": "HOS-P034",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B025",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 8:5",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D034",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 497,
+      "line_start": 493,
+      "paragraph_id": "HOS-P034",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B025",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 8:6",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D035",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 505,
+      "line_start": 500,
+      "paragraph_id": "HOS-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 8:7",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D035",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 509,
+      "line_start": 507,
+      "paragraph_id": "HOS-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 8:8",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D035",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 513,
+      "line_start": 511,
+      "paragraph_id": "HOS-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 8:9",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D035",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 518,
+      "line_start": 515,
+      "paragraph_id": "HOS-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 8:10",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 522,
+      "line_start": 521,
+      "paragraph_id": "HOS-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B027",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 8:11",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 525,
+      "line_start": 524,
+      "paragraph_id": "HOS-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B027",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 8:12",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 532,
+      "line_start": 527,
+      "paragraph_id": "HOS-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B027",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 8:13",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "HOS-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 538,
+      "line_start": 534,
+      "paragraph_id": "HOS-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B027",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 8:14",
+      "section_id": "HOS-S007",
+      "section_marker": "s1",
+      "section_title": "Israel to Reap the Whirlwind",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 546,
+      "line_start": 542,
+      "paragraph_id": "HOS-P037",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B028",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 9:1",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 549,
+      "line_start": 548,
+      "paragraph_id": "HOS-P037",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B028",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 9:2",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 553,
+      "line_start": 551,
+      "paragraph_id": "HOS-P037",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B028",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 9:3",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 560,
+      "line_start": 555,
+      "paragraph_id": "HOS-P037",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B028",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 9:4",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 564,
+      "line_start": 563,
+      "paragraph_id": "HOS-P038",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B029",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:5",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 570,
+      "line_start": 566,
+      "paragraph_id": "HOS-P038",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B029",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:6",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 578,
+      "line_start": 572,
+      "paragraph_id": "HOS-P038",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B029",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:7",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 583,
+      "line_start": 580,
+      "paragraph_id": "HOS-P038",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B029",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:8",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 588,
+      "line_start": 585,
+      "paragraph_id": "HOS-P038",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B029",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:9",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 597,
+      "line_start": 591,
+      "paragraph_id": "HOS-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:10",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 600,
+      "line_start": 599,
+      "paragraph_id": "HOS-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:11",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 605,
+      "line_start": 602,
+      "paragraph_id": "HOS-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:12",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 610,
+      "line_start": 607,
+      "paragraph_id": "HOS-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:13",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 616,
+      "line_start": 613,
+      "paragraph_id": "HOS-P040",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B031",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:14",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D041",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 624,
+      "line_start": 619,
+      "paragraph_id": "HOS-P041",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B032",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:15",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D041",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 630,
+      "line_start": 626,
+      "paragraph_id": "HOS-P041",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B032",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:16",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "HOS-D042",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 635,
+      "line_start": 633,
+      "paragraph_id": "HOS-P042",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B033",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 9:17",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D043",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 644,
+      "line_start": 639,
+      "paragraph_id": "HOS-P043",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B034",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:1",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D043",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 649,
+      "line_start": 646,
+      "paragraph_id": "HOS-P043",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B034",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:2",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D044",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 655,
+      "line_start": 652,
+      "paragraph_id": "HOS-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B035",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:3",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D044",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 661,
+      "line_start": 657,
+      "paragraph_id": "HOS-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B035",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:4",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D044",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 668,
+      "line_start": 663,
+      "paragraph_id": "HOS-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B035",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:5",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D044",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 673,
+      "line_start": 670,
+      "paragraph_id": "HOS-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B035",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:6",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D044",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 676,
+      "line_start": 675,
+      "paragraph_id": "HOS-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B035",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:7",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D044",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 683,
+      "line_start": 678,
+      "paragraph_id": "HOS-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B035",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:8",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 689,
+      "line_start": 686,
+      "paragraph_id": "HOS-P045",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:9",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 693,
+      "line_start": 691,
+      "paragraph_id": "HOS-P045",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:10",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 701,
+      "line_start": 695,
+      "paragraph_id": "HOS-P045",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:11",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 708,
+      "line_start": 703,
+      "paragraph_id": "HOS-P045",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:12",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 714,
+      "line_start": 710,
+      "paragraph_id": "HOS-P045",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:13",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 719,
+      "line_start": 716,
+      "paragraph_id": "HOS-P045",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:14",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 10,
+      "discourse_unit_id": "HOS-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 724,
+      "line_start": 721,
+      "paragraph_id": "HOS-P045",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 10:15",
+      "section_id": "HOS-S008",
+      "section_marker": "s1",
+      "section_title": "Punishment for Israel",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 729,
+      "line_start": 728,
+      "paragraph_id": "HOS-P046",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B037",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 11:1",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 734,
+      "line_start": 731,
+      "paragraph_id": "HOS-P046",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B037",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 11:2",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 739,
+      "line_start": 736,
+      "paragraph_id": "HOS-P046",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B037",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 11:3",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 745,
+      "line_start": 741,
+      "paragraph_id": "HOS-P046",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B037",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 11:4",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D047",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 750,
+      "line_start": 748,
+      "paragraph_id": "HOS-P047",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B038",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 11:5",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D047",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 754,
+      "line_start": 752,
+      "paragraph_id": "HOS-P047",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B038",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 11:6",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D047",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 758,
+      "line_start": 756,
+      "paragraph_id": "HOS-P047",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B038",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 11:7",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D048",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 766,
+      "line_start": 761,
+      "paragraph_id": "HOS-P048",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 11:8",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D048",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 772,
+      "line_start": 768,
+      "paragraph_id": "HOS-P048",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 11:9",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D048",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 777,
+      "line_start": 774,
+      "paragraph_id": "HOS-P048",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 11:10",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D048",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 783,
+      "line_start": 779,
+      "paragraph_id": "HOS-P048",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 11:11",
+      "section_id": "HOS-S009",
+      "section_marker": "s1",
+      "section_title": "Godʼs Love for Israel",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 11,
+      "discourse_unit_id": "HOS-D049",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 789,
+      "line_start": 786,
+      "paragraph_id": "HOS-P049",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B040",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 11:12",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": true,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": -20
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D049",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 796,
+      "line_start": 792,
+      "paragraph_id": "HOS-P049",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B040",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 12:1",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D049",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 800,
+      "line_start": 798,
+      "paragraph_id": "HOS-P049",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B040",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 12:2",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D049",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 803,
+      "line_start": 802,
+      "paragraph_id": "HOS-P049",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B040",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 12:3",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D049",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 808,
+      "line_start": 805,
+      "paragraph_id": "HOS-P049",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B040",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 12:4",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D049",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 811,
+      "line_start": 810,
+      "paragraph_id": "HOS-P049",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B040",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 12:5",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D049",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 815,
+      "line_start": 813,
+      "paragraph_id": "HOS-P049",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B040",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 12:6",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D050",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 819,
+      "line_start": 818,
+      "paragraph_id": "HOS-P050",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B041",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 12:7",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D050",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 824,
+      "line_start": 821,
+      "paragraph_id": "HOS-P050",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B041",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 12:8",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D051",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 830,
+      "line_start": 827,
+      "paragraph_id": "HOS-P051",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B042",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 12:9",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D051",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 834,
+      "line_start": 832,
+      "paragraph_id": "HOS-P051",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B042",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 12:10",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D052",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 841,
+      "line_start": 837,
+      "paragraph_id": "HOS-P052",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B043",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 12:11",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D052",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 845,
+      "line_start": 843,
+      "paragraph_id": "HOS-P052",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B043",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 12:12",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D052",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 848,
+      "line_start": 847,
+      "paragraph_id": "HOS-P052",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B043",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 12:13",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 12,
+      "discourse_unit_id": "HOS-D052",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 852,
+      "line_start": 850,
+      "paragraph_id": "HOS-P052",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B043",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 12:14",
+      "section_id": "HOS-S010",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Sin",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D053",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 858,
+      "line_start": 856,
+      "paragraph_id": "HOS-P053",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B044",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 13:1",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D053",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 866,
+      "line_start": 860,
+      "paragraph_id": "HOS-P053",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B044",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 13:2",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D053",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 871,
+      "line_start": 868,
+      "paragraph_id": "HOS-P053",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B044",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 13:3",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D054",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 877,
+      "line_start": 874,
+      "paragraph_id": "HOS-P054",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B045",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:4",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D054",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 880,
+      "line_start": 879,
+      "paragraph_id": "HOS-P054",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B045",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:5",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D054",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 884,
+      "line_start": 882,
+      "paragraph_id": "HOS-P054",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B045",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:6",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D054",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 887,
+      "line_start": 886,
+      "paragraph_id": "HOS-P054",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B045",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:7",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D054",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 892,
+      "line_start": 889,
+      "paragraph_id": "HOS-P054",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B045",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:8",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D055",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 896,
+      "line_start": 895,
+      "paragraph_id": "HOS-P055",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B046",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:9",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D055",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 901,
+      "line_start": 898,
+      "paragraph_id": "HOS-P055",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B046",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:10",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D055",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 904,
+      "line_start": 903,
+      "paragraph_id": "HOS-P055",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B046",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:11",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D055",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 907,
+      "line_start": 906,
+      "paragraph_id": "HOS-P055",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B046",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:12",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D055",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 912,
+      "line_start": 909,
+      "paragraph_id": "HOS-P055",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B046",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:13",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D056",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 920,
+      "line_start": 915,
+      "paragraph_id": "HOS-P056",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B047",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:14",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D057",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 928,
+      "line_start": 922,
+      "paragraph_id": "HOS-P057",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B048",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:15",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 13,
+      "discourse_unit_id": "HOS-D057",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 934,
+      "line_start": 930,
+      "paragraph_id": "HOS-P057",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B048",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 13:16",
+      "section_id": "HOS-S011",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Anger Against Israel",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 14,
+      "discourse_unit_id": "HOS-D058",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 939,
+      "line_start": 938,
+      "paragraph_id": "HOS-P058",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B049",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 14:1",
+      "section_id": "HOS-S012",
+      "section_marker": "s1",
+      "section_title": "Repentance to Bring Blessing",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 14,
+      "discourse_unit_id": "HOS-D058",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 946,
+      "line_start": 941,
+      "paragraph_id": "HOS-P058",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B049",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 14:2",
+      "section_id": "HOS-S012",
+      "section_marker": "s1",
+      "section_title": "Repentance to Bring Blessing",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 14,
+      "discourse_unit_id": "HOS-D058",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 952,
+      "line_start": 948,
+      "paragraph_id": "HOS-P058",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B049",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "HOS 14:3",
+      "section_id": "HOS-S012",
+      "section_marker": "s1",
+      "section_title": "Repentance to Bring Blessing",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 14,
+      "discourse_unit_id": "HOS-D059",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 957,
+      "line_start": 955,
+      "paragraph_id": "HOS-P059",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B050",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 14:4",
+      "section_id": "HOS-S012",
+      "section_marker": "s1",
+      "section_title": "Repentance to Bring Blessing",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 14,
+      "discourse_unit_id": "HOS-D059",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 962,
+      "line_start": 959,
+      "paragraph_id": "HOS-P059",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B050",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 14:5",
+      "section_id": "HOS-S012",
+      "section_marker": "s1",
+      "section_title": "Repentance to Bring Blessing",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 14,
+      "discourse_unit_id": "HOS-D059",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 966,
+      "line_start": 964,
+      "paragraph_id": "HOS-P059",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B050",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 14:6",
+      "section_id": "HOS-S012",
+      "section_marker": "s1",
+      "section_title": "Repentance to Bring Blessing",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 14,
+      "discourse_unit_id": "HOS-D059",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 971,
+      "line_start": 968,
+      "paragraph_id": "HOS-P059",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B050",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 14:7",
+      "section_id": "HOS-S012",
+      "section_marker": "s1",
+      "section_title": "Repentance to Bring Blessing",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 14,
+      "discourse_unit_id": "HOS-D059",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 976,
+      "line_start": 973,
+      "paragraph_id": "HOS-P059",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B050",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 14:8",
+      "section_id": "HOS-S012",
+      "section_marker": "s1",
+      "section_title": "Repentance to Bring Blessing",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HOS",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 14,
+      "discourse_unit_id": "HOS-D060",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 983,
+      "line_start": 979,
+      "paragraph_id": "HOS-P060",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "HOS-B051",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "HOS 14:9",
+      "section_id": "HOS-S012",
+      "section_marker": "s1",
+      "section_title": "Repentance to Bring Blessing",
+      "verse_end": 9,
+      "verse_start": 9
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "9dd20f58ba0abd27eb0f3e40f91a663a734d7dad52658b860bff35281419f6ad",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 1,
+    "cross_chapter_sections": 4,
+    "discourse_units": 60,
+    "paragraphs": 60,
+    "poetry_blocks": 50,
+    "sections": 13,
+    "verse_records": 197
+  }
+}

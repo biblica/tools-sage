@@ -1,0 +1,1618 @@
+{
+  "book": "HAB",
+  "records": [
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 10,
+      "line_start": 10,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HAB 1:1",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 15,
+      "line_start": 12,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:2",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 20,
+      "line_start": 17,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:3",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 25,
+      "line_start": 22,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:4",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 30,
+      "line_start": 27,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:5",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 35,
+      "line_start": 32,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:6",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 38,
+      "line_start": 37,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:7",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 44,
+      "line_start": 40,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:8",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 48,
+      "line_start": 46,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:9",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 53,
+      "line_start": 50,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:10",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 57,
+      "line_start": 55,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:11",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 63,
+      "line_start": 59,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:12",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 70,
+      "line_start": 65,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:13",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 73,
+      "line_start": 72,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:14",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 78,
+      "line_start": 75,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:15",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 83,
+      "line_start": 80,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:16",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "HAB-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 86,
+      "line_start": 85,
+      "paragraph_id": "HAB-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B001",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 1:17",
+      "section_id": "HAB-S001",
+      "section_marker": "s1",
+      "section_title": "Chaldeans Used to Punish Judah",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 93,
+      "line_start": 90,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:1",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 98,
+      "line_start": 95,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:2",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 103,
+      "line_start": 100,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:3",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 107,
+      "line_start": 105,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:4",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 114,
+      "line_start": 109,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:5",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 120,
+      "line_start": 116,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:6",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 124,
+      "line_start": 122,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:7",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 129,
+      "line_start": 126,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:8",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 133,
+      "line_start": 131,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:9",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 137,
+      "line_start": 135,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:10",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 140,
+      "line_start": 139,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:11",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 143,
+      "line_start": 142,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:12",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 147,
+      "line_start": 145,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:13",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 151,
+      "line_start": 149,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:14",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 155,
+      "line_start": 153,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:15",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 160,
+      "line_start": 157,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:16",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 165,
+      "line_start": 162,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:17",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 170,
+      "line_start": 167,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:18",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 176,
+      "line_start": 172,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:19",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "HAB-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 179,
+      "line_start": 178,
+      "paragraph_id": "HAB-P002",
+      "paragraph_marker": "q",
+      "poetry_block_id": "HAB-B002",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 2:20",
+      "section_id": "HAB-S002",
+      "section_marker": "s1",
+      "section_title": "God Answers the Prophet",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 183,
+      "line_start": 183,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "HAB 3:1",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 188,
+      "line_start": 185,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:2",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 193,
+      "line_start": 190,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:3",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 197,
+      "line_start": 195,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:4",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 200,
+      "line_start": 199,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:5",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 206,
+      "line_start": 202,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:6",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 209,
+      "line_start": 208,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:7",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 215,
+      "line_start": 211,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:8",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 219,
+      "line_start": 217,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:9",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 224,
+      "line_start": 221,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:10",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 228,
+      "line_start": 226,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:11",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 231,
+      "line_start": 230,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:12",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 236,
+      "line_start": 233,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:13",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 242,
+      "line_start": 238,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:14",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 245,
+      "line_start": 244,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:15",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 252,
+      "line_start": 247,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:16",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 259,
+      "line_start": 254,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:17",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 262,
+      "line_start": 261,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:18",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "HAB",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "HAB-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q",
+      "line_end": 267,
+      "line_start": 264,
+      "paragraph_id": "HAB-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "HAB-B003",
+      "poetry_block_marker": "q",
+      "poetry_block_title": "",
+      "reference": "HAB 3:19",
+      "section_id": "HAB-S003",
+      "section_marker": "s1",
+      "section_title": "God’s People Saved",
+      "verse_end": 19,
+      "verse_start": 19
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "56196ad1f92e6b33fac3e32e83d87eaf84f50b5fe886641b43a6b29287bb25d4",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 0,
+    "discourse_units": 5,
+    "paragraphs": 3,
+    "poetry_blocks": 3,
+    "sections": 3,
+    "verse_records": 56
+  }
+}

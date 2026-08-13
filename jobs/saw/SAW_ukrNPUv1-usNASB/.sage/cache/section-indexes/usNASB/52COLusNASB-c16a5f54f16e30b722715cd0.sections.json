@@ -1,0 +1,2728 @@
+{
+  "book": "COL",
+  "records": [
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 10,
+      "line_start": 10,
+      "paragraph_id": "COL-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:1",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D002",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 12,
+      "line_start": 12,
+      "paragraph_id": "COL-P002",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:2",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 14,
+      "line_start": 14,
+      "paragraph_id": "COL-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:3",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 15,
+      "line_start": 15,
+      "paragraph_id": "COL-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:4",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 16,
+      "line_start": 16,
+      "paragraph_id": "COL-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:5",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 17,
+      "line_start": 17,
+      "paragraph_id": "COL-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:6",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 18,
+      "line_start": 18,
+      "paragraph_id": "COL-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:7",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 19,
+      "line_start": 19,
+      "paragraph_id": "COL-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:8",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 21,
+      "line_start": 21,
+      "paragraph_id": "COL-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:9",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 22,
+      "line_start": 22,
+      "paragraph_id": "COL-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:10",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 23,
+      "line_start": 23,
+      "paragraph_id": "COL-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:11",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 24,
+      "line_start": 24,
+      "paragraph_id": "COL-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:12",
+      "section_id": "COL-S001",
+      "section_marker": "s1",
+      "section_title": "Thankfulness for Spiritual Attainments",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "m",
+      "line_end": 27,
+      "line_start": 27,
+      "paragraph_id": "COL-P005",
+      "paragraph_marker": "m",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:13",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "m",
+      "line_end": 28,
+      "line_start": 28,
+      "paragraph_id": "COL-P005",
+      "paragraph_marker": "m",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:14",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 30,
+      "line_start": 30,
+      "paragraph_id": "COL-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:15",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 31,
+      "line_start": 31,
+      "paragraph_id": "COL-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:16",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 32,
+      "line_start": 32,
+      "paragraph_id": "COL-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:17",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 33,
+      "line_start": 33,
+      "paragraph_id": "COL-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:18",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 34,
+      "line_start": 34,
+      "paragraph_id": "COL-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:19",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 35,
+      "line_start": 35,
+      "paragraph_id": "COL-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:20",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 37,
+      "line_start": 37,
+      "paragraph_id": "COL-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:21",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 38,
+      "line_start": 38,
+      "paragraph_id": "COL-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:22",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 39,
+      "line_start": 39,
+      "paragraph_id": "COL-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:23",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 41,
+      "line_start": 41,
+      "paragraph_id": "COL-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:24",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 42,
+      "line_start": 42,
+      "paragraph_id": "COL-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:25",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 43,
+      "line_start": 43,
+      "paragraph_id": "COL-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:26",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 26,
+      "verse_start": 26
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 44,
+      "line_start": 44,
+      "paragraph_id": "COL-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:27",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 27,
+      "verse_start": 27
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 45,
+      "line_start": 45,
+      "paragraph_id": "COL-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:28",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 28,
+      "verse_start": 28
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "COL-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 46,
+      "line_start": 46,
+      "paragraph_id": "COL-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 1:29",
+      "section_id": "COL-S002",
+      "section_marker": "s1",
+      "section_title": "The Incomparable Christ",
+      "verse_end": 29,
+      "verse_start": 29
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 50,
+      "line_start": 50,
+      "paragraph_id": "COL-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:1",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 51,
+      "line_start": 51,
+      "paragraph_id": "COL-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:2",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 52,
+      "line_start": 52,
+      "paragraph_id": "COL-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:3",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 53,
+      "line_start": 53,
+      "paragraph_id": "COL-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:4",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 54,
+      "line_start": 54,
+      "paragraph_id": "COL-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:5",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 56,
+      "line_start": 56,
+      "paragraph_id": "COL-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:6",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 57,
+      "line_start": 57,
+      "paragraph_id": "COL-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:7",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 59,
+      "line_start": 59,
+      "paragraph_id": "COL-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:8",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 60,
+      "line_start": 60,
+      "paragraph_id": "COL-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:9",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 61,
+      "line_start": 61,
+      "paragraph_id": "COL-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:10",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 62,
+      "line_start": 62,
+      "paragraph_id": "COL-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:11",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 63,
+      "line_start": 63,
+      "paragraph_id": "COL-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:12",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 64,
+      "line_start": 64,
+      "paragraph_id": "COL-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:13",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 65,
+      "line_start": 65,
+      "paragraph_id": "COL-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:14",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 66,
+      "line_start": 66,
+      "paragraph_id": "COL-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:15",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 68,
+      "line_start": 68,
+      "paragraph_id": "COL-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:16",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 69,
+      "line_start": 69,
+      "paragraph_id": "COL-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:17",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 70,
+      "line_start": 70,
+      "paragraph_id": "COL-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:18",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 71,
+      "line_start": 71,
+      "paragraph_id": "COL-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:19",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 73,
+      "line_start": 73,
+      "paragraph_id": "COL-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:20",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 74,
+      "line_start": 74,
+      "paragraph_id": "COL-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:21",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 75,
+      "line_start": 75,
+      "paragraph_id": "COL-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:22",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "COL-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 76,
+      "line_start": 76,
+      "paragraph_id": "COL-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 2:23",
+      "section_id": "COL-S003",
+      "section_marker": "s1",
+      "section_title": "You Are Built Up in Christ",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 80,
+      "line_start": 80,
+      "paragraph_id": "COL-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:1",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 81,
+      "line_start": 81,
+      "paragraph_id": "COL-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:2",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 82,
+      "line_start": 82,
+      "paragraph_id": "COL-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:3",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 83,
+      "line_start": 83,
+      "paragraph_id": "COL-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:4",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 85,
+      "line_start": 85,
+      "paragraph_id": "COL-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:5",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 86,
+      "line_start": 86,
+      "paragraph_id": "COL-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:6",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 87,
+      "line_start": 87,
+      "paragraph_id": "COL-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:7",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 88,
+      "line_start": 88,
+      "paragraph_id": "COL-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:8",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 89,
+      "line_start": 89,
+      "paragraph_id": "COL-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:9",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 90,
+      "line_start": 90,
+      "paragraph_id": "COL-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:10",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 91,
+      "line_start": 91,
+      "paragraph_id": "COL-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:11",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 93,
+      "line_start": 93,
+      "paragraph_id": "COL-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:12",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 94,
+      "line_start": 94,
+      "paragraph_id": "COL-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:13",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 95,
+      "line_start": 95,
+      "paragraph_id": "COL-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:14",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 96,
+      "line_start": 96,
+      "paragraph_id": "COL-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:15",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 97,
+      "line_start": 97,
+      "paragraph_id": "COL-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:16",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 98,
+      "line_start": 98,
+      "paragraph_id": "COL-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:17",
+      "section_id": "COL-S004",
+      "section_marker": "s1",
+      "section_title": "Put On the New Self",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 101,
+      "line_start": 101,
+      "paragraph_id": "COL-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:18",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 102,
+      "line_start": 102,
+      "paragraph_id": "COL-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:19",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 103,
+      "line_start": 103,
+      "paragraph_id": "COL-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:20",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 104,
+      "line_start": 104,
+      "paragraph_id": "COL-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:21",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 106,
+      "line_start": 106,
+      "paragraph_id": "COL-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:22",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 107,
+      "line_start": 107,
+      "paragraph_id": "COL-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:23",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 108,
+      "line_start": 108,
+      "paragraph_id": "COL-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:24",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "COL-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 109,
+      "line_start": 109,
+      "paragraph_id": "COL-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 3:25",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 112,
+      "line_start": 112,
+      "paragraph_id": "COL-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:1",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 114,
+      "line_start": 114,
+      "paragraph_id": "COL-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:2",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 115,
+      "line_start": 115,
+      "paragraph_id": "COL-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:3",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 116,
+      "line_start": 116,
+      "paragraph_id": "COL-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:4",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 118,
+      "line_start": 118,
+      "paragraph_id": "COL-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:5",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 119,
+      "line_start": 119,
+      "paragraph_id": "COL-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:6",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 121,
+      "line_start": 121,
+      "paragraph_id": "COL-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:7",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 122,
+      "line_start": 122,
+      "paragraph_id": "COL-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:8",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 123,
+      "line_start": 123,
+      "paragraph_id": "COL-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:9",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 125,
+      "line_start": 125,
+      "paragraph_id": "COL-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:10",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 126,
+      "line_start": 126,
+      "paragraph_id": "COL-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:11",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 127,
+      "line_start": 127,
+      "paragraph_id": "COL-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:12",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 128,
+      "line_start": 128,
+      "paragraph_id": "COL-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:13",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 129,
+      "line_start": 129,
+      "paragraph_id": "COL-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:14",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 130,
+      "line_start": 130,
+      "paragraph_id": "COL-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:15",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 131,
+      "line_start": 131,
+      "paragraph_id": "COL-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:16",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 132,
+      "line_start": 132,
+      "paragraph_id": "COL-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:17",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "COL",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "COL-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 134,
+      "line_start": 134,
+      "paragraph_id": "COL-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "COL 4:18",
+      "section_id": "COL-S005",
+      "section_marker": "s1",
+      "section_title": "Family Relations",
+      "verse_end": 18,
+      "verse_start": 18
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "7644d604099082265dac6a2edb3a457039a92b634b37143418b5c8953730b939",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 1,
+    "discourse_units": 24,
+    "paragraphs": 24,
+    "poetry_blocks": 0,
+    "sections": 5,
+    "verse_records": 95
+  }
+}

@@ -1,0 +1,3040 @@
+{
+  "book": "PHP",
+  "records": [
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "po",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "po",
+      "line_end": 16,
+      "line_start": 15,
+      "paragraph_id": "PHP-P001",
+      "paragraph_marker": "po",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:1",
+      "section_id": "PHP-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "po",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D003",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "po",
+      "line_end": 18,
+      "line_start": 18,
+      "paragraph_id": "PHP-P003",
+      "paragraph_marker": "po",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:2",
+      "section_id": "PHP-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 21,
+      "line_start": 21,
+      "paragraph_id": "PHP-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:3",
+      "section_id": "PHP-S001",
+      "section_marker": "s1",
+      "section_title": "Thanksgiving and Prayer",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 22,
+      "line_start": 22,
+      "paragraph_id": "PHP-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:4",
+      "section_id": "PHP-S001",
+      "section_marker": "s1",
+      "section_title": "Thanksgiving and Prayer",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 23,
+      "line_start": 23,
+      "paragraph_id": "PHP-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:5",
+      "section_id": "PHP-S001",
+      "section_marker": "s1",
+      "section_title": "Thanksgiving and Prayer",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 24,
+      "line_start": 24,
+      "paragraph_id": "PHP-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:6",
+      "section_id": "PHP-S001",
+      "section_marker": "s1",
+      "section_title": "Thanksgiving and Prayer",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 26,
+      "line_start": 26,
+      "paragraph_id": "PHP-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:7",
+      "section_id": "PHP-S001",
+      "section_marker": "s1",
+      "section_title": "Thanksgiving and Prayer",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 27,
+      "line_start": 27,
+      "paragraph_id": "PHP-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:8",
+      "section_id": "PHP-S001",
+      "section_marker": "s1",
+      "section_title": "Thanksgiving and Prayer",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 29,
+      "line_start": 29,
+      "paragraph_id": "PHP-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:9",
+      "section_id": "PHP-S001",
+      "section_marker": "s1",
+      "section_title": "Thanksgiving and Prayer",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 30,
+      "line_start": 30,
+      "paragraph_id": "PHP-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:10",
+      "section_id": "PHP-S001",
+      "section_marker": "s1",
+      "section_title": "Thanksgiving and Prayer",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 31,
+      "line_start": 31,
+      "paragraph_id": "PHP-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:11",
+      "section_id": "PHP-S001",
+      "section_marker": "s1",
+      "section_title": "Thanksgiving and Prayer",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 34,
+      "line_start": 34,
+      "paragraph_id": "PHP-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:12",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 35,
+      "line_start": 35,
+      "paragraph_id": "PHP-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:13",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 36,
+      "line_start": 36,
+      "paragraph_id": "PHP-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:14",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 38,
+      "line_start": 38,
+      "paragraph_id": "PHP-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:15",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 39,
+      "line_start": 39,
+      "paragraph_id": "PHP-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:16",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 40,
+      "line_start": 40,
+      "paragraph_id": "PHP-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:17",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 42,
+      "line_start": 41,
+      "paragraph_id": "PHP-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:18",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 43,
+      "line_start": 43,
+      "paragraph_id": "PHP-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:19",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 44,
+      "line_start": 44,
+      "paragraph_id": "PHP-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:20",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 45,
+      "line_start": 45,
+      "paragraph_id": "PHP-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:21",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 46,
+      "line_start": 46,
+      "paragraph_id": "PHP-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:22",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 47,
+      "line_start": 47,
+      "paragraph_id": "PHP-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:23",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 48,
+      "line_start": 48,
+      "paragraph_id": "PHP-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:24",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 49,
+      "line_start": 49,
+      "paragraph_id": "PHP-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:25",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 50,
+      "line_start": 50,
+      "paragraph_id": "PHP-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:26",
+      "section_id": "PHP-S002",
+      "section_marker": "s1",
+      "section_title": "Paulʼs Chains Advance the Gospel",
+      "verse_end": 26,
+      "verse_start": 26
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 53,
+      "line_start": 53,
+      "paragraph_id": "PHP-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:27",
+      "section_id": "PHP-S003",
+      "section_marker": "s1",
+      "section_title": "Life Worthy of the Gospel",
+      "verse_end": 27,
+      "verse_start": 27
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 54,
+      "line_start": 54,
+      "paragraph_id": "PHP-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:28",
+      "section_id": "PHP-S003",
+      "section_marker": "s1",
+      "section_title": "Life Worthy of the Gospel",
+      "verse_end": 28,
+      "verse_start": 28
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 55,
+      "line_start": 55,
+      "paragraph_id": "PHP-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:29",
+      "section_id": "PHP-S003",
+      "section_marker": "s1",
+      "section_title": "Life Worthy of the Gospel",
+      "verse_end": 29,
+      "verse_start": 29
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "PHP-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 56,
+      "line_start": 56,
+      "paragraph_id": "PHP-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 1:30",
+      "section_id": "PHP-S003",
+      "section_marker": "s1",
+      "section_title": "Life Worthy of the Gospel",
+      "verse_end": 30,
+      "verse_start": 30
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 60,
+      "line_start": 60,
+      "paragraph_id": "PHP-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:1",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 61,
+      "line_start": 61,
+      "paragraph_id": "PHP-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:2",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 62,
+      "line_start": 62,
+      "paragraph_id": "PHP-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:3",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 63,
+      "line_start": 63,
+      "paragraph_id": "PHP-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:4",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 65,
+      "line_start": 65,
+      "paragraph_id": "PHP-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:5",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D013",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 68,
+      "line_start": 67,
+      "paragraph_id": "PHP-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "PHP-B001",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "PHP 2:6",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D013",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 72,
+      "line_start": 70,
+      "paragraph_id": "PHP-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "PHP-B001",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "PHP 2:7",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D013",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 77,
+      "line_start": 74,
+      "paragraph_id": "PHP-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "PHP-B001",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "PHP 2:8",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D014",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 81,
+      "line_start": 80,
+      "paragraph_id": "PHP-P013",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "PHP-B002",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "PHP 2:9",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D014",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 84,
+      "line_start": 83,
+      "paragraph_id": "PHP-P013",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "PHP-B002",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "PHP 2:10",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D014",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 87,
+      "line_start": 86,
+      "paragraph_id": "PHP-P013",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "PHP-B002",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "PHP 2:11",
+      "section_id": "PHP-S004",
+      "section_marker": "s1",
+      "section_title": "Imitating Christʼs Humility",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 90,
+      "line_start": 90,
+      "paragraph_id": "PHP-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:12",
+      "section_id": "PHP-S005",
+      "section_marker": "s1",
+      "section_title": "Do Everything Without Grumbling",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 91,
+      "line_start": 91,
+      "paragraph_id": "PHP-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:13",
+      "section_id": "PHP-S005",
+      "section_marker": "s1",
+      "section_title": "Do Everything Without Grumbling",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 93,
+      "line_start": 93,
+      "paragraph_id": "PHP-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:14",
+      "section_id": "PHP-S005",
+      "section_marker": "s1",
+      "section_title": "Do Everything Without Grumbling",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 94,
+      "line_start": 94,
+      "paragraph_id": "PHP-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:15",
+      "section_id": "PHP-S005",
+      "section_marker": "s1",
+      "section_title": "Do Everything Without Grumbling",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 95,
+      "line_start": 95,
+      "paragraph_id": "PHP-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:16",
+      "section_id": "PHP-S005",
+      "section_marker": "s1",
+      "section_title": "Do Everything Without Grumbling",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 96,
+      "line_start": 96,
+      "paragraph_id": "PHP-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:17",
+      "section_id": "PHP-S005",
+      "section_marker": "s1",
+      "section_title": "Do Everything Without Grumbling",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 97,
+      "line_start": 97,
+      "paragraph_id": "PHP-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:18",
+      "section_id": "PHP-S005",
+      "section_marker": "s1",
+      "section_title": "Do Everything Without Grumbling",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 100,
+      "line_start": 100,
+      "paragraph_id": "PHP-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:19",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 101,
+      "line_start": 101,
+      "paragraph_id": "PHP-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:20",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 102,
+      "line_start": 102,
+      "paragraph_id": "PHP-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:21",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 103,
+      "line_start": 103,
+      "paragraph_id": "PHP-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:22",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 104,
+      "line_start": 104,
+      "paragraph_id": "PHP-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:23",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 105,
+      "line_start": 105,
+      "paragraph_id": "PHP-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:24",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 107,
+      "line_start": 107,
+      "paragraph_id": "PHP-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:25",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 108,
+      "line_start": 108,
+      "paragraph_id": "PHP-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:26",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 26,
+      "verse_start": 26
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 109,
+      "line_start": 109,
+      "paragraph_id": "PHP-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:27",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 27,
+      "verse_start": 27
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 110,
+      "line_start": 110,
+      "paragraph_id": "PHP-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:28",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 28,
+      "verse_start": 28
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 111,
+      "line_start": 111,
+      "paragraph_id": "PHP-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:29",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 29,
+      "verse_start": 29
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "PHP-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 112,
+      "line_start": 112,
+      "paragraph_id": "PHP-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 2:30",
+      "section_id": "PHP-S006",
+      "section_marker": "s1",
+      "section_title": "Timothy and Epaphroditus",
+      "verse_end": 30,
+      "verse_start": 30
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 116,
+      "line_start": 116,
+      "paragraph_id": "PHP-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:1",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 117,
+      "line_start": 117,
+      "paragraph_id": "PHP-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:2",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 118,
+      "line_start": 118,
+      "paragraph_id": "PHP-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:3",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 120,
+      "line_start": 119,
+      "paragraph_id": "PHP-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:4",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 121,
+      "line_start": 121,
+      "paragraph_id": "PHP-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:5",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 122,
+      "line_start": 122,
+      "paragraph_id": "PHP-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:6",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 124,
+      "line_start": 124,
+      "paragraph_id": "PHP-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:7",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 125,
+      "line_start": 125,
+      "paragraph_id": "PHP-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:8",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 126,
+      "line_start": 126,
+      "paragraph_id": "PHP-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:9",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 127,
+      "line_start": 127,
+      "paragraph_id": "PHP-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:10",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 128,
+      "line_start": 128,
+      "paragraph_id": "PHP-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:11",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 130,
+      "line_start": 130,
+      "paragraph_id": "PHP-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:12",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 131,
+      "line_start": 131,
+      "paragraph_id": "PHP-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:13",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 132,
+      "line_start": 132,
+      "paragraph_id": "PHP-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:14",
+      "section_id": "PHP-S007",
+      "section_marker": "s1",
+      "section_title": "No Confidence in the Flesh",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 135,
+      "line_start": 135,
+      "paragraph_id": "PHP-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:15",
+      "section_id": "PHP-S008",
+      "section_marker": "s1",
+      "section_title": "Following Paulʼs Example",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 136,
+      "line_start": 136,
+      "paragraph_id": "PHP-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:16",
+      "section_id": "PHP-S008",
+      "section_marker": "s1",
+      "section_title": "Following Paulʼs Example",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 138,
+      "line_start": 138,
+      "paragraph_id": "PHP-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:17",
+      "section_id": "PHP-S008",
+      "section_marker": "s1",
+      "section_title": "Following Paulʼs Example",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 139,
+      "line_start": 139,
+      "paragraph_id": "PHP-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:18",
+      "section_id": "PHP-S008",
+      "section_marker": "s1",
+      "section_title": "Following Paulʼs Example",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 140,
+      "line_start": 140,
+      "paragraph_id": "PHP-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:19",
+      "section_id": "PHP-S008",
+      "section_marker": "s1",
+      "section_title": "Following Paulʼs Example",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 141,
+      "line_start": 141,
+      "paragraph_id": "PHP-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:20",
+      "section_id": "PHP-S008",
+      "section_marker": "s1",
+      "section_title": "Following Paulʼs Example",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "PHP-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 142,
+      "line_start": 142,
+      "paragraph_id": "PHP-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 3:21",
+      "section_id": "PHP-S008",
+      "section_marker": "s1",
+      "section_title": "Following Paulʼs Example",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 146,
+      "line_start": 146,
+      "paragraph_id": "PHP-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:1",
+      "section_id": "PHP-S009",
+      "section_marker": "s1",
+      "section_title": "Closing Appeal for Steadfastness and Unity",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 148,
+      "line_start": 148,
+      "paragraph_id": "PHP-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:2",
+      "section_id": "PHP-S009",
+      "section_marker": "s1",
+      "section_title": "Closing Appeal for Steadfastness and Unity",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 149,
+      "line_start": 149,
+      "paragraph_id": "PHP-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:3",
+      "section_id": "PHP-S009",
+      "section_marker": "s1",
+      "section_title": "Closing Appeal for Steadfastness and Unity",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 152,
+      "line_start": 152,
+      "paragraph_id": "PHP-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:4",
+      "section_id": "PHP-S010",
+      "section_marker": "s1",
+      "section_title": "Final Exhortations",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 153,
+      "line_start": 153,
+      "paragraph_id": "PHP-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:5",
+      "section_id": "PHP-S010",
+      "section_marker": "s1",
+      "section_title": "Final Exhortations",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 154,
+      "line_start": 154,
+      "paragraph_id": "PHP-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:6",
+      "section_id": "PHP-S010",
+      "section_marker": "s1",
+      "section_title": "Final Exhortations",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 155,
+      "line_start": 155,
+      "paragraph_id": "PHP-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:7",
+      "section_id": "PHP-S010",
+      "section_marker": "s1",
+      "section_title": "Final Exhortations",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 157,
+      "line_start": 157,
+      "paragraph_id": "PHP-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:8",
+      "section_id": "PHP-S010",
+      "section_marker": "s1",
+      "section_title": "Final Exhortations",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 158,
+      "line_start": 158,
+      "paragraph_id": "PHP-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:9",
+      "section_id": "PHP-S010",
+      "section_marker": "s1",
+      "section_title": "Final Exhortations",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 161,
+      "line_start": 161,
+      "paragraph_id": "PHP-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:10",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 162,
+      "line_start": 162,
+      "paragraph_id": "PHP-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:11",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 163,
+      "line_start": 163,
+      "paragraph_id": "PHP-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:12",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 164,
+      "line_start": 164,
+      "paragraph_id": "PHP-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:13",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 166,
+      "line_start": 166,
+      "paragraph_id": "PHP-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:14",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 167,
+      "line_start": 167,
+      "paragraph_id": "PHP-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:15",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 168,
+      "line_start": 168,
+      "paragraph_id": "PHP-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:16",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 169,
+      "line_start": 169,
+      "paragraph_id": "PHP-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:17",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 170,
+      "line_start": 170,
+      "paragraph_id": "PHP-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:18",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 171,
+      "line_start": 171,
+      "paragraph_id": "PHP-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:19",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D031",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 173,
+      "line_start": 173,
+      "paragraph_id": "PHP-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:20",
+      "section_id": "PHP-S011",
+      "section_marker": "s1",
+      "section_title": "Thanks for Their Gifts",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 178,
+      "line_start": 177,
+      "paragraph_id": "PHP-P031",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:21",
+      "section_id": "PHP-S012",
+      "section_marker": "s1",
+      "section_title": "Final Greetings",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D034",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 180,
+      "line_start": 180,
+      "paragraph_id": "PHP-P033",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:22",
+      "section_id": "PHP-S012",
+      "section_marker": "s1",
+      "section_title": "Final Greetings",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "PHP",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "PHP-D035",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 183,
+      "line_start": 183,
+      "paragraph_id": "PHP-P034",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "PHP 4:23",
+      "section_id": "PHP-S012",
+      "section_marker": "s1",
+      "section_title": "Final Greetings",
+      "verse_end": 23,
+      "verse_start": 23
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "e3278116e05a792729460ddc7bb81f2940eec02554a3d42ef8f45ddc263e7b30",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 0,
+    "discourse_units": 33,
+    "paragraphs": 32,
+    "poetry_blocks": 2,
+    "sections": 13,
+    "verse_records": 104
+  }
+}

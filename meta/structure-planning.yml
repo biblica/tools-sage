@@ -1,0 +1,97 @@
+profile:
+  schema_version: '1.0'
+  id: usfm-structure-planning
+  status: ACTIVE
+  purpose: Stable section, poetry-block, paragraph, chapter, and verse boundaries for bounded evidence planning
+
+split_markers:
+  section:
+    ms1: 100
+    ms2: 90
+    s1: 80
+    s2: 60
+  poetry:
+    qa: 95
+    b: 70
+
+book_overrides:
+  PSA:
+    section:
+      cl: 110
+    poetry:
+      qa: 90
+      b: 1
+    scores:
+      chapter: 110
+
+ignored_split_headers:
+  - s3
+
+continuation_markers:
+  - m
+
+marker_patterns:
+  headers:
+    - 'ms\d*'
+    - 'mr'
+    - 's\d*'
+    - 'sr'
+    - 'r'
+    - 'd'
+    - 'sp'
+    - 'sd\d*'
+    - 'mt\d*'
+    - 'mte\d*'
+    - 'imt\d*'
+    - 'imte\d*'
+    - 'is\d*'
+    - 'ip'
+    - 'ipi'
+    - 'im'
+    - 'imi'
+    - 'ipq'
+    - 'imq'
+    - 'ipr'
+    - 'iq\d*'
+    - 'iot'
+    - 'io\d*'
+    - 'iex'
+    - 'cl'
+    - 'cd'
+    - 'qa'
+  body_paragraphs:
+    - 'p'
+    - 'po'
+    - 'pr'
+    - 'cls'
+    - 'pmo'
+    - 'pm'
+    - 'pmc'
+    - 'pmr'
+    - 'pi\d*'
+    - 'mi\d*'
+    - 'nb'
+    - 'pc'
+    - 'ph\d*'
+    - 'lh'
+    - 'li\d*'
+    - 'lf'
+    - 'lim\d*'
+    - 'tr'
+    - 'tc\d*'
+    - 'th\d*'
+    - 'tcr\d*'
+    - 'thr\d*'
+    - 'lit'
+  poetry_lines:
+    - 'q\d*'
+    - 'qm\d*'
+    - 'qr'
+    - 'qc'
+    - 'qd'
+
+scores:
+  paragraph: 30
+  chapter: 10
+  chapter_continuation: -20
+  verse: 0

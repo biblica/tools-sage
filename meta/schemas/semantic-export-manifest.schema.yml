@@ -1,0 +1,40 @@
+schema_id: sage-semantic-export-manifest-2.0
+required:
+- schema_version
+- language
+- profile
+- view
+- included_statuses
+- output
+- sha256
+- entry_count
+- sense_count
+- source_status_counts
+- exported_status_counts
+- validation
+profiles:
+- FLEx
+- Combine
+views:
+  starter:
+  - SEED
+  - OBSERVED
+  - TEAM_CONFIRMED
+  - ESTABLISHED
+  - APPROVED
+  reviewed:
+  - TEAM_CONFIRMED
+  - ESTABLISHED
+  - APPROVED
+  established:
+  - ESTABLISHED
+  - APPROVED
+  approved:
+  - APPROVED
+rules:
+  generated_output_only: true
+  modify_import_in_place: false
+  local_reparse_validation_required: true
+  semdom_translation_authority: false
+  explicit_view_required: true
+  stale_index_export: prohibited

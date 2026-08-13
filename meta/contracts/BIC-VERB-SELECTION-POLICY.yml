@@ -1,0 +1,92 @@
+policy:
+  id: BIC_PROTECTED_VERB_SELECTION_POLICY
+  baseline: '1.00'
+  status: PINNED
+  design_rules:
+    local_first_execution:
+      required: true
+      rule: Use deterministic local processing whenever a result can be obtained reliably without semantic or linguistic inference.
+    semantic_authority_separation:
+      semdom_role: CLASSIFICATION_AND_RETRIEVAL
+      project_sense_role: CONTEXTUAL_LEXICAL_IDENTITY
+      decision_index_role: TRANSLATION_AUTHORITY
+      semdom_may_authorize_translation_choice: false
+    operator_input_during_rewrite: PROHIBITED
+  lexical_identity:
+    canonical_index: BASE_LEMMA
+    morphology_in_primary_lemma_identity: false
+    preserve_surface_occurrences: true
+    sense_identity: PROJECT_SENSE_ID
+    semdom_is_unique_sense_id: false
+  semantic_gate:
+    semantic_fidelity_precedes_accessibility: true
+    lexical_burden_may_override_semantics: false
+    required_preservation:
+    - MEANING
+    - SEMANTIC_FORCE
+    - TONE
+    - AGENCY
+    - PARTICIPANT_RELATIONS
+    - TENSE_ASPECT_MOOD
+    - VOICE
+    - REGISTER
+    - DISCOURSE_FUNCTION
+    - LEGITIMATE_AMBIGUITY
+    - APPROVED_TERMINOLOGY
+  lexical_burden:
+    scale: [0, 1, 2, 3, 4]
+    components:
+      familiarity: 0.40
+      register_markedness: 0.15
+      sense_ambiguity: 0.15
+      construction_burden: 0.15
+      specialist_load: 0.15
+    calculation_owner: LOCAL_CONTROLLER
+    tie_breaker_only_among_semantically_viable_candidates: true
+    longman:
+      invented_bands_prohibited: true
+      licensed_evidence_required: true
+  ol_referral:
+    calculation_owner: LOCAL_CONTROLLER
+    minimum_semantic_risk: 2
+    material_trigger_required: true
+    lexical_difficulty_alone_is_trigger: false
+    bounded_question_required: true
+    bounded_scope_required: true
+  completion:
+    risk_0: CONTINUE
+    risk_1: CONTINUE
+    risk_2: CONTINUE_WITH_REVIEW_ITEM
+    risk_3: CONTINUE_WITH_ELEVATED_REPORT
+    risk_4: CONTINUE_WITH_CRITICAL_REPORT
+    linguistic_uncertainty_blocks_rewrite: false
+    operator_override: PROHIBITED
+    self_check_required: true
+  reporting:
+    human_report: CONCISE
+    detailed_machine_ledger_retained: true
+    risk_0: NORMALLY_SILENT
+    risk_1: SUMMARY
+    risk_2: REVIEW_ITEM
+    risk_3: ELEVATED_REVIEW_ITEM
+    risk_4: CRITICAL_REVIEW_ITEM
+    alternatives:
+      risk_2_max: 2
+      risk_3_max: 3
+      risk_4_max: 4
+      material_alternatives_only: true
+      rejection_reason_required_for_high_risk: true
+      rejection_codes:
+      - MEANING_LOSS
+      - FORCE_WEAKENED
+      - FORCE_INTENSIFIED
+      - WRONG_SENSE
+      - AGENCY_CHANGED
+      - PARTICIPANT_RELATION_CHANGED
+      - TAM_CHANGED
+      - REGISTER_MISMATCH
+      - AMBIGUITY_INTRODUCED
+      - TERMINOLOGY_CONFLICT
+      - LESS_ACCESSIBLE_WITH_NO_SEMANTIC_GAIN
+      - OL_EVIDENCE_DISFAVOURS
+      - OTHER_MATERIAL_LOSS

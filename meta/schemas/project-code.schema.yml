@@ -1,0 +1,36 @@
+schema_id: sage-project-code-1.0
+grammar: <lowercase-language-code><UPPERCASE-project-abbreviation><lowercase-type><iteration-digit>
+paratext_shortname_limit: 8
+preferred_patterns:
+- xxxYYYz0
+- xxYYYYz0
+parse_order:
+- final_iteration_digit
+- preceding_lowercase_type_code
+- leading_lowercase_language_code
+- intervening_uppercase_project_abbreviation
+controls:
+  boundary_detection: case_and_position_not_registry
+  language_code:
+    typical: ISO_639_3
+    permitted_lengths: [2, 3]
+    split_requires_registry: false
+    two_character_codes: accepted
+  project_abbreviation:
+    casing: uppercase
+    permitted_lengths: [1, 4]
+  type_codes:
+    casing: lowercase
+    v: TRANSLATION
+    x: BACKTRANSLATION
+    unknown: registrable_review_required
+  iteration:
+    digits: 1
+    zero: initial_creation_something_from_nothing
+    positive: cumulative_revision_lifecycle_counter
+    resets_when_scope_expands: false
+  scope:
+    source: detected_Scripture_books
+    inferred_from_iteration: false
+  workflow_role_inferred_from_type: false
+  nonconforming_existing_project_code: registrable_without_structural_inference

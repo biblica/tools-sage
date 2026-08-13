@@ -1,0 +1,1258 @@
+{
+  "content": [
+    {
+      "code": "XXA",
+      "content": [],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Bible Module AddDoubtfulVerses.sfm",
+        "\n",
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "New International Version® NIV® 2011, updated 2016",
+        "\n",
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 1973, 1978, 1984, 2011 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Alternate texts used for a “no footnotes and with missing verses” version approved for distribution by the Gideons. Italic formatting should be included if Mark 16:9-20 and John 7:53–8:11 are italicized.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Matthew 17:21",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "XXA 20",
+          "type": "verse"
+        },
+        "He replied, ",
+        {
+          "content": [
+            "“Because you have so little faith. Truly I tell you, if you have faith as small as a mustard seed, you can say to this mountain, ‘Move from here to there,’ and it will move. Nothing will be impossible for you."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "21",
+          "sid": "XXA 21",
+          "type": "verse"
+        },
+        {
+          "content": [
+            {
+              "content": [
+                "But this kind does not go out except by prayer and fasting.”"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Matthew 18:11",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "XXA 10",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "“See that you do not despise one of these little ones. For I tell you that their angels in heaven always see the face of my Father in heaven."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "XXA 11",
+          "type": "verse"
+        },
+        {
+          "content": [
+            {
+              "content": [
+                "The Son of Man came to save what was lost."
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Matthew 23:14",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "XXA 13",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "“Woe to you, teachers of the law and Pharisees, you hypocrites! You shut the door of the kingdom of heaven in peopleʼs faces. You yourselves do not enter, nor will you let those enter who are trying to."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "XXA 14",
+          "type": "verse"
+        },
+        {
+          "content": [
+            {
+              "content": [
+                "“Woe to you, teachers of the law and Pharisees, you hypocrites! You devour widowsʼ houses and for a show make lengthy prayers. Therefore you will be punished more severely."
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "XXA 15",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "“Woe to you, teachers of the law and Pharisees, you hypocrites! You travel over land and sea to win a single convert, and when you have succeeded, you make them twice as much a child of hell as you are."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Mark 7:16",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "XXA 14",
+          "type": "verse"
+        },
+        "Again Jesus called the crowd to him and said, ",
+        {
+          "content": [
+            "“Listen to me, everyone, and understand this."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "XXA 15",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Nothing outside a person can defile them by going into them. Rather, it is what comes out of a person that defiles them."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "XXA 16",
+          "type": "verse"
+        },
+        {
+          "content": [
+            {
+              "content": [
+                "If anyone has ears to hear, let them hear.”"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Mark 9:44,46",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "42",
+          "sid": "XXA 42",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "“If anyone causes one of these little ones—those who believe in me—to stumble, it would be better for them if a large millstone were hung around their neck and they were thrown into the sea."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "43",
+          "sid": "XXA 43",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "If your hand causes you to stumble, cut it off. It is better for you to enter life maimed than with two hands to go into hell, where the fire never goes out,"
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "44",
+          "sid": "XXA 44",
+          "type": "verse"
+        },
+        {
+          "content": [
+            {
+              "content": [
+                "where"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            {
+              "content": [
+                "“ ‘the worms that eat them do not die,"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            {
+              "content": [
+                "and the fire is not quenched.’"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "45",
+          "sid": "XXA 45",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "And if your foot causes you to stumble, cut it off. It is better for you to enter life crippled than to have two feet and be thrown into hell,"
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "46",
+          "sid": "XXA 46",
+          "type": "verse"
+        },
+        {
+          "content": [
+            {
+              "content": [
+                "where"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "m",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            {
+              "content": [
+                "“ ‘the worms that eat them do not die,"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            {
+              "content": [
+                "and the fire is not quenched.’"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "47",
+          "sid": "XXA 47",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "And if your eye causes you to stumble, pluck it out. It is better for you to enter the kingdom of God with one eye than to have two eyes and be thrown into hell,"
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "48",
+          "sid": "XXA 48",
+          "type": "verse"
+        },
+        "\n"
+      ],
+      "marker": "m",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Mark 11:26",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "22",
+          "sid": "XXA 22",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "“Have faith in God,”"
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        " Jesus answered.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "23",
+          "sid": "XXA 23",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Truly I tell you, if anyone says to this mountain, ‘Go, throw yourself into the sea,’ and does not doubt in their heart but believes that what they say will happen, it will be done for them."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "24",
+          "sid": "XXA 24",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Therefore I tell you, whatever you ask for in prayer, believe that you have received it, and it will be yours."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "25",
+          "sid": "XXA 25",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "And when you stand praying, if you hold anything against anyone, forgive them, so that your Father in heaven may forgive you your sins."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "26",
+          "sid": "XXA 26",
+          "type": "verse"
+        },
+        {
+          "content": [
+            {
+              "content": [
+                "But if you do not forgive, neither will your Father who is in heaven forgive your sins.”"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Mark 15:28",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "27",
+          "sid": "XXA 27",
+          "type": "verse"
+        },
+        "They crucified two rebels with him, one on his right and one on his left,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "28",
+          "sid": "XXA 28",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "and the scripture was fulfilled which says, “He was counted with the lawless ones.”"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " Those who passed by hurled insults at him, shaking their heads and saying, “So! You who are going to destroy the temple and build it in three days, come down from the cross and save yourself!” In the same way the chief priests and the teachers of the law mocked him among themselves. “He saved others,” they said, “but he canʼt save himself! Let this Messiah, this king of Israel, come down now from the cross, that we may see and believe.” Those crucified with him also heaped insults on him.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Luke 17:36",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "30",
+          "sid": "XXA 30",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "“It will be just like this on the day the Son of Man is revealed."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "31",
+          "sid": "XXA 31",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "On that day no one who is on the housetop, with possessions inside, should go down to get them. Likewise, no one in the field should go back for anything."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "32",
+          "sid": "XXA 32",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Remember Lotʼs wife!"
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "33",
+          "sid": "XXA 33",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Whoever tries to keep their life will lose it, and whoever loses their life will preserve it."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "34",
+          "sid": "XXA 34",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "I tell you, on that night two people will be in one bed; one will be taken and the other left."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "35",
+          "sid": "XXA 35",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Two women will be grinding grain together; one will be taken and the other left."
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "36",
+          "sid": "XXA 36",
+          "type": "verse"
+        },
+        {
+          "content": [
+            {
+              "content": [
+                "Two men will be in the field; one will be taken and the other left.”"
+              ],
+              "marker": "wj",
+              "type": "char"
+            }
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Luke 23:17",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "XXA 13",
+          "type": "verse"
+        },
+        "Pilate called together the chief priests, the rulers and the people,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "XXA 14",
+          "type": "verse"
+        },
+        "and said to them, “You brought me this man as one who was inciting the people to rebellion. I have examined him in your presence and have found no basis for your charges against him.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "XXA 15",
+          "type": "verse"
+        },
+        "Neither has Herod, for he sent him back to us; as you can see, he has done nothing to deserve death.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "XXA 16",
+          "type": "verse"
+        },
+        "Therefore, I will punish him and then release him.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "XXA 17",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Now he was obliged to release someone to them at the Feast."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "John 5:3‑4",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "XXA 1",
+          "type": "verse"
+        },
+        "Some time later, Jesus went up to Jerusalem for one of the Jewish festivals.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "XXA 2",
+          "type": "verse"
+        },
+        "Now there is in Jerusalem near the Sheep Gate a pool, which in Aramaic is called Bethesda and which is surrounded by five covered colonnades.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "XXA 3",
+          "type": "verse"
+        },
+        "Here a great number of disabled people used to lie—the blind, the lame, the paralyzed",
+        {
+          "content": [
+            "—and they waited for the moving of the waters. They were waiting for the water to start moving."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "XXA 4",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "From time to time an angel of the Lord would come down and stir up the waters. The first one into the pool after each such disturbance would be cured of whatever disease they had"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        ".",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "XXA 5",
+          "type": "verse"
+        },
+        "One who was there had been an invalid for thirty-eight years.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "XXA 6",
+          "type": "verse"
+        },
+        "When Jesus saw him lying there and learned that he had been in this condition for a long time, he asked him, ",
+        {
+          "content": [
+            "“Do you want to get well?”"
+          ],
+          "marker": "wj",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Acts 8:37",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "36",
+          "sid": "XXA 36",
+          "type": "verse"
+        },
+        "As they traveled along the road, they came to some water and the eunuch said, “Look, here is water. What can stand in the way of my being baptized?”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "37",
+          "sid": "XXA 37",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Philip said, “If you believe with all your heart, you may.”"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "The eunuch answered, “I believe that Jesus Christ is the Son of God.”"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "38",
+          "sid": "XXA 38",
+          "type": "verse"
+        },
+        "And he gave orders to stop the chariot. Then both Philip and the eunuch went down into the water and Philip baptized him.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "39",
+          "sid": "XXA 39",
+          "type": "verse"
+        },
+        "When they came up out of the water, the Spirit of the Lord suddenly took Philip away, and the eunuch did not see him again, but went on his way rejoicing.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "40",
+          "sid": "XXA 40",
+          "type": "verse"
+        },
+        "Philip, however, appeared at Azotus and traveled about, preaching the gospel in all the towns until he reached Caesarea.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Acts 15:34",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "30",
+          "sid": "XXA 30",
+          "type": "verse"
+        },
+        "So the men were sent off and went down to Antioch, where they gathered the church together and delivered the letter.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "31",
+          "sid": "XXA 31",
+          "type": "verse"
+        },
+        "The people read it and were glad for its encouraging message.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "32",
+          "sid": "XXA 32",
+          "type": "verse"
+        },
+        "Judas and Silas, who themselves were prophets, said much to encourage and strengthen the believers.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "33",
+          "sid": "XXA 33",
+          "type": "verse"
+        },
+        "After spending some time there, they were sent off by the believers with the blessing of peace to return to those who had sent them.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "34",
+          "sid": "XXA 34",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "But Silas decided to remain there."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "35",
+          "sid": "XXA 35",
+          "type": "verse"
+        },
+        "But Paul and Barnabas remained in Antioch, where they and many others taught and preached the word of the Lord.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Acts 24:6‑8",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "XXA 5",
+          "type": "verse"
+        },
+        "“We have found this man to be a troublemaker, stirring up riots among the Jews all over the world. He is a ringleader of the Nazarene sect",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "XXA 6",
+          "type": "verse"
+        },
+        "and even tried to desecrate the temple; so we seized him, ",
+        {
+          "content": [
+            "and we would have judged him in accordance with our law."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "XXA 7",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "But the commander Lysias came and took him from us with much violence,"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "XXA 8",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "ordering his accusers to come before you."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " By examining him yourself you will be able to learn the truth about all these charges we are bringing against him.”",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Acts 28:29",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "28",
+          "sid": "XXA 28",
+          "type": "verse"
+        },
+        "“Therefore I want you to know that Godʼs salvation has been sent to the Gentiles, and they will listen!”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "29",
+          "sid": "XXA 29",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "After he said this, the Jews left, arguing vigorously among themselves. "
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Romans 16:24",
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "23",
+          "sid": "XXA 23",
+          "type": "verse"
+        },
+        "Gaius, whose hospitality I and the whole church here enjoy, sends you his greetings.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Erastus, who is the cityʼs director of public works, and our brother Quartus send you their greetings.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "24",
+          "sid": "XXA 24",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "May the grace of our Lord Jesus Christ be with all of you. Amen."
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "25",
+          "sid": "XXA 25",
+          "type": "verse"
+        },
+        "Now to him who is able to establish you in accordance with my gospel, the message I proclaim about Jesus Christ, in keeping with the revelation of the mystery hidden for long ages past,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "26",
+          "sid": "XXA 26",
+          "type": "verse"
+        },
+        "but now revealed and made known through the prophetic writings by the command of the eternal God, so that all the Gentiles might come to the obedience that comes from faith—",
+        "\n",
+        {
+          "marker": "v",
+          "number": "27",
+          "sid": "XXA 27",
+          "type": "verse"
+        },
+        "to the only wise God be glory forever through Jesus Christ! Amen.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "XXA",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "94XXAusNIVv2.SFM",
+    "source_sha256": "28fe3a0228a255ea18c8fe54401ba786911119a04b15d64c88b37dea46fe9534",
+    "source_size": 9509,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": []
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

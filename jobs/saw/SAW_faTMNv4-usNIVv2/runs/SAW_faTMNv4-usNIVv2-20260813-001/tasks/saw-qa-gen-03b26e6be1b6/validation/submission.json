@@ -1,0 +1,31 @@
+{
+  "check_type": null,
+  "commit": null,
+  "conditional_ol_evidence_used": false,
+  "contemporary_source": "usNIVv2",
+  "decision_required": false,
+  "focus": null,
+  "lexical_donor": null,
+  "operation": "qa",
+  "original_language_sources": [],
+  "output_project": "faTMNv4",
+  "outputs": [
+    {
+      "path": "output/findings.json",
+      "sha256": "9d3a7221ebb07a7cbd0233e6e79429404079169393c33c9f2bd50efa97d28def"
+    }
+  ],
+  "scope": "GEN 9:18-11:32",
+  "status": "FINALIZED",
+  "task_id": "saw-qa-gen-03b26e6be1b6",
+  "validated_utc": "2026-08-13T21:54:05+00:00",
+  "validation": {
+    "coverage_count": 76,
+    "finding_count": 5,
+    "format": "SAW_FINDINGS_2.0",
+    "review_receipt_count": 1,
+    "stage": "TRANSLATION_AND_MEANING_QA",
+    "structural_candidates_reconciled": 0
+  },
+  "workflow": "saw"
+}

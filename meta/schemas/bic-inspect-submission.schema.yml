@@ -1,0 +1,25 @@
+schema_id: sage-bic-inspect-submission-1.0
+required:
+  - schema_version
+  - operation_id
+  - scope
+  - resource_fingerprints
+  - proposals
+  - challenges
+proposal_required:
+  - submitted_id
+  - record_type
+  - payload
+proposal_optional:
+  - evidence_refs
+challenge_required:
+  - submitted_id
+  - scripture_reference
+  - challenge_type
+  - summary
+  - recommended_action
+memory_rules:
+  model_submission_state: PROPOSED
+  automatic_approval: forbidden
+  usable_state: APPROVED_FOR_USE
+  commit: locked_journaled_multi_file_transaction

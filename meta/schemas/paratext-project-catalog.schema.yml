@@ -1,0 +1,18 @@
+schema_id: sage-paratext-project-catalog-1.0
+required: [schema_version, projects_root, scanned_utc, projects, invalid_folders]
+controls:
+  schema_version: '1.0'
+  owner: derived_machine_state
+  path: state/paratext-project-catalog.json
+  scan_scope: immediate_children_only
+  discovery_gate: parseable_settings.xml_with_recognised_project_metadata
+  menu_source: true
+  filters: [FB, NT, PORTIONS, language]
+  project_metadata:
+    settings.xml: [Language, FullName, LanguageIsoCode]
+    canons.xml: included_books
+    custom.vrs: [name, base_vrs_comment, base_description]
+    sfm: actual_scripture_inventory
+  filesystem_authority:
+    books_and_vrs_are_rederived: true
+    workflow_roles_inferred: false

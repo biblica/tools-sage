@@ -1,0 +1,12 @@
+schema_version: '1.0'
+job_id: SAW_ukrNPUv1-usNASB
+tool: saw
+display_name: ukrNPUv1 analysed against usNASB
+status: ACTIVE
+bindings:
+  wip: ukrNPUv1
+  reference: usNASB
+profiles:
+  target_grammar: uk/wip
+defaults: {}
+configuration_revision: 1

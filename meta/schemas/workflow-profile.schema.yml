@@ -1,0 +1,106 @@
+schema_id: sage-workflow-profile-0.05
+required:
+  workflow:
+  - id
+  - name
+  - purpose
+  - qualification_status
+  - baseline_version
+  - execution_model
+  bindings: mapping
+  evidence_policies: mapping
+  permissions:
+  - may_write_projects
+  process:
+  - stages
+  - rules
+  qualification_gates: list
+prohibited:
+- grammar_bindings
+profile_resolution:
+  source: bound_sage_project
+  fields:
+  - project.language.profile
+  - project.language.variant
+role_authority:
+  source: job.bindings
+  inferred_from_project_code: false
+  stored_in_sage_project_inventory: false
+required_bindings:
+  bic:
+  - CONTENT_SOURCE
+  - LEXICAL_DONOR
+  - GENERATED_TARGET
+  saw:
+  - WIP
+  - REFERENCE
+execution_contract:
+  mode: SAGE_GOVERNED_TASK_V1
+  canonical_resource_bindings:
+    bic: SOURCE_DONOR_TARGET
+    saw: WIP_REFERENCE
+  resource_projection_fields:
+    output_project: TARGET_or_WIP
+    contemporary_source: SOURCE_or_REFERENCE
+  original_language_sources: explicit_ol_or_conditionally_authorised_for_material_risk
+  multi_project_evaluation: sequential_isolated_tasks
+  task_creation_requires_fresh_initialization: true
+  task_creation_requires_selected_resource_readiness: true
+  submission_requires_immutable_task_controls: true
+  job_id: required_for_all_governed_tasks
+  run_id: required_for_all_governed_tasks
+  direct_cli: must_resolve_or_create_persisted_job_and_run
+  release_candidate_migration: prohibited
+  original_language_resolution:
+    cardinality: exactly_one
+    object: applicable_bound_ol_resource
+    condition: ol_is_routed
+process_contracts:
+  bic:
+  - INSPECT
+  - REWRITE
+  - SELF_CHECK
+  - TRANSACTIONAL_COMMIT
+  saw:
+  - DETERMINISTIC_PREFLIGHT
+  - STRUCTURAL_ADJUDICATION
+  - TRANSLATION_AND_MEANING_QA
+  - SELECTIVE_OL_ADJUDICATION
+  - COVERAGE_RECONCILIATION
+  - DETERMINISTIC_FINALISATION
+human_review_attention:
+  memory_review: optional_provenance
+  grammar_profile_review: nonblocking_attention
+  urgency_3: log_and_continue
+  urgency_4: critical_report_and_continue_without_operator_input
+independence_contract:
+  bic_to_saw_handoff: prohibited
+  target_to_wip_role_conversion: prohibited
+  shared_run_lifecycle: prohibited
+external_access_contract:
+  saw_external_writes: prohibited
+  bic_target_external_write: optional_SFM_only
+  all_external_vrs_writes: prohibited
+saw_qa_composite:
+  public_operation: qa
+  stages:
+  - DETERMINISTIC_PREFLIGHT
+  - STRUCTURAL_ADJUDICATION_IF_REQUIRED
+  - TRANSLATION_AND_MEANING_QA_REQUIRED
+  - SELECTIVE_OL_ADJUDICATION_IF_REQUIRED
+  - DETERMINISTIC_FINALISATION
+  stage_isolation: one_model_stage_per_governed_task
+  focused_and_ol: remain_separate_bounded_operations
+optional_bindings:
+  bic:
+    ORIGINAL_LANGUAGE_GREEK: zero_or_one
+    ORIGINAL_LANGUAGE_HEBREW: zero_or_one
+  saw:
+    ORIGINAL_LANGUAGE_GREEK: zero_or_one
+    ORIGINAL_LANGUAGE_HEBREW: zero_or_one
+cardinality_vocabulary:
+- exactly_one
+- zero_or_one
+- one_or_more
+- zero_or_more
+- exactly_one_of

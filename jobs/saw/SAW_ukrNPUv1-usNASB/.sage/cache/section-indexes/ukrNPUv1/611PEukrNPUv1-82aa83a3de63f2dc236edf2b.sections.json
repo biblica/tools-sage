@@ -1,0 +1,3080 @@
+{
+  "book": "1PE",
+  "records": [
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 18,
+      "line_start": 16,
+      "paragraph_id": "1PE-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:1",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "Привітання",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D002",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 21,
+      "line_start": 19,
+      "paragraph_id": "1PE-P002",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:2",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "Привітання",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 25,
+      "line_start": 25,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:3",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 26,
+      "line_start": 26,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:4",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 27,
+      "line_start": 27,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:5",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 28,
+      "line_start": 28,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:6",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 29,
+      "line_start": 29,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:7",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 30,
+      "line_start": 30,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:8",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 31,
+      "line_start": 31,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:9",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 33,
+      "line_start": 33,
+      "paragraph_id": "1PE-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:10",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 34,
+      "line_start": 34,
+      "paragraph_id": "1PE-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:11",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 35,
+      "line_start": 35,
+      "paragraph_id": "1PE-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:12",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "Хвала Богу за живу надію",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 38,
+      "line_start": 38,
+      "paragraph_id": "1PE-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:13",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 39,
+      "line_start": 39,
+      "paragraph_id": "1PE-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:14",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 40,
+      "line_start": 40,
+      "paragraph_id": "1PE-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:15",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 41,
+      "line_start": 41,
+      "paragraph_id": "1PE-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:16",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 43,
+      "line_start": 43,
+      "paragraph_id": "1PE-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:17",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 44,
+      "line_start": 44,
+      "paragraph_id": "1PE-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:18",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 45,
+      "line_start": 45,
+      "paragraph_id": "1PE-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:19",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 46,
+      "line_start": 46,
+      "paragraph_id": "1PE-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:20",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 47,
+      "line_start": 47,
+      "paragraph_id": "1PE-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:21",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 49,
+      "line_start": 49,
+      "paragraph_id": "1PE-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:22",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 50,
+      "line_start": 50,
+      "paragraph_id": "1PE-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:23",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 54,
+      "line_start": 51,
+      "paragraph_id": "1PE-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:24",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 57,
+      "line_start": 56,
+      "paragraph_id": "1PE-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B004",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 1:25",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 60,
+      "line_start": 60,
+      "paragraph_id": "1PE-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:1",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 61,
+      "line_start": 61,
+      "paragraph_id": "1PE-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:2",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 62,
+      "line_start": 62,
+      "paragraph_id": "1PE-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:3",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "Заклик до святого життя",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 65,
+      "line_start": 65,
+      "paragraph_id": "1PE-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:4",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "Живий камінь і обраний народ",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 66,
+      "line_start": 66,
+      "paragraph_id": "1PE-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:5",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "Живий камінь і обраний народ",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 69,
+      "line_start": 67,
+      "paragraph_id": "1PE-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:6",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "Живий камінь і обраний народ",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 73,
+      "line_start": 71,
+      "paragraph_id": "1PE-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:7",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "Живий камінь і обраний народ",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D015",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 77,
+      "line_start": 74,
+      "paragraph_id": "1PE-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B006",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 2:8",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "Живий камінь і обраний народ",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 78,
+      "line_start": 78,
+      "paragraph_id": "1PE-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:9",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "Живий камінь і обраний народ",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 83,
+      "line_start": 80,
+      "paragraph_id": "1PE-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B007",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 2:10",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "Живий камінь і обраний народ",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 86,
+      "line_start": 86,
+      "paragraph_id": "1PE-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:11",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "Живіть як Божі раби",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 87,
+      "line_start": 87,
+      "paragraph_id": "1PE-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:12",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "Живіть як Божі раби",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 88,
+      "line_start": 88,
+      "paragraph_id": "1PE-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:13",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "Живіть як Божі раби",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 89,
+      "line_start": 89,
+      "paragraph_id": "1PE-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:14",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "Живіть як Божі раби",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 90,
+      "line_start": 90,
+      "paragraph_id": "1PE-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:15",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "Живіть як Божі раби",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 91,
+      "line_start": 91,
+      "paragraph_id": "1PE-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:16",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "Живіть як Божі раби",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 92,
+      "line_start": 92,
+      "paragraph_id": "1PE-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:17",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "Живіть як Божі раби",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 95,
+      "line_start": 95,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:18",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "Приклад Христових страждань",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 96,
+      "line_start": 96,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:19",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "Приклад Христових страждань",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 97,
+      "line_start": 97,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:20",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "Приклад Христових страждань",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 98,
+      "line_start": 98,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:21",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "Приклад Христових страждань",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D020",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 101,
+      "line_start": 100,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B008",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 2:22",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "Приклад Христових страждань",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "m",
+      "line_end": 103,
+      "line_start": 103,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B008",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 2:23",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "Приклад Христових страждань",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "m",
+      "line_end": 104,
+      "line_start": 104,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B008",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 2:24",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "Приклад Христових страждань",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "m",
+      "line_end": 105,
+      "line_start": 105,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B008",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 2:25",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "Приклад Христових страждань",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 109,
+      "line_start": 109,
+      "paragraph_id": "1PE-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:1",
+      "section_id": "1PE-S007",
+      "section_marker": "s1",
+      "section_title": "Дружини та чоловіки",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 110,
+      "line_start": 110,
+      "paragraph_id": "1PE-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:2",
+      "section_id": "1PE-S007",
+      "section_marker": "s1",
+      "section_title": "Дружини та чоловіки",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 111,
+      "line_start": 111,
+      "paragraph_id": "1PE-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:3",
+      "section_id": "1PE-S007",
+      "section_marker": "s1",
+      "section_title": "Дружини та чоловіки",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 112,
+      "line_start": 112,
+      "paragraph_id": "1PE-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:4",
+      "section_id": "1PE-S007",
+      "section_marker": "s1",
+      "section_title": "Дружини та чоловіки",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 113,
+      "line_start": 113,
+      "paragraph_id": "1PE-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:5",
+      "section_id": "1PE-S007",
+      "section_marker": "s1",
+      "section_title": "Дружини та чоловіки",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 114,
+      "line_start": 114,
+      "paragraph_id": "1PE-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:6",
+      "section_id": "1PE-S007",
+      "section_marker": "s1",
+      "section_title": "Дружини та чоловіки",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 116,
+      "line_start": 116,
+      "paragraph_id": "1PE-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:7",
+      "section_id": "1PE-S007",
+      "section_marker": "s1",
+      "section_title": "Дружини та чоловіки",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 119,
+      "line_start": 119,
+      "paragraph_id": "1PE-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:8",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 120,
+      "line_start": 120,
+      "paragraph_id": "1PE-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:9",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 125,
+      "line_start": 122,
+      "paragraph_id": "1PE-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B009",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 3:10",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 128,
+      "line_start": 127,
+      "paragraph_id": "1PE-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B009",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 3:11",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 132,
+      "line_start": 130,
+      "paragraph_id": "1PE-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B009",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 3:12",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 134,
+      "line_start": 134,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:13",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 135,
+      "line_start": 135,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:14",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 136,
+      "line_start": 136,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:15",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 137,
+      "line_start": 137,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:16",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 138,
+      "line_start": 138,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:17",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 139,
+      "line_start": 139,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:18",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 140,
+      "line_start": 140,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:19",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 141,
+      "line_start": 141,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:20",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 142,
+      "line_start": 142,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:21",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 143,
+      "line_start": 143,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:22",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "Страждання за праведність",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 147,
+      "line_start": 147,
+      "paragraph_id": "1PE-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:1",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 148,
+      "line_start": 148,
+      "paragraph_id": "1PE-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:2",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 149,
+      "line_start": 149,
+      "paragraph_id": "1PE-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:3",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 150,
+      "line_start": 150,
+      "paragraph_id": "1PE-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:4",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 151,
+      "line_start": 151,
+      "paragraph_id": "1PE-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:5",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 152,
+      "line_start": 152,
+      "paragraph_id": "1PE-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:6",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 154,
+      "line_start": 154,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:7",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 155,
+      "line_start": 155,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:8",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 156,
+      "line_start": 156,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:9",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 157,
+      "line_start": 157,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:10",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 158,
+      "line_start": 158,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:11",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "Добрі управителі Божої благодаті",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 161,
+      "line_start": 161,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:12",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "Страждання християнина",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 162,
+      "line_start": 162,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:13",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "Страждання християнина",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 163,
+      "line_start": 163,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:14",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "Страждання християнина",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 164,
+      "line_start": 164,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:15",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "Страждання християнина",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 165,
+      "line_start": 165,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:16",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "Страждання християнина",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 166,
+      "line_start": 166,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:17",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "Страждання християнина",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 169,
+      "line_start": 167,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:18",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "Страждання християнина",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D031",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 171,
+      "line_start": 171,
+      "paragraph_id": "1PE-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:19",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "Страждання християнина",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 175,
+      "line_start": 175,
+      "paragraph_id": "1PE-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:1",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 176,
+      "line_start": 176,
+      "paragraph_id": "1PE-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:2",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 177,
+      "line_start": 177,
+      "paragraph_id": "1PE-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:3",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 178,
+      "line_start": 178,
+      "paragraph_id": "1PE-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:4",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D033",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 182,
+      "line_start": 180,
+      "paragraph_id": "1PE-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:5",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D035",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "m",
+      "line_end": 184,
+      "line_start": 184,
+      "paragraph_id": "1PE-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B011",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 5:6",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D035",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "m",
+      "line_end": 185,
+      "line_start": 185,
+      "paragraph_id": "1PE-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "1PE-B011",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "1PE 5:7",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D036",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 187,
+      "line_start": 187,
+      "paragraph_id": "1PE-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:8",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D036",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 188,
+      "line_start": 188,
+      "paragraph_id": "1PE-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:9",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D037",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 190,
+      "line_start": 190,
+      "paragraph_id": "1PE-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:10",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D037",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 191,
+      "line_start": 191,
+      "paragraph_id": "1PE-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:11",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "Для старійшин і молодих",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D038",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 194,
+      "line_start": 194,
+      "paragraph_id": "1PE-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:12",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "Останні вітання",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D039",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 197,
+      "line_start": 197,
+      "paragraph_id": "1PE-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:13",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "Останні вітання",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D040",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 201,
+      "line_start": 199,
+      "paragraph_id": "1PE-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:14",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "Останні вітання",
+      "verse_end": 14,
+      "verse_start": 14
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "c999022938b7c5cd87a381fe25799de3d79d9b9b5820214a33d9d3d208009b52",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 1,
+    "discourse_units": 35,
+    "paragraphs": 28,
+    "poetry_blocks": 6,
+    "sections": 12,
+    "verse_records": 105
+  }
+}

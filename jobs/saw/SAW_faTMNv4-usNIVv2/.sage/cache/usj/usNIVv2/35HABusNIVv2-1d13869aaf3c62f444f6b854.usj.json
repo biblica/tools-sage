@@ -1,0 +1,5666 @@
+{
+  "content": [
+    {
+      "code": "HAB",
+      "content": [
+        "- English-US: New International Version® NIV® 2011, updated 2016"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 1973, 1978, 1984, 2011 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "Habakkuk",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Habakkuk",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Hab.",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Hab",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Habakkuk",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Introduction",
+        "\n"
+      ],
+      "marker": "imt",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Near the time of the transition from the Assyrian to the Babylonian empires (late 7",
+        {
+          "content": [
+            "th"
+          ],
+          "marker": "ord",
+          "type": "char"
+        },
+        " century BC), the prophet Habakkuk engaged in a profound dialogue with Israelʼs God. The form of his book is a short series of complaints, or laments, followed by the divine responses. When Habakkukʼs cries are answered, he closes with a hymn of confidence in Godʼs expected victory.",
+        "\n"
+      ],
+      "marker": "im",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The prophet begins by asking how long God will allow evil to triumph. The divine reply is that God is raising up the Babylonians as his tool of correction. This leads to Habakkukʼs second question: Why do you allow the wicked to ",
+        {
+          "content": [
+            "swallow up those more righteous than themselves"
+          ],
+          "marker": "qt",
+          "type": "char"
+        },
+        "? God replies again, explaining that the Babylonians will be judged just like the Assyrians, and that the righteous must await this in faith and patience. The inevitability of Babylonʼs doom is emphasized when God pronounces a series of five woes against it.",
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "content": [
+        "When Habakkukʼs dialogue with God concludes, the book moves to what is called ",
+        {
+          "content": [
+            "A prayer of Habakkuk"
+          ],
+          "marker": "bk",
+          "type": "char"
+        },
+        ". But its musical notations reveal that it is clearly meant to be sung. Habakkuk celebrates Godʼs dramatic intervention for Israel in the past and prays that God will do it again. The prophet resolves in the meantime to wait patiently for Godʼs coming.",
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "HAB 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "HAB 1:1",
+          "type": "verse"
+        },
+        "The prophecy that Habakkuk the prophet received.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Habakkukʼs Complaint",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "HAB 1:2",
+          "type": "verse"
+        },
+        "How long, ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", must I call for help,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "but you do not listen?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Or cry out to you, “Violence!”",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "but you do not save?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "HAB 1:3",
+          "type": "verse"
+        },
+        "Why do you make me look at injustice?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Why do you tolerate wrongdoing?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Destruction and violence are before me;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "there is strife, and conflict abounds.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "HAB 1:4",
+          "type": "verse"
+        },
+        "Therefore the law is paralyzed,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and justice never prevails.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The wicked hem in the righteous,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "so that justice is perverted.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "ʼs Answer",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "HAB 1:5",
+          "type": "verse"
+        },
+        "“Look at the nations and watch—",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and be utterly amazed.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "For I am going to do something in your days",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "that you would not believe,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "even if you were told.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "HAB 1:6",
+          "type": "verse"
+        },
+        "I am raising up the Babylonians,",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:6 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "Chaldeans"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "that ruthless and impetuous people,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "who sweep across the whole earth",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "to seize dwellings not their own.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "HAB 1:7",
+          "type": "verse"
+        },
+        "They are a feared and dreaded people;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "they are a law to themselves",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and promote their own honor.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "HAB 1:8",
+          "type": "verse"
+        },
+        "Their horses are swifter than leopards,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "fiercer than wolves at dusk.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Their cavalry gallops headlong;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "their horsemen come from afar.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "They fly like an eagle swooping to devour;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "HAB 1:9",
+          "type": "verse"
+        },
+        "they all come intent on violence.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Their hordes",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:9 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "The meaning of the Hebrew for this word is uncertain."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " advance like a desert wind",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and gather prisoners like sand.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "HAB 1:10",
+          "type": "verse"
+        },
+        "They mock kings",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and scoff at rulers.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "They laugh at all fortified cities;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "by building earthen ramps they capture them.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "HAB 1:11",
+          "type": "verse"
+        },
+        "Then they sweep past like the wind and go on—",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "guilty people, whose own strength is their god.”",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Habakkukʼs Second Complaint",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "HAB 1:12",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", are you not from everlasting?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "My God, my Holy One, you",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:12 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "An ancient Hebrew scribal tradition; Masoretic Text ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "we"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " will never die.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "You, ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", have appointed them to execute judgment;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "you, my Rock, have ordained them to punish.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "HAB 1:13",
+          "type": "verse"
+        },
+        "Your eyes are too pure to look on evil;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "you cannot tolerate wrongdoing.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Why then do you tolerate the treacherous?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Why are you silent while the wicked",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "swallow up those more righteous than themselves?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "HAB 1:14",
+          "type": "verse"
+        },
+        "You have made people like the fish in the sea,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "like the sea creatures that have no ruler.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "HAB 1:15",
+          "type": "verse"
+        },
+        "The wicked foe pulls all of them up with hooks,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "he catches them in his net,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "he gathers them up in his dragnet;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and so he rejoices and is glad.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "HAB 1:16",
+          "type": "verse"
+        },
+        "Therefore he sacrifices to his net",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and burns incense to his dragnet,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "for by his net he lives in luxury",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and enjoys the choicest food.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "HAB 1:17",
+          "type": "verse"
+        },
+        "Is he to keep on emptying his net,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "destroying nations without mercy?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "2",
+      "sid": "HAB 2",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "HAB 2:1",
+          "type": "verse"
+        },
+        "I will stand at my watch",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and station myself on the ramparts;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "I will look to see what he will say to me,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and what answer I am to give to this complaint.",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:1 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "and what ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "to answer when I am rebuked"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "ʼs Answer",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "HAB 2:2",
+          "type": "verse"
+        },
+        "Then the ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " replied:",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "“Write down the revelation",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and make it plain on tablets",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "so that a herald",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:2 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "so that ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "whoever reads it"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " may run with it.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "HAB 2:3",
+          "type": "verse"
+        },
+        "For the revelation awaits an appointed time;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "it speaks of the end",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and will not prove false.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Though it linger, wait for it;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "it",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:3 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "Though ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "he linger, wait for him; / he"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " will certainly come",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and will not delay.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "HAB 2:4",
+          "type": "verse"
+        },
+        "“See, the enemy is puffed up;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "his desires are not upright—",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "but the righteous person will live by his faithfulness",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:4 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "faith"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "—",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "HAB 2:5",
+          "type": "verse"
+        },
+        "indeed, wine betrays him;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "he is arrogant and never at rest.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Because he is as greedy as the grave",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and like death is never satisfied,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "he gathers to himself all the nations",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and takes captive all the peoples.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "HAB 2:6",
+          "type": "verse"
+        },
+        "“Will not all of them taunt him with ridicule and scorn, saying,",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "“ ‘Woe to him who piles up stolen goods",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and makes himself wealthy by extortion!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "How long must this go on?’",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "HAB 2:7",
+          "type": "verse"
+        },
+        "Will not your creditors suddenly arise?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Will they not wake up and make you tremble?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Then you will become their prey.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "HAB 2:8",
+          "type": "verse"
+        },
+        "Because you have plundered many nations,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "the peoples who are left will plunder you.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "For you have shed human blood;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "you have destroyed lands and cities and everyone in them.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "HAB 2:9",
+          "type": "verse"
+        },
+        "“Woe to him who builds his house by unjust gain,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "setting his nest on high",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "to escape the clutches of ruin!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "HAB 2:10",
+          "type": "verse"
+        },
+        "You have plotted the ruin of many peoples,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "shaming your own house and forfeiting your life.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "HAB 2:11",
+          "type": "verse"
+        },
+        "The stones of the wall will cry out,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and the beams of the woodwork will echo it.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "HAB 2:12",
+          "type": "verse"
+        },
+        "“Woe to him who builds a city with bloodshed",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and establishes a town by injustice!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "HAB 2:13",
+          "type": "verse"
+        },
+        "Has not the ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " Almighty determined",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "that the peopleʼs labor is only fuel for the fire,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "that the nations exhaust themselves for nothing?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "HAB 2:14",
+          "type": "verse"
+        },
+        "For the earth will be filled with the knowledge of the glory of the ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "as the waters cover the sea.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "HAB 2:15",
+          "type": "verse"
+        },
+        "“Woe to him who gives drink to his neighbors,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "pouring it from the wineskin till they are drunk,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "so that he can gaze on their naked bodies!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "HAB 2:16",
+          "type": "verse"
+        },
+        "You will be filled with shame instead of glory.",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Now it is your turn! Drink and let your nakedness be exposed",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:16 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Masoretic Text; Dead Sea Scrolls, Aquila, Vulgate and Syriac (see also Septuagint) ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "and ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "stagger"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The cup from the ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "ʼs right hand is coming around to you,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and disgrace will cover your glory.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "HAB 2:17",
+          "type": "verse"
+        },
+        "The violence you have done to Lebanon will overwhelm you,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and your destruction of animals will terrify you.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "For you have shed human blood;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "you have destroyed lands and cities and everyone in them.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "HAB 2:18",
+          "type": "verse"
+        },
+        "“Of what value is an idol carved by a craftsman?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Or an image that teaches lies?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "For the one who makes it trusts in his own creation;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "he makes idols that cannot speak.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "HAB 2:19",
+          "type": "verse"
+        },
+        "Woe to him who says to wood, ‘Come to life!’",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Or to lifeless stone, ‘Wake up!’",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Can it give guidance?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "It is covered with gold and silver;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "there is no breath in it.”",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "HAB 2:20",
+          "type": "verse"
+        },
+        "The ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " is in his holy temple;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "let all the earth be silent before him.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "3",
+      "sid": "HAB 3",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "Habakkukʼs Prayer",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "HAB 3:1",
+          "type": "verse"
+        },
+        "A prayer of Habakkuk the prophet. On ",
+        {
+          "content": [
+            "shigionoth"
+          ],
+          "marker": "tl",
+          "type": "char"
+        },
+        ".",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:1 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Probably a literary or musical term"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "d",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "HAB 3:2",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", I have heard of your fame;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "I stand in awe of your deeds, ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Repeat them in our day,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "in our time make them known;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "in wrath remember mercy.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "HAB 3:3",
+          "type": "verse"
+        },
+        "God came from Teman,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "the Holy One from Mount Paran.",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:3 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "The Hebrew has ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "Selah ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "(a word of uncertain meaning) here and at the middle of ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "verse 9|HAB 3:9",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "and at the end of ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "verse 13|HAB 3:13",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "His glory covered the heavens",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and his praise filled the earth.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "HAB 3:4",
+          "type": "verse"
+        },
+        "His splendor was like the sunrise;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "rays flashed from his hand,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "where his power was hidden.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "HAB 3:5",
+          "type": "verse"
+        },
+        "Plague went before him;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "pestilence followed his steps.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "HAB 3:6",
+          "type": "verse"
+        },
+        "He stood, and shook the earth;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "he looked, and made the nations tremble.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The ancient mountains crumbled",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and the age-old hills collapsed—",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "but he marches on forever.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "HAB 3:7",
+          "type": "verse"
+        },
+        "I saw the tents of Cushan in distress,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "the dwellings of Midian in anguish.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "HAB 3:8",
+          "type": "verse"
+        },
+        "Were you angry with the rivers, ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Was your wrath against the streams?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Did you rage against the sea",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "when you rode your horses",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and your chariots to victory?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "HAB 3:9",
+          "type": "verse"
+        },
+        "You uncovered your bow,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "you called for many arrows.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "You split the earth with rivers;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "HAB 3:10",
+          "type": "verse"
+        },
+        "the mountains saw you and writhed.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Torrents of water swept by;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "the deep roared",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and lifted its waves on high.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "HAB 3:11",
+          "type": "verse"
+        },
+        "Sun and moon stood still in the heavens",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "at the glint of your flying arrows,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "at the lightning of your flashing spear.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "HAB 3:12",
+          "type": "verse"
+        },
+        "In wrath you strode through the earth",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and in anger you threshed the nations.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "HAB 3:13",
+          "type": "verse"
+        },
+        "You came out to deliver your people,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "to save your anointed one.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "You crushed the leader of the land of wickedness,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "you stripped him from head to foot.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "HAB 3:14",
+          "type": "verse"
+        },
+        "With his own spear you pierced his head",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "when his warriors stormed out to scatter us,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "gloating as though about to devour",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "the wretched who were in hiding.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "HAB 3:15",
+          "type": "verse"
+        },
+        "You trampled the sea with your horses,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "churning the great waters.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "HAB 3:16",
+          "type": "verse"
+        },
+        "I heard and my heart pounded,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "my lips quivered at the sound;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "decay crept into my bones,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and my legs trembled.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Yet I will wait patiently for the day of calamity",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "to come on the nation invading us.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "HAB 3:17",
+          "type": "verse"
+        },
+        "Though the fig tree does not bud",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and there are no grapes on the vines,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "though the olive crop fails",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and the fields produce no food,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "though there are no sheep in the pen",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "and no cattle in the stalls,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "HAB 3:18",
+          "type": "verse"
+        },
+        "yet I will rejoice in the ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "I will be joyful in God my Savior.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "HAB 3:19",
+          "type": "verse"
+        },
+        "The Sovereign ",
+        {
+          "content": [
+            "Lord"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " is my strength;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "he makes my feet like the feet of a deer,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "he enables me to tread on the heights.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "For the director of music. On my stringed instruments.",
+        "\n"
+      ],
+      "marker": "qd",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "HAB",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "35HABusNIVv2.SFM",
+    "source_sha256": "20b235a3cbc6ef52dbe0b49134d2f49051b5e9e0dc60253092de801f1940f0c2",
+    "source_size": 11150,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "The prophecy that Habakkuk the prophet received.",
+        "body_text_exact": "The prophecy that Habakkuk the prophet received.",
+        "body_text_normalized": "The prophecy that Habakkuk the prophet received.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "The prophecy that Habakkuk the prophet received."
+        ],
+        "discourse_unit_id": "HAB-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 15,
+        "line_start": 15,
+        "lines": [
+          "\\v 1 The prophecy that Habakkuk the prophet received."
+        ],
+        "number": "1",
+        "paragraph_id": "HAB-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 The prophecy that Habakkuk the prophet received.",
+        "section_id": "HAB-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "How long, Lord, must I call for help,\nbut you do not listen?\nOr cry out to you, “Violence!”\nbut you do not save?",
+        "body_text_exact": "How long, Lord, must I call for help,\nbut you do not listen?\nOr cry out to you, “Violence!”\nbut you do not save?",
+        "body_text_normalized": "How long, Lord, must I call for help, but you do not listen? Or cry out to you, “Violence!” but you do not save?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "How long, ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", must I call for help,",
+          "\n",
+          "but you do not listen?",
+          "\n",
+          "Or cry out to you, “Violence!”",
+          "\n",
+          "but you do not save?"
+        ],
+        "discourse_unit_id": "HAB-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 22,
+        "line_start": 19,
+        "lines": [
+          "\\v 2 How long, \\nd Lord\\nd*, must I call for help,",
+          "\\q2 but you do not listen?",
+          "\\q1 Or cry out to you, “Violence!”",
+          "\\q2 but you do not save?"
+        ],
+        "number": "2",
+        "paragraph_id": "HAB-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 How long, \\nd Lord\\nd*, must I call for help,\n\\q2 but you do not listen?\n\\q1 Or cry out to you, “Violence!”\n\\q2 but you do not save?",
+        "section_id": "HAB-S001",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Complaint",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Why do you make me look at injustice?\nWhy do you tolerate wrongdoing?\nDestruction and violence are before me;\nthere is strife, and conflict abounds.",
+        "body_text_exact": "Why do you make me look at injustice?\nWhy do you tolerate wrongdoing?\nDestruction and violence are before me;\nthere is strife, and conflict abounds.",
+        "body_text_normalized": "Why do you make me look at injustice? Why do you tolerate wrongdoing? Destruction and violence are before me; there is strife, and conflict abounds.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Why do you make me look at injustice?",
+          "\n",
+          "Why do you tolerate wrongdoing?",
+          "\n",
+          "Destruction and violence are before me;",
+          "\n",
+          "there is strife, and conflict abounds."
+        ],
+        "discourse_unit_id": "HAB-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 27,
+        "line_start": 24,
+        "lines": [
+          "\\v 3 Why do you make me look at injustice?",
+          "\\q2 Why do you tolerate wrongdoing?",
+          "\\q1 Destruction and violence are before me;",
+          "\\q2 there is strife, and conflict abounds."
+        ],
+        "number": "3",
+        "paragraph_id": "HAB-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Why do you make me look at injustice?\n\\q2 Why do you tolerate wrongdoing?\n\\q1 Destruction and violence are before me;\n\\q2 there is strife, and conflict abounds.",
+        "section_id": "HAB-S001",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Complaint",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Therefore the law is paralyzed,\nand justice never prevails.\nThe wicked hem in the righteous,\nso that justice is perverted.",
+        "body_text_exact": "Therefore the law is paralyzed,\nand justice never prevails.\nThe wicked hem in the righteous,\nso that justice is perverted.",
+        "body_text_normalized": "Therefore the law is paralyzed, and justice never prevails. The wicked hem in the righteous, so that justice is perverted.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Therefore the law is paralyzed,",
+          "\n",
+          "and justice never prevails.",
+          "\n",
+          "The wicked hem in the righteous,",
+          "\n",
+          "so that justice is perverted."
+        ],
+        "discourse_unit_id": "HAB-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 32,
+        "line_start": 29,
+        "lines": [
+          "\\v 4 Therefore the law is paralyzed,",
+          "\\q2 and justice never prevails.",
+          "\\q1 The wicked hem in the righteous,",
+          "\\q2 so that justice is perverted."
+        ],
+        "number": "4",
+        "paragraph_id": "HAB-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Therefore the law is paralyzed,\n\\q2 and justice never prevails.\n\\q1 The wicked hem in the righteous,\n\\q2 so that justice is perverted.",
+        "section_id": "HAB-S001",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Complaint",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "“Look at the nations and watch—\nand be utterly amazed.\nFor I am going to do something in your days\nthat you would not believe,\neven if you were told.",
+        "body_text_exact": "“Look at the nations and watch—\nand be utterly amazed.\nFor I am going to do something in your days\nthat you would not believe,\neven if you were told.",
+        "body_text_normalized": "“Look at the nations and watch— and be utterly amazed. For I am going to do something in your days that you would not believe, even if you were told.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "“Look at the nations and watch—",
+          "\n",
+          "and be utterly amazed.",
+          "\n",
+          "For I am going to do something in your days",
+          "\n",
+          "that you would not believe,",
+          "\n",
+          "even if you were told."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 39,
+        "line_start": 35,
+        "lines": [
+          "\\v 5 “Look at the nations and watch—",
+          "\\q2 and be utterly amazed.",
+          "\\q1 For I am going to do something in your days",
+          "\\q2 that you would not believe,",
+          "\\q2 even if you were told."
+        ],
+        "number": "5",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 “Look at the nations and watch—\n\\q2 and be utterly amazed.\n\\q1 For I am going to do something in your days\n\\q2 that you would not believe,\n\\q2 even if you were told.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "I am raising up the Babylonians,\nthat ruthless and impetuous people,\nwho sweep across the whole earth\nto seize dwellings not their own.",
+        "body_text_exact": "I am raising up the Babylonians,\nthat ruthless and impetuous people,\nwho sweep across the whole earth\nto seize dwellings not their own.",
+        "body_text_normalized": "I am raising up the Babylonians, that ruthless and impetuous people, who sweep across the whole earth to seize dwellings not their own.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "I am raising up the Babylonians,",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:6 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "Chaldeans"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "\n",
+          "that ruthless and impetuous people,",
+          "\n",
+          "who sweep across the whole earth",
+          "\n",
+          "to seize dwellings not their own."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 44,
+        "line_start": 41,
+        "lines": [
+          "\\v 6 I am raising up the Babylonians,\\f + \\fr 1:6 \\ft Or \\fqa Chaldeans\\f*",
+          "\\q2 that ruthless and impetuous people,",
+          "\\q1 who sweep across the whole earth",
+          "\\q2 to seize dwellings not their own."
+        ],
+        "number": "6",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 I am raising up the Babylonians,\\f + \\fr 1:6 \\ft Or \\fqa Chaldeans\\f*\n\\q2 that ruthless and impetuous people,\n\\q1 who sweep across the whole earth\n\\q2 to seize dwellings not their own.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "They are a feared and dreaded people;\nthey are a law to themselves\nand promote their own honor.",
+        "body_text_exact": "They are a feared and dreaded people;\nthey are a law to themselves\nand promote their own honor.",
+        "body_text_normalized": "They are a feared and dreaded people; they are a law to themselves and promote their own honor.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "They are a feared and dreaded people;",
+          "\n",
+          "they are a law to themselves",
+          "\n",
+          "and promote their own honor."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 48,
+        "line_start": 46,
+        "lines": [
+          "\\v 7 They are a feared and dreaded people;",
+          "\\q2 they are a law to themselves",
+          "\\q2 and promote their own honor."
+        ],
+        "number": "7",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 They are a feared and dreaded people;\n\\q2 they are a law to themselves\n\\q2 and promote their own honor.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Their horses are swifter than leopards,\nfiercer than wolves at dusk.\nTheir cavalry gallops headlong;\ntheir horsemen come from afar.\nThey fly like an eagle swooping to devour;",
+        "body_text_exact": "Their horses are swifter than leopards,\nfiercer than wolves at dusk.\nTheir cavalry gallops headlong;\ntheir horsemen come from afar.\nThey fly like an eagle swooping to devour;",
+        "body_text_normalized": "Their horses are swifter than leopards, fiercer than wolves at dusk. Their cavalry gallops headlong; their horsemen come from afar. They fly like an eagle swooping to devour;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Their horses are swifter than leopards,",
+          "\n",
+          "fiercer than wolves at dusk.",
+          "\n",
+          "Their cavalry gallops headlong;",
+          "\n",
+          "their horsemen come from afar.",
+          "\n",
+          "They fly like an eagle swooping to devour;"
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 54,
+        "line_start": 50,
+        "lines": [
+          "\\v 8 Their horses are swifter than leopards,",
+          "\\q2 fiercer than wolves at dusk.",
+          "\\q1 Their cavalry gallops headlong;",
+          "\\q2 their horsemen come from afar.",
+          "\\q1 They fly like an eagle swooping to devour;"
+        ],
+        "number": "8",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Their horses are swifter than leopards,\n\\q2 fiercer than wolves at dusk.\n\\q1 Their cavalry gallops headlong;\n\\q2 their horsemen come from afar.\n\\q1 They fly like an eagle swooping to devour;",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "they all come intent on violence.\nTheir hordes advance like a desert wind\nand gather prisoners like sand.",
+        "body_text_exact": "they all come intent on violence.\nTheir hordes advance like a desert wind\nand gather prisoners like sand.",
+        "body_text_normalized": "they all come intent on violence. Their hordes advance like a desert wind and gather prisoners like sand.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "they all come intent on violence.",
+          "\n",
+          "Their hordes",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:9 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "The meaning of the Hebrew for this word is uncertain."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " advance like a desert wind",
+          "\n",
+          "and gather prisoners like sand."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 58,
+        "line_start": 56,
+        "lines": [
+          "\\v 9 they all come intent on violence.",
+          "\\q1 Their hordes\\f + \\fr 1:9 \\ft The meaning of the Hebrew for this word is uncertain.\\f* advance like a desert wind",
+          "\\q2 and gather prisoners like sand."
+        ],
+        "number": "9",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 they all come intent on violence.\n\\q1 Their hordes\\f + \\fr 1:9 \\ft The meaning of the Hebrew for this word is uncertain.\\f* advance like a desert wind\n\\q2 and gather prisoners like sand.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "They mock kings\nand scoff at rulers.\nThey laugh at all fortified cities;\nby building earthen ramps they capture them.",
+        "body_text_exact": "They mock kings\nand scoff at rulers.\nThey laugh at all fortified cities;\nby building earthen ramps they capture them.",
+        "body_text_normalized": "They mock kings and scoff at rulers. They laugh at all fortified cities; by building earthen ramps they capture them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "They mock kings",
+          "\n",
+          "and scoff at rulers.",
+          "\n",
+          "They laugh at all fortified cities;",
+          "\n",
+          "by building earthen ramps they capture them."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 63,
+        "line_start": 60,
+        "lines": [
+          "\\v 10 They mock kings",
+          "\\q2 and scoff at rulers.",
+          "\\q1 They laugh at all fortified cities;",
+          "\\q2 by building earthen ramps they capture them."
+        ],
+        "number": "10",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 They mock kings\n\\q2 and scoff at rulers.\n\\q1 They laugh at all fortified cities;\n\\q2 by building earthen ramps they capture them.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Then they sweep past like the wind and go on—\nguilty people, whose own strength is their god.”",
+        "body_text_exact": "Then they sweep past like the wind and go on—\nguilty people, whose own strength is their god.”",
+        "body_text_normalized": "Then they sweep past like the wind and go on— guilty people, whose own strength is their god.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Then they sweep past like the wind and go on—",
+          "\n",
+          "guilty people, whose own strength is their god.”"
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 66,
+        "line_start": 65,
+        "lines": [
+          "\\v 11 Then they sweep past like the wind and go on—",
+          "\\q2 guilty people, whose own strength is their god.”"
+        ],
+        "number": "11",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Then they sweep past like the wind and go on—\n\\q2 guilty people, whose own strength is their god.”",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Lord, are you not from everlasting?\nMy God, my Holy One, you will never die.\nYou, Lord, have appointed them to execute judgment;\nyou, my Rock, have ordained them to punish.",
+        "body_text_exact": "Lord, are you not from everlasting?\nMy God, my Holy One, you will never die.\nYou, Lord, have appointed them to execute judgment;\nyou, my Rock, have ordained them to punish.",
+        "body_text_normalized": "Lord, are you not from everlasting? My God, my Holy One, you will never die. You, Lord, have appointed them to execute judgment; you, my Rock, have ordained them to punish.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", are you not from everlasting?",
+          "\n",
+          "My God, my Holy One, you",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:12 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "An ancient Hebrew scribal tradition; Masoretic Text ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "we"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " will never die.",
+          "\n",
+          "You, ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", have appointed them to execute judgment;",
+          "\n",
+          "you, my Rock, have ordained them to punish."
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 72,
+        "line_start": 69,
+        "lines": [
+          "\\v 12 \\nd Lord\\nd*, are you not from everlasting?",
+          "\\q2 My God, my Holy One, you\\f + \\fr 1:12 \\ft An ancient Hebrew scribal tradition; Masoretic Text \\fqa we\\f* will never die.",
+          "\\q1 You, \\nd Lord\\nd*, have appointed them to execute judgment;",
+          "\\q2 you, my Rock, have ordained them to punish."
+        ],
+        "number": "12",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 \\nd Lord\\nd*, are you not from everlasting?\n\\q2 My God, my Holy One, you\\f + \\fr 1:12 \\ft An ancient Hebrew scribal tradition; Masoretic Text \\fqa we\\f* will never die.\n\\q1 You, \\nd Lord\\nd*, have appointed them to execute judgment;\n\\q2 you, my Rock, have ordained them to punish.",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Second Complaint",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Your eyes are too pure to look on evil;\nyou cannot tolerate wrongdoing.\nWhy then do you tolerate the treacherous?\nWhy are you silent while the wicked\nswallow up those more righteous than themselves?",
+        "body_text_exact": "Your eyes are too pure to look on evil;\nyou cannot tolerate wrongdoing.\nWhy then do you tolerate the treacherous?\nWhy are you silent while the wicked\nswallow up those more righteous than themselves?",
+        "body_text_normalized": "Your eyes are too pure to look on evil; you cannot tolerate wrongdoing. Why then do you tolerate the treacherous? Why are you silent while the wicked swallow up those more righteous than themselves?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Your eyes are too pure to look on evil;",
+          "\n",
+          "you cannot tolerate wrongdoing.",
+          "\n",
+          "Why then do you tolerate the treacherous?",
+          "\n",
+          "Why are you silent while the wicked",
+          "\n",
+          "swallow up those more righteous than themselves?"
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 78,
+        "line_start": 74,
+        "lines": [
+          "\\v 13 Your eyes are too pure to look on evil;",
+          "\\q2 you cannot tolerate wrongdoing.",
+          "\\q1 Why then do you tolerate the treacherous?",
+          "\\q2 Why are you silent while the wicked",
+          "\\q2 swallow up those more righteous than themselves?"
+        ],
+        "number": "13",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Your eyes are too pure to look on evil;\n\\q2 you cannot tolerate wrongdoing.\n\\q1 Why then do you tolerate the treacherous?\n\\q2 Why are you silent while the wicked\n\\q2 swallow up those more righteous than themselves?",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Second Complaint",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "You have made people like the fish in the sea,\nlike the sea creatures that have no ruler.",
+        "body_text_exact": "You have made people like the fish in the sea,\nlike the sea creatures that have no ruler.",
+        "body_text_normalized": "You have made people like the fish in the sea, like the sea creatures that have no ruler.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "You have made people like the fish in the sea,",
+          "\n",
+          "like the sea creatures that have no ruler."
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 81,
+        "line_start": 80,
+        "lines": [
+          "\\v 14 You have made people like the fish in the sea,",
+          "\\q2 like the sea creatures that have no ruler."
+        ],
+        "number": "14",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 You have made people like the fish in the sea,\n\\q2 like the sea creatures that have no ruler.",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Second Complaint",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "The wicked foe pulls all of them up with hooks,\nhe catches them in his net,\nhe gathers them up in his dragnet;\nand so he rejoices and is glad.",
+        "body_text_exact": "The wicked foe pulls all of them up with hooks,\nhe catches them in his net,\nhe gathers them up in his dragnet;\nand so he rejoices and is glad.",
+        "body_text_normalized": "The wicked foe pulls all of them up with hooks, he catches them in his net, he gathers them up in his dragnet; and so he rejoices and is glad.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "The wicked foe pulls all of them up with hooks,",
+          "\n",
+          "he catches them in his net,",
+          "\n",
+          "he gathers them up in his dragnet;",
+          "\n",
+          "and so he rejoices and is glad."
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 86,
+        "line_start": 83,
+        "lines": [
+          "\\v 15 The wicked foe pulls all of them up with hooks,",
+          "\\q2 he catches them in his net,",
+          "\\q1 he gathers them up in his dragnet;",
+          "\\q2 and so he rejoices and is glad."
+        ],
+        "number": "15",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 The wicked foe pulls all of them up with hooks,\n\\q2 he catches them in his net,\n\\q1 he gathers them up in his dragnet;\n\\q2 and so he rejoices and is glad.",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Second Complaint",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Therefore he sacrifices to his net\nand burns incense to his dragnet,\nfor by his net he lives in luxury\nand enjoys the choicest food.",
+        "body_text_exact": "Therefore he sacrifices to his net\nand burns incense to his dragnet,\nfor by his net he lives in luxury\nand enjoys the choicest food.",
+        "body_text_normalized": "Therefore he sacrifices to his net and burns incense to his dragnet, for by his net he lives in luxury and enjoys the choicest food.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Therefore he sacrifices to his net",
+          "\n",
+          "and burns incense to his dragnet,",
+          "\n",
+          "for by his net he lives in luxury",
+          "\n",
+          "and enjoys the choicest food."
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 91,
+        "line_start": 88,
+        "lines": [
+          "\\v 16 Therefore he sacrifices to his net",
+          "\\q2 and burns incense to his dragnet,",
+          "\\q1 for by his net he lives in luxury",
+          "\\q2 and enjoys the choicest food."
+        ],
+        "number": "16",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 Therefore he sacrifices to his net\n\\q2 and burns incense to his dragnet,\n\\q1 for by his net he lives in luxury\n\\q2 and enjoys the choicest food.",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Second Complaint",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Is he to keep on emptying his net,\ndestroying nations without mercy?",
+        "body_text_exact": "Is he to keep on emptying his net,\ndestroying nations without mercy?",
+        "body_text_normalized": "Is he to keep on emptying his net, destroying nations without mercy?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Is he to keep on emptying his net,",
+          "\n",
+          "destroying nations without mercy?"
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 94,
+        "line_start": 93,
+        "lines": [
+          "\\v 17 Is he to keep on emptying his net,",
+          "\\q2 destroying nations without mercy?"
+        ],
+        "number": "17",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Is he to keep on emptying his net,\n\\q2 destroying nations without mercy?",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Second Complaint",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "I will stand at my watch\nand station myself on the ramparts;\nI will look to see what he will say to me,\nand what answer I am to give to this complaint.",
+        "body_text_exact": "I will stand at my watch\nand station myself on the ramparts;\nI will look to see what he will say to me,\nand what answer I am to give to this complaint.",
+        "body_text_normalized": "I will stand at my watch and station myself on the ramparts; I will look to see what he will say to me, and what answer I am to give to this complaint.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "I will stand at my watch",
+          "\n",
+          "and station myself on the ramparts;",
+          "\n",
+          "I will look to see what he will say to me,",
+          "\n",
+          "and what answer I am to give to this complaint.",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:1 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "and what ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "to answer when I am rebuked"
+            ],
+            "marker": "f",
+            "type": "note"
+          }
+        ],
+        "discourse_unit_id": "HAB-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 101,
+        "line_start": 98,
+        "lines": [
+          "\\v 1 I will stand at my watch",
+          "\\q2 and station myself on the ramparts;",
+          "\\q1 I will look to see what he will say to me,",
+          "\\q2 and what answer I am to give to this complaint.\\f + \\fr 2:1 \\ft Or \\fq and what \\fqa to answer when I am rebuked\\f*"
+        ],
+        "number": "1",
+        "paragraph_id": "HAB-P005",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 I will stand at my watch\n\\q2 and station myself on the ramparts;\n\\q1 I will look to see what he will say to me,\n\\q2 and what answer I am to give to this complaint.\\f + \\fr 2:1 \\ft Or \\fq and what \\fqa to answer when I am rebuked\\f*",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Second Complaint",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Then the Lord replied:\n“Write down the revelation\nand make it plain on tablets\nso that a herald may run with it.",
+        "body_text_exact": "Then the Lord replied:\n“Write down the revelation\nand make it plain on tablets\nso that a herald may run with it.",
+        "body_text_normalized": "Then the Lord replied: “Write down the revelation and make it plain on tablets so that a herald may run with it.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Then the ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " replied:",
+          "\n",
+          "“Write down the revelation",
+          "\n",
+          "and make it plain on tablets",
+          "\n",
+          "so that a herald",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:2 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "so that ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "whoever reads it"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " may run with it."
+        ],
+        "discourse_unit_id": "HAB-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 107,
+        "line_start": 104,
+        "lines": [
+          "\\v 2 Then the \\nd Lord\\nd* replied:",
+          "\\q1 “Write down the revelation",
+          "\\q2 and make it plain on tablets",
+          "\\q2 so that a herald\\f + \\fr 2:2 \\ft Or \\fq so that \\fqa whoever reads it\\f* may run with it."
+        ],
+        "number": "2",
+        "paragraph_id": "HAB-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Then the \\nd Lord\\nd* replied:\n\\q1 “Write down the revelation\n\\q2 and make it plain on tablets\n\\q2 so that a herald\\f + \\fr 2:2 \\ft Or \\fq so that \\fqa whoever reads it\\f* may run with it.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "For the revelation awaits an appointed time;\nit speaks of the end\nand will not prove false.\nThough it linger, wait for it;\nit will certainly come\nand will not delay.",
+        "body_text_exact": "For the revelation awaits an appointed time;\nit speaks of the end\nand will not prove false.\nThough it linger, wait for it;\nit will certainly come\nand will not delay.",
+        "body_text_normalized": "For the revelation awaits an appointed time; it speaks of the end and will not prove false. Though it linger, wait for it; it will certainly come and will not delay.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "For the revelation awaits an appointed time;",
+          "\n",
+          "it speaks of the end",
+          "\n",
+          "and will not prove false.",
+          "\n",
+          "Though it linger, wait for it;",
+          "\n",
+          "it",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:3 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "Though ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "he linger, wait for him; / he"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " will certainly come",
+          "\n",
+          "and will not delay."
+        ],
+        "discourse_unit_id": "HAB-D007",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 114,
+        "line_start": 109,
+        "lines": [
+          "\\v 3 For the revelation awaits an appointed time;",
+          "\\q2 it speaks of the end",
+          "\\q2 and will not prove false.",
+          "\\q1 Though it linger, wait for it;",
+          "\\q2 it\\f + \\fr 2:3 \\ft Or \\fq Though \\fqa he linger, wait for him; / he\\f* will certainly come",
+          "\\q2 and will not delay."
+        ],
+        "number": "3",
+        "paragraph_id": "HAB-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B006",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 For the revelation awaits an appointed time;\n\\q2 it speaks of the end\n\\q2 and will not prove false.\n\\q1 Though it linger, wait for it;\n\\q2 it\\f + \\fr 2:3 \\ft Or \\fq Though \\fqa he linger, wait for him; / he\\f* will certainly come\n\\q2 and will not delay.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "“See, the enemy is puffed up;\nhis desires are not upright—\nbut the righteous person will live by his faithfulness—",
+        "body_text_exact": "“See, the enemy is puffed up;\nhis desires are not upright—\nbut the righteous person will live by his faithfulness—",
+        "body_text_normalized": "“See, the enemy is puffed up; his desires are not upright— but the righteous person will live by his faithfulness—",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“See, the enemy is puffed up;",
+          "\n",
+          "his desires are not upright—",
+          "\n",
+          "but the righteous person will live by his faithfulness",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:4 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "faith"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "—"
+        ],
+        "discourse_unit_id": "HAB-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 120,
+        "line_start": 118,
+        "lines": [
+          "\\v 4 “See, the enemy is puffed up;",
+          "\\q2 his desires are not upright—",
+          "\\q2 but the righteous person will live by his faithfulness\\f + \\fr 2:4 \\ft Or \\fqa faith\\f*—"
+        ],
+        "number": "4",
+        "paragraph_id": "HAB-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B008",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 “See, the enemy is puffed up;\n\\q2 his desires are not upright—\n\\q2 but the righteous person will live by his faithfulness\\f + \\fr 2:4 \\ft Or \\fqa faith\\f*—",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "indeed, wine betrays him;\nhe is arrogant and never at rest.\nBecause he is as greedy as the grave\nand like death is never satisfied,\nhe gathers to himself all the nations\nand takes captive all the peoples.",
+        "body_text_exact": "indeed, wine betrays him;\nhe is arrogant and never at rest.\nBecause he is as greedy as the grave\nand like death is never satisfied,\nhe gathers to himself all the nations\nand takes captive all the peoples.",
+        "body_text_normalized": "indeed, wine betrays him; he is arrogant and never at rest. Because he is as greedy as the grave and like death is never satisfied, he gathers to himself all the nations and takes captive all the peoples.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "indeed, wine betrays him;",
+          "\n",
+          "he is arrogant and never at rest.",
+          "\n",
+          "Because he is as greedy as the grave",
+          "\n",
+          "and like death is never satisfied,",
+          "\n",
+          "he gathers to himself all the nations",
+          "\n",
+          "and takes captive all the peoples."
+        ],
+        "discourse_unit_id": "HAB-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 127,
+        "line_start": 122,
+        "lines": [
+          "\\v 5 indeed, wine betrays him;",
+          "\\q2 he is arrogant and never at rest.",
+          "\\q1 Because he is as greedy as the grave",
+          "\\q2 and like death is never satisfied,",
+          "\\q1 he gathers to himself all the nations",
+          "\\q2 and takes captive all the peoples."
+        ],
+        "number": "5",
+        "paragraph_id": "HAB-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B008",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 indeed, wine betrays him;\n\\q2 he is arrogant and never at rest.\n\\q1 Because he is as greedy as the grave\n\\q2 and like death is never satisfied,\n\\q1 he gathers to himself all the nations\n\\q2 and takes captive all the peoples.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "“Will not all of them taunt him with ridicule and scorn, saying,\n“ ‘Woe to him who piles up stolen goods\nand makes himself wealthy by extortion!\nHow long must this go on?’",
+        "body_text_exact": "“Will not all of them taunt him with ridicule and scorn, saying,\n“ ‘Woe to him who piles up stolen goods\nand makes himself wealthy by extortion!\nHow long must this go on?’",
+        "body_text_normalized": "“Will not all of them taunt him with ridicule and scorn, saying, “ ‘Woe to him who piles up stolen goods and makes himself wealthy by extortion! How long must this go on?’",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“Will not all of them taunt him with ridicule and scorn, saying,",
+          "\n",
+          "“ ‘Woe to him who piles up stolen goods",
+          "\n",
+          "and makes himself wealthy by extortion!",
+          "\n",
+          "How long must this go on?’"
+        ],
+        "discourse_unit_id": "HAB-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 132,
+        "line_start": 129,
+        "lines": [
+          "\\v 6 “Will not all of them taunt him with ridicule and scorn, saying,",
+          "\\q1 “ ‘Woe to him who piles up stolen goods",
+          "\\q2 and makes himself wealthy by extortion!",
+          "\\q2 How long must this go on?’"
+        ],
+        "number": "6",
+        "paragraph_id": "HAB-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 “Will not all of them taunt him with ridicule and scorn, saying,\n\\q1 “ ‘Woe to him who piles up stolen goods\n\\q2 and makes himself wealthy by extortion!\n\\q2 How long must this go on?’",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Will not your creditors suddenly arise?\nWill they not wake up and make you tremble?\nThen you will become their prey.",
+        "body_text_exact": "Will not your creditors suddenly arise?\nWill they not wake up and make you tremble?\nThen you will become their prey.",
+        "body_text_normalized": "Will not your creditors suddenly arise? Will they not wake up and make you tremble? Then you will become their prey.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Will not your creditors suddenly arise?",
+          "\n",
+          "Will they not wake up and make you tremble?",
+          "\n",
+          "Then you will become their prey."
+        ],
+        "discourse_unit_id": "HAB-D010",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 136,
+        "line_start": 134,
+        "lines": [
+          "\\v 7 Will not your creditors suddenly arise?",
+          "\\q2 Will they not wake up and make you tremble?",
+          "\\q2 Then you will become their prey."
+        ],
+        "number": "7",
+        "paragraph_id": "HAB-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B009",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Will not your creditors suddenly arise?\n\\q2 Will they not wake up and make you tremble?\n\\q2 Then you will become their prey.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Because you have plundered many nations,\nthe peoples who are left will plunder you.\nFor you have shed human blood;\nyou have destroyed lands and cities and everyone in them.",
+        "body_text_exact": "Because you have plundered many nations,\nthe peoples who are left will plunder you.\nFor you have shed human blood;\nyou have destroyed lands and cities and everyone in them.",
+        "body_text_normalized": "Because you have plundered many nations, the peoples who are left will plunder you. For you have shed human blood; you have destroyed lands and cities and everyone in them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Because you have plundered many nations,",
+          "\n",
+          "the peoples who are left will plunder you.",
+          "\n",
+          "For you have shed human blood;",
+          "\n",
+          "you have destroyed lands and cities and everyone in them."
+        ],
+        "discourse_unit_id": "HAB-D010",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 141,
+        "line_start": 138,
+        "lines": [
+          "\\v 8 Because you have plundered many nations,",
+          "\\q2 the peoples who are left will plunder you.",
+          "\\q1 For you have shed human blood;",
+          "\\q2 you have destroyed lands and cities and everyone in them."
+        ],
+        "number": "8",
+        "paragraph_id": "HAB-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B009",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Because you have plundered many nations,\n\\q2 the peoples who are left will plunder you.\n\\q1 For you have shed human blood;\n\\q2 you have destroyed lands and cities and everyone in them.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "“Woe to him who builds his house by unjust gain,\nsetting his nest on high\nto escape the clutches of ruin!",
+        "body_text_exact": "“Woe to him who builds his house by unjust gain,\nsetting his nest on high\nto escape the clutches of ruin!",
+        "body_text_normalized": "“Woe to him who builds his house by unjust gain, setting his nest on high to escape the clutches of ruin!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“Woe to him who builds his house by unjust gain,",
+          "\n",
+          "setting his nest on high",
+          "\n",
+          "to escape the clutches of ruin!"
+        ],
+        "discourse_unit_id": "HAB-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 146,
+        "line_start": 144,
+        "lines": [
+          "\\v 9 “Woe to him who builds his house by unjust gain,",
+          "\\q2 setting his nest on high",
+          "\\q2 to escape the clutches of ruin!"
+        ],
+        "number": "9",
+        "paragraph_id": "HAB-P009",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B010",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 “Woe to him who builds his house by unjust gain,\n\\q2 setting his nest on high\n\\q2 to escape the clutches of ruin!",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "You have plotted the ruin of many peoples,\nshaming your own house and forfeiting your life.",
+        "body_text_exact": "You have plotted the ruin of many peoples,\nshaming your own house and forfeiting your life.",
+        "body_text_normalized": "You have plotted the ruin of many peoples, shaming your own house and forfeiting your life.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "You have plotted the ruin of many peoples,",
+          "\n",
+          "shaming your own house and forfeiting your life."
+        ],
+        "discourse_unit_id": "HAB-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 149,
+        "line_start": 148,
+        "lines": [
+          "\\v 10 You have plotted the ruin of many peoples,",
+          "\\q2 shaming your own house and forfeiting your life."
+        ],
+        "number": "10",
+        "paragraph_id": "HAB-P009",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B010",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 You have plotted the ruin of many peoples,\n\\q2 shaming your own house and forfeiting your life.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "The stones of the wall will cry out,\nand the beams of the woodwork will echo it.",
+        "body_text_exact": "The stones of the wall will cry out,\nand the beams of the woodwork will echo it.",
+        "body_text_normalized": "The stones of the wall will cry out, and the beams of the woodwork will echo it.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "The stones of the wall will cry out,",
+          "\n",
+          "and the beams of the woodwork will echo it."
+        ],
+        "discourse_unit_id": "HAB-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 152,
+        "line_start": 151,
+        "lines": [
+          "\\v 11 The stones of the wall will cry out,",
+          "\\q2 and the beams of the woodwork will echo it."
+        ],
+        "number": "11",
+        "paragraph_id": "HAB-P009",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B010",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 The stones of the wall will cry out,\n\\q2 and the beams of the woodwork will echo it.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "“Woe to him who builds a city with bloodshed\nand establishes a town by injustice!",
+        "body_text_exact": "“Woe to him who builds a city with bloodshed\nand establishes a town by injustice!",
+        "body_text_normalized": "“Woe to him who builds a city with bloodshed and establishes a town by injustice!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“Woe to him who builds a city with bloodshed",
+          "\n",
+          "and establishes a town by injustice!"
+        ],
+        "discourse_unit_id": "HAB-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 156,
+        "line_start": 155,
+        "lines": [
+          "\\v 12 “Woe to him who builds a city with bloodshed",
+          "\\q2 and establishes a town by injustice!"
+        ],
+        "number": "12",
+        "paragraph_id": "HAB-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 “Woe to him who builds a city with bloodshed\n\\q2 and establishes a town by injustice!",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Has not the Lord Almighty determined\nthat the peopleʼs labor is only fuel for the fire,\nthat the nations exhaust themselves for nothing?",
+        "body_text_exact": "Has not the Lord Almighty determined\nthat the peopleʼs labor is only fuel for the fire,\nthat the nations exhaust themselves for nothing?",
+        "body_text_normalized": "Has not the Lord Almighty determined that the peopleʼs labor is only fuel for the fire, that the nations exhaust themselves for nothing?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Has not the ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " Almighty determined",
+          "\n",
+          "that the peopleʼs labor is only fuel for the fire,",
+          "\n",
+          "that the nations exhaust themselves for nothing?"
+        ],
+        "discourse_unit_id": "HAB-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 160,
+        "line_start": 158,
+        "lines": [
+          "\\v 13 Has not the \\nd Lord\\nd* Almighty determined",
+          "\\q2 that the peopleʼs labor is only fuel for the fire,",
+          "\\q2 that the nations exhaust themselves for nothing?"
+        ],
+        "number": "13",
+        "paragraph_id": "HAB-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Has not the \\nd Lord\\nd* Almighty determined\n\\q2 that the peopleʼs labor is only fuel for the fire,\n\\q2 that the nations exhaust themselves for nothing?",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "For the earth will be filled with the knowledge of the glory of the Lord\nas the waters cover the sea.",
+        "body_text_exact": "For the earth will be filled with the knowledge of the glory of the Lord\nas the waters cover the sea.",
+        "body_text_normalized": "For the earth will be filled with the knowledge of the glory of the Lord as the waters cover the sea.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "For the earth will be filled with the knowledge of the glory of the ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "\n",
+          "as the waters cover the sea."
+        ],
+        "discourse_unit_id": "HAB-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 163,
+        "line_start": 162,
+        "lines": [
+          "\\v 14 For the earth will be filled with the knowledge of the glory of the \\nd Lord\\nd*",
+          "\\q2 as the waters cover the sea."
+        ],
+        "number": "14",
+        "paragraph_id": "HAB-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 For the earth will be filled with the knowledge of the glory of the \\nd Lord\\nd*\n\\q2 as the waters cover the sea.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "“Woe to him who gives drink to his neighbors,\npouring it from the wineskin till they are drunk,\nso that he can gaze on their naked bodies!",
+        "body_text_exact": "“Woe to him who gives drink to his neighbors,\npouring it from the wineskin till they are drunk,\nso that he can gaze on their naked bodies!",
+        "body_text_normalized": "“Woe to him who gives drink to his neighbors, pouring it from the wineskin till they are drunk, so that he can gaze on their naked bodies!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“Woe to him who gives drink to his neighbors,",
+          "\n",
+          "pouring it from the wineskin till they are drunk,",
+          "\n",
+          "so that he can gaze on their naked bodies!"
+        ],
+        "discourse_unit_id": "HAB-D013",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 168,
+        "line_start": 166,
+        "lines": [
+          "\\v 15 “Woe to him who gives drink to his neighbors,",
+          "\\q2 pouring it from the wineskin till they are drunk,",
+          "\\q2 so that he can gaze on their naked bodies!"
+        ],
+        "number": "15",
+        "paragraph_id": "HAB-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B012",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 “Woe to him who gives drink to his neighbors,\n\\q2 pouring it from the wineskin till they are drunk,\n\\q2 so that he can gaze on their naked bodies!",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "You will be filled with shame instead of glory.\nNow it is your turn! Drink and let your nakedness be exposed!\nThe cup from the Lordʼs right hand is coming around to you,\nand disgrace will cover your glory.",
+        "body_text_exact": "You will be filled with shame instead of glory.\nNow it is your turn! Drink and let your nakedness be exposed!\nThe cup from the Lordʼs right hand is coming around to you,\nand disgrace will cover your glory.",
+        "body_text_normalized": "You will be filled with shame instead of glory. Now it is your turn! Drink and let your nakedness be exposed! The cup from the Lordʼs right hand is coming around to you, and disgrace will cover your glory.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "You will be filled with shame instead of glory.",
+          "\n",
+          "Now it is your turn! Drink and let your nakedness be exposed",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:16 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Masoretic Text; Dead Sea Scrolls, Aquila, Vulgate and Syriac (see also Septuagint) ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "and ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "stagger"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "!",
+          "\n",
+          "The cup from the ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "ʼs right hand is coming around to you,",
+          "\n",
+          "and disgrace will cover your glory."
+        ],
+        "discourse_unit_id": "HAB-D013",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 173,
+        "line_start": 170,
+        "lines": [
+          "\\v 16 You will be filled with shame instead of glory.",
+          "\\q2 Now it is your turn! Drink and let your nakedness be exposed\\f + \\fr 2:16 \\ft Masoretic Text; Dead Sea Scrolls, Aquila, Vulgate and Syriac (see also Septuagint) \\fq and \\fqa stagger\\f*!",
+          "\\q1 The cup from the \\nd Lord\\nd*ʼs right hand is coming around to you,",
+          "\\q2 and disgrace will cover your glory."
+        ],
+        "number": "16",
+        "paragraph_id": "HAB-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B012",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 You will be filled with shame instead of glory.\n\\q2 Now it is your turn! Drink and let your nakedness be exposed\\f + \\fr 2:16 \\ft Masoretic Text; Dead Sea Scrolls, Aquila, Vulgate and Syriac (see also Septuagint) \\fq and \\fqa stagger\\f*!\n\\q1 The cup from the \\nd Lord\\nd*ʼs right hand is coming around to you,\n\\q2 and disgrace will cover your glory.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "The violence you have done to Lebanon will overwhelm you,\nand your destruction of animals will terrify you.\nFor you have shed human blood;\nyou have destroyed lands and cities and everyone in them.",
+        "body_text_exact": "The violence you have done to Lebanon will overwhelm you,\nand your destruction of animals will terrify you.\nFor you have shed human blood;\nyou have destroyed lands and cities and everyone in them.",
+        "body_text_normalized": "The violence you have done to Lebanon will overwhelm you, and your destruction of animals will terrify you. For you have shed human blood; you have destroyed lands and cities and everyone in them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "The violence you have done to Lebanon will overwhelm you,",
+          "\n",
+          "and your destruction of animals will terrify you.",
+          "\n",
+          "For you have shed human blood;",
+          "\n",
+          "you have destroyed lands and cities and everyone in them."
+        ],
+        "discourse_unit_id": "HAB-D013",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 178,
+        "line_start": 175,
+        "lines": [
+          "\\v 17 The violence you have done to Lebanon will overwhelm you,",
+          "\\q2 and your destruction of animals will terrify you.",
+          "\\q1 For you have shed human blood;",
+          "\\q2 you have destroyed lands and cities and everyone in them."
+        ],
+        "number": "17",
+        "paragraph_id": "HAB-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B012",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 The violence you have done to Lebanon will overwhelm you,\n\\q2 and your destruction of animals will terrify you.\n\\q1 For you have shed human blood;\n\\q2 you have destroyed lands and cities and everyone in them.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "“Of what value is an idol carved by a craftsman?\nOr an image that teaches lies?\nFor the one who makes it trusts in his own creation;\nhe makes idols that cannot speak.",
+        "body_text_exact": "“Of what value is an idol carved by a craftsman?\nOr an image that teaches lies?\nFor the one who makes it trusts in his own creation;\nhe makes idols that cannot speak.",
+        "body_text_normalized": "“Of what value is an idol carved by a craftsman? Or an image that teaches lies? For the one who makes it trusts in his own creation; he makes idols that cannot speak.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "“Of what value is an idol carved by a craftsman?",
+          "\n",
+          "Or an image that teaches lies?",
+          "\n",
+          "For the one who makes it trusts in his own creation;",
+          "\n",
+          "he makes idols that cannot speak."
+        ],
+        "discourse_unit_id": "HAB-D014",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 184,
+        "line_start": 181,
+        "lines": [
+          "\\v 18 “Of what value is an idol carved by a craftsman?",
+          "\\q2 Or an image that teaches lies?",
+          "\\q1 For the one who makes it trusts in his own creation;",
+          "\\q2 he makes idols that cannot speak."
+        ],
+        "number": "18",
+        "paragraph_id": "HAB-P012",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B013",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 “Of what value is an idol carved by a craftsman?\n\\q2 Or an image that teaches lies?\n\\q1 For the one who makes it trusts in his own creation;\n\\q2 he makes idols that cannot speak.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "Woe to him who says to wood, ‘Come to life!’\nOr to lifeless stone, ‘Wake up!’\nCan it give guidance?\nIt is covered with gold and silver;\nthere is no breath in it.”",
+        "body_text_exact": "Woe to him who says to wood, ‘Come to life!’\nOr to lifeless stone, ‘Wake up!’\nCan it give guidance?\nIt is covered with gold and silver;\nthere is no breath in it.”",
+        "body_text_normalized": "Woe to him who says to wood, ‘Come to life!’ Or to lifeless stone, ‘Wake up!’ Can it give guidance? It is covered with gold and silver; there is no breath in it.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Woe to him who says to wood, ‘Come to life!’",
+          "\n",
+          "Or to lifeless stone, ‘Wake up!’",
+          "\n",
+          "Can it give guidance?",
+          "\n",
+          "It is covered with gold and silver;",
+          "\n",
+          "there is no breath in it.”"
+        ],
+        "discourse_unit_id": "HAB-D014",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 190,
+        "line_start": 186,
+        "lines": [
+          "\\v 19 Woe to him who says to wood, ‘Come to life!’",
+          "\\q2 Or to lifeless stone, ‘Wake up!’",
+          "\\q1 Can it give guidance?",
+          "\\q2 It is covered with gold and silver;",
+          "\\q2 there is no breath in it.”"
+        ],
+        "number": "19",
+        "paragraph_id": "HAB-P012",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B013",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 Woe to him who says to wood, ‘Come to life!’\n\\q2 Or to lifeless stone, ‘Wake up!’\n\\q1 Can it give guidance?\n\\q2 It is covered with gold and silver;\n\\q2 there is no breath in it.”",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "The Lord is in his holy temple;\nlet all the earth be silent before him.",
+        "body_text_exact": "The Lord is in his holy temple;\nlet all the earth be silent before him.",
+        "body_text_normalized": "The Lord is in his holy temple; let all the earth be silent before him.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "The ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " is in his holy temple;",
+          "\n",
+          "let all the earth be silent before him."
+        ],
+        "discourse_unit_id": "HAB-D015",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 194,
+        "line_start": 193,
+        "lines": [
+          "\\v 20 The \\nd Lord\\nd* is in his holy temple;",
+          "\\q2 let all the earth be silent before him."
+        ],
+        "number": "20",
+        "paragraph_id": "HAB-P013",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B014",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 The \\nd Lord\\nd* is in his holy temple;\n\\q2 let all the earth be silent before him.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "The Lordʼs Answer",
+        "verse_end": 20,
+        "verse_start": 20
+      },
+      {
+        "body_text": "A prayer of Habakkuk the prophet. On shigionoth.",
+        "body_text_exact": "A prayer of Habakkuk the prophet. On shigionoth.",
+        "body_text_normalized": "A prayer of Habakkuk the prophet. On shigionoth.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "A prayer of Habakkuk the prophet. On ",
+          {
+            "content": [
+              "shigionoth"
+            ],
+            "marker": "tl",
+            "type": "char"
+          },
+          ".",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:1 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Probably a literary or musical term"
+            ],
+            "marker": "f",
+            "type": "note"
+          }
+        ],
+        "discourse_unit_id": "HAB-D016",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "implicit",
+        "line_end": 198,
+        "line_start": 198,
+        "lines": [
+          "\\v 1 A prayer of Habakkuk the prophet. On \\tl shigionoth\\tl*.\\f + \\fr 3:1 \\ft Probably a literary or musical term\\f*"
+        ],
+        "number": "1",
+        "paragraph_id": "HAB-P014",
+        "paragraph_marker": "implicit",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 A prayer of Habakkuk the prophet. On \\tl shigionoth\\tl*.\\f + \\fr 3:1 \\ft Probably a literary or musical term\\f*",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Lord, I have heard of your fame;\nI stand in awe of your deeds, Lord.\nRepeat them in our day,\nin our time make them known;\nin wrath remember mercy.",
+        "body_text_exact": "Lord, I have heard of your fame;\nI stand in awe of your deeds, Lord.\nRepeat them in our day,\nin our time make them known;\nin wrath remember mercy.",
+        "body_text_normalized": "Lord, I have heard of your fame; I stand in awe of your deeds, Lord. Repeat them in our day, in our time make them known; in wrath remember mercy.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", I have heard of your fame;",
+          "\n",
+          "I stand in awe of your deeds, ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ".",
+          "\n",
+          "Repeat them in our day,",
+          "\n",
+          "in our time make them known;",
+          "\n",
+          "in wrath remember mercy."
+        ],
+        "discourse_unit_id": "HAB-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 204,
+        "line_start": 200,
+        "lines": [
+          "\\v 2 \\nd Lord\\nd*, I have heard of your fame;",
+          "\\q2 I stand in awe of your deeds, \\nd Lord\\nd*.",
+          "\\q1 Repeat them in our day,",
+          "\\q2 in our time make them known;",
+          "\\q2 in wrath remember mercy."
+        ],
+        "number": "2",
+        "paragraph_id": "HAB-P014",
+        "paragraph_marker": "implicit",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B015",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 \\nd Lord\\nd*, I have heard of your fame;\n\\q2 I stand in awe of your deeds, \\nd Lord\\nd*.\n\\q1 Repeat them in our day,\n\\q2 in our time make them known;\n\\q2 in wrath remember mercy.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "God came from Teman,\nthe Holy One from Mount Paran.\nHis glory covered the heavens\nand his praise filled the earth.",
+        "body_text_exact": "God came from Teman,\nthe Holy One from Mount Paran.\nHis glory covered the heavens\nand his praise filled the earth.",
+        "body_text_normalized": "God came from Teman, the Holy One from Mount Paran. His glory covered the heavens and his praise filled the earth.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "God came from Teman,",
+          "\n",
+          "the Holy One from Mount Paran.",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:3 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "The Hebrew has ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "Selah ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "(a word of uncertain meaning) here and at the middle of ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "verse 9|HAB 3:9",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "and at the end of ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "verse 13|HAB 3:13",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "\n",
+          "His glory covered the heavens",
+          "\n",
+          "and his praise filled the earth."
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 210,
+        "line_start": 207,
+        "lines": [
+          "\\v 3 God came from Teman,",
+          "\\q2 the Holy One from Mount Paran.\\f + \\fr 3:3 \\ft The Hebrew has \\fqa Selah \\ft (a word of uncertain meaning) here and at the middle of \\+xt verse 9|HAB 3:9\\+xt* and at the end of \\+xt verse 13|HAB 3:13\\+xt*.\\f*",
+          "\\q1 His glory covered the heavens",
+          "\\q2 and his praise filled the earth."
+        ],
+        "number": "3",
+        "paragraph_id": "HAB-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 God came from Teman,\n\\q2 the Holy One from Mount Paran.\\f + \\fr 3:3 \\ft The Hebrew has \\fqa Selah \\ft (a word of uncertain meaning) here and at the middle of \\+xt verse 9|HAB 3:9\\+xt* and at the end of \\+xt verse 13|HAB 3:13\\+xt*.\\f*\n\\q1 His glory covered the heavens\n\\q2 and his praise filled the earth.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "His splendor was like the sunrise;\nrays flashed from his hand,\nwhere his power was hidden.",
+        "body_text_exact": "His splendor was like the sunrise;\nrays flashed from his hand,\nwhere his power was hidden.",
+        "body_text_normalized": "His splendor was like the sunrise; rays flashed from his hand, where his power was hidden.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "His splendor was like the sunrise;",
+          "\n",
+          "rays flashed from his hand,",
+          "\n",
+          "where his power was hidden."
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 214,
+        "line_start": 212,
+        "lines": [
+          "\\v 4 His splendor was like the sunrise;",
+          "\\q2 rays flashed from his hand,",
+          "\\q2 where his power was hidden."
+        ],
+        "number": "4",
+        "paragraph_id": "HAB-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 His splendor was like the sunrise;\n\\q2 rays flashed from his hand,\n\\q2 where his power was hidden.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Plague went before him;\npestilence followed his steps.",
+        "body_text_exact": "Plague went before him;\npestilence followed his steps.",
+        "body_text_normalized": "Plague went before him; pestilence followed his steps.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Plague went before him;",
+          "\n",
+          "pestilence followed his steps."
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 217,
+        "line_start": 216,
+        "lines": [
+          "\\v 5 Plague went before him;",
+          "\\q2 pestilence followed his steps."
+        ],
+        "number": "5",
+        "paragraph_id": "HAB-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Plague went before him;\n\\q2 pestilence followed his steps.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "He stood, and shook the earth;\nhe looked, and made the nations tremble.\nThe ancient mountains crumbled\nand the age-old hills collapsed—\nbut he marches on forever.",
+        "body_text_exact": "He stood, and shook the earth;\nhe looked, and made the nations tremble.\nThe ancient mountains crumbled\nand the age-old hills collapsed—\nbut he marches on forever.",
+        "body_text_normalized": "He stood, and shook the earth; he looked, and made the nations tremble. The ancient mountains crumbled and the age-old hills collapsed— but he marches on forever.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "He stood, and shook the earth;",
+          "\n",
+          "he looked, and made the nations tremble.",
+          "\n",
+          "The ancient mountains crumbled",
+          "\n",
+          "and the age-old hills collapsed—",
+          "\n",
+          "but he marches on forever."
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 223,
+        "line_start": 219,
+        "lines": [
+          "\\v 6 He stood, and shook the earth;",
+          "\\q2 he looked, and made the nations tremble.",
+          "\\q1 The ancient mountains crumbled",
+          "\\q2 and the age-old hills collapsed—",
+          "\\q2 but he marches on forever."
+        ],
+        "number": "6",
+        "paragraph_id": "HAB-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 He stood, and shook the earth;\n\\q2 he looked, and made the nations tremble.\n\\q1 The ancient mountains crumbled\n\\q2 and the age-old hills collapsed—\n\\q2 but he marches on forever.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "I saw the tents of Cushan in distress,\nthe dwellings of Midian in anguish.",
+        "body_text_exact": "I saw the tents of Cushan in distress,\nthe dwellings of Midian in anguish.",
+        "body_text_normalized": "I saw the tents of Cushan in distress, the dwellings of Midian in anguish.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "I saw the tents of Cushan in distress,",
+          "\n",
+          "the dwellings of Midian in anguish."
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 226,
+        "line_start": 225,
+        "lines": [
+          "\\v 7 I saw the tents of Cushan in distress,",
+          "\\q2 the dwellings of Midian in anguish."
+        ],
+        "number": "7",
+        "paragraph_id": "HAB-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 I saw the tents of Cushan in distress,\n\\q2 the dwellings of Midian in anguish.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Were you angry with the rivers, Lord?\nWas your wrath against the streams?\nDid you rage against the sea\nwhen you rode your horses\nand your chariots to victory?",
+        "body_text_exact": "Were you angry with the rivers, Lord?\nWas your wrath against the streams?\nDid you rage against the sea\nwhen you rode your horses\nand your chariots to victory?",
+        "body_text_normalized": "Were you angry with the rivers, Lord? Was your wrath against the streams? Did you rage against the sea when you rode your horses and your chariots to victory?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Were you angry with the rivers, ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "?",
+          "\n",
+          "Was your wrath against the streams?",
+          "\n",
+          "Did you rage against the sea",
+          "\n",
+          "when you rode your horses",
+          "\n",
+          "and your chariots to victory?"
+        ],
+        "discourse_unit_id": "HAB-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 233,
+        "line_start": 229,
+        "lines": [
+          "\\v 8 Were you angry with the rivers, \\nd Lord\\nd*?",
+          "\\q2 Was your wrath against the streams?",
+          "\\q1 Did you rage against the sea",
+          "\\q2 when you rode your horses",
+          "\\q2 and your chariots to victory?"
+        ],
+        "number": "8",
+        "paragraph_id": "HAB-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Were you angry with the rivers, \\nd Lord\\nd*?\n\\q2 Was your wrath against the streams?\n\\q1 Did you rage against the sea\n\\q2 when you rode your horses\n\\q2 and your chariots to victory?",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "You uncovered your bow,\nyou called for many arrows.\nYou split the earth with rivers;",
+        "body_text_exact": "You uncovered your bow,\nyou called for many arrows.\nYou split the earth with rivers;",
+        "body_text_normalized": "You uncovered your bow, you called for many arrows. You split the earth with rivers;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "You uncovered your bow,",
+          "\n",
+          "you called for many arrows.",
+          "\n",
+          "You split the earth with rivers;"
+        ],
+        "discourse_unit_id": "HAB-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 237,
+        "line_start": 235,
+        "lines": [
+          "\\v 9 You uncovered your bow,",
+          "\\q2 you called for many arrows.",
+          "\\q1 You split the earth with rivers;"
+        ],
+        "number": "9",
+        "paragraph_id": "HAB-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 You uncovered your bow,\n\\q2 you called for many arrows.\n\\q1 You split the earth with rivers;",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "the mountains saw you and writhed.\nTorrents of water swept by;\nthe deep roared\nand lifted its waves on high.",
+        "body_text_exact": "the mountains saw you and writhed.\nTorrents of water swept by;\nthe deep roared\nand lifted its waves on high.",
+        "body_text_normalized": "the mountains saw you and writhed. Torrents of water swept by; the deep roared and lifted its waves on high.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "the mountains saw you and writhed.",
+          "\n",
+          "Torrents of water swept by;",
+          "\n",
+          "the deep roared",
+          "\n",
+          "and lifted its waves on high."
+        ],
+        "discourse_unit_id": "HAB-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 242,
+        "line_start": 239,
+        "lines": [
+          "\\v 10 the mountains saw you and writhed.",
+          "\\q1 Torrents of water swept by;",
+          "\\q2 the deep roared",
+          "\\q2 and lifted its waves on high."
+        ],
+        "number": "10",
+        "paragraph_id": "HAB-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 the mountains saw you and writhed.\n\\q1 Torrents of water swept by;\n\\q2 the deep roared\n\\q2 and lifted its waves on high.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Sun and moon stood still in the heavens\nat the glint of your flying arrows,\nat the lightning of your flashing spear.",
+        "body_text_exact": "Sun and moon stood still in the heavens\nat the glint of your flying arrows,\nat the lightning of your flashing spear.",
+        "body_text_normalized": "Sun and moon stood still in the heavens at the glint of your flying arrows, at the lightning of your flashing spear.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Sun and moon stood still in the heavens",
+          "\n",
+          "at the glint of your flying arrows,",
+          "\n",
+          "at the lightning of your flashing spear."
+        ],
+        "discourse_unit_id": "HAB-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 247,
+        "line_start": 245,
+        "lines": [
+          "\\v 11 Sun and moon stood still in the heavens",
+          "\\q2 at the glint of your flying arrows,",
+          "\\q2 at the lightning of your flashing spear."
+        ],
+        "number": "11",
+        "paragraph_id": "HAB-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Sun and moon stood still in the heavens\n\\q2 at the glint of your flying arrows,\n\\q2 at the lightning of your flashing spear.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "In wrath you strode through the earth\nand in anger you threshed the nations.",
+        "body_text_exact": "In wrath you strode through the earth\nand in anger you threshed the nations.",
+        "body_text_normalized": "In wrath you strode through the earth and in anger you threshed the nations.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "In wrath you strode through the earth",
+          "\n",
+          "and in anger you threshed the nations."
+        ],
+        "discourse_unit_id": "HAB-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 250,
+        "line_start": 249,
+        "lines": [
+          "\\v 12 In wrath you strode through the earth",
+          "\\q2 and in anger you threshed the nations."
+        ],
+        "number": "12",
+        "paragraph_id": "HAB-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 In wrath you strode through the earth\n\\q2 and in anger you threshed the nations.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "You came out to deliver your people,\nto save your anointed one.\nYou crushed the leader of the land of wickedness,\nyou stripped him from head to foot.",
+        "body_text_exact": "You came out to deliver your people,\nto save your anointed one.\nYou crushed the leader of the land of wickedness,\nyou stripped him from head to foot.",
+        "body_text_normalized": "You came out to deliver your people, to save your anointed one. You crushed the leader of the land of wickedness, you stripped him from head to foot.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "You came out to deliver your people,",
+          "\n",
+          "to save your anointed one.",
+          "\n",
+          "You crushed the leader of the land of wickedness,",
+          "\n",
+          "you stripped him from head to foot."
+        ],
+        "discourse_unit_id": "HAB-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 255,
+        "line_start": 252,
+        "lines": [
+          "\\v 13 You came out to deliver your people,",
+          "\\q2 to save your anointed one.",
+          "\\q1 You crushed the leader of the land of wickedness,",
+          "\\q2 you stripped him from head to foot."
+        ],
+        "number": "13",
+        "paragraph_id": "HAB-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 You came out to deliver your people,\n\\q2 to save your anointed one.\n\\q1 You crushed the leader of the land of wickedness,\n\\q2 you stripped him from head to foot.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "With his own spear you pierced his head\nwhen his warriors stormed out to scatter us,\ngloating as though about to devour\nthe wretched who were in hiding.",
+        "body_text_exact": "With his own spear you pierced his head\nwhen his warriors stormed out to scatter us,\ngloating as though about to devour\nthe wretched who were in hiding.",
+        "body_text_normalized": "With his own spear you pierced his head when his warriors stormed out to scatter us, gloating as though about to devour the wretched who were in hiding.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "With his own spear you pierced his head",
+          "\n",
+          "when his warriors stormed out to scatter us,",
+          "\n",
+          "gloating as though about to devour",
+          "\n",
+          "the wretched who were in hiding."
+        ],
+        "discourse_unit_id": "HAB-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 260,
+        "line_start": 257,
+        "lines": [
+          "\\v 14 With his own spear you pierced his head",
+          "\\q2 when his warriors stormed out to scatter us,",
+          "\\q1 gloating as though about to devour",
+          "\\q2 the wretched who were in hiding."
+        ],
+        "number": "14",
+        "paragraph_id": "HAB-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 With his own spear you pierced his head\n\\q2 when his warriors stormed out to scatter us,\n\\q1 gloating as though about to devour\n\\q2 the wretched who were in hiding.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "You trampled the sea with your horses,\nchurning the great waters.",
+        "body_text_exact": "You trampled the sea with your horses,\nchurning the great waters.",
+        "body_text_normalized": "You trampled the sea with your horses, churning the great waters.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "You trampled the sea with your horses,",
+          "\n",
+          "churning the great waters."
+        ],
+        "discourse_unit_id": "HAB-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 263,
+        "line_start": 262,
+        "lines": [
+          "\\v 15 You trampled the sea with your horses,",
+          "\\q2 churning the great waters."
+        ],
+        "number": "15",
+        "paragraph_id": "HAB-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 You trampled the sea with your horses,\n\\q2 churning the great waters.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "I heard and my heart pounded,\nmy lips quivered at the sound;\ndecay crept into my bones,\nand my legs trembled.\nYet I will wait patiently for the day of calamity\nto come on the nation invading us.",
+        "body_text_exact": "I heard and my heart pounded,\nmy lips quivered at the sound;\ndecay crept into my bones,\nand my legs trembled.\nYet I will wait patiently for the day of calamity\nto come on the nation invading us.",
+        "body_text_normalized": "I heard and my heart pounded, my lips quivered at the sound; decay crept into my bones, and my legs trembled. Yet I will wait patiently for the day of calamity to come on the nation invading us.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "I heard and my heart pounded,",
+          "\n",
+          "my lips quivered at the sound;",
+          "\n",
+          "decay crept into my bones,",
+          "\n",
+          "and my legs trembled.",
+          "\n",
+          "Yet I will wait patiently for the day of calamity",
+          "\n",
+          "to come on the nation invading us."
+        ],
+        "discourse_unit_id": "HAB-D021",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 271,
+        "line_start": 266,
+        "lines": [
+          "\\v 16 I heard and my heart pounded,",
+          "\\q2 my lips quivered at the sound;",
+          "\\q1 decay crept into my bones,",
+          "\\q2 and my legs trembled.",
+          "\\q1 Yet I will wait patiently for the day of calamity",
+          "\\q2 to come on the nation invading us."
+        ],
+        "number": "16",
+        "paragraph_id": "HAB-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 I heard and my heart pounded,\n\\q2 my lips quivered at the sound;\n\\q1 decay crept into my bones,\n\\q2 and my legs trembled.\n\\q1 Yet I will wait patiently for the day of calamity\n\\q2 to come on the nation invading us.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Though the fig tree does not bud\nand there are no grapes on the vines,\nthough the olive crop fails\nand the fields produce no food,\nthough there are no sheep in the pen\nand no cattle in the stalls,",
+        "body_text_exact": "Though the fig tree does not bud\nand there are no grapes on the vines,\nthough the olive crop fails\nand the fields produce no food,\nthough there are no sheep in the pen\nand no cattle in the stalls,",
+        "body_text_normalized": "Though the fig tree does not bud and there are no grapes on the vines, though the olive crop fails and the fields produce no food, though there are no sheep in the pen and no cattle in the stalls,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Though the fig tree does not bud",
+          "\n",
+          "and there are no grapes on the vines,",
+          "\n",
+          "though the olive crop fails",
+          "\n",
+          "and the fields produce no food,",
+          "\n",
+          "though there are no sheep in the pen",
+          "\n",
+          "and no cattle in the stalls,"
+        ],
+        "discourse_unit_id": "HAB-D021",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 278,
+        "line_start": 273,
+        "lines": [
+          "\\v 17 Though the fig tree does not bud",
+          "\\q2 and there are no grapes on the vines,",
+          "\\q1 though the olive crop fails",
+          "\\q2 and the fields produce no food,",
+          "\\q1 though there are no sheep in the pen",
+          "\\q2 and no cattle in the stalls,"
+        ],
+        "number": "17",
+        "paragraph_id": "HAB-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Though the fig tree does not bud\n\\q2 and there are no grapes on the vines,\n\\q1 though the olive crop fails\n\\q2 and the fields produce no food,\n\\q1 though there are no sheep in the pen\n\\q2 and no cattle in the stalls,",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "yet I will rejoice in the Lord,\nI will be joyful in God my Savior.",
+        "body_text_exact": "yet I will rejoice in the Lord,\nI will be joyful in God my Savior.",
+        "body_text_normalized": "yet I will rejoice in the Lord, I will be joyful in God my Savior.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "yet I will rejoice in the ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "I will be joyful in God my Savior."
+        ],
+        "discourse_unit_id": "HAB-D021",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 281,
+        "line_start": 280,
+        "lines": [
+          "\\v 18 yet I will rejoice in the \\nd Lord\\nd*,",
+          "\\q2 I will be joyful in God my Savior."
+        ],
+        "number": "18",
+        "paragraph_id": "HAB-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 yet I will rejoice in the \\nd Lord\\nd*,\n\\q2 I will be joyful in God my Savior.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "The Sovereign Lord is my strength;\nhe makes my feet like the feet of a deer,\nhe enables me to tread on the heights.\nFor the director of music. On my stringed instruments.",
+        "body_text_exact": "The Sovereign Lord is my strength;\nhe makes my feet like the feet of a deer,\nhe enables me to tread on the heights.\nFor the director of music. On my stringed instruments.",
+        "body_text_normalized": "The Sovereign Lord is my strength; he makes my feet like the feet of a deer, he enables me to tread on the heights. For the director of music. On my stringed instruments.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "The Sovereign ",
+          {
+            "content": [
+              "Lord"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " is my strength;",
+          "\n",
+          "he makes my feet like the feet of a deer,",
+          "\n",
+          "he enables me to tread on the heights.",
+          "\n",
+          "For the director of music. On my stringed instruments."
+        ],
+        "discourse_unit_id": "HAB-D022",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 287,
+        "line_start": 284,
+        "lines": [
+          "\\v 19 The Sovereign \\nd Lord\\nd* is my strength;",
+          "\\q2 he makes my feet like the feet of a deer,",
+          "\\q2 he enables me to tread on the heights.",
+          "\\qd For the director of music. On my stringed instruments."
+        ],
+        "number": "19",
+        "paragraph_id": "HAB-P019",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B020",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 The Sovereign \\nd Lord\\nd* is my strength;\n\\q2 he makes my feet like the feet of a deer,\n\\q2 he enables me to tread on the heights.\n\\qd For the director of music. On my stringed instruments.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Habakkukʼs Prayer",
+        "verse_end": 19,
+        "verse_start": 19
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

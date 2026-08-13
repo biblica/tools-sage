@@ -1,0 +1,9 @@
+schema_id: sage-evaluation-set-1.0
+required: [execution_mode, entries]
+execution_mode_values: [SEQUENTIAL]
+entry_required: [output_project, contemporary_source]
+controls:
+  output_projects_per_task: 1
+  contemporary_sources_per_task: 1
+  project_roles_must_be_declared: true
+  output_project_context_isolation: true

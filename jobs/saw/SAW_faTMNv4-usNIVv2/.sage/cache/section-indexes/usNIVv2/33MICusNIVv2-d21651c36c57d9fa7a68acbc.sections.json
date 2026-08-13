@@ -1,0 +1,3020 @@
+{
+  "book": "MIC",
+  "records": [
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 14,
+      "line_start": 14,
+      "paragraph_id": "MIC-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 1:1",
+      "section_id": "MIC-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D002",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 21,
+      "line_start": 18,
+      "paragraph_id": "MIC-P002",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B002",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 1:2",
+      "section_id": "MIC-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 25,
+      "line_start": 24,
+      "paragraph_id": "MIC-P003",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B003",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:3",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Samaria and Jerusalem",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 30,
+      "line_start": 27,
+      "paragraph_id": "MIC-P003",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B003",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:4",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Samaria and Jerusalem",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D003",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 37,
+      "line_start": 32,
+      "paragraph_id": "MIC-P003",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B003",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:5",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Samaria and Jerusalem",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D004",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 43,
+      "line_start": 40,
+      "paragraph_id": "MIC-P004",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B004",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 1:6",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Samaria and Jerusalem",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D004",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 49,
+      "line_start": 45,
+      "paragraph_id": "MIC-P004",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B004",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 1:7",
+      "section_id": "MIC-S001",
+      "section_marker": "s1",
+      "section_title": "Judgment Against Samaria and Jerusalem",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 55,
+      "line_start": 52,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:8",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Weeping and Mourning",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 60,
+      "line_start": 57,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:9",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Weeping and Mourning",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 65,
+      "line_start": 62,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:10",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Weeping and Mourning",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 72,
+      "line_start": 67,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:11",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Weeping and Mourning",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 77,
+      "line_start": 74,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:12",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Weeping and Mourning",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 82,
+      "line_start": 79,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:13",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Weeping and Mourning",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 87,
+      "line_start": 84,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:14",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Weeping and Mourning",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 92,
+      "line_start": 89,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:15",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Weeping and Mourning",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "MIC-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 97,
+      "line_start": 94,
+      "paragraph_id": "MIC-P005",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 1:16",
+      "section_id": "MIC-S002",
+      "section_marker": "s1",
+      "section_title": "Weeping and Mourning",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D006",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 104,
+      "line_start": 101,
+      "paragraph_id": "MIC-P006",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B006",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:1",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Human Plans and Godʼs Plans",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D006",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 109,
+      "line_start": 106,
+      "paragraph_id": "MIC-P006",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B006",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:2",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Human Plans and Godʼs Plans",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 115,
+      "line_start": 111,
+      "paragraph_id": "MIC-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 2:3",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Human Plans and Godʼs Plans",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D008",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 122,
+      "line_start": 117,
+      "paragraph_id": "MIC-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B007",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:4",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Human Plans and Godʼs Plans",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 126,
+      "line_start": 125,
+      "paragraph_id": "MIC-P008",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B008",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:5",
+      "section_id": "MIC-S003",
+      "section_marker": "s1",
+      "section_title": "Human Plans and Godʼs Plans",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D010",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 131,
+      "line_start": 129,
+      "paragraph_id": "MIC-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B009",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:6",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "False Prophets",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D010",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 138,
+      "line_start": 133,
+      "paragraph_id": "MIC-P009",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B009",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:7",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "False Prophets",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 144,
+      "line_start": 140,
+      "paragraph_id": "MIC-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:8",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "False Prophets",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 149,
+      "line_start": 146,
+      "paragraph_id": "MIC-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:9",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "False Prophets",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 154,
+      "line_start": 151,
+      "paragraph_id": "MIC-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:10",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "False Prophets",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 158,
+      "line_start": 156,
+      "paragraph_id": "MIC-P010",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B010",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 2:11",
+      "section_id": "MIC-S004",
+      "section_marker": "s1",
+      "section_title": "False Prophets",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D012",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 165,
+      "line_start": 161,
+      "paragraph_id": "MIC-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B011",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:12",
+      "section_id": "MIC-S005",
+      "section_marker": "s1",
+      "section_title": "Deliverance Promised",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "MIC-D012",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 170,
+      "line_start": 167,
+      "paragraph_id": "MIC-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B011",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 2:13",
+      "section_id": "MIC-S005",
+      "section_marker": "s1",
+      "section_title": "Deliverance Promised",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 177,
+      "line_start": 174,
+      "paragraph_id": "MIC-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 3:1",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D014",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 181,
+      "line_start": 179,
+      "paragraph_id": "MIC-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B012",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:2",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D014",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 187,
+      "line_start": 183,
+      "paragraph_id": "MIC-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B012",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:3",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D015",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 193,
+      "line_start": 190,
+      "paragraph_id": "MIC-P013",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B013",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:4",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 201,
+      "line_start": 195,
+      "paragraph_id": "MIC-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 3:5",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 206,
+      "line_start": 203,
+      "paragraph_id": "MIC-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B014",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:6",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 211,
+      "line_start": 208,
+      "paragraph_id": "MIC-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B014",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:7",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 217,
+      "line_start": 213,
+      "paragraph_id": "MIC-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B014",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 3:8",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 223,
+      "line_start": 220,
+      "paragraph_id": "MIC-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:9",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 226,
+      "line_start": 225,
+      "paragraph_id": "MIC-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:10",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 233,
+      "line_start": 228,
+      "paragraph_id": "MIC-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:11",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "MIC-D018",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 238,
+      "line_start": 235,
+      "paragraph_id": "MIC-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B015",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 3:12",
+      "section_id": "MIC-S006",
+      "section_marker": "s1",
+      "section_title": "Leaders and Prophets Rebuked",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 246,
+      "line_start": 242,
+      "paragraph_id": "MIC-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 4:1",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "The Mountain of the Lord",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 254,
+      "line_start": 248,
+      "paragraph_id": "MIC-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 4:2",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "The Mountain of the Lord",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 261,
+      "line_start": 256,
+      "paragraph_id": "MIC-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B017",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:3",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "The Mountain of the Lord",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 266,
+      "line_start": 263,
+      "paragraph_id": "MIC-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B017",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:4",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "The Mountain of the Lord",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 271,
+      "line_start": 268,
+      "paragraph_id": "MIC-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B017",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:5",
+      "section_id": "MIC-S007",
+      "section_marker": "s1",
+      "section_title": "The Mountain of the Lord",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D023",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 277,
+      "line_start": 274,
+      "paragraph_id": "MIC-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B018",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:6",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Plan",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D023",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 282,
+      "line_start": 279,
+      "paragraph_id": "MIC-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B018",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:7",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Plan",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D023",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 287,
+      "line_start": 284,
+      "paragraph_id": "MIC-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B018",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 4:8",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Plan",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D024",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 293,
+      "line_start": 290,
+      "paragraph_id": "MIC-P019",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:9",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Plan",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D024",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 302,
+      "line_start": 295,
+      "paragraph_id": "MIC-P019",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:10",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Plan",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 308,
+      "line_start": 305,
+      "paragraph_id": "MIC-P020",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B020",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:11",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Plan",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 313,
+      "line_start": 310,
+      "paragraph_id": "MIC-P020",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B020",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:12",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Plan",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "MIC-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 320,
+      "line_start": 315,
+      "paragraph_id": "MIC-P020",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B020",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 4:13",
+      "section_id": "MIC-S008",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Plan",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D026",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 327,
+      "line_start": 324,
+      "paragraph_id": "MIC-P021",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B021",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:1",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D027",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 335,
+      "line_start": 330,
+      "paragraph_id": "MIC-P022",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B022",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:2",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 341,
+      "line_start": 338,
+      "paragraph_id": "MIC-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B023",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:3",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D029",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 348,
+      "line_start": 344,
+      "paragraph_id": "MIC-P024",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B024",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:4",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D030",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 355,
+      "line_start": 351,
+      "paragraph_id": "MIC-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B025",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:5",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D030",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 361,
+      "line_start": 357,
+      "paragraph_id": "MIC-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B025",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:6",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 369,
+      "line_start": 364,
+      "paragraph_id": "MIC-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:7",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 376,
+      "line_start": 371,
+      "paragraph_id": "MIC-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:8",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D031",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 379,
+      "line_start": 378,
+      "paragraph_id": "MIC-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 5:9",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 383,
+      "line_start": 381,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 5:10",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 386,
+      "line_start": 385,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:11",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 389,
+      "line_start": 388,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:12",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 394,
+      "line_start": 391,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:13",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 397,
+      "line_start": 396,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:14",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "MIC-D033",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 400,
+      "line_start": 399,
+      "paragraph_id": "MIC-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "MIC-B027",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 5:15",
+      "section_id": "MIC-S009",
+      "section_marker": "s1",
+      "section_title": "A Promised Ruler From Bethlehem",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D034",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 406,
+      "line_start": 404,
+      "paragraph_id": "MIC-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "MIC 6:1",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Case Against Israel",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 412,
+      "line_start": 409,
+      "paragraph_id": "MIC-P029",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B029",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:2",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Case Against Israel",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 416,
+      "line_start": 415,
+      "paragraph_id": "MIC-P030",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:3",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Case Against Israel",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 421,
+      "line_start": 418,
+      "paragraph_id": "MIC-P030",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:4",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Case Against Israel",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 427,
+      "line_start": 423,
+      "paragraph_id": "MIC-P030",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:5",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Case Against Israel",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 433,
+      "line_start": 430,
+      "paragraph_id": "MIC-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B031",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:6",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Case Against Israel",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 438,
+      "line_start": 435,
+      "paragraph_id": "MIC-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B031",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:7",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Case Against Israel",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 443,
+      "line_start": 440,
+      "paragraph_id": "MIC-P031",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B031",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 6:8",
+      "section_id": "MIC-S010",
+      "section_marker": "s1",
+      "section_title": "The Lordʼs Case Against Israel",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 448,
+      "line_start": 446,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:9",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Guilt and Punishment",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 451,
+      "line_start": 450,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:10",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Guilt and Punishment",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 454,
+      "line_start": 453,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:11",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Guilt and Punishment",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 458,
+      "line_start": 456,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:12",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Guilt and Punishment",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 461,
+      "line_start": 460,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:13",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Guilt and Punishment",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 466,
+      "line_start": 463,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:14",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Guilt and Punishment",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 470,
+      "line_start": 468,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:15",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Guilt and Punishment",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "MIC-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 477,
+      "line_start": 472,
+      "paragraph_id": "MIC-P032",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 6:16",
+      "section_id": "MIC-S011",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Guilt and Punishment",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 485,
+      "line_start": 481,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:1",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Misery",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 490,
+      "line_start": 487,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:2",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Misery",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 496,
+      "line_start": 492,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:3",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Misery",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 502,
+      "line_start": 498,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:4",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Misery",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 507,
+      "line_start": 504,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:5",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Misery",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 512,
+      "line_start": 509,
+      "paragraph_id": "MIC-P033",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B033",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:6",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Misery",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D041",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 517,
+      "line_start": 515,
+      "paragraph_id": "MIC-P034",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B034",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:7",
+      "section_id": "MIC-S012",
+      "section_marker": "s1",
+      "section_title": "Israelʼs Misery",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D042",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 523,
+      "line_start": 520,
+      "paragraph_id": "MIC-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B035",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:8",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Israel Will Rise",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D042",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 530,
+      "line_start": 525,
+      "paragraph_id": "MIC-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B035",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:9",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Israel Will Rise",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D042",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 538,
+      "line_start": 532,
+      "paragraph_id": "MIC-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B035",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:10",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Israel Will Rise",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D043",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 542,
+      "line_start": 541,
+      "paragraph_id": "MIC-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:11",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Israel Will Rise",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D043",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 548,
+      "line_start": 544,
+      "paragraph_id": "MIC-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:12",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Israel Will Rise",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D043",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 551,
+      "line_start": 550,
+      "paragraph_id": "MIC-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:13",
+      "section_id": "MIC-S013",
+      "section_marker": "s1",
+      "section_title": "Israel Will Rise",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D044",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 559,
+      "line_start": 554,
+      "paragraph_id": "MIC-P037",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B037",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "MIC 7:14",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Prayer and Praise",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 563,
+      "line_start": 562,
+      "paragraph_id": "MIC-P038",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B038",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:15",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Prayer and Praise",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 569,
+      "line_start": 566,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:16",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Prayer and Praise",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 575,
+      "line_start": 571,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:17",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Prayer and Praise",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 581,
+      "line_start": 577,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:18",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Prayer and Praise",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 585,
+      "line_start": 583,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:19",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Prayer and Praise",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "MIC",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "MIC-D046",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 590,
+      "line_start": 587,
+      "paragraph_id": "MIC-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "MIC-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "MIC 7:20",
+      "section_id": "MIC-S014",
+      "section_marker": "s1",
+      "section_title": "Prayer and Praise",
+      "verse_end": 20,
+      "verse_start": 20
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "22c4b0a565076857efdc9c357972339190ad2eac34b6cc1b139fc0817f46696c",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 0,
+    "discourse_units": 44,
+    "paragraphs": 39,
+    "poetry_blocks": 36,
+    "sections": 15,
+    "verse_records": 105
+  }
+}

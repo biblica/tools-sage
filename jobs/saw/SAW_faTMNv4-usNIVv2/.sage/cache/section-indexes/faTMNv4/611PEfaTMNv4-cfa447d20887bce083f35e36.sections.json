@@ -1,0 +1,3074 @@
+{
+  "book": "1PE",
+  "records": [
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "po",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "po",
+      "line_end": 19,
+      "line_start": 18,
+      "paragraph_id": "1PE-P001",
+      "paragraph_marker": "po",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:1",
+      "section_id": "1PE-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "po",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D002",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "po",
+      "line_end": 21,
+      "line_start": 20,
+      "paragraph_id": "1PE-P002",
+      "paragraph_marker": "po",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:2",
+      "section_id": "1PE-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 24,
+      "line_start": 24,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:3",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 25,
+      "line_start": 25,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:4",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 26,
+      "line_start": 26,
+      "paragraph_id": "1PE-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:5",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 28,
+      "line_start": 28,
+      "paragraph_id": "1PE-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:6",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D005",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 29,
+      "line_start": 29,
+      "paragraph_id": "1PE-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:7",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 31,
+      "line_start": 31,
+      "paragraph_id": "1PE-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:8",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 32,
+      "line_start": 32,
+      "paragraph_id": "1PE-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:9",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 34,
+      "line_start": 34,
+      "paragraph_id": "1PE-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:10",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 35,
+      "line_start": 35,
+      "paragraph_id": "1PE-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:11",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D007",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 36,
+      "line_start": 36,
+      "paragraph_id": "1PE-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:12",
+      "section_id": "1PE-S001",
+      "section_marker": "s1",
+      "section_title": "آزمایش ایمان",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 39,
+      "line_start": 39,
+      "paragraph_id": "1PE-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:13",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 40,
+      "line_start": 40,
+      "paragraph_id": "1PE-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:14",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 41,
+      "line_start": 41,
+      "paragraph_id": "1PE-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:15",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 42,
+      "line_start": 42,
+      "paragraph_id": "1PE-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:16",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 44,
+      "line_start": 44,
+      "paragraph_id": "1PE-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:17",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 45,
+      "line_start": 45,
+      "paragraph_id": "1PE-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:18",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 46,
+      "line_start": 46,
+      "paragraph_id": "1PE-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:19",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 47,
+      "line_start": 47,
+      "paragraph_id": "1PE-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:20",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D009",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 48,
+      "line_start": 48,
+      "paragraph_id": "1PE-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:21",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 50,
+      "line_start": 50,
+      "paragraph_id": "1PE-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:22",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 51,
+      "line_start": 51,
+      "paragraph_id": "1PE-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:23",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 52,
+      "line_start": 52,
+      "paragraph_id": "1PE-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:24",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "1PE-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 53,
+      "line_start": 53,
+      "paragraph_id": "1PE-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 1:25",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 56,
+      "line_start": 56,
+      "paragraph_id": "1PE-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:1",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 57,
+      "line_start": 57,
+      "paragraph_id": "1PE-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:2",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D011",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 58,
+      "line_start": 58,
+      "paragraph_id": "1PE-P011",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:3",
+      "section_id": "1PE-S002",
+      "section_marker": "s1",
+      "section_title": "پاکی و تقدس مؤمنین",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 61,
+      "line_start": 61,
+      "paragraph_id": "1PE-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:4",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "سنگ‌های زنده برای خانۀ خدا",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 62,
+      "line_start": 62,
+      "paragraph_id": "1PE-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:5",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "سنگ‌های زنده برای خانۀ خدا",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 63,
+      "line_start": 63,
+      "paragraph_id": "1PE-P012",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:6",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "سنگ‌های زنده برای خانۀ خدا",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 65,
+      "line_start": 65,
+      "paragraph_id": "1PE-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:7",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "سنگ‌های زنده برای خانۀ خدا",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D013",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 66,
+      "line_start": 66,
+      "paragraph_id": "1PE-P013",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:8",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "سنگ‌های زنده برای خانۀ خدا",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 68,
+      "line_start": 68,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:9",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "سنگ‌های زنده برای خانۀ خدا",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 69,
+      "line_start": 69,
+      "paragraph_id": "1PE-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:10",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "سنگ‌های زنده برای خانۀ خدا",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 71,
+      "line_start": 71,
+      "paragraph_id": "1PE-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:11",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "سنگ‌های زنده برای خانۀ خدا",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D015",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 72,
+      "line_start": 72,
+      "paragraph_id": "1PE-P015",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:12",
+      "section_id": "1PE-S003",
+      "section_marker": "s1",
+      "section_title": "سنگ‌های زنده برای خانۀ خدا",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 75,
+      "line_start": 75,
+      "paragraph_id": "1PE-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:13",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "رفتار مسیحی در اجتماع",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 76,
+      "line_start": 76,
+      "paragraph_id": "1PE-P016",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:14",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "رفتار مسیحی در اجتماع",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 78,
+      "line_start": 78,
+      "paragraph_id": "1PE-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:15",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "رفتار مسیحی در اجتماع",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D017",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 79,
+      "line_start": 79,
+      "paragraph_id": "1PE-P017",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:16",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "رفتار مسیحی در اجتماع",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 81,
+      "line_start": 81,
+      "paragraph_id": "1PE-P018",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:17",
+      "section_id": "1PE-S004",
+      "section_marker": "s1",
+      "section_title": "رفتار مسیحی در اجتماع",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 84,
+      "line_start": 84,
+      "paragraph_id": "1PE-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:18",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "سرمشق از مسیح",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 85,
+      "line_start": 85,
+      "paragraph_id": "1PE-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:19",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "سرمشق از مسیح",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D019",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 86,
+      "line_start": 86,
+      "paragraph_id": "1PE-P019",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:20",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "سرمشق از مسیح",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 88,
+      "line_start": 88,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:21",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "سرمشق از مسیح",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 89,
+      "line_start": 89,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:22",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "سرمشق از مسیح",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 90,
+      "line_start": 90,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:23",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "سرمشق از مسیح",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 91,
+      "line_start": 91,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:24",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "سرمشق از مسیح",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "1PE-D020",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 92,
+      "line_start": 92,
+      "paragraph_id": "1PE-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 2:25",
+      "section_id": "1PE-S005",
+      "section_marker": "s1",
+      "section_title": "سرمشق از مسیح",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 96,
+      "line_start": 96,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:1",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به زنان",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 97,
+      "line_start": 97,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:2",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به زنان",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 98,
+      "line_start": 98,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:3",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به زنان",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 99,
+      "line_start": 99,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:4",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به زنان",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 100,
+      "line_start": 100,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:5",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به زنان",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D021",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 101,
+      "line_start": 101,
+      "paragraph_id": "1PE-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:6",
+      "section_id": "1PE-S006",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به زنان",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D022",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 104,
+      "line_start": 104,
+      "paragraph_id": "1PE-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:7",
+      "section_id": "1PE-S007",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به شوهران",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 107,
+      "line_start": 107,
+      "paragraph_id": "1PE-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:8",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به همۀ مسیحیان",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 108,
+      "line_start": 108,
+      "paragraph_id": "1PE-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:9",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به همۀ مسیحیان",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 110,
+      "line_start": 109,
+      "paragraph_id": "1PE-P023",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:10",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به همۀ مسیحیان",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 111,
+      "line_start": 111,
+      "paragraph_id": "1PE-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:11",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به همۀ مسیحیان",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D024",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 112,
+      "line_start": 112,
+      "paragraph_id": "1PE-P024",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:12",
+      "section_id": "1PE-S008",
+      "section_marker": "s1",
+      "section_title": "کلامی چند به همۀ مسیحیان",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 115,
+      "line_start": 115,
+      "paragraph_id": "1PE-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:13",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 116,
+      "line_start": 116,
+      "paragraph_id": "1PE-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:14",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D025",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 117,
+      "line_start": 117,
+      "paragraph_id": "1PE-P025",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:15",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 119,
+      "line_start": 119,
+      "paragraph_id": "1PE-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:16",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D026",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 120,
+      "line_start": 120,
+      "paragraph_id": "1PE-P026",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:17",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 122,
+      "line_start": 122,
+      "paragraph_id": "1PE-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:18",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 123,
+      "line_start": 123,
+      "paragraph_id": "1PE-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:19",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 124,
+      "line_start": 124,
+      "paragraph_id": "1PE-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:20",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 125,
+      "line_start": 125,
+      "paragraph_id": "1PE-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:21",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "1PE-D027",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 126,
+      "line_start": 126,
+      "paragraph_id": "1PE-P027",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 3:22",
+      "section_id": "1PE-S009",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت به خاطر نیکوکاری",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 130,
+      "line_start": 130,
+      "paragraph_id": "1PE-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:1",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 131,
+      "line_start": 131,
+      "paragraph_id": "1PE-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:2",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D028",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 132,
+      "line_start": 132,
+      "paragraph_id": "1PE-P028",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:3",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 134,
+      "line_start": 134,
+      "paragraph_id": "1PE-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:4",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 135,
+      "line_start": 135,
+      "paragraph_id": "1PE-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:5",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D029",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 136,
+      "line_start": 136,
+      "paragraph_id": "1PE-P029",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:6",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 138,
+      "line_start": 138,
+      "paragraph_id": "1PE-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:7",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 139,
+      "line_start": 139,
+      "paragraph_id": "1PE-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:8",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 140,
+      "line_start": 140,
+      "paragraph_id": "1PE-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:9",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 141,
+      "line_start": 141,
+      "paragraph_id": "1PE-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:10",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 142,
+      "line_start": 142,
+      "paragraph_id": "1PE-P030",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:11",
+      "section_id": "1PE-S010",
+      "section_marker": "s1",
+      "section_title": "زندگی برای خدا",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D031",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 145,
+      "line_start": 145,
+      "paragraph_id": "1PE-P031",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:12",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت مسیحیان",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D031",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 146,
+      "line_start": 146,
+      "paragraph_id": "1PE-P031",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:13",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت مسیحیان",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 148,
+      "line_start": 148,
+      "paragraph_id": "1PE-P032",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:14",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت مسیحیان",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 149,
+      "line_start": 149,
+      "paragraph_id": "1PE-P032",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:15",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت مسیحیان",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 150,
+      "line_start": 150,
+      "paragraph_id": "1PE-P032",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:16",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت مسیحیان",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 151,
+      "line_start": 151,
+      "paragraph_id": "1PE-P032",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:17",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت مسیحیان",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 152,
+      "line_start": 152,
+      "paragraph_id": "1PE-P032",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:18",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت مسیحیان",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "1PE-D033",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 154,
+      "line_start": 154,
+      "paragraph_id": "1PE-P033",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 4:19",
+      "section_id": "1PE-S011",
+      "section_marker": "s1",
+      "section_title": "رنج و زحمت مسیحیان",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D034",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 158,
+      "line_start": 158,
+      "paragraph_id": "1PE-P034",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:1",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D035",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 160,
+      "line_start": 160,
+      "paragraph_id": "1PE-P035",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:2",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D035",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 161,
+      "line_start": 161,
+      "paragraph_id": "1PE-P035",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:3",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D035",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 162,
+      "line_start": 162,
+      "paragraph_id": "1PE-P035",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:4",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D036",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 164,
+      "line_start": 164,
+      "paragraph_id": "1PE-P036",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:5",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D036",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 165,
+      "line_start": 165,
+      "paragraph_id": "1PE-P036",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:6",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D037",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 167,
+      "line_start": 167,
+      "paragraph_id": "1PE-P037",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:7",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D038",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 169,
+      "line_start": 169,
+      "paragraph_id": "1PE-P038",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:8",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D038",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 170,
+      "line_start": 170,
+      "paragraph_id": "1PE-P038",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:9",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D038",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 171,
+      "line_start": 171,
+      "paragraph_id": "1PE-P038",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:10",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D038",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 172,
+      "line_start": 172,
+      "paragraph_id": "1PE-P038",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:11",
+      "section_id": "1PE-S012",
+      "section_marker": "s1",
+      "section_title": "کلامی به کشیشان کلیسا و جوانان",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D039",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 176,
+      "line_start": 176,
+      "paragraph_id": "1PE-P039",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:12",
+      "section_id": "1PE-S013",
+      "section_marker": "s1",
+      "section_title": "سلام‌های پایانی پطرس",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D040",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 178,
+      "line_start": 178,
+      "paragraph_id": "1PE-P040",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:13",
+      "section_id": "1PE-S013",
+      "section_marker": "s1",
+      "section_title": "سلام‌های پایانی پطرس",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "1PE",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "1PE-D040",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 179,
+      "line_start": 179,
+      "paragraph_id": "1PE-P040",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "1PE 5:14",
+      "section_id": "1PE-S013",
+      "section_marker": "s1",
+      "section_title": "سلام‌های پایانی پطرس",
+      "verse_end": 14,
+      "verse_start": 14
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "fcf2c50f614f337536103787f36c490dee261fc6c654b9d3d229a142b8888ff1",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 1,
+    "discourse_units": 39,
+    "paragraphs": 39,
+    "poetry_blocks": 0,
+    "sections": 14,
+    "verse_records": 105
+  }
+}

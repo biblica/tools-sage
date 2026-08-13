@@ -1,0 +1,25 @@
+schema_id: sage-model-policy-1.0
+required:
+  - schema_version
+  - provider
+  - global
+  - qualification
+  - task_profiles
+controls:
+  schema_version: '1.0'
+  provider: codex
+  live_availability_source: codex_app_server_model_list
+  auth_source: codex_app_server_account_read
+  reasoning_order: provider_advertised_order_with_sage_ceiling
+  sage_supported_reasoning_efforts:
+    - none
+    - minimal
+    - low
+    - medium
+    - high
+    - xhigh
+  maximum_supported_reasoning_effort: xhigh
+  unknown_models: unqualified_by_default
+  unsupported_reasoning_efforts: filtered_and_rejected
+  operator_override: recorded_and_cannot_bypass_reasoning_ceiling
+  openai_api_keys: prohibited

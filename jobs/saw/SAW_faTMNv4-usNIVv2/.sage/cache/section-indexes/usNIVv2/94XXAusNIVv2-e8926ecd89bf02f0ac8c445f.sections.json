@@ -1,0 +1,19 @@
+{
+  "book": "XXA",
+  "records": [],
+  "schema_version": "1.2",
+  "source_sha256": "28fe3a0228a255ea18c8fe54401ba786911119a04b15d64c88b37dea46fe9534",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 0,
+    "discourse_units": 0,
+    "paragraphs": 0,
+    "poetry_blocks": 0,
+    "sections": 0,
+    "verse_records": 0
+  }
+}

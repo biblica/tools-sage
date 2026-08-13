@@ -1,0 +1,5569 @@
+{
+  "content": [
+    {
+      "code": "HAB",
+      "content": [
+        "- New Ukrainian Translation ver.1"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 2022 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "Авакума",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Книга пророка Авакума",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Авакума",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Ав.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Книга пророка Авакума",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вступ",
+        "\n"
+      ],
+      "marker": "iot",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Час життя і пророчої діяльності Авакума припадає на VII ст. до Р. Х., коли царство Ізраїлю зі столицею в Самарії було зруйноване ассирійцями, а народ пішов у вигнання; царство ж Юдеї зі столицею в Єрусалимі все ще існувало. Оскільки нашестя халдеїв представлено в Книзі пророка Авакума як майбутня кара ",
+        {
+          "content": [
+            "Господня"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " Єрусалиму та Юдеї (",
+        {
+          "content": [
+            "1:6"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "), імовірно, книга написана раніше ніж 605 р. до Р. Х., тобто перед першим вторгненням Навуходоносора, вавилонського царя, до Юдеї (див. ",
+        {
+          "content": [
+            "2 Цар. 23:34–37; 2 Хр. 36:6–10; Дан. 1:1–2"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ").",
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Книга побудована як діалог між пророком і Богом. Авакум скаржиться ",
+        {
+          "content": [
+            "Господеві"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " на несправедливість і беззаконня серед свого народу (",
+        {
+          "content": [
+            "1:2–4"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "); Бог відповідає йому звісткою про покарання через халдеїв (",
+        {
+          "content": [
+            "1:5–11"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). Пророк засмучений такою відповіддю і докоряє Богові, що Той «відпустив людей, наче рибу в морі» (",
+        {
+          "content": [
+            "1:12—2:1"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " відповідає: праведний має зберігати свою вірність Богові й покладатися на Нього в усьому, а Він звершить правосуддя належного часу (",
+        {
+          "content": [
+            "2:2–20"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). Потім іде молитва пророка Авакума, у якій він оспівує зʼявлення Божої слави (",
+        {
+          "content": [
+            "3:1–15"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). Книга пророка Авакума завершується тим, що пророк проголошує свою вірність ",
+        {
+          "content": [
+            "Господеві"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " за будь-яких обставин (",
+        {
+          "content": [
+            "3:16–19"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ").",
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "HAB 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "HAB 1:1",
+          "type": "verse"
+        },
+        "Пророча звістка, яку бачив пророк Авакум.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Скарга Авакума",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "HAB 1:2",
+          "type": "verse"
+        },
+        "― Доки, ",
+        {
+          "content": [
+            "Господи"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", я волатиму,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а Ти не будеш слухати?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Доки я кричатиму до Тебе про насильство,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а Ти не рятуватимеш?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "HAB 1:3",
+          "type": "verse"
+        },
+        "Чому Ти змушуєш мене дивитися на свавілля",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й Сам споглядаєш утиск?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Переді мною – грабунок і насильство,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "здіймаються суперечки й розбрат.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "HAB 1:4",
+          "type": "verse"
+        },
+        "Тому заціпенів Закон,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і правосуддя більше не виступає переможно.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Бо нечестиві обступили праведного,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "так що викривленим стало правосуддя.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Відповідь Бога",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "HAB 1:5",
+          "type": "verse"
+        },
+        "― Подивіться на народи, погляньте",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й здивуйтеся великим подивом,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо таке діяння Я вчиню за днів ваших,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що ви не повірили б,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "якби вам розповіли.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "HAB 1:6",
+          "type": "verse"
+        },
+        "Бо ось Я підніму халдеїв,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "народ лютий і рішучий,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "який піде просторами землі,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб оволодіти не своїми помешканнями.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "HAB 1:7",
+          "type": "verse"
+        },
+        "Жахливий і страшний той народ!",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він – сам собі закон правосуддя",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і сам творить собі велич.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "HAB 1:8",
+          "type": "verse"
+        },
+        "Швидші від леопардів його коні,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "гостріший, ніж у вовків увечері, ",
+        {
+          "content": [
+            "їхній зір"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Їхні вершники скачуть здалека,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "наближаються, летять,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "немов орли, поспішають пожирати ",
+        {
+          "content": [
+            "здобич"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "HAB 1:9",
+          "type": "verse"
+        },
+        "Усі вони йдуть чинити насильство;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "їхні орди ринуть уперед, наче східний вітер,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і збирають полонених, наче пісок.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "HAB 1:10",
+          "type": "verse"
+        },
+        "Той народ глузує з царів",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і насміхається з можновладців.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Сміється він із будь-якого укріплення,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "насипаючи земляні вали для облоги,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і захоплює його.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "HAB 1:11",
+          "type": "verse"
+        },
+        "Він несеться, наче вітер, що пролітає і зникає,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "це винний ",
+        {
+          "content": [
+            "народ"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ", чий бог – його сила.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Друга скарга Авакума",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "HAB 1:12",
+          "type": "verse"
+        },
+        "― Хіба ж Ти не відвіку, ",
+        {
+          "content": [
+            "Господи"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Боже мій, Святий мій, ми не помремо",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:12 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Стародавня традиція зазначає цей вірш як місце, де текст був навмисно змінений переписувачами. Метою цих змін було уникнення будь-якого прояву неповаги до Бога. Оригінальне формулювання – ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "Ти не помреш."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Господи"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", Ти призначив той народ, щоб суд чинити;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "о скеле, Ти заснував його для покарання.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "HAB 1:13",
+          "type": "verse"
+        },
+        "Твої очі надто чисті, щоб бачити зло;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і дивитися на утиск Ти не можеш.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Чому ж Ти дивишся на віроломних?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Чому мовчиш, коли нечестивий поглинає того,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хто праведніший за нього?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "HAB 1:14",
+          "type": "verse"
+        },
+        "Ти відпустив людей, наче рибу в морі,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ніби морських істот, що кишать без правителя.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "HAB 1:15",
+          "type": "verse"
+        },
+        "Будь-кого з них піднімає гарпуном нечестивий,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "затягує у свої тенета,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "збирає їх своїм неводом,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а потім радіє через це й веселиться.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "HAB 1:16",
+          "type": "verse"
+        },
+        "За це він приносить жертву своїм тенетам",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і кадить пахощі своєму неводу,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "адже завдяки їм його частка – ситна",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і його їжа – жирна.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "HAB 1:17",
+          "type": "verse"
+        },
+        "Чи він і далі має спорожнювати свої тенета,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "чи завжди буде вбивати народи безжально?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "2",
+      "sid": "HAB 2",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "HAB 2:1",
+          "type": "verse"
+        },
+        "Стану я на свою варту,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "стоятиму на вершині укріплення",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й приглядатимуся, щоб побачити,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що Він мені скаже,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що відповість на моє картання.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Відповідь ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "HAB 2:2",
+          "type": "verse"
+        },
+        "Тоді відповів мені ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " і сказав:",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "― Запиши видіння й поясни його на скрижалях,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб будь-хто міг його навіть побіжно прочитати.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "HAB 2:3",
+          "type": "verse"
+        },
+        "Бо те видіння ще чекає на призначений час;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "воно свідчить про кінець",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і не введе в оману.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Якщо зволікатиме, чекай на нього:",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "воно неодмінно прийде,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "не запізниться.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "HAB 2:4",
+          "type": "verse"
+        },
+        "Ось душа пихатого не вдовольниться,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а праведний житиме вірою своєю",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:4 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Або: ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "завдяки своїй вірності."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "HAB 2:5",
+          "type": "verse"
+        },
+        "Муж зухвалий – наче від вина спʼянілий",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і не може заспокоїтися.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Розпирає йому душу, наче царство мертвих,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і він, як смерть, не може вдовольнитися;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "збирає до себе всі народи",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й стягує до себе всі племена.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "HAB 2:6",
+          "type": "verse"
+        },
+        "Чи не про нього всі ці притчі промовляють",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і загадкова мова – хіба не про нього?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "«Горе тому, хто примножує не своє!",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він обтяжує себе заставами.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Доки ж це буде?».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "HAB 2:7",
+          "type": "verse"
+        },
+        "Чи не постануть раптово твої позикодавці?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Чи не прокинуться ті, що змусять тебе тремтіти?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Тоді ти сам станеш їхньою здобиччю!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "HAB 2:8",
+          "type": "verse"
+        },
+        "Оскільки ти грабував численні народи,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "то й тебе пограбує залишок народів",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "за ",
+        {
+          "content": [
+            "пролиту"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " людську кров",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і насильство щодо землі,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "міст та всіх їхніх мешканців.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "HAB 2:9",
+          "type": "verse"
+        },
+        "Горе тому, хто пристрасно шукає лихої вигоди для свого дому,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб на висоті звести собі гніздо",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й урятуватися від злої руки!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "HAB 2:10",
+          "type": "verse"
+        },
+        "Ти задумав ганебне для свого дому,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "грабуючи численні народи",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і гріхом ",
+        {
+          "content": [
+            "занечищуючи"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " свою душу.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "HAB 2:11",
+          "type": "verse"
+        },
+        "Бо каміння зі стін ",
+        {
+          "content": [
+            "твого дому"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " заволає",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і деревʼяні балки відгукнуться їм у відповідь:",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "HAB 2:12",
+          "type": "verse"
+        },
+        "«Горе тому, хто будує місто на крові",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й утверджує його стіни беззаконням!».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "HAB 2:13",
+          "type": "verse"
+        },
+        "Хіба це не від ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " Воїнств:",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "народи виснажують себе задля того, що ",
+        {
+          "content": [
+            "згорить"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " у вогні,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і племена втомлюються заради того, що марне?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "HAB 2:14",
+          "type": "verse"
+        },
+        "Бо земля буде наповнена пізнанням слави ",
+        {
+          "content": [
+            "Господньої"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " так,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "як води вкривають море.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "HAB 2:15",
+          "type": "verse"
+        },
+        "Горе тому, хто поїть своїх ближніх,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "домішуючи до вина свою лють, поки ті не спʼяніють,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб подивитися на їхню наготу!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "HAB 2:16",
+          "type": "verse"
+        },
+        "Ти наситився ганьбою замість слави,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "тож пий тепер ти й покажи наготу свою необрізану",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:16 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "У грец. перекладі (Септуаґінта) та сир. перекладі (Пешитта): ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "тож пий тепер ти і хитайся! ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Див. ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "Бут. 9:20–25",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Чаша з правиці ",
+        {
+          "content": [
+            "Господньої"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " повернулася тепер до тебе,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і ганьба замінила твою славу.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "HAB 2:17",
+          "type": "verse"
+        },
+        "Бо насильство, яке ти вчинив у Лівані, спіткає тебе",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і знищення тварин сповнить тебе жахом",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "за пролиту людську кров",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і за насильство щодо землі,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "міст та всіх їхніх мешканців.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "HAB 2:18",
+          "type": "verse"
+        },
+        "Яка користь від ідола тому майстру,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "який його витесав,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і чи вилитий істукан дасть настанову неправдиву?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Але майстер покладає надію на своє творіння,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "виготовляючи нікчемних німих ідолів.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "HAB 2:19",
+          "type": "verse"
+        },
+        "Горе тому, хто каже дереву: «Пробудися!» –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "чи безмовному каменю: «Прокинься!».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Хіба він може наставляти?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він укритий золотом і сріблом,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "але ж усередині нього немає жодного духа!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "HAB 2:20",
+          "type": "verse"
+        },
+        "А ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " – у храмі Своєму святому;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "нехай мовчить перед Ним уся земля!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "3",
+      "sid": "HAB 3",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "Молитва Авакума",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "HAB 3:1",
+          "type": "verse"
+        },
+        "Молитва пророка Авакума, жалобна пісня.",
+        "\n"
+      ],
+      "marker": "d",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "HAB 3:2",
+          "type": "verse"
+        },
+        "― ",
+        {
+          "content": [
+            "Господи"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", я почув звістку від Тебе й наповнився страхом.",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Господи"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", я зрозумів діяння Твої і здивувався.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Повтори їх за життя нашого,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "зроби їх відомими за наших років;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "гніваючись, згадай про милість.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "HAB 3:3",
+          "type": "verse"
+        },
+        "Бог іде від Тейману,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і Святий – від гори Паран. ",
+        {
+          "content": [
+            "Села"
+          ],
+          "marker": "qs",
+          "type": "char"
+        },
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:3 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "tl",
+              "type": "marker"
+            },
+            "Села",
+            {
+              "closing": true,
+              "marker": "tl",
+              "type": "marker"
+            },
+            "– євр. музичний термін, що вказує на підвищення тону або паузу."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Його велич покрила небеса,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і Його хвала наповнила землю.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "HAB 3:4",
+          "type": "verse"
+        },
+        "Його сяйво – як світло;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "проміння виходить з Його руки –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "там сховано Його могутність.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "HAB 3:5",
+          "type": "verse"
+        },
+        "Перед Ним іде моровиця,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і гарячка йде за Його стопами.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "HAB 3:6",
+          "type": "verse"
+        },
+        "Він став і похитнув землю;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він поглянув і змусив підскочити народи.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Прадавні гори затряслися,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "одвічні пагорби вклонилися –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хода Його вічна!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "HAB 3:7",
+          "type": "verse"
+        },
+        "Я бачив намети Кушану в смутку,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "тремтітимуть шатри землі Мідіану.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "HAB 3:8",
+          "type": "verse"
+        },
+        "Чи не на ріки Ти розлютився, ",
+        {
+          "content": [
+            "Господи"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Чи не проти потоків був Твій гнів?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Чи не проти моря була Твоя лють,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "коли Ти їхав верхи на конях,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "на Твоїх колісницях переможних?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "HAB 3:9",
+          "type": "verse"
+        },
+        "Ти оголив Свій лук,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "наповнив стрілами Свій сагайдак. ",
+        {
+          "content": [
+            "Села"
+          ],
+          "marker": "qs",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Ти розділив землю ріками;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "HAB 3:10",
+          "type": "verse"
+        },
+        "гори побачили Тебе й затремтіли,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "потоки води поникли;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "безодня подала свій голос,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "високо піднесла свої хвилі.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "HAB 3:11",
+          "type": "verse"
+        },
+        "Сонце й місяць стали непорушно на висотах",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "при світлі польоту Твоїх стріл,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "при сяйві блискавки Твого списа.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "HAB 3:12",
+          "type": "verse"
+        },
+        "Обурений, Ти крокуєш землею,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "у гніві топчеш народи.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "HAB 3:13",
+          "type": "verse"
+        },
+        "Ти вийшов, щоб урятувати Свій народ,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб урятувати Свого помазанця.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Ти вразив вершину дому нечестивця,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Ти оголив його підвалини до самої скельної основи. ",
+        {
+          "content": [
+            "Села"
+          ],
+          "marker": "qs",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "HAB 3:14",
+          "type": "verse"
+        },
+        "Ти пронизав Своїми стрілами голови його воєвод,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "коли вони ринули, щоб розсіяти нас,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "коли вони розпалилися пристрастю,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб пожерти пригнобленого у схованці.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "HAB 3:15",
+          "type": "verse"
+        },
+        "Ти топтав море Своїми конями,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "збурюючи великі води.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "HAB 3:16",
+          "type": "verse"
+        },
+        "Я почув, і затремтіли мої нутрощі,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "затряслися мої вуста від того голосу;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "гниль увійшла в мої кості,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і мої стегна обімліли.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Та я буду спокійним у день лиха,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "коли піднімуться нападники.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "HAB 3:17",
+          "type": "verse"
+        },
+        "Навіть якби не розцвіла смоковниця",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й не було ягід на виноградній лозі,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "навіть якби на оливковому дереві бракувало маслин",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і поле не принесло їжі,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "навіть якби забрали дрібну худобу з кошари",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й не стало великої худоби у хліві,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "HAB 3:18",
+          "type": "verse"
+        },
+        "я все одно радітиму в ",
+        {
+          "content": [
+            "Господі"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "веселитимуся в Бозі, моєму Спасителеві.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "HAB 3:19",
+          "type": "verse"
+        },
+        "Володар ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " – моя сила;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він робить мої ноги, як у лані,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "спрямовує мене на мої висоти.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Керівнику хору. На струнних інструментах.",
+        "\n"
+      ],
+      "marker": "d",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "HAB",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "35HABukrNPUv1.SFM",
+    "source_sha256": "fbf729393fa0b6130e1d2231ddfe0fb4c09cc81452c658406dbffb773fb2d738",
+    "source_size": 17517,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Пророча звістка, яку бачив пророк Авакум.",
+        "body_text_exact": "Пророча звістка, яку бачив пророк Авакум.",
+        "body_text_normalized": "Пророча звістка, яку бачив пророк Авакум.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Пророча звістка, яку бачив пророк Авакум."
+        ],
+        "discourse_unit_id": "HAB-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 14,
+        "line_start": 14,
+        "lines": [
+          "\\v 1 Пророча звістка, яку бачив пророк Авакум."
+        ],
+        "number": "1",
+        "paragraph_id": "HAB-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Пророча звістка, яку бачив пророк Авакум.",
+        "section_id": "HAB-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "― Доки, Господи, я волатиму,\nа Ти не будеш слухати?\nДоки я кричатиму до Тебе про насильство,\nа Ти не рятуватимеш?",
+        "body_text_exact": "― Доки, Господи, я волатиму,\nа Ти не будеш слухати?\nДоки я кричатиму до Тебе про насильство,\nа Ти не рятуватимеш?",
+        "body_text_normalized": "― Доки, Господи, я волатиму, а Ти не будеш слухати? Доки я кричатиму до Тебе про насильство, а Ти не рятуватимеш?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "― Доки, ",
+          {
+            "content": [
+              "Господи"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", я волатиму,",
+          "\n",
+          "а Ти не будеш слухати?",
+          "\n",
+          "Доки я кричатиму до Тебе про насильство,",
+          "\n",
+          "а Ти не рятуватимеш?"
+        ],
+        "discourse_unit_id": "HAB-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 21,
+        "line_start": 18,
+        "lines": [
+          "\\v 2 ― Доки, \\nd Господи\\nd*, я волатиму,",
+          "\\q2 а Ти не будеш слухати?",
+          "\\q1 Доки я кричатиму до Тебе про насильство,",
+          "\\q2 а Ти не рятуватимеш?"
+        ],
+        "number": "2",
+        "paragraph_id": "HAB-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 ― Доки, \\nd Господи\\nd*, я волатиму,\n\\q2 а Ти не будеш слухати?\n\\q1 Доки я кричатиму до Тебе про насильство,\n\\q2 а Ти не рятуватимеш?",
+        "section_id": "HAB-S001",
+        "section_marker": "s1",
+        "section_title": "Скарга Авакума",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Чому Ти змушуєш мене дивитися на свавілля\nй Сам споглядаєш утиск?\nПереді мною – грабунок і насильство,\nздіймаються суперечки й розбрат.",
+        "body_text_exact": "Чому Ти змушуєш мене дивитися на свавілля\nй Сам споглядаєш утиск?\nПереді мною – грабунок і насильство,\nздіймаються суперечки й розбрат.",
+        "body_text_normalized": "Чому Ти змушуєш мене дивитися на свавілля й Сам споглядаєш утиск? Переді мною – грабунок і насильство, здіймаються суперечки й розбрат.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Чому Ти змушуєш мене дивитися на свавілля",
+          "\n",
+          "й Сам споглядаєш утиск?",
+          "\n",
+          "Переді мною – грабунок і насильство,",
+          "\n",
+          "здіймаються суперечки й розбрат."
+        ],
+        "discourse_unit_id": "HAB-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 26,
+        "line_start": 23,
+        "lines": [
+          "\\v 3 Чому Ти змушуєш мене дивитися на свавілля",
+          "\\q2 й Сам споглядаєш утиск?",
+          "\\q1 Переді мною – грабунок і насильство,",
+          "\\q2 здіймаються суперечки й розбрат."
+        ],
+        "number": "3",
+        "paragraph_id": "HAB-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Чому Ти змушуєш мене дивитися на свавілля\n\\q2 й Сам споглядаєш утиск?\n\\q1 Переді мною – грабунок і насильство,\n\\q2 здіймаються суперечки й розбрат.",
+        "section_id": "HAB-S001",
+        "section_marker": "s1",
+        "section_title": "Скарга Авакума",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Тому заціпенів Закон,\nі правосуддя більше не виступає переможно.\nБо нечестиві обступили праведного,\nтак що викривленим стало правосуддя.",
+        "body_text_exact": "Тому заціпенів Закон,\nі правосуддя більше не виступає переможно.\nБо нечестиві обступили праведного,\nтак що викривленим стало правосуддя.",
+        "body_text_normalized": "Тому заціпенів Закон, і правосуддя більше не виступає переможно. Бо нечестиві обступили праведного, так що викривленим стало правосуддя.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Тому заціпенів Закон,",
+          "\n",
+          "і правосуддя більше не виступає переможно.",
+          "\n",
+          "Бо нечестиві обступили праведного,",
+          "\n",
+          "так що викривленим стало правосуддя."
+        ],
+        "discourse_unit_id": "HAB-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 31,
+        "line_start": 28,
+        "lines": [
+          "\\v 4 Тому заціпенів Закон,",
+          "\\q2 і правосуддя більше не виступає переможно.",
+          "\\q1 Бо нечестиві обступили праведного,",
+          "\\q2 так що викривленим стало правосуддя."
+        ],
+        "number": "4",
+        "paragraph_id": "HAB-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Тому заціпенів Закон,\n\\q2 і правосуддя більше не виступає переможно.\n\\q1 Бо нечестиві обступили праведного,\n\\q2 так що викривленим стало правосуддя.",
+        "section_id": "HAB-S001",
+        "section_marker": "s1",
+        "section_title": "Скарга Авакума",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "― Подивіться на народи, погляньте\nй здивуйтеся великим подивом,\nбо таке діяння Я вчиню за днів ваших,\nщо ви не повірили б,\nякби вам розповіли.",
+        "body_text_exact": "― Подивіться на народи, погляньте\nй здивуйтеся великим подивом,\nбо таке діяння Я вчиню за днів ваших,\nщо ви не повірили б,\nякби вам розповіли.",
+        "body_text_normalized": "― Подивіться на народи, погляньте й здивуйтеся великим подивом, бо таке діяння Я вчиню за днів ваших, що ви не повірили б, якби вам розповіли.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "― Подивіться на народи, погляньте",
+          "\n",
+          "й здивуйтеся великим подивом,",
+          "\n",
+          "бо таке діяння Я вчиню за днів ваших,",
+          "\n",
+          "що ви не повірили б,",
+          "\n",
+          "якби вам розповіли."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 38,
+        "line_start": 34,
+        "lines": [
+          "\\v 5 ― Подивіться на народи, погляньте",
+          "\\q2 й здивуйтеся великим подивом,",
+          "\\q1 бо таке діяння Я вчиню за днів ваших,",
+          "\\q2 що ви не повірили б,",
+          "\\q2 якби вам розповіли."
+        ],
+        "number": "5",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 ― Подивіться на народи, погляньте\n\\q2 й здивуйтеся великим подивом,\n\\q1 бо таке діяння Я вчиню за днів ваших,\n\\q2 що ви не повірили б,\n\\q2 якби вам розповіли.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "Відповідь Бога",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "Бо ось Я підніму халдеїв,\nнарод лютий і рішучий,\nякий піде просторами землі,\nщоб оволодіти не своїми помешканнями.",
+        "body_text_exact": "Бо ось Я підніму халдеїв,\nнарод лютий і рішучий,\nякий піде просторами землі,\nщоб оволодіти не своїми помешканнями.",
+        "body_text_normalized": "Бо ось Я підніму халдеїв, народ лютий і рішучий, який піде просторами землі, щоб оволодіти не своїми помешканнями.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Бо ось Я підніму халдеїв,",
+          "\n",
+          "народ лютий і рішучий,",
+          "\n",
+          "який піде просторами землі,",
+          "\n",
+          "щоб оволодіти не своїми помешканнями."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 43,
+        "line_start": 40,
+        "lines": [
+          "\\v 6 Бо ось Я підніму халдеїв,",
+          "\\q2 народ лютий і рішучий,",
+          "\\q1 який піде просторами землі,",
+          "\\q2 щоб оволодіти не своїми помешканнями."
+        ],
+        "number": "6",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 Бо ось Я підніму халдеїв,\n\\q2 народ лютий і рішучий,\n\\q1 який піде просторами землі,\n\\q2 щоб оволодіти не своїми помешканнями.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "Відповідь Бога",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Жахливий і страшний той народ!\nВін – сам собі закон правосуддя\nі сам творить собі велич.",
+        "body_text_exact": "Жахливий і страшний той народ!\nВін – сам собі закон правосуддя\nі сам творить собі велич.",
+        "body_text_normalized": "Жахливий і страшний той народ! Він – сам собі закон правосуддя і сам творить собі велич.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Жахливий і страшний той народ!",
+          "\n",
+          "Він – сам собі закон правосуддя",
+          "\n",
+          "і сам творить собі велич."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 47,
+        "line_start": 45,
+        "lines": [
+          "\\v 7 Жахливий і страшний той народ!",
+          "\\q2 Він – сам собі закон правосуддя",
+          "\\q2 і сам творить собі велич."
+        ],
+        "number": "7",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Жахливий і страшний той народ!\n\\q2 Він – сам собі закон правосуддя\n\\q2 і сам творить собі велич.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "Відповідь Бога",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Швидші від леопардів його коні,\nгостріший, ніж у вовків увечері, їхній зір.\nЇхні вершники скачуть здалека,\nнаближаються, летять,\nнемов орли, поспішають пожирати здобич.",
+        "body_text_exact": "Швидші від леопардів його коні,\nгостріший, ніж у вовків увечері, їхній зір.\nЇхні вершники скачуть здалека,\nнаближаються, летять,\nнемов орли, поспішають пожирати здобич.",
+        "body_text_normalized": "Швидші від леопардів його коні, гостріший, ніж у вовків увечері, їхній зір. Їхні вершники скачуть здалека, наближаються, летять, немов орли, поспішають пожирати здобич.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Швидші від леопардів його коні,",
+          "\n",
+          "гостріший, ніж у вовків увечері, ",
+          {
+            "content": [
+              "їхній зір"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ".",
+          "\n",
+          "Їхні вершники скачуть здалека,",
+          "\n",
+          "наближаються, летять,",
+          "\n",
+          "немов орли, поспішають пожирати ",
+          {
+            "content": [
+              "здобич"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 53,
+        "line_start": 49,
+        "lines": [
+          "\\v 8 Швидші від леопардів його коні,",
+          "\\q2 гостріший, ніж у вовків увечері, \\add їхній зір\\add*.",
+          "\\q1 Їхні вершники скачуть здалека,",
+          "\\q2 наближаються, летять,",
+          "\\q1 немов орли, поспішають пожирати \\add здобич\\add*."
+        ],
+        "number": "8",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Швидші від леопардів його коні,\n\\q2 гостріший, ніж у вовків увечері, \\add їхній зір\\add*.\n\\q1 Їхні вершники скачуть здалека,\n\\q2 наближаються, летять,\n\\q1 немов орли, поспішають пожирати \\add здобич\\add*.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "Відповідь Бога",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Усі вони йдуть чинити насильство;\nїхні орди ринуть уперед, наче східний вітер,\nі збирають полонених, наче пісок.",
+        "body_text_exact": "Усі вони йдуть чинити насильство;\nїхні орди ринуть уперед, наче східний вітер,\nі збирають полонених, наче пісок.",
+        "body_text_normalized": "Усі вони йдуть чинити насильство; їхні орди ринуть уперед, наче східний вітер, і збирають полонених, наче пісок.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Усі вони йдуть чинити насильство;",
+          "\n",
+          "їхні орди ринуть уперед, наче східний вітер,",
+          "\n",
+          "і збирають полонених, наче пісок."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 57,
+        "line_start": 55,
+        "lines": [
+          "\\v 9 Усі вони йдуть чинити насильство;",
+          "\\q2 їхні орди ринуть уперед, наче східний вітер,",
+          "\\q2 і збирають полонених, наче пісок."
+        ],
+        "number": "9",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Усі вони йдуть чинити насильство;\n\\q2 їхні орди ринуть уперед, наче східний вітер,\n\\q2 і збирають полонених, наче пісок.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "Відповідь Бога",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Той народ глузує з царів\nі насміхається з можновладців.\nСміється він із будь-якого укріплення,\nнасипаючи земляні вали для облоги,\nі захоплює його.",
+        "body_text_exact": "Той народ глузує з царів\nі насміхається з можновладців.\nСміється він із будь-якого укріплення,\nнасипаючи земляні вали для облоги,\nі захоплює його.",
+        "body_text_normalized": "Той народ глузує з царів і насміхається з можновладців. Сміється він із будь-якого укріплення, насипаючи земляні вали для облоги, і захоплює його.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Той народ глузує з царів",
+          "\n",
+          "і насміхається з можновладців.",
+          "\n",
+          "Сміється він із будь-якого укріплення,",
+          "\n",
+          "насипаючи земляні вали для облоги,",
+          "\n",
+          "і захоплює його."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 63,
+        "line_start": 59,
+        "lines": [
+          "\\v 10 Той народ глузує з царів",
+          "\\q2 і насміхається з можновладців.",
+          "\\q1 Сміється він із будь-якого укріплення,",
+          "\\q2 насипаючи земляні вали для облоги,",
+          "\\q2 і захоплює його."
+        ],
+        "number": "10",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Той народ глузує з царів\n\\q2 і насміхається з можновладців.\n\\q1 Сміється він із будь-якого укріплення,\n\\q2 насипаючи земляні вали для облоги,\n\\q2 і захоплює його.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "Відповідь Бога",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Він несеться, наче вітер, що пролітає і зникає,\nце винний народ, чий бог – його сила.",
+        "body_text_exact": "Він несеться, наче вітер, що пролітає і зникає,\nце винний народ, чий бог – його сила.",
+        "body_text_normalized": "Він несеться, наче вітер, що пролітає і зникає, це винний народ, чий бог – його сила.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Він несеться, наче вітер, що пролітає і зникає,",
+          "\n",
+          "це винний ",
+          {
+            "content": [
+              "народ"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ", чий бог – його сила."
+        ],
+        "discourse_unit_id": "HAB-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 66,
+        "line_start": 65,
+        "lines": [
+          "\\v 11 Він несеться, наче вітер, що пролітає і зникає,",
+          "\\q2 це винний \\add народ\\add*, чий бог – його сила."
+        ],
+        "number": "11",
+        "paragraph_id": "HAB-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B003",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Він несеться, наче вітер, що пролітає і зникає,\n\\q2 це винний \\add народ\\add*, чий бог – його сила.",
+        "section_id": "HAB-S002",
+        "section_marker": "s1",
+        "section_title": "Відповідь Бога",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "― Хіба ж Ти не відвіку, Господи?\nБоже мій, Святий мій, ми не помремо!\nГосподи, Ти призначив той народ, щоб суд чинити;\nо скеле, Ти заснував його для покарання.",
+        "body_text_exact": "― Хіба ж Ти не відвіку, Господи?\nБоже мій, Святий мій, ми не помремо!\nГосподи, Ти призначив той народ, щоб суд чинити;\nо скеле, Ти заснував його для покарання.",
+        "body_text_normalized": "― Хіба ж Ти не відвіку, Господи? Боже мій, Святий мій, ми не помремо! Господи, Ти призначив той народ, щоб суд чинити; о скеле, Ти заснував його для покарання.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "― Хіба ж Ти не відвіку, ",
+          {
+            "content": [
+              "Господи"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "?",
+          "\n",
+          "Боже мій, Святий мій, ми не помремо",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:12 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Стародавня традиція зазначає цей вірш як місце, де текст був навмисно змінений переписувачами. Метою цих змін було уникнення будь-якого прояву неповаги до Бога. Оригінальне формулювання – ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "Ти не помреш."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "!",
+          "\n",
+          {
+            "content": [
+              "Господи"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", Ти призначив той народ, щоб суд чинити;",
+          "\n",
+          "о скеле, Ти заснував його для покарання."
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 72,
+        "line_start": 69,
+        "lines": [
+          "\\v 12 ― Хіба ж Ти не відвіку, \\nd Господи\\nd*?",
+          "\\q2 Боже мій, Святий мій, ми не помремо\\f + \\fr 1:12 \\ft Стародавня традиція зазначає цей вірш як місце, де текст був навмисно змінений переписувачами. Метою цих змін було уникнення будь-якого прояву неповаги до Бога. Оригінальне формулювання – \\fqa Ти не помреш.\\f*!",
+          "\\q1 \\nd Господи\\nd*, Ти призначив той народ, щоб суд чинити;",
+          "\\q2 о скеле, Ти заснував його для покарання."
+        ],
+        "number": "12",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 ― Хіба ж Ти не відвіку, \\nd Господи\\nd*?\n\\q2 Боже мій, Святий мій, ми не помремо\\f + \\fr 1:12 \\ft Стародавня традиція зазначає цей вірш як місце, де текст був навмисно змінений переписувачами. Метою цих змін було уникнення будь-якого прояву неповаги до Бога. Оригінальне формулювання – \\fqa Ти не помреш.\\f*!\n\\q1 \\nd Господи\\nd*, Ти призначив той народ, щоб суд чинити;\n\\q2 о скеле, Ти заснував його для покарання.",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Друга скарга Авакума",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Твої очі надто чисті, щоб бачити зло;\nі дивитися на утиск Ти не можеш.\nЧому ж Ти дивишся на віроломних?\nЧому мовчиш, коли нечестивий поглинає того,\nхто праведніший за нього?",
+        "body_text_exact": "Твої очі надто чисті, щоб бачити зло;\nі дивитися на утиск Ти не можеш.\nЧому ж Ти дивишся на віроломних?\nЧому мовчиш, коли нечестивий поглинає того,\nхто праведніший за нього?",
+        "body_text_normalized": "Твої очі надто чисті, щоб бачити зло; і дивитися на утиск Ти не можеш. Чому ж Ти дивишся на віроломних? Чому мовчиш, коли нечестивий поглинає того, хто праведніший за нього?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Твої очі надто чисті, щоб бачити зло;",
+          "\n",
+          "і дивитися на утиск Ти не можеш.",
+          "\n",
+          "Чому ж Ти дивишся на віроломних?",
+          "\n",
+          "Чому мовчиш, коли нечестивий поглинає того,",
+          "\n",
+          "хто праведніший за нього?"
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 78,
+        "line_start": 74,
+        "lines": [
+          "\\v 13 Твої очі надто чисті, щоб бачити зло;",
+          "\\q2 і дивитися на утиск Ти не можеш.",
+          "\\q1 Чому ж Ти дивишся на віроломних?",
+          "\\q2 Чому мовчиш, коли нечестивий поглинає того,",
+          "\\q2 хто праведніший за нього?"
+        ],
+        "number": "13",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Твої очі надто чисті, щоб бачити зло;\n\\q2 і дивитися на утиск Ти не можеш.\n\\q1 Чому ж Ти дивишся на віроломних?\n\\q2 Чому мовчиш, коли нечестивий поглинає того,\n\\q2 хто праведніший за нього?",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Друга скарга Авакума",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Ти відпустив людей, наче рибу в морі,\nніби морських істот, що кишать без правителя.",
+        "body_text_exact": "Ти відпустив людей, наче рибу в морі,\nніби морських істот, що кишать без правителя.",
+        "body_text_normalized": "Ти відпустив людей, наче рибу в морі, ніби морських істот, що кишать без правителя.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Ти відпустив людей, наче рибу в морі,",
+          "\n",
+          "ніби морських істот, що кишать без правителя."
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 81,
+        "line_start": 80,
+        "lines": [
+          "\\v 14 Ти відпустив людей, наче рибу в морі,",
+          "\\q2 ніби морських істот, що кишать без правителя."
+        ],
+        "number": "14",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Ти відпустив людей, наче рибу в морі,\n\\q2 ніби морських істот, що кишать без правителя.",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Друга скарга Авакума",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Будь-кого з них піднімає гарпуном нечестивий,\nзатягує у свої тенета,\nзбирає їх своїм неводом,\nа потім радіє через це й веселиться.",
+        "body_text_exact": "Будь-кого з них піднімає гарпуном нечестивий,\nзатягує у свої тенета,\nзбирає їх своїм неводом,\nа потім радіє через це й веселиться.",
+        "body_text_normalized": "Будь-кого з них піднімає гарпуном нечестивий, затягує у свої тенета, збирає їх своїм неводом, а потім радіє через це й веселиться.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Будь-кого з них піднімає гарпуном нечестивий,",
+          "\n",
+          "затягує у свої тенета,",
+          "\n",
+          "збирає їх своїм неводом,",
+          "\n",
+          "а потім радіє через це й веселиться."
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 86,
+        "line_start": 83,
+        "lines": [
+          "\\v 15 Будь-кого з них піднімає гарпуном нечестивий,",
+          "\\q2 затягує у свої тенета,",
+          "\\q1 збирає їх своїм неводом,",
+          "\\q2 а потім радіє через це й веселиться."
+        ],
+        "number": "15",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Будь-кого з них піднімає гарпуном нечестивий,\n\\q2 затягує у свої тенета,\n\\q1 збирає їх своїм неводом,\n\\q2 а потім радіє через це й веселиться.",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Друга скарга Авакума",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "За це він приносить жертву своїм тенетам\nі кадить пахощі своєму неводу,\nадже завдяки їм його частка – ситна\nі його їжа – жирна.",
+        "body_text_exact": "За це він приносить жертву своїм тенетам\nі кадить пахощі своєму неводу,\nадже завдяки їм його частка – ситна\nі його їжа – жирна.",
+        "body_text_normalized": "За це він приносить жертву своїм тенетам і кадить пахощі своєму неводу, адже завдяки їм його частка – ситна і його їжа – жирна.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "За це він приносить жертву своїм тенетам",
+          "\n",
+          "і кадить пахощі своєму неводу,",
+          "\n",
+          "адже завдяки їм його частка – ситна",
+          "\n",
+          "і його їжа – жирна."
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 91,
+        "line_start": 88,
+        "lines": [
+          "\\v 16 За це він приносить жертву своїм тенетам",
+          "\\q2 і кадить пахощі своєму неводу,",
+          "\\q1 адже завдяки їм його частка – ситна",
+          "\\q2 і його їжа – жирна."
+        ],
+        "number": "16",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 За це він приносить жертву своїм тенетам\n\\q2 і кадить пахощі своєму неводу,\n\\q1 адже завдяки їм його частка – ситна\n\\q2 і його їжа – жирна.",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Друга скарга Авакума",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Чи він і далі має спорожнювати свої тенета,\nчи завжди буде вбивати народи безжально?",
+        "body_text_exact": "Чи він і далі має спорожнювати свої тенета,\nчи завжди буде вбивати народи безжально?",
+        "body_text_normalized": "Чи він і далі має спорожнювати свої тенета, чи завжди буде вбивати народи безжально?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Чи він і далі має спорожнювати свої тенета,",
+          "\n",
+          "чи завжди буде вбивати народи безжально?"
+        ],
+        "discourse_unit_id": "HAB-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 94,
+        "line_start": 93,
+        "lines": [
+          "\\v 17 Чи він і далі має спорожнювати свої тенета,",
+          "\\q2 чи завжди буде вбивати народи безжально?"
+        ],
+        "number": "17",
+        "paragraph_id": "HAB-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B004",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Чи він і далі має спорожнювати свої тенета,\n\\q2 чи завжди буде вбивати народи безжально?",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Друга скарга Авакума",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "Стану я на свою варту,\nстоятиму на вершині укріплення\nй приглядатимуся, щоб побачити,\nщо Він мені скаже,\nщо відповість на моє картання.",
+        "body_text_exact": "Стану я на свою варту,\nстоятиму на вершині укріплення\nй приглядатимуся, щоб побачити,\nщо Він мені скаже,\nщо відповість на моє картання.",
+        "body_text_normalized": "Стану я на свою варту, стоятиму на вершині укріплення й приглядатимуся, щоб побачити, що Він мені скаже, що відповість на моє картання.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Стану я на свою варту,",
+          "\n",
+          "стоятиму на вершині укріплення",
+          "\n",
+          "й приглядатимуся, щоб побачити,",
+          "\n",
+          "що Він мені скаже,",
+          "\n",
+          "що відповість на моє картання."
+        ],
+        "discourse_unit_id": "HAB-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 102,
+        "line_start": 98,
+        "lines": [
+          "\\v 1 Стану я на свою варту,",
+          "\\q2 стоятиму на вершині укріплення",
+          "\\q1 й приглядатимуся, щоб побачити,",
+          "\\q2 що Він мені скаже,",
+          "\\q2 що відповість на моє картання."
+        ],
+        "number": "1",
+        "paragraph_id": "HAB-P005",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Стану я на свою варту,\n\\q2 стоятиму на вершині укріплення\n\\q1 й приглядатимуся, щоб побачити,\n\\q2 що Він мені скаже,\n\\q2 що відповість на моє картання.",
+        "section_id": "HAB-S003",
+        "section_marker": "s1",
+        "section_title": "Друга скарга Авакума",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Тоді відповів мені Господь і сказав:\n― Запиши видіння й поясни його на скрижалях,\nщоб будь-хто міг його навіть побіжно прочитати.",
+        "body_text_exact": "Тоді відповів мені Господь і сказав:\n― Запиши видіння й поясни його на скрижалях,\nщоб будь-хто міг його навіть побіжно прочитати.",
+        "body_text_normalized": "Тоді відповів мені Господь і сказав: ― Запиши видіння й поясни його на скрижалях, щоб будь-хто міг його навіть побіжно прочитати.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Тоді відповів мені ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " і сказав:",
+          "\n",
+          "― Запиши видіння й поясни його на скрижалях,",
+          "\n",
+          "щоб будь-хто міг його навіть побіжно прочитати."
+        ],
+        "discourse_unit_id": "HAB-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 107,
+        "line_start": 105,
+        "lines": [
+          "\\v 2 Тоді відповів мені \\nd Господь\\nd* і сказав:",
+          "\\q1 ― Запиши видіння й поясни його на скрижалях,",
+          "\\q2 щоб будь-хто міг його навіть побіжно прочитати."
+        ],
+        "number": "2",
+        "paragraph_id": "HAB-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Тоді відповів мені \\nd Господь\\nd* і сказав:\n\\q1 ― Запиши видіння й поясни його на скрижалях,\n\\q2 щоб будь-хто міг його навіть побіжно прочитати.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Бо те видіння ще чекає на призначений час;\nвоно свідчить про кінець\nі не введе в оману.\nЯкщо зволікатиме, чекай на нього:\nвоно неодмінно прийде,\nне запізниться.",
+        "body_text_exact": "Бо те видіння ще чекає на призначений час;\nвоно свідчить про кінець\nі не введе в оману.\nЯкщо зволікатиме, чекай на нього:\nвоно неодмінно прийде,\nне запізниться.",
+        "body_text_normalized": "Бо те видіння ще чекає на призначений час; воно свідчить про кінець і не введе в оману. Якщо зволікатиме, чекай на нього: воно неодмінно прийде, не запізниться.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Бо те видіння ще чекає на призначений час;",
+          "\n",
+          "воно свідчить про кінець",
+          "\n",
+          "і не введе в оману.",
+          "\n",
+          "Якщо зволікатиме, чекай на нього:",
+          "\n",
+          "воно неодмінно прийде,",
+          "\n",
+          "не запізниться."
+        ],
+        "discourse_unit_id": "HAB-D007",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 114,
+        "line_start": 109,
+        "lines": [
+          "\\v 3 Бо те видіння ще чекає на призначений час;",
+          "\\q2 воно свідчить про кінець",
+          "\\q2 і не введе в оману.",
+          "\\q1 Якщо зволікатиме, чекай на нього:",
+          "\\q2 воно неодмінно прийде,",
+          "\\q2 не запізниться."
+        ],
+        "number": "3",
+        "paragraph_id": "HAB-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B006",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Бо те видіння ще чекає на призначений час;\n\\q2 воно свідчить про кінець\n\\q2 і не введе в оману.\n\\q1 Якщо зволікатиме, чекай на нього:\n\\q2 воно неодмінно прийде,\n\\q2 не запізниться.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Ось душа пихатого не вдовольниться,\nа праведний житиме вірою своєю.",
+        "body_text_exact": "Ось душа пихатого не вдовольниться,\nа праведний житиме вірою своєю.",
+        "body_text_normalized": "Ось душа пихатого не вдовольниться, а праведний житиме вірою своєю.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Ось душа пихатого не вдовольниться,",
+          "\n",
+          "а праведний житиме вірою своєю",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:4 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Або: ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "завдяки своїй вірності."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "."
+        ],
+        "discourse_unit_id": "HAB-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 119,
+        "line_start": 118,
+        "lines": [
+          "\\v 4 Ось душа пихатого не вдовольниться,",
+          "\\q2 а праведний житиме вірою своєю\\f + \\fr 2:4 \\ft Або: \\fqa завдяки своїй вірності.\\f*."
+        ],
+        "number": "4",
+        "paragraph_id": "HAB-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B008",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Ось душа пихатого не вдовольниться,\n\\q2 а праведний житиме вірою своєю\\f + \\fr 2:4 \\ft Або: \\fqa завдяки своїй вірності.\\f*.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Муж зухвалий – наче від вина спʼянілий\nі не може заспокоїтися.\nРозпирає йому душу, наче царство мертвих,\nі він, як смерть, не може вдовольнитися;\nзбирає до себе всі народи\nй стягує до себе всі племена.",
+        "body_text_exact": "Муж зухвалий – наче від вина спʼянілий\nі не може заспокоїтися.\nРозпирає йому душу, наче царство мертвих,\nі він, як смерть, не може вдовольнитися;\nзбирає до себе всі народи\nй стягує до себе всі племена.",
+        "body_text_normalized": "Муж зухвалий – наче від вина спʼянілий і не може заспокоїтися. Розпирає йому душу, наче царство мертвих, і він, як смерть, не може вдовольнитися; збирає до себе всі народи й стягує до себе всі племена.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Муж зухвалий – наче від вина спʼянілий",
+          "\n",
+          "і не може заспокоїтися.",
+          "\n",
+          "Розпирає йому душу, наче царство мертвих,",
+          "\n",
+          "і він, як смерть, не може вдовольнитися;",
+          "\n",
+          "збирає до себе всі народи",
+          "\n",
+          "й стягує до себе всі племена."
+        ],
+        "discourse_unit_id": "HAB-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 126,
+        "line_start": 121,
+        "lines": [
+          "\\v 5 Муж зухвалий – наче від вина спʼянілий",
+          "\\q2 і не може заспокоїтися.",
+          "\\q1 Розпирає йому душу, наче царство мертвих,",
+          "\\q2 і він, як смерть, не може вдовольнитися;",
+          "\\q1 збирає до себе всі народи",
+          "\\q2 й стягує до себе всі племена."
+        ],
+        "number": "5",
+        "paragraph_id": "HAB-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B008",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Муж зухвалий – наче від вина спʼянілий\n\\q2 і не може заспокоїтися.\n\\q1 Розпирає йому душу, наче царство мертвих,\n\\q2 і він, як смерть, не може вдовольнитися;\n\\q1 збирає до себе всі народи\n\\q2 й стягує до себе всі племена.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "Чи не про нього всі ці притчі промовляють\nі загадкова мова – хіба не про нього?\n«Горе тому, хто примножує не своє!\nВін обтяжує себе заставами.\nДоки ж це буде?».",
+        "body_text_exact": "Чи не про нього всі ці притчі промовляють\nі загадкова мова – хіба не про нього?\n«Горе тому, хто примножує не своє!\nВін обтяжує себе заставами.\nДоки ж це буде?».",
+        "body_text_normalized": "Чи не про нього всі ці притчі промовляють і загадкова мова – хіба не про нього? «Горе тому, хто примножує не своє! Він обтяжує себе заставами. Доки ж це буде?».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Чи не про нього всі ці притчі промовляють",
+          "\n",
+          "і загадкова мова – хіба не про нього?",
+          "\n",
+          "«Горе тому, хто примножує не своє!",
+          "\n",
+          "Він обтяжує себе заставами.",
+          "\n",
+          "Доки ж це буде?»."
+        ],
+        "discourse_unit_id": "HAB-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 132,
+        "line_start": 128,
+        "lines": [
+          "\\v 6 Чи не про нього всі ці притчі промовляють",
+          "\\q2 і загадкова мова – хіба не про нього?",
+          "\\q1 «Горе тому, хто примножує не своє!",
+          "\\q2 Він обтяжує себе заставами.",
+          "\\q2 Доки ж це буде?»."
+        ],
+        "number": "6",
+        "paragraph_id": "HAB-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B008",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 Чи не про нього всі ці притчі промовляють\n\\q2 і загадкова мова – хіба не про нього?\n\\q1 «Горе тому, хто примножує не своє!\n\\q2 Він обтяжує себе заставами.\n\\q2 Доки ж це буде?».",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Чи не постануть раптово твої позикодавці?\nЧи не прокинуться ті, що змусять тебе тремтіти?\nТоді ти сам станеш їхньою здобиччю!",
+        "body_text_exact": "Чи не постануть раптово твої позикодавці?\nЧи не прокинуться ті, що змусять тебе тремтіти?\nТоді ти сам станеш їхньою здобиччю!",
+        "body_text_normalized": "Чи не постануть раптово твої позикодавці? Чи не прокинуться ті, що змусять тебе тремтіти? Тоді ти сам станеш їхньою здобиччю!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Чи не постануть раптово твої позикодавці?",
+          "\n",
+          "Чи не прокинуться ті, що змусять тебе тремтіти?",
+          "\n",
+          "Тоді ти сам станеш їхньою здобиччю!"
+        ],
+        "discourse_unit_id": "HAB-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 136,
+        "line_start": 134,
+        "lines": [
+          "\\v 7 Чи не постануть раптово твої позикодавці?",
+          "\\q2 Чи не прокинуться ті, що змусять тебе тремтіти?",
+          "\\q2 Тоді ти сам станеш їхньою здобиччю!"
+        ],
+        "number": "7",
+        "paragraph_id": "HAB-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B008",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Чи не постануть раптово твої позикодавці?\n\\q2 Чи не прокинуться ті, що змусять тебе тремтіти?\n\\q2 Тоді ти сам станеш їхньою здобиччю!",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Оскільки ти грабував численні народи,\nто й тебе пограбує залишок народів\nза пролиту людську кров\nі насильство щодо землі,\nміст та всіх їхніх мешканців.",
+        "body_text_exact": "Оскільки ти грабував численні народи,\nто й тебе пограбує залишок народів\nза пролиту людську кров\nі насильство щодо землі,\nміст та всіх їхніх мешканців.",
+        "body_text_normalized": "Оскільки ти грабував численні народи, то й тебе пограбує залишок народів за пролиту людську кров і насильство щодо землі, міст та всіх їхніх мешканців.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Оскільки ти грабував численні народи,",
+          "\n",
+          "то й тебе пограбує залишок народів",
+          "\n",
+          "за ",
+          {
+            "content": [
+              "пролиту"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " людську кров",
+          "\n",
+          "і насильство щодо землі,",
+          "\n",
+          "міст та всіх їхніх мешканців."
+        ],
+        "discourse_unit_id": "HAB-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 142,
+        "line_start": 138,
+        "lines": [
+          "\\v 8 Оскільки ти грабував численні народи,",
+          "\\q2 то й тебе пограбує залишок народів",
+          "\\q1 за \\add пролиту\\add* людську кров",
+          "\\q2 і насильство щодо землі,",
+          "\\q2 міст та всіх їхніх мешканців."
+        ],
+        "number": "8",
+        "paragraph_id": "HAB-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B008",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Оскільки ти грабував численні народи,\n\\q2 то й тебе пограбує залишок народів\n\\q1 за \\add пролиту\\add* людську кров\n\\q2 і насильство щодо землі,\n\\q2 міст та всіх їхніх мешканців.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Горе тому, хто пристрасно шукає лихої вигоди для свого дому,\nщоб на висоті звести собі гніздо\nй урятуватися від злої руки!",
+        "body_text_exact": "Горе тому, хто пристрасно шукає лихої вигоди для свого дому,\nщоб на висоті звести собі гніздо\nй урятуватися від злої руки!",
+        "body_text_normalized": "Горе тому, хто пристрасно шукає лихої вигоди для свого дому, щоб на висоті звести собі гніздо й урятуватися від злої руки!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Горе тому, хто пристрасно шукає лихої вигоди для свого дому,",
+          "\n",
+          "щоб на висоті звести собі гніздо",
+          "\n",
+          "й урятуватися від злої руки!"
+        ],
+        "discourse_unit_id": "HAB-D009",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 147,
+        "line_start": 145,
+        "lines": [
+          "\\v 9 Горе тому, хто пристрасно шукає лихої вигоди для свого дому,",
+          "\\q2 щоб на висоті звести собі гніздо",
+          "\\q2 й урятуватися від злої руки!"
+        ],
+        "number": "9",
+        "paragraph_id": "HAB-P008",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B009",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Горе тому, хто пристрасно шукає лихої вигоди для свого дому,\n\\q2 щоб на висоті звести собі гніздо\n\\q2 й урятуватися від злої руки!",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Ти задумав ганебне для свого дому,\nграбуючи численні народи\nі гріхом занечищуючи свою душу.",
+        "body_text_exact": "Ти задумав ганебне для свого дому,\nграбуючи численні народи\nі гріхом занечищуючи свою душу.",
+        "body_text_normalized": "Ти задумав ганебне для свого дому, грабуючи численні народи і гріхом занечищуючи свою душу.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Ти задумав ганебне для свого дому,",
+          "\n",
+          "грабуючи численні народи",
+          "\n",
+          "і гріхом ",
+          {
+            "content": [
+              "занечищуючи"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " свою душу."
+        ],
+        "discourse_unit_id": "HAB-D009",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 151,
+        "line_start": 149,
+        "lines": [
+          "\\v 10 Ти задумав ганебне для свого дому,",
+          "\\q2 грабуючи численні народи",
+          "\\q2 і гріхом \\add занечищуючи\\add* свою душу."
+        ],
+        "number": "10",
+        "paragraph_id": "HAB-P008",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B009",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Ти задумав ганебне для свого дому,\n\\q2 грабуючи численні народи\n\\q2 і гріхом \\add занечищуючи\\add* свою душу.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Бо каміння зі стін твого дому заволає\nі деревʼяні балки відгукнуться їм у відповідь:",
+        "body_text_exact": "Бо каміння зі стін твого дому заволає\nі деревʼяні балки відгукнуться їм у відповідь:",
+        "body_text_normalized": "Бо каміння зі стін твого дому заволає і деревʼяні балки відгукнуться їм у відповідь:",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Бо каміння зі стін ",
+          {
+            "content": [
+              "твого дому"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " заволає",
+          "\n",
+          "і деревʼяні балки відгукнуться їм у відповідь:"
+        ],
+        "discourse_unit_id": "HAB-D009",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 154,
+        "line_start": 153,
+        "lines": [
+          "\\v 11 Бо каміння зі стін \\add твого дому\\add* заволає",
+          "\\q2 і деревʼяні балки відгукнуться їм у відповідь:"
+        ],
+        "number": "11",
+        "paragraph_id": "HAB-P008",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B009",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Бо каміння зі стін \\add твого дому\\add* заволає\n\\q2 і деревʼяні балки відгукнуться їм у відповідь:",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "«Горе тому, хто будує місто на крові\nй утверджує його стіни беззаконням!».",
+        "body_text_exact": "«Горе тому, хто будує місто на крові\nй утверджує його стіни беззаконням!».",
+        "body_text_normalized": "«Горе тому, хто будує місто на крові й утверджує його стіни беззаконням!».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "«Горе тому, хто будує місто на крові",
+          "\n",
+          "й утверджує його стіни беззаконням!»."
+        ],
+        "discourse_unit_id": "HAB-D010",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 158,
+        "line_start": 157,
+        "lines": [
+          "\\v 12 «Горе тому, хто будує місто на крові",
+          "\\q2 й утверджує його стіни беззаконням!»."
+        ],
+        "number": "12",
+        "paragraph_id": "HAB-P009",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B010",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 «Горе тому, хто будує місто на крові\n\\q2 й утверджує його стіни беззаконням!».",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Хіба це не від Господа Воїнств:\nнароди виснажують себе задля того, що згорить у вогні,\nі племена втомлюються заради того, що марне?",
+        "body_text_exact": "Хіба це не від Господа Воїнств:\nнароди виснажують себе задля того, що згорить у вогні,\nі племена втомлюються заради того, що марне?",
+        "body_text_normalized": "Хіба це не від Господа Воїнств: народи виснажують себе задля того, що згорить у вогні, і племена втомлюються заради того, що марне?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Хіба це не від ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " Воїнств:",
+          "\n",
+          "народи виснажують себе задля того, що ",
+          {
+            "content": [
+              "згорить"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " у вогні,",
+          "\n",
+          "і племена втомлюються заради того, що марне?"
+        ],
+        "discourse_unit_id": "HAB-D010",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 162,
+        "line_start": 160,
+        "lines": [
+          "\\v 13 Хіба це не від \\nd Господа\\nd* Воїнств:",
+          "\\q2 народи виснажують себе задля того, що \\add згорить\\add* у вогні,",
+          "\\q2 і племена втомлюються заради того, що марне?"
+        ],
+        "number": "13",
+        "paragraph_id": "HAB-P009",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B010",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Хіба це не від \\nd Господа\\nd* Воїнств:\n\\q2 народи виснажують себе задля того, що \\add згорить\\add* у вогні,\n\\q2 і племена втомлюються заради того, що марне?",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Бо земля буде наповнена пізнанням слави Господньої так,\nяк води вкривають море.",
+        "body_text_exact": "Бо земля буде наповнена пізнанням слави Господньої так,\nяк води вкривають море.",
+        "body_text_normalized": "Бо земля буде наповнена пізнанням слави Господньої так, як води вкривають море.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Бо земля буде наповнена пізнанням слави ",
+          {
+            "content": [
+              "Господньої"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " так,",
+          "\n",
+          "як води вкривають море."
+        ],
+        "discourse_unit_id": "HAB-D010",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 165,
+        "line_start": 164,
+        "lines": [
+          "\\v 14 Бо земля буде наповнена пізнанням слави \\nd Господньої\\nd* так,",
+          "\\q2 як води вкривають море."
+        ],
+        "number": "14",
+        "paragraph_id": "HAB-P009",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B010",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Бо земля буде наповнена пізнанням слави \\nd Господньої\\nd* так,\n\\q2 як води вкривають море.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Горе тому, хто поїть своїх ближніх,\nдомішуючи до вина свою лють, поки ті не спʼяніють,\nщоб подивитися на їхню наготу!",
+        "body_text_exact": "Горе тому, хто поїть своїх ближніх,\nдомішуючи до вина свою лють, поки ті не спʼяніють,\nщоб подивитися на їхню наготу!",
+        "body_text_normalized": "Горе тому, хто поїть своїх ближніх, домішуючи до вина свою лють, поки ті не спʼяніють, щоб подивитися на їхню наготу!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Горе тому, хто поїть своїх ближніх,",
+          "\n",
+          "домішуючи до вина свою лють, поки ті не спʼяніють,",
+          "\n",
+          "щоб подивитися на їхню наготу!"
+        ],
+        "discourse_unit_id": "HAB-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 170,
+        "line_start": 168,
+        "lines": [
+          "\\v 15 Горе тому, хто поїть своїх ближніх,",
+          "\\q2 домішуючи до вина свою лють, поки ті не спʼяніють,",
+          "\\q2 щоб подивитися на їхню наготу!"
+        ],
+        "number": "15",
+        "paragraph_id": "HAB-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Горе тому, хто поїть своїх ближніх,\n\\q2 домішуючи до вина свою лють, поки ті не спʼяніють,\n\\q2 щоб подивитися на їхню наготу!",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Ти наситився ганьбою замість слави,\nтож пий тепер ти й покажи наготу свою необрізану!\nЧаша з правиці Господньої повернулася тепер до тебе,\nі ганьба замінила твою славу.",
+        "body_text_exact": "Ти наситився ганьбою замість слави,\nтож пий тепер ти й покажи наготу свою необрізану!\nЧаша з правиці Господньої повернулася тепер до тебе,\nі ганьба замінила твою славу.",
+        "body_text_normalized": "Ти наситився ганьбою замість слави, тож пий тепер ти й покажи наготу свою необрізану! Чаша з правиці Господньої повернулася тепер до тебе, і ганьба замінила твою славу.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Ти наситився ганьбою замість слави,",
+          "\n",
+          "тож пий тепер ти й покажи наготу свою необрізану",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:16 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "У грец. перекладі (Септуаґінта) та сир. перекладі (Пешитта): ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "тож пий тепер ти і хитайся! ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Див. ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "Бут. 9:20–25",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "!",
+          "\n",
+          "Чаша з правиці ",
+          {
+            "content": [
+              "Господньої"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " повернулася тепер до тебе,",
+          "\n",
+          "і ганьба замінила твою славу."
+        ],
+        "discourse_unit_id": "HAB-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 175,
+        "line_start": 172,
+        "lines": [
+          "\\v 16 Ти наситився ганьбою замість слави,",
+          "\\q2 тож пий тепер ти й покажи наготу свою необрізану\\f + \\fr 2:16 \\ft У грец. перекладі (Септуаґінта) та сир. перекладі (Пешитта): \\fqa тож пий тепер ти і хитайся! \\ft Див. \\+xt Бут. 9:20–25\\+xt*.\\f*!",
+          "\\q1 Чаша з правиці \\nd Господньої\\nd* повернулася тепер до тебе,",
+          "\\q2 і ганьба замінила твою славу."
+        ],
+        "number": "16",
+        "paragraph_id": "HAB-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 Ти наситився ганьбою замість слави,\n\\q2 тож пий тепер ти й покажи наготу свою необрізану\\f + \\fr 2:16 \\ft У грец. перекладі (Септуаґінта) та сир. перекладі (Пешитта): \\fqa тож пий тепер ти і хитайся! \\ft Див. \\+xt Бут. 9:20–25\\+xt*.\\f*!\n\\q1 Чаша з правиці \\nd Господньої\\nd* повернулася тепер до тебе,\n\\q2 і ганьба замінила твою славу.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Бо насильство, яке ти вчинив у Лівані, спіткає тебе\nі знищення тварин сповнить тебе жахом\nза пролиту людську кров\nі за насильство щодо землі,\nміст та всіх їхніх мешканців.",
+        "body_text_exact": "Бо насильство, яке ти вчинив у Лівані, спіткає тебе\nі знищення тварин сповнить тебе жахом\nза пролиту людську кров\nі за насильство щодо землі,\nміст та всіх їхніх мешканців.",
+        "body_text_normalized": "Бо насильство, яке ти вчинив у Лівані, спіткає тебе і знищення тварин сповнить тебе жахом за пролиту людську кров і за насильство щодо землі, міст та всіх їхніх мешканців.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Бо насильство, яке ти вчинив у Лівані, спіткає тебе",
+          "\n",
+          "і знищення тварин сповнить тебе жахом",
+          "\n",
+          "за пролиту людську кров",
+          "\n",
+          "і за насильство щодо землі,",
+          "\n",
+          "міст та всіх їхніх мешканців."
+        ],
+        "discourse_unit_id": "HAB-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 181,
+        "line_start": 177,
+        "lines": [
+          "\\v 17 Бо насильство, яке ти вчинив у Лівані, спіткає тебе",
+          "\\q2 і знищення тварин сповнить тебе жахом",
+          "\\q1 за пролиту людську кров",
+          "\\q2 і за насильство щодо землі,",
+          "\\q2 міст та всіх їхніх мешканців."
+        ],
+        "number": "17",
+        "paragraph_id": "HAB-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Бо насильство, яке ти вчинив у Лівані, спіткає тебе\n\\q2 і знищення тварин сповнить тебе жахом\n\\q1 за пролиту людську кров\n\\q2 і за насильство щодо землі,\n\\q2 міст та всіх їхніх мешканців.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "Яка користь від ідола тому майстру,\nякий його витесав,\nі чи вилитий істукан дасть настанову неправдиву?\nАле майстер покладає надію на своє творіння,\nвиготовляючи нікчемних німих ідолів.",
+        "body_text_exact": "Яка користь від ідола тому майстру,\nякий його витесав,\nі чи вилитий істукан дасть настанову неправдиву?\nАле майстер покладає надію на своє творіння,\nвиготовляючи нікчемних німих ідолів.",
+        "body_text_normalized": "Яка користь від ідола тому майстру, який його витесав, і чи вилитий істукан дасть настанову неправдиву? Але майстер покладає надію на своє творіння, виготовляючи нікчемних німих ідолів.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Яка користь від ідола тому майстру,",
+          "\n",
+          "який його витесав,",
+          "\n",
+          "і чи вилитий істукан дасть настанову неправдиву?",
+          "\n",
+          "Але майстер покладає надію на своє творіння,",
+          "\n",
+          "виготовляючи нікчемних німих ідолів."
+        ],
+        "discourse_unit_id": "HAB-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 188,
+        "line_start": 184,
+        "lines": [
+          "\\v 18 Яка користь від ідола тому майстру,",
+          "\\q2 який його витесав,",
+          "\\q2 і чи вилитий істукан дасть настанову неправдиву?",
+          "\\q1 Але майстер покладає надію на своє творіння,",
+          "\\q2 виготовляючи нікчемних німих ідолів."
+        ],
+        "number": "18",
+        "paragraph_id": "HAB-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B012",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 Яка користь від ідола тому майстру,\n\\q2 який його витесав,\n\\q2 і чи вилитий істукан дасть настанову неправдиву?\n\\q1 Але майстер покладає надію на своє творіння,\n\\q2 виготовляючи нікчемних німих ідолів.",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "Горе тому, хто каже дереву: «Пробудися!» –\nчи безмовному каменю: «Прокинься!».\nХіба він може наставляти?\nВін укритий золотом і сріблом,\nале ж усередині нього немає жодного духа!",
+        "body_text_exact": "Горе тому, хто каже дереву: «Пробудися!» –\nчи безмовному каменю: «Прокинься!».\nХіба він може наставляти?\nВін укритий золотом і сріблом,\nале ж усередині нього немає жодного духа!",
+        "body_text_normalized": "Горе тому, хто каже дереву: «Пробудися!» – чи безмовному каменю: «Прокинься!». Хіба він може наставляти? Він укритий золотом і сріблом, але ж усередині нього немає жодного духа!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Горе тому, хто каже дереву: «Пробудися!» –",
+          "\n",
+          "чи безмовному каменю: «Прокинься!».",
+          "\n",
+          "Хіба він може наставляти?",
+          "\n",
+          "Він укритий золотом і сріблом,",
+          "\n",
+          "але ж усередині нього немає жодного духа!"
+        ],
+        "discourse_unit_id": "HAB-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 194,
+        "line_start": 190,
+        "lines": [
+          "\\v 19 Горе тому, хто каже дереву: «Пробудися!» –",
+          "\\q2 чи безмовному каменю: «Прокинься!».",
+          "\\q1 Хіба він може наставляти?",
+          "\\q2 Він укритий золотом і сріблом,",
+          "\\q2 але ж усередині нього немає жодного духа!"
+        ],
+        "number": "19",
+        "paragraph_id": "HAB-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B012",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 Горе тому, хто каже дереву: «Пробудися!» –\n\\q2 чи безмовному каменю: «Прокинься!».\n\\q1 Хіба він може наставляти?\n\\q2 Він укритий золотом і сріблом,\n\\q2 але ж усередині нього немає жодного духа!",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "А Господь – у храмі Своєму святому;\nнехай мовчить перед Ним уся земля!",
+        "body_text_exact": "А Господь – у храмі Своєму святому;\nнехай мовчить перед Ним уся земля!",
+        "body_text_normalized": "А Господь – у храмі Своєму святому; нехай мовчить перед Ним уся земля!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "А ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " – у храмі Своєму святому;",
+          "\n",
+          "нехай мовчить перед Ним уся земля!"
+        ],
+        "discourse_unit_id": "HAB-D013",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 198,
+        "line_start": 197,
+        "lines": [
+          "\\v 20 А \\nd Господь\\nd* – у храмі Своєму святому;",
+          "\\q2 нехай мовчить перед Ним уся земля!"
+        ],
+        "number": "20",
+        "paragraph_id": "HAB-P012",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B013",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 А \\nd Господь\\nd* – у храмі Своєму святому;\n\\q2 нехай мовчить перед Ним уся земля!",
+        "section_id": "HAB-S004",
+        "section_marker": "s1",
+        "section_title": "Відповідь Господа",
+        "verse_end": 20,
+        "verse_start": 20
+      },
+      {
+        "body_text": "Молитва пророка Авакума, жалобна пісня.",
+        "body_text_exact": "Молитва пророка Авакума, жалобна пісня.",
+        "body_text_normalized": "Молитва пророка Авакума, жалобна пісня.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Молитва пророка Авакума, жалобна пісня."
+        ],
+        "discourse_unit_id": "HAB-D014",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "implicit",
+        "line_end": 202,
+        "line_start": 202,
+        "lines": [
+          "\\v 1 Молитва пророка Авакума, жалобна пісня."
+        ],
+        "number": "1",
+        "paragraph_id": "HAB-P013",
+        "paragraph_marker": "implicit",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Молитва пророка Авакума, жалобна пісня.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "― Господи, я почув звістку від Тебе й наповнився страхом.\nГосподи, я зрозумів діяння Твої і здивувався.\nПовтори їх за життя нашого,\nзроби їх відомими за наших років;\nгніваючись, згадай про милість.",
+        "body_text_exact": "― Господи, я почув звістку від Тебе й наповнився страхом.\nГосподи, я зрозумів діяння Твої і здивувався.\nПовтори їх за життя нашого,\nзроби їх відомими за наших років;\nгніваючись, згадай про милість.",
+        "body_text_normalized": "― Господи, я почув звістку від Тебе й наповнився страхом. Господи, я зрозумів діяння Твої і здивувався. Повтори їх за життя нашого, зроби їх відомими за наших років; гніваючись, згадай про милість.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "― ",
+          {
+            "content": [
+              "Господи"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", я почув звістку від Тебе й наповнився страхом.",
+          "\n",
+          {
+            "content": [
+              "Господи"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", я зрозумів діяння Твої і здивувався.",
+          "\n",
+          "Повтори їх за життя нашого,",
+          "\n",
+          "зроби їх відомими за наших років;",
+          "\n",
+          "гніваючись, згадай про милість."
+        ],
+        "discourse_unit_id": "HAB-D015",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 208,
+        "line_start": 204,
+        "lines": [
+          "\\v 2 ― \\nd Господи\\nd*, я почув звістку від Тебе й наповнився страхом.",
+          "\\q2 \\nd Господи\\nd*, я зрозумів діяння Твої і здивувався.",
+          "\\q1 Повтори їх за життя нашого,",
+          "\\q2 зроби їх відомими за наших років;",
+          "\\q2 гніваючись, згадай про милість."
+        ],
+        "number": "2",
+        "paragraph_id": "HAB-P013",
+        "paragraph_marker": "implicit",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B014",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 ― \\nd Господи\\nd*, я почув звістку від Тебе й наповнився страхом.\n\\q2 \\nd Господи\\nd*, я зрозумів діяння Твої і здивувався.\n\\q1 Повтори їх за життя нашого,\n\\q2 зроби їх відомими за наших років;\n\\q2 гніваючись, згадай про милість.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Бог іде від Тейману,\nі Святий – від гори Паран. Села\nЙого велич покрила небеса,\nі Його хвала наповнила землю.",
+        "body_text_exact": "Бог іде від Тейману,\nі Святий – від гори Паран. Села\nЙого велич покрила небеса,\nі Його хвала наповнила землю.",
+        "body_text_normalized": "Бог іде від Тейману, і Святий – від гори Паран. Села Його велич покрила небеса, і Його хвала наповнила землю.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Бог іде від Тейману,",
+          "\n",
+          "і Святий – від гори Паран. ",
+          {
+            "content": [
+              "Села"
+            ],
+            "marker": "qs",
+            "type": "char"
+          },
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:3 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "tl",
+                "type": "marker"
+              },
+              "Села",
+              {
+                "closing": true,
+                "marker": "tl",
+                "type": "marker"
+              },
+              "– євр. музичний термін, що вказує на підвищення тону або паузу."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "\n",
+          "Його велич покрила небеса,",
+          "\n",
+          "і Його хвала наповнила землю."
+        ],
+        "discourse_unit_id": "HAB-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 214,
+        "line_start": 211,
+        "lines": [
+          "\\v 3 Бог іде від Тейману,",
+          "\\q2 і Святий – від гори Паран. \\qs Села\\qs*\\f + \\fr 3:3 \\ft \\+tl Села\\+tl* – євр. музичний термін, що вказує на підвищення тону або паузу.\\f*",
+          "\\q1 Його велич покрила небеса,",
+          "\\q2 і Його хвала наповнила землю."
+        ],
+        "number": "3",
+        "paragraph_id": "HAB-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B015",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Бог іде від Тейману,\n\\q2 і Святий – від гори Паран. \\qs Села\\qs*\\f + \\fr 3:3 \\ft \\+tl Села\\+tl* – євр. музичний термін, що вказує на підвищення тону або паузу.\\f*\n\\q1 Його велич покрила небеса,\n\\q2 і Його хвала наповнила землю.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Його сяйво – як світло;\nпроміння виходить з Його руки –\nтам сховано Його могутність.",
+        "body_text_exact": "Його сяйво – як світло;\nпроміння виходить з Його руки –\nтам сховано Його могутність.",
+        "body_text_normalized": "Його сяйво – як світло; проміння виходить з Його руки – там сховано Його могутність.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Його сяйво – як світло;",
+          "\n",
+          "проміння виходить з Його руки –",
+          "\n",
+          "там сховано Його могутність."
+        ],
+        "discourse_unit_id": "HAB-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 218,
+        "line_start": 216,
+        "lines": [
+          "\\v 4 Його сяйво – як світло;",
+          "\\q2 проміння виходить з Його руки –",
+          "\\q2 там сховано Його могутність."
+        ],
+        "number": "4",
+        "paragraph_id": "HAB-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B015",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Його сяйво – як світло;\n\\q2 проміння виходить з Його руки –\n\\q2 там сховано Його могутність.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Перед Ним іде моровиця,\nі гарячка йде за Його стопами.",
+        "body_text_exact": "Перед Ним іде моровиця,\nі гарячка йде за Його стопами.",
+        "body_text_normalized": "Перед Ним іде моровиця, і гарячка йде за Його стопами.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Перед Ним іде моровиця,",
+          "\n",
+          "і гарячка йде за Його стопами."
+        ],
+        "discourse_unit_id": "HAB-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 221,
+        "line_start": 220,
+        "lines": [
+          "\\v 5 Перед Ним іде моровиця,",
+          "\\q2 і гарячка йде за Його стопами."
+        ],
+        "number": "5",
+        "paragraph_id": "HAB-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B015",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Перед Ним іде моровиця,\n\\q2 і гарячка йде за Його стопами.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "Він став і похитнув землю;\nВін поглянув і змусив підскочити народи.\nПрадавні гори затряслися,\nодвічні пагорби вклонилися –\nхода Його вічна!",
+        "body_text_exact": "Він став і похитнув землю;\nВін поглянув і змусив підскочити народи.\nПрадавні гори затряслися,\nодвічні пагорби вклонилися –\nхода Його вічна!",
+        "body_text_normalized": "Він став і похитнув землю; Він поглянув і змусив підскочити народи. Прадавні гори затряслися, одвічні пагорби вклонилися – хода Його вічна!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Він став і похитнув землю;",
+          "\n",
+          "Він поглянув і змусив підскочити народи.",
+          "\n",
+          "Прадавні гори затряслися,",
+          "\n",
+          "одвічні пагорби вклонилися –",
+          "\n",
+          "хода Його вічна!"
+        ],
+        "discourse_unit_id": "HAB-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 227,
+        "line_start": 223,
+        "lines": [
+          "\\v 6 Він став і похитнув землю;",
+          "\\q2 Він поглянув і змусив підскочити народи.",
+          "\\q1 Прадавні гори затряслися,",
+          "\\q2 одвічні пагорби вклонилися –",
+          "\\q2 хода Його вічна!"
+        ],
+        "number": "6",
+        "paragraph_id": "HAB-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B015",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 Він став і похитнув землю;\n\\q2 Він поглянув і змусив підскочити народи.\n\\q1 Прадавні гори затряслися,\n\\q2 одвічні пагорби вклонилися –\n\\q2 хода Його вічна!",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Я бачив намети Кушану в смутку,\nтремтітимуть шатри землі Мідіану.",
+        "body_text_exact": "Я бачив намети Кушану в смутку,\nтремтітимуть шатри землі Мідіану.",
+        "body_text_normalized": "Я бачив намети Кушану в смутку, тремтітимуть шатри землі Мідіану.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Я бачив намети Кушану в смутку,",
+          "\n",
+          "тремтітимуть шатри землі Мідіану."
+        ],
+        "discourse_unit_id": "HAB-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 230,
+        "line_start": 229,
+        "lines": [
+          "\\v 7 Я бачив намети Кушану в смутку,",
+          "\\q2 тремтітимуть шатри землі Мідіану."
+        ],
+        "number": "7",
+        "paragraph_id": "HAB-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B015",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Я бачив намети Кушану в смутку,\n\\q2 тремтітимуть шатри землі Мідіану.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Чи не на ріки Ти розлютився, Господи?\nЧи не проти потоків був Твій гнів?\nЧи не проти моря була Твоя лють,\nколи Ти їхав верхи на конях,\nна Твоїх колісницях переможних?",
+        "body_text_exact": "Чи не на ріки Ти розлютився, Господи?\nЧи не проти потоків був Твій гнів?\nЧи не проти моря була Твоя лють,\nколи Ти їхав верхи на конях,\nна Твоїх колісницях переможних?",
+        "body_text_normalized": "Чи не на ріки Ти розлютився, Господи? Чи не проти потоків був Твій гнів? Чи не проти моря була Твоя лють, коли Ти їхав верхи на конях, на Твоїх колісницях переможних?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Чи не на ріки Ти розлютився, ",
+          {
+            "content": [
+              "Господи"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "?",
+          "\n",
+          "Чи не проти потоків був Твій гнів?",
+          "\n",
+          "Чи не проти моря була Твоя лють,",
+          "\n",
+          "коли Ти їхав верхи на конях,",
+          "\n",
+          "на Твоїх колісницях переможних?"
+        ],
+        "discourse_unit_id": "HAB-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 237,
+        "line_start": 233,
+        "lines": [
+          "\\v 8 Чи не на ріки Ти розлютився, \\nd Господи\\nd*?",
+          "\\q2 Чи не проти потоків був Твій гнів?",
+          "\\q1 Чи не проти моря була Твоя лють,",
+          "\\q2 коли Ти їхав верхи на конях,",
+          "\\q2 на Твоїх колісницях переможних?"
+        ],
+        "number": "8",
+        "paragraph_id": "HAB-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Чи не на ріки Ти розлютився, \\nd Господи\\nd*?\n\\q2 Чи не проти потоків був Твій гнів?\n\\q1 Чи не проти моря була Твоя лють,\n\\q2 коли Ти їхав верхи на конях,\n\\q2 на Твоїх колісницях переможних?",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Ти оголив Свій лук,\nнаповнив стрілами Свій сагайдак. Села\nТи розділив землю ріками;",
+        "body_text_exact": "Ти оголив Свій лук,\nнаповнив стрілами Свій сагайдак. Села\nТи розділив землю ріками;",
+        "body_text_normalized": "Ти оголив Свій лук, наповнив стрілами Свій сагайдак. Села Ти розділив землю ріками;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Ти оголив Свій лук,",
+          "\n",
+          "наповнив стрілами Свій сагайдак. ",
+          {
+            "content": [
+              "Села"
+            ],
+            "marker": "qs",
+            "type": "char"
+          },
+          "\n",
+          "Ти розділив землю ріками;"
+        ],
+        "discourse_unit_id": "HAB-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 241,
+        "line_start": 239,
+        "lines": [
+          "\\v 9 Ти оголив Свій лук,",
+          "\\q2 наповнив стрілами Свій сагайдак. \\qs Села\\qs*",
+          "\\q1 Ти розділив землю ріками;"
+        ],
+        "number": "9",
+        "paragraph_id": "HAB-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Ти оголив Свій лук,\n\\q2 наповнив стрілами Свій сагайдак. \\qs Села\\qs*\n\\q1 Ти розділив землю ріками;",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "гори побачили Тебе й затремтіли,\nпотоки води поникли;\nбезодня подала свій голос,\nвисоко піднесла свої хвилі.",
+        "body_text_exact": "гори побачили Тебе й затремтіли,\nпотоки води поникли;\nбезодня подала свій голос,\nвисоко піднесла свої хвилі.",
+        "body_text_normalized": "гори побачили Тебе й затремтіли, потоки води поникли; безодня подала свій голос, високо піднесла свої хвилі.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "гори побачили Тебе й затремтіли,",
+          "\n",
+          "потоки води поникли;",
+          "\n",
+          "безодня подала свій голос,",
+          "\n",
+          "високо піднесла свої хвилі."
+        ],
+        "discourse_unit_id": "HAB-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 246,
+        "line_start": 243,
+        "lines": [
+          "\\v 10 гори побачили Тебе й затремтіли,",
+          "\\q1 потоки води поникли;",
+          "\\q2 безодня подала свій голос,",
+          "\\q2 високо піднесла свої хвилі."
+        ],
+        "number": "10",
+        "paragraph_id": "HAB-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 гори побачили Тебе й затремтіли,\n\\q1 потоки води поникли;\n\\q2 безодня подала свій голос,\n\\q2 високо піднесла свої хвилі.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Сонце й місяць стали непорушно на висотах\nпри світлі польоту Твоїх стріл,\nпри сяйві блискавки Твого списа.",
+        "body_text_exact": "Сонце й місяць стали непорушно на висотах\nпри світлі польоту Твоїх стріл,\nпри сяйві блискавки Твого списа.",
+        "body_text_normalized": "Сонце й місяць стали непорушно на висотах при світлі польоту Твоїх стріл, при сяйві блискавки Твого списа.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Сонце й місяць стали непорушно на висотах",
+          "\n",
+          "при світлі польоту Твоїх стріл,",
+          "\n",
+          "при сяйві блискавки Твого списа."
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 251,
+        "line_start": 249,
+        "lines": [
+          "\\v 11 Сонце й місяць стали непорушно на висотах",
+          "\\q2 при світлі польоту Твоїх стріл,",
+          "\\q2 при сяйві блискавки Твого списа."
+        ],
+        "number": "11",
+        "paragraph_id": "HAB-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Сонце й місяць стали непорушно на висотах\n\\q2 при світлі польоту Твоїх стріл,\n\\q2 при сяйві блискавки Твого списа.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Обурений, Ти крокуєш землею,\nу гніві топчеш народи.",
+        "body_text_exact": "Обурений, Ти крокуєш землею,\nу гніві топчеш народи.",
+        "body_text_normalized": "Обурений, Ти крокуєш землею, у гніві топчеш народи.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Обурений, Ти крокуєш землею,",
+          "\n",
+          "у гніві топчеш народи."
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 254,
+        "line_start": 253,
+        "lines": [
+          "\\v 12 Обурений, Ти крокуєш землею,",
+          "\\q2 у гніві топчеш народи."
+        ],
+        "number": "12",
+        "paragraph_id": "HAB-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Обурений, Ти крокуєш землею,\n\\q2 у гніві топчеш народи.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Ти вийшов, щоб урятувати Свій народ,\nщоб урятувати Свого помазанця.\nТи вразив вершину дому нечестивця,\nТи оголив його підвалини до самої скельної основи. Села",
+        "body_text_exact": "Ти вийшов, щоб урятувати Свій народ,\nщоб урятувати Свого помазанця.\nТи вразив вершину дому нечестивця,\nТи оголив його підвалини до самої скельної основи. Села",
+        "body_text_normalized": "Ти вийшов, щоб урятувати Свій народ, щоб урятувати Свого помазанця. Ти вразив вершину дому нечестивця, Ти оголив його підвалини до самої скельної основи. Села",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Ти вийшов, щоб урятувати Свій народ,",
+          "\n",
+          "щоб урятувати Свого помазанця.",
+          "\n",
+          "Ти вразив вершину дому нечестивця,",
+          "\n",
+          "Ти оголив його підвалини до самої скельної основи. ",
+          {
+            "content": [
+              "Села"
+            ],
+            "marker": "qs",
+            "type": "char"
+          }
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 259,
+        "line_start": 256,
+        "lines": [
+          "\\v 13 Ти вийшов, щоб урятувати Свій народ,",
+          "\\q2 щоб урятувати Свого помазанця.",
+          "\\q1 Ти вразив вершину дому нечестивця,",
+          "\\q2 Ти оголив його підвалини до самої скельної основи. \\qs Села\\qs*"
+        ],
+        "number": "13",
+        "paragraph_id": "HAB-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Ти вийшов, щоб урятувати Свій народ,\n\\q2 щоб урятувати Свого помазанця.\n\\q1 Ти вразив вершину дому нечестивця,\n\\q2 Ти оголив його підвалини до самої скельної основи. \\qs Села\\qs*",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Ти пронизав Своїми стрілами голови його воєвод,\nколи вони ринули, щоб розсіяти нас,\nколи вони розпалилися пристрастю,\nщоб пожерти пригнобленого у схованці.",
+        "body_text_exact": "Ти пронизав Своїми стрілами голови його воєвод,\nколи вони ринули, щоб розсіяти нас,\nколи вони розпалилися пристрастю,\nщоб пожерти пригнобленого у схованці.",
+        "body_text_normalized": "Ти пронизав Своїми стрілами голови його воєвод, коли вони ринули, щоб розсіяти нас, коли вони розпалилися пристрастю, щоб пожерти пригнобленого у схованці.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Ти пронизав Своїми стрілами голови його воєвод,",
+          "\n",
+          "коли вони ринули, щоб розсіяти нас,",
+          "\n",
+          "коли вони розпалилися пристрастю,",
+          "\n",
+          "щоб пожерти пригнобленого у схованці."
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 264,
+        "line_start": 261,
+        "lines": [
+          "\\v 14 Ти пронизав Своїми стрілами голови його воєвод,",
+          "\\q2 коли вони ринули, щоб розсіяти нас,",
+          "\\q1 коли вони розпалилися пристрастю,",
+          "\\q2 щоб пожерти пригнобленого у схованці."
+        ],
+        "number": "14",
+        "paragraph_id": "HAB-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Ти пронизав Своїми стрілами голови його воєвод,\n\\q2 коли вони ринули, щоб розсіяти нас,\n\\q1 коли вони розпалилися пристрастю,\n\\q2 щоб пожерти пригнобленого у схованці.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Ти топтав море Своїми конями,\nзбурюючи великі води.",
+        "body_text_exact": "Ти топтав море Своїми конями,\nзбурюючи великі води.",
+        "body_text_normalized": "Ти топтав море Своїми конями, збурюючи великі води.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Ти топтав море Своїми конями,",
+          "\n",
+          "збурюючи великі води."
+        ],
+        "discourse_unit_id": "HAB-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 267,
+        "line_start": 266,
+        "lines": [
+          "\\v 15 Ти топтав море Своїми конями,",
+          "\\q2 збурюючи великі води."
+        ],
+        "number": "15",
+        "paragraph_id": "HAB-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Ти топтав море Своїми конями,\n\\q2 збурюючи великі води.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Я почув, і затремтіли мої нутрощі,\nзатряслися мої вуста від того голосу;\nгниль увійшла в мої кості,\nі мої стегна обімліли.\nТа я буду спокійним у день лиха,\nколи піднімуться нападники.",
+        "body_text_exact": "Я почув, і затремтіли мої нутрощі,\nзатряслися мої вуста від того голосу;\nгниль увійшла в мої кості,\nі мої стегна обімліли.\nТа я буду спокійним у день лиха,\nколи піднімуться нападники.",
+        "body_text_normalized": "Я почув, і затремтіли мої нутрощі, затряслися мої вуста від того голосу; гниль увійшла в мої кості, і мої стегна обімліли. Та я буду спокійним у день лиха, коли піднімуться нападники.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Я почув, і затремтіли мої нутрощі,",
+          "\n",
+          "затряслися мої вуста від того голосу;",
+          "\n",
+          "гниль увійшла в мої кості,",
+          "\n",
+          "і мої стегна обімліли.",
+          "\n",
+          "Та я буду спокійним у день лиха,",
+          "\n",
+          "коли піднімуться нападники."
+        ],
+        "discourse_unit_id": "HAB-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 275,
+        "line_start": 270,
+        "lines": [
+          "\\v 16 Я почув, і затремтіли мої нутрощі,",
+          "\\q2 затряслися мої вуста від того голосу;",
+          "\\q1 гниль увійшла в мої кості,",
+          "\\q2 і мої стегна обімліли.",
+          "\\q1 Та я буду спокійним у день лиха,",
+          "\\q2 коли піднімуться нападники."
+        ],
+        "number": "16",
+        "paragraph_id": "HAB-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 Я почув, і затремтіли мої нутрощі,\n\\q2 затряслися мої вуста від того голосу;\n\\q1 гниль увійшла в мої кості,\n\\q2 і мої стегна обімліли.\n\\q1 Та я буду спокійним у день лиха,\n\\q2 коли піднімуться нападники.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Навіть якби не розцвіла смоковниця\nй не було ягід на виноградній лозі,\nнавіть якби на оливковому дереві бракувало маслин\nі поле не принесло їжі,\nнавіть якби забрали дрібну худобу з кошари\nй не стало великої худоби у хліві,",
+        "body_text_exact": "Навіть якби не розцвіла смоковниця\nй не було ягід на виноградній лозі,\nнавіть якби на оливковому дереві бракувало маслин\nі поле не принесло їжі,\nнавіть якби забрали дрібну худобу з кошари\nй не стало великої худоби у хліві,",
+        "body_text_normalized": "Навіть якби не розцвіла смоковниця й не було ягід на виноградній лозі, навіть якби на оливковому дереві бракувало маслин і поле не принесло їжі, навіть якби забрали дрібну худобу з кошари й не стало великої худоби у хліві,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Навіть якби не розцвіла смоковниця",
+          "\n",
+          "й не було ягід на виноградній лозі,",
+          "\n",
+          "навіть якби на оливковому дереві бракувало маслин",
+          "\n",
+          "і поле не принесло їжі,",
+          "\n",
+          "навіть якби забрали дрібну худобу з кошари",
+          "\n",
+          "й не стало великої худоби у хліві,"
+        ],
+        "discourse_unit_id": "HAB-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 282,
+        "line_start": 277,
+        "lines": [
+          "\\v 17 Навіть якби не розцвіла смоковниця",
+          "\\q2 й не було ягід на виноградній лозі,",
+          "\\q1 навіть якби на оливковому дереві бракувало маслин",
+          "\\q2 і поле не принесло їжі,",
+          "\\q1 навіть якби забрали дрібну худобу з кошари",
+          "\\q2 й не стало великої худоби у хліві,"
+        ],
+        "number": "17",
+        "paragraph_id": "HAB-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Навіть якби не розцвіла смоковниця\n\\q2 й не було ягід на виноградній лозі,\n\\q1 навіть якби на оливковому дереві бракувало маслин\n\\q2 і поле не принесло їжі,\n\\q1 навіть якби забрали дрібну худобу з кошари\n\\q2 й не стало великої худоби у хліві,",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "я все одно радітиму в Господі,\nвеселитимуся в Бозі, моєму Спасителеві.",
+        "body_text_exact": "я все одно радітиму в Господі,\nвеселитимуся в Бозі, моєму Спасителеві.",
+        "body_text_normalized": "я все одно радітиму в Господі, веселитимуся в Бозі, моєму Спасителеві.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "я все одно радітиму в ",
+          {
+            "content": [
+              "Господі"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "веселитимуся в Бозі, моєму Спасителеві."
+        ],
+        "discourse_unit_id": "HAB-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 285,
+        "line_start": 284,
+        "lines": [
+          "\\v 18 я все одно радітиму в \\nd Господі\\nd*,",
+          "\\q2 веселитимуся в Бозі, моєму Спасителеві."
+        ],
+        "number": "18",
+        "paragraph_id": "HAB-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 я все одно радітиму в \\nd Господі\\nd*,\n\\q2 веселитимуся в Бозі, моєму Спасителеві.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "Володар Господь – моя сила;\nВін робить мої ноги, як у лані,\nспрямовує мене на мої висоти.",
+        "body_text_exact": "Володар Господь – моя сила;\nВін робить мої ноги, як у лані,\nспрямовує мене на мої висоти.",
+        "body_text_normalized": "Володар Господь – моя сила; Він робить мої ноги, як у лані, спрямовує мене на мої висоти.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Володар ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " – моя сила;",
+          "\n",
+          "Він робить мої ноги, як у лані,",
+          "\n",
+          "спрямовує мене на мої висоти."
+        ],
+        "discourse_unit_id": "HAB-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 290,
+        "line_start": 288,
+        "lines": [
+          "\\v 19 Володар \\nd Господь\\nd* – моя сила;",
+          "\\q2 Він робить мої ноги, як у лані,",
+          "\\q2 спрямовує мене на мої висоти."
+        ],
+        "number": "19",
+        "paragraph_id": "HAB-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "HAB-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 Володар \\nd Господь\\nd* – моя сила;\n\\q2 Він робить мої ноги, як у лані,\n\\q2 спрямовує мене на мої висоти.",
+        "section_id": "HAB-S005",
+        "section_marker": "s1",
+        "section_title": "Молитва Авакума",
+        "verse_end": 19,
+        "verse_start": 19
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

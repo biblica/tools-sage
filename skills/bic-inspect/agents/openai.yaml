@@ -1,0 +1,3 @@
+interface:
+  display_name: "BIC Inspect"
+  short_description: "Inspect bounded source evidence and propose governed memory."

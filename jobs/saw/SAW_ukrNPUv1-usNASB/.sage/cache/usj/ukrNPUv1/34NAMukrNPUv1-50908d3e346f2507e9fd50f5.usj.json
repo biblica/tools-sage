@@ -1,0 +1,4855 @@
+{
+  "content": [
+    {
+      "code": "NAM",
+      "content": [
+        "- New Ukrainian Translation ver.1"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 2022 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "Наума",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Книга пророка Наума",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Наума",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Наум",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Книга пророка Наума",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вступ",
+        "\n"
+      ],
+      "marker": "iot",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Книга пророка Наума містить звістку про кару ",
+        {
+          "content": [
+            "Господню"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " Ніневії, столиці Ассирії, за те, що ассирійці завдали багато лиха Божому народові Ізраїлю та іншим народам. Найімовірніше, книга написана незадовго до падіння великого міста в 612 р. до Р. Х., коли воно було спустошене нашестям мідійців і скіфів. Пророк Йона теж провіщав загибель Ніневії, але його проповідь у місті звучала раніше, приблизно за часів правління ізраїльського царя Єровама ІІ (786–746 рр. до Р. Х.). Тоді Бог помилував місто, зважаючи на покаяння його мешканців.",
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Імовірно, пізніше ассирійці повернулися до своїх гріхів, і тепер уже Наум звіщає про остаточний Божий вирок жорстокому місту. Книгу можна поділити на три частини, відповідно до трьох її розділів: велич і неминучість Божого суду (розділ ",
+        {
+          "content": [
+            "1"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "), облога й падіння Ніневії (розділ ",
+        {
+          "content": [
+            "2"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ") та гріхи, через які столиця Ассирії буде покарана (розділ ",
+        {
+          "content": [
+            "3"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). У Книзі пророка Наума Бог зображений як милостивий, але й справедливий: Він карає грішника, який не кається у своєму беззаконні.",
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "NAM 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "NAM 1:1",
+          "type": "verse"
+        },
+        "Пророцтво про Ніневію. Книга видіння Наума з Елькоша.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Гнів ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " проти Ніневії",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "NAM 1:2",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " – ревнивий і мстивий Бог;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " – мстивий і сповнений гніву.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " помститься Своїм супротивникам",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і виллє гнів на Своїх ворогів.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "NAM 1:3",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " довготерпеливий і могутній у силі;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " не залишить винного без покарання.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Його шлях – у вихорі та бурі,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а хмари – порох від Його ніг.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "NAM 1:4",
+          "type": "verse"
+        },
+        "Він докоряє морю й висушує його;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він осушує всі річки.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Башан і Кармель мліють,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і цвіт Лівану засихає.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "NAM 1:5",
+          "type": "verse"
+        },
+        "Перед Ним тремтять гори",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й тануть пагорби.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Земля здригається перед Його обличчям,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "всесвіт і всі його мешканці.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "NAM 1:6",
+          "type": "verse"
+        },
+        "Хто встоїть перед Його обуренням?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Хто витримає Його лютий гнів?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Його лють розливається, як вогонь,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і перед Ним розсипаються скелі.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "NAM 1:7",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " добрий,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він – твердиня в день скорботи,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він знає тих, що в Ньому шукають притулок.",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "NAM 1:8",
+          "type": "verse"
+        },
+        "Але великою повінню, що розливається,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він покладе край місцю, де ",
+        {
+          "content": [
+            "стоїть Ніневія"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і ворогів Своїх переслідуватиме в темряві.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "NAM 1:9",
+          "type": "verse"
+        },
+        "Що ви замислюєте проти ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він усьому покладе край,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і лихо більше не повториться.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "NAM 1:10",
+          "type": "verse"
+        },
+        "Вони заплутані серед колючок",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і спʼяніли від свого пива;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "висохнуть зовсім, як солома.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "NAM 1:11",
+          "type": "verse"
+        },
+        "Ніневіє, з тебе вийшов той,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хто задумує зло проти ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хто дає нікчемні поради.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "NAM 1:12",
+          "type": "verse"
+        },
+        "Так говорить ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ":",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "«Хоча в них є спільники і їх багато,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "вони будуть вирізані й зникнуть.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Хоч Я й пригнічував тебе, ",
+        {
+          "content": [
+            "Юдо"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "не буду більше тебе пригнічувати.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "NAM 1:13",
+          "type": "verse"
+        },
+        "Тепер Я зламаю їхнє ярмо, що на твоїй шиї,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і зірву з тебе кайдани».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "NAM 1:14",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " дав наказ щодо тебе, Ніневіє:",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "«Ти більше не матимеш нащадків, які б носили твоє імʼя.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Я вигублю литих ідолів",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "із храмів твоїх богів.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Я приготую тобі могилу,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо ти стала нікчемна».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "NAM 1:15",
+          "type": "verse"
+        },
+        "Ось на горах ноги благовісника,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що проголошує мир!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Юдеє, відзначай свої свята",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й виконуй обітниці.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Не нападе на тебе більше віроломний,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо він буде знищений ущент.",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:15 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "У євр. тексті ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "1:15",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "пронумеровано як 2:1."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "2",
+      "sid": "NAM 2",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "Падіння Ніневії",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "У євр. тексті ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "2:1–13",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "пронумеровано як 2:2–14."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "NAM 2:1",
+          "type": "verse"
+        },
+        "Руйнівник піднявся проти тебе, Ніневіє!",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Охороняй укріплення,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "пильнуй дорогу,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "зміцни свої стегна,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "збери всі свої сили!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "NAM 2:2",
+          "type": "verse"
+        },
+        "Бо ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " відновить велич Якова,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "як і велич Ізраїля,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хоча руйнівники спустошили",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "та знищили їхні виноградники.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "NAM 2:3",
+          "type": "verse"
+        },
+        "Щити його воїнів червоні;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "мужі сильні вдягнені в багряне.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Сталь його колісниць сяє вогнем",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "у день, коли вони приготувалися ",
+        {
+          "content": [
+            "до битви"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і розмахують своїми кипарисовими списами.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "NAM 2:4",
+          "type": "verse"
+        },
+        "Колісниці шалено мчать по вулицях,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "носяться по площах.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вигляд у них – наче у смолоскипів;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "вони мчать, неначе блискавки.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "NAM 2:5",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Цар"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " закликає своїх могутніх,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "але вони спотикаються на своєму шляху,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "поспішають до муру,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й облога вже встановлена!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "NAM 2:6",
+          "type": "verse"
+        },
+        "Брами річок відчинилися,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і палац розтанув!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "NAM 2:7",
+          "type": "verse"
+        },
+        "Так було постановлено:",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Ніневію роздягнуть і поведуть у полон.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Її служниці стогнуть, як голубки,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і бʼють себе в груди.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "NAM 2:8",
+          "type": "verse"
+        },
+        "Ніневія наче ставок,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "вода якого витікає.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "«Стійте! Стійте!» – ",
+        {
+          "content": [
+            "кличуть до них"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "але ніхто не обертається.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "NAM 2:9",
+          "type": "verse"
+        },
+        "Грабуйте срібло!",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Грабуйте золото!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Безмежні розкоші,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "безліч коштовних речей!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "NAM 2:10",
+          "type": "verse"
+        },
+        "Ніневія спустошена, зруйнована й пограбована!",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Серця розтанули, і тремтять коліна,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "стегна у всіх мліють, і обличчя в усіх зблідли.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "NAM 2:11",
+          "type": "verse"
+        },
+        "Де ж тепер левʼяче лігво?",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Де місце, у якому вони годували своїх левчуків,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "де ходили лев та левиця з дитинчатами,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "де б їх ніхто не полохав?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "NAM 2:12",
+          "type": "verse"
+        },
+        "Лев достатньо пошматував для своїх дитинчат",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і вдосталь задушив здобичі для своєї левиці.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він наповнив здобиччю свої печери",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й розтерзаною плоттю – своє лігво.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "NAM 2:13",
+          "type": "verse"
+        },
+        "«Ось Я проти тебе, –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "проголошує ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " Воїнств. –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Я спалю твої колісниці в диму,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і меч пожере твоїх молодих левів.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Я не залишу тобі здобичі на землі,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і більше не буде чутно",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "голосу твоїх посланців».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "3",
+      "sid": "NAM 3",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "Горе Ніневії",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "NAM 3:1",
+          "type": "verse"
+        },
+        "Горе кривавому місту!",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Воно сповнене кривди,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "сповнене хижості,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "грабіж у ньому не припиняється!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "NAM 3:2",
+          "type": "verse"
+        },
+        "Лязгіт батогів і звук стукоту коліс –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "скаче кінь і гуркотить колісниця!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "NAM 3:3",
+          "type": "verse"
+        },
+        "Вершник наближається,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "виблискує меч, і сяє спис!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Багато вбитих і гори трупів,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "немає краю мертвим тілам –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "люди спотикаються об них.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "NAM 3:4",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Усе це"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " – за розбещеність блудниці,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "гарної на вигляд володарки чар,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що поневолила народи своєю розпустою",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і племена – своїм чаклунством.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "NAM 3:5",
+          "type": "verse"
+        },
+        "«Ось Я – проти тебе! –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "промовляє ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " Воїнств. –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Я задеру твою спідницю тобі аж на обличчя",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "та покажу народам твою наготу",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і царствам – твій сором.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "NAM 3:6",
+          "type": "verse"
+        },
+        "Я обкидаю тебе нечистотами,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "поведуся з тобою зневажливо",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і виставлю тебе на огляд.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "NAM 3:7",
+          "type": "verse"
+        },
+        "Тоді кожен, хто побачить тебе,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "тікатиме від тебе й скаже:",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "„Спустошена Ніневія – хто може її заспокоїти?“.",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Де я знайду для тебе втіху?»",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "NAM 3:8",
+          "type": "verse"
+        },
+        "Хіба ти не була розташована краще,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ніж Тебес",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:8 ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "Тебес ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "– євр. ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "Но-Амон",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            "– одне з найважливіших міст Стародавнього Єгипту."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " на ",
+        {
+          "content": [
+            "березі"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " Нілу,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "оточена водами?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Ріка була її укріпленням,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "води – її стінами.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "NAM 3:9",
+          "type": "verse"
+        },
+        "Куш та Єгипет були твоєю безмежною міццю,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Пут",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "3:9 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Межі цієї території точно не визначені. Найімовірніше, це Африка, оскільки біблійні джерела повʼязують її з Єгиптом і Кушем; можливо, ідеться про територію сучасного Сомалі."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " і лівійці були твоєю допомогою.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "NAM 3:10",
+          "type": "verse"
+        },
+        "Але тепер вона у вигнанні,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "пішла у полон.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Її немовлята лежать розбитими",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "на розі кожної вулиці.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Щодо її знаті кинуто жереб,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а її шляхетних закуто в кайдани.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "NAM 3:11",
+          "type": "verse"
+        },
+        "Ти теж спʼянієш,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і станеш непомітною,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і шукатимеш захисту від своїх ворогів.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "NAM 3:12",
+          "type": "verse"
+        },
+        "Усі твої твердині стануть як смоковниці з першими плодами:",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "якщо їх похитати, смокви впадуть прямо до рота тому,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хто їх їстиме.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "NAM 3:13",
+          "type": "verse"
+        },
+        "Ось твій народ посеред тебе",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "став наче ті жінки;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ворота твоєї землі",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "навстіж відкриті перед твоїми ворогами,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і вогонь пожере твої засуви.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "NAM 3:14",
+          "type": "verse"
+        },
+        "Начерпай собі води на час облоги!",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Зміцни свої укріплення!",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Іди, міси розчин і топчи глину,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "зміцнюй цегляну кладку!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "NAM 3:15",
+          "type": "verse"
+        },
+        "Там тебе пожиратиме вогонь,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "рубатиме меч, знищуючи тебе,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "як нищить рій сарани.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Примножуй ",
+        {
+          "content": [
+            "народ"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ", як гусінь,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "примножуй, як сарану!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "NAM 3:16",
+          "type": "verse"
+        },
+        "Якби ти примножила своїх торговців,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "як зорі небесні,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "рій сарани розорить їх і полетить.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "NAM 3:17",
+          "type": "verse"
+        },
+        "Твої вельможі – як сарана,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і твої чиновники – як рій коників,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що обсідають огорожі прохолодного дня,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "та лише засяє сонце, вони відлітають,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і ніхто не знає куди, у яке місце.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "NAM 3:18",
+          "type": "verse"
+        },
+        "Задрімали твої пастухи, царю Ассирії,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "лягли спочивати твої сильні воїни.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Розбігся твій народ по горах,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "немає кому його зібрати.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "NAM 3:19",
+          "type": "verse"
+        },
+        "Немає зцілення твоїм ранам,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ти хвора від завданого тобі удару.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Усі, хто чує твоє імʼя,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "сплеснуть долонями через тебе,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "адже на кого не обрушилося твоє нестримне зло?",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "NAM",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "34NAMukrNPUv1.SFM",
+    "source_sha256": "42aaa92279b2b121bdb208f87012aeff1fddfe42b3b37bdcd3fe076e3b0aede2",
+    "source_size": 14563,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Пророцтво про Ніневію. Книга видіння Наума з Елькоша.",
+        "body_text_exact": "Пророцтво про Ніневію. Книга видіння Наума з Елькоша.",
+        "body_text_normalized": "Пророцтво про Ніневію. Книга видіння Наума з Елькоша.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Пророцтво про Ніневію. Книга видіння Наума з Елькоша."
+        ],
+        "discourse_unit_id": "NAM-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 14,
+        "line_start": 14,
+        "lines": [
+          "\\v 1 Пророцтво про Ніневію. Книга видіння Наума з Елькоша."
+        ],
+        "number": "1",
+        "paragraph_id": "NAM-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Пророцтво про Ніневію. Книга видіння Наума з Елькоша.",
+        "section_id": "NAM-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Господь – ревнивий і мстивий Бог;\nГосподь – мстивий і сповнений гніву.\nГосподь помститься Своїм супротивникам\nі виллє гнів на Своїх ворогів.",
+        "body_text_exact": "Господь – ревнивий і мстивий Бог;\nГосподь – мстивий і сповнений гніву.\nГосподь помститься Своїм супротивникам\nі виллє гнів на Своїх ворогів.",
+        "body_text_normalized": "Господь – ревнивий і мстивий Бог; Господь – мстивий і сповнений гніву. Господь помститься Своїм супротивникам і виллє гнів на Своїх ворогів.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " – ревнивий і мстивий Бог;",
+          "\n",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " – мстивий і сповнений гніву.",
+          "\n",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " помститься Своїм супротивникам",
+          "\n",
+          "і виллє гнів на Своїх ворогів."
+        ],
+        "discourse_unit_id": "NAM-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 21,
+        "line_start": 18,
+        "lines": [
+          "\\v 2 \\nd Господь\\nd* – ревнивий і мстивий Бог;",
+          "\\q2 \\nd Господь\\nd* – мстивий і сповнений гніву.",
+          "\\q1 \\nd Господь\\nd* помститься Своїм супротивникам",
+          "\\q2 і виллє гнів на Своїх ворогів."
+        ],
+        "number": "2",
+        "paragraph_id": "NAM-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 \\nd Господь\\nd* – ревнивий і мстивий Бог;\n\\q2 \\nd Господь\\nd* – мстивий і сповнений гніву.\n\\q1 \\nd Господь\\nd* помститься Своїм супротивникам\n\\q2 і виллє гнів на Своїх ворогів.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Господь довготерпеливий і могутній у силі;\nГосподь не залишить винного без покарання.\nЙого шлях – у вихорі та бурі,\nа хмари – порох від Його ніг.",
+        "body_text_exact": "Господь довготерпеливий і могутній у силі;\nГосподь не залишить винного без покарання.\nЙого шлях – у вихорі та бурі,\nа хмари – порох від Його ніг.",
+        "body_text_normalized": "Господь довготерпеливий і могутній у силі; Господь не залишить винного без покарання. Його шлях – у вихорі та бурі, а хмари – порох від Його ніг.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " довготерпеливий і могутній у силі;",
+          "\n",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " не залишить винного без покарання.",
+          "\n",
+          "Його шлях – у вихорі та бурі,",
+          "\n",
+          "а хмари – порох від Його ніг."
+        ],
+        "discourse_unit_id": "NAM-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 26,
+        "line_start": 23,
+        "lines": [
+          "\\v 3 \\nd Господь\\nd* довготерпеливий і могутній у силі;",
+          "\\q2 \\nd Господь\\nd* не залишить винного без покарання.",
+          "\\q1 Його шлях – у вихорі та бурі,",
+          "\\q2 а хмари – порох від Його ніг."
+        ],
+        "number": "3",
+        "paragraph_id": "NAM-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 \\nd Господь\\nd* довготерпеливий і могутній у силі;\n\\q2 \\nd Господь\\nd* не залишить винного без покарання.\n\\q1 Його шлях – у вихорі та бурі,\n\\q2 а хмари – порох від Його ніг.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Він докоряє морю й висушує його;\nВін осушує всі річки.\nБашан і Кармель мліють,\nі цвіт Лівану засихає.",
+        "body_text_exact": "Він докоряє морю й висушує його;\nВін осушує всі річки.\nБашан і Кармель мліють,\nі цвіт Лівану засихає.",
+        "body_text_normalized": "Він докоряє морю й висушує його; Він осушує всі річки. Башан і Кармель мліють, і цвіт Лівану засихає.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Він докоряє морю й висушує його;",
+          "\n",
+          "Він осушує всі річки.",
+          "\n",
+          "Башан і Кармель мліють,",
+          "\n",
+          "і цвіт Лівану засихає."
+        ],
+        "discourse_unit_id": "NAM-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 31,
+        "line_start": 28,
+        "lines": [
+          "\\v 4 Він докоряє морю й висушує його;",
+          "\\q2 Він осушує всі річки.",
+          "\\q1 Башан і Кармель мліють,",
+          "\\q2 і цвіт Лівану засихає."
+        ],
+        "number": "4",
+        "paragraph_id": "NAM-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Він докоряє морю й висушує його;\n\\q2 Він осушує всі річки.\n\\q1 Башан і Кармель мліють,\n\\q2 і цвіт Лівану засихає.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Перед Ним тремтять гори\nй тануть пагорби.\nЗемля здригається перед Його обличчям,\nвсесвіт і всі його мешканці.",
+        "body_text_exact": "Перед Ним тремтять гори\nй тануть пагорби.\nЗемля здригається перед Його обличчям,\nвсесвіт і всі його мешканці.",
+        "body_text_normalized": "Перед Ним тремтять гори й тануть пагорби. Земля здригається перед Його обличчям, всесвіт і всі його мешканці.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Перед Ним тремтять гори",
+          "\n",
+          "й тануть пагорби.",
+          "\n",
+          "Земля здригається перед Його обличчям,",
+          "\n",
+          "всесвіт і всі його мешканці."
+        ],
+        "discourse_unit_id": "NAM-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 36,
+        "line_start": 33,
+        "lines": [
+          "\\v 5 Перед Ним тремтять гори",
+          "\\q2 й тануть пагорби.",
+          "\\q1 Земля здригається перед Його обличчям,",
+          "\\q2 всесвіт і всі його мешканці."
+        ],
+        "number": "5",
+        "paragraph_id": "NAM-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Перед Ним тремтять гори\n\\q2 й тануть пагорби.\n\\q1 Земля здригається перед Його обличчям,\n\\q2 всесвіт і всі його мешканці.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "Хто встоїть перед Його обуренням?\nХто витримає Його лютий гнів?\nЙого лють розливається, як вогонь,\nі перед Ним розсипаються скелі.",
+        "body_text_exact": "Хто встоїть перед Його обуренням?\nХто витримає Його лютий гнів?\nЙого лють розливається, як вогонь,\nі перед Ним розсипаються скелі.",
+        "body_text_normalized": "Хто встоїть перед Його обуренням? Хто витримає Його лютий гнів? Його лють розливається, як вогонь, і перед Ним розсипаються скелі.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Хто встоїть перед Його обуренням?",
+          "\n",
+          "Хто витримає Його лютий гнів?",
+          "\n",
+          "Його лють розливається, як вогонь,",
+          "\n",
+          "і перед Ним розсипаються скелі."
+        ],
+        "discourse_unit_id": "NAM-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 41,
+        "line_start": 38,
+        "lines": [
+          "\\v 6 Хто встоїть перед Його обуренням?",
+          "\\q2 Хто витримає Його лютий гнів?",
+          "\\q1 Його лють розливається, як вогонь,",
+          "\\q2 і перед Ним розсипаються скелі."
+        ],
+        "number": "6",
+        "paragraph_id": "NAM-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 Хто встоїть перед Його обуренням?\n\\q2 Хто витримає Його лютий гнів?\n\\q1 Його лють розливається, як вогонь,\n\\q2 і перед Ним розсипаються скелі.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Господь добрий,\nВін – твердиня в день скорботи,\nВін знає тих, що в Ньому шукають притулок.",
+        "body_text_exact": "Господь добрий,\nВін – твердиня в день скорботи,\nВін знає тих, що в Ньому шукають притулок.",
+        "body_text_normalized": "Господь добрий, Він – твердиня в день скорботи, Він знає тих, що в Ньому шукають притулок.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " добрий,",
+          "\n",
+          "Він – твердиня в день скорботи,",
+          "\n",
+          "Він знає тих, що в Ньому шукають притулок."
+        ],
+        "discourse_unit_id": "NAM-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 46,
+        "line_start": 44,
+        "lines": [
+          "\\v 7 \\nd Господь\\nd* добрий,",
+          "\\q2 Він – твердиня в день скорботи,",
+          "\\q1 Він знає тих, що в Ньому шукають притулок."
+        ],
+        "number": "7",
+        "paragraph_id": "NAM-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B003",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 \\nd Господь\\nd* добрий,\n\\q2 Він – твердиня в день скорботи,\n\\q1 Він знає тих, що в Ньому шукають притулок.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Але великою повінню, що розливається,\nВін покладе край місцю, де стоїть Ніневія,\nі ворогів Своїх переслідуватиме в темряві.",
+        "body_text_exact": "Але великою повінню, що розливається,\nВін покладе край місцю, де стоїть Ніневія,\nі ворогів Своїх переслідуватиме в темряві.",
+        "body_text_normalized": "Але великою повінню, що розливається, Він покладе край місцю, де стоїть Ніневія, і ворогів Своїх переслідуватиме в темряві.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Але великою повінню, що розливається,",
+          "\n",
+          "Він покладе край місцю, де ",
+          {
+            "content": [
+              "стоїть Ніневія"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "і ворогів Своїх переслідуватиме в темряві."
+        ],
+        "discourse_unit_id": "NAM-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 50,
+        "line_start": 48,
+        "lines": [
+          "\\v 8 Але великою повінню, що розливається,",
+          "\\q1 Він покладе край місцю, де \\add стоїть Ніневія\\add*,",
+          "\\q2 і ворогів Своїх переслідуватиме в темряві."
+        ],
+        "number": "8",
+        "paragraph_id": "NAM-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B003",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Але великою повінню, що розливається,\n\\q1 Він покладе край місцю, де \\add стоїть Ніневія\\add*,\n\\q2 і ворогів Своїх переслідуватиме в темряві.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Що ви замислюєте проти Господа?\nВін усьому покладе край,\nі лихо більше не повториться.",
+        "body_text_exact": "Що ви замислюєте проти Господа?\nВін усьому покладе край,\nі лихо більше не повториться.",
+        "body_text_normalized": "Що ви замислюєте проти Господа? Він усьому покладе край, і лихо більше не повториться.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Що ви замислюєте проти ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "?",
+          "\n",
+          "Він усьому покладе край,",
+          "\n",
+          "і лихо більше не повториться."
+        ],
+        "discourse_unit_id": "NAM-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 55,
+        "line_start": 53,
+        "lines": [
+          "\\v 9 Що ви замислюєте проти \\nd Господа\\nd*?",
+          "\\q2 Він усьому покладе край,",
+          "\\q2 і лихо більше не повториться."
+        ],
+        "number": "9",
+        "paragraph_id": "NAM-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Що ви замислюєте проти \\nd Господа\\nd*?\n\\q2 Він усьому покладе край,\n\\q2 і лихо більше не повториться.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Вони заплутані серед колючок\nі спʼяніли від свого пива;\nвисохнуть зовсім, як солома.",
+        "body_text_exact": "Вони заплутані серед колючок\nі спʼяніли від свого пива;\nвисохнуть зовсім, як солома.",
+        "body_text_normalized": "Вони заплутані серед колючок і спʼяніли від свого пива; висохнуть зовсім, як солома.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Вони заплутані серед колючок",
+          "\n",
+          "і спʼяніли від свого пива;",
+          "\n",
+          "висохнуть зовсім, як солома."
+        ],
+        "discourse_unit_id": "NAM-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 59,
+        "line_start": 57,
+        "lines": [
+          "\\v 10 Вони заплутані серед колючок",
+          "\\q2 і спʼяніли від свого пива;",
+          "\\q2 висохнуть зовсім, як солома."
+        ],
+        "number": "10",
+        "paragraph_id": "NAM-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Вони заплутані серед колючок\n\\q2 і спʼяніли від свого пива;\n\\q2 висохнуть зовсім, як солома.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Ніневіє, з тебе вийшов той,\nхто задумує зло проти Господа,\nхто дає нікчемні поради.",
+        "body_text_exact": "Ніневіє, з тебе вийшов той,\nхто задумує зло проти Господа,\nхто дає нікчемні поради.",
+        "body_text_normalized": "Ніневіє, з тебе вийшов той, хто задумує зло проти Господа, хто дає нікчемні поради.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Ніневіє, з тебе вийшов той,",
+          "\n",
+          "хто задумує зло проти ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "хто дає нікчемні поради."
+        ],
+        "discourse_unit_id": "NAM-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 63,
+        "line_start": 61,
+        "lines": [
+          "\\v 11 Ніневіє, з тебе вийшов той,",
+          "\\q2 хто задумує зло проти \\nd Господа\\nd*,",
+          "\\q2 хто дає нікчемні поради."
+        ],
+        "number": "11",
+        "paragraph_id": "NAM-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Ніневіє, з тебе вийшов той,\n\\q2 хто задумує зло проти \\nd Господа\\nd*,\n\\q2 хто дає нікчемні поради.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Так говорить Господь:\n«Хоча в них є спільники і їх багато,\nвони будуть вирізані й зникнуть.\nХоч Я й пригнічував тебе, Юдо,\nне буду більше тебе пригнічувати.",
+        "body_text_exact": "Так говорить Господь:\n«Хоча в них є спільники і їх багато,\nвони будуть вирізані й зникнуть.\nХоч Я й пригнічував тебе, Юдо,\nне буду більше тебе пригнічувати.",
+        "body_text_normalized": "Так говорить Господь: «Хоча в них є спільники і їх багато, вони будуть вирізані й зникнуть. Хоч Я й пригнічував тебе, Юдо, не буду більше тебе пригнічувати.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Так говорить ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ":",
+          "\n",
+          "«Хоча в них є спільники і їх багато,",
+          "\n",
+          "вони будуть вирізані й зникнуть.",
+          "\n",
+          "Хоч Я й пригнічував тебе, ",
+          {
+            "content": [
+              "Юдо"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "не буду більше тебе пригнічувати."
+        ],
+        "discourse_unit_id": "NAM-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 69,
+        "line_start": 65,
+        "lines": [
+          "\\v 12 Так говорить \\nd Господь\\nd*:",
+          "\\q1 «Хоча в них є спільники і їх багато,",
+          "\\q2 вони будуть вирізані й зникнуть.",
+          "\\q1 Хоч Я й пригнічував тебе, \\add Юдо\\add*,",
+          "\\q2 не буду більше тебе пригнічувати."
+        ],
+        "number": "12",
+        "paragraph_id": "NAM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Так говорить \\nd Господь\\nd*:\n\\q1 «Хоча в них є спільники і їх багато,\n\\q2 вони будуть вирізані й зникнуть.\n\\q1 Хоч Я й пригнічував тебе, \\add Юдо\\add*,\n\\q2 не буду більше тебе пригнічувати.",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Тепер Я зламаю їхнє ярмо, що на твоїй шиї,\nі зірву з тебе кайдани».",
+        "body_text_exact": "Тепер Я зламаю їхнє ярмо, що на твоїй шиї,\nі зірву з тебе кайдани».",
+        "body_text_normalized": "Тепер Я зламаю їхнє ярмо, що на твоїй шиї, і зірву з тебе кайдани».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Тепер Я зламаю їхнє ярмо, що на твоїй шиї,",
+          "\n",
+          "і зірву з тебе кайдани»."
+        ],
+        "discourse_unit_id": "NAM-D006",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 72,
+        "line_start": 71,
+        "lines": [
+          "\\v 13 Тепер Я зламаю їхнє ярмо, що на твоїй шиї,",
+          "\\q2 і зірву з тебе кайдани»."
+        ],
+        "number": "13",
+        "paragraph_id": "NAM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B005",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Тепер Я зламаю їхнє ярмо, що на твоїй шиї,\n\\q2 і зірву з тебе кайдани».",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Господь дав наказ щодо тебе, Ніневіє:\n«Ти більше не матимеш нащадків, які б носили твоє імʼя.\nЯ вигублю литих ідолів\nіз храмів твоїх богів.\nЯ приготую тобі могилу,\nбо ти стала нікчемна».",
+        "body_text_exact": "Господь дав наказ щодо тебе, Ніневіє:\n«Ти більше не матимеш нащадків, які б носили твоє імʼя.\nЯ вигублю литих ідолів\nіз храмів твоїх богів.\nЯ приготую тобі могилу,\nбо ти стала нікчемна».",
+        "body_text_normalized": "Господь дав наказ щодо тебе, Ніневіє: «Ти більше не матимеш нащадків, які б носили твоє імʼя. Я вигублю литих ідолів із храмів твоїх богів. Я приготую тобі могилу, бо ти стала нікчемна».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " дав наказ щодо тебе, Ніневіє:",
+          "\n",
+          "«Ти більше не матимеш нащадків, які б носили твоє імʼя.",
+          "\n",
+          "Я вигублю литих ідолів",
+          "\n",
+          "із храмів твоїх богів.",
+          "\n",
+          "Я приготую тобі могилу,",
+          "\n",
+          "бо ти стала нікчемна»."
+        ],
+        "discourse_unit_id": "NAM-D007",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 80,
+        "line_start": 75,
+        "lines": [
+          "\\v 14 \\nd Господь\\nd* дав наказ щодо тебе, Ніневіє:",
+          "\\q2 «Ти більше не матимеш нащадків, які б носили твоє імʼя.",
+          "\\q1 Я вигублю литих ідолів",
+          "\\q2 із храмів твоїх богів.",
+          "\\q1 Я приготую тобі могилу,",
+          "\\q2 бо ти стала нікчемна»."
+        ],
+        "number": "14",
+        "paragraph_id": "NAM-P006",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B006",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 \\nd Господь\\nd* дав наказ щодо тебе, Ніневіє:\n\\q2 «Ти більше не матимеш нащадків, які б носили твоє імʼя.\n\\q1 Я вигублю литих ідолів\n\\q2 із храмів твоїх богів.\n\\q1 Я приготую тобі могилу,\n\\q2 бо ти стала нікчемна».",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Ось на горах ноги благовісника,\nщо проголошує мир!\nЮдеє, відзначай свої свята\nй виконуй обітниці.\nНе нападе на тебе більше віроломний,\nбо він буде знищений ущент.",
+        "body_text_exact": "Ось на горах ноги благовісника,\nщо проголошує мир!\nЮдеє, відзначай свої свята\nй виконуй обітниці.\nНе нападе на тебе більше віроломний,\nбо він буде знищений ущент.",
+        "body_text_normalized": "Ось на горах ноги благовісника, що проголошує мир! Юдеє, відзначай свої свята й виконуй обітниці. Не нападе на тебе більше віроломний, бо він буде знищений ущент.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Ось на горах ноги благовісника,",
+          "\n",
+          "що проголошує мир!",
+          "\n",
+          "Юдеє, відзначай свої свята",
+          "\n",
+          "й виконуй обітниці.",
+          "\n",
+          "Не нападе на тебе більше віроломний,",
+          "\n",
+          "бо він буде знищений ущент.",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:15 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "У євр. тексті ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "1:15",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "пронумеровано як 2:1."
+            ],
+            "marker": "f",
+            "type": "note"
+          }
+        ],
+        "discourse_unit_id": "NAM-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 88,
+        "line_start": 83,
+        "lines": [
+          "\\v 15 Ось на горах ноги благовісника,",
+          "\\q2 що проголошує мир!",
+          "\\q1 Юдеє, відзначай свої свята",
+          "\\q2 й виконуй обітниці.",
+          "\\q1 Не нападе на тебе більше віроломний,",
+          "\\q2 бо він буде знищений ущент.\\f + \\fr 1:15 \\ft У євр. тексті \\+xt 1:15\\+xt* пронумеровано як 2:1.\\f*"
+        ],
+        "number": "15",
+        "paragraph_id": "NAM-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B007",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Ось на горах ноги благовісника,\n\\q2 що проголошує мир!\n\\q1 Юдеє, відзначай свої свята\n\\q2 й виконуй обітниці.\n\\q1 Не нападе на тебе більше віроломний,\n\\q2 бо він буде знищений ущент.\\f + \\fr 1:15 \\ft У євр. тексті \\+xt 1:15\\+xt* пронумеровано як 2:1.\\f*",
+        "section_id": "NAM-S001",
+        "section_marker": "s1",
+        "section_title": "Гнів Господапроти Ніневії",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Руйнівник піднявся проти тебе, Ніневіє!\nОхороняй укріплення,\nпильнуй дорогу,\nзміцни свої стегна,\nзбери всі свої сили!",
+        "body_text_exact": "Руйнівник піднявся проти тебе, Ніневіє!\nОхороняй укріплення,\nпильнуй дорогу,\nзміцни свої стегна,\nзбери всі свої сили!",
+        "body_text_normalized": "Руйнівник піднявся проти тебе, Ніневіє! Охороняй укріплення, пильнуй дорогу, зміцни свої стегна, збери всі свої сили!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Руйнівник піднявся проти тебе, Ніневіє!",
+          "\n",
+          "Охороняй укріплення,",
+          "\n",
+          "пильнуй дорогу,",
+          "\n",
+          "зміцни свої стегна,",
+          "\n",
+          "збери всі свої сили!"
+        ],
+        "discourse_unit_id": "NAM-D009",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 96,
+        "line_start": 92,
+        "lines": [
+          "\\v 1 Руйнівник піднявся проти тебе, Ніневіє!",
+          "\\q2 Охороняй укріплення,",
+          "\\q2 пильнуй дорогу,",
+          "\\q2 зміцни свої стегна,",
+          "\\q2 збери всі свої сили!"
+        ],
+        "number": "1",
+        "paragraph_id": "NAM-P008",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B008",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Руйнівник піднявся проти тебе, Ніневіє!\n\\q2 Охороняй укріплення,\n\\q2 пильнуй дорогу,\n\\q2 зміцни свої стегна,\n\\q2 збери всі свої сили!",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Бо Господь відновить велич Якова,\nяк і велич Ізраїля,\nхоча руйнівники спустошили\nта знищили їхні виноградники.",
+        "body_text_exact": "Бо Господь відновить велич Якова,\nяк і велич Ізраїля,\nхоча руйнівники спустошили\nта знищили їхні виноградники.",
+        "body_text_normalized": "Бо Господь відновить велич Якова, як і велич Ізраїля, хоча руйнівники спустошили та знищили їхні виноградники.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Бо ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " відновить велич Якова,",
+          "\n",
+          "як і велич Ізраїля,",
+          "\n",
+          "хоча руйнівники спустошили",
+          "\n",
+          "та знищили їхні виноградники."
+        ],
+        "discourse_unit_id": "NAM-D010",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 102,
+        "line_start": 99,
+        "lines": [
+          "\\v 2 Бо \\nd Господь\\nd* відновить велич Якова,",
+          "\\q2 як і велич Ізраїля,",
+          "\\q1 хоча руйнівники спустошили",
+          "\\q2 та знищили їхні виноградники."
+        ],
+        "number": "2",
+        "paragraph_id": "NAM-P009",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B009",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Бо \\nd Господь\\nd* відновить велич Якова,\n\\q2 як і велич Ізраїля,\n\\q1 хоча руйнівники спустошили\n\\q2 та знищили їхні виноградники.",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Щити його воїнів червоні;\nмужі сильні вдягнені в багряне.\nСталь його колісниць сяє вогнем\nу день, коли вони приготувалися до битви\nі розмахують своїми кипарисовими списами.",
+        "body_text_exact": "Щити його воїнів червоні;\nмужі сильні вдягнені в багряне.\nСталь його колісниць сяє вогнем\nу день, коли вони приготувалися до битви\nі розмахують своїми кипарисовими списами.",
+        "body_text_normalized": "Щити його воїнів червоні; мужі сильні вдягнені в багряне. Сталь його колісниць сяє вогнем у день, коли вони приготувалися до битви і розмахують своїми кипарисовими списами.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Щити його воїнів червоні;",
+          "\n",
+          "мужі сильні вдягнені в багряне.",
+          "\n",
+          "Сталь його колісниць сяє вогнем",
+          "\n",
+          "у день, коли вони приготувалися ",
+          {
+            "content": [
+              "до битви"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          "\n",
+          "і розмахують своїми кипарисовими списами."
+        ],
+        "discourse_unit_id": "NAM-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 109,
+        "line_start": 105,
+        "lines": [
+          "\\v 3 Щити його воїнів червоні;",
+          "\\q2 мужі сильні вдягнені в багряне.",
+          "\\q1 Сталь його колісниць сяє вогнем",
+          "\\q2 у день, коли вони приготувалися \\add до битви\\add*",
+          "\\q2 і розмахують своїми кипарисовими списами."
+        ],
+        "number": "3",
+        "paragraph_id": "NAM-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B010",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Щити його воїнів червоні;\n\\q2 мужі сильні вдягнені в багряне.\n\\q1 Сталь його колісниць сяє вогнем\n\\q2 у день, коли вони приготувалися \\add до битви\\add*\n\\q2 і розмахують своїми кипарисовими списами.",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Колісниці шалено мчать по вулицях,\nносяться по площах.\nВигляд у них – наче у смолоскипів;\nвони мчать, неначе блискавки.",
+        "body_text_exact": "Колісниці шалено мчать по вулицях,\nносяться по площах.\nВигляд у них – наче у смолоскипів;\nвони мчать, неначе блискавки.",
+        "body_text_normalized": "Колісниці шалено мчать по вулицях, носяться по площах. Вигляд у них – наче у смолоскипів; вони мчать, неначе блискавки.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Колісниці шалено мчать по вулицях,",
+          "\n",
+          "носяться по площах.",
+          "\n",
+          "Вигляд у них – наче у смолоскипів;",
+          "\n",
+          "вони мчать, неначе блискавки."
+        ],
+        "discourse_unit_id": "NAM-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 114,
+        "line_start": 111,
+        "lines": [
+          "\\v 4 Колісниці шалено мчать по вулицях,",
+          "\\q2 носяться по площах.",
+          "\\q1 Вигляд у них – наче у смолоскипів;",
+          "\\q2 вони мчать, неначе блискавки."
+        ],
+        "number": "4",
+        "paragraph_id": "NAM-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B010",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Колісниці шалено мчать по вулицях,\n\\q2 носяться по площах.\n\\q1 Вигляд у них – наче у смолоскипів;\n\\q2 вони мчать, неначе блискавки.",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Цар закликає своїх могутніх,\nале вони спотикаються на своєму шляху,\nпоспішають до муру,\nй облога вже встановлена!",
+        "body_text_exact": "Цар закликає своїх могутніх,\nале вони спотикаються на своєму шляху,\nпоспішають до муру,\nй облога вже встановлена!",
+        "body_text_normalized": "Цар закликає своїх могутніх, але вони спотикаються на своєму шляху, поспішають до муру, й облога вже встановлена!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          {
+            "content": [
+              "Цар"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " закликає своїх могутніх,",
+          "\n",
+          "але вони спотикаються на своєму шляху,",
+          "\n",
+          "поспішають до муру,",
+          "\n",
+          "й облога вже встановлена!"
+        ],
+        "discourse_unit_id": "NAM-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 120,
+        "line_start": 117,
+        "lines": [
+          "\\v 5 \\add Цар\\add* закликає своїх могутніх,",
+          "\\q2 але вони спотикаються на своєму шляху,",
+          "\\q1 поспішають до муру,",
+          "\\q2 й облога вже встановлена!"
+        ],
+        "number": "5",
+        "paragraph_id": "NAM-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 \\add Цар\\add* закликає своїх могутніх,\n\\q2 але вони спотикаються на своєму шляху,\n\\q1 поспішають до муру,\n\\q2 й облога вже встановлена!",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "Брами річок відчинилися,\nі палац розтанув!",
+        "body_text_exact": "Брами річок відчинилися,\nі палац розтанув!",
+        "body_text_normalized": "Брами річок відчинилися, і палац розтанув!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Брами річок відчинилися,",
+          "\n",
+          "і палац розтанув!"
+        ],
+        "discourse_unit_id": "NAM-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 123,
+        "line_start": 122,
+        "lines": [
+          "\\v 6 Брами річок відчинилися,",
+          "\\q2 і палац розтанув!"
+        ],
+        "number": "6",
+        "paragraph_id": "NAM-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 Брами річок відчинилися,\n\\q2 і палац розтанув!",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Так було постановлено:\nНіневію роздягнуть і поведуть у полон.\nЇї служниці стогнуть, як голубки,\nі бʼють себе в груди.",
+        "body_text_exact": "Так було постановлено:\nНіневію роздягнуть і поведуть у полон.\nЇї служниці стогнуть, як голубки,\nі бʼють себе в груди.",
+        "body_text_normalized": "Так було постановлено: Ніневію роздягнуть і поведуть у полон. Її служниці стогнуть, як голубки, і бʼють себе в груди.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Так було постановлено:",
+          "\n",
+          "Ніневію роздягнуть і поведуть у полон.",
+          "\n",
+          "Її служниці стогнуть, як голубки,",
+          "\n",
+          "і бʼють себе в груди."
+        ],
+        "discourse_unit_id": "NAM-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 128,
+        "line_start": 125,
+        "lines": [
+          "\\v 7 Так було постановлено:",
+          "\\q2 Ніневію роздягнуть і поведуть у полон.",
+          "\\q1 Її служниці стогнуть, як голубки,",
+          "\\q2 і бʼють себе в груди."
+        ],
+        "number": "7",
+        "paragraph_id": "NAM-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Так було постановлено:\n\\q2 Ніневію роздягнуть і поведуть у полон.\n\\q1 Її служниці стогнуть, як голубки,\n\\q2 і бʼють себе в груди.",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Ніневія наче ставок,\nвода якого витікає.\n«Стійте! Стійте!» – кличуть до них,\nале ніхто не обертається.",
+        "body_text_exact": "Ніневія наче ставок,\nвода якого витікає.\n«Стійте! Стійте!» – кличуть до них,\nале ніхто не обертається.",
+        "body_text_normalized": "Ніневія наче ставок, вода якого витікає. «Стійте! Стійте!» – кличуть до них, але ніхто не обертається.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Ніневія наче ставок,",
+          "\n",
+          "вода якого витікає.",
+          "\n",
+          "«Стійте! Стійте!» – ",
+          {
+            "content": [
+              "кличуть до них"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "але ніхто не обертається."
+        ],
+        "discourse_unit_id": "NAM-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 133,
+        "line_start": 130,
+        "lines": [
+          "\\v 8 Ніневія наче ставок,",
+          "\\q2 вода якого витікає.",
+          "\\q1 «Стійте! Стійте!» – \\add кличуть до них\\add*,",
+          "\\q2 але ніхто не обертається."
+        ],
+        "number": "8",
+        "paragraph_id": "NAM-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Ніневія наче ставок,\n\\q2 вода якого витікає.\n\\q1 «Стійте! Стійте!» – \\add кличуть до них\\add*,\n\\q2 але ніхто не обертається.",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Грабуйте срібло!\nГрабуйте золото!\nБезмежні розкоші,\nбезліч коштовних речей!",
+        "body_text_exact": "Грабуйте срібло!\nГрабуйте золото!\nБезмежні розкоші,\nбезліч коштовних речей!",
+        "body_text_normalized": "Грабуйте срібло! Грабуйте золото! Безмежні розкоші, безліч коштовних речей!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Грабуйте срібло!",
+          "\n",
+          "Грабуйте золото!",
+          "\n",
+          "Безмежні розкоші,",
+          "\n",
+          "безліч коштовних речей!"
+        ],
+        "discourse_unit_id": "NAM-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 138,
+        "line_start": 135,
+        "lines": [
+          "\\v 9 Грабуйте срібло!",
+          "\\q2 Грабуйте золото!",
+          "\\q1 Безмежні розкоші,",
+          "\\q2 безліч коштовних речей!"
+        ],
+        "number": "9",
+        "paragraph_id": "NAM-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Грабуйте срібло!\n\\q2 Грабуйте золото!\n\\q1 Безмежні розкоші,\n\\q2 безліч коштовних речей!",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Ніневія спустошена, зруйнована й пограбована!\nСерця розтанули, і тремтять коліна,\nстегна у всіх мліють, і обличчя в усіх зблідли.",
+        "body_text_exact": "Ніневія спустошена, зруйнована й пограбована!\nСерця розтанули, і тремтять коліна,\nстегна у всіх мліють, і обличчя в усіх зблідли.",
+        "body_text_normalized": "Ніневія спустошена, зруйнована й пограбована! Серця розтанули, і тремтять коліна, стегна у всіх мліють, і обличчя в усіх зблідли.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Ніневія спустошена, зруйнована й пограбована!",
+          "\n",
+          "Серця розтанули, і тремтять коліна,",
+          "\n",
+          "стегна у всіх мліють, і обличчя в усіх зблідли."
+        ],
+        "discourse_unit_id": "NAM-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 142,
+        "line_start": 140,
+        "lines": [
+          "\\v 10 Ніневія спустошена, зруйнована й пограбована!",
+          "\\q2 Серця розтанули, і тремтять коліна,",
+          "\\q2 стегна у всіх мліють, і обличчя в усіх зблідли."
+        ],
+        "number": "10",
+        "paragraph_id": "NAM-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B011",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Ніневія спустошена, зруйнована й пограбована!\n\\q2 Серця розтанули, і тремтять коліна,\n\\q2 стегна у всіх мліють, і обличчя в усіх зблідли.",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Де ж тепер левʼяче лігво?\nДе місце, у якому вони годували своїх левчуків,\nде ходили лев та левиця з дитинчатами,\nде б їх ніхто не полохав?",
+        "body_text_exact": "Де ж тепер левʼяче лігво?\nДе місце, у якому вони годували своїх левчуків,\nде ходили лев та левиця з дитинчатами,\nде б їх ніхто не полохав?",
+        "body_text_normalized": "Де ж тепер левʼяче лігво? Де місце, у якому вони годували своїх левчуків, де ходили лев та левиця з дитинчатами, де б їх ніхто не полохав?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Де ж тепер левʼяче лігво?",
+          "\n",
+          "Де місце, у якому вони годували своїх левчуків,",
+          "\n",
+          "де ходили лев та левиця з дитинчатами,",
+          "\n",
+          "де б їх ніхто не полохав?"
+        ],
+        "discourse_unit_id": "NAM-D013",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 148,
+        "line_start": 145,
+        "lines": [
+          "\\v 11 Де ж тепер левʼяче лігво?",
+          "\\q2 Де місце, у якому вони годували своїх левчуків,",
+          "\\q1 де ходили лев та левиця з дитинчатами,",
+          "\\q2 де б їх ніхто не полохав?"
+        ],
+        "number": "11",
+        "paragraph_id": "NAM-P012",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B012",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Де ж тепер левʼяче лігво?\n\\q2 Де місце, у якому вони годували своїх левчуків,\n\\q1 де ходили лев та левиця з дитинчатами,\n\\q2 де б їх ніхто не полохав?",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Лев достатньо пошматував для своїх дитинчат\nі вдосталь задушив здобичі для своєї левиці.\nВін наповнив здобиччю свої печери\nй розтерзаною плоттю – своє лігво.",
+        "body_text_exact": "Лев достатньо пошматував для своїх дитинчат\nі вдосталь задушив здобичі для своєї левиці.\nВін наповнив здобиччю свої печери\nй розтерзаною плоттю – своє лігво.",
+        "body_text_normalized": "Лев достатньо пошматував для своїх дитинчат і вдосталь задушив здобичі для своєї левиці. Він наповнив здобиччю свої печери й розтерзаною плоттю – своє лігво.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Лев достатньо пошматував для своїх дитинчат",
+          "\n",
+          "і вдосталь задушив здобичі для своєї левиці.",
+          "\n",
+          "Він наповнив здобиччю свої печери",
+          "\n",
+          "й розтерзаною плоттю – своє лігво."
+        ],
+        "discourse_unit_id": "NAM-D013",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 153,
+        "line_start": 150,
+        "lines": [
+          "\\v 12 Лев достатньо пошматував для своїх дитинчат",
+          "\\q2 і вдосталь задушив здобичі для своєї левиці.",
+          "\\q1 Він наповнив здобиччю свої печери",
+          "\\q2 й розтерзаною плоттю – своє лігво."
+        ],
+        "number": "12",
+        "paragraph_id": "NAM-P012",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B012",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Лев достатньо пошматував для своїх дитинчат\n\\q2 і вдосталь задушив здобичі для своєї левиці.\n\\q1 Він наповнив здобиччю свої печери\n\\q2 й розтерзаною плоттю – своє лігво.",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "«Ось Я проти тебе, –\nпроголошує Господь Воїнств. –\nЯ спалю твої колісниці в диму,\nі меч пожере твоїх молодих левів.\nЯ не залишу тобі здобичі на землі,\nі більше не буде чутно\nголосу твоїх посланців».",
+        "body_text_exact": "«Ось Я проти тебе, –\nпроголошує Господь Воїнств. –\nЯ спалю твої колісниці в диму,\nі меч пожере твоїх молодих левів.\nЯ не залишу тобі здобичі на землі,\nі більше не буде чутно\nголосу твоїх посланців».",
+        "body_text_normalized": "«Ось Я проти тебе, – проголошує Господь Воїнств. – Я спалю твої колісниці в диму, і меч пожере твоїх молодих левів. Я не залишу тобі здобичі на землі, і більше не буде чутно голосу твоїх посланців».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "«Ось Я проти тебе, –",
+          "\n",
+          "проголошує ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " Воїнств. –",
+          "\n",
+          "Я спалю твої колісниці в диму,",
+          "\n",
+          "і меч пожере твоїх молодих левів.",
+          "\n",
+          "Я не залишу тобі здобичі на землі,",
+          "\n",
+          "і більше не буде чутно",
+          "\n",
+          "голосу твоїх посланців»."
+        ],
+        "discourse_unit_id": "NAM-D014",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 162,
+        "line_start": 156,
+        "lines": [
+          "\\v 13 «Ось Я проти тебе, –",
+          "\\q2 проголошує \\nd Господь\\nd* Воїнств. –",
+          "\\q1 Я спалю твої колісниці в диму,",
+          "\\q2 і меч пожере твоїх молодих левів.",
+          "\\q2 Я не залишу тобі здобичі на землі,",
+          "\\q1 і більше не буде чутно",
+          "\\q2 голосу твоїх посланців»."
+        ],
+        "number": "13",
+        "paragraph_id": "NAM-P013",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B013",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 «Ось Я проти тебе, –\n\\q2 проголошує \\nd Господь\\nd* Воїнств. –\n\\q1 Я спалю твої колісниці в диму,\n\\q2 і меч пожере твоїх молодих левів.\n\\q2 Я не залишу тобі здобичі на землі,\n\\q1 і більше не буде чутно\n\\q2 голосу твоїх посланців».",
+        "section_id": "NAM-S002",
+        "section_marker": "s1",
+        "section_title": "Падіння Ніневії",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Горе кривавому місту!\nВоно сповнене кривди,\nсповнене хижості,\nграбіж у ньому не припиняється!",
+        "body_text_exact": "Горе кривавому місту!\nВоно сповнене кривди,\nсповнене хижості,\nграбіж у ньому не припиняється!",
+        "body_text_normalized": "Горе кривавому місту! Воно сповнене кривди, сповнене хижості, грабіж у ньому не припиняється!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Горе кривавому місту!",
+          "\n",
+          "Воно сповнене кривди,",
+          "\n",
+          "сповнене хижості,",
+          "\n",
+          "грабіж у ньому не припиняється!"
+        ],
+        "discourse_unit_id": "NAM-D015",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 169,
+        "line_start": 166,
+        "lines": [
+          "\\v 1 Горе кривавому місту!",
+          "\\q1 Воно сповнене кривди,",
+          "\\q2 сповнене хижості,",
+          "\\q2 грабіж у ньому не припиняється!"
+        ],
+        "number": "1",
+        "paragraph_id": "NAM-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B014",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Горе кривавому місту!\n\\q1 Воно сповнене кривди,\n\\q2 сповнене хижості,\n\\q2 грабіж у ньому не припиняється!",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Лязгіт батогів і звук стукоту коліс –\nскаче кінь і гуркотить колісниця!",
+        "body_text_exact": "Лязгіт батогів і звук стукоту коліс –\nскаче кінь і гуркотить колісниця!",
+        "body_text_normalized": "Лязгіт батогів і звук стукоту коліс – скаче кінь і гуркотить колісниця!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Лязгіт батогів і звук стукоту коліс –",
+          "\n",
+          "скаче кінь і гуркотить колісниця!"
+        ],
+        "discourse_unit_id": "NAM-D015",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 172,
+        "line_start": 171,
+        "lines": [
+          "\\v 2 Лязгіт батогів і звук стукоту коліс –",
+          "\\q2 скаче кінь і гуркотить колісниця!"
+        ],
+        "number": "2",
+        "paragraph_id": "NAM-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B014",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Лязгіт батогів і звук стукоту коліс –\n\\q2 скаче кінь і гуркотить колісниця!",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Вершник наближається,\nвиблискує меч, і сяє спис!\nБагато вбитих і гори трупів,\nнемає краю мертвим тілам –\nлюди спотикаються об них.",
+        "body_text_exact": "Вершник наближається,\nвиблискує меч, і сяє спис!\nБагато вбитих і гори трупів,\nнемає краю мертвим тілам –\nлюди спотикаються об них.",
+        "body_text_normalized": "Вершник наближається, виблискує меч, і сяє спис! Багато вбитих і гори трупів, немає краю мертвим тілам – люди спотикаються об них.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Вершник наближається,",
+          "\n",
+          "виблискує меч, і сяє спис!",
+          "\n",
+          "Багато вбитих і гори трупів,",
+          "\n",
+          "немає краю мертвим тілам –",
+          "\n",
+          "люди спотикаються об них."
+        ],
+        "discourse_unit_id": "NAM-D015",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 178,
+        "line_start": 174,
+        "lines": [
+          "\\v 3 Вершник наближається,",
+          "\\q2 виблискує меч, і сяє спис!",
+          "\\q1 Багато вбитих і гори трупів,",
+          "\\q2 немає краю мертвим тілам –",
+          "\\q2 люди спотикаються об них."
+        ],
+        "number": "3",
+        "paragraph_id": "NAM-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B014",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Вершник наближається,\n\\q2 виблискує меч, і сяє спис!\n\\q1 Багато вбитих і гори трупів,\n\\q2 немає краю мертвим тілам –\n\\q2 люди спотикаються об них.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Усе це – за розбещеність блудниці,\nгарної на вигляд володарки чар,\nщо поневолила народи своєю розпустою\nі племена – своїм чаклунством.",
+        "body_text_exact": "Усе це – за розбещеність блудниці,\nгарної на вигляд володарки чар,\nщо поневолила народи своєю розпустою\nі племена – своїм чаклунством.",
+        "body_text_normalized": "Усе це – за розбещеність блудниці, гарної на вигляд володарки чар, що поневолила народи своєю розпустою і племена – своїм чаклунством.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          {
+            "content": [
+              "Усе це"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " – за розбещеність блудниці,",
+          "\n",
+          "гарної на вигляд володарки чар,",
+          "\n",
+          "що поневолила народи своєю розпустою",
+          "\n",
+          "і племена – своїм чаклунством."
+        ],
+        "discourse_unit_id": "NAM-D015",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 183,
+        "line_start": 180,
+        "lines": [
+          "\\v 4 \\add Усе це\\add* – за розбещеність блудниці,",
+          "\\q2 гарної на вигляд володарки чар,",
+          "\\q1 що поневолила народи своєю розпустою",
+          "\\q2 і племена – своїм чаклунством."
+        ],
+        "number": "4",
+        "paragraph_id": "NAM-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B014",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 \\add Усе це\\add* – за розбещеність блудниці,\n\\q2 гарної на вигляд володарки чар,\n\\q1 що поневолила народи своєю розпустою\n\\q2 і племена – своїм чаклунством.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "«Ось Я – проти тебе! –\nпромовляє Господь Воїнств. –\nЯ задеру твою спідницю тобі аж на обличчя\nта покажу народам твою наготу\nі царствам – твій сором.",
+        "body_text_exact": "«Ось Я – проти тебе! –\nпромовляє Господь Воїнств. –\nЯ задеру твою спідницю тобі аж на обличчя\nта покажу народам твою наготу\nі царствам – твій сором.",
+        "body_text_normalized": "«Ось Я – проти тебе! – промовляє Господь Воїнств. – Я задеру твою спідницю тобі аж на обличчя та покажу народам твою наготу і царствам – твій сором.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "«Ось Я – проти тебе! –",
+          "\n",
+          "промовляє ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " Воїнств. –",
+          "\n",
+          "Я задеру твою спідницю тобі аж на обличчя",
+          "\n",
+          "та покажу народам твою наготу",
+          "\n",
+          "і царствам – твій сором."
+        ],
+        "discourse_unit_id": "NAM-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 190,
+        "line_start": 186,
+        "lines": [
+          "\\v 5 «Ось Я – проти тебе! –",
+          "\\q2 промовляє \\nd Господь\\nd* Воїнств. –",
+          "\\q1 Я задеру твою спідницю тобі аж на обличчя",
+          "\\q2 та покажу народам твою наготу",
+          "\\q2 і царствам – твій сором."
+        ],
+        "number": "5",
+        "paragraph_id": "NAM-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B015",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 «Ось Я – проти тебе! –\n\\q2 промовляє \\nd Господь\\nd* Воїнств. –\n\\q1 Я задеру твою спідницю тобі аж на обличчя\n\\q2 та покажу народам твою наготу\n\\q2 і царствам – твій сором.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "Я обкидаю тебе нечистотами,\nповедуся з тобою зневажливо\nі виставлю тебе на огляд.",
+        "body_text_exact": "Я обкидаю тебе нечистотами,\nповедуся з тобою зневажливо\nі виставлю тебе на огляд.",
+        "body_text_normalized": "Я обкидаю тебе нечистотами, поведуся з тобою зневажливо і виставлю тебе на огляд.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Я обкидаю тебе нечистотами,",
+          "\n",
+          "поведуся з тобою зневажливо",
+          "\n",
+          "і виставлю тебе на огляд."
+        ],
+        "discourse_unit_id": "NAM-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 194,
+        "line_start": 192,
+        "lines": [
+          "\\v 6 Я обкидаю тебе нечистотами,",
+          "\\q2 поведуся з тобою зневажливо",
+          "\\q2 і виставлю тебе на огляд."
+        ],
+        "number": "6",
+        "paragraph_id": "NAM-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B015",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 Я обкидаю тебе нечистотами,\n\\q2 поведуся з тобою зневажливо\n\\q2 і виставлю тебе на огляд.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Тоді кожен, хто побачить тебе,\nтікатиме від тебе й скаже:\n„Спустошена Ніневія – хто може її заспокоїти?“.\nДе я знайду для тебе втіху?»",
+        "body_text_exact": "Тоді кожен, хто побачить тебе,\nтікатиме від тебе й скаже:\n„Спустошена Ніневія – хто може її заспокоїти?“.\nДе я знайду для тебе втіху?»",
+        "body_text_normalized": "Тоді кожен, хто побачить тебе, тікатиме від тебе й скаже: „Спустошена Ніневія – хто може її заспокоїти?“. Де я знайду для тебе втіху?»",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Тоді кожен, хто побачить тебе,",
+          "\n",
+          "тікатиме від тебе й скаже:",
+          "\n",
+          "„Спустошена Ніневія – хто може її заспокоїти?“.",
+          "\n",
+          "Де я знайду для тебе втіху?»"
+        ],
+        "discourse_unit_id": "NAM-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 199,
+        "line_start": 196,
+        "lines": [
+          "\\v 7 Тоді кожен, хто побачить тебе,",
+          "\\q2 тікатиме від тебе й скаже:",
+          "\\q1 „Спустошена Ніневія – хто може її заспокоїти?“.",
+          "\\q2 Де я знайду для тебе втіху?»"
+        ],
+        "number": "7",
+        "paragraph_id": "NAM-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B015",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Тоді кожен, хто побачить тебе,\n\\q2 тікатиме від тебе й скаже:\n\\q1 „Спустошена Ніневія – хто може її заспокоїти?“.\n\\q2 Де я знайду для тебе втіху?»",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Хіба ти не була розташована краще,\nніж Тебес на березі Нілу,\nоточена водами?\nРіка була її укріпленням,\nводи – її стінами.",
+        "body_text_exact": "Хіба ти не була розташована краще,\nніж Тебес на березі Нілу,\nоточена водами?\nРіка була її укріпленням,\nводи – її стінами.",
+        "body_text_normalized": "Хіба ти не була розташована краще, ніж Тебес на березі Нілу, оточена водами? Ріка була її укріпленням, води – її стінами.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Хіба ти не була розташована краще,",
+          "\n",
+          "ніж Тебес",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:8 ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "Тебес ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "– євр. ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "Но-Амон",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              "– одне з найважливіших міст Стародавнього Єгипту."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " на ",
+          {
+            "content": [
+              "березі"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " Нілу,",
+          "\n",
+          "оточена водами?",
+          "\n",
+          "Ріка була її укріпленням,",
+          "\n",
+          "води – її стінами."
+        ],
+        "discourse_unit_id": "NAM-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 206,
+        "line_start": 202,
+        "lines": [
+          "\\v 8 Хіба ти не була розташована краще,",
+          "\\q2 ніж Тебес\\f + \\fr 3:8 \\fq Тебес \\ft – євр. \\+it Но-Амон\\+it* – одне з найважливіших міст Стародавнього Єгипту.\\f* на \\add березі\\add* Нілу,",
+          "\\q2 оточена водами?",
+          "\\q1 Ріка була її укріпленням,",
+          "\\q2 води – її стінами."
+        ],
+        "number": "8",
+        "paragraph_id": "NAM-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Хіба ти не була розташована краще,\n\\q2 ніж Тебес\\f + \\fr 3:8 \\fq Тебес \\ft – євр. \\+it Но-Амон\\+it* – одне з найважливіших міст Стародавнього Єгипту.\\f* на \\add березі\\add* Нілу,\n\\q2 оточена водами?\n\\q1 Ріка була її укріпленням,\n\\q2 води – її стінами.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Куш та Єгипет були твоєю безмежною міццю,\nПут і лівійці були твоєю допомогою.",
+        "body_text_exact": "Куш та Єгипет були твоєю безмежною міццю,\nПут і лівійці були твоєю допомогою.",
+        "body_text_normalized": "Куш та Єгипет були твоєю безмежною міццю, Пут і лівійці були твоєю допомогою.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Куш та Єгипет були твоєю безмежною міццю,",
+          "\n",
+          "Пут",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "3:9 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Межі цієї території точно не визначені. Найімовірніше, це Африка, оскільки біблійні джерела повʼязують її з Єгиптом і Кушем; можливо, ідеться про територію сучасного Сомалі."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " і лівійці були твоєю допомогою."
+        ],
+        "discourse_unit_id": "NAM-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 209,
+        "line_start": 208,
+        "lines": [
+          "\\v 9 Куш та Єгипет були твоєю безмежною міццю,",
+          "\\q2 Пут\\f + \\fr 3:9 \\ft Межі цієї території точно не визначені. Найімовірніше, це Африка, оскільки біблійні джерела повʼязують її з Єгиптом і Кушем; можливо, ідеться про територію сучасного Сомалі.\\f* і лівійці були твоєю допомогою."
+        ],
+        "number": "9",
+        "paragraph_id": "NAM-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Куш та Єгипет були твоєю безмежною міццю,\n\\q2 Пут\\f + \\fr 3:9 \\ft Межі цієї території точно не визначені. Найімовірніше, це Африка, оскільки біблійні джерела повʼязують її з Єгиптом і Кушем; можливо, ідеться про територію сучасного Сомалі.\\f* і лівійці були твоєю допомогою.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Але тепер вона у вигнанні,\nпішла у полон.\nЇї немовлята лежать розбитими\nна розі кожної вулиці.\nЩодо її знаті кинуто жереб,\nа її шляхетних закуто в кайдани.",
+        "body_text_exact": "Але тепер вона у вигнанні,\nпішла у полон.\nЇї немовлята лежать розбитими\nна розі кожної вулиці.\nЩодо її знаті кинуто жереб,\nа її шляхетних закуто в кайдани.",
+        "body_text_normalized": "Але тепер вона у вигнанні, пішла у полон. Її немовлята лежать розбитими на розі кожної вулиці. Щодо її знаті кинуто жереб, а її шляхетних закуто в кайдани.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Але тепер вона у вигнанні,",
+          "\n",
+          "пішла у полон.",
+          "\n",
+          "Її немовлята лежать розбитими",
+          "\n",
+          "на розі кожної вулиці.",
+          "\n",
+          "Щодо її знаті кинуто жереб,",
+          "\n",
+          "а її шляхетних закуто в кайдани."
+        ],
+        "discourse_unit_id": "NAM-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 216,
+        "line_start": 211,
+        "lines": [
+          "\\v 10 Але тепер вона у вигнанні,",
+          "\\q2 пішла у полон.",
+          "\\q1 Її немовлята лежать розбитими",
+          "\\q2 на розі кожної вулиці.",
+          "\\q1 Щодо її знаті кинуто жереб,",
+          "\\q2 а її шляхетних закуто в кайдани."
+        ],
+        "number": "10",
+        "paragraph_id": "NAM-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Але тепер вона у вигнанні,\n\\q2 пішла у полон.\n\\q1 Її немовлята лежать розбитими\n\\q2 на розі кожної вулиці.\n\\q1 Щодо її знаті кинуто жереб,\n\\q2 а її шляхетних закуто в кайдани.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Ти теж спʼянієш,\nі станеш непомітною,\nі шукатимеш захисту від своїх ворогів.",
+        "body_text_exact": "Ти теж спʼянієш,\nі станеш непомітною,\nі шукатимеш захисту від своїх ворогів.",
+        "body_text_normalized": "Ти теж спʼянієш, і станеш непомітною, і шукатимеш захисту від своїх ворогів.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Ти теж спʼянієш,",
+          "\n",
+          "і станеш непомітною,",
+          "\n",
+          "і шукатимеш захисту від своїх ворогів."
+        ],
+        "discourse_unit_id": "NAM-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 220,
+        "line_start": 218,
+        "lines": [
+          "\\v 11 Ти теж спʼянієш,",
+          "\\q2 і станеш непомітною,",
+          "\\q2 і шукатимеш захисту від своїх ворогів."
+        ],
+        "number": "11",
+        "paragraph_id": "NAM-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B016",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Ти теж спʼянієш,\n\\q2 і станеш непомітною,\n\\q2 і шукатимеш захисту від своїх ворогів.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Усі твої твердині стануть як смоковниці з першими плодами:\nякщо їх похитати, смокви впадуть прямо до рота тому,\nхто їх їстиме.",
+        "body_text_exact": "Усі твої твердині стануть як смоковниці з першими плодами:\nякщо їх похитати, смокви впадуть прямо до рота тому,\nхто їх їстиме.",
+        "body_text_normalized": "Усі твої твердині стануть як смоковниці з першими плодами: якщо їх похитати, смокви впадуть прямо до рота тому, хто їх їстиме.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Усі твої твердині стануть як смоковниці з першими плодами:",
+          "\n",
+          "якщо їх похитати, смокви впадуть прямо до рота тому,",
+          "\n",
+          "хто їх їстиме."
+        ],
+        "discourse_unit_id": "NAM-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 225,
+        "line_start": 223,
+        "lines": [
+          "\\v 12 Усі твої твердині стануть як смоковниці з першими плодами:",
+          "\\q2 якщо їх похитати, смокви впадуть прямо до рота тому,",
+          "\\q2 хто їх їстиме."
+        ],
+        "number": "12",
+        "paragraph_id": "NAM-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Усі твої твердині стануть як смоковниці з першими плодами:\n\\q2 якщо їх похитати, смокви впадуть прямо до рота тому,\n\\q2 хто їх їстиме.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Ось твій народ посеред тебе\nстав наче ті жінки;\nворота твоєї землі\nнавстіж відкриті перед твоїми ворогами,\nі вогонь пожере твої засуви.",
+        "body_text_exact": "Ось твій народ посеред тебе\nстав наче ті жінки;\nворота твоєї землі\nнавстіж відкриті перед твоїми ворогами,\nі вогонь пожере твої засуви.",
+        "body_text_normalized": "Ось твій народ посеред тебе став наче ті жінки; ворота твоєї землі навстіж відкриті перед твоїми ворогами, і вогонь пожере твої засуви.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Ось твій народ посеред тебе",
+          "\n",
+          "став наче ті жінки;",
+          "\n",
+          "ворота твоєї землі",
+          "\n",
+          "навстіж відкриті перед твоїми ворогами,",
+          "\n",
+          "і вогонь пожере твої засуви."
+        ],
+        "discourse_unit_id": "NAM-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 231,
+        "line_start": 227,
+        "lines": [
+          "\\v 13 Ось твій народ посеред тебе",
+          "\\q2 став наче ті жінки;",
+          "\\q1 ворота твоєї землі",
+          "\\q2 навстіж відкриті перед твоїми ворогами,",
+          "\\q2 і вогонь пожере твої засуви."
+        ],
+        "number": "13",
+        "paragraph_id": "NAM-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B017",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Ось твій народ посеред тебе\n\\q2 став наче ті жінки;\n\\q1 ворота твоєї землі\n\\q2 навстіж відкриті перед твоїми ворогами,\n\\q2 і вогонь пожере твої засуви.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Начерпай собі води на час облоги!\nЗміцни свої укріплення!\nІди, міси розчин і топчи глину,\nзміцнюй цегляну кладку!",
+        "body_text_exact": "Начерпай собі води на час облоги!\nЗміцни свої укріплення!\nІди, міси розчин і топчи глину,\nзміцнюй цегляну кладку!",
+        "body_text_normalized": "Начерпай собі води на час облоги! Зміцни свої укріплення! Іди, міси розчин і топчи глину, зміцнюй цегляну кладку!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Начерпай собі води на час облоги!",
+          "\n",
+          "Зміцни свої укріплення!",
+          "\n",
+          "Іди, міси розчин і топчи глину,",
+          "\n",
+          "зміцнюй цегляну кладку!"
+        ],
+        "discourse_unit_id": "NAM-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 237,
+        "line_start": 234,
+        "lines": [
+          "\\v 14 Начерпай собі води на час облоги!",
+          "\\q1 Зміцни свої укріплення!",
+          "\\q2 Іди, міси розчин і топчи глину,",
+          "\\q2 зміцнюй цегляну кладку!"
+        ],
+        "number": "14",
+        "paragraph_id": "NAM-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Начерпай собі води на час облоги!\n\\q1 Зміцни свої укріплення!\n\\q2 Іди, міси розчин і топчи глину,\n\\q2 зміцнюй цегляну кладку!",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Там тебе пожиратиме вогонь,\nрубатиме меч, знищуючи тебе,\nяк нищить рій сарани.\nПримножуй народ, як гусінь,\nпримножуй, як сарану!",
+        "body_text_exact": "Там тебе пожиратиме вогонь,\nрубатиме меч, знищуючи тебе,\nяк нищить рій сарани.\nПримножуй народ, як гусінь,\nпримножуй, як сарану!",
+        "body_text_normalized": "Там тебе пожиратиме вогонь, рубатиме меч, знищуючи тебе, як нищить рій сарани. Примножуй народ, як гусінь, примножуй, як сарану!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Там тебе пожиратиме вогонь,",
+          "\n",
+          "рубатиме меч, знищуючи тебе,",
+          "\n",
+          "як нищить рій сарани.",
+          "\n",
+          "Примножуй ",
+          {
+            "content": [
+              "народ"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ", як гусінь,",
+          "\n",
+          "примножуй, як сарану!"
+        ],
+        "discourse_unit_id": "NAM-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 243,
+        "line_start": 239,
+        "lines": [
+          "\\v 15 Там тебе пожиратиме вогонь,",
+          "\\q2 рубатиме меч, знищуючи тебе,",
+          "\\q2 як нищить рій сарани.",
+          "\\q1 Примножуй \\add народ\\add*, як гусінь,",
+          "\\q2 примножуй, як сарану!"
+        ],
+        "number": "15",
+        "paragraph_id": "NAM-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Там тебе пожиратиме вогонь,\n\\q2 рубатиме меч, знищуючи тебе,\n\\q2 як нищить рій сарани.\n\\q1 Примножуй \\add народ\\add*, як гусінь,\n\\q2 примножуй, як сарану!",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Якби ти примножила своїх торговців,\nяк зорі небесні,\nрій сарани розорить їх і полетить.",
+        "body_text_exact": "Якби ти примножила своїх торговців,\nяк зорі небесні,\nрій сарани розорить їх і полетить.",
+        "body_text_normalized": "Якби ти примножила своїх торговців, як зорі небесні, рій сарани розорить їх і полетить.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Якби ти примножила своїх торговців,",
+          "\n",
+          "як зорі небесні,",
+          "\n",
+          "рій сарани розорить їх і полетить."
+        ],
+        "discourse_unit_id": "NAM-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 247,
+        "line_start": 245,
+        "lines": [
+          "\\v 16 Якби ти примножила своїх торговців,",
+          "\\q2 як зорі небесні,",
+          "\\q2 рій сарани розорить їх і полетить."
+        ],
+        "number": "16",
+        "paragraph_id": "NAM-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 Якби ти примножила своїх торговців,\n\\q2 як зорі небесні,\n\\q2 рій сарани розорить їх і полетить.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Твої вельможі – як сарана,\nі твої чиновники – як рій коників,\nщо обсідають огорожі прохолодного дня,\nта лише засяє сонце, вони відлітають,\nі ніхто не знає куди, у яке місце.",
+        "body_text_exact": "Твої вельможі – як сарана,\nі твої чиновники – як рій коників,\nщо обсідають огорожі прохолодного дня,\nта лише засяє сонце, вони відлітають,\nі ніхто не знає куди, у яке місце.",
+        "body_text_normalized": "Твої вельможі – як сарана, і твої чиновники – як рій коників, що обсідають огорожі прохолодного дня, та лише засяє сонце, вони відлітають, і ніхто не знає куди, у яке місце.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Твої вельможі – як сарана,",
+          "\n",
+          "і твої чиновники – як рій коників,",
+          "\n",
+          "що обсідають огорожі прохолодного дня,",
+          "\n",
+          "та лише засяє сонце, вони відлітають,",
+          "\n",
+          "і ніхто не знає куди, у яке місце."
+        ],
+        "discourse_unit_id": "NAM-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 253,
+        "line_start": 249,
+        "lines": [
+          "\\v 17 Твої вельможі – як сарана,",
+          "\\q2 і твої чиновники – як рій коників,",
+          "\\q1 що обсідають огорожі прохолодного дня,",
+          "\\q2 та лише засяє сонце, вони відлітають,",
+          "\\q2 і ніхто не знає куди, у яке місце."
+        ],
+        "number": "17",
+        "paragraph_id": "NAM-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B018",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Твої вельможі – як сарана,\n\\q2 і твої чиновники – як рій коників,\n\\q1 що обсідають огорожі прохолодного дня,\n\\q2 та лише засяє сонце, вони відлітають,\n\\q2 і ніхто не знає куди, у яке місце.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "Задрімали твої пастухи, царю Ассирії,\nлягли спочивати твої сильні воїни.\nРозбігся твій народ по горах,\nнемає кому його зібрати.",
+        "body_text_exact": "Задрімали твої пастухи, царю Ассирії,\nлягли спочивати твої сильні воїни.\nРозбігся твій народ по горах,\nнемає кому його зібрати.",
+        "body_text_normalized": "Задрімали твої пастухи, царю Ассирії, лягли спочивати твої сильні воїни. Розбігся твій народ по горах, немає кому його зібрати.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Задрімали твої пастухи, царю Ассирії,",
+          "\n",
+          "лягли спочивати твої сильні воїни.",
+          "\n",
+          "Розбігся твій народ по горах,",
+          "\n",
+          "немає кому його зібрати."
+        ],
+        "discourse_unit_id": "NAM-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 259,
+        "line_start": 256,
+        "lines": [
+          "\\v 18 Задрімали твої пастухи, царю Ассирії,",
+          "\\q2 лягли спочивати твої сильні воїни.",
+          "\\q1 Розбігся твій народ по горах,",
+          "\\q2 немає кому його зібрати."
+        ],
+        "number": "18",
+        "paragraph_id": "NAM-P019",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 Задрімали твої пастухи, царю Ассирії,\n\\q2 лягли спочивати твої сильні воїни.\n\\q1 Розбігся твій народ по горах,\n\\q2 немає кому його зібрати.",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "Немає зцілення твоїм ранам,\nти хвора від завданого тобі удару.\nУсі, хто чує твоє імʼя,\nсплеснуть долонями через тебе,\nадже на кого не обрушилося твоє нестримне зло?",
+        "body_text_exact": "Немає зцілення твоїм ранам,\nти хвора від завданого тобі удару.\nУсі, хто чує твоє імʼя,\nсплеснуть долонями через тебе,\nадже на кого не обрушилося твоє нестримне зло?",
+        "body_text_normalized": "Немає зцілення твоїм ранам, ти хвора від завданого тобі удару. Усі, хто чує твоє імʼя, сплеснуть долонями через тебе, адже на кого не обрушилося твоє нестримне зло?",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Немає зцілення твоїм ранам,",
+          "\n",
+          "ти хвора від завданого тобі удару.",
+          "\n",
+          "Усі, хто чує твоє імʼя,",
+          "\n",
+          "сплеснуть долонями через тебе,",
+          "\n",
+          "адже на кого не обрушилося твоє нестримне зло?"
+        ],
+        "discourse_unit_id": "NAM-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 265,
+        "line_start": 261,
+        "lines": [
+          "\\v 19 Немає зцілення твоїм ранам,",
+          "\\q2 ти хвора від завданого тобі удару.",
+          "\\q1 Усі, хто чує твоє імʼя,",
+          "\\q2 сплеснуть долонями через тебе,",
+          "\\q2 адже на кого не обрушилося твоє нестримне зло?"
+        ],
+        "number": "19",
+        "paragraph_id": "NAM-P019",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "NAM-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 Немає зцілення твоїм ранам,\n\\q2 ти хвора від завданого тобі удару.\n\\q1 Усі, хто чує твоє імʼя,\n\\q2 сплеснуть долонями через тебе,\n\\q2 адже на кого не обрушилося твоє нестримне зло?",
+        "section_id": "NAM-S003",
+        "section_marker": "s1",
+        "section_title": "Горе Ніневії",
+        "verse_end": 19,
+        "verse_start": 19
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

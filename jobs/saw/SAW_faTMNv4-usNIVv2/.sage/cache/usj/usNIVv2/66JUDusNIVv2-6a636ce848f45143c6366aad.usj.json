@@ -1,0 +1,1805 @@
+{
+  "content": [
+    {
+      "code": "JUD",
+      "content": [
+        "- English-US: New International Version® NIV® 2011, updated 2016"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 1973, 1978, 1984, 2011 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "Jude",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Jude",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Jude",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Jude",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Jude",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Introduction",
+        "\n"
+      ],
+      "marker": "imt",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Jesus had several brothers, two of whom were James and Jude. Much less is known about Jude than James (see ",
+        {
+          "content": [
+            "James"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "), but he was clearly a church leader, since he wrote to believers with authority in this letter that bears his name. It cannot be determined exactly who was meant to receive the letter, although the references to angels, to Israelʼs history and to specific writings indicate that Jewish Christians were in view.",
+        "\n"
+      ],
+      "marker": "im",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Jude addresses the problem of false teachers who have come and are now threatening ",
+        {
+          "content": [
+            "the faith that was once for all entrusted to Godʼs holy people."
+          ],
+          "marker": "qt",
+          "type": "char"
+        },
+        " On the basis of supposedly inspired dreams, they reject authority and pollute their own bodies. Even though they claim to be bringing Godʼs message, they really follow ",
+        {
+          "content": [
+            "mere natural instincts and do not have the Spirit."
+          ],
+          "marker": "qt",
+          "type": "char"
+        },
+        " The believers must actively resist them and cleanse their community by rejecting both the teaching and the example of these ungodly men.",
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "content": [
+        "It seems that the apostle Peter received a copy of Judeʼs letter and wrote a similar one of his own to show that it faithfully presented the teaching of the apostles of the Lord Jesus Christ (see ",
+        {
+          "content": [
+            "2 Peter"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ").",
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "JUD 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "JUD 1:1",
+          "type": "verse"
+        },
+        "Jude, a servant of Jesus Christ and a brother of James,",
+        "\n"
+      ],
+      "marker": "po",
+      "type": "para"
+    },
+    {
+      "content": [
+        "To those who have been called, who are loved in God the Father and kept for",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:1 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "by",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "; or ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "in"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " Jesus Christ:",
+        "\n"
+      ],
+      "marker": "po",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "JUD 1:2",
+          "type": "verse"
+        },
+        "Mercy, peace and love be yours in abundance.",
+        "\n"
+      ],
+      "marker": "po",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The Sin and Doom of Ungodly People",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "JUD 1:3",
+          "type": "verse"
+        },
+        "Dear friends, although I was very eager to write to you about the salvation we share, I felt compelled to write and urge you to contend for the faith that was once for all entrusted to Godʼs holy people.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "JUD 1:4",
+          "type": "verse"
+        },
+        "For certain individuals whose condemnation was written about",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:4 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Or ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "individuals ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "who were marked out for condemnation"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " long ago have secretly slipped in among you. They are ungodly people, who pervert the grace of our God into a license for immorality and deny Jesus Christ our only Sovereign and Lord.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "JUD 1:5",
+          "type": "verse"
+        },
+        "Though you already know all this, I want to remind you that the Lord",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:5 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Some early manuscripts ",
+            {
+              "closing": false,
+              "marker": "fqa",
+              "type": "marker"
+            },
+            "Jesus"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " at one time delivered his people out of Egypt, but later destroyed those who did not believe.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "JUD 1:6",
+          "type": "verse"
+        },
+        "And the angels who did not keep their positions of authority but abandoned their proper dwelling—these he has kept in darkness, bound with everlasting chains for judgment on the great Day.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "JUD 1:7",
+          "type": "verse"
+        },
+        "In a similar way, Sodom and Gomorrah and the surrounding towns gave themselves up to sexual immorality and perversion. They serve as an example of those who suffer the punishment of eternal fire.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "JUD 1:8",
+          "type": "verse"
+        },
+        "In the very same way, on the strength of their dreams these ungodly people pollute their own bodies, reject authority and heap abuse on celestial beings.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "JUD 1:9",
+          "type": "verse"
+        },
+        "But even the archangel Michael, when he was disputing with the devil about the body of Moses, did not himself dare to condemn him for slander but said, “The Lord rebuke you!”",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:9 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Jude is alluding to the Jewish Testament of Moses (approximately the first century ",
+            {
+              "closing": false,
+              "marker": "sc",
+              "type": "marker"
+            },
+            "a.d.",
+            {
+              "closing": true,
+              "marker": "sc",
+              "type": "marker"
+            },
+            ")."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "JUD 1:10",
+          "type": "verse"
+        },
+        "Yet these people slander whatever they do not understand, and the very things they do understand by instinct—as irrational animals do—will destroy them.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "JUD 1:11",
+          "type": "verse"
+        },
+        "Woe to them! They have taken the way of Cain; they have rushed for profit into Balaamʼs error; they have been destroyed in Korahʼs rebellion.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "JUD 1:12",
+          "type": "verse"
+        },
+        "These people are blemishes at your love feasts, eating with you without the slightest qualm—shepherds who feed only themselves. They are clouds without rain, blown along by the wind; autumn trees, without fruit and uprooted—twice dead.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "JUD 1:13",
+          "type": "verse"
+        },
+        "They are wild waves of the sea, foaming up their shame; wandering stars, for whom blackest darkness has been reserved forever.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "JUD 1:14",
+          "type": "verse"
+        },
+        "Enoch, the seventh from Adam, prophesied about them: “See, the Lord is coming with thousands upon thousands of his holy ones",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "JUD 1:15",
+          "type": "verse"
+        },
+        "to judge everyone, and to convict all of them of all the ungodly acts they have committed in their ungodliness, and of all the defiant words ungodly sinners have spoken against him.”",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:15 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "From the Jewish First Book of Enoch (approximately the first century ",
+            {
+              "closing": false,
+              "marker": "sc",
+              "type": "marker"
+            },
+            "b.c.",
+            {
+              "closing": true,
+              "marker": "sc",
+              "type": "marker"
+            },
+            ")"
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "JUD 1:16",
+          "type": "verse"
+        },
+        "These people are grumblers and faultfinders; they follow their own evil desires; they boast about themselves and flatter others for their own advantage.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "A Call to Persevere",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "JUD 1:17",
+          "type": "verse"
+        },
+        "But, dear friends, remember what the apostles of our Lord Jesus Christ foretold.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "JUD 1:18",
+          "type": "verse"
+        },
+        "They said to you, “In the last times there will be scoffers who will follow their own ungodly desires.”",
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "JUD 1:19",
+          "type": "verse"
+        },
+        "These are the people who divide you, who follow mere natural instincts and do not have the Spirit.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "JUD 1:20",
+          "type": "verse"
+        },
+        "But you, dear friends, by building yourselves up in your most holy faith and praying in the Holy Spirit,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "21",
+          "sid": "JUD 1:21",
+          "type": "verse"
+        },
+        "keep yourselves in Godʼs love as you wait for the mercy of our Lord Jesus Christ to bring you to eternal life.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "22",
+          "sid": "JUD 1:22",
+          "type": "verse"
+        },
+        "Be merciful to those who doubt;",
+        "\n",
+        {
+          "marker": "v",
+          "number": "23",
+          "sid": "JUD 1:23",
+          "type": "verse"
+        },
+        "save others by snatching them from the fire; to others show mercy, mixed with fear—hating even the clothing stained by corrupted flesh.",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:23 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "The Greek manuscripts of these verses vary at several points."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Doxology",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "24",
+          "sid": "JUD 1:24",
+          "type": "verse"
+        },
+        "To him who is able to keep you from stumbling and to present you before his glorious presence without fault and with great joy—",
+        "\n",
+        {
+          "marker": "v",
+          "number": "25",
+          "sid": "JUD 1:25",
+          "type": "verse"
+        },
+        "to the only God our Savior be glory, majesty, power and authority, through Jesus Christ our Lord, before all ages, now and forevermore! Amen.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "JUD",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "66JUDusNIVv2.SFM",
+    "source_sha256": "b22dfdc90a45dc7e291f1ce88e7908c1b22fe40fa34aa52b9d24d26b6e4ab50f",
+    "source_size": 5799,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Jude, a servant of Jesus Christ and a brother of James,\nTo those who have been called, who are loved in God the Father and kept for Jesus Christ:",
+        "body_text_exact": "Jude, a servant of Jesus Christ and a brother of James,\nTo those who have been called, who are loved in God the Father and kept for Jesus Christ:",
+        "body_text_normalized": "Jude, a servant of Jesus Christ and a brother of James, To those who have been called, who are loved in God the Father and kept for Jesus Christ:",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "po",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Jude, a servant of Jesus Christ and a brother of James,",
+          "\n",
+          "To those who have been called, who are loved in God the Father and kept for",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:1 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "by",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "; or ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "in"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " Jesus Christ:"
+        ],
+        "discourse_unit_id": "JUD-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "po",
+        "line_end": 16,
+        "line_start": 15,
+        "lines": [
+          "\\v 1 Jude, a servant of Jesus Christ and a brother of James,",
+          "\\po To those who have been called, who are loved in God the Father and kept for\\f + \\fr 1:1 \\ft Or \\fqa by\\ft ; or \\fqa in\\f* Jesus Christ:"
+        ],
+        "number": "1",
+        "paragraph_id": "JUD-P001",
+        "paragraph_marker": "po",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Jude, a servant of Jesus Christ and a brother of James,\n\\po To those who have been called, who are loved in God the Father and kept for\\f + \\fr 1:1 \\ft Or \\fqa by\\ft ; or \\fqa in\\f* Jesus Christ:",
+        "section_id": "JUD-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Mercy, peace and love be yours in abundance.",
+        "body_text_exact": "Mercy, peace and love be yours in abundance.",
+        "body_text_normalized": "Mercy, peace and love be yours in abundance.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "po",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Mercy, peace and love be yours in abundance."
+        ],
+        "discourse_unit_id": "JUD-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "po",
+        "line_end": 18,
+        "line_start": 18,
+        "lines": [
+          "\\v 2 Mercy, peace and love be yours in abundance."
+        ],
+        "number": "2",
+        "paragraph_id": "JUD-P003",
+        "paragraph_marker": "po",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Mercy, peace and love be yours in abundance.",
+        "section_id": "JUD-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Dear friends, although I was very eager to write to you about the salvation we share, I felt compelled to write and urge you to contend for the faith that was once for all entrusted to Godʼs holy people.",
+        "body_text_exact": "Dear friends, although I was very eager to write to you about the salvation we share, I felt compelled to write and urge you to contend for the faith that was once for all entrusted to Godʼs holy people.",
+        "body_text_normalized": "Dear friends, although I was very eager to write to you about the salvation we share, I felt compelled to write and urge you to contend for the faith that was once for all entrusted to Godʼs holy people.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Dear friends, although I was very eager to write to you about the salvation we share, I felt compelled to write and urge you to contend for the faith that was once for all entrusted to Godʼs holy people."
+        ],
+        "discourse_unit_id": "JUD-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 21,
+        "line_start": 21,
+        "lines": [
+          "\\v 3 Dear friends, although I was very eager to write to you about the salvation we share, I felt compelled to write and urge you to contend for the faith that was once for all entrusted to Godʼs holy people."
+        ],
+        "number": "3",
+        "paragraph_id": "JUD-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Dear friends, although I was very eager to write to you about the salvation we share, I felt compelled to write and urge you to contend for the faith that was once for all entrusted to Godʼs holy people.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "For certain individuals whose condemnation was written about long ago have secretly slipped in among you. They are ungodly people, who pervert the grace of our God into a license for immorality and deny Jesus Christ our only Sovereign and Lord.",
+        "body_text_exact": "For certain individuals whose condemnation was written about long ago have secretly slipped in among you. They are ungodly people, who pervert the grace of our God into a license for immorality and deny Jesus Christ our only Sovereign and Lord.",
+        "body_text_normalized": "For certain individuals whose condemnation was written about long ago have secretly slipped in among you. They are ungodly people, who pervert the grace of our God into a license for immorality and deny Jesus Christ our only Sovereign and Lord.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "For certain individuals whose condemnation was written about",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:4 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Or ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "individuals ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "who were marked out for condemnation"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " long ago have secretly slipped in among you. They are ungodly people, who pervert the grace of our God into a license for immorality and deny Jesus Christ our only Sovereign and Lord."
+        ],
+        "discourse_unit_id": "JUD-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 22,
+        "line_start": 22,
+        "lines": [
+          "\\v 4 For certain individuals whose condemnation was written about\\f + \\fr 1:4 \\ft Or \\fq individuals \\fqa who were marked out for condemnation\\f* long ago have secretly slipped in among you. They are ungodly people, who pervert the grace of our God into a license for immorality and deny Jesus Christ our only Sovereign and Lord."
+        ],
+        "number": "4",
+        "paragraph_id": "JUD-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 For certain individuals whose condemnation was written about\\f + \\fr 1:4 \\ft Or \\fq individuals \\fqa who were marked out for condemnation\\f* long ago have secretly slipped in among you. They are ungodly people, who pervert the grace of our God into a license for immorality and deny Jesus Christ our only Sovereign and Lord.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Though you already know all this, I want to remind you that the Lord at one time delivered his people out of Egypt, but later destroyed those who did not believe.",
+        "body_text_exact": "Though you already know all this, I want to remind you that the Lord at one time delivered his people out of Egypt, but later destroyed those who did not believe.",
+        "body_text_normalized": "Though you already know all this, I want to remind you that the Lord at one time delivered his people out of Egypt, but later destroyed those who did not believe.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Though you already know all this, I want to remind you that the Lord",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:5 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Some early manuscripts ",
+              {
+                "closing": false,
+                "marker": "fqa",
+                "type": "marker"
+              },
+              "Jesus"
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " at one time delivered his people out of Egypt, but later destroyed those who did not believe."
+        ],
+        "discourse_unit_id": "JUD-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 24,
+        "line_start": 24,
+        "lines": [
+          "\\v 5 Though you already know all this, I want to remind you that the Lord\\f + \\fr 1:5 \\ft Some early manuscripts \\fqa Jesus\\f* at one time delivered his people out of Egypt, but later destroyed those who did not believe."
+        ],
+        "number": "5",
+        "paragraph_id": "JUD-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Though you already know all this, I want to remind you that the Lord\\f + \\fr 1:5 \\ft Some early manuscripts \\fqa Jesus\\f* at one time delivered his people out of Egypt, but later destroyed those who did not believe.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "And the angels who did not keep their positions of authority but abandoned their proper dwelling—these he has kept in darkness, bound with everlasting chains for judgment on the great Day.",
+        "body_text_exact": "And the angels who did not keep their positions of authority but abandoned their proper dwelling—these he has kept in darkness, bound with everlasting chains for judgment on the great Day.",
+        "body_text_normalized": "And the angels who did not keep their positions of authority but abandoned their proper dwelling—these he has kept in darkness, bound with everlasting chains for judgment on the great Day.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "And the angels who did not keep their positions of authority but abandoned their proper dwelling—these he has kept in darkness, bound with everlasting chains for judgment on the great Day."
+        ],
+        "discourse_unit_id": "JUD-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 25,
+        "line_start": 25,
+        "lines": [
+          "\\v 6 And the angels who did not keep their positions of authority but abandoned their proper dwelling—these he has kept in darkness, bound with everlasting chains for judgment on the great Day."
+        ],
+        "number": "6",
+        "paragraph_id": "JUD-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 And the angels who did not keep their positions of authority but abandoned their proper dwelling—these he has kept in darkness, bound with everlasting chains for judgment on the great Day.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "In a similar way, Sodom and Gomorrah and the surrounding towns gave themselves up to sexual immorality and perversion. They serve as an example of those who suffer the punishment of eternal fire.",
+        "body_text_exact": "In a similar way, Sodom and Gomorrah and the surrounding towns gave themselves up to sexual immorality and perversion. They serve as an example of those who suffer the punishment of eternal fire.",
+        "body_text_normalized": "In a similar way, Sodom and Gomorrah and the surrounding towns gave themselves up to sexual immorality and perversion. They serve as an example of those who suffer the punishment of eternal fire.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "In a similar way, Sodom and Gomorrah and the surrounding towns gave themselves up to sexual immorality and perversion. They serve as an example of those who suffer the punishment of eternal fire."
+        ],
+        "discourse_unit_id": "JUD-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 26,
+        "line_start": 26,
+        "lines": [
+          "\\v 7 In a similar way, Sodom and Gomorrah and the surrounding towns gave themselves up to sexual immorality and perversion. They serve as an example of those who suffer the punishment of eternal fire."
+        ],
+        "number": "7",
+        "paragraph_id": "JUD-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 In a similar way, Sodom and Gomorrah and the surrounding towns gave themselves up to sexual immorality and perversion. They serve as an example of those who suffer the punishment of eternal fire.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "In the very same way, on the strength of their dreams these ungodly people pollute their own bodies, reject authority and heap abuse on celestial beings.",
+        "body_text_exact": "In the very same way, on the strength of their dreams these ungodly people pollute their own bodies, reject authority and heap abuse on celestial beings.",
+        "body_text_normalized": "In the very same way, on the strength of their dreams these ungodly people pollute their own bodies, reject authority and heap abuse on celestial beings.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "In the very same way, on the strength of their dreams these ungodly people pollute their own bodies, reject authority and heap abuse on celestial beings."
+        ],
+        "discourse_unit_id": "JUD-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 28,
+        "line_start": 28,
+        "lines": [
+          "\\v 8 In the very same way, on the strength of their dreams these ungodly people pollute their own bodies, reject authority and heap abuse on celestial beings."
+        ],
+        "number": "8",
+        "paragraph_id": "JUD-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 In the very same way, on the strength of their dreams these ungodly people pollute their own bodies, reject authority and heap abuse on celestial beings.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "But even the archangel Michael, when he was disputing with the devil about the body of Moses, did not himself dare to condemn him for slander but said, “The Lord rebuke you!”",
+        "body_text_exact": "But even the archangel Michael, when he was disputing with the devil about the body of Moses, did not himself dare to condemn him for slander but said, “The Lord rebuke you!”",
+        "body_text_normalized": "But even the archangel Michael, when he was disputing with the devil about the body of Moses, did not himself dare to condemn him for slander but said, “The Lord rebuke you!”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "But even the archangel Michael, when he was disputing with the devil about the body of Moses, did not himself dare to condemn him for slander but said, “The Lord rebuke you!”",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:9 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Jude is alluding to the Jewish Testament of Moses (approximately the first century ",
+              {
+                "closing": false,
+                "marker": "sc",
+                "type": "marker"
+              },
+              "a.d.",
+              {
+                "closing": true,
+                "marker": "sc",
+                "type": "marker"
+              },
+              ")."
+            ],
+            "marker": "f",
+            "type": "note"
+          }
+        ],
+        "discourse_unit_id": "JUD-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 29,
+        "line_start": 29,
+        "lines": [
+          "\\v 9 But even the archangel Michael, when he was disputing with the devil about the body of Moses, did not himself dare to condemn him for slander but said, “The Lord rebuke you!”\\f + \\fr 1:9 \\ft Jude is alluding to the Jewish Testament of Moses (approximately the first century \\+sc a.d.\\+sc*).\\f*"
+        ],
+        "number": "9",
+        "paragraph_id": "JUD-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 But even the archangel Michael, when he was disputing with the devil about the body of Moses, did not himself dare to condemn him for slander but said, “The Lord rebuke you!”\\f + \\fr 1:9 \\ft Jude is alluding to the Jewish Testament of Moses (approximately the first century \\+sc a.d.\\+sc*).\\f*",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Yet these people slander whatever they do not understand, and the very things they do understand by instinct—as irrational animals do—will destroy them.",
+        "body_text_exact": "Yet these people slander whatever they do not understand, and the very things they do understand by instinct—as irrational animals do—will destroy them.",
+        "body_text_normalized": "Yet these people slander whatever they do not understand, and the very things they do understand by instinct—as irrational animals do—will destroy them.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Yet these people slander whatever they do not understand, and the very things they do understand by instinct—as irrational animals do—will destroy them."
+        ],
+        "discourse_unit_id": "JUD-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 30,
+        "line_start": 30,
+        "lines": [
+          "\\v 10 Yet these people slander whatever they do not understand, and the very things they do understand by instinct—as irrational animals do—will destroy them."
+        ],
+        "number": "10",
+        "paragraph_id": "JUD-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Yet these people slander whatever they do not understand, and the very things they do understand by instinct—as irrational animals do—will destroy them.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Woe to them! They have taken the way of Cain; they have rushed for profit into Balaamʼs error; they have been destroyed in Korahʼs rebellion.",
+        "body_text_exact": "Woe to them! They have taken the way of Cain; they have rushed for profit into Balaamʼs error; they have been destroyed in Korahʼs rebellion.",
+        "body_text_normalized": "Woe to them! They have taken the way of Cain; they have rushed for profit into Balaamʼs error; they have been destroyed in Korahʼs rebellion.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Woe to them! They have taken the way of Cain; they have rushed for profit into Balaamʼs error; they have been destroyed in Korahʼs rebellion."
+        ],
+        "discourse_unit_id": "JUD-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 32,
+        "line_start": 32,
+        "lines": [
+          "\\v 11 Woe to them! They have taken the way of Cain; they have rushed for profit into Balaamʼs error; they have been destroyed in Korahʼs rebellion."
+        ],
+        "number": "11",
+        "paragraph_id": "JUD-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Woe to them! They have taken the way of Cain; they have rushed for profit into Balaamʼs error; they have been destroyed in Korahʼs rebellion.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "These people are blemishes at your love feasts, eating with you without the slightest qualm—shepherds who feed only themselves. They are clouds without rain, blown along by the wind; autumn trees, without fruit and uprooted—twice dead.",
+        "body_text_exact": "These people are blemishes at your love feasts, eating with you without the slightest qualm—shepherds who feed only themselves. They are clouds without rain, blown along by the wind; autumn trees, without fruit and uprooted—twice dead.",
+        "body_text_normalized": "These people are blemishes at your love feasts, eating with you without the slightest qualm—shepherds who feed only themselves. They are clouds without rain, blown along by the wind; autumn trees, without fruit and uprooted—twice dead.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "These people are blemishes at your love feasts, eating with you without the slightest qualm—shepherds who feed only themselves. They are clouds without rain, blown along by the wind; autumn trees, without fruit and uprooted—twice dead."
+        ],
+        "discourse_unit_id": "JUD-D008",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 34,
+        "line_start": 34,
+        "lines": [
+          "\\v 12 These people are blemishes at your love feasts, eating with you without the slightest qualm—shepherds who feed only themselves. They are clouds without rain, blown along by the wind; autumn trees, without fruit and uprooted—twice dead."
+        ],
+        "number": "12",
+        "paragraph_id": "JUD-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 These people are blemishes at your love feasts, eating with you without the slightest qualm—shepherds who feed only themselves. They are clouds without rain, blown along by the wind; autumn trees, without fruit and uprooted—twice dead.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "They are wild waves of the sea, foaming up their shame; wandering stars, for whom blackest darkness has been reserved forever.",
+        "body_text_exact": "They are wild waves of the sea, foaming up their shame; wandering stars, for whom blackest darkness has been reserved forever.",
+        "body_text_normalized": "They are wild waves of the sea, foaming up their shame; wandering stars, for whom blackest darkness has been reserved forever.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "They are wild waves of the sea, foaming up their shame; wandering stars, for whom blackest darkness has been reserved forever."
+        ],
+        "discourse_unit_id": "JUD-D008",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 35,
+        "line_start": 35,
+        "lines": [
+          "\\v 13 They are wild waves of the sea, foaming up their shame; wandering stars, for whom blackest darkness has been reserved forever."
+        ],
+        "number": "13",
+        "paragraph_id": "JUD-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 They are wild waves of the sea, foaming up their shame; wandering stars, for whom blackest darkness has been reserved forever.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Enoch, the seventh from Adam, prophesied about them: “See, the Lord is coming with thousands upon thousands of his holy ones",
+        "body_text_exact": "Enoch, the seventh from Adam, prophesied about them: “See, the Lord is coming with thousands upon thousands of his holy ones",
+        "body_text_normalized": "Enoch, the seventh from Adam, prophesied about them: “See, the Lord is coming with thousands upon thousands of his holy ones",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Enoch, the seventh from Adam, prophesied about them: “See, the Lord is coming with thousands upon thousands of his holy ones"
+        ],
+        "discourse_unit_id": "JUD-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 37,
+        "line_start": 37,
+        "lines": [
+          "\\v 14 Enoch, the seventh from Adam, prophesied about them: “See, the Lord is coming with thousands upon thousands of his holy ones"
+        ],
+        "number": "14",
+        "paragraph_id": "JUD-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Enoch, the seventh from Adam, prophesied about them: “See, the Lord is coming with thousands upon thousands of his holy ones",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "to judge everyone, and to convict all of them of all the ungodly acts they have committed in their ungodliness, and of all the defiant words ungodly sinners have spoken against him.”",
+        "body_text_exact": "to judge everyone, and to convict all of them of all the ungodly acts they have committed in their ungodliness, and of all the defiant words ungodly sinners have spoken against him.”",
+        "body_text_normalized": "to judge everyone, and to convict all of them of all the ungodly acts they have committed in their ungodliness, and of all the defiant words ungodly sinners have spoken against him.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "to judge everyone, and to convict all of them of all the ungodly acts they have committed in their ungodliness, and of all the defiant words ungodly sinners have spoken against him.”",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:15 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "From the Jewish First Book of Enoch (approximately the first century ",
+              {
+                "closing": false,
+                "marker": "sc",
+                "type": "marker"
+              },
+              "b.c.",
+              {
+                "closing": true,
+                "marker": "sc",
+                "type": "marker"
+              },
+              ")"
+            ],
+            "marker": "f",
+            "type": "note"
+          }
+        ],
+        "discourse_unit_id": "JUD-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 38,
+        "line_start": 38,
+        "lines": [
+          "\\v 15 to judge everyone, and to convict all of them of all the ungodly acts they have committed in their ungodliness, and of all the defiant words ungodly sinners have spoken against him.”\\f + \\fr 1:15 \\ft From the Jewish First Book of Enoch (approximately the first century \\+sc b.c.\\+sc*)\\f*"
+        ],
+        "number": "15",
+        "paragraph_id": "JUD-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 to judge everyone, and to convict all of them of all the ungodly acts they have committed in their ungodliness, and of all the defiant words ungodly sinners have spoken against him.”\\f + \\fr 1:15 \\ft From the Jewish First Book of Enoch (approximately the first century \\+sc b.c.\\+sc*)\\f*",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "These people are grumblers and faultfinders; they follow their own evil desires; they boast about themselves and flatter others for their own advantage.",
+        "body_text_exact": "These people are grumblers and faultfinders; they follow their own evil desires; they boast about themselves and flatter others for their own advantage.",
+        "body_text_normalized": "These people are grumblers and faultfinders; they follow their own evil desires; they boast about themselves and flatter others for their own advantage.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "These people are grumblers and faultfinders; they follow their own evil desires; they boast about themselves and flatter others for their own advantage."
+        ],
+        "discourse_unit_id": "JUD-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 39,
+        "line_start": 39,
+        "lines": [
+          "\\v 16 These people are grumblers and faultfinders; they follow their own evil desires; they boast about themselves and flatter others for their own advantage."
+        ],
+        "number": "16",
+        "paragraph_id": "JUD-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 These people are grumblers and faultfinders; they follow their own evil desires; they boast about themselves and flatter others for their own advantage.",
+        "section_id": "JUD-S001",
+        "section_marker": "s1",
+        "section_title": "The Sin and Doom of Ungodly People",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "But, dear friends, remember what the apostles of our Lord Jesus Christ foretold.",
+        "body_text_exact": "But, dear friends, remember what the apostles of our Lord Jesus Christ foretold.",
+        "body_text_normalized": "But, dear friends, remember what the apostles of our Lord Jesus Christ foretold.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "But, dear friends, remember what the apostles of our Lord Jesus Christ foretold."
+        ],
+        "discourse_unit_id": "JUD-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 42,
+        "line_start": 42,
+        "lines": [
+          "\\v 17 But, dear friends, remember what the apostles of our Lord Jesus Christ foretold."
+        ],
+        "number": "17",
+        "paragraph_id": "JUD-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 But, dear friends, remember what the apostles of our Lord Jesus Christ foretold.",
+        "section_id": "JUD-S002",
+        "section_marker": "s1",
+        "section_title": "A Call to Persevere",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "They said to you, “In the last times there will be scoffers who will follow their own ungodly desires.”",
+        "body_text_exact": "They said to you, “In the last times there will be scoffers who will follow their own ungodly desires.”",
+        "body_text_normalized": "They said to you, “In the last times there will be scoffers who will follow their own ungodly desires.”",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "They said to you, “In the last times there will be scoffers who will follow their own ungodly desires.”"
+        ],
+        "discourse_unit_id": "JUD-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 43,
+        "line_start": 43,
+        "lines": [
+          "\\v 18 They said to you, “In the last times there will be scoffers who will follow their own ungodly desires.”"
+        ],
+        "number": "18",
+        "paragraph_id": "JUD-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 They said to you, “In the last times there will be scoffers who will follow their own ungodly desires.”",
+        "section_id": "JUD-S002",
+        "section_marker": "s1",
+        "section_title": "A Call to Persevere",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "These are the people who divide you, who follow mere natural instincts and do not have the Spirit.",
+        "body_text_exact": "These are the people who divide you, who follow mere natural instincts and do not have the Spirit.",
+        "body_text_normalized": "These are the people who divide you, who follow mere natural instincts and do not have the Spirit.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "These are the people who divide you, who follow mere natural instincts and do not have the Spirit."
+        ],
+        "discourse_unit_id": "JUD-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 44,
+        "line_start": 44,
+        "lines": [
+          "\\v 19 These are the people who divide you, who follow mere natural instincts and do not have the Spirit."
+        ],
+        "number": "19",
+        "paragraph_id": "JUD-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 These are the people who divide you, who follow mere natural instincts and do not have the Spirit.",
+        "section_id": "JUD-S002",
+        "section_marker": "s1",
+        "section_title": "A Call to Persevere",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "But you, dear friends, by building yourselves up in your most holy faith and praying in the Holy Spirit,",
+        "body_text_exact": "But you, dear friends, by building yourselves up in your most holy faith and praying in the Holy Spirit,",
+        "body_text_normalized": "But you, dear friends, by building yourselves up in your most holy faith and praying in the Holy Spirit,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "But you, dear friends, by building yourselves up in your most holy faith and praying in the Holy Spirit,"
+        ],
+        "discourse_unit_id": "JUD-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 46,
+        "line_start": 46,
+        "lines": [
+          "\\v 20 But you, dear friends, by building yourselves up in your most holy faith and praying in the Holy Spirit,"
+        ],
+        "number": "20",
+        "paragraph_id": "JUD-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 But you, dear friends, by building yourselves up in your most holy faith and praying in the Holy Spirit,",
+        "section_id": "JUD-S002",
+        "section_marker": "s1",
+        "section_title": "A Call to Persevere",
+        "verse_end": 20,
+        "verse_start": 20
+      },
+      {
+        "body_text": "keep yourselves in Godʼs love as you wait for the mercy of our Lord Jesus Christ to bring you to eternal life.",
+        "body_text_exact": "keep yourselves in Godʼs love as you wait for the mercy of our Lord Jesus Christ to bring you to eternal life.",
+        "body_text_normalized": "keep yourselves in Godʼs love as you wait for the mercy of our Lord Jesus Christ to bring you to eternal life.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "keep yourselves in Godʼs love as you wait for the mercy of our Lord Jesus Christ to bring you to eternal life."
+        ],
+        "discourse_unit_id": "JUD-D011",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 47,
+        "line_start": 47,
+        "lines": [
+          "\\v 21 keep yourselves in Godʼs love as you wait for the mercy of our Lord Jesus Christ to bring you to eternal life."
+        ],
+        "number": "21",
+        "paragraph_id": "JUD-P011",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 21 keep yourselves in Godʼs love as you wait for the mercy of our Lord Jesus Christ to bring you to eternal life.",
+        "section_id": "JUD-S002",
+        "section_marker": "s1",
+        "section_title": "A Call to Persevere",
+        "verse_end": 21,
+        "verse_start": 21
+      },
+      {
+        "body_text": "Be merciful to those who doubt;",
+        "body_text_exact": "Be merciful to those who doubt;",
+        "body_text_normalized": "Be merciful to those who doubt;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Be merciful to those who doubt;"
+        ],
+        "discourse_unit_id": "JUD-D012",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 49,
+        "line_start": 49,
+        "lines": [
+          "\\v 22 Be merciful to those who doubt;"
+        ],
+        "number": "22",
+        "paragraph_id": "JUD-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 22 Be merciful to those who doubt;",
+        "section_id": "JUD-S002",
+        "section_marker": "s1",
+        "section_title": "A Call to Persevere",
+        "verse_end": 22,
+        "verse_start": 22
+      },
+      {
+        "body_text": "save others by snatching them from the fire; to others show mercy, mixed with fear—hating even the clothing stained by corrupted flesh.",
+        "body_text_exact": "save others by snatching them from the fire; to others show mercy, mixed with fear—hating even the clothing stained by corrupted flesh.",
+        "body_text_normalized": "save others by snatching them from the fire; to others show mercy, mixed with fear—hating even the clothing stained by corrupted flesh.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "save others by snatching them from the fire; to others show mercy, mixed with fear—hating even the clothing stained by corrupted flesh.",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:23 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "The Greek manuscripts of these verses vary at several points."
+            ],
+            "marker": "f",
+            "type": "note"
+          }
+        ],
+        "discourse_unit_id": "JUD-D012",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 50,
+        "line_start": 50,
+        "lines": [
+          "\\v 23 save others by snatching them from the fire; to others show mercy, mixed with fear—hating even the clothing stained by corrupted flesh.\\f + \\fr 1:23 \\ft The Greek manuscripts of these verses vary at several points.\\f*"
+        ],
+        "number": "23",
+        "paragraph_id": "JUD-P012",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 23 save others by snatching them from the fire; to others show mercy, mixed with fear—hating even the clothing stained by corrupted flesh.\\f + \\fr 1:23 \\ft The Greek manuscripts of these verses vary at several points.\\f*",
+        "section_id": "JUD-S002",
+        "section_marker": "s1",
+        "section_title": "A Call to Persevere",
+        "verse_end": 23,
+        "verse_start": 23
+      },
+      {
+        "body_text": "To him who is able to keep you from stumbling and to present you before his glorious presence without fault and with great joy—",
+        "body_text_exact": "To him who is able to keep you from stumbling and to present you before his glorious presence without fault and with great joy—",
+        "body_text_normalized": "To him who is able to keep you from stumbling and to present you before his glorious presence without fault and with great joy—",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "To him who is able to keep you from stumbling and to present you before his glorious presence without fault and with great joy—"
+        ],
+        "discourse_unit_id": "JUD-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 54,
+        "line_start": 54,
+        "lines": [
+          "\\v 24 To him who is able to keep you from stumbling and to present you before his glorious presence without fault and with great joy—"
+        ],
+        "number": "24",
+        "paragraph_id": "JUD-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 24 To him who is able to keep you from stumbling and to present you before his glorious presence without fault and with great joy—",
+        "section_id": "JUD-S003",
+        "section_marker": "s1",
+        "section_title": "Doxology",
+        "verse_end": 24,
+        "verse_start": 24
+      },
+      {
+        "body_text": "to the only God our Savior be glory, majesty, power and authority, through Jesus Christ our Lord, before all ages, now and forevermore! Amen.",
+        "body_text_exact": "to the only God our Savior be glory, majesty, power and authority, through Jesus Christ our Lord, before all ages, now and forevermore! Amen.",
+        "body_text_normalized": "to the only God our Savior be glory, majesty, power and authority, through Jesus Christ our Lord, before all ages, now and forevermore! Amen.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "to the only God our Savior be glory, majesty, power and authority, through Jesus Christ our Lord, before all ages, now and forevermore! Amen."
+        ],
+        "discourse_unit_id": "JUD-D013",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 55,
+        "line_start": 55,
+        "lines": [
+          "\\v 25 to the only God our Savior be glory, majesty, power and authority, through Jesus Christ our Lord, before all ages, now and forevermore! Amen."
+        ],
+        "number": "25",
+        "paragraph_id": "JUD-P013",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 25 to the only God our Savior be glory, majesty, power and authority, through Jesus Christ our Lord, before all ages, now and forevermore! Amen.",
+        "section_id": "JUD-S003",
+        "section_marker": "s1",
+        "section_title": "Doxology",
+        "verse_end": 25,
+        "verse_start": 25
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

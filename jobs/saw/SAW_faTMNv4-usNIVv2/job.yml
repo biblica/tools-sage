@@ -1,0 +1,12 @@
+schema_version: '1.0'
+job_id: SAW_faTMNv4-usNIVv2
+tool: saw
+display_name: faTMNv4 analysed against usNIVv2
+status: ACTIVE
+bindings:
+  wip: faTMNv4
+  reference: usNIVv2
+profiles:
+  target_grammar: pes/wip
+defaults: {}
+configuration_revision: 1

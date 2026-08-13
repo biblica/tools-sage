@@ -1,0 +1,4234 @@
+{
+  "book": "AMO",
+  "records": [
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D001",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 15,
+      "line_start": 15,
+      "paragraph_id": "AMO-P001",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 1:1",
+      "section_id": "AMO-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D002",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 23,
+      "line_start": 19,
+      "paragraph_id": "AMO-P002",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 1:2",
+      "section_id": "AMO-S000",
+      "section_marker": "book",
+      "section_title": "",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D004",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 30,
+      "line_start": 26,
+      "paragraph_id": "AMO-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 1:3",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 33,
+      "line_start": 32,
+      "paragraph_id": "AMO-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B004",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 1:4",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D005",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 39,
+      "line_start": 35,
+      "paragraph_id": "AMO-P003",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B004",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 1:5",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D006",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 45,
+      "line_start": 41,
+      "paragraph_id": "AMO-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 1:6",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D007",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 48,
+      "line_start": 47,
+      "paragraph_id": "AMO-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 1:7",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D007",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 54,
+      "line_start": 50,
+      "paragraph_id": "AMO-P004",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B005",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 1:8",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D008",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 60,
+      "line_start": 56,
+      "paragraph_id": "AMO-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 1:9",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D009",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 63,
+      "line_start": 62,
+      "paragraph_id": "AMO-P005",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B006",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 1:10",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D010",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 71,
+      "line_start": 65,
+      "paragraph_id": "AMO-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 1:11",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D011",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 74,
+      "line_start": 73,
+      "paragraph_id": "AMO-P006",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B007",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 1:12",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D012",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 80,
+      "line_start": 76,
+      "paragraph_id": "AMO-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 1:13",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D013",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 85,
+      "line_start": 82,
+      "paragraph_id": "AMO-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B008",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 1:14",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 1,
+      "discourse_unit_id": "AMO-D013",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 89,
+      "line_start": 87,
+      "paragraph_id": "AMO-P007",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B008",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 1:15",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D014",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 96,
+      "line_start": 92,
+      "paragraph_id": "AMO-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 2:1",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D015",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 101,
+      "line_start": 98,
+      "paragraph_id": "AMO-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B009",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 2:2",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D015",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 105,
+      "line_start": 103,
+      "paragraph_id": "AMO-P008",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B009",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 2:3",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D016",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 113,
+      "line_start": 107,
+      "paragraph_id": "AMO-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 2:4",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D017",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 116,
+      "line_start": 115,
+      "paragraph_id": "AMO-P009",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B010",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 2:5",
+      "section_id": "AMO-S001",
+      "section_marker": "s1",
+      "section_title": "Суд над сусідами Ізраїля",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D018",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 123,
+      "line_start": 119,
+      "paragraph_id": "AMO-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 2:6",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D019",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 129,
+      "line_start": 125,
+      "paragraph_id": "AMO-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B011",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 2:7",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D019",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 134,
+      "line_start": 131,
+      "paragraph_id": "AMO-P010",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B011",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 2:8",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D020",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 141,
+      "line_start": 137,
+      "paragraph_id": "AMO-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B012",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 2:9",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D020",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 145,
+      "line_start": 143,
+      "paragraph_id": "AMO-P011",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B012",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 2:10",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D021",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 151,
+      "line_start": 148,
+      "paragraph_id": "AMO-P012",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B013",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 2:11",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D021",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 154,
+      "line_start": 153,
+      "paragraph_id": "AMO-P012",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B013",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 2:12",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 158,
+      "line_start": 157,
+      "paragraph_id": "AMO-P013",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B014",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 2:13",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 162,
+      "line_start": 160,
+      "paragraph_id": "AMO-P013",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B014",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 2:14",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 166,
+      "line_start": 164,
+      "paragraph_id": "AMO-P013",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B014",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 2:15",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 2,
+      "discourse_unit_id": "AMO-D022",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 170,
+      "line_start": 168,
+      "paragraph_id": "AMO-P013",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B014",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 2:16",
+      "section_id": "AMO-S002",
+      "section_marker": "s1",
+      "section_title": "Суд над Ізраїлем",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D023",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 174,
+      "line_start": 174,
+      "paragraph_id": "AMO-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 3:1",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D024",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 179,
+      "line_start": 176,
+      "paragraph_id": "AMO-P014",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B015",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 3:2",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 183,
+      "line_start": 182,
+      "paragraph_id": "AMO-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B016",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 3:3",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 188,
+      "line_start": 185,
+      "paragraph_id": "AMO-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B016",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 3:4",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 193,
+      "line_start": 190,
+      "paragraph_id": "AMO-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B016",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 3:5",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D025",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 198,
+      "line_start": 195,
+      "paragraph_id": "AMO-P015",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B016",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 3:6",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D026",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 203,
+      "line_start": 201,
+      "paragraph_id": "AMO-P016",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B017",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 3:7",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D027",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 209,
+      "line_start": 206,
+      "paragraph_id": "AMO-P017",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B018",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 3:8",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D028",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 216,
+      "line_start": 212,
+      "paragraph_id": "AMO-P018",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B019",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 3:9",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D029",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 220,
+      "line_start": 219,
+      "paragraph_id": "AMO-P019",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B020",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 3:10",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D030",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 225,
+      "line_start": 222,
+      "paragraph_id": "AMO-P020",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 3:11",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D032",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 232,
+      "line_start": 227,
+      "paragraph_id": "AMO-P021",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 3:12",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D034",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 234,
+      "line_start": 234,
+      "paragraph_id": "AMO-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 3:13",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D035",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 239,
+      "line_start": 236,
+      "paragraph_id": "AMO-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B023",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 3:14",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 3,
+      "discourse_unit_id": "AMO-D035",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 245,
+      "line_start": 241,
+      "paragraph_id": "AMO-P022",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B023",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 3:15",
+      "section_id": "AMO-S003",
+      "section_marker": "s1",
+      "section_title": "Свідчення проти Ізраїля",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 254,
+      "line_start": 249,
+      "paragraph_id": "AMO-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B024",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 4:1",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 259,
+      "line_start": 256,
+      "paragraph_id": "AMO-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B024",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 4:2",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 263,
+      "line_start": 261,
+      "paragraph_id": "AMO-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B024",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 4:3",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 268,
+      "line_start": 265,
+      "paragraph_id": "AMO-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B024",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 4:4",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D036",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 274,
+      "line_start": 270,
+      "paragraph_id": "AMO-P023",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B024",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 4:5",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D037",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 280,
+      "line_start": 277,
+      "paragraph_id": "AMO-P024",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B025",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 4:6",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 289,
+      "line_start": 283,
+      "paragraph_id": "AMO-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 4:7",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D038",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 295,
+      "line_start": 291,
+      "paragraph_id": "AMO-P025",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B026",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 4:8",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D039",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 302,
+      "line_start": 298,
+      "paragraph_id": "AMO-P026",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B027",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 4:9",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D040",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 311,
+      "line_start": 305,
+      "paragraph_id": "AMO-P027",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B028",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 4:10",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D041",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 318,
+      "line_start": 314,
+      "paragraph_id": "AMO-P028",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B029",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 4:11",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D042",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 323,
+      "line_start": 321,
+      "paragraph_id": "AMO-P029",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B030",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 4:12",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 4,
+      "discourse_unit_id": "AMO-D043",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 331,
+      "line_start": 326,
+      "paragraph_id": "AMO-P030",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B031",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 4:13",
+      "section_id": "AMO-S004",
+      "section_marker": "s1",
+      "section_title": "Ізраїль не повертається до Бога",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D044",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 335,
+      "line_start": 335,
+      "paragraph_id": "AMO-P031",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 5:1",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D045",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 340,
+      "line_start": 337,
+      "paragraph_id": "AMO-P031",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B032",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 5:2",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D046",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 346,
+      "line_start": 342,
+      "paragraph_id": "AMO-P032",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 5:3",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D048",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 349,
+      "line_start": 348,
+      "paragraph_id": "AMO-P033",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 5:4",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D049",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 355,
+      "line_start": 351,
+      "paragraph_id": "AMO-P033",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B034",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 5:5",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D049",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 360,
+      "line_start": 357,
+      "paragraph_id": "AMO-P033",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B034",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 5:6",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D050",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 364,
+      "line_start": 363,
+      "paragraph_id": "AMO-P034",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B035",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:7",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D051",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 372,
+      "line_start": 367,
+      "paragraph_id": "AMO-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:8",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D051",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 375,
+      "line_start": 374,
+      "paragraph_id": "AMO-P035",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B036",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:9",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D052",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 379,
+      "line_start": 378,
+      "paragraph_id": "AMO-P036",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B037",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:10",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D053",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 387,
+      "line_start": 382,
+      "paragraph_id": "AMO-P037",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B038",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:11",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D053",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 394,
+      "line_start": 389,
+      "paragraph_id": "AMO-P037",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B038",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:12",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D054",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 397,
+      "line_start": 396,
+      "paragraph_id": "AMO-P038",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B039",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:13",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D055",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 403,
+      "line_start": 400,
+      "paragraph_id": "AMO-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B040",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:14",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D055",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 408,
+      "line_start": 405,
+      "paragraph_id": "AMO-P039",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B040",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:15",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D056",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 414,
+      "line_start": 410,
+      "paragraph_id": "AMO-P040",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 5:16",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D057",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 418,
+      "line_start": 416,
+      "paragraph_id": "AMO-P040",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B041",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 5:17",
+      "section_id": "AMO-S005",
+      "section_marker": "s1",
+      "section_title": "Плач і заклик до покаяння",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D058",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 424,
+      "line_start": 421,
+      "paragraph_id": "AMO-P041",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B042",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 5:18",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 18,
+      "verse_start": 18
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D058",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 430,
+      "line_start": 426,
+      "paragraph_id": "AMO-P041",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B042",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 5:19",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 19,
+      "verse_start": 19
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D058",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 433,
+      "line_start": 432,
+      "paragraph_id": "AMO-P041",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B042",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 5:20",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 20,
+      "verse_start": 20
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D059",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 437,
+      "line_start": 436,
+      "paragraph_id": "AMO-P042",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B043",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:21",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 21,
+      "verse_start": 21
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D059",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 442,
+      "line_start": 439,
+      "paragraph_id": "AMO-P042",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B043",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:22",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 22,
+      "verse_start": 22
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D059",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 445,
+      "line_start": 444,
+      "paragraph_id": "AMO-P042",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B043",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:23",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 23,
+      "verse_start": 23
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D059",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 448,
+      "line_start": 447,
+      "paragraph_id": "AMO-P042",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B043",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:24",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 24,
+      "verse_start": 24
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D060",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 452,
+      "line_start": 451,
+      "paragraph_id": "AMO-P043",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B044",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:25",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 25,
+      "verse_start": 25
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D060",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 456,
+      "line_start": 454,
+      "paragraph_id": "AMO-P043",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B044",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:26",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 26,
+      "verse_start": 26
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 5,
+      "discourse_unit_id": "AMO-D060",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 459,
+      "line_start": 458,
+      "paragraph_id": "AMO-P043",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B044",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 5:27",
+      "section_id": "AMO-S006",
+      "section_marker": "s1",
+      "section_title": "День Господа",
+      "verse_end": 27,
+      "verse_start": 27
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D061",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 466,
+      "line_start": 463,
+      "paragraph_id": "AMO-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B045",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 6:1",
+      "section_id": "AMO-S007",
+      "section_marker": "s1",
+      "section_title": "Горе безтурботним",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D061",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 472,
+      "line_start": 468,
+      "paragraph_id": "AMO-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B045",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 6:2",
+      "section_id": "AMO-S007",
+      "section_marker": "s1",
+      "section_title": "Горе безтурботним",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D061",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 475,
+      "line_start": 474,
+      "paragraph_id": "AMO-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B045",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 6:3",
+      "section_id": "AMO-S007",
+      "section_marker": "s1",
+      "section_title": "Горе безтурботним",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D061",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 480,
+      "line_start": 477,
+      "paragraph_id": "AMO-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B045",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 6:4",
+      "section_id": "AMO-S007",
+      "section_marker": "s1",
+      "section_title": "Горе безтурботним",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D061",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 483,
+      "line_start": 482,
+      "paragraph_id": "AMO-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B045",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 6:5",
+      "section_id": "AMO-S007",
+      "section_marker": "s1",
+      "section_title": "Горе безтурботним",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D061",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 487,
+      "line_start": 485,
+      "paragraph_id": "AMO-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B045",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 6:6",
+      "section_id": "AMO-S007",
+      "section_marker": "s1",
+      "section_title": "Горе безтурботним",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D061",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 490,
+      "line_start": 489,
+      "paragraph_id": "AMO-P044",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B045",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 6:7",
+      "section_id": "AMO-S007",
+      "section_marker": "s1",
+      "section_title": "Горе безтурботним",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D062",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 497,
+      "line_start": 493,
+      "paragraph_id": "AMO-P045",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 6:8",
+      "section_id": "AMO-S008",
+      "section_marker": "s1",
+      "section_title": "Господьненавидить пихатість Ізраїля",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D064",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 499,
+      "line_start": 499,
+      "paragraph_id": "AMO-P046",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 6:9",
+      "section_id": "AMO-S008",
+      "section_marker": "s1",
+      "section_title": "Господьненавидить пихатість Ізраїля",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D064",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 500,
+      "line_start": 500,
+      "paragraph_id": "AMO-P046",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 6:10",
+      "section_id": "AMO-S008",
+      "section_marker": "s1",
+      "section_title": "Господьненавидить пихатість Ізраїля",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D065",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 504,
+      "line_start": 502,
+      "paragraph_id": "AMO-P046",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B047",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 6:11",
+      "section_id": "AMO-S008",
+      "section_marker": "s1",
+      "section_title": "Господьненавидить пихатість Ізраїля",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D066",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 510,
+      "line_start": 507,
+      "paragraph_id": "AMO-P047",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B048",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 6:12",
+      "section_id": "AMO-S008",
+      "section_marker": "s1",
+      "section_title": "Господьненавидить пихатість Ізраїля",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D066",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 513,
+      "line_start": 512,
+      "paragraph_id": "AMO-P047",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B048",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 6:13",
+      "section_id": "AMO-S008",
+      "section_marker": "s1",
+      "section_title": "Господьненавидить пихатість Ізраїля",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 6,
+      "discourse_unit_id": "AMO-D067",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 519,
+      "line_start": 516,
+      "paragraph_id": "AMO-P048",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B049",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 6:14",
+      "section_id": "AMO-S008",
+      "section_marker": "s1",
+      "section_title": "Господьненавидить пихатість Ізраїля",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D068",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 523,
+      "line_start": 523,
+      "paragraph_id": "AMO-P049",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:1",
+      "section_id": "AMO-S009",
+      "section_marker": "s1",
+      "section_title": "Сарана, вогонь і висок",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D068",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 525,
+      "line_start": 524,
+      "paragraph_id": "AMO-P049",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:2",
+      "section_id": "AMO-S009",
+      "section_marker": "s1",
+      "section_title": "Сарана, вогонь і висок",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D070",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 528,
+      "line_start": 527,
+      "paragraph_id": "AMO-P051",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:3",
+      "section_id": "AMO-S009",
+      "section_marker": "s1",
+      "section_title": "Сарана, вогонь і висок",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D072",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 530,
+      "line_start": 530,
+      "paragraph_id": "AMO-P053",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:4",
+      "section_id": "AMO-S009",
+      "section_marker": "s1",
+      "section_title": "Сарана, вогонь і висок",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D072",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 532,
+      "line_start": 531,
+      "paragraph_id": "AMO-P053",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:5",
+      "section_id": "AMO-S009",
+      "section_marker": "s1",
+      "section_title": "Сарана, вогонь і висок",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D074",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 535,
+      "line_start": 534,
+      "paragraph_id": "AMO-P055",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:6",
+      "section_id": "AMO-S009",
+      "section_marker": "s1",
+      "section_title": "Сарана, вогонь і висок",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D076",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 538,
+      "line_start": 538,
+      "paragraph_id": "AMO-P057",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:7",
+      "section_id": "AMO-S009",
+      "section_marker": "s1",
+      "section_title": "Сарана, вогонь і висок",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D077",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 545,
+      "line_start": 540,
+      "paragraph_id": "AMO-P058",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:8",
+      "section_id": "AMO-S009",
+      "section_marker": "s1",
+      "section_title": "Сарана, вогонь і висок",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D083",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 549,
+      "line_start": 547,
+      "paragraph_id": "AMO-P063",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B051",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 7:9",
+      "section_id": "AMO-S009",
+      "section_marker": "s1",
+      "section_title": "Сарана, вогонь і висок",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D084",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 552,
+      "line_start": 552,
+      "paragraph_id": "AMO-P064",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:10",
+      "section_id": "AMO-S010",
+      "section_marker": "s1",
+      "section_title": "Амос та Амація",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D084",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 556,
+      "line_start": 553,
+      "paragraph_id": "AMO-P064",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:11",
+      "section_id": "AMO-S010",
+      "section_marker": "s1",
+      "section_title": "Амос та Амація",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D086",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 559,
+      "line_start": 558,
+      "paragraph_id": "AMO-P065",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:12",
+      "section_id": "AMO-S010",
+      "section_marker": "s1",
+      "section_title": "Амос та Амація",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D087",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 560,
+      "line_start": 560,
+      "paragraph_id": "AMO-P066",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:13",
+      "section_id": "AMO-S010",
+      "section_marker": "s1",
+      "section_title": "Амос та Амація",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D088",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 563,
+      "line_start": 562,
+      "paragraph_id": "AMO-P067",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:14",
+      "section_id": "AMO-S010",
+      "section_marker": "s1",
+      "section_title": "Амос та Амація",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D089",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 564,
+      "line_start": 564,
+      "paragraph_id": "AMO-P068",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:15",
+      "section_id": "AMO-S010",
+      "section_marker": "s1",
+      "section_title": "Амос та Амація",
+      "verse_end": 15,
+      "verse_start": 15
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D089",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 567,
+      "line_start": 565,
+      "paragraph_id": "AMO-P068",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:16",
+      "section_id": "AMO-S010",
+      "section_marker": "s1",
+      "section_title": "Амос та Амація",
+      "verse_end": 16,
+      "verse_start": 16
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 7,
+      "discourse_unit_id": "AMO-D091",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 575,
+      "line_start": 569,
+      "paragraph_id": "AMO-P069",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 7:17",
+      "section_id": "AMO-S010",
+      "section_marker": "s1",
+      "section_title": "Амос та Амація",
+      "verse_end": 17,
+      "verse_start": 17
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D093",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 579,
+      "line_start": 579,
+      "paragraph_id": "AMO-P070",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 8:1",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D094",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 586,
+      "line_start": 581,
+      "paragraph_id": "AMO-P071",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 8:2",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D100",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 588,
+      "line_start": 588,
+      "paragraph_id": "AMO-P077",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 8:3",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D101",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 591,
+      "line_start": 590,
+      "paragraph_id": "AMO-P077",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B055",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 8:4",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D102",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "m",
+      "line_end": 600,
+      "line_start": 593,
+      "paragraph_id": "AMO-P077",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B055",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 8:5",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D103",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 604,
+      "line_start": 602,
+      "paragraph_id": "AMO-P077",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B055",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 8:6",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D104",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 606,
+      "line_start": 606,
+      "paragraph_id": "AMO-P078",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 8:7",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D105",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 612,
+      "line_start": 608,
+      "paragraph_id": "AMO-P078",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B056",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 8:8",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D106",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 616,
+      "line_start": 614,
+      "paragraph_id": "AMO-P079",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 8:9",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D107",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 623,
+      "line_start": 618,
+      "paragraph_id": "AMO-P079",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B057",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 8:10",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D108",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 629,
+      "line_start": 626,
+      "paragraph_id": "AMO-P080",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B058",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 8:11",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D108",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 634,
+      "line_start": 631,
+      "paragraph_id": "AMO-P080",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B058",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 8:12",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D109",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 638,
+      "line_start": 636,
+      "paragraph_id": "AMO-P081",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 8:13",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 8,
+      "discourse_unit_id": "AMO-D110",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 643,
+      "line_start": 640,
+      "paragraph_id": "AMO-P081",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B059",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 8:14",
+      "section_id": "AMO-S011",
+      "section_marker": "s1",
+      "section_title": "Кошик зрілих плодів",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "CHAPTER",
+          "marker": "c",
+          "score": 10
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D111",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 653,
+      "line_start": 647,
+      "paragraph_id": "AMO-P082",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 9:1",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 1,
+      "verse_start": 1
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D112",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 658,
+      "line_start": 655,
+      "paragraph_id": "AMO-P082",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B060",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 9:2",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 2,
+      "verse_start": 2
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D112",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 663,
+      "line_start": 660,
+      "paragraph_id": "AMO-P082",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B060",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 9:3",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 3,
+      "verse_start": 3
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D112",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 669,
+      "line_start": 665,
+      "paragraph_id": "AMO-P082",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B060",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 9:4",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 4,
+      "verse_start": 4
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D114",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 676,
+      "line_start": 672,
+      "paragraph_id": "AMO-P084",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B062",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 9:5",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 5,
+      "verse_start": 5
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D114",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 682,
+      "line_start": 678,
+      "paragraph_id": "AMO-P084",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B062",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 9:6",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 6,
+      "verse_start": 6
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D115",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 690,
+      "line_start": 685,
+      "paragraph_id": "AMO-P085",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B063",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 9:7",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 7,
+      "verse_start": 7
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D116",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 699,
+      "line_start": 693,
+      "paragraph_id": "AMO-P086",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B064",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 9:8",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 8,
+      "verse_start": 8
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D116",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 705,
+      "line_start": 701,
+      "paragraph_id": "AMO-P086",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B064",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 9:9",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 9,
+      "verse_start": 9
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D116",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 710,
+      "line_start": 707,
+      "paragraph_id": "AMO-P086",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B064",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 9:10",
+      "section_id": "AMO-S012",
+      "section_marker": "s1",
+      "section_title": "Знищення Ізраїля",
+      "verse_end": 10,
+      "verse_start": 10
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "SECTION",
+          "marker": "s1",
+          "score": 80
+        },
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D117",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 717,
+      "line_start": 713,
+      "paragraph_id": "AMO-P087",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 9:11",
+      "section_id": "AMO-S013",
+      "section_marker": "s1",
+      "section_title": "Відновлення Ізраїля",
+      "verse_end": 11,
+      "verse_start": 11
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D118",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 721,
+      "line_start": 719,
+      "paragraph_id": "AMO-P087",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B065",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 9:12",
+      "section_id": "AMO-S013",
+      "section_marker": "s1",
+      "section_title": "Відновлення Ізраїля",
+      "verse_end": 12,
+      "verse_start": 12
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "PARAGRAPH",
+          "marker": "p",
+          "score": 30
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D119",
+      "discourse_unit_kind": "PROSE_PARAGRAPH",
+      "discourse_unit_marker": "p",
+      "line_end": 727,
+      "line_start": 723,
+      "paragraph_id": "AMO-P088",
+      "paragraph_marker": "p",
+      "poetry_block_id": "",
+      "poetry_block_marker": "",
+      "poetry_block_title": "",
+      "reference": "AMO 9:13",
+      "section_id": "AMO-S013",
+      "section_marker": "s1",
+      "section_title": "Відновлення Ізраїля",
+      "verse_end": 13,
+      "verse_start": 13
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "VERSE",
+          "marker": "v",
+          "score": 0
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D120",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 733,
+      "line_start": 729,
+      "paragraph_id": "AMO-P088",
+      "paragraph_marker": "p",
+      "poetry_block_id": "AMO-B066",
+      "poetry_block_marker": "q1",
+      "poetry_block_title": "",
+      "reference": "AMO 9:14",
+      "section_id": "AMO-S013",
+      "section_marker": "s1",
+      "section_title": "Відновлення Ізраїля",
+      "verse_end": 14,
+      "verse_start": 14
+    },
+    {
+      "book": "AMO",
+      "boundaries_before": [
+        {
+          "continues_paragraph": false,
+          "kind": "POETRY_BLOCK",
+          "marker": "b",
+          "score": 70
+        }
+      ],
+      "chapter": 9,
+      "discourse_unit_id": "AMO-D121",
+      "discourse_unit_kind": "POETRY_STANZA",
+      "discourse_unit_marker": "q1",
+      "line_end": 738,
+      "line_start": 735,
+      "paragraph_id": "AMO-P089",
+      "paragraph_marker": "q1",
+      "poetry_block_id": "AMO-B067",
+      "poetry_block_marker": "b",
+      "poetry_block_title": "",
+      "reference": "AMO 9:15",
+      "section_id": "AMO-S013",
+      "section_marker": "s1",
+      "section_title": "Відновлення Ізраїля",
+      "verse_end": 15,
+      "verse_start": 15
+    }
+  ],
+  "schema_version": "1.2",
+  "source_sha256": "17f5b2eb892c2d66335572ad5fdabce5f479f85de9f9caf9b9445b318426ef89",
+  "structure_policy": {
+    "id": "usfm-structure-planning",
+    "sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b"
+  },
+  "summary": {
+    "cross_chapter_poetry_blocks": 0,
+    "cross_chapter_sections": 1,
+    "discourse_units": 98,
+    "paragraphs": 75,
+    "poetry_blocks": 55,
+    "sections": 14,
+    "verse_records": 146
+  }
+}

@@ -1,0 +1,84 @@
+#!/bin/sh
+set -eu
+ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SETTINGS=""
+JSON=0
+NO_PROMPT=0
+LOG_MODE=""
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --settings)
+            [ "$#" -ge 2 ] || { printf '%s\n' 'bic: --settings requires a .yml filename' >&2; exit 2; }
+            SETTINGS=$2
+            shift 2
+            ;;
+        --json)
+            JSON=1
+            shift
+            ;;
+        --no-prompt)
+            NO_PROMPT=1
+            shift
+            ;;
+        --quiet|--verbose|--debug)
+            LOG_MODE=$1
+            shift
+            ;;
+        *) break ;;
+    esac
+done
+run_sage() {
+    if [ -n "$SETTINGS" ]; then
+        set -- --settings "$SETTINGS" "$@"
+    fi
+    if [ "$JSON" -eq 1 ]; then
+        set -- --json "$@"
+    fi
+    if [ "$NO_PROMPT" -eq 1 ]; then
+        set -- --no-prompt "$@"
+    fi
+    if [ -n "$LOG_MODE" ]; then
+        set -- "$LOG_MODE" "$@"
+    fi
+    exec "$ROOT_DIR/sage" "$@"
+}
+COMMAND=${1:-status}
+[ "$#" -eq 0 ] || shift
+case "$COMMAND" in
+    -h|--help|help)
+        cat <<'HELP'
+usage: bic [--settings FILE.yml] [--json] [--no-prompt] [--quiet|--verbose|--debug] <command> [options]
+
+Commands:
+  status       Show BIC qualification and resource readiness
+  inspect      Create one bounded BIC INSPECT ACT task
+  rewrite      Create one bounded BIC REWRITE ACT task
+  self-check   Create one bounded BIC SELF-CHECK ACT task
+  submit       Validate and commit or stage one completed task
+  plan         Build deterministic work units without analysis
+
+Invalid commands and option values are corrected interactively when possible.
+Use --no-prompt or --json for structured INPUT_REQUIRED output.
+
+Authority model:
+  SOURCE = sole content/translation authority
+  DONOR  = vocabulary evidence only; no verse wording or syntax
+  TARGET = generated write destination; existing TARGET text is not INSPECT/REWRITE evidence
+
+Required order:
+  inspect -> submit -> rewrite -> submit -> self-check -> submit
+
+Optional provenance:
+  sage memory review may record attention after INSPECT; it never gates REWRITE.
+
+Examples:
+  ./bic status
+  ./bic inspect --source idKKHv0 --donor usNIVv2 --target usBOLx1 --scope "3JN 1:1-15"
+  ./bic rewrite --source idKKHv0 --donor usNIVv2 --target usBOLx1 --scope "3JN 1:1-15" --grammar-override-id GRAMMAR_REVIEW_ID
+  ./bic self-check --source idKKHv0 --donor usNIVv2 --target usBOLx1 --scope "3JN 1:1-15" --predecessor-task PATH/task-manifest.json --grammar-override-id GRAMMAR_REVIEW_ID
+  ./bic submit --task workspace-data/bic/output/active/TASK_ID/task-manifest.json
+
+HELP
+        ;;
+    *) run_sage shortcut --workflow bic "$COMMAND" -- "$@" ;;
+esac

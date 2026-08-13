@@ -1,64 +1,37 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-*.manifest
-*.spec
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+cache/grammar/*
+cache/usj/*
+cache/versification/*
+cache/source-maps/*
+cache/section-indexes/*
+!cache/**/.gitkeep
+workspace-data/sage/state/*
+workspace-data/sage/locks/*
+workspace-data/sage/transactions/*
+workspace-data/sage/output/*
+workspace-data/bic/state/*
+workspace-data/bic/locks/*
+workspace-data/bic/transactions/*
+workspace-data/bic/memory/*
+workspace-data/bic/output/*
+workspace-data/saw/state/*
+workspace-data/saw/locks/*
+workspace-data/saw/transactions/*
+workspace-data/saw/indexes/*
+workspace-data/saw/output/*
+!workspace-data/**/.gitkeep
 
-# Virtual environments
-venv/
-ENV/
-env/
-.venv
+# Local Paratext project directories are external resource data.
+projects/*/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+.coverage
+coverage.xml
+htmlcov/
 
-# OS
-.DS_Store
-.env
-.env.local
+# Local SAGE Python runtime.
+.venv/
+state/

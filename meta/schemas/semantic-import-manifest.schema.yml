@@ -1,0 +1,26 @@
+schema_id: sage-semantic-import-manifest-2.0
+required:
+- schema_version
+- source_id
+- source_type
+- language
+- authority
+- mutable
+- record_count
+- records_sha256
+- source
+rules:
+  mutable: false
+  authority: REFERENCE_ONLY
+  source_id_reuse_with_different_bytes: prohibited
+  active_selection_external: true
+  import_source_does_not_imply_approval: true
+  flex_combine_import_status: OBSERVED
+  seed_import_status: SEED
+  stronger_status_requires_review_registry: true
+status_ladder:
+- SEED
+- OBSERVED
+- TEAM_CONFIRMED
+- ESTABLISHED
+- APPROVED

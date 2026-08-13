@@ -1,0 +1,21 @@
+schema_id: sage-act-control-1.0
+purpose: Trusted controller record stored outside the model-writable task directory.
+required:
+  - task_id
+  - workflow
+  - operation
+  - task_root
+  - manifest_path
+  - manifest_sha256
+  - act_path
+  - act_sha256
+  - task_fingerprint
+  - settings_sha256
+  - allowed_writes
+  - status
+status_values: [CREATED, COMMITTED, STAGED_VALIDATED, FINALIZED]
+controls:
+  storage: workflow_state_root/act-tasks
+  writable_by_model: false
+  output_paths: output_directory_only_without_traversal
+  transition: exactly_once_submission

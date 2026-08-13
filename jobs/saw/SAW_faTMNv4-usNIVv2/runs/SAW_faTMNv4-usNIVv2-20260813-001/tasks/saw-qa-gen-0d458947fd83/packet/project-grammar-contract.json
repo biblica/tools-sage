@@ -1,0 +1,157 @@
+{
+  "approved_exceptions": [],
+  "effective_status": "PROJECT_REVIEW_REQUIRED",
+  "evidence_priority": [
+    "recorded project decision or approved exception",
+    "repeated acceptable WIP corpus pattern in equivalent contexts",
+    "Persian-language consultant or Area Linguist judgement",
+    "descriptive Persian grammar evidence",
+    "AI-generated hypothesis requiring review"
+  ],
+  "finding_requirement": "A project-grammar finding must cite one or more rule IDs. A general meaning finding must identify its non-grammar category explicitly.",
+  "finding_requirements": [
+    "Cite the exact WIP form and reference.",
+    "Cite one or more FA-GR rule IDs for a grammar finding.",
+    "Record supporting and contrary evidence.",
+    "Distinguish grammar, orthography, style, and meaning risk.",
+    "Route unconfirmed rules and naturalness judgements to the assigned human reviewer."
+  ],
+  "governance": {
+    "authority": "Project-approved Persian grammar guidance, corpus evidence, and recorded consultant decisions",
+    "automatic_approval": false,
+    "reference_language_is_not_target_model": true,
+    "source_language_form_is_not_target_form": true,
+    "unresolved_cases": "REPORT_WITH_URGENCY"
+  },
+  "governance_review": null,
+  "language": "fa",
+  "last_reviewed": null,
+  "normalization": {
+    "capitalisation_policy": "NOT_APPLICABLE_EXCEPT_LATIN_EMBEDS",
+    "digit_policy": "PROJECT_DECISION_RECOMMENDED",
+    "orthography_standard": "PROJECT_DECISION_RECOMMENDED",
+    "preferred_characters": {
+      "kaf": "ک",
+      "yeh": "ی"
+    },
+    "punctuation_policy": "PROJECT_DECISION_RECOMMENDED",
+    "quotation_policy": "PROJECT_DECISION_RECOMMENDED",
+    "unicode_form": "NFC",
+    "zwnj_policy": "PROJECT_DECISION_RECOMMENDED"
+  },
+  "owner_role": "AREA_LINGUIST",
+  "profile_id": "wip",
+  "profile_sha256": "13a06d0f27a1f7522d27299bc36233544614b36208dc29e1adbab70df87e87d1",
+  "project_decisions": [],
+  "provenance": {},
+  "purpose": "consultant_review_support",
+  "restrictions": [
+    "Do not infer a project rule from one occurrence.",
+    "Do not treat the contemporary source grammar or word order as the Persian model.",
+    "Do not transfer Greek or Hebrew morphology directly into Persian grammar.",
+    "Do not normalise characters, ZWNJ, digits, or punctuation without project authority.",
+    "Do not auto-approve grammar decisions."
+  ],
+  "role": "WIP",
+  "rules": [
+    {
+      "caution": "Do not replace characters automatically when the project has an established orthographic policy.",
+      "dimension": "unicode_and_character_forms",
+      "review": "Check Arabic/Persian character variants, combining marks, joining behaviour, and project-approved Unicode forms.",
+      "rule_id": "FA-GR-001"
+    },
+    {
+      "caution": "ZWNJ conventions vary by project and publication system; report evidence rather than normalising silently.",
+      "dimension": "spacing_and_zwnj",
+      "review": "Check word spacing, half-space or ZWNJ use, affixes, compounds, and joining around punctuation.",
+      "rule_id": "FA-GR-002"
+    },
+    {
+      "caution": "Do not infer an ezāfe error solely from the written absence of an optional visible marker.",
+      "dimension": "ezafe_and_noun_phrases",
+      "review": "Check ezāfe relationships, adjective order, possessive relationships, apposition, and noun-phrase attachment.",
+      "rule_id": "FA-GR-003"
+    },
+    {
+      "caution": "Clitic placement interacts with register, emphasis, and written style; confirm the intended constituent.",
+      "dimension": "clitics_and_enclitic_pronouns",
+      "review": "Check attachment and referents of object, possessive, copular, and connective clitics.",
+      "rule_id": "FA-GR-004"
+    },
+    {
+      "caution": "Formal and colloquial patterns differ; use the project register rather than a universal prescriptive rule.",
+      "dimension": "agreement_and_person",
+      "review": "Check subject–verb agreement, animacy-sensitive plural agreement, person, number, and copular forms.",
+      "rule_id": "FA-GR-005"
+    },
+    {
+      "caution": "Do not map Greek, Hebrew, or English verbal forms mechanically to one Persian construction.",
+      "dimension": "tense_aspect_modality",
+      "review": "Check tense, aspect, mood, evidential force, modality, and auxiliary combinations against the intended event structure.",
+      "rule_id": "FA-GR-006"
+    },
+    {
+      "caution": "Lexical choice and naturalness require Persian corpus and project evidence.",
+      "dimension": "light_verbs_and_predicates",
+      "review": "Check light-verb constructions, compound predicates, valency, and selection of copular or verbal complements.",
+      "rule_id": "FA-GR-007"
+    },
+    {
+      "caution": "Persian permits subject omission; do not add names or pronouns merely to mirror a reference text.",
+      "dimension": "participant_reference",
+      "review": "Check overt and omitted pronouns, antecedents, reflexives, demonstratives, honorific forms, and participant shifts.",
+      "rule_id": "FA-GR-008"
+    },
+    {
+      "caution": "Differences from English word order are not findings unless they affect meaning, clarity, or project style.",
+      "dimension": "word_order_and_information_structure",
+      "review": "Check topic–comment organisation, focus, scrambling, modifier placement, and ambiguity caused by constituent order.",
+      "rule_id": "FA-GR-009"
+    },
+    {
+      "caution": "Restructuring is acceptable when logical relationships and discourse prominence remain clear.",
+      "dimension": "relative_and_subordinate_clauses",
+      "review": "Check relative clauses, complement clauses, conditionals, temporal clauses, and the scope of subordinators.",
+      "rule_id": "FA-GR-010"
+    },
+    {
+      "caution": "A particle difference alone does not establish a meaning error.",
+      "dimension": "negation_questions_commands",
+      "review": "Check negative scope, negative concord, interrogatives, imperatives, prohibitions, and indirect commands.",
+      "rule_id": "FA-GR-011"
+    },
+    {
+      "caution": "Persian may leave some relations implicit; assess whether the intended relation remains recoverable.",
+      "dimension": "connectives_and_discourse",
+      "review": "Check causal, inferential, adversative, concessive, sequential, and explanatory relationships across clauses.",
+      "rule_id": "FA-GR-012"
+    },
+    {
+      "caution": "Apply the project’s publication conventions and do not import English punctuation mechanically.",
+      "dimension": "punctuation_and_quotation",
+      "review": "Check Persian punctuation, quotation marks, dialogue layout, terminal punctuation, and spacing around signs.",
+      "rule_id": "FA-GR-013"
+    },
+    {
+      "caution": "Final naturalness and community acceptability require qualified Persian speakers.",
+      "dimension": "register_naturalness_and_calque",
+      "review": "Check contemporary Persian naturalness, audience register, idiom, and possible calques from the contemporary source.",
+      "rule_id": "FA-GR-014"
+    },
+    {
+      "caution": "Do not restructure a valid Persian sentence solely to mirror the contemporary source; require evidence of meaning, clarity, or project-policy impact.",
+      "dimension": "sentence_boundaries_and_clause_attachment",
+      "review": "Check sentence division, clause attachment, parenthetical structure, coordination, and subordination where punctuation or connective choice permits competing parses.",
+      "rule_id": "FA-GR-015"
+    }
+  ],
+  "schema_version": "2.0",
+  "script": "Arab",
+  "status": "PROJECT_REVIEW_REQUIRED",
+  "usage": {
+    "baseline_qa": "Identify bounded evidence, corpus patterns, and review questions in the authorised scope.",
+    "focused_check": "Investigate one explicit Persian grammar or orthography concern.",
+    "initialization": "Validate language identity, schema, and approval status; do not perform verse-level grammar review.",
+    "original_language_review": "Clarify source meaning only when materially relevant; do not prescribe Persian form directly."
+  }
+}

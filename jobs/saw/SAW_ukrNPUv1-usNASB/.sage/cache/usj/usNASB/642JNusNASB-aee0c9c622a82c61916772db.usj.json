@@ -1,0 +1,1409 @@
+{
+  "content": [
+    {
+      "code": "2JN",
+      "content": [
+        "NASB20"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "2 John",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "2 John",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "2 John",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "The Second Letter of",
+        "\n"
+      ],
+      "marker": "mt2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "JOHN",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "2JN 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        {
+          "content": [
+            "Walk According to His Commandments"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "2JN 1:1",
+          "type": "verse"
+        },
+        "The elder to the chosen lady and her children, whom I love in truth; and not only I, but also all who know the truth,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "2JN 1:2",
+          "type": "verse"
+        },
+        "because of the truth which remains in us and will be with us forever:",
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "2JN 1:3",
+          "type": "verse"
+        },
+        "Grace, mercy, ",
+        {
+          "content": [
+            "and"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " peace will be with us, from God the Father and from Jesus Christ, the Son of the Father, in truth and love.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "2JN 1:4",
+          "type": "verse"
+        },
+        "I was overjoyed to find ",
+        {
+          "content": [
+            "some"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " of your children walking in truth, just as we have received a commandment ",
+        {
+          "content": [
+            "to do"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " from the Father.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "2JN 1:5",
+          "type": "verse"
+        },
+        "Now I ask you, lady, not as though ",
+        {
+          "content": [
+            "I were"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " writing to you a new commandment, but the one which we have had from the beginning, that we love one another.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "2JN 1:6",
+          "type": "verse"
+        },
+        "And this is love, that we walk according to His commandments. This is the commandment, just as you have heard from the beginning, that you are to walk in it.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "2JN 1:7",
+          "type": "verse"
+        },
+        "For many deceivers have gone out into the world, those who do not acknowledge Jesus Christ ",
+        {
+          "content": [
+            "as"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " coming in the flesh. This is the deceiver and the antichrist.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "2JN 1:8",
+          "type": "verse"
+        },
+        "Watch yourselves, that you do not lose what we have accomplished, but ",
+        {
+          "content": [
+            "that"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " you may receive a full reward.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "2JN 1:9",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:9 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "Everyone",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "Anyone who ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:9 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "goes on ahead",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "goes too far and does not remain in the teaching of Christ, does not have God; the one who remains in the teaching has both the Father and the Son.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "2JN 1:10",
+          "type": "verse"
+        },
+        "If anyone comes to you and does not bring this teaching, do not receive him into ",
+        {
+          "content": [
+            "your"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " house, and do not ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:10 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "say to him",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "give him a greeting;",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "2JN 1:11",
+          "type": "verse"
+        },
+        "for the one who ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:11 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "says to him",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "gives him a greeting ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:11 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "I.e., shares responsibility for them",
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "participates in his evil deeds.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "2JN 1:12",
+          "type": "verse"
+        },
+        "Though I have many things to write to you, I do not want to ",
+        {
+          "content": [
+            "do so"
+          ],
+          "marker": "it",
+          "type": "char"
+        },
+        " with paper and ink; but I hope to come to you and speak ",
+        {
+          "content": [
+            "1 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:12 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Lit ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "mouth to mouth",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "face to face, so that ",
+        {
+          "content": [
+            "2 ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:12 ",
+            {
+              "closing": true,
+              "marker": "fr",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "One early ms ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "our",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            {
+              "closing": true,
+              "marker": "ft",
+              "type": "marker"
+            }
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "your joy may be made complete.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "2JN 1:13",
+          "type": "verse"
+        },
+        "The children of your chosen sister greet you.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "2JN",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "642JNusNASB.SFM",
+    "source_sha256": "4aa4ee9ac763021b63c64d76017a27910b00879029aa760803b9a7fdbc0aa3c2",
+    "source_size": 2290,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "The elder to the chosen lady and her children, whom I love in truth; and not only I, but also all who know the truth,",
+        "body_text_exact": "The elder to the chosen lady and her children, whom I love in truth; and not only I, but also all who know the truth,",
+        "body_text_normalized": "The elder to the chosen lady and her children, whom I love in truth; and not only I, but also all who know the truth,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "The elder to the chosen lady and her children, whom I love in truth; and not only I, but also all who know the truth,"
+        ],
+        "discourse_unit_id": "2JN-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 10,
+        "line_start": 10,
+        "lines": [
+          "\\v 1 The elder to the chosen lady and her children, whom I love in truth; and not only I, but also all who know the truth,"
+        ],
+        "number": "1",
+        "paragraph_id": "2JN-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 The elder to the chosen lady and her children, whom I love in truth; and not only I, but also all who know the truth,",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "because of the truth which remains in us and will be with us forever:",
+        "body_text_exact": "because of the truth which remains in us and will be with us forever:",
+        "body_text_normalized": "because of the truth which remains in us and will be with us forever:",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "because of the truth which remains in us and will be with us forever:"
+        ],
+        "discourse_unit_id": "2JN-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 11,
+        "line_start": 11,
+        "lines": [
+          "\\v 2 because of the truth which remains in us and will be with us forever:"
+        ],
+        "number": "2",
+        "paragraph_id": "2JN-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 because of the truth which remains in us and will be with us forever:",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Grace, mercy, and peace will be with us, from God the Father and from Jesus Christ, the Son of the Father, in truth and love.",
+        "body_text_exact": "Grace, mercy, and peace will be with us, from God the Father and from Jesus Christ, the Son of the Father, in truth and love.",
+        "body_text_normalized": "Grace, mercy, and peace will be with us, from God the Father and from Jesus Christ, the Son of the Father, in truth and love.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Grace, mercy, ",
+          {
+            "content": [
+              "and"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " peace will be with us, from God the Father and from Jesus Christ, the Son of the Father, in truth and love."
+        ],
+        "discourse_unit_id": "2JN-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 12,
+        "line_start": 12,
+        "lines": [
+          "\\v 3 Grace, mercy, \\it and\\it* peace will be with us, from God the Father and from Jesus Christ, the Son of the Father, in truth and love."
+        ],
+        "number": "3",
+        "paragraph_id": "2JN-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Grace, mercy, \\it and\\it* peace will be with us, from God the Father and from Jesus Christ, the Son of the Father, in truth and love.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "I was overjoyed to find some of your children walking in truth, just as we have received a commandment to do from the Father.",
+        "body_text_exact": "I was overjoyed to find some of your children walking in truth, just as we have received a commandment to do from the Father.",
+        "body_text_normalized": "I was overjoyed to find some of your children walking in truth, just as we have received a commandment to do from the Father.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "I was overjoyed to find ",
+          {
+            "content": [
+              "some"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " of your children walking in truth, just as we have received a commandment ",
+          {
+            "content": [
+              "to do"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " from the Father."
+        ],
+        "discourse_unit_id": "2JN-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 14,
+        "line_start": 14,
+        "lines": [
+          "\\v 4 I was overjoyed to find \\it some\\it* of your children walking in truth, just as we have received a commandment \\it to do\\it* from the Father."
+        ],
+        "number": "4",
+        "paragraph_id": "2JN-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 I was overjoyed to find \\it some\\it* of your children walking in truth, just as we have received a commandment \\it to do\\it* from the Father.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Now I ask you, lady, not as though I were writing to you a new commandment, but the one which we have had from the beginning, that we love one another.",
+        "body_text_exact": "Now I ask you, lady, not as though I were writing to you a new commandment, but the one which we have had from the beginning, that we love one another.",
+        "body_text_normalized": "Now I ask you, lady, not as though I were writing to you a new commandment, but the one which we have had from the beginning, that we love one another.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Now I ask you, lady, not as though ",
+          {
+            "content": [
+              "I were"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " writing to you a new commandment, but the one which we have had from the beginning, that we love one another."
+        ],
+        "discourse_unit_id": "2JN-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 15,
+        "line_start": 15,
+        "lines": [
+          "\\v 5 Now I ask you, lady, not as though \\it I were\\it* writing to you a new commandment, but the one which we have had from the beginning, that we love one another."
+        ],
+        "number": "5",
+        "paragraph_id": "2JN-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Now I ask you, lady, not as though \\it I were\\it* writing to you a new commandment, but the one which we have had from the beginning, that we love one another.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "And this is love, that we walk according to His commandments. This is the commandment, just as you have heard from the beginning, that you are to walk in it.",
+        "body_text_exact": "And this is love, that we walk according to His commandments. This is the commandment, just as you have heard from the beginning, that you are to walk in it.",
+        "body_text_normalized": "And this is love, that we walk according to His commandments. This is the commandment, just as you have heard from the beginning, that you are to walk in it.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "And this is love, that we walk according to His commandments. This is the commandment, just as you have heard from the beginning, that you are to walk in it."
+        ],
+        "discourse_unit_id": "2JN-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 16,
+        "line_start": 16,
+        "lines": [
+          "\\v 6 And this is love, that we walk according to His commandments. This is the commandment, just as you have heard from the beginning, that you are to walk in it."
+        ],
+        "number": "6",
+        "paragraph_id": "2JN-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 And this is love, that we walk according to His commandments. This is the commandment, just as you have heard from the beginning, that you are to walk in it.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "For many deceivers have gone out into the world, those who do not acknowledge Jesus Christ as coming in the flesh. This is the deceiver and the antichrist.",
+        "body_text_exact": "For many deceivers have gone out into the world, those who do not acknowledge Jesus Christ as coming in the flesh. This is the deceiver and the antichrist.",
+        "body_text_normalized": "For many deceivers have gone out into the world, those who do not acknowledge Jesus Christ as coming in the flesh. This is the deceiver and the antichrist.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "For many deceivers have gone out into the world, those who do not acknowledge Jesus Christ ",
+          {
+            "content": [
+              "as"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " coming in the flesh. This is the deceiver and the antichrist."
+        ],
+        "discourse_unit_id": "2JN-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 18,
+        "line_start": 18,
+        "lines": [
+          "\\v 7 For many deceivers have gone out into the world, those who do not acknowledge Jesus Christ \\it as\\it* coming in the flesh. This is the deceiver and the antichrist."
+        ],
+        "number": "7",
+        "paragraph_id": "2JN-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 For many deceivers have gone out into the world, those who do not acknowledge Jesus Christ \\it as\\it* coming in the flesh. This is the deceiver and the antichrist.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Watch yourselves, that you do not lose what we have accomplished, but that you may receive a full reward.",
+        "body_text_exact": "Watch yourselves, that you do not lose what we have accomplished, but that you may receive a full reward.",
+        "body_text_normalized": "Watch yourselves, that you do not lose what we have accomplished, but that you may receive a full reward.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Watch yourselves, that you do not lose what we have accomplished, but ",
+          {
+            "content": [
+              "that"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " you may receive a full reward."
+        ],
+        "discourse_unit_id": "2JN-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 19,
+        "line_start": 19,
+        "lines": [
+          "\\v 8 Watch yourselves, that you do not lose what we have accomplished, but \\it that\\it* you may receive a full reward."
+        ],
+        "number": "8",
+        "paragraph_id": "2JN-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Watch yourselves, that you do not lose what we have accomplished, but \\it that\\it* you may receive a full reward.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Anyone who goes too far and does not remain in the teaching of Christ, does not have God; the one who remains in the teaching has both the Father and the Son.",
+        "body_text_exact": "Anyone who goes too far and does not remain in the teaching of Christ, does not have God; the one who remains in the teaching has both the Father and the Son.",
+        "body_text_normalized": "Anyone who goes too far and does not remain in the teaching of Christ, does not have God; the one who remains in the teaching has both the Father and the Son.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:9 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "Everyone",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "Anyone who ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:9 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "goes on ahead",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "goes too far and does not remain in the teaching of Christ, does not have God; the one who remains in the teaching has both the Father and the Son."
+        ],
+        "discourse_unit_id": "2JN-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 20,
+        "line_start": 20,
+        "lines": [
+          "\\v 9 \\f 1 \\fr 1:9 \\fr*\\ft Lit \\+it Everyone\\+it*\\ft*\\f*Anyone who \\f 2 \\fr 1:9 \\fr*\\ft Lit \\+it goes on ahead\\+it*\\ft*\\f*goes too far and does not remain in the teaching of Christ, does not have God; the one who remains in the teaching has both the Father and the Son."
+        ],
+        "number": "9",
+        "paragraph_id": "2JN-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 \\f 1 \\fr 1:9 \\fr*\\ft Lit \\+it Everyone\\+it*\\ft*\\f*Anyone who \\f 2 \\fr 1:9 \\fr*\\ft Lit \\+it goes on ahead\\+it*\\ft*\\f*goes too far and does not remain in the teaching of Christ, does not have God; the one who remains in the teaching has both the Father and the Son.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "If anyone comes to you and does not bring this teaching, do not receive him into your house, and do not give him a greeting;",
+        "body_text_exact": "If anyone comes to you and does not bring this teaching, do not receive him into your house, and do not give him a greeting;",
+        "body_text_normalized": "If anyone comes to you and does not bring this teaching, do not receive him into your house, and do not give him a greeting;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "If anyone comes to you and does not bring this teaching, do not receive him into ",
+          {
+            "content": [
+              "your"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " house, and do not ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:10 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "say to him",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "give him a greeting;"
+        ],
+        "discourse_unit_id": "2JN-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 21,
+        "line_start": 21,
+        "lines": [
+          "\\v 10 If anyone comes to you and does not bring this teaching, do not receive him into \\it your\\it* house, and do not \\f 1 \\fr 1:10 \\fr*\\ft Lit \\+it say to him\\+it*\\ft*\\f*give him a greeting;"
+        ],
+        "number": "10",
+        "paragraph_id": "2JN-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 If anyone comes to you and does not bring this teaching, do not receive him into \\it your\\it* house, and do not \\f 1 \\fr 1:10 \\fr*\\ft Lit \\+it say to him\\+it*\\ft*\\f*give him a greeting;",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "for the one who gives him a greeting participates in his evil deeds.",
+        "body_text_exact": "for the one who gives him a greeting participates in his evil deeds.",
+        "body_text_normalized": "for the one who gives him a greeting participates in his evil deeds.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "for the one who ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:11 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "says to him",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "gives him a greeting ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:11 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "I.e., shares responsibility for them",
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "participates in his evil deeds."
+        ],
+        "discourse_unit_id": "2JN-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 22,
+        "line_start": 22,
+        "lines": [
+          "\\v 11 for the one who \\f 1 \\fr 1:11 \\fr*\\ft Lit \\+it says to him\\+it*\\ft*\\f*gives him a greeting \\f 2 \\fr 1:11 \\fr*\\ft I.e., shares responsibility for them\\ft*\\f*participates in his evil deeds."
+        ],
+        "number": "11",
+        "paragraph_id": "2JN-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 for the one who \\f 1 \\fr 1:11 \\fr*\\ft Lit \\+it says to him\\+it*\\ft*\\f*gives him a greeting \\f 2 \\fr 1:11 \\fr*\\ft I.e., shares responsibility for them\\ft*\\f*participates in his evil deeds.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Though I have many things to write to you, I do not want to do so with paper and ink; but I hope to come to you and speak face to face, so that your joy may be made complete.",
+        "body_text_exact": "Though I have many things to write to you, I do not want to do so with paper and ink; but I hope to come to you and speak face to face, so that your joy may be made complete.",
+        "body_text_normalized": "Though I have many things to write to you, I do not want to do so with paper and ink; but I hope to come to you and speak face to face, so that your joy may be made complete.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Though I have many things to write to you, I do not want to ",
+          {
+            "content": [
+              "do so"
+            ],
+            "marker": "it",
+            "type": "char"
+          },
+          " with paper and ink; but I hope to come to you and speak ",
+          {
+            "content": [
+              "1 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:12 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Lit ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "mouth to mouth",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "face to face, so that ",
+          {
+            "content": [
+              "2 ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:12 ",
+              {
+                "closing": true,
+                "marker": "fr",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "One early ms ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "our",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              {
+                "closing": true,
+                "marker": "ft",
+                "type": "marker"
+              }
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "your joy may be made complete."
+        ],
+        "discourse_unit_id": "2JN-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 24,
+        "line_start": 24,
+        "lines": [
+          "\\v 12 Though I have many things to write to you, I do not want to \\it do so\\it* with paper and ink; but I hope to come to you and speak \\f 1 \\fr 1:12 \\fr*\\ft Lit \\+it mouth to mouth\\+it*\\ft*\\f*face to face, so that \\f 2 \\fr 1:12 \\fr*\\ft One early ms \\+it our\\+it*\\ft*\\f*your joy may be made complete."
+        ],
+        "number": "12",
+        "paragraph_id": "2JN-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Though I have many things to write to you, I do not want to \\it do so\\it* with paper and ink; but I hope to come to you and speak \\f 1 \\fr 1:12 \\fr*\\ft Lit \\+it mouth to mouth\\+it*\\ft*\\f*face to face, so that \\f 2 \\fr 1:12 \\fr*\\ft One early ms \\+it our\\+it*\\ft*\\f*your joy may be made complete.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "The children of your chosen sister greet you.",
+        "body_text_exact": "The children of your chosen sister greet you.",
+        "body_text_normalized": "The children of your chosen sister greet you.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "The children of your chosen sister greet you."
+        ],
+        "discourse_unit_id": "2JN-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 26,
+        "line_start": 26,
+        "lines": [
+          "\\v 13 The children of your chosen sister greet you."
+        ],
+        "number": "13",
+        "paragraph_id": "2JN-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 The children of your chosen sister greet you.",
+        "section_id": "2JN-S001",
+        "section_marker": "s1",
+        "section_title": "Walk According to His Commandments",
+        "verse_end": 13,
+        "verse_start": 13
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

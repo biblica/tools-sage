@@ -1,0 +1,6204 @@
+{
+  "content": [
+    {
+      "code": "ZEP",
+      "content": [
+        "- New Ukrainian Translation ver.1"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 2022 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "Софонії",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Книга пророка Софонії",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Софонії",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Соф.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Книга пророка Софонії",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вступ",
+        "\n"
+      ],
+      "marker": "iot",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Пророча діяльність пророка Софонії припадає на часи правління праведного царя Йосії, що прагнув повернути народ Юдеї та мешканців Єрусалима до Бога їхніх предків. Перед тим країною правив нечестивий цар Манассія та його син Аммон, що грішили самі й спонукали до гріха народ (",
+        {
+          "content": [
+            "2 Цар. 21:1–26; 2 Хр. 33:1–25"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). Тож початок царювання малолітнього Йосії, онука Манассії, теж не відзначився прагненням до праведності серед народу, що відображено в Книзі пророка Софонії. Духовне пробудження царя настало 18-го року його правління (622 р. до Р. Х.), але його зусилля не знайшли щирого відгуку серед жителів Юдеї, про що говорив також пророк Єремія (див. ",
+        {
+          "content": [
+            "2 Цар. 22:1—23:25; 2 Хр. 34:8—35:19; Єр. 1—7"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ").",
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Основна звістка Книги пророка Софонії – пророцтво про день ",
+        {
+          "content": [
+            "Господній"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", тобто час Божого суду, що мав невдовзі настати як для жителів Юдеї (",
+        {
+          "content": [
+            "1:2–18"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "), так і для їхніх ворогів із навколишніх народів (",
+        {
+          "content": [
+            "2:4—3:8"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). Імовірно, ідеться про майбутнє нашестя халдеїв на чолі із царем Навуходоносором, що спустошило країни східного Середземноморʼя в кінці VII на початку VI ст. до Р. Х. Софонія закликає народ до покаяння (",
+        {
+          "content": [
+            "2:1–3"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ") й пророкує про повернення розсіяних ізраїльтян і славне майбутнє Божого народу, коли той навернеться до ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " (",
+        {
+          "content": [
+            "3:8–20"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ").",
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "ZEP 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "ZEP 1:1",
+          "type": "verse"
+        },
+        "Слово ",
+        {
+          "content": [
+            "Господнє"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", яке було до Софонії, сина Куші, сина Ґедалії, сина Амарії, сина Єзекії, за днів Йосії, сина Амона, царя Юдеї.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Суд над усією землею в день ",
+        {
+          "content": [
+            "Господній"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "ZEP 1:2",
+          "type": "verse"
+        },
+        "«Я неодмінно знищу все",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "з поверхні землі, –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "промовляє ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ". –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "ZEP 1:3",
+          "type": "verse"
+        },
+        "Я знищу людей і тварин,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "знищу птахів небесних",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і риб морських,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а також ",
+        {
+          "content": [
+            "ідолів"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ", що є спотиканням для нечестивих.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Так, Я викоріню людей із поверхні землі! –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "промовляє ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ". –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "ZEP 1:4",
+          "type": "verse"
+        },
+        "Я простягну Мою руку на Юдею",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і на всіх мешканців Єрусалима",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й викоріню з цього місця залишки Баала,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "імена жерців та священників,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "ZEP 1:5",
+          "type": "verse"
+        },
+        "і тих, що поклоняються на дахах воїнству небесному",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:5 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "Воїнство небесне",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            "– сонце, місяць та зірки. Див. ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "Повт. 4:19",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        ";",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і тих, що поклоняються ",
+        {
+          "content": [
+            "Господеві"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " й клянуться Ним,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "але й царем своїм, Молохом",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:5 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "Молох",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            "– божество в народів Ханаану; це імʼя означає ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "цар",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            "."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        ", клянуться;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "ZEP 1:6",
+          "type": "verse"
+        },
+        "і тих, що відвертаються від ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й не шукають, не прагнуть Його».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "ZEP 1:7",
+          "type": "verse"
+        },
+        "Мовчи перед Володарем ",
+        {
+          "content": [
+            "Господом"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо день ",
+        {
+          "content": [
+            "Господній"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " близько,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " приготував жертву,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо Він уже визначив тих, кого покличе.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "ZEP 1:8",
+          "type": "verse"
+        },
+        "«У день жертвоприношення ",
+        {
+          "content": [
+            "Господнього"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Я покараю князів, і синів царя,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і тих, що вдягаються в одяг чужинців.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "ZEP 1:9",
+          "type": "verse"
+        },
+        "Того дня Я покараю всіх тих,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що перескакують через поріг,",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:9 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Ідеться про давній язичницький звичай. Див. ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "1 Сам. 5:5",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що наповнюють дім свого володаря",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "насильством і підступом.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "ZEP 1:10",
+          "type": "verse"
+        },
+        "Того дня голос волання буде чутно від Рибних воріт",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ридання – від нової частини міста,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "гучний тріск – із пагорбів, –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "промовляє ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ". –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "ZEP 1:11",
+          "type": "verse"
+        },
+        "Ридайте, мешканці Махтешу,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо погублені будуть усі ",
+        {
+          "content": [
+            "купці"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " – народ ханаанський",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:11 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Ханаанці активно займалися торгівлею, тому слово ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "ханаанець",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            "часто вживалось як синонім слова ",
+            {
+              "closing": false,
+              "marker": "it",
+              "type": "marker"
+            },
+            "купець",
+            {
+              "closing": true,
+              "marker": "it",
+              "type": "marker"
+            },
+            ". Див. ",
+            {
+              "closing": false,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "Зах. 14:21",
+            {
+              "closing": true,
+              "marker": "xt",
+              "type": "marker"
+            },
+            "."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "викорінені будуть усі, хто відважує срібло.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "ZEP 1:12",
+          "type": "verse"
+        },
+        "Того часу Я обшукаю Єрусалим зі світильниками",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й покараю тих безтурботних людей,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що стали наче гуща витриманого вина,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що думають у своїх серцях:",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "„Не чинить ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " ні добра, ні зла“.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "ZEP 1:13",
+          "type": "verse"
+        },
+        "Тоді їхнє майно буде розграбоване,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а доми їхні – спустошені.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вони побудували будинки,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "але жити в них не будуть;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "насадили виноградники,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "але вина з них не питимуть».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "ZEP 1:14",
+          "type": "verse"
+        },
+        "Близько великий день ",
+        {
+          "content": [
+            "Господній"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "близько й дуже поспішає!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Голос дня ",
+        {
+          "content": [
+            "Господнього"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " скорботний,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "лунає там, як бойовий клич воїна!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "ZEP 1:15",
+          "type": "verse"
+        },
+        "Той день – день люті,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "день скорботи й страждання,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "день бурі руйнівної і спустошення,",
+        "\n"
+      ],
+      "marker": "q3",
+      "type": "para"
+    },
+    {
+      "content": [
+        "день темряви й мороку,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "день хмари й імли,",
+        "\n"
+      ],
+      "marker": "q3",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "ZEP 1:16",
+          "type": "verse"
+        },
+        "день звуку сурми й горна",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "проти укріплених міст",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і проти високих кутових веж.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "ZEP 1:17",
+          "type": "verse"
+        },
+        "Я наведу таке лихо на людей,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що вони ходитимуть, як сліпі,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо вони згрішили проти ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Тоді їхня кров розіллється, наче порох,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а їхні нутрощі будуть як гній.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "ZEP 1:18",
+          "type": "verse"
+        },
+        "Ні їхнє срібло, ані їхнє золото",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "не зможуть урятувати їх",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "у день люті ",
+        {
+          "content": [
+            "Господньої"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "У вогні Його ревнощів",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "буде пожерта вся земля,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо Він знищить усіх мешканців землі,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "здійснить це зненацька.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "2",
+      "sid": "ZEP 2",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "Юдея та Єрусалим на суді разом з іншими народами",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Заклик до покаяння Юдеї",
+        "\n"
+      ],
+      "marker": "s2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "ZEP 2:1",
+          "type": "verse"
+        },
+        "Збирайся, збирайся докупи,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "народе безсоромний,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "ZEP 2:2",
+          "type": "verse"
+        },
+        "перш ніж проголошено буде рішення",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і день мине, як гнана вітром полова,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "перш ніж прийде на вас",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "лютий гнів ",
+        {
+          "content": [
+            "Господній"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "перш ніж настане для вас",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "день гніву ",
+        {
+          "content": [
+            "Господнього"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "ZEP 2:3",
+          "type": "verse"
+        },
+        "Шукайте ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", усі смиренні цієї країни,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що виконуєте Його закони правосуддя.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Шукайте праведності, шукайте покори!",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Може, так ви будете сховані",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "в день гніву ",
+        {
+          "content": [
+            "Господнього"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Про Филистею",
+        "\n"
+      ],
+      "marker": "s2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "ZEP 2:4",
+          "type": "verse"
+        },
+        "Тоді буде покинута Ґаза",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й Ашкелон стане руїною.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Ашдод опівдні буде вигнаний,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і викорінений буде Екрон.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "ZEP 2:5",
+          "type": "verse"
+        },
+        "Горе мешканцям приморської округи,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "народу керетян!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Слово ",
+        {
+          "content": [
+            "Господнє"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " вийшло проти вас,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "жителі Ханаану, землі филистимлян:",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "«Я погублю тебе,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "не залишиться жодного мешканця».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "ZEP 2:6",
+          "type": "verse"
+        },
+        "І стане приморська округа пасовищем,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "де будуть криниці для пастухів",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і кошари для дрібної худоби.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "ZEP 2:7",
+          "type": "verse"
+        },
+        "Та округа належатиме",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "залишку дому Юди –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "там вони будуть пасти,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а в будинках Ашкелона",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ввечері спочиватимуть,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "коли ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", Бог їхній,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "відвідає їх і поверне з полону.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Про Моав і Аммон",
+        "\n"
+      ],
+      "marker": "s2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "ZEP 2:8",
+          "type": "verse"
+        },
+        "«Я почув глузування Моава",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й глузливі слова синів Аммонових,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "якими вони ганьбили Мій народ",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і зазіхали на його землю.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "ZEP 2:9",
+          "type": "verse"
+        },
+        "Тому присягаюся Собою! –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "промовляє ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " Воїнств,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Бог Ізраїлю, –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Моав стане як Содом,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а сини Аммона як Гоморра –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "порослою бурʼяном місциною,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "соляною ямою і вічною пусткою.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Залишок Мого люду пограбує його,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і решта Мого народу успадкує їхню землю».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "ZEP 2:10",
+          "type": "verse"
+        },
+        "Це станеться з ними за їхню гордість,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо вони глузували з народу ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " Воїнств",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і величалися над ним.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "ZEP 2:11",
+          "type": "verse"
+        },
+        "Страшним буде ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " щодо них,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "коли знищить усіх богів землі.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Тоді буде вклонятися Йому кожна людина зі свого місця,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "усі острови, заселені народами.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Про Куш",
+        "\n"
+      ],
+      "marker": "s2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "ZEP 2:12",
+          "type": "verse"
+        },
+        "«І ви, кушійці",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "2:12 ",
+            {
+              "closing": false,
+              "marker": "fq",
+              "type": "marker"
+            },
+            "Кушійці ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "– люди з верхівʼя Нілу."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        ", теж",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "будете вражені Моїм мечем».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Про Ассирію",
+        "\n"
+      ],
+      "marker": "s2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "ZEP 2:13",
+          "type": "verse"
+        },
+        "Він простягне руку Свою на північ",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і погубить Ассирію,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "перетворить Ніневію на руїни,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "на висохлу землю, наче пустеля.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "ZEP 2:14",
+          "type": "verse"
+        },
+        "Лежатимуть серед неї отари,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "зграї різних тварин.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Пустельні сови та їжаки спочиватимуть",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "на руїнах її колон,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "їхні голоси лунатимуть крізь вікна,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "на її порогах буде спустошення,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "а кедрові балки – кинуті напризволяще.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "ZEP 2:15",
+          "type": "verse"
+        },
+        "Це місто було колись веселим,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "мешкало в безпеці.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Воно казало у своєму серці:",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "«Я – єдине таке місто, немає іншого».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Якою ж руїною воно стало,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "місцем спочинку для всякого звіра!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Кожен, хто йде повз нього,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "глузливо присвисне і махне рукою.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "3",
+      "sid": "ZEP 3",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "Про Єрусалим",
+        "\n"
+      ],
+      "marker": "s2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "ZEP 3:1",
+          "type": "verse"
+        },
+        "Горе місту бунтівному й нечистому",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "місту-гнобителю!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "ZEP 3:2",
+          "type": "verse"
+        },
+        "Воно не слухало нічийого голосу,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "не сприймало настанови,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "не покладалося на ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ",",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "до Бога не наближалося.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "ZEP 3:3",
+          "type": "verse"
+        },
+        "Його князі серед нього –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "леви, що ричать;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "його судді – вовки вечірні,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що загризають ",
+        {
+          "content": [
+            "жертву"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " до ранку.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "ZEP 3:4",
+          "type": "verse"
+        },
+        "Його пророки – безрозсудливі,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "зрадливі люди;",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "його священники занечищують святиню,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "нівечать Закон.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "ZEP 3:5",
+          "type": "verse"
+        },
+        "Але ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", Який перебуває посеред нього, – праведний;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він не чинить беззаконня.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Щоранку Він звершує правосуддя при світлі,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і не втомлюється, і не знає",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ні беззаконня, ані чогось ганебного.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Єрусалим не кається",
+        "\n"
+      ],
+      "marker": "s2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "ZEP 3:6",
+          "type": "verse"
+        },
+        "«Я винищив народи,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "їхні кутові вежі зруйновані,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "їхні вулиці спустошені,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "так що немає на них перехожих.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Їхні міста спустошені,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "немає в них жодного мешканця.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "ZEP 3:7",
+          "type": "verse"
+        },
+        "Я сказав: „Єрусалиме, май же страх переді Мною,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "прийми настанову!“.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Тоді його оселя не була б зруйнована",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і жодне з призначених Мною покарань не спіткало б його.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Але вони зрання чинять",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "усі свої розбещені вчинки.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "ZEP 3:8",
+          "type": "verse"
+        },
+        "Тому чекайте на Мене, –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "промовляє ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "на той день, коли Я стану свідчити ",
+        {
+          "content": [
+            "проти вас"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Бо Мій суд має зібрати народи",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й скликати царства,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб вилити на них Моє обурення,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "усю лють Мого гніву.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вогнем Моїх ревнощів",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "буде пожерта вся земля.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Відновлення залишку Ізраїлю",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "ZEP 3:9",
+          "type": "verse"
+        },
+        "Тоді Я відновлю чистоту в устах народів,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб усі вони кликали імʼя ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й служили Йому разом, плечем до плеча.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "ZEP 3:10",
+          "type": "verse"
+        },
+        "Від берегів річок Куша",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Мої розпорошені шанувальники",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "принесуть Мені дари.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "ZEP 3:11",
+          "type": "verse"
+        },
+        "Того дня ти, ",
+        {
+          "content": [
+            "Єрусалиме"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ", не будеш соромитися",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "через жодне з учинених тобою проти Мене беззаконь,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "бо тоді Я віддалю з-поміж тебе тих,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що радіють через твою пиху,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і ти не будеш більше пишатися",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "на горі Моєї святині.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "ZEP 3:12",
+          "type": "verse"
+        },
+        "Але Я залишу поміж тебе",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "народ смиренний і вбогий,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "що в імені ",
+        {
+          "content": [
+            "Господа"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " шукатиме притулок.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "ZEP 3:13",
+          "type": "verse"
+        },
+        "Залишок Ізраїля не чинитиме кривди",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "й не говоритиме неправди,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і язика лукавого не знайдеться в їхніх устах.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Але вони, пастимуться й спочиватимуть,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і ніхто не потривожить їх».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "ZEP 3:14",
+          "type": "verse"
+        },
+        "Кричи з радості, донько Сіону,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "вигукуй переможно, Ізраїлю!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Радій і веселися всім серцем,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "донько Єрусалима!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "ZEP 3:15",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        " скасував твій вирок,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "обернув назад твого ворога.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Цар Ізраїлю, ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", посеред тебе;",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "ти більше не боятимешся лиха!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "ZEP 3:16",
+          "type": "verse"
+        },
+        "Того дня скажуть Єрусалиму:",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "«Не бійся, Сіоне!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Нехай не слабнуть твої руки!",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "ZEP 3:17",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ", Бог твій, посеред тебе –",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Воїн переможний.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Він щиро радітиме тобою,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "запокоїть Своєю любовʼю",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і піднесено веселитиметься за тебе».",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "ZEP 3:18",
+          "type": "verse"
+        },
+        "«Я заберу в тебе тих,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хто сумує за святами,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "щоб ти більше не ніс через це тягар ганьби.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "ZEP 3:19",
+          "type": "verse"
+        },
+        "Того часу Я покараю всіх тих,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "хто пригнічував тебе,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "врятую кульгавих, і зберу розсіяних,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "і зроблю їх похвалою і славою",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "в кожній країні, де їх ганьбили.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "ZEP 3:20",
+          "type": "verse"
+        },
+        "Того часу Я приведу вас,",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "того часу Я зберу вас.",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Тоді Я дам вам славне імʼя й похвалу",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "серед усіх народів землі,",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "коли поверну ваших полонених",
+        "\n"
+      ],
+      "marker": "q1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "у вас на очах», –",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    },
+    {
+      "content": [
+        "сказав ",
+        {
+          "content": [
+            "Господь"
+          ],
+          "marker": "nd",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "q2",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "ZEP",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "36ZEPukrNPUv1.SFM",
+    "source_sha256": "520ce750e533d7002a662f610ebcc10d80adc249882d9e494509cba460cf1421",
+    "source_size": 18553,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Слово Господнє, яке було до Софонії, сина Куші, сина Ґедалії, сина Амарії, сина Єзекії, за днів Йосії, сина Амона, царя Юдеї.",
+        "body_text_exact": "Слово Господнє, яке було до Софонії, сина Куші, сина Ґедалії, сина Амарії, сина Єзекії, за днів Йосії, сина Амона, царя Юдеї.",
+        "body_text_normalized": "Слово Господнє, яке було до Софонії, сина Куші, сина Ґедалії, сина Амарії, сина Єзекії, за днів Йосії, сина Амона, царя Юдеї.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Слово ",
+          {
+            "content": [
+              "Господнє"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", яке було до Софонії, сина Куші, сина Ґедалії, сина Амарії, сина Єзекії, за днів Йосії, сина Амона, царя Юдеї."
+        ],
+        "discourse_unit_id": "ZEP-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 14,
+        "line_start": 14,
+        "lines": [
+          "\\v 1 Слово \\nd Господнє\\nd*, яке було до Софонії, сина Куші, сина Ґедалії, сина Амарії, сина Єзекії, за днів Йосії, сина Амона, царя Юдеї."
+        ],
+        "number": "1",
+        "paragraph_id": "ZEP-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Слово \\nd Господнє\\nd*, яке було до Софонії, сина Куші, сина Ґедалії, сина Амарії, сина Єзекії, за днів Йосії, сина Амона, царя Юдеї.",
+        "section_id": "ZEP-S000",
+        "section_marker": "book",
+        "section_title": "",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "«Я неодмінно знищу все\nз поверхні землі, –\nпромовляє Господь. –",
+        "body_text_exact": "«Я неодмінно знищу все\nз поверхні землі, –\nпромовляє Господь. –",
+        "body_text_normalized": "«Я неодмінно знищу все з поверхні землі, – промовляє Господь. –",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "«Я неодмінно знищу все",
+          "\n",
+          "з поверхні землі, –",
+          "\n",
+          "промовляє ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ". –"
+        ],
+        "discourse_unit_id": "ZEP-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 20,
+        "line_start": 18,
+        "lines": [
+          "\\v 2 «Я неодмінно знищу все",
+          "\\q2 з поверхні землі, –",
+          "\\q2 промовляє \\nd Господь\\nd*. –"
+        ],
+        "number": "2",
+        "paragraph_id": "ZEP-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 «Я неодмінно знищу все\n\\q2 з поверхні землі, –\n\\q2 промовляє \\nd Господь\\nd*. –",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Я знищу людей і тварин,\nзнищу птахів небесних\nі риб морських,\nа також ідолів, що є спотиканням для нечестивих.\nТак, Я викоріню людей із поверхні землі! –\nпромовляє Господь. –",
+        "body_text_exact": "Я знищу людей і тварин,\nзнищу птахів небесних\nі риб морських,\nа також ідолів, що є спотиканням для нечестивих.\nТак, Я викоріню людей із поверхні землі! –\nпромовляє Господь. –",
+        "body_text_normalized": "Я знищу людей і тварин, знищу птахів небесних і риб морських, а також ідолів, що є спотиканням для нечестивих. Так, Я викоріню людей із поверхні землі! – промовляє Господь. –",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я знищу людей і тварин,",
+          "\n",
+          "знищу птахів небесних",
+          "\n",
+          "і риб морських,",
+          "\n",
+          "а також ",
+          {
+            "content": [
+              "ідолів"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ", що є спотиканням для нечестивих.",
+          "\n",
+          "Так, Я викоріню людей із поверхні землі! –",
+          "\n",
+          "промовляє ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ". –"
+        ],
+        "discourse_unit_id": "ZEP-D002",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 28,
+        "line_start": 22,
+        "lines": [
+          "\\v 3 Я знищу людей і тварин,",
+          "\\q2 знищу птахів небесних",
+          "\\q2 і риб морських,",
+          "\\q2 а також \\add ідолів\\add*, що є спотиканням для нечестивих.",
+          "\\q1 Так, Я викоріню людей із поверхні землі! –",
+          "\\q2 промовляє \\nd Господь\\nd*. –"
+        ],
+        "number": "3",
+        "paragraph_id": "ZEP-P002",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B002",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Я знищу людей і тварин,\n\\q2 знищу птахів небесних\n\\q2 і риб морських,\n\\q2 а також \\add ідолів\\add*, що є спотиканням для нечестивих.\n\\q1 Так, Я викоріню людей із поверхні землі! –\n\\q2 промовляє \\nd Господь\\nd*. –",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Я простягну Мою руку на Юдею\nі на всіх мешканців Єрусалима\nй викоріню з цього місця залишки Баала,\nімена жерців та священників,",
+        "body_text_exact": "Я простягну Мою руку на Юдею\nі на всіх мешканців Єрусалима\nй викоріню з цього місця залишки Баала,\nімена жерців та священників,",
+        "body_text_normalized": "Я простягну Мою руку на Юдею і на всіх мешканців Єрусалима й викоріню з цього місця залишки Баала, імена жерців та священників,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я простягну Мою руку на Юдею",
+          "\n",
+          "і на всіх мешканців Єрусалима",
+          "\n",
+          "й викоріню з цього місця залишки Баала,",
+          "\n",
+          "імена жерців та священників,"
+        ],
+        "discourse_unit_id": "ZEP-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 33,
+        "line_start": 30,
+        "lines": [
+          "\\v 4 Я простягну Мою руку на Юдею",
+          "\\q2 і на всіх мешканців Єрусалима",
+          "\\q1 й викоріню з цього місця залишки Баала,",
+          "\\q2 імена жерців та священників,"
+        ],
+        "number": "4",
+        "paragraph_id": "ZEP-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B003",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Я простягну Мою руку на Юдею\n\\q2 і на всіх мешканців Єрусалима\n\\q1 й викоріню з цього місця залишки Баала,\n\\q2 імена жерців та священників,",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "і тих, що поклоняються на дахах воїнству небесному;\nі тих, що поклоняються Господеві й клянуться Ним,\nале й царем своїм, Молохом, клянуться;",
+        "body_text_exact": "і тих, що поклоняються на дахах воїнству небесному;\nі тих, що поклоняються Господеві й клянуться Ним,\nале й царем своїм, Молохом, клянуться;",
+        "body_text_normalized": "і тих, що поклоняються на дахах воїнству небесному; і тих, що поклоняються Господеві й клянуться Ним, але й царем своїм, Молохом, клянуться;",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "і тих, що поклоняються на дахах воїнству небесному",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:5 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "Воїнство небесне",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              "– сонце, місяць та зірки. Див. ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "Повт. 4:19",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          ";",
+          "\n",
+          "і тих, що поклоняються ",
+          {
+            "content": [
+              "Господеві"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " й клянуться Ним,",
+          "\n",
+          "але й царем своїм, Молохом",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:5 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "Молох",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              "– божество в народів Ханаану; це імʼя означає ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "цар",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              "."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          ", клянуться;"
+        ],
+        "discourse_unit_id": "ZEP-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 37,
+        "line_start": 35,
+        "lines": [
+          "\\v 5 і тих, що поклоняються на дахах воїнству небесному\\f + \\fr 1:5 \\ft \\+it Воїнство небесне\\+it* – сонце, місяць та зірки. Див. \\+xt Повт. 4:19\\+xt*.\\f*;",
+          "\\q2 і тих, що поклоняються \\nd Господеві\\nd* й клянуться Ним,",
+          "\\q2 але й царем своїм, Молохом\\f + \\fr 1:5 \\ft \\+it Молох\\+it* – божество в народів Ханаану; це імʼя означає \\+it цар\\+it*.\\f*, клянуться;"
+        ],
+        "number": "5",
+        "paragraph_id": "ZEP-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B003",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 і тих, що поклоняються на дахах воїнству небесному\\f + \\fr 1:5 \\ft \\+it Воїнство небесне\\+it* – сонце, місяць та зірки. Див. \\+xt Повт. 4:19\\+xt*.\\f*;\n\\q2 і тих, що поклоняються \\nd Господеві\\nd* й клянуться Ним,\n\\q2 але й царем своїм, Молохом\\f + \\fr 1:5 \\ft \\+it Молох\\+it* – божество в народів Ханаану; це імʼя означає \\+it цар\\+it*.\\f*, клянуться;",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "і тих, що відвертаються від Господа\nй не шукають, не прагнуть Його».",
+        "body_text_exact": "і тих, що відвертаються від Господа\nй не шукають, не прагнуть Його».",
+        "body_text_normalized": "і тих, що відвертаються від Господа й не шукають, не прагнуть Його».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "і тих, що відвертаються від ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "\n",
+          "й не шукають, не прагнуть Його»."
+        ],
+        "discourse_unit_id": "ZEP-D003",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 40,
+        "line_start": 39,
+        "lines": [
+          "\\v 6 і тих, що відвертаються від \\nd Господа\\nd*",
+          "\\q2 й не шукають, не прагнуть Його»."
+        ],
+        "number": "6",
+        "paragraph_id": "ZEP-P003",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B003",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 і тих, що відвертаються від \\nd Господа\\nd*\n\\q2 й не шукають, не прагнуть Його».",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Мовчи перед Володарем Господом,\nбо день Господній близько,\nбо Господь приготував жертву,\nбо Він уже визначив тих, кого покличе.",
+        "body_text_exact": "Мовчи перед Володарем Господом,\nбо день Господній близько,\nбо Господь приготував жертву,\nбо Він уже визначив тих, кого покличе.",
+        "body_text_normalized": "Мовчи перед Володарем Господом, бо день Господній близько, бо Господь приготував жертву, бо Він уже визначив тих, кого покличе.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Мовчи перед Володарем ",
+          {
+            "content": [
+              "Господом"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "бо день ",
+          {
+            "content": [
+              "Господній"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " близько,",
+          "\n",
+          "бо ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " приготував жертву,",
+          "\n",
+          "бо Він уже визначив тих, кого покличе."
+        ],
+        "discourse_unit_id": "ZEP-D004",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 46,
+        "line_start": 43,
+        "lines": [
+          "\\v 7 Мовчи перед Володарем \\nd Господом\\nd*,",
+          "\\q2 бо день \\nd Господній\\nd* близько,",
+          "\\q1 бо \\nd Господь\\nd* приготував жертву,",
+          "\\q2 бо Він уже визначив тих, кого покличе."
+        ],
+        "number": "7",
+        "paragraph_id": "ZEP-P004",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B004",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Мовчи перед Володарем \\nd Господом\\nd*,\n\\q2 бо день \\nd Господній\\nd* близько,\n\\q1 бо \\nd Господь\\nd* приготував жертву,\n\\q2 бо Він уже визначив тих, кого покличе.",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "«У день жертвоприношення Господнього\nЯ покараю князів, і синів царя,\nі тих, що вдягаються в одяг чужинців.",
+        "body_text_exact": "«У день жертвоприношення Господнього\nЯ покараю князів, і синів царя,\nі тих, що вдягаються в одяг чужинців.",
+        "body_text_normalized": "«У день жертвоприношення Господнього Я покараю князів, і синів царя, і тих, що вдягаються в одяг чужинців.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "«У день жертвоприношення ",
+          {
+            "content": [
+              "Господнього"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "\n",
+          "Я покараю князів, і синів царя,",
+          "\n",
+          "і тих, що вдягаються в одяг чужинців."
+        ],
+        "discourse_unit_id": "ZEP-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 51,
+        "line_start": 49,
+        "lines": [
+          "\\v 8 «У день жертвоприношення \\nd Господнього\\nd*",
+          "\\q2 Я покараю князів, і синів царя,",
+          "\\q2 і тих, що вдягаються в одяг чужинців."
+        ],
+        "number": "8",
+        "paragraph_id": "ZEP-P005",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 «У день жертвоприношення \\nd Господнього\\nd*\n\\q2 Я покараю князів, і синів царя,\n\\q2 і тих, що вдягаються в одяг чужинців.",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Того дня Я покараю всіх тих,\nщо перескакують через поріг,\nщо наповнюють дім свого володаря\nнасильством і підступом.",
+        "body_text_exact": "Того дня Я покараю всіх тих,\nщо перескакують через поріг,\nщо наповнюють дім свого володаря\nнасильством і підступом.",
+        "body_text_normalized": "Того дня Я покараю всіх тих, що перескакують через поріг, що наповнюють дім свого володаря насильством і підступом.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Того дня Я покараю всіх тих,",
+          "\n",
+          "що перескакують через поріг,",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:9 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Ідеться про давній язичницький звичай. Див. ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "1 Сам. 5:5",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          "\n",
+          "що наповнюють дім свого володаря",
+          "\n",
+          "насильством і підступом."
+        ],
+        "discourse_unit_id": "ZEP-D005",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 56,
+        "line_start": 53,
+        "lines": [
+          "\\v 9 Того дня Я покараю всіх тих,",
+          "\\q2 що перескакують через поріг,\\f + \\fr 1:9 \\ft Ідеться про давній язичницький звичай. Див. \\+xt 1 Сам. 5:5\\+xt*.\\f*",
+          "\\q1 що наповнюють дім свого володаря",
+          "\\q2 насильством і підступом."
+        ],
+        "number": "9",
+        "paragraph_id": "ZEP-P005",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B005",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Того дня Я покараю всіх тих,\n\\q2 що перескакують через поріг,\\f + \\fr 1:9 \\ft Ідеться про давній язичницький звичай. Див. \\+xt 1 Сам. 5:5\\+xt*.\\f*\n\\q1 що наповнюють дім свого володаря\n\\q2 насильством і підступом.",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Того дня голос волання буде чутно від Рибних воріт\nридання – від нової частини міста,\nгучний тріск – із пагорбів, –\nпромовляє Господь. –",
+        "body_text_exact": "Того дня голос волання буде чутно від Рибних воріт\nридання – від нової частини міста,\nгучний тріск – із пагорбів, –\nпромовляє Господь. –",
+        "body_text_normalized": "Того дня голос волання буде чутно від Рибних воріт ридання – від нової частини міста, гучний тріск – із пагорбів, – промовляє Господь. –",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Того дня голос волання буде чутно від Рибних воріт",
+          "\n",
+          "ридання – від нової частини міста,",
+          "\n",
+          "гучний тріск – із пагорбів, –",
+          "\n",
+          "промовляє ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ". –"
+        ],
+        "discourse_unit_id": "ZEP-D006",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 62,
+        "line_start": 59,
+        "lines": [
+          "\\v 10 Того дня голос волання буде чутно від Рибних воріт",
+          "\\q2 ридання – від нової частини міста,",
+          "\\q1 гучний тріск – із пагорбів, –",
+          "\\q2 промовляє \\nd Господь\\nd*. –"
+        ],
+        "number": "10",
+        "paragraph_id": "ZEP-P006",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B006",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Того дня голос волання буде чутно від Рибних воріт\n\\q2 ридання – від нової частини міста,\n\\q1 гучний тріск – із пагорбів, –\n\\q2 промовляє \\nd Господь\\nd*. –",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Ридайте, мешканці Махтешу,\nбо погублені будуть усі купці – народ ханаанський,\nвикорінені будуть усі, хто відважує срібло.",
+        "body_text_exact": "Ридайте, мешканці Махтешу,\nбо погублені будуть усі купці – народ ханаанський,\nвикорінені будуть усі, хто відважує срібло.",
+        "body_text_normalized": "Ридайте, мешканці Махтешу, бо погублені будуть усі купці – народ ханаанський, викорінені будуть усі, хто відважує срібло.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Ридайте, мешканці Махтешу,",
+          "\n",
+          "бо погублені будуть усі ",
+          {
+            "content": [
+              "купці"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " – народ ханаанський",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:11 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Ханаанці активно займалися торгівлею, тому слово ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "ханаанець",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              "часто вживалось як синонім слова ",
+              {
+                "closing": false,
+                "marker": "it",
+                "type": "marker"
+              },
+              "купець",
+              {
+                "closing": true,
+                "marker": "it",
+                "type": "marker"
+              },
+              ". Див. ",
+              {
+                "closing": false,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "Зах. 14:21",
+              {
+                "closing": true,
+                "marker": "xt",
+                "type": "marker"
+              },
+              "."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          ",",
+          "\n",
+          "викорінені будуть усі, хто відважує срібло."
+        ],
+        "discourse_unit_id": "ZEP-D006",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 66,
+        "line_start": 64,
+        "lines": [
+          "\\v 11 Ридайте, мешканці Махтешу,",
+          "\\q2 бо погублені будуть усі \\add купці\\add* – народ ханаанський\\f + \\fr 1:11 \\ft Ханаанці активно займалися торгівлею, тому слово \\+it ханаанець\\+it* часто вживалось як синонім слова \\+it купець\\+it*. Див. \\+xt Зах. 14:21\\+xt*.\\f*,",
+          "\\q2 викорінені будуть усі, хто відважує срібло."
+        ],
+        "number": "11",
+        "paragraph_id": "ZEP-P006",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B006",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Ридайте, мешканці Махтешу,\n\\q2 бо погублені будуть усі \\add купці\\add* – народ ханаанський\\f + \\fr 1:11 \\ft Ханаанці активно займалися торгівлею, тому слово \\+it ханаанець\\+it* часто вживалось як синонім слова \\+it купець\\+it*. Див. \\+xt Зах. 14:21\\+xt*.\\f*,\n\\q2 викорінені будуть усі, хто відважує срібло.",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Того часу Я обшукаю Єрусалим зі світильниками\nй покараю тих безтурботних людей,\nщо стали наче гуща витриманого вина,\nщо думають у своїх серцях:\n„Не чинить Господь ні добра, ні зла“.",
+        "body_text_exact": "Того часу Я обшукаю Єрусалим зі світильниками\nй покараю тих безтурботних людей,\nщо стали наче гуща витриманого вина,\nщо думають у своїх серцях:\n„Не чинить Господь ні добра, ні зла“.",
+        "body_text_normalized": "Того часу Я обшукаю Єрусалим зі світильниками й покараю тих безтурботних людей, що стали наче гуща витриманого вина, що думають у своїх серцях: „Не чинить Господь ні добра, ні зла“.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Того часу Я обшукаю Єрусалим зі світильниками",
+          "\n",
+          "й покараю тих безтурботних людей,",
+          "\n",
+          "що стали наче гуща витриманого вина,",
+          "\n",
+          "що думають у своїх серцях:",
+          "\n",
+          "„Не чинить ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " ні добра, ні зла“."
+        ],
+        "discourse_unit_id": "ZEP-D006",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 72,
+        "line_start": 68,
+        "lines": [
+          "\\v 12 Того часу Я обшукаю Єрусалим зі світильниками",
+          "\\q2 й покараю тих безтурботних людей,",
+          "\\q2 що стали наче гуща витриманого вина,",
+          "\\q1 що думають у своїх серцях:",
+          "\\q2 „Не чинить \\nd Господь\\nd* ні добра, ні зла“."
+        ],
+        "number": "12",
+        "paragraph_id": "ZEP-P006",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B006",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Того часу Я обшукаю Єрусалим зі світильниками\n\\q2 й покараю тих безтурботних людей,\n\\q2 що стали наче гуща витриманого вина,\n\\q1 що думають у своїх серцях:\n\\q2 „Не чинить \\nd Господь\\nd* ні добра, ні зла“.",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Тоді їхнє майно буде розграбоване,\nа доми їхні – спустошені.\nВони побудували будинки,\nале жити в них не будуть;\nнасадили виноградники,\nале вина з них не питимуть».",
+        "body_text_exact": "Тоді їхнє майно буде розграбоване,\nа доми їхні – спустошені.\nВони побудували будинки,\nале жити в них не будуть;\nнасадили виноградники,\nале вина з них не питимуть».",
+        "body_text_normalized": "Тоді їхнє майно буде розграбоване, а доми їхні – спустошені. Вони побудували будинки, але жити в них не будуть; насадили виноградники, але вина з них не питимуть».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Тоді їхнє майно буде розграбоване,",
+          "\n",
+          "а доми їхні – спустошені.",
+          "\n",
+          "Вони побудували будинки,",
+          "\n",
+          "але жити в них не будуть;",
+          "\n",
+          "насадили виноградники,",
+          "\n",
+          "але вина з них не питимуть»."
+        ],
+        "discourse_unit_id": "ZEP-D006",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 79,
+        "line_start": 74,
+        "lines": [
+          "\\v 13 Тоді їхнє майно буде розграбоване,",
+          "\\q2 а доми їхні – спустошені.",
+          "\\q1 Вони побудували будинки,",
+          "\\q2 але жити в них не будуть;",
+          "\\q1 насадили виноградники,",
+          "\\q2 але вина з них не питимуть»."
+        ],
+        "number": "13",
+        "paragraph_id": "ZEP-P006",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B006",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Тоді їхнє майно буде розграбоване,\n\\q2 а доми їхні – спустошені.\n\\q1 Вони побудували будинки,\n\\q2 але жити в них не будуть;\n\\q1 насадили виноградники,\n\\q2 але вина з них не питимуть».",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Близько великий день Господній –\nблизько й дуже поспішає!\nГолос дня Господнього скорботний,\nлунає там, як бойовий клич воїна!",
+        "body_text_exact": "Близько великий день Господній –\nблизько й дуже поспішає!\nГолос дня Господнього скорботний,\nлунає там, як бойовий клич воїна!",
+        "body_text_normalized": "Близько великий день Господній – близько й дуже поспішає! Голос дня Господнього скорботний, лунає там, як бойовий клич воїна!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Близько великий день ",
+          {
+            "content": [
+              "Господній"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " –",
+          "\n",
+          "близько й дуже поспішає!",
+          "\n",
+          "Голос дня ",
+          {
+            "content": [
+              "Господнього"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " скорботний,",
+          "\n",
+          "лунає там, як бойовий клич воїна!"
+        ],
+        "discourse_unit_id": "ZEP-D007",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 85,
+        "line_start": 82,
+        "lines": [
+          "\\v 14 Близько великий день \\nd Господній\\nd* –",
+          "\\q2 близько й дуже поспішає!",
+          "\\q1 Голос дня \\nd Господнього\\nd* скорботний,",
+          "\\q2 лунає там, як бойовий клич воїна!"
+        ],
+        "number": "14",
+        "paragraph_id": "ZEP-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B007",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Близько великий день \\nd Господній\\nd* –\n\\q2 близько й дуже поспішає!\n\\q1 Голос дня \\nd Господнього\\nd* скорботний,\n\\q2 лунає там, як бойовий клич воїна!",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Той день – день люті,\nдень скорботи й страждання,\nдень бурі руйнівної і спустошення,\nдень темряви й мороку,\nдень хмари й імли,",
+        "body_text_exact": "Той день – день люті,\nдень скорботи й страждання,\nдень бурі руйнівної і спустошення,\nдень темряви й мороку,\nдень хмари й імли,",
+        "body_text_normalized": "Той день – день люті, день скорботи й страждання, день бурі руйнівної і спустошення, день темряви й мороку, день хмари й імли,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Той день – день люті,",
+          "\n",
+          "день скорботи й страждання,",
+          "\n",
+          "день бурі руйнівної і спустошення,",
+          "\n",
+          "день темряви й мороку,",
+          "\n",
+          "день хмари й імли,"
+        ],
+        "discourse_unit_id": "ZEP-D007",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 91,
+        "line_start": 87,
+        "lines": [
+          "\\v 15 Той день – день люті,",
+          "\\q2 день скорботи й страждання,",
+          "\\q3 день бурі руйнівної і спустошення,",
+          "\\q2 день темряви й мороку,",
+          "\\q3 день хмари й імли,"
+        ],
+        "number": "15",
+        "paragraph_id": "ZEP-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B007",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Той день – день люті,\n\\q2 день скорботи й страждання,\n\\q3 день бурі руйнівної і спустошення,\n\\q2 день темряви й мороку,\n\\q3 день хмари й імли,",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "день звуку сурми й горна\nпроти укріплених міст\nі проти високих кутових веж.",
+        "body_text_exact": "день звуку сурми й горна\nпроти укріплених міст\nі проти високих кутових веж.",
+        "body_text_normalized": "день звуку сурми й горна проти укріплених міст і проти високих кутових веж.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "день звуку сурми й горна",
+          "\n",
+          "проти укріплених міст",
+          "\n",
+          "і проти високих кутових веж."
+        ],
+        "discourse_unit_id": "ZEP-D007",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 95,
+        "line_start": 93,
+        "lines": [
+          "\\v 16 день звуку сурми й горна",
+          "\\q1 проти укріплених міст",
+          "\\q2 і проти високих кутових веж."
+        ],
+        "number": "16",
+        "paragraph_id": "ZEP-P007",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B007",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 день звуку сурми й горна\n\\q1 проти укріплених міст\n\\q2 і проти високих кутових веж.",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Я наведу таке лихо на людей,\nщо вони ходитимуть, як сліпі,\nбо вони згрішили проти Господа.\nТоді їхня кров розіллється, наче порох,\nа їхні нутрощі будуть як гній.",
+        "body_text_exact": "Я наведу таке лихо на людей,\nщо вони ходитимуть, як сліпі,\nбо вони згрішили проти Господа.\nТоді їхня кров розіллється, наче порох,\nа їхні нутрощі будуть як гній.",
+        "body_text_normalized": "Я наведу таке лихо на людей, що вони ходитимуть, як сліпі, бо вони згрішили проти Господа. Тоді їхня кров розіллється, наче порох, а їхні нутрощі будуть як гній.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я наведу таке лихо на людей,",
+          "\n",
+          "що вони ходитимуть, як сліпі,",
+          "\n",
+          "бо вони згрішили проти ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ".",
+          "\n",
+          "Тоді їхня кров розіллється, наче порох,",
+          "\n",
+          "а їхні нутрощі будуть як гній."
+        ],
+        "discourse_unit_id": "ZEP-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 102,
+        "line_start": 98,
+        "lines": [
+          "\\v 17 Я наведу таке лихо на людей,",
+          "\\q2 що вони ходитимуть, як сліпі,",
+          "\\q2 бо вони згрішили проти \\nd Господа\\nd*.",
+          "\\q1 Тоді їхня кров розіллється, наче порох,",
+          "\\q2 а їхні нутрощі будуть як гній."
+        ],
+        "number": "17",
+        "paragraph_id": "ZEP-P008",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B008",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Я наведу таке лихо на людей,\n\\q2 що вони ходитимуть, як сліпі,\n\\q2 бо вони згрішили проти \\nd Господа\\nd*.\n\\q1 Тоді їхня кров розіллється, наче порох,\n\\q2 а їхні нутрощі будуть як гній.",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "Ні їхнє срібло, ані їхнє золото\nне зможуть урятувати їх\nу день люті Господньої.\nУ вогні Його ревнощів\nбуде пожерта вся земля,\nбо Він знищить усіх мешканців землі,\nздійснить це зненацька.",
+        "body_text_exact": "Ні їхнє срібло, ані їхнє золото\nне зможуть урятувати їх\nу день люті Господньої.\nУ вогні Його ревнощів\nбуде пожерта вся земля,\nбо Він знищить усіх мешканців землі,\nздійснить це зненацька.",
+        "body_text_normalized": "Ні їхнє срібло, ані їхнє золото не зможуть урятувати їх у день люті Господньої. У вогні Його ревнощів буде пожерта вся земля, бо Він знищить усіх мешканців землі, здійснить це зненацька.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Ні їхнє срібло, ані їхнє золото",
+          "\n",
+          "не зможуть урятувати їх",
+          "\n",
+          "у день люті ",
+          {
+            "content": [
+              "Господньої"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ".",
+          "\n",
+          "У вогні Його ревнощів",
+          "\n",
+          "буде пожерта вся земля,",
+          "\n",
+          "бо Він знищить усіх мешканців землі,",
+          "\n",
+          "здійснить це зненацька."
+        ],
+        "discourse_unit_id": "ZEP-D008",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 111,
+        "line_start": 104,
+        "lines": [
+          "\\v 18 Ні їхнє срібло, ані їхнє золото",
+          "\\q2 не зможуть урятувати їх",
+          "\\q2 у день люті \\nd Господньої\\nd*.",
+          "\\q1 У вогні Його ревнощів",
+          "\\q2 буде пожерта вся земля,",
+          "\\q1 бо Він знищить усіх мешканців землі,",
+          "\\q2 здійснить це зненацька."
+        ],
+        "number": "18",
+        "paragraph_id": "ZEP-P008",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B008",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 Ні їхнє срібло, ані їхнє золото\n\\q2 не зможуть урятувати їх\n\\q2 у день люті \\nd Господньої\\nd*.\n\\q1 У вогні Його ревнощів\n\\q2 буде пожерта вся земля,\n\\q1 бо Він знищить усіх мешканців землі,\n\\q2 здійснить це зненацька.",
+        "section_id": "ZEP-S001",
+        "section_marker": "s1",
+        "section_title": "Суд над усією землею в день Господній",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "Збирайся, збирайся докупи,\nнароде безсоромний,",
+        "body_text_exact": "Збирайся, збирайся докупи,\nнароде безсоромний,",
+        "body_text_normalized": "Збирайся, збирайся докупи, народе безсоромний,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Збирайся, збирайся докупи,",
+          "\n",
+          "народе безсоромний,"
+        ],
+        "discourse_unit_id": "ZEP-D010",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 117,
+        "line_start": 116,
+        "lines": [
+          "\\v 1 Збирайся, збирайся докупи,",
+          "\\q2 народе безсоромний,"
+        ],
+        "number": "1",
+        "paragraph_id": "ZEP-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B010",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Збирайся, збирайся докупи,\n\\q2 народе безсоромний,",
+        "section_id": "ZEP-S003",
+        "section_marker": "s2",
+        "section_title": "Заклик до покаяння Юдеї",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "перш ніж проголошено буде рішення\nі день мине, як гнана вітром полова,\nперш ніж прийде на вас\nлютий гнів Господній,\nперш ніж настане для вас\nдень гніву Господнього.",
+        "body_text_exact": "перш ніж проголошено буде рішення\nі день мине, як гнана вітром полова,\nперш ніж прийде на вас\nлютий гнів Господній,\nперш ніж настане для вас\nдень гніву Господнього.",
+        "body_text_normalized": "перш ніж проголошено буде рішення і день мине, як гнана вітром полова, перш ніж прийде на вас лютий гнів Господній, перш ніж настане для вас день гніву Господнього.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "перш ніж проголошено буде рішення",
+          "\n",
+          "і день мине, як гнана вітром полова,",
+          "\n",
+          "перш ніж прийде на вас",
+          "\n",
+          "лютий гнів ",
+          {
+            "content": [
+              "Господній"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "перш ніж настане для вас",
+          "\n",
+          "день гніву ",
+          {
+            "content": [
+              "Господнього"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "ZEP-D010",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 124,
+        "line_start": 119,
+        "lines": [
+          "\\v 2 перш ніж проголошено буде рішення",
+          "\\q2 і день мине, як гнана вітром полова,",
+          "\\q1 перш ніж прийде на вас",
+          "\\q2 лютий гнів \\nd Господній\\nd*,",
+          "\\q1 перш ніж настане для вас",
+          "\\q2 день гніву \\nd Господнього\\nd*."
+        ],
+        "number": "2",
+        "paragraph_id": "ZEP-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B010",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 перш ніж проголошено буде рішення\n\\q2 і день мине, як гнана вітром полова,\n\\q1 перш ніж прийде на вас\n\\q2 лютий гнів \\nd Господній\\nd*,\n\\q1 перш ніж настане для вас\n\\q2 день гніву \\nd Господнього\\nd*.",
+        "section_id": "ZEP-S003",
+        "section_marker": "s2",
+        "section_title": "Заклик до покаяння Юдеї",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Шукайте Господа, усі смиренні цієї країни,\nщо виконуєте Його закони правосуддя.\nШукайте праведності, шукайте покори!\nМоже, так ви будете сховані\nв день гніву Господнього.",
+        "body_text_exact": "Шукайте Господа, усі смиренні цієї країни,\nщо виконуєте Його закони правосуддя.\nШукайте праведності, шукайте покори!\nМоже, так ви будете сховані\nв день гніву Господнього.",
+        "body_text_normalized": "Шукайте Господа, усі смиренні цієї країни, що виконуєте Його закони правосуддя. Шукайте праведності, шукайте покори! Може, так ви будете сховані в день гніву Господнього.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Шукайте ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", усі смиренні цієї країни,",
+          "\n",
+          "що виконуєте Його закони правосуддя.",
+          "\n",
+          "Шукайте праведності, шукайте покори!",
+          "\n",
+          "Може, так ви будете сховані",
+          "\n",
+          "в день гніву ",
+          {
+            "content": [
+              "Господнього"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "ZEP-D010",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 130,
+        "line_start": 126,
+        "lines": [
+          "\\v 3 Шукайте \\nd Господа\\nd*, усі смиренні цієї країни,",
+          "\\q2 що виконуєте Його закони правосуддя.",
+          "\\q1 Шукайте праведності, шукайте покори!",
+          "\\q2 Може, так ви будете сховані",
+          "\\q2 в день гніву \\nd Господнього\\nd*."
+        ],
+        "number": "3",
+        "paragraph_id": "ZEP-P010",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B010",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Шукайте \\nd Господа\\nd*, усі смиренні цієї країни,\n\\q2 що виконуєте Його закони правосуддя.\n\\q1 Шукайте праведності, шукайте покори!\n\\q2 Може, так ви будете сховані\n\\q2 в день гніву \\nd Господнього\\nd*.",
+        "section_id": "ZEP-S003",
+        "section_marker": "s2",
+        "section_title": "Заклик до покаяння Юдеї",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Тоді буде покинута Ґаза\nй Ашкелон стане руїною.\nАшдод опівдні буде вигнаний,\nі викорінений буде Екрон.",
+        "body_text_exact": "Тоді буде покинута Ґаза\nй Ашкелон стане руїною.\nАшдод опівдні буде вигнаний,\nі викорінений буде Екрон.",
+        "body_text_normalized": "Тоді буде покинута Ґаза й Ашкелон стане руїною. Ашдод опівдні буде вигнаний, і викорінений буде Екрон.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s2",
+            "score": 60
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Тоді буде покинута Ґаза",
+          "\n",
+          "й Ашкелон стане руїною.",
+          "\n",
+          "Ашдод опівдні буде вигнаний,",
+          "\n",
+          "і викорінений буде Екрон."
+        ],
+        "discourse_unit_id": "ZEP-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 136,
+        "line_start": 133,
+        "lines": [
+          "\\v 4 Тоді буде покинута Ґаза",
+          "\\q2 й Ашкелон стане руїною.",
+          "\\q1 Ашдод опівдні буде вигнаний,",
+          "\\q2 і викорінений буде Екрон."
+        ],
+        "number": "4",
+        "paragraph_id": "ZEP-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B011",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Тоді буде покинута Ґаза\n\\q2 й Ашкелон стане руїною.\n\\q1 Ашдод опівдні буде вигнаний,\n\\q2 і викорінений буде Екрон.",
+        "section_id": "ZEP-S004",
+        "section_marker": "s2",
+        "section_title": "Про Филистею",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Горе мешканцям приморської округи,\nнароду керетян!\nСлово Господнє вийшло проти вас,\nжителі Ханаану, землі филистимлян:\n«Я погублю тебе,\nне залишиться жодного мешканця».",
+        "body_text_exact": "Горе мешканцям приморської округи,\nнароду керетян!\nСлово Господнє вийшло проти вас,\nжителі Ханаану, землі филистимлян:\n«Я погублю тебе,\nне залишиться жодного мешканця».",
+        "body_text_normalized": "Горе мешканцям приморської округи, народу керетян! Слово Господнє вийшло проти вас, жителі Ханаану, землі филистимлян: «Я погублю тебе, не залишиться жодного мешканця».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Горе мешканцям приморської округи,",
+          "\n",
+          "народу керетян!",
+          "\n",
+          "Слово ",
+          {
+            "content": [
+              "Господнє"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " вийшло проти вас,",
+          "\n",
+          "жителі Ханаану, землі филистимлян:",
+          "\n",
+          "«Я погублю тебе,",
+          "\n",
+          "не залишиться жодного мешканця»."
+        ],
+        "discourse_unit_id": "ZEP-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 143,
+        "line_start": 138,
+        "lines": [
+          "\\v 5 Горе мешканцям приморської округи,",
+          "\\q2 народу керетян!",
+          "\\q1 Слово \\nd Господнє\\nd* вийшло проти вас,",
+          "\\q2 жителі Ханаану, землі филистимлян:",
+          "\\q1 «Я погублю тебе,",
+          "\\q2 не залишиться жодного мешканця»."
+        ],
+        "number": "5",
+        "paragraph_id": "ZEP-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B011",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Горе мешканцям приморської округи,\n\\q2 народу керетян!\n\\q1 Слово \\nd Господнє\\nd* вийшло проти вас,\n\\q2 жителі Ханаану, землі филистимлян:\n\\q1 «Я погублю тебе,\n\\q2 не залишиться жодного мешканця».",
+        "section_id": "ZEP-S004",
+        "section_marker": "s2",
+        "section_title": "Про Филистею",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "І стане приморська округа пасовищем,\nде будуть криниці для пастухів\nі кошари для дрібної худоби.",
+        "body_text_exact": "І стане приморська округа пасовищем,\nде будуть криниці для пастухів\nі кошари для дрібної худоби.",
+        "body_text_normalized": "І стане приморська округа пасовищем, де будуть криниці для пастухів і кошари для дрібної худоби.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "І стане приморська округа пасовищем,",
+          "\n",
+          "де будуть криниці для пастухів",
+          "\n",
+          "і кошари для дрібної худоби."
+        ],
+        "discourse_unit_id": "ZEP-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 147,
+        "line_start": 145,
+        "lines": [
+          "\\v 6 І стане приморська округа пасовищем,",
+          "\\q2 де будуть криниці для пастухів",
+          "\\q2 і кошари для дрібної худоби."
+        ],
+        "number": "6",
+        "paragraph_id": "ZEP-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B011",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 І стане приморська округа пасовищем,\n\\q2 де будуть криниці для пастухів\n\\q2 і кошари для дрібної худоби.",
+        "section_id": "ZEP-S004",
+        "section_marker": "s2",
+        "section_title": "Про Филистею",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Та округа належатиме\nзалишку дому Юди –\nтам вони будуть пасти,\nа в будинках Ашкелона\nввечері спочиватимуть,\nколи Господь, Бог їхній,\nвідвідає їх і поверне з полону.",
+        "body_text_exact": "Та округа належатиме\nзалишку дому Юди –\nтам вони будуть пасти,\nа в будинках Ашкелона\nввечері спочиватимуть,\nколи Господь, Бог їхній,\nвідвідає їх і поверне з полону.",
+        "body_text_normalized": "Та округа належатиме залишку дому Юди – там вони будуть пасти, а в будинках Ашкелона ввечері спочиватимуть, коли Господь, Бог їхній, відвідає їх і поверне з полону.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Та округа належатиме",
+          "\n",
+          "залишку дому Юди –",
+          "\n",
+          "там вони будуть пасти,",
+          "\n",
+          "а в будинках Ашкелона",
+          "\n",
+          "ввечері спочиватимуть,",
+          "\n",
+          "коли ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", Бог їхній,",
+          "\n",
+          "відвідає їх і поверне з полону."
+        ],
+        "discourse_unit_id": "ZEP-D011",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 155,
+        "line_start": 149,
+        "lines": [
+          "\\v 7 Та округа належатиме",
+          "\\q2 залишку дому Юди –",
+          "\\q2 там вони будуть пасти,",
+          "\\q1 а в будинках Ашкелона",
+          "\\q2 ввечері спочиватимуть,",
+          "\\q1 коли \\nd Господь\\nd*, Бог їхній,",
+          "\\q2 відвідає їх і поверне з полону."
+        ],
+        "number": "7",
+        "paragraph_id": "ZEP-P011",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B011",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Та округа належатиме\n\\q2 залишку дому Юди –\n\\q2 там вони будуть пасти,\n\\q1 а в будинках Ашкелона\n\\q2 ввечері спочиватимуть,\n\\q1 коли \\nd Господь\\nd*, Бог їхній,\n\\q2 відвідає їх і поверне з полону.",
+        "section_id": "ZEP-S004",
+        "section_marker": "s2",
+        "section_title": "Про Филистею",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "«Я почув глузування Моава\nй глузливі слова синів Аммонових,\nякими вони ганьбили Мій народ\nі зазіхали на його землю.",
+        "body_text_exact": "«Я почув глузування Моава\nй глузливі слова синів Аммонових,\nякими вони ганьбили Мій народ\nі зазіхали на його землю.",
+        "body_text_normalized": "«Я почув глузування Моава й глузливі слова синів Аммонових, якими вони ганьбили Мій народ і зазіхали на його землю.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s2",
+            "score": 60
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "«Я почув глузування Моава",
+          "\n",
+          "й глузливі слова синів Аммонових,",
+          "\n",
+          "якими вони ганьбили Мій народ",
+          "\n",
+          "і зазіхали на його землю."
+        ],
+        "discourse_unit_id": "ZEP-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 161,
+        "line_start": 158,
+        "lines": [
+          "\\v 8 «Я почув глузування Моава",
+          "\\q2 й глузливі слова синів Аммонових,",
+          "\\q1 якими вони ганьбили Мій народ",
+          "\\q2 і зазіхали на його землю."
+        ],
+        "number": "8",
+        "paragraph_id": "ZEP-P012",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B012",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 «Я почув глузування Моава\n\\q2 й глузливі слова синів Аммонових,\n\\q1 якими вони ганьбили Мій народ\n\\q2 і зазіхали на його землю.",
+        "section_id": "ZEP-S005",
+        "section_marker": "s2",
+        "section_title": "Про Моав і Аммон",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Тому присягаюся Собою! –\nпромовляє Господь Воїнств,\nБог Ізраїлю, –\nМоав стане як Содом,\nа сини Аммона як Гоморра –\nпорослою бурʼяном місциною,\nсоляною ямою і вічною пусткою.\nЗалишок Мого люду пограбує його,\nі решта Мого народу успадкує їхню землю».",
+        "body_text_exact": "Тому присягаюся Собою! –\nпромовляє Господь Воїнств,\nБог Ізраїлю, –\nМоав стане як Содом,\nа сини Аммона як Гоморра –\nпорослою бурʼяном місциною,\nсоляною ямою і вічною пусткою.\nЗалишок Мого люду пограбує його,\nі решта Мого народу успадкує їхню землю».",
+        "body_text_normalized": "Тому присягаюся Собою! – промовляє Господь Воїнств, Бог Ізраїлю, – Моав стане як Содом, а сини Аммона як Гоморра – порослою бурʼяном місциною, соляною ямою і вічною пусткою. Залишок Мого люду пограбує його, і решта Мого народу успадкує їхню землю».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Тому присягаюся Собою! –",
+          "\n",
+          "промовляє ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " Воїнств,",
+          "\n",
+          "Бог Ізраїлю, –",
+          "\n",
+          "Моав стане як Содом,",
+          "\n",
+          "а сини Аммона як Гоморра –",
+          "\n",
+          "порослою бурʼяном місциною,",
+          "\n",
+          "соляною ямою і вічною пусткою.",
+          "\n",
+          "Залишок Мого люду пограбує його,",
+          "\n",
+          "і решта Мого народу успадкує їхню землю»."
+        ],
+        "discourse_unit_id": "ZEP-D012",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 171,
+        "line_start": 163,
+        "lines": [
+          "\\v 9 Тому присягаюся Собою! –",
+          "\\q2 промовляє \\nd Господь\\nd* Воїнств,",
+          "\\q2 Бог Ізраїлю, –",
+          "\\q1 Моав стане як Содом,",
+          "\\q2 а сини Аммона як Гоморра –",
+          "\\q1 порослою бурʼяном місциною,",
+          "\\q2 соляною ямою і вічною пусткою.",
+          "\\q1 Залишок Мого люду пограбує його,",
+          "\\q2 і решта Мого народу успадкує їхню землю»."
+        ],
+        "number": "9",
+        "paragraph_id": "ZEP-P012",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B012",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Тому присягаюся Собою! –\n\\q2 промовляє \\nd Господь\\nd* Воїнств,\n\\q2 Бог Ізраїлю, –\n\\q1 Моав стане як Содом,\n\\q2 а сини Аммона як Гоморра –\n\\q1 порослою бурʼяном місциною,\n\\q2 соляною ямою і вічною пусткою.\n\\q1 Залишок Мого люду пограбує його,\n\\q2 і решта Мого народу успадкує їхню землю».",
+        "section_id": "ZEP-S005",
+        "section_marker": "s2",
+        "section_title": "Про Моав і Аммон",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Це станеться з ними за їхню гордість,\nбо вони глузували з народу Господа Воїнств\nі величалися над ним.",
+        "body_text_exact": "Це станеться з ними за їхню гордість,\nбо вони глузували з народу Господа Воїнств\nі величалися над ним.",
+        "body_text_normalized": "Це станеться з ними за їхню гордість, бо вони глузували з народу Господа Воїнств і величалися над ним.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Це станеться з ними за їхню гордість,",
+          "\n",
+          "бо вони глузували з народу ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " Воїнств",
+          "\n",
+          "і величалися над ним."
+        ],
+        "discourse_unit_id": "ZEP-D013",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 176,
+        "line_start": 174,
+        "lines": [
+          "\\v 10 Це станеться з ними за їхню гордість,",
+          "\\q2 бо вони глузували з народу \\nd Господа\\nd* Воїнств",
+          "\\q2 і величалися над ним."
+        ],
+        "number": "10",
+        "paragraph_id": "ZEP-P013",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B013",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Це станеться з ними за їхню гордість,\n\\q2 бо вони глузували з народу \\nd Господа\\nd* Воїнств\n\\q2 і величалися над ним.",
+        "section_id": "ZEP-S005",
+        "section_marker": "s2",
+        "section_title": "Про Моав і Аммон",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Страшним буде Господь щодо них,\nколи знищить усіх богів землі.\nТоді буде вклонятися Йому кожна людина зі свого місця,\nусі острови, заселені народами.",
+        "body_text_exact": "Страшним буде Господь щодо них,\nколи знищить усіх богів землі.\nТоді буде вклонятися Йому кожна людина зі свого місця,\nусі острови, заселені народами.",
+        "body_text_normalized": "Страшним буде Господь щодо них, коли знищить усіх богів землі. Тоді буде вклонятися Йому кожна людина зі свого місця, усі острови, заселені народами.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Страшним буде ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " щодо них,",
+          "\n",
+          "коли знищить усіх богів землі.",
+          "\n",
+          "Тоді буде вклонятися Йому кожна людина зі свого місця,",
+          "\n",
+          "усі острови, заселені народами."
+        ],
+        "discourse_unit_id": "ZEP-D013",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 181,
+        "line_start": 178,
+        "lines": [
+          "\\v 11 Страшним буде \\nd Господь\\nd* щодо них,",
+          "\\q2 коли знищить усіх богів землі.",
+          "\\q1 Тоді буде вклонятися Йому кожна людина зі свого місця,",
+          "\\q2 усі острови, заселені народами."
+        ],
+        "number": "11",
+        "paragraph_id": "ZEP-P013",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B013",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Страшним буде \\nd Господь\\nd* щодо них,\n\\q2 коли знищить усіх богів землі.\n\\q1 Тоді буде вклонятися Йому кожна людина зі свого місця,\n\\q2 усі острови, заселені народами.",
+        "section_id": "ZEP-S005",
+        "section_marker": "s2",
+        "section_title": "Про Моав і Аммон",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "«І ви, кушійці, теж\nбудете вражені Моїм мечем».",
+        "body_text_exact": "«І ви, кушійці, теж\nбудете вражені Моїм мечем».",
+        "body_text_normalized": "«І ви, кушійці, теж будете вражені Моїм мечем».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s2",
+            "score": 60
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "«І ви, кушійці",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "2:12 ",
+              {
+                "closing": false,
+                "marker": "fq",
+                "type": "marker"
+              },
+              "Кушійці ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "– люди з верхівʼя Нілу."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          ", теж",
+          "\n",
+          "будете вражені Моїм мечем»."
+        ],
+        "discourse_unit_id": "ZEP-D014",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 185,
+        "line_start": 184,
+        "lines": [
+          "\\v 12 «І ви, кушійці\\f + \\fr 2:12 \\fq Кушійці \\ft – люди з верхівʼя Нілу.\\f*, теж",
+          "\\q2 будете вражені Моїм мечем»."
+        ],
+        "number": "12",
+        "paragraph_id": "ZEP-P014",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B014",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 «І ви, кушійці\\f + \\fr 2:12 \\fq Кушійці \\ft – люди з верхівʼя Нілу.\\f*, теж\n\\q2 будете вражені Моїм мечем».",
+        "section_id": "ZEP-S006",
+        "section_marker": "s2",
+        "section_title": "Про Куш",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Він простягне руку Свою на північ\nі погубить Ассирію,\nперетворить Ніневію на руїни,\nна висохлу землю, наче пустеля.",
+        "body_text_exact": "Він простягне руку Свою на північ\nі погубить Ассирію,\nперетворить Ніневію на руїни,\nна висохлу землю, наче пустеля.",
+        "body_text_normalized": "Він простягне руку Свою на північ і погубить Ассирію, перетворить Ніневію на руїни, на висохлу землю, наче пустеля.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s2",
+            "score": 60
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Він простягне руку Свою на північ",
+          "\n",
+          "і погубить Ассирію,",
+          "\n",
+          "перетворить Ніневію на руїни,",
+          "\n",
+          "на висохлу землю, наче пустеля."
+        ],
+        "discourse_unit_id": "ZEP-D015",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 191,
+        "line_start": 188,
+        "lines": [
+          "\\v 13 Він простягне руку Свою на північ",
+          "\\q2 і погубить Ассирію,",
+          "\\q1 перетворить Ніневію на руїни,",
+          "\\q2 на висохлу землю, наче пустеля."
+        ],
+        "number": "13",
+        "paragraph_id": "ZEP-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B015",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Він простягне руку Свою на північ\n\\q2 і погубить Ассирію,\n\\q1 перетворить Ніневію на руїни,\n\\q2 на висохлу землю, наче пустеля.",
+        "section_id": "ZEP-S007",
+        "section_marker": "s2",
+        "section_title": "Про Ассирію",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Лежатимуть серед неї отари,\nзграї різних тварин.\nПустельні сови та їжаки спочиватимуть\nна руїнах її колон,\nїхні голоси лунатимуть крізь вікна,\nна її порогах буде спустошення,\nа кедрові балки – кинуті напризволяще.",
+        "body_text_exact": "Лежатимуть серед неї отари,\nзграї різних тварин.\nПустельні сови та їжаки спочиватимуть\nна руїнах її колон,\nїхні голоси лунатимуть крізь вікна,\nна її порогах буде спустошення,\nа кедрові балки – кинуті напризволяще.",
+        "body_text_normalized": "Лежатимуть серед неї отари, зграї різних тварин. Пустельні сови та їжаки спочиватимуть на руїнах її колон, їхні голоси лунатимуть крізь вікна, на її порогах буде спустошення, а кедрові балки – кинуті напризволяще.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Лежатимуть серед неї отари,",
+          "\n",
+          "зграї різних тварин.",
+          "\n",
+          "Пустельні сови та їжаки спочиватимуть",
+          "\n",
+          "на руїнах її колон,",
+          "\n",
+          "їхні голоси лунатимуть крізь вікна,",
+          "\n",
+          "на її порогах буде спустошення,",
+          "\n",
+          "а кедрові балки – кинуті напризволяще."
+        ],
+        "discourse_unit_id": "ZEP-D015",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 199,
+        "line_start": 193,
+        "lines": [
+          "\\v 14 Лежатимуть серед неї отари,",
+          "\\q2 зграї різних тварин.",
+          "\\q1 Пустельні сови та їжаки спочиватимуть",
+          "\\q2 на руїнах її колон,",
+          "\\q1 їхні голоси лунатимуть крізь вікна,",
+          "\\q2 на її порогах буде спустошення,",
+          "\\q2 а кедрові балки – кинуті напризволяще."
+        ],
+        "number": "14",
+        "paragraph_id": "ZEP-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B015",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Лежатимуть серед неї отари,\n\\q2 зграї різних тварин.\n\\q1 Пустельні сови та їжаки спочиватимуть\n\\q2 на руїнах її колон,\n\\q1 їхні голоси лунатимуть крізь вікна,\n\\q2 на її порогах буде спустошення,\n\\q2 а кедрові балки – кинуті напризволяще.",
+        "section_id": "ZEP-S007",
+        "section_marker": "s2",
+        "section_title": "Про Ассирію",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Це місто було колись веселим,\nмешкало в безпеці.\nВоно казало у своєму серці:\n«Я – єдине таке місто, немає іншого».\nЯкою ж руїною воно стало,\nмісцем спочинку для всякого звіра!\nКожен, хто йде повз нього,\nглузливо присвисне і махне рукою.",
+        "body_text_exact": "Це місто було колись веселим,\nмешкало в безпеці.\nВоно казало у своєму серці:\n«Я – єдине таке місто, немає іншого».\nЯкою ж руїною воно стало,\nмісцем спочинку для всякого звіра!\nКожен, хто йде повз нього,\nглузливо присвисне і махне рукою.",
+        "body_text_normalized": "Це місто було колись веселим, мешкало в безпеці. Воно казало у своєму серці: «Я – єдине таке місто, немає іншого». Якою ж руїною воно стало, місцем спочинку для всякого звіра! Кожен, хто йде повз нього, глузливо присвисне і махне рукою.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 2,
+        "content": [
+          "Це місто було колись веселим,",
+          "\n",
+          "мешкало в безпеці.",
+          "\n",
+          "Воно казало у своєму серці:",
+          "\n",
+          "«Я – єдине таке місто, немає іншого».",
+          "\n",
+          "Якою ж руїною воно стало,",
+          "\n",
+          "місцем спочинку для всякого звіра!",
+          "\n",
+          "Кожен, хто йде повз нього,",
+          "\n",
+          "глузливо присвисне і махне рукою."
+        ],
+        "discourse_unit_id": "ZEP-D015",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 208,
+        "line_start": 201,
+        "lines": [
+          "\\v 15 Це місто було колись веселим,",
+          "\\q2 мешкало в безпеці.",
+          "\\q1 Воно казало у своєму серці:",
+          "\\q2 «Я – єдине таке місто, немає іншого».",
+          "\\q1 Якою ж руїною воно стало,",
+          "\\q2 місцем спочинку для всякого звіра!",
+          "\\q1 Кожен, хто йде повз нього,",
+          "\\q2 глузливо присвисне і махне рукою."
+        ],
+        "number": "15",
+        "paragraph_id": "ZEP-P015",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B015",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Це місто було колись веселим,\n\\q2 мешкало в безпеці.\n\\q1 Воно казало у своєму серці:\n\\q2 «Я – єдине таке місто, немає іншого».\n\\q1 Якою ж руїною воно стало,\n\\q2 місцем спочинку для всякого звіра!\n\\q1 Кожен, хто йде повз нього,\n\\q2 глузливо присвисне і махне рукою.",
+        "section_id": "ZEP-S007",
+        "section_marker": "s2",
+        "section_title": "Про Ассирію",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Горе місту бунтівному й нечистому\nмісту-гнобителю!",
+        "body_text_exact": "Горе місту бунтівному й нечистому\nмісту-гнобителю!",
+        "body_text_normalized": "Горе місту бунтівному й нечистому місту-гнобителю!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s2",
+            "score": 60
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Горе місту бунтівному й нечистому",
+          "\n",
+          "місту-гнобителю!"
+        ],
+        "discourse_unit_id": "ZEP-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 213,
+        "line_start": 212,
+        "lines": [
+          "\\v 1 Горе місту бунтівному й нечистому",
+          "\\q2 місту-гнобителю!"
+        ],
+        "number": "1",
+        "paragraph_id": "ZEP-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B016",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Горе місту бунтівному й нечистому\n\\q2 місту-гнобителю!",
+        "section_id": "ZEP-S008",
+        "section_marker": "s2",
+        "section_title": "Про Єрусалим",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Воно не слухало нічийого голосу,\nне сприймало настанови,\nне покладалося на Господа,\nдо Бога не наближалося.",
+        "body_text_exact": "Воно не слухало нічийого голосу,\nне сприймало настанови,\nне покладалося на Господа,\nдо Бога не наближалося.",
+        "body_text_normalized": "Воно не слухало нічийого голосу, не сприймало настанови, не покладалося на Господа, до Бога не наближалося.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Воно не слухало нічийого голосу,",
+          "\n",
+          "не сприймало настанови,",
+          "\n",
+          "не покладалося на ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ",",
+          "\n",
+          "до Бога не наближалося."
+        ],
+        "discourse_unit_id": "ZEP-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 218,
+        "line_start": 215,
+        "lines": [
+          "\\v 2 Воно не слухало нічийого голосу,",
+          "\\q2 не сприймало настанови,",
+          "\\q1 не покладалося на \\nd Господа\\nd*,",
+          "\\q2 до Бога не наближалося."
+        ],
+        "number": "2",
+        "paragraph_id": "ZEP-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B016",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Воно не слухало нічийого голосу,\n\\q2 не сприймало настанови,\n\\q1 не покладалося на \\nd Господа\\nd*,\n\\q2 до Бога не наближалося.",
+        "section_id": "ZEP-S008",
+        "section_marker": "s2",
+        "section_title": "Про Єрусалим",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Його князі серед нього –\nлеви, що ричать;\nйого судді – вовки вечірні,\nщо загризають жертву до ранку.",
+        "body_text_exact": "Його князі серед нього –\nлеви, що ричать;\nйого судді – вовки вечірні,\nщо загризають жертву до ранку.",
+        "body_text_normalized": "Його князі серед нього – леви, що ричать; його судді – вовки вечірні, що загризають жертву до ранку.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Його князі серед нього –",
+          "\n",
+          "леви, що ричать;",
+          "\n",
+          "його судді – вовки вечірні,",
+          "\n",
+          "що загризають ",
+          {
+            "content": [
+              "жертву"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " до ранку."
+        ],
+        "discourse_unit_id": "ZEP-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 223,
+        "line_start": 220,
+        "lines": [
+          "\\v 3 Його князі серед нього –",
+          "\\q2 леви, що ричать;",
+          "\\q1 його судді – вовки вечірні,",
+          "\\q2 що загризають \\add жертву\\add* до ранку."
+        ],
+        "number": "3",
+        "paragraph_id": "ZEP-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B016",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Його князі серед нього –\n\\q2 леви, що ричать;\n\\q1 його судді – вовки вечірні,\n\\q2 що загризають \\add жертву\\add* до ранку.",
+        "section_id": "ZEP-S008",
+        "section_marker": "s2",
+        "section_title": "Про Єрусалим",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Його пророки – безрозсудливі,\nзрадливі люди;\nйого священники занечищують святиню,\nнівечать Закон.",
+        "body_text_exact": "Його пророки – безрозсудливі,\nзрадливі люди;\nйого священники занечищують святиню,\nнівечать Закон.",
+        "body_text_normalized": "Його пророки – безрозсудливі, зрадливі люди; його священники занечищують святиню, нівечать Закон.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Його пророки – безрозсудливі,",
+          "\n",
+          "зрадливі люди;",
+          "\n",
+          "його священники занечищують святиню,",
+          "\n",
+          "нівечать Закон."
+        ],
+        "discourse_unit_id": "ZEP-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 228,
+        "line_start": 225,
+        "lines": [
+          "\\v 4 Його пророки – безрозсудливі,",
+          "\\q2 зрадливі люди;",
+          "\\q1 його священники занечищують святиню,",
+          "\\q2 нівечать Закон."
+        ],
+        "number": "4",
+        "paragraph_id": "ZEP-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B016",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Його пророки – безрозсудливі,\n\\q2 зрадливі люди;\n\\q1 його священники занечищують святиню,\n\\q2 нівечать Закон.",
+        "section_id": "ZEP-S008",
+        "section_marker": "s2",
+        "section_title": "Про Єрусалим",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "Але Господь, Який перебуває посеред нього, – праведний;\nВін не чинить беззаконня.\nЩоранку Він звершує правосуддя при світлі,\nі не втомлюється, і не знає\nні беззаконня, ані чогось ганебного.",
+        "body_text_exact": "Але Господь, Який перебуває посеред нього, – праведний;\nВін не чинить беззаконня.\nЩоранку Він звершує правосуддя при світлі,\nі не втомлюється, і не знає\nні беззаконня, ані чогось ганебного.",
+        "body_text_normalized": "Але Господь, Який перебуває посеред нього, – праведний; Він не чинить беззаконня. Щоранку Він звершує правосуддя при світлі, і не втомлюється, і не знає ні беззаконня, ані чогось ганебного.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Але ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", Який перебуває посеред нього, – праведний;",
+          "\n",
+          "Він не чинить беззаконня.",
+          "\n",
+          "Щоранку Він звершує правосуддя при світлі,",
+          "\n",
+          "і не втомлюється, і не знає",
+          "\n",
+          "ні беззаконня, ані чогось ганебного."
+        ],
+        "discourse_unit_id": "ZEP-D016",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 234,
+        "line_start": 230,
+        "lines": [
+          "\\v 5 Але \\nd Господь\\nd*, Який перебуває посеред нього, – праведний;",
+          "\\q2 Він не чинить беззаконня.",
+          "\\q1 Щоранку Він звершує правосуддя при світлі,",
+          "\\q2 і не втомлюється, і не знає",
+          "\\q2 ні беззаконня, ані чогось ганебного."
+        ],
+        "number": "5",
+        "paragraph_id": "ZEP-P016",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B016",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 Але \\nd Господь\\nd*, Який перебуває посеред нього, – праведний;\n\\q2 Він не чинить беззаконня.\n\\q1 Щоранку Він звершує правосуддя при світлі,\n\\q2 і не втомлюється, і не знає\n\\q2 ні беззаконня, ані чогось ганебного.",
+        "section_id": "ZEP-S008",
+        "section_marker": "s2",
+        "section_title": "Про Єрусалим",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "«Я винищив народи,\nїхні кутові вежі зруйновані,\nїхні вулиці спустошені,\nтак що немає на них перехожих.\nЇхні міста спустошені,\nнемає в них жодного мешканця.",
+        "body_text_exact": "«Я винищив народи,\nїхні кутові вежі зруйновані,\nїхні вулиці спустошені,\nтак що немає на них перехожих.\nЇхні міста спустошені,\nнемає в них жодного мешканця.",
+        "body_text_normalized": "«Я винищив народи, їхні кутові вежі зруйновані, їхні вулиці спустошені, так що немає на них перехожих. Їхні міста спустошені, немає в них жодного мешканця.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s2",
+            "score": 60
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "«Я винищив народи,",
+          "\n",
+          "їхні кутові вежі зруйновані,",
+          "\n",
+          "їхні вулиці спустошені,",
+          "\n",
+          "так що немає на них перехожих.",
+          "\n",
+          "Їхні міста спустошені,",
+          "\n",
+          "немає в них жодного мешканця."
+        ],
+        "discourse_unit_id": "ZEP-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 242,
+        "line_start": 237,
+        "lines": [
+          "\\v 6 «Я винищив народи,",
+          "\\q2 їхні кутові вежі зруйновані,",
+          "\\q1 їхні вулиці спустошені,",
+          "\\q2 так що немає на них перехожих.",
+          "\\q1 Їхні міста спустошені,",
+          "\\q2 немає в них жодного мешканця."
+        ],
+        "number": "6",
+        "paragraph_id": "ZEP-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B017",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 «Я винищив народи,\n\\q2 їхні кутові вежі зруйновані,\n\\q1 їхні вулиці спустошені,\n\\q2 так що немає на них перехожих.\n\\q1 Їхні міста спустошені,\n\\q2 немає в них жодного мешканця.",
+        "section_id": "ZEP-S009",
+        "section_marker": "s2",
+        "section_title": "Єрусалим не кається",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Я сказав: „Єрусалиме, май же страх переді Мною,\nприйми настанову!“.\nТоді його оселя не була б зруйнована\nі жодне з призначених Мною покарань не спіткало б його.\nАле вони зрання чинять\nусі свої розбещені вчинки.",
+        "body_text_exact": "Я сказав: „Єрусалиме, май же страх переді Мною,\nприйми настанову!“.\nТоді його оселя не була б зруйнована\nі жодне з призначених Мною покарань не спіткало б його.\nАле вони зрання чинять\nусі свої розбещені вчинки.",
+        "body_text_normalized": "Я сказав: „Єрусалиме, май же страх переді Мною, прийми настанову!“. Тоді його оселя не була б зруйнована і жодне з призначених Мною покарань не спіткало б його. Але вони зрання чинять усі свої розбещені вчинки.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Я сказав: „Єрусалиме, май же страх переді Мною,",
+          "\n",
+          "прийми настанову!“.",
+          "\n",
+          "Тоді його оселя не була б зруйнована",
+          "\n",
+          "і жодне з призначених Мною покарань не спіткало б його.",
+          "\n",
+          "Але вони зрання чинять",
+          "\n",
+          "усі свої розбещені вчинки."
+        ],
+        "discourse_unit_id": "ZEP-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 249,
+        "line_start": 244,
+        "lines": [
+          "\\v 7 Я сказав: „Єрусалиме, май же страх переді Мною,",
+          "\\q2 прийми настанову!“.",
+          "\\q1 Тоді його оселя не була б зруйнована",
+          "\\q2 і жодне з призначених Мною покарань не спіткало б його.",
+          "\\q1 Але вони зрання чинять",
+          "\\q2 усі свої розбещені вчинки."
+        ],
+        "number": "7",
+        "paragraph_id": "ZEP-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B017",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Я сказав: „Єрусалиме, май же страх переді Мною,\n\\q2 прийми настанову!“.\n\\q1 Тоді його оселя не була б зруйнована\n\\q2 і жодне з призначених Мною покарань не спіткало б його.\n\\q1 Але вони зрання чинять\n\\q2 усі свої розбещені вчинки.",
+        "section_id": "ZEP-S009",
+        "section_marker": "s2",
+        "section_title": "Єрусалим не кається",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Тому чекайте на Мене, –\nпромовляє Господь, –\nна той день, коли Я стану свідчити проти вас.\nБо Мій суд має зібрати народи\nй скликати царства,\nщоб вилити на них Моє обурення,\nусю лють Мого гніву.\nВогнем Моїх ревнощів\nбуде пожерта вся земля.",
+        "body_text_exact": "Тому чекайте на Мене, –\nпромовляє Господь, –\nна той день, коли Я стану свідчити проти вас.\nБо Мій суд має зібрати народи\nй скликати царства,\nщоб вилити на них Моє обурення,\nусю лють Мого гніву.\nВогнем Моїх ревнощів\nбуде пожерта вся земля.",
+        "body_text_normalized": "Тому чекайте на Мене, – промовляє Господь, – на той день, коли Я стану свідчити проти вас. Бо Мій суд має зібрати народи й скликати царства, щоб вилити на них Моє обурення, усю лють Мого гніву. Вогнем Моїх ревнощів буде пожерта вся земля.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Тому чекайте на Мене, –",
+          "\n",
+          "промовляє ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", –",
+          "\n",
+          "на той день, коли Я стану свідчити ",
+          {
+            "content": [
+              "проти вас"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ".",
+          "\n",
+          "Бо Мій суд має зібрати народи",
+          "\n",
+          "й скликати царства,",
+          "\n",
+          "щоб вилити на них Моє обурення,",
+          "\n",
+          "усю лють Мого гніву.",
+          "\n",
+          "Вогнем Моїх ревнощів",
+          "\n",
+          "буде пожерта вся земля."
+        ],
+        "discourse_unit_id": "ZEP-D017",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 259,
+        "line_start": 251,
+        "lines": [
+          "\\v 8 Тому чекайте на Мене, –",
+          "\\q2 промовляє \\nd Господь\\nd*, –",
+          "\\q2 на той день, коли Я стану свідчити \\add проти вас\\add*.",
+          "\\q1 Бо Мій суд має зібрати народи",
+          "\\q2 й скликати царства,",
+          "\\q1 щоб вилити на них Моє обурення,",
+          "\\q2 усю лють Мого гніву.",
+          "\\q1 Вогнем Моїх ревнощів",
+          "\\q2 буде пожерта вся земля."
+        ],
+        "number": "8",
+        "paragraph_id": "ZEP-P017",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B017",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Тому чекайте на Мене, –\n\\q2 промовляє \\nd Господь\\nd*, –\n\\q2 на той день, коли Я стану свідчити \\add проти вас\\add*.\n\\q1 Бо Мій суд має зібрати народи\n\\q2 й скликати царства,\n\\q1 щоб вилити на них Моє обурення,\n\\q2 усю лють Мого гніву.\n\\q1 Вогнем Моїх ревнощів\n\\q2 буде пожерта вся земля.",
+        "section_id": "ZEP-S009",
+        "section_marker": "s2",
+        "section_title": "Єрусалим не кається",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "Тоді Я відновлю чистоту в устах народів,\nщоб усі вони кликали імʼя Господа\nй служили Йому разом, плечем до плеча.",
+        "body_text_exact": "Тоді Я відновлю чистоту в устах народів,\nщоб усі вони кликали імʼя Господа\nй служили Йому разом, плечем до плеча.",
+        "body_text_normalized": "Тоді Я відновлю чистоту в устах народів, щоб усі вони кликали імʼя Господа й служили Йому разом, плечем до плеча.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Тоді Я відновлю чистоту в устах народів,",
+          "\n",
+          "щоб усі вони кликали імʼя ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "\n",
+          "й служили Йому разом, плечем до плеча."
+        ],
+        "discourse_unit_id": "ZEP-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 264,
+        "line_start": 262,
+        "lines": [
+          "\\v 9 Тоді Я відновлю чистоту в устах народів,",
+          "\\q2 щоб усі вони кликали імʼя \\nd Господа\\nd*",
+          "\\q2 й служили Йому разом, плечем до плеча."
+        ],
+        "number": "9",
+        "paragraph_id": "ZEP-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B018",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 Тоді Я відновлю чистоту в устах народів,\n\\q2 щоб усі вони кликали імʼя \\nd Господа\\nd*\n\\q2 й служили Йому разом, плечем до плеча.",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "Від берегів річок Куша\nМої розпорошені шанувальники\nпринесуть Мені дари.",
+        "body_text_exact": "Від берегів річок Куша\nМої розпорошені шанувальники\nпринесуть Мені дари.",
+        "body_text_normalized": "Від берегів річок Куша Мої розпорошені шанувальники принесуть Мені дари.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Від берегів річок Куша",
+          "\n",
+          "Мої розпорошені шанувальники",
+          "\n",
+          "принесуть Мені дари."
+        ],
+        "discourse_unit_id": "ZEP-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 268,
+        "line_start": 266,
+        "lines": [
+          "\\v 10 Від берегів річок Куша",
+          "\\q2 Мої розпорошені шанувальники",
+          "\\q2 принесуть Мені дари."
+        ],
+        "number": "10",
+        "paragraph_id": "ZEP-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B018",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 Від берегів річок Куша\n\\q2 Мої розпорошені шанувальники\n\\q2 принесуть Мені дари.",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Того дня ти, Єрусалиме, не будеш соромитися\nчерез жодне з учинених тобою проти Мене беззаконь,\nбо тоді Я віддалю з-поміж тебе тих,\nщо радіють через твою пиху,\nі ти не будеш більше пишатися\nна горі Моєї святині.",
+        "body_text_exact": "Того дня ти, Єрусалиме, не будеш соромитися\nчерез жодне з учинених тобою проти Мене беззаконь,\nбо тоді Я віддалю з-поміж тебе тих,\nщо радіють через твою пиху,\nі ти не будеш більше пишатися\nна горі Моєї святині.",
+        "body_text_normalized": "Того дня ти, Єрусалиме, не будеш соромитися через жодне з учинених тобою проти Мене беззаконь, бо тоді Я віддалю з-поміж тебе тих, що радіють через твою пиху, і ти не будеш більше пишатися на горі Моєї святині.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Того дня ти, ",
+          {
+            "content": [
+              "Єрусалиме"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ", не будеш соромитися",
+          "\n",
+          "через жодне з учинених тобою проти Мене беззаконь,",
+          "\n",
+          "бо тоді Я віддалю з-поміж тебе тих,",
+          "\n",
+          "що радіють через твою пиху,",
+          "\n",
+          "і ти не будеш більше пишатися",
+          "\n",
+          "на горі Моєї святині."
+        ],
+        "discourse_unit_id": "ZEP-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 275,
+        "line_start": 270,
+        "lines": [
+          "\\v 11 Того дня ти, \\add Єрусалиме\\add*, не будеш соромитися",
+          "\\q2 через жодне з учинених тобою проти Мене беззаконь,",
+          "\\q1 бо тоді Я віддалю з-поміж тебе тих,",
+          "\\q2 що радіють через твою пиху,",
+          "\\q1 і ти не будеш більше пишатися",
+          "\\q2 на горі Моєї святині."
+        ],
+        "number": "11",
+        "paragraph_id": "ZEP-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B018",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Того дня ти, \\add Єрусалиме\\add*, не будеш соромитися\n\\q2 через жодне з учинених тобою проти Мене беззаконь,\n\\q1 бо тоді Я віддалю з-поміж тебе тих,\n\\q2 що радіють через твою пиху,\n\\q1 і ти не будеш більше пишатися\n\\q2 на горі Моєї святині.",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Але Я залишу поміж тебе\nнарод смиренний і вбогий,\nщо в імені Господа шукатиме притулок.",
+        "body_text_exact": "Але Я залишу поміж тебе\nнарод смиренний і вбогий,\nщо в імені Господа шукатиме притулок.",
+        "body_text_normalized": "Але Я залишу поміж тебе народ смиренний і вбогий, що в імені Господа шукатиме притулок.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Але Я залишу поміж тебе",
+          "\n",
+          "народ смиренний і вбогий,",
+          "\n",
+          "що в імені ",
+          {
+            "content": [
+              "Господа"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " шукатиме притулок."
+        ],
+        "discourse_unit_id": "ZEP-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 279,
+        "line_start": 277,
+        "lines": [
+          "\\v 12 Але Я залишу поміж тебе",
+          "\\q2 народ смиренний і вбогий,",
+          "\\q2 що в імені \\nd Господа\\nd* шукатиме притулок."
+        ],
+        "number": "12",
+        "paragraph_id": "ZEP-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B018",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Але Я залишу поміж тебе\n\\q2 народ смиренний і вбогий,\n\\q2 що в імені \\nd Господа\\nd* шукатиме притулок.",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Залишок Ізраїля не чинитиме кривди\nй не говоритиме неправди,\nі язика лукавого не знайдеться в їхніх устах.\nАле вони, пастимуться й спочиватимуть,\nі ніхто не потривожить їх».",
+        "body_text_exact": "Залишок Ізраїля не чинитиме кривди\nй не говоритиме неправди,\nі язика лукавого не знайдеться в їхніх устах.\nАле вони, пастимуться й спочиватимуть,\nі ніхто не потривожить їх».",
+        "body_text_normalized": "Залишок Ізраїля не чинитиме кривди й не говоритиме неправди, і язика лукавого не знайдеться в їхніх устах. Але вони, пастимуться й спочиватимуть, і ніхто не потривожить їх».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Залишок Ізраїля не чинитиме кривди",
+          "\n",
+          "й не говоритиме неправди,",
+          "\n",
+          "і язика лукавого не знайдеться в їхніх устах.",
+          "\n",
+          "Але вони, пастимуться й спочиватимуть,",
+          "\n",
+          "і ніхто не потривожить їх»."
+        ],
+        "discourse_unit_id": "ZEP-D018",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 285,
+        "line_start": 281,
+        "lines": [
+          "\\v 13 Залишок Ізраїля не чинитиме кривди",
+          "\\q2 й не говоритиме неправди,",
+          "\\q2 і язика лукавого не знайдеться в їхніх устах.",
+          "\\q1 Але вони, пастимуться й спочиватимуть,",
+          "\\q2 і ніхто не потривожить їх»."
+        ],
+        "number": "13",
+        "paragraph_id": "ZEP-P018",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B018",
+        "poetry_block_marker": "q1",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Залишок Ізраїля не чинитиме кривди\n\\q2 й не говоритиме неправди,\n\\q2 і язика лукавого не знайдеться в їхніх устах.\n\\q1 Але вони, пастимуться й спочиватимуть,\n\\q2 і ніхто не потривожить їх».",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Кричи з радості, донько Сіону,\nвигукуй переможно, Ізраїлю!\nРадій і веселися всім серцем,\nдонько Єрусалима!",
+        "body_text_exact": "Кричи з радості, донько Сіону,\nвигукуй переможно, Ізраїлю!\nРадій і веселися всім серцем,\nдонько Єрусалима!",
+        "body_text_normalized": "Кричи з радості, донько Сіону, вигукуй переможно, Ізраїлю! Радій і веселися всім серцем, донько Єрусалима!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Кричи з радості, донько Сіону,",
+          "\n",
+          "вигукуй переможно, Ізраїлю!",
+          "\n",
+          "Радій і веселися всім серцем,",
+          "\n",
+          "донько Єрусалима!"
+        ],
+        "discourse_unit_id": "ZEP-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 291,
+        "line_start": 288,
+        "lines": [
+          "\\v 14 Кричи з радості, донько Сіону,",
+          "\\q2 вигукуй переможно, Ізраїлю!",
+          "\\q1 Радій і веселися всім серцем,",
+          "\\q2 донько Єрусалима!"
+        ],
+        "number": "14",
+        "paragraph_id": "ZEP-P019",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Кричи з радості, донько Сіону,\n\\q2 вигукуй переможно, Ізраїлю!\n\\q1 Радій і веселися всім серцем,\n\\q2 донько Єрусалима!",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Господь скасував твій вирок,\nобернув назад твого ворога.\nЦар Ізраїлю, Господь, посеред тебе;\nти більше не боятимешся лиха!",
+        "body_text_exact": "Господь скасував твій вирок,\nобернув назад твого ворога.\nЦар Ізраїлю, Господь, посеред тебе;\nти більше не боятимешся лиха!",
+        "body_text_normalized": "Господь скасував твій вирок, обернув назад твого ворога. Цар Ізраїлю, Господь, посеред тебе; ти більше не боятимешся лиха!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          " скасував твій вирок,",
+          "\n",
+          "обернув назад твого ворога.",
+          "\n",
+          "Цар Ізраїлю, ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", посеред тебе;",
+          "\n",
+          "ти більше не боятимешся лиха!"
+        ],
+        "discourse_unit_id": "ZEP-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 296,
+        "line_start": 293,
+        "lines": [
+          "\\v 15 \\nd Господь\\nd* скасував твій вирок,",
+          "\\q2 обернув назад твого ворога.",
+          "\\q1 Цар Ізраїлю, \\nd Господь\\nd*, посеред тебе;",
+          "\\q2 ти більше не боятимешся лиха!"
+        ],
+        "number": "15",
+        "paragraph_id": "ZEP-P019",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 \\nd Господь\\nd* скасував твій вирок,\n\\q2 обернув назад твого ворога.\n\\q1 Цар Ізраїлю, \\nd Господь\\nd*, посеред тебе;\n\\q2 ти більше не боятимешся лиха!",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "Того дня скажуть Єрусалиму:\n«Не бійся, Сіоне!\nНехай не слабнуть твої руки!",
+        "body_text_exact": "Того дня скажуть Єрусалиму:\n«Не бійся, Сіоне!\nНехай не слабнуть твої руки!",
+        "body_text_normalized": "Того дня скажуть Єрусалиму: «Не бійся, Сіоне! Нехай не слабнуть твої руки!",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Того дня скажуть Єрусалиму:",
+          "\n",
+          "«Не бійся, Сіоне!",
+          "\n",
+          "Нехай не слабнуть твої руки!"
+        ],
+        "discourse_unit_id": "ZEP-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 300,
+        "line_start": 298,
+        "lines": [
+          "\\v 16 Того дня скажуть Єрусалиму:",
+          "\\q2 «Не бійся, Сіоне!",
+          "\\q2 Нехай не слабнуть твої руки!"
+        ],
+        "number": "16",
+        "paragraph_id": "ZEP-P019",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 Того дня скажуть Єрусалиму:\n\\q2 «Не бійся, Сіоне!\n\\q2 Нехай не слабнуть твої руки!",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Господь, Бог твій, посеред тебе –\nВоїн переможний.\nВін щиро радітиме тобою,\nзапокоїть Своєю любовʼю\nі піднесено веселитиметься за тебе».",
+        "body_text_exact": "Господь, Бог твій, посеред тебе –\nВоїн переможний.\nВін щиро радітиме тобою,\nзапокоїть Своєю любовʼю\nі піднесено веселитиметься за тебе».",
+        "body_text_normalized": "Господь, Бог твій, посеред тебе – Воїн переможний. Він щиро радітиме тобою, запокоїть Своєю любовʼю і піднесено веселитиметься за тебе».",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          ", Бог твій, посеред тебе –",
+          "\n",
+          "Воїн переможний.",
+          "\n",
+          "Він щиро радітиме тобою,",
+          "\n",
+          "запокоїть Своєю любовʼю",
+          "\n",
+          "і піднесено веселитиметься за тебе»."
+        ],
+        "discourse_unit_id": "ZEP-D019",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 306,
+        "line_start": 302,
+        "lines": [
+          "\\v 17 \\nd Господь\\nd*, Бог твій, посеред тебе –",
+          "\\q2 Воїн переможний.",
+          "\\q1 Він щиро радітиме тобою,",
+          "\\q2 запокоїть Своєю любовʼю",
+          "\\q2 і піднесено веселитиметься за тебе»."
+        ],
+        "number": "17",
+        "paragraph_id": "ZEP-P019",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B019",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 \\nd Господь\\nd*, Бог твій, посеред тебе –\n\\q2 Воїн переможний.\n\\q1 Він щиро радітиме тобою,\n\\q2 запокоїть Своєю любовʼю\n\\q2 і піднесено веселитиметься за тебе».",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "«Я заберу в тебе тих,\nхто сумує за святами,\nщоб ти більше не ніс через це тягар ганьби.",
+        "body_text_exact": "«Я заберу в тебе тих,\nхто сумує за святами,\nщоб ти більше не ніс через це тягар ганьби.",
+        "body_text_normalized": "«Я заберу в тебе тих, хто сумує за святами, щоб ти більше не ніс через це тягар ганьби.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "«Я заберу в тебе тих,",
+          "\n",
+          "хто сумує за святами,",
+          "\n",
+          "щоб ти більше не ніс через це тягар ганьби."
+        ],
+        "discourse_unit_id": "ZEP-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 311,
+        "line_start": 309,
+        "lines": [
+          "\\v 18 «Я заберу в тебе тих,",
+          "\\q2 хто сумує за святами,",
+          "\\q2 щоб ти більше не ніс через це тягар ганьби."
+        ],
+        "number": "18",
+        "paragraph_id": "ZEP-P020",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B020",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 «Я заберу в тебе тих,\n\\q2 хто сумує за святами,\n\\q2 щоб ти більше не ніс через це тягар ганьби.",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "Того часу Я покараю всіх тих,\nхто пригнічував тебе,\nврятую кульгавих, і зберу розсіяних,\nі зроблю їх похвалою і славою\nв кожній країні, де їх ганьбили.",
+        "body_text_exact": "Того часу Я покараю всіх тих,\nхто пригнічував тебе,\nврятую кульгавих, і зберу розсіяних,\nі зроблю їх похвалою і славою\nв кожній країні, де їх ганьбили.",
+        "body_text_normalized": "Того часу Я покараю всіх тих, хто пригнічував тебе, врятую кульгавих, і зберу розсіяних, і зроблю їх похвалою і славою в кожній країні, де їх ганьбили.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Того часу Я покараю всіх тих,",
+          "\n",
+          "хто пригнічував тебе,",
+          "\n",
+          "врятую кульгавих, і зберу розсіяних,",
+          "\n",
+          "і зроблю їх похвалою і славою",
+          "\n",
+          "в кожній країні, де їх ганьбили."
+        ],
+        "discourse_unit_id": "ZEP-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 317,
+        "line_start": 313,
+        "lines": [
+          "\\v 19 Того часу Я покараю всіх тих,",
+          "\\q2 хто пригнічував тебе,",
+          "\\q1 врятую кульгавих, і зберу розсіяних,",
+          "\\q2 і зроблю їх похвалою і славою",
+          "\\q2 в кожній країні, де їх ганьбили."
+        ],
+        "number": "19",
+        "paragraph_id": "ZEP-P020",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B020",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 Того часу Я покараю всіх тих,\n\\q2 хто пригнічував тебе,\n\\q1 врятую кульгавих, і зберу розсіяних,\n\\q2 і зроблю їх похвалою і славою\n\\q2 в кожній країні, де їх ганьбили.",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "Того часу Я приведу вас,\nтого часу Я зберу вас.\nТоді Я дам вам славне імʼя й похвалу\nсеред усіх народів землі,\nколи поверну ваших полонених\nу вас на очах», –\nсказав Господь.",
+        "body_text_exact": "Того часу Я приведу вас,\nтого часу Я зберу вас.\nТоді Я дам вам славне імʼя й похвалу\nсеред усіх народів землі,\nколи поверну ваших полонених\nу вас на очах», –\nсказав Господь.",
+        "body_text_normalized": "Того часу Я приведу вас, того часу Я зберу вас. Тоді Я дам вам славне імʼя й похвалу серед усіх народів землі, коли поверну ваших полонених у вас на очах», – сказав Господь.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 3,
+        "content": [
+          "Того часу Я приведу вас,",
+          "\n",
+          "того часу Я зберу вас.",
+          "\n",
+          "Тоді Я дам вам славне імʼя й похвалу",
+          "\n",
+          "серед усіх народів землі,",
+          "\n",
+          "коли поверну ваших полонених",
+          "\n",
+          "у вас на очах», –",
+          "\n",
+          "сказав ",
+          {
+            "content": [
+              "Господь"
+            ],
+            "marker": "nd",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "ZEP-D020",
+        "discourse_unit_kind": "POETRY_STANZA",
+        "discourse_unit_marker": "q1",
+        "line_end": 325,
+        "line_start": 319,
+        "lines": [
+          "\\v 20 Того часу Я приведу вас,",
+          "\\q2 того часу Я зберу вас.",
+          "\\q1 Тоді Я дам вам славне імʼя й похвалу",
+          "\\q2 серед усіх народів землі,",
+          "\\q1 коли поверну ваших полонених",
+          "\\q2 у вас на очах», –",
+          "\\q2 сказав \\nd Господь\\nd*."
+        ],
+        "number": "20",
+        "paragraph_id": "ZEP-P020",
+        "paragraph_marker": "q1",
+        "parser_errors": [],
+        "poetry_block_id": "ZEP-B020",
+        "poetry_block_marker": "b",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 Того часу Я приведу вас,\n\\q2 того часу Я зберу вас.\n\\q1 Тоді Я дам вам славне імʼя й похвалу\n\\q2 серед усіх народів землі,\n\\q1 коли поверну ваших полонених\n\\q2 у вас на очах», –\n\\q2 сказав \\nd Господь\\nd*.",
+        "section_id": "ZEP-S010",
+        "section_marker": "s1",
+        "section_title": "Відновлення залишку Ізраїлю",
+        "verse_end": 20,
+        "verse_start": 20
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

@@ -1,0 +1,1608 @@
+{
+  "content": [
+    {
+      "code": "PHM",
+      "content": [
+        "- New Ukrainian Translation ver.1"
+      ],
+      "marker": "id",
+      "type": "book"
+    },
+    {
+      "content": [
+        {
+          "marker": "rem",
+          "type": "marker"
+        },
+        "Copyright © 2022 by Biblica, Inc.",
+        "\n",
+        {
+          "marker": "h",
+          "type": "marker"
+        },
+        "Филимона",
+        "\n",
+        {
+          "marker": "toc1",
+          "type": "marker"
+        },
+        "Послання до Филимона",
+        "\n",
+        {
+          "marker": "toc2",
+          "type": "marker"
+        },
+        "Филимона",
+        "\n",
+        {
+          "marker": "toc3",
+          "type": "marker"
+        },
+        "Флм.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Послання до Филимона",
+        "\n"
+      ],
+      "marker": "mt1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Вступ",
+        "\n"
+      ],
+      "marker": "iot",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Послання до Филимона – найкоротший і найбільш особистий лист апостола Павла. Це послання адресоване одній людині, на імʼя Филимон, щодо раба-втікача Онисима. Обидва були християнами, обидва походили з Колос, але раб Онисим з якоїсь причини покинув свого пана Филимона і зрештою опинився біля увʼязненого в Римі апостола Павла (",
+        {
+          "content": [
+            "Кол. 4:7–8"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        "). Згодом Тихик і Онисим мали доправити послання Павла до церкви в Колосах. Оскільки зустріч раба-втікача зі своїм володарем була неминучою, Онисиму загрожувало суворе покаранням. Ба більше, за такий вчинок і попередню недостойну поведінку його могли зневажити й члени християнської спільноти. Апостол вирішує заступитися за Онисима, який змінився на краще, ставши вірним супутником Павла. Тому апостол просить Филимона пробачити свого раба й прийняти його без нарікань та кари, а всі збитки Павло готовий відшкодувати власним коштом (",
+        {
+          "content": [
+            "1:8–21"
+          ],
+          "marker": "xt",
+          "type": "char"
+        },
+        ").",
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Хоча це послання є приватним листом, воно важливе з огляду на стосунки між рабами та їхніми власниками в ранній християнській спільноті, а також на особистість самого Павла, що обходився з братами й сестрами у Христі смиренно, не вдаючись до наданої йому в церкві влади.",
+        "\n",
+        {
+          "marker": "ie",
+          "type": "marker"
+        },
+        "\n"
+      ],
+      "marker": "ip",
+      "type": "para"
+    },
+    {
+      "marker": "c",
+      "number": "1",
+      "sid": "PHM 1",
+      "type": "chapter"
+    },
+    {
+      "content": [
+        "Привітання",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "1",
+          "sid": "PHM 1:1",
+          "type": "verse"
+        },
+        "Павло, вʼязень Христа Ісуса, та брат Тимофій.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Улюбленому Филимонові, нашому співпрацівнику,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "2",
+          "sid": "PHM 1:2",
+          "type": "verse"
+        },
+        "Апфії, нашій улюбленій",
+        {
+          "content": [
+            "+ ",
+            {
+              "closing": false,
+              "marker": "fr",
+              "type": "marker"
+            },
+            "1:2 ",
+            {
+              "closing": false,
+              "marker": "ft",
+              "type": "marker"
+            },
+            "Деякі рукописи не містять цього слова."
+          ],
+          "marker": "f",
+          "type": "note"
+        },
+        " сестрі, й Архипові, нашому соратнику, а також церкві, яка ",
+        {
+          "content": [
+            "збирається"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " у вашому домі.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "3",
+          "sid": "PHM 1:3",
+          "type": "verse"
+        },
+        "Благодать вам і мир від Бога, Отця нашого, і Господа Ісуса Христа.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n"
+      ],
+      "marker": "b",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Подяка та молитва",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "4",
+          "sid": "PHM 1:4",
+          "type": "verse"
+        },
+        "Я завжди дякую моєму Богові, коли згадую про тебе у своїх молитвах,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "5",
+          "sid": "PHM 1:5",
+          "type": "verse"
+        },
+        "бо я чую про твою віру й любов до Господа Ісуса та до всіх святих.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "6",
+          "sid": "PHM 1:6",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Молюся"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ", щоб спільність твоєї віри була діяльною в пізнанні всього доброго, що є в нас у Христі.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "7",
+          "sid": "PHM 1:7",
+          "type": "verse"
+        },
+        "Я мав велику радість та підбадьорення через твою любов, бо тобою, брате, були заспокоєні серця святих.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Прохання про Онисима",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "8",
+          "sid": "PHM 1:8",
+          "type": "verse"
+        },
+        "Хоча в Христі я маю повну сміливість наказувати, що тобі слід робити,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "9",
+          "sid": "PHM 1:9",
+          "type": "verse"
+        },
+        "проте я краще проситиму тебе в імʼя любові. Я, Павло, старійшина, а тепер і вʼязень Христа Ісуса,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "10",
+          "sid": "PHM 1:10",
+          "type": "verse"
+        },
+        "благаю тебе за мого сина, якому я став батьком в увʼязненні, за Онисима.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "11",
+          "sid": "PHM 1:11",
+          "type": "verse"
+        },
+        "Раніше він не приносив тобі користі, але тепер корисний і для тебе, і для мене.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "12",
+          "sid": "PHM 1:12",
+          "type": "verse"
+        },
+        "Я відсилаю його до тебе, наче власне серце.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "13",
+          "sid": "PHM 1:13",
+          "type": "verse"
+        },
+        "Я хотів би тримати його біля себе, щоб він замість тебе служив мені, поки я в увʼязненні за Добру Звістку.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "14",
+          "sid": "PHM 1:14",
+          "type": "verse"
+        },
+        "Але я не хотів робити нічого без твоєї згоди, щоби твоє добро було не вимушеним, а добровільним.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "15",
+          "sid": "PHM 1:15",
+          "type": "verse"
+        },
+        "Можливо, для того він і відлучався ненадовго, щоб ти його отримав назавжди,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "16",
+          "sid": "PHM 1:16",
+          "type": "verse"
+        },
+        "але вже не як раба, а краще за раба – як улюбленого брата. Він дорогий для мене, але ще дорожчий для тебе як людина і як ",
+        {
+          "content": [
+            "брат"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " у Господі.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "17",
+          "sid": "PHM 1:17",
+          "type": "verse"
+        },
+        "Тож, якщо ти вважаєш мене другом, прийми його, як ",
+        {
+          "content": [
+            "прийняв би"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " мене.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "18",
+          "sid": "PHM 1:18",
+          "type": "verse"
+        },
+        "Якщо він чимось скривдив тебе або щось тобі винен, зарахуй це мені.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "19",
+          "sid": "PHM 1:19",
+          "type": "verse"
+        },
+        "Я, Павло, написав це власноруч: я відшкодую ",
+        {
+          "content": [
+            "його збиток"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ", не кажучи вже про те, що ти й самого себе винен мені.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "20",
+          "sid": "PHM 1:20",
+          "type": "verse"
+        },
+        "Так, брате, я бажаю мати якусь користь від тебе в Господі, заспокой моє серце в Христі.",
+        "\n",
+        {
+          "marker": "v",
+          "number": "21",
+          "sid": "PHM 1:21",
+          "type": "verse"
+        },
+        "Упевнений у твоїй покорі, я пишу тобі, знаючи, що ти зробиш навіть більше, ніж я прошу.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "22",
+          "sid": "PHM 1:22",
+          "type": "verse"
+        },
+        "Також підготуй для мене кімнату, бо я сподіваюся, що завдяки вашим молитвам повернуся до вас.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "Останні вітання",
+        "\n"
+      ],
+      "marker": "s1",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "23",
+          "sid": "PHM 1:23",
+          "type": "verse"
+        },
+        "Епафрас, увʼязнений зі мною у Христі Ісусі, вітає тебе,",
+        "\n",
+        {
+          "marker": "v",
+          "number": "24",
+          "sid": "PHM 1:24",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "а також"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " Марк, Аристарх, Димас і Лука, з якими працюємо разом ",
+        {
+          "content": [
+            "для Христа"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        ".",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    },
+    {
+      "content": [
+        "\n",
+        {
+          "marker": "v",
+          "number": "25",
+          "sid": "PHM 1:25",
+          "type": "verse"
+        },
+        {
+          "content": [
+            "Нехай"
+          ],
+          "marker": "add",
+          "type": "char"
+        },
+        " благодать Господа Ісуса Христа буде з вашим духом.",
+        "\n"
+      ],
+      "marker": "p",
+      "type": "para"
+    }
+  ],
+  "sage": {
+    "book_code": "PHM",
+    "compiler": "SAGE-USJ-0.01-rc7",
+    "errors": [],
+    "source_name": "58PHMukrNPUv1.SFM",
+    "source_sha256": "d4a653bd0d03ae1bf36c3aeca51a6d46cb1dff4da31f3e75f733f9e1ddb1cc6e",
+    "source_size": 6639,
+    "structure_policy_id": "usfm-structure-planning",
+    "structure_policy_sha256": "f9b6871b3fd3ea71771cd899b17ce772ecdc575f8a58bc9f02fadc6325c3251b",
+    "verse_records": [
+      {
+        "body_text": "Павло, вʼязень Христа Ісуса, та брат Тимофій.\nУлюбленому Филимонові, нашому співпрацівнику,",
+        "body_text_exact": "Павло, вʼязень Христа Ісуса, та брат Тимофій.\nУлюбленому Филимонові, нашому співпрацівнику,",
+        "body_text_normalized": "Павло, вʼязень Христа Ісуса, та брат Тимофій. Улюбленому Филимонові, нашому співпрацівнику,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "CHAPTER",
+            "marker": "c",
+            "score": 10
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Павло, вʼязень Христа Ісуса, та брат Тимофій.",
+          "\n",
+          "Улюбленому Филимонові, нашому співпрацівнику,"
+        ],
+        "discourse_unit_id": "PHM-D001",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 17,
+        "line_start": 15,
+        "lines": [
+          "\\v 1 Павло, вʼязень Христа Ісуса, та брат Тимофій.",
+          "\\p Улюбленому Филимонові, нашому співпрацівнику,"
+        ],
+        "number": "1",
+        "paragraph_id": "PHM-P001",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 1 Павло, вʼязень Христа Ісуса, та брат Тимофій.\n\\p Улюбленому Филимонові, нашому співпрацівнику,",
+        "section_id": "PHM-S001",
+        "section_marker": "s1",
+        "section_title": "Привітання",
+        "verse_end": 1,
+        "verse_start": 1
+      },
+      {
+        "body_text": "Апфії, нашій улюбленій сестрі, й Архипові, нашому соратнику, а також церкві, яка збирається у вашому домі.",
+        "body_text_exact": "Апфії, нашій улюбленій сестрі, й Архипові, нашому соратнику, а також церкві, яка збирається у вашому домі.",
+        "body_text_normalized": "Апфії, нашій улюбленій сестрі, й Архипові, нашому соратнику, а також церкві, яка збирається у вашому домі.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Апфії, нашій улюбленій",
+          {
+            "content": [
+              "+ ",
+              {
+                "closing": false,
+                "marker": "fr",
+                "type": "marker"
+              },
+              "1:2 ",
+              {
+                "closing": false,
+                "marker": "ft",
+                "type": "marker"
+              },
+              "Деякі рукописи не містять цього слова."
+            ],
+            "marker": "f",
+            "type": "note"
+          },
+          " сестрі, й Архипові, нашому соратнику, а також церкві, яка ",
+          {
+            "content": [
+              "збирається"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " у вашому домі."
+        ],
+        "discourse_unit_id": "PHM-D002",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 18,
+        "line_start": 18,
+        "lines": [
+          "\\v 2 Апфії, нашій улюбленій\\f + \\fr 1:2 \\ft Деякі рукописи не містять цього слова.\\f* сестрі, й Архипові, нашому соратнику, а також церкві, яка \\add збирається\\add* у вашому домі."
+        ],
+        "number": "2",
+        "paragraph_id": "PHM-P002",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 2 Апфії, нашій улюбленій\\f + \\fr 1:2 \\ft Деякі рукописи не містять цього слова.\\f* сестрі, й Архипові, нашому соратнику, а також церкві, яка \\add збирається\\add* у вашому домі.",
+        "section_id": "PHM-S001",
+        "section_marker": "s1",
+        "section_title": "Привітання",
+        "verse_end": 2,
+        "verse_start": 2
+      },
+      {
+        "body_text": "Благодать вам і мир від Бога, Отця нашого, і Господа Ісуса Христа.",
+        "body_text_exact": "Благодать вам і мир від Бога, Отця нашого, і Господа Ісуса Христа.",
+        "body_text_normalized": "Благодать вам і мир від Бога, Отця нашого, і Господа Ісуса Христа.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Благодать вам і мир від Бога, Отця нашого, і Господа Ісуса Христа."
+        ],
+        "discourse_unit_id": "PHM-D003",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 21,
+        "line_start": 21,
+        "lines": [
+          "\\v 3 Благодать вам і мир від Бога, Отця нашого, і Господа Ісуса Христа."
+        ],
+        "number": "3",
+        "paragraph_id": "PHM-P003",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 3 Благодать вам і мир від Бога, Отця нашого, і Господа Ісуса Христа.",
+        "section_id": "PHM-S001",
+        "section_marker": "s1",
+        "section_title": "Привітання",
+        "verse_end": 3,
+        "verse_start": 3
+      },
+      {
+        "body_text": "Я завжди дякую моєму Богові, коли згадую про тебе у своїх молитвах,",
+        "body_text_exact": "Я завжди дякую моєму Богові, коли згадую про тебе у своїх молитвах,",
+        "body_text_normalized": "Я завжди дякую моєму Богові, коли згадую про тебе у своїх молитвах,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "POETRY_BLOCK",
+            "marker": "b",
+            "score": 70
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я завжди дякую моєму Богові, коли згадую про тебе у своїх молитвах,"
+        ],
+        "discourse_unit_id": "PHM-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 25,
+        "line_start": 25,
+        "lines": [
+          "\\v 4 Я завжди дякую моєму Богові, коли згадую про тебе у своїх молитвах,"
+        ],
+        "number": "4",
+        "paragraph_id": "PHM-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 4 Я завжди дякую моєму Богові, коли згадую про тебе у своїх молитвах,",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Подяка та молитва",
+        "verse_end": 4,
+        "verse_start": 4
+      },
+      {
+        "body_text": "бо я чую про твою віру й любов до Господа Ісуса та до всіх святих.",
+        "body_text_exact": "бо я чую про твою віру й любов до Господа Ісуса та до всіх святих.",
+        "body_text_normalized": "бо я чую про твою віру й любов до Господа Ісуса та до всіх святих.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "бо я чую про твою віру й любов до Господа Ісуса та до всіх святих."
+        ],
+        "discourse_unit_id": "PHM-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 26,
+        "line_start": 26,
+        "lines": [
+          "\\v 5 бо я чую про твою віру й любов до Господа Ісуса та до всіх святих."
+        ],
+        "number": "5",
+        "paragraph_id": "PHM-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 5 бо я чую про твою віру й любов до Господа Ісуса та до всіх святих.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Подяка та молитва",
+        "verse_end": 5,
+        "verse_start": 5
+      },
+      {
+        "body_text": "Молюся, щоб спільність твоєї віри була діяльною в пізнанні всього доброго, що є в нас у Христі.",
+        "body_text_exact": "Молюся, щоб спільність твоєї віри була діяльною в пізнанні всього доброго, що є в нас у Христі.",
+        "body_text_normalized": "Молюся, щоб спільність твоєї віри була діяльною в пізнанні всього доброго, що є в нас у Христі.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "Молюся"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ", щоб спільність твоєї віри була діяльною в пізнанні всього доброго, що є в нас у Христі."
+        ],
+        "discourse_unit_id": "PHM-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 27,
+        "line_start": 27,
+        "lines": [
+          "\\v 6 \\add Молюся\\add*, щоб спільність твоєї віри була діяльною в пізнанні всього доброго, що є в нас у Христі."
+        ],
+        "number": "6",
+        "paragraph_id": "PHM-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 6 \\add Молюся\\add*, щоб спільність твоєї віри була діяльною в пізнанні всього доброго, що є в нас у Христі.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Подяка та молитва",
+        "verse_end": 6,
+        "verse_start": 6
+      },
+      {
+        "body_text": "Я мав велику радість та підбадьорення через твою любов, бо тобою, брате, були заспокоєні серця святих.",
+        "body_text_exact": "Я мав велику радість та підбадьорення через твою любов, бо тобою, брате, були заспокоєні серця святих.",
+        "body_text_normalized": "Я мав велику радість та підбадьорення через твою любов, бо тобою, брате, були заспокоєні серця святих.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я мав велику радість та підбадьорення через твою любов, бо тобою, брате, були заспокоєні серця святих."
+        ],
+        "discourse_unit_id": "PHM-D004",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 28,
+        "line_start": 28,
+        "lines": [
+          "\\v 7 Я мав велику радість та підбадьорення через твою любов, бо тобою, брате, були заспокоєні серця святих."
+        ],
+        "number": "7",
+        "paragraph_id": "PHM-P004",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 7 Я мав велику радість та підбадьорення через твою любов, бо тобою, брате, були заспокоєні серця святих.",
+        "section_id": "PHM-S002",
+        "section_marker": "s1",
+        "section_title": "Подяка та молитва",
+        "verse_end": 7,
+        "verse_start": 7
+      },
+      {
+        "body_text": "Хоча в Христі я маю повну сміливість наказувати, що тобі слід робити,",
+        "body_text_exact": "Хоча в Христі я маю повну сміливість наказувати, що тобі слід робити,",
+        "body_text_normalized": "Хоча в Христі я маю повну сміливість наказувати, що тобі слід робити,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Хоча в Христі я маю повну сміливість наказувати, що тобі слід робити,"
+        ],
+        "discourse_unit_id": "PHM-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 31,
+        "line_start": 31,
+        "lines": [
+          "\\v 8 Хоча в Христі я маю повну сміливість наказувати, що тобі слід робити,"
+        ],
+        "number": "8",
+        "paragraph_id": "PHM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 8 Хоча в Христі я маю повну сміливість наказувати, що тобі слід робити,",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 8,
+        "verse_start": 8
+      },
+      {
+        "body_text": "проте я краще проситиму тебе в імʼя любові. Я, Павло, старійшина, а тепер і вʼязень Христа Ісуса,",
+        "body_text_exact": "проте я краще проситиму тебе в імʼя любові. Я, Павло, старійшина, а тепер і вʼязень Христа Ісуса,",
+        "body_text_normalized": "проте я краще проситиму тебе в імʼя любові. Я, Павло, старійшина, а тепер і вʼязень Христа Ісуса,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "проте я краще проситиму тебе в імʼя любові. Я, Павло, старійшина, а тепер і вʼязень Христа Ісуса,"
+        ],
+        "discourse_unit_id": "PHM-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 32,
+        "line_start": 32,
+        "lines": [
+          "\\v 9 проте я краще проситиму тебе в імʼя любові. Я, Павло, старійшина, а тепер і вʼязень Христа Ісуса,"
+        ],
+        "number": "9",
+        "paragraph_id": "PHM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 9 проте я краще проситиму тебе в імʼя любові. Я, Павло, старійшина, а тепер і вʼязень Христа Ісуса,",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 9,
+        "verse_start": 9
+      },
+      {
+        "body_text": "благаю тебе за мого сина, якому я став батьком в увʼязненні, за Онисима.",
+        "body_text_exact": "благаю тебе за мого сина, якому я став батьком в увʼязненні, за Онисима.",
+        "body_text_normalized": "благаю тебе за мого сина, якому я став батьком в увʼязненні, за Онисима.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "благаю тебе за мого сина, якому я став батьком в увʼязненні, за Онисима."
+        ],
+        "discourse_unit_id": "PHM-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 33,
+        "line_start": 33,
+        "lines": [
+          "\\v 10 благаю тебе за мого сина, якому я став батьком в увʼязненні, за Онисима."
+        ],
+        "number": "10",
+        "paragraph_id": "PHM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 10 благаю тебе за мого сина, якому я став батьком в увʼязненні, за Онисима.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 10,
+        "verse_start": 10
+      },
+      {
+        "body_text": "Раніше він не приносив тобі користі, але тепер корисний і для тебе, і для мене.",
+        "body_text_exact": "Раніше він не приносив тобі користі, але тепер корисний і для тебе, і для мене.",
+        "body_text_normalized": "Раніше він не приносив тобі користі, але тепер корисний і для тебе, і для мене.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Раніше він не приносив тобі користі, але тепер корисний і для тебе, і для мене."
+        ],
+        "discourse_unit_id": "PHM-D005",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 34,
+        "line_start": 34,
+        "lines": [
+          "\\v 11 Раніше він не приносив тобі користі, але тепер корисний і для тебе, і для мене."
+        ],
+        "number": "11",
+        "paragraph_id": "PHM-P005",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 11 Раніше він не приносив тобі користі, але тепер корисний і для тебе, і для мене.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 11,
+        "verse_start": 11
+      },
+      {
+        "body_text": "Я відсилаю його до тебе, наче власне серце.",
+        "body_text_exact": "Я відсилаю його до тебе, наче власне серце.",
+        "body_text_normalized": "Я відсилаю його до тебе, наче власне серце.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я відсилаю його до тебе, наче власне серце."
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 36,
+        "line_start": 36,
+        "lines": [
+          "\\v 12 Я відсилаю його до тебе, наче власне серце."
+        ],
+        "number": "12",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 12 Я відсилаю його до тебе, наче власне серце.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 12,
+        "verse_start": 12
+      },
+      {
+        "body_text": "Я хотів би тримати його біля себе, щоб він замість тебе служив мені, поки я в увʼязненні за Добру Звістку.",
+        "body_text_exact": "Я хотів би тримати його біля себе, щоб він замість тебе служив мені, поки я в увʼязненні за Добру Звістку.",
+        "body_text_normalized": "Я хотів би тримати його біля себе, щоб він замість тебе служив мені, поки я в увʼязненні за Добру Звістку.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я хотів би тримати його біля себе, щоб він замість тебе служив мені, поки я в увʼязненні за Добру Звістку."
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 37,
+        "line_start": 37,
+        "lines": [
+          "\\v 13 Я хотів би тримати його біля себе, щоб він замість тебе служив мені, поки я в увʼязненні за Добру Звістку."
+        ],
+        "number": "13",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 13 Я хотів би тримати його біля себе, щоб він замість тебе служив мені, поки я в увʼязненні за Добру Звістку.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 13,
+        "verse_start": 13
+      },
+      {
+        "body_text": "Але я не хотів робити нічого без твоєї згоди, щоби твоє добро було не вимушеним, а добровільним.",
+        "body_text_exact": "Але я не хотів робити нічого без твоєї згоди, щоби твоє добро було не вимушеним, а добровільним.",
+        "body_text_normalized": "Але я не хотів робити нічого без твоєї згоди, щоби твоє добро було не вимушеним, а добровільним.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Але я не хотів робити нічого без твоєї згоди, щоби твоє добро було не вимушеним, а добровільним."
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 38,
+        "line_start": 38,
+        "lines": [
+          "\\v 14 Але я не хотів робити нічого без твоєї згоди, щоби твоє добро було не вимушеним, а добровільним."
+        ],
+        "number": "14",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 14 Але я не хотів робити нічого без твоєї згоди, щоби твоє добро було не вимушеним, а добровільним.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 14,
+        "verse_start": 14
+      },
+      {
+        "body_text": "Можливо, для того він і відлучався ненадовго, щоб ти його отримав назавжди,",
+        "body_text_exact": "Можливо, для того він і відлучався ненадовго, щоб ти його отримав назавжди,",
+        "body_text_normalized": "Можливо, для того він і відлучався ненадовго, щоб ти його отримав назавжди,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Можливо, для того він і відлучався ненадовго, щоб ти його отримав назавжди,"
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 39,
+        "line_start": 39,
+        "lines": [
+          "\\v 15 Можливо, для того він і відлучався ненадовго, щоб ти його отримав назавжди,"
+        ],
+        "number": "15",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 15 Можливо, для того він і відлучався ненадовго, щоб ти його отримав назавжди,",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 15,
+        "verse_start": 15
+      },
+      {
+        "body_text": "але вже не як раба, а краще за раба – як улюбленого брата. Він дорогий для мене, але ще дорожчий для тебе як людина і як брат у Господі.",
+        "body_text_exact": "але вже не як раба, а краще за раба – як улюбленого брата. Він дорогий для мене, але ще дорожчий для тебе як людина і як брат у Господі.",
+        "body_text_normalized": "але вже не як раба, а краще за раба – як улюбленого брата. Він дорогий для мене, але ще дорожчий для тебе як людина і як брат у Господі.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "але вже не як раба, а краще за раба – як улюбленого брата. Він дорогий для мене, але ще дорожчий для тебе як людина і як ",
+          {
+            "content": [
+              "брат"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " у Господі."
+        ],
+        "discourse_unit_id": "PHM-D006",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 40,
+        "line_start": 40,
+        "lines": [
+          "\\v 16 але вже не як раба, а краще за раба – як улюбленого брата. Він дорогий для мене, але ще дорожчий для тебе як людина і як \\add брат\\add* у Господі."
+        ],
+        "number": "16",
+        "paragraph_id": "PHM-P006",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 16 але вже не як раба, а краще за раба – як улюбленого брата. Він дорогий для мене, але ще дорожчий для тебе як людина і як \\add брат\\add* у Господі.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 16,
+        "verse_start": 16
+      },
+      {
+        "body_text": "Тож, якщо ти вважаєш мене другом, прийми його, як прийняв би мене.",
+        "body_text_exact": "Тож, якщо ти вважаєш мене другом, прийми його, як прийняв би мене.",
+        "body_text_normalized": "Тож, якщо ти вважаєш мене другом, прийми його, як прийняв би мене.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Тож, якщо ти вважаєш мене другом, прийми його, як ",
+          {
+            "content": [
+              "прийняв би"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " мене."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 42,
+        "line_start": 42,
+        "lines": [
+          "\\v 17 Тож, якщо ти вважаєш мене другом, прийми його, як \\add прийняв би\\add* мене."
+        ],
+        "number": "17",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 17 Тож, якщо ти вважаєш мене другом, прийми його, як \\add прийняв би\\add* мене.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 17,
+        "verse_start": 17
+      },
+      {
+        "body_text": "Якщо він чимось скривдив тебе або щось тобі винен, зарахуй це мені.",
+        "body_text_exact": "Якщо він чимось скривдив тебе або щось тобі винен, зарахуй це мені.",
+        "body_text_normalized": "Якщо він чимось скривдив тебе або щось тобі винен, зарахуй це мені.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Якщо він чимось скривдив тебе або щось тобі винен, зарахуй це мені."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 43,
+        "line_start": 43,
+        "lines": [
+          "\\v 18 Якщо він чимось скривдив тебе або щось тобі винен, зарахуй це мені."
+        ],
+        "number": "18",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 18 Якщо він чимось скривдив тебе або щось тобі винен, зарахуй це мені.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 18,
+        "verse_start": 18
+      },
+      {
+        "body_text": "Я, Павло, написав це власноруч: я відшкодую його збиток, не кажучи вже про те, що ти й самого себе винен мені.",
+        "body_text_exact": "Я, Павло, написав це власноруч: я відшкодую його збиток, не кажучи вже про те, що ти й самого себе винен мені.",
+        "body_text_normalized": "Я, Павло, написав це власноруч: я відшкодую його збиток, не кажучи вже про те, що ти й самого себе винен мені.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Я, Павло, написав це власноруч: я відшкодую ",
+          {
+            "content": [
+              "його збиток"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          ", не кажучи вже про те, що ти й самого себе винен мені."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 44,
+        "line_start": 44,
+        "lines": [
+          "\\v 19 Я, Павло, написав це власноруч: я відшкодую \\add його збиток\\add*, не кажучи вже про те, що ти й самого себе винен мені."
+        ],
+        "number": "19",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 19 Я, Павло, написав це власноруч: я відшкодую \\add його збиток\\add*, не кажучи вже про те, що ти й самого себе винен мені.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 19,
+        "verse_start": 19
+      },
+      {
+        "body_text": "Так, брате, я бажаю мати якусь користь від тебе в Господі, заспокой моє серце в Христі.",
+        "body_text_exact": "Так, брате, я бажаю мати якусь користь від тебе в Господі, заспокой моє серце в Христі.",
+        "body_text_normalized": "Так, брате, я бажаю мати якусь користь від тебе в Господі, заспокой моє серце в Христі.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Так, брате, я бажаю мати якусь користь від тебе в Господі, заспокой моє серце в Христі."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 45,
+        "line_start": 45,
+        "lines": [
+          "\\v 20 Так, брате, я бажаю мати якусь користь від тебе в Господі, заспокой моє серце в Христі."
+        ],
+        "number": "20",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 20 Так, брате, я бажаю мати якусь користь від тебе в Господі, заспокой моє серце в Христі.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 20,
+        "verse_start": 20
+      },
+      {
+        "body_text": "Упевнений у твоїй покорі, я пишу тобі, знаючи, що ти зробиш навіть більше, ніж я прошу.",
+        "body_text_exact": "Упевнений у твоїй покорі, я пишу тобі, знаючи, що ти зробиш навіть більше, ніж я прошу.",
+        "body_text_normalized": "Упевнений у твоїй покорі, я пишу тобі, знаючи, що ти зробиш навіть більше, ніж я прошу.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Упевнений у твоїй покорі, я пишу тобі, знаючи, що ти зробиш навіть більше, ніж я прошу."
+        ],
+        "discourse_unit_id": "PHM-D007",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 46,
+        "line_start": 46,
+        "lines": [
+          "\\v 21 Упевнений у твоїй покорі, я пишу тобі, знаючи, що ти зробиш навіть більше, ніж я прошу."
+        ],
+        "number": "21",
+        "paragraph_id": "PHM-P007",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 21 Упевнений у твоїй покорі, я пишу тобі, знаючи, що ти зробиш навіть більше, ніж я прошу.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 21,
+        "verse_start": 21
+      },
+      {
+        "body_text": "Також підготуй для мене кімнату, бо я сподіваюся, що завдяки вашим молитвам повернуся до вас.",
+        "body_text_exact": "Також підготуй для мене кімнату, бо я сподіваюся, що завдяки вашим молитвам повернуся до вас.",
+        "body_text_normalized": "Також підготуй для мене кімнату, бо я сподіваюся, що завдяки вашим молитвам повернуся до вас.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Також підготуй для мене кімнату, бо я сподіваюся, що завдяки вашим молитвам повернуся до вас."
+        ],
+        "discourse_unit_id": "PHM-D008",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 48,
+        "line_start": 48,
+        "lines": [
+          "\\v 22 Також підготуй для мене кімнату, бо я сподіваюся, що завдяки вашим молитвам повернуся до вас."
+        ],
+        "number": "22",
+        "paragraph_id": "PHM-P008",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 22 Також підготуй для мене кімнату, бо я сподіваюся, що завдяки вашим молитвам повернуся до вас.",
+        "section_id": "PHM-S003",
+        "section_marker": "s1",
+        "section_title": "Прохання про Онисима",
+        "verse_end": 22,
+        "verse_start": 22
+      },
+      {
+        "body_text": "Епафрас, увʼязнений зі мною у Христі Ісусі, вітає тебе,",
+        "body_text_exact": "Епафрас, увʼязнений зі мною у Христі Ісусі, вітає тебе,",
+        "body_text_normalized": "Епафрас, увʼязнений зі мною у Христі Ісусі, вітає тебе,",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "SECTION",
+            "marker": "s1",
+            "score": 80
+          },
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          "Епафрас, увʼязнений зі мною у Христі Ісусі, вітає тебе,"
+        ],
+        "discourse_unit_id": "PHM-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 51,
+        "line_start": 51,
+        "lines": [
+          "\\v 23 Епафрас, увʼязнений зі мною у Христі Ісусі, вітає тебе,"
+        ],
+        "number": "23",
+        "paragraph_id": "PHM-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 23 Епафрас, увʼязнений зі мною у Христі Ісусі, вітає тебе,",
+        "section_id": "PHM-S004",
+        "section_marker": "s1",
+        "section_title": "Останні вітання",
+        "verse_end": 23,
+        "verse_start": 23
+      },
+      {
+        "body_text": "а також Марк, Аристарх, Димас і Лука, з якими працюємо разом для Христа.",
+        "body_text_exact": "а також Марк, Аристарх, Димас і Лука, з якими працюємо разом для Христа.",
+        "body_text_normalized": "а також Марк, Аристарх, Димас і Лука, з якими працюємо разом для Христа.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "VERSE",
+            "marker": "v",
+            "score": 0
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "а також"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " Марк, Аристарх, Димас і Лука, з якими працюємо разом ",
+          {
+            "content": [
+              "для Христа"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          "."
+        ],
+        "discourse_unit_id": "PHM-D009",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 52,
+        "line_start": 52,
+        "lines": [
+          "\\v 24 \\add а також\\add* Марк, Аристарх, Димас і Лука, з якими працюємо разом \\add для Христа\\add*."
+        ],
+        "number": "24",
+        "paragraph_id": "PHM-P009",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 24 \\add а також\\add* Марк, Аристарх, Димас і Лука, з якими працюємо разом \\add для Христа\\add*.",
+        "section_id": "PHM-S004",
+        "section_marker": "s1",
+        "section_title": "Останні вітання",
+        "verse_end": 24,
+        "verse_start": 24
+      },
+      {
+        "body_text": "Нехай благодать Господа Ісуса Христа буде з вашим духом.",
+        "body_text_exact": "Нехай благодать Господа Ісуса Христа буде з вашим духом.",
+        "body_text_normalized": "Нехай благодать Господа Ісуса Христа буде з вашим духом.",
+        "boundaries_before": [
+          {
+            "continues_paragraph": false,
+            "kind": "PARAGRAPH",
+            "marker": "p",
+            "score": 30
+          }
+        ],
+        "chapter": 1,
+        "content": [
+          {
+            "content": [
+              "Нехай"
+            ],
+            "marker": "add",
+            "type": "char"
+          },
+          " благодать Господа Ісуса Христа буде з вашим духом."
+        ],
+        "discourse_unit_id": "PHM-D010",
+        "discourse_unit_kind": "PROSE_PARAGRAPH",
+        "discourse_unit_marker": "p",
+        "line_end": 54,
+        "line_start": 54,
+        "lines": [
+          "\\v 25 \\add Нехай\\add* благодать Господа Ісуса Христа буде з вашим духом."
+        ],
+        "number": "25",
+        "paragraph_id": "PHM-P010",
+        "paragraph_marker": "p",
+        "parser_errors": [],
+        "poetry_block_id": "",
+        "poetry_block_marker": "",
+        "poetry_block_title": "",
+        "raw_usfm": "\\v 25 \\add Нехай\\add* благодать Господа Ісуса Христа буде з вашим духом.",
+        "section_id": "PHM-S004",
+        "section_marker": "s1",
+        "section_title": "Останні вітання",
+        "verse_end": 25,
+        "verse_start": 25
+      }
+    ]
+  },
+  "type": "USJ",
+  "version": "3.1"
+}

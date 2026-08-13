@@ -1,0 +1,21 @@
+{
+  "check_type": null,
+  "created_utc": "2026-08-13T21:48:34+00:00",
+  "current_stage": "COMPLETE",
+  "focus": null,
+  "job_id": "SAW_faTMNv4-usNIVv2",
+  "operation": "qa",
+  "plan_path": "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/plans/SAW-QA-GEN-B251F6EABF.json",
+  "run_id": "SAW_faTMNv4-usNIVv2-20260813-001",
+  "schema_version": "1.0",
+  "scope": "GEN 1-11",
+  "status": "COMPLETE",
+  "task_manifests": [
+    "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/tasks/saw-qa-gen-04f1fbce0918/task-manifest.json",
+    "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/tasks/saw-qa-gen-5952a66fec58/task-manifest.json",
+    "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/tasks/saw-qa-gen-0d458947fd83/task-manifest.json",
+    "/Users/pietertraut/Work/Tech_Dev/SAGE/jobs/saw/SAW_faTMNv4-usNIVv2/runs/SAW_faTMNv4-usNIVv2-20260813-001/tasks/saw-qa-gen-03b26e6be1b6/task-manifest.json"
+  ],
+  "tool": "saw",
+  "updated_utc": "2026-08-13T21:54:07+00:00"
+}
