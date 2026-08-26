@@ -1,0 +1,19 @@
+{
+  "contract": {
+    "id": "BIC4_PROTECTED_REWRITE_DETAIL_RULES",
+    "baseline": "4.00",
+    "status": "PINNED",
+    "canonical_file": "system/skills/bic-rewrite/references/PROTECTED-REWRITE-DETAIL-RULES.md",
+    "mirror_files": [
+      "system/skills/bic-self-check/references/PROTECTED-REWRITE-DETAIL-RULES.md"
+    ],
+    "sha256": "f2c8b9bc3d0626260021a042fdb3aed36909c13056156c3a7ea9bc6cc49b3aea",
+    "permitted_adaptations": [
+      "US_SYSTEM_SPELLING",
+      "CANONICAL_REWRITE_ACTION_VOCABULARY",
+      "GENERATED_LAYOUT_MARKER_POLICY_EXCEPTION",
+      "USJ_COMPARISON_INPUT"
+    ],
+    "release": "0.01beta"
+  }
+}

@@ -1,0 +1,41 @@
+schema_id: sage-run-1.0
+required:
+- schema_version
+- run_id
+- tool
+- job_id
+- operation
+- scope
+- status
+- current_stage
+- task_manifests
+- created_utc
+- updated_utc
+optional:
+  result: DONE | FAILED | BLOCKED | CANCELLED
+  result_reason: required_when_BLOCKED
+
+controls:
+  schema_version: '1.0'
+  ownership: tool_then_job_id_then_run_id
+  scope: one_bounded_operator_goal
+  task_manifests: immutable_task_paths_inside_run
+  progress:
+    policy_source: owning_job.progress_quantifier
+    basis: PROJECTED_HANDOFF_ESTIMATED_TOKENS
+    completed: finalized_ACT_task_weights
+    total: sealed_ACT_task_weights
+    persisted_percent: prohibited
+    legacy_job_basis_accepted: ACT_ESTIMATED_TOKENS
+    visual_cells: 10
+    concurrency: exactly_one_active_run
+  active_task:
+    identity_source: ACT_manifest_operation_and_skill
+    active_phases: [PREPARING, RUNNING, VALIDATING, WRITING]
+    terminal_results: [DONE, FAILED, BLOCKED, CANCELLED]
+    blocked_reason: required
+  plan_path: optional_partition_plan_inside_run
+  approved_work_plan_path: optional_operator_approved_work_unit_manifest_inside_run
+  cross_job_task_paths: prohibited
+  active_run_pointer: job_local_runtime_state
+  pre_release_migration: prohibited

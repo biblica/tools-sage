@@ -1,0 +1,47 @@
+schema_id: sage-execution-event-1.0
+required:
+- schema_version
+- event_id
+- timestamp_utc
+- disposition
+- reason_code
+- message
+- blocks
+- retryability
+optional:
+  workflow: bic | saw
+  job_id: governed_job_id
+  run_id: governed_run_id
+  task_id: governed_task_id
+  operation: bounded_operation
+  stage: bounded_stage
+  requested_scope: scripture_scope
+  work_unit_scope: scripture_scope
+  resource: sanitized_resource_context
+  next_action: operator_recovery_action
+  details: sanitized_bounded_details
+  source: diagnostic_origin
+controls:
+  schema_version: '1.0'
+  dispositions:
+  - INPUT_REQUIRED
+  - READY_WITH_ACTIONS
+  - TASK_PAUSED
+  - TASK_OUTPUT_REJECTED
+  - STALE
+  - BLOCKED
+  - ERROR
+  blocking_boundaries:
+  - SETUP
+  - JOB_CREATION
+  - RUN_CREATION
+  - WORK_UNIT
+  - TASK_ATTEMPT
+  - STAGE
+  - TARGET_COMMIT
+  - RUN_FINALIZATION
+  - NONE
+  append_only_evidence: true
+  deterministic_markdown_projection: BLOCK-REPORT.md
+  credentials_in_details: prohibited
+  unknown_nonempty_legacy_content_deletion: prohibited

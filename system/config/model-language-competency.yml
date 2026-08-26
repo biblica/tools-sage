@@ -1,0 +1,138 @@
+schema_version: '1.0'
+policy:
+  title: Registered LLM Language Competency Evidence
+  operator_disclaimer: These tiers come from versioned release evidence or measured
+    evaluations. Missing evidence is UNASSESSED; a model never rates itself.
+  tiers:
+  - EXCELLENT
+  - GOOD
+  - FAIR
+  - UNASSESSED
+  model_release_identity: provider_model_id
+  provider_runtime_version_note: The provider CLI/runtime version is recorded separately.
+    When the provider exposes no finer model revision, the provider model ID is the
+    model release/version key.
+  new_model_action: REQUIRE_VERSIONED_OR_MEASURED_EVIDENCE
+  new_language_action: MARK_UNASSESSED_THEN_BUILD_PROFILE
+  overwrite_policy: NEVER_OVERWRITE_OLDER_MODEL_RELEASES
+
+seed_models:
+- provider: codex
+  model: gpt-5.6-terra
+  model_version: gpt-5.6-terra
+  assessment_source: SAGE_RELEASE_SEED
+  languages:
+    en-US:
+      language: English (United States)
+      tier: EXCELLENT
+    en-GB:
+      language: English (United Kingdom)
+      tier: EXCELLENT
+    es-419:
+      language: Spanish (Latin America)
+      tier: EXCELLENT
+    es-BR:
+      language: Spanish (Brazil)
+      tier: EXCELLENT
+    fr-FR:
+      language: French (France)
+      tier: EXCELLENT
+    fr-011:
+      language: French (Western Africa)
+      tier: EXCELLENT
+    de-DE:
+      language: German (Germany)
+      tier: EXCELLENT
+    zh-Hans-CN:
+      language: Chinese, Mandarin (China)
+      tier: EXCELLENT
+    ja-JP:
+      language: Japanese (Japan)
+      tier: EXCELLENT
+    pt-BR:
+      language: Portuguese (Brazil)
+      tier: EXCELLENT
+    pt-419:
+      language: Portuguese (Latin America)
+      tier: EXCELLENT
+    it-IT:
+      language: Italian (Italy)
+      tier: EXCELLENT
+    ru-RU:
+      language: Russian (Russia)
+      tier: GOOD
+    ko-KR:
+      language: Korean (South Korea)
+      tier: GOOD
+    ar-SA:
+      language: Arabic, Modern Standard (Saudi Arabia)
+      tier: GOOD
+    ar-145:
+      language: Arabic, Modern Standard (Western Asia)
+      tier: GOOD
+    nl-NL:
+      language: Dutch (Netherlands)
+      tier: GOOD
+    pl-PL:
+      language: Polish (Poland)
+      tier: GOOD
+    sw-TZ:
+      language: Swahili (Tanzania)
+      tier: GOOD
+    th-TH:
+      language: Thai (Thailand)
+      tier: GOOD
+    fa-IR:
+      language: Persian / Farsi (Iran)
+      tier: GOOD
+    pes-IR:
+      language: Iranian Persian (Iran)
+      tier: GOOD
+    prs-AF:
+      language: Dari (Afghanistan)
+      tier: FAIR
+    uk-UA:
+      language: Ukrainian (Ukraine)
+      tier: GOOD
+    tr-TR:
+      language: Turkish (Turkey)
+      tier: FAIR
+    fi-FI:
+      language: Finnish (Finland)
+      tier: FAIR
+    hi-IN:
+      language: Hindi (India)
+      tier: FAIR
+    vi-VN:
+      language: Vietnamese (Vietnam)
+      tier: FAIR
+    el-GR:
+      language: Greek (Greece)
+      tier: FAIR
+    id-ID:
+      language: Indonesian (Indonesia)
+      tier: FAIR
+    am-ET:
+      language: Amharic (Ethiopia)
+      tier: FAIR
+    lo-LA:
+      language: Lao (Laos)
+      tier: FAIR
+    ha-NG:
+      language: Hausa (Nigeria)
+      tier: FAIR
+    ha-NE:
+      language: Hausa (Niger)
+      tier: FAIR
+    pa-Guru-IN:
+      language: Punjabi, Gurmukhi (India)
+      tier: FAIR
+    pa-Arab-PK:
+      language: Punjabi, Shahmukhi (Pakistan)
+      tier: FAIR
+    ti-ER:
+      language: Tigrinya (Eritrea)
+      tier: FAIR
+    ti-ET:
+      language: Tigrinya (Ethiopia)
+      tier: FAIR

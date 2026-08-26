@@ -1,11 +1,25 @@
-# Scripture Project Operator Cheat Sheet — RC7.04
+# Scripture Project Operator Cheat Sheet — v0.01beta
+
+Every menu, including Manage Jobs, Scripture Projects, BIC, SAW, and SAGE
+Maintenance, ends with the same navigation block:
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│  A. Back   B. Main Menu   C. Exit SAGE                               │
+│  D. Language   E. Help   F. Status                                   │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+`A` returns to the immediate parent when Back is available, `B` returns directly to the Main Menu,
+`C` exits SAGE, `D` opens Interface Language, `E` opens contextual Help, and `F` opens Status. Help and Status return to the invoking view. Footer keys do not change with localization.
 
 ## Normal path
 
 ```text
 Main Menu
   -> Scripture Projects
-  -> Scan / Rescan Paratext Projects
+  -> Paratext Projects root
+  -> Scan Paratext Projects
   -> Add Projects to SAGE
   -> SAGE Projects
 ```
@@ -13,11 +27,11 @@ Main Menu
 For a clean machine:
 
 1. Configure the Paratext Projects root.
-2. SAGE scans direct child folders with valid `settings.xml` and saves the Paratext Project Catalogue.
+2. SAGE scans direct child folders with valid `settings.xml` and saves the Paratext Project Catalog.
 3. Open **Add Projects to SAGE**.
-4. Optionally filter by **FB / NT / Portions** and/or **Language**.
+4. Optionally filter by **FB**, **NT**, **Portions**, or **Language**.
 5. Review the detected Project metadata and add the Project to SAGE.
-6. Create BIC/SAW Jobs separately and assign Job roles there.
+6. Create BIC and SAW Jobs separately and assign Job roles there.
 
 Project addition is a System task. SOURCE/DONOR/TARGET/WIP/REFERENCE assignment is a tool setup task.
 
@@ -25,7 +39,7 @@ Project addition is a System task. SOURCE/DONOR/TARGET/WIP/REFERENCE assignment 
 
 SAGE reads `settings.xml`, `canons.xml`, top-level `*.SFM`, `custom.vrs`, and the Project folder name. It does not modify those files during discovery or addition to SAGE.
 
-A valid ISO language identity may be added to SAGE even when no SAGE language-analysis profile exists. Folder-prefix evidence is advisory; ambiguous corrections require operator selection.
+A Project is registered only after SAGE has confirmed a regional Language Profile namespace. Grammar Profiles remain separate and may be configured later when a Job role requires one. Settings.xml, all relevant LDML identities, Project-name prefix evidence, ISO relationships, and country evidence support the estimate; ambiguous identity or country choices require Operator confirmation.
 
 ## Base VRS
 
@@ -36,8 +50,8 @@ The Base VRS root defaults to the Paratext Projects root. An explicit Base VRS o
 BIC:
 
 ```text
-SOURCE     Scripture being analysed
-DONOR      Supporting translation/reference wording
+SOURCE     Scripture being analyzed
+DONOR      Decontextualized vocabulary evidence only
 TARGET     Translation BIC may modify through governed writes
 ```
 
@@ -52,30 +66,36 @@ Role selectors show only SAGE Projects. **Add another Project to SAGE** temporar
 
 ## Scope and preview
 
-Runs use **SELECT SCRIPTURE SCOPE**. Choose a Book plus a range, choose direct entry, or type the scope at the selection prompt. `GEN` selects the whole book; `GEN 1` selects the whole chapter; `GEN 1:1-10` selects the verse range. Before Run creation SAGE shows **REVIEW WORK BEFORE RUNNING** with bounded sections and estimated tokens. Choose **Run**, **Change scope**, or **Cancel**.
+Runs use **CHOOSE SCRIPTURE SCOPE**. Choose a Book plus a range, choose direct entry, or type the scope at the choice prompt. `GEN` means the whole book; `GEN 1` means the whole chapter; `GEN 1:1-10` means the verse range. Before Run creation SAGE shows **REVIEW WORK BEFORE RUNNING** with bounded sections and estimated tokens. Choose **Run**, **Change scope**, or **Back**.
 
 ## Job report batching
 
-A Run owns the bounded Tasks, provider receipts, validation records, and intermediate plan/stage artefacts needed for audit and recovery. When the Run finalises, SAGE validates complete coverage and batches the approved findings into the owning Job's main report catalogue:
+A Run owns the bounded Tasks, provider receipts, validation records, and intermediate plan/stage
+artifacts needed for audit and recovery. When the Run finalizes, SAGE validates complete coverage
+and batches the approved findings into the owning Job's main report catalog:
 
 ```text
-jobs/<tool>/<job-id>/reports/<BOOK>/
+SAGEdata/reports/<job-id>/<BOOK>/
 ```
 
-For SAW QA on `GEN 1`, final files use names such as:
+For SAW QA, Operator reports are chapter-scoped with an explicit three-digit chapter component:
 
 ```text
-GEN/GEN-001_2026-08-13_001_ACTION-REPORT.md
-GEN/GEN-001_2026-08-13_001_OPERATOR-NOTE.txt
+GEN/GEN_001_ACTION-REPORT.md
+GEN/GEN_001_OPERATOR-NOTE.txt
 ```
 
-The final report is Job-owned, not Run-owned and not Project-owned. The `<job-id>` path segment identifies the Job, not a Project. A Project reporting-language override selects rendering languages only; it does not own or redirect report files. A Job may batch results from several Runs into the same book folder; the date and serial prevent collisions. SAGE prints the exact final report paths at completion. It never writes reports into a Paratext Project folder.
+Single-chapter books still use chapter `001`, for example `PHM_001_ACTION-REPORT.md`. Block-level evidence remains under the governed Run task tree.
+
+The final report is Job-owned, not Run-owned and not Project-owned. The `<job-id>` path segment identifies the Job, not a Project. The global Operator language is primary. Normal menus expose only `approved` languages and configured `candidates`; an advanced Operator must add a `pilot_only` tag to `human_output.operator_language_policy.candidates` by hand before evaluation. The Job may add an optional secondary reporting language; SAGE recommends the SAW WIP language or BIC TARGET language and also offers another language or none. In every bilingual report, the primary rendering governs interpretation and the secondary is an assistive, lower-confidence translation that must be checked against the primary before action. A secondary rendering adds model usage and report compilation time and requires more human review than a single-language report. Canonical machine evidence remains authoritative. A finalized chapter report is the current canonical Operator projection for that Job/book/chapter. Governed Run/task evidence preserves historical execution identity; Operator filenames do not encode Run date/serial. SAGE prints the exact final report paths at completion. It never writes reports into a Paratext Project folder.
 
 ## Safe removal
 
 **Remove Project from SAGE** removes SAGE state only. It never deletes or changes the Paratext Project. SAGE blocks removal while any Job still binds the Project.
 
-**Remove Job** deletes SAGE Job-local state, Runs, and reports for that Job; it does not delete or modify SAGE Projects or Paratext files.
+**Remove Job** deletes the Job directory, including its Runs and Job-local report data. Published
+files in the root Operator reports catalog are separate and remain available. Removal does not
+delete or modify SAGE Projects or Paratext files.
 
 ## Original-language resources
 

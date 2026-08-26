@@ -1,0 +1,33 @@
+﻿<ScriptureText>
+  <StyleSheet>usfm.sty</StyleSheet>
+  <Versification>4</Versification>
+  <Language>Ancient Hebrew</Language>
+  <MinParatextVersion>8.0.100.76</MinParatextVersion>
+  <FullName>Hebrew Source (MT)</FullName>
+  <Encoding>65001</Encoding>
+  <Editable>T</Editable>
+  <Copyright />
+  <NormalizationForm>NFC</NormalizationForm>
+  <Name>hebRESa</Name>
+  <Guid>f572edf00e64922c354628baf74d01bf1202f57c</Guid>
+  <DefaultFont>Ezra SIL</DefaultFont>
+  <DefaultFontSize>12</DefaultFontSize>
+  <FontFeatures />
+  <HtmlLanguage />
+  <LanguageIsoCode>hbo:::</LanguageIsoCode>
+  <FileNameBookNameForm>41MAT</FileNameBookNameForm>
+  <FileNamePrePart />
+  <FileNamePostPart>hebRESa.SFM</FileNamePostPart>
+  <BiblicalTermsListSetting>Major::BiblicalTerms.xml</BiblicalTermsListSetting>
+  <MatchBasedOnStems>F</MatchBasedOnStems>
+  <AllowReadAccess>F</AllowReadAccess>
+  <AllowSharingWithSLDR>F</AllowSharingWithSLDR>
+  <Visibility>Public</Visibility>
+  <AllowInvisibleChars>F</AllowInvisibleChars>
+  <TranslationInfo>Standard::</TranslationInfo>
+  <EncodingConverter />
+  <UsfmVersion>3</UsfmVersion>
+  <ParallelPassagesBooks>000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</ParallelPassagesBooks>
+  <BooksPresent>111111111111111111111111111111111111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000</BooksPresent>
+  <Naming PrePart="" PostPart="hebRESa.SFM" BookNameForm="41MAT" />
+</ScriptureText>

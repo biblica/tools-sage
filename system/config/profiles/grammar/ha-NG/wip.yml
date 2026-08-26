@@ -1,0 +1,81 @@
+profile:
+  schema_version: '2.0'
+  id: wip
+  language: ha-NG
+  script: Latn
+  role: WIP
+  status: PROJECT_REVIEW_REQUIRED
+  purpose: provisional_ha_ng_wip_setup
+  owner_role: PROJECT_TEAM
+  last_reviewed: null
+checks:
+- id: HANG-GR-001
+  dimension: meaning
+  review: Check that the bounded wording preserves the complete proposition, participant relations, and logical
+    connection.
+  caution: Report uncertainty; do not approve or rewrite automatically.
+- id: HANG-GR-002
+  dimension: participant_reference
+  review: Check explicit and implicit participant references, including pronouns, omitted arguments, and antecedents
+    across the bounded discourse unit.
+  caution: Do not infer an antecedent that the project evidence does not support.
+- id: HANG-GR-003
+  dimension: morphology_and_agreement
+  review: Check inflection, agreement, case or relational marking, number, gender/class, person, and other language-relevant
+    morphology where it affects interpretation or naturalness.
+  caution: Treat plausible alternatives as project-review questions when bounded evidence does not decide between
+    them.
+- id: HANG-GR-004
+  dimension: verb_form
+  review: Check tense, aspect, mood, voice, polarity, agreement, auxiliaries, and other language-relevant verb choices
+    in context.
+  caution: Do not replace a form merely because another form is more frequent outside the project.
+- id: HANG-GR-005
+  dimension: word_order_and_information_structure
+  review: Check constituent order against focus, emphasis, quotation structure, and discourse flow in the bounded
+    passage.
+  caution: Treat marked order as potentially meaningful until project evidence resolves it.
+- id: HANG-GR-006
+  dimension: clause_structure
+  review: Check coordination, subordination, negation, ellipsis, clause linkage, and quotation boundaries for grammatical
+    and discourse coherence.
+  caution: Preserve logical and quotation relationships; do not normalize them silently.
+- id: HANG-GR-007
+  dimension: terminology_and_lexical_form
+  review: Check project terminology, inflected lexical forms, register, collocations, and consistency within the
+    bounded scope.
+  caution: Project-approved terminology takes precedence over general-language preference.
+- id: HANG-GR-008
+  dimension: orthography_punctuation_and_regional_usage
+  review: Check standard Boko (Latin-script) Hausa orthography, tone-independent spelling conventions, pronouns,
+    gender/number agreement, TAM constructions, punctuation, and natural Nigerian Hausa usage.
+  caution: Do not infer Ajami conventions or Niger-specific forms unless the project explicitly uses them.
+normalization:
+  unicode: NFC
+  preserve_script: true
+project_decisions: []
+approved_exceptions: []
+governance:
+  authority: project_team_required
+  human_approval_required: true
+evidence_priority:
+- bounded_project_text
+- approved_project_decisions
+- declared_contemporary_source
+- relevant_original_language_source
+usage:
+  apply_to:
+  - qa
+  - focused
+  - ol
+  report_rule_ids: true
+finding_requirements:
+- Cite each applicable rule ID.
+- Separate grammar findings from general meaning findings.
+restrictions:
+- Do not invent project rules.
+- Do not promote this starter profile to approved Project grammar without human review.
+provenance:
+  type: SAGE_BUNDLED_STARTER
+  project_validated: false
+  language_label: Hausa (Nigeria)

@@ -1,0 +1,92 @@
+schema_version: '1.0'
+identities:
+  en:
+    name: English
+    iso_639_1: en
+    iso_639_3: eng
+    type: language
+    script: Latn
+  fa:
+    name: Persian
+    iso_639_1: fa
+    iso_639_3: fas
+    type: macrolanguage
+    script: Arab
+  pes:
+    name: Iranian Persian
+    iso_639_3: pes
+    type: member_language
+    parent: fa
+    script: Arab
+  prs:
+    name: Dari
+    iso_639_3: prs
+    type: member_language
+    parent: fa
+    script: Arab
+  id:
+    name: Indonesian
+    iso_639_1: id
+    iso_639_3: ind
+    type: language
+    script: Latn
+  ti:
+    name: Tigrinya
+    iso_639_1: ti
+    iso_639_3: tir
+    type: language
+    script: Ethi
+  am:
+    name: Amharic
+    iso_639_1: am
+    iso_639_3: amh
+    type: language
+    script: Ethi
+  ha:
+    name: Hausa
+    iso_639_1: ha
+    iso_639_3: hau
+    type: language
+    script: Latn
+  fr:
+    name: French
+    iso_639_1: fr
+    iso_639_3: fra
+    type: language
+    script: Latn
+  es:
+    name: Spanish
+    iso_639_1: es
+    iso_639_3: spa
+    type: language
+    script: Latn
+  pt:
+    name: Portuguese
+    iso_639_1: pt
+    iso_639_3: por
+    type: language
+    script: Latn
+  de:
+    name: German
+    iso_639_1: de
+    iso_639_3: deu
+    type: language
+    script: Latn
+  ar:
+    name: Arabic
+    iso_639_1: ar
+    iso_639_3: ara
+    type: macrolanguage
+    script: Arab
+  hi:
+    name: Hindi
+    iso_639_1: hi
+    iso_639_3: hin
+    type: language
+    script: Deva
+  uk:
+    name: Ukrainian
+    iso_639_1: uk
+    iso_639_3: ukr
+    type: language
+    script: Cyrl

@@ -1,0 +1,3111 @@
+{
+  "_meta": {
+    "schema": "sage-menu-localization/1.0",
+    "default_locale": "en-US",
+    "locales": [
+      "en-US",
+      "en-GB",
+      "id",
+      "fr",
+      "ru",
+      "pt-BR"
+    ],
+    "editing_rules": [
+      "Edit localized text values only; keep semantic keys stable.",
+      "Every entry must contain all six locales.",
+      "en-US is the canonical source wording used for runtime lookup.",
+      "Display capitalization is applied by the menu renderer; do not duplicate entries only for uppercase headings.",
+      "Keep SAGE identifiers such as BIC, SAW, Job, Run, Project, TARGET, SOURCE, DONOR, WIP, REFERENCE, ACT, RWC, SEMDOM, FLEx, Combine, and Codex unchanged unless system grammar changes them."
+    ]
+  },
+  "strings": {
+    "menu.abandon": {
+      "en-US": "Abandon",
+      "en-GB": "Abandon",
+      "id": "Tinggalkan",
+      "fr": "Abandonner",
+      "ru": "Отказаться",
+      "pt-BR": "Abandonar"
+    },
+    "menu.abandon.active.run": {
+      "en-US": "Abandon active Run",
+      "en-GB": "Abandon active Run",
+      "id": "Tinggalkan Run aktif",
+      "fr": "Abandonner le Run actif",
+      "ru": "Отказаться от активного Run",
+      "pt-BR": "Abandonar Run ativo"
+    },
+    "menu.about.sage": {
+      "en-US": "About SAGE",
+      "en-GB": "About SAGE",
+      "id": "Tentang SAGE",
+      "fr": "À propos de SAGE",
+      "ru": "О SAGE",
+      "pt-BR": "Sobre o SAGE"
+    },
+    "menu.accept": {
+      "en-US": "Accept",
+      "en-GB": "Accept",
+      "id": "Terima",
+      "fr": "Accepter",
+      "ru": "Принять",
+      "pt-BR": "Aceitar"
+    },
+    "menu.act.and.manifest.paths": {
+      "en-US": "ACT and manifest paths",
+      "en-GB": "ACT and manifest paths",
+      "id": "Jalur ACT dan manifest",
+      "fr": "Chemins ACT et manifeste",
+      "ru": "Пути ACT и манифеста",
+      "pt-BR": "Caminhos ACT e manifesto"
+    },
+    "menu.active": {
+      "en-US": "Active",
+      "en-GB": "Active",
+      "id": "Aktif",
+      "fr": "Actif",
+      "ru": "Активно",
+      "pt-BR": "Ativo"
+    },
+    "menu.active.job.status": {
+      "en-US": "Active Job status",
+      "en-GB": "Active Job status",
+      "id": "status Job aktif",
+      "fr": "état du Job actif",
+      "ru": "состояние активного Job",
+      "pt-BR": "status do Job ativo"
+    },
+    "menu.add.a.paratext.project.to.sage": {
+      "en-US": "Add a Paratext Project to SAGE",
+      "en-GB": "Add a Paratext Project to SAGE",
+      "id": "tambahkan Paratext Project ke SAGE",
+      "fr": "ajouter un Paratext Project à SAGE",
+      "ru": "добавить Paratext Project в SAGE",
+      "pt-BR": "adicionar um Paratext Project ao SAGE"
+    },
+    "menu.add.another.project.to.sage": {
+      "en-US": "Add another Project to SAGE",
+      "en-GB": "Add another Project to SAGE",
+      "id": "Tambahkan Project lain ke SAGE",
+      "fr": "Ajouter un autre Project à SAGE",
+      "ru": "Добавить другой Project в SAGE",
+      "pt-BR": "Adicionar outro Project ao SAGE"
+    },
+    "menu.add.bic.job.source.donor.target": {
+      "en-US": "Add BIC Job [SOURCE, DONOR, TARGET]",
+      "en-GB": "Add BIC Job [SOURCE, DONOR, TARGET]",
+      "id": "tambahkan BIC Job [SOURCE, DONOR, TARGET]",
+      "fr": "ajouter un BIC Job [SOURCE, DONOR, TARGET]",
+      "ru": "добавить BIC Job [SOURCE, DONOR, TARGET]",
+      "pt-BR": "adicionar BIC Job [SOURCE, DONOR, TARGET]"
+    },
+    "menu.add.grammar.profile.from.yaml.file": {
+      "en-US": "Add grammar profile from YAML file",
+      "en-GB": "Add grammar profile from YAML file",
+      "id": "Tambahkan profil tata bahasa dari file YAML",
+      "fr": "Ajouter un profil grammatical depuis un fichier YAML",
+      "ru": "Добавить грамматический профиль из файла YAML",
+      "pt-BR": "Adicionar perfil gramatical de arquivo YAML"
+    },
+    "menu.add.job": {
+      "en-US": "Add Job",
+      "en-GB": "Add Job",
+      "id": "tambahkan Job",
+      "fr": "ajouter un Job",
+      "ru": "добавить Job",
+      "pt-BR": "adicionar Job"
+    },
+    "menu.add.language.profile": {
+      "en-US": "Add language profile",
+      "en-GB": "Add language profile",
+      "id": "Tambahkan profil bahasa",
+      "fr": "Ajouter un profil de langue",
+      "ru": "Добавить языковой профиль",
+      "pt-BR": "Adicionar perfil de idioma"
+    },
+    "menu.add.projects.to.sage": {
+      "en-US": "Add Projects to SAGE",
+      "en-GB": "Add Projects to SAGE",
+      "id": "tambahkan Projects ke SAGE",
+      "fr": "ajouter des Projects à SAGE",
+      "ru": "добавить Projects в SAGE",
+      "pt-BR": "adicionar Projects ao SAGE"
+    },
+    "menu.add.provider": {
+      "en-US": "Add provider",
+      "en-GB": "Add provider",
+      "id": "Tambahkan penyedia",
+      "fr": "Ajouter un fournisseur",
+      "ru": "Добавить провайдера",
+      "pt-BR": "Adicionar provedor"
+    },
+    "menu.add.saw.job.wip.reference": {
+      "en-US": "Add SAW Job [WIP, REFERENCE]",
+      "en-GB": "Add SAW Job [WIP, REFERENCE]",
+      "id": "tambahkan SAW Job [WIP, REFERENCE]",
+      "fr": "ajouter un SAW Job [WIP, REFERENCE]",
+      "ru": "добавить SAW Job [WIP, REFERENCE]",
+      "pt-BR": "adicionar SAW Job [WIP, REFERENCE]"
+    },
+    "menu.advanced.project.settings": {
+      "en-US": "Advanced Project settings",
+      "en-GB": "Advanced Project settings",
+      "id": "pengaturan Project lanjutan",
+      "fr": "paramètres avancés du Project",
+      "ru": "расширенные настройки Project",
+      "pt-BR": "configurações avançadas do Project"
+    },
+    "menu.advanced.resources": {
+      "en-US": "Advanced resources",
+      "en-GB": "Advanced resources",
+      "id": "sumber daya lanjutan",
+      "fr": "ressources avancées",
+      "ru": "расширенные ресурсы",
+      "pt-BR": "recursos avançados"
+    },
+    "menu.advanced.run.controls": {
+      "en-US": "Advanced Run Controls",
+      "en-GB": "Advanced Run Controls",
+      "id": "kontrol Run lanjutan",
+      "fr": "contrôles avancés du Run",
+      "ru": "расширенное управление Run",
+      "pt-BR": "controles avançados do Run"
+    },
+    "menu.advanced.rwc.source.management": {
+      "en-US": "Advanced RWC source management",
+      "en-GB": "Advanced RWC source management",
+      "id": "pengelolaan sumber RWC lanjutan",
+      "fr": "gestion avancée des sources RWC",
+      "ru": "расширенное управление источниками RWC",
+      "pt-BR": "gerenciamento avançado de fontes RWC"
+    },
+    "menu.advanced.settings": {
+      "en-US": "Advanced settings",
+      "en-GB": "Advanced settings",
+      "id": "Pengaturan lanjutan",
+      "fr": "Paramètres avancés",
+      "ru": "Расширенные настройки",
+      "pt-BR": "Configurações avançadas"
+    },
+    "menu.ai.provider.status": {
+      "en-US": "AI provider status",
+      "en-GB": "AI provider status",
+      "id": "status penyedia AI",
+      "fr": "état du fournisseur d’IA",
+      "ru": "состояние провайдера ИИ",
+      "pt-BR": "status do provedor de IA"
+    },
+    "menu.ai.setup.and.status": {
+      "en-US": "AI setup and status",
+      "en-GB": "AI setup and status",
+      "id": "penyiapan dan status AI",
+      "fr": "configuration et état de l’IA",
+      "ru": "настройка и состояние ИИ",
+      "pt-BR": "configuração e status da IA"
+    },
+    "menu.ai.status.and.recommended.settings": {
+      "en-US": "AI status and recommended settings",
+      "en-GB": "AI status and recommended settings",
+      "id": "Status AI dan pengaturan yang disarankan",
+      "fr": "État de l’IA et paramètres recommandés",
+      "ru": "Состояние AI и рекомендуемые настройки",
+      "pt-BR": "Status da IA e configurações recomendadas"
+    },
+    "menu.all": {
+      "en-US": "All",
+      "en-GB": "All",
+      "id": "Semua",
+      "fr": "Tous",
+      "ru": "Все",
+      "pt-BR": "Todos"
+    },
+    "menu.all.languages": {
+      "en-US": "All languages",
+      "en-GB": "All languages",
+      "id": "Semua bahasa",
+      "fr": "Toutes les langues",
+      "ru": "Все языки",
+      "pt-BR": "Todos os idiomas"
+    },
+    "menu.all.memory.records": {
+      "en-US": "All memory records",
+      "en-GB": "All memory records",
+      "id": "semua rekaman memori",
+      "fr": "tous les enregistrements de mémoire",
+      "ru": "все записи памяти",
+      "pt-BR": "todos os registros de memória"
+    },
+    "menu.approved.for.rewrite": {
+      "en-US": "APPROVED_FOR_REWRITE",
+      "en-GB": "APPROVED_FOR_REWRITE",
+      "id": "DISETUJUI_UNTUK_REWRITE",
+      "fr": "APPROUVÉ_POUR_REWRITE",
+      "ru": "ОДОБРЕНО_ДЛЯ_REWRITE",
+      "pt-BR": "APROVADO_PARA_REWRITE"
+    },
+    "menu.archive": {
+      "en-US": "Archive",
+      "en-GB": "Archive",
+      "id": "Arsipkan",
+      "fr": "Archiver",
+      "ru": "Архивировать",
+      "pt-BR": "Arquivar"
+    },
+    "menu.archive.completed.run": {
+      "en-US": "Archive completed Run",
+      "en-GB": "Archive completed Run",
+      "id": "arsipkan Run selesai",
+      "fr": "archiver le Run terminé",
+      "ru": "архивировать завершённый Run",
+      "pt-BR": "arquivar Run concluído"
+    },
+    "menu.archive.job": {
+      "en-US": "Archive Job",
+      "en-GB": "Archive Job",
+      "id": "Arsipkan Job",
+      "fr": "Archiver le Job",
+      "ru": "Архивировать Job",
+      "pt-BR": "Arquivar Job"
+    },
+    "menu.archive.or.abandon.run": {
+      "en-US": "Archive or abandon Run",
+      "en-GB": "Archive or abandon Run",
+      "id": "arsipkan atau tinggalkan Run",
+      "fr": "archiver ou abandonner le Run",
+      "ru": "архивировать или отказаться от Run",
+      "pt-BR": "arquivar ou abandonar Run"
+    },
+    "menu.audit.job.folders": {
+      "en-US": "Audit Job folders",
+      "en-GB": "Audit Job folders",
+      "id": "Audit folder Job",
+      "fr": "Auditer les dossiers Job",
+      "ru": "Аудит папок Job",
+      "pt-BR": "Auditar pastas de Job"
+    },
+    "menu.authority.type": {
+      "en-US": "Authority type",
+      "en-GB": "Authority type",
+      "id": "jenis otoritas",
+      "fr": "type d’autorité",
+      "ru": "тип авторитета",
+      "pt-BR": "tipo de autoridade"
+    },
+    "menu.automatic.codex.selection": {
+      "en-US": "Automatic Codex selection",
+      "en-GB": "Automatic Codex selection",
+      "id": "pemilihan Codex otomatis",
+      "fr": "sélection automatique de Codex",
+      "ru": "автоматический выбор Codex",
+      "pt-BR": "seleção automática do Codex"
+    },
+    "menu.available.codex.models": {
+      "en-US": "Available Codex models",
+      "en-GB": "Available Codex models",
+      "id": "model Codex yang tersedia",
+      "fr": "modèles Codex disponibles",
+      "ru": "доступные модели Codex",
+      "pt-BR": "modelos Codex disponíveis"
+    },
+    "menu.available.paratext.projects": {
+      "en-US": "Available Paratext Projects",
+      "en-GB": "Available Paratext Projects",
+      "id": "Paratext Projects yang tersedia",
+      "fr": "Paratext Projects disponibles",
+      "ru": "доступные Paratext Projects",
+      "pt-BR": "Paratext Projects disponíveis"
+    },
+    "menu.back": {
+      "en-US": "Back",
+      "en-GB": "Back",
+      "id": "Kembali",
+      "fr": "Retour",
+      "ru": "Назад",
+      "pt-BR": "Voltar"
+    },
+    "menu.base.vrs.folder.override": {
+      "en-US": "Base VRS folder override",
+      "en-GB": "Base VRS folder override",
+      "id": "penggantian folder VRS dasar",
+      "fr": "remplacement du dossier VRS de base",
+      "ru": "переопределение папки базового VRS",
+      "pt-BR": "substituição da pasta VRS base"
+    },
+    "menu.batch.queues": {
+      "en-US": "Batch queues",
+      "en-GB": "Batch queues",
+      "id": "antrean batch",
+      "fr": "files batch",
+      "ru": "пакетные очереди",
+      "pt-BR": "filas em lote"
+    },
+    "menu.bic": {
+      "en-US": "BIC",
+      "en-GB": "BIC",
+      "id": "BIC",
+      "fr": "BIC",
+      "ru": "BIC",
+      "pt-BR": "BIC"
+    },
+    "menu.bic.inspect": {
+      "en-US": "BIC INSPECT",
+      "en-GB": "BIC INSPECT",
+      "id": "BIC INSPECT",
+      "fr": "BIC INSPECT",
+      "ru": "BIC INSPECT",
+      "pt-BR": "BIC INSPECT"
+    },
+    "menu.bic.job": {
+      "en-US": "BIC Job",
+      "en-GB": "BIC Job",
+      "id": "BIC Job",
+      "fr": "Job BIC",
+      "ru": "Job BIC",
+      "pt-BR": "Job BIC"
+    },
+    "menu.bic.jobs": {
+      "en-US": "BIC Jobs",
+      "en-GB": "BIC Jobs",
+      "id": "BIC Jobs",
+      "fr": "Jobs BIC",
+      "ru": "Jobs BIC",
+      "pt-BR": "Jobs BIC"
+    },
+    "menu.bic.memory.and.terminology": {
+      "en-US": "BIC Memory and Terminology",
+      "en-GB": "BIC Memory and Terminology",
+      "id": "memori dan terminologi BIC",
+      "fr": "mémoire et terminologie BIC",
+      "ru": "память и терминология BIC",
+      "pt-BR": "memória e terminologia BIC"
+    },
+    "menu.bic.reports.and.history": {
+      "en-US": "BIC reports and history",
+      "en-GB": "BIC reports and history",
+      "id": "laporan dan riwayat BIC",
+      "fr": "rapports et historique BIC",
+      "ru": "отчёты и история BIC",
+      "pt-BR": "relatórios e histórico BIC"
+    },
+    "menu.bic.rewrite": {
+      "en-US": "BIC REWRITE",
+      "en-GB": "BIC REWRITE",
+      "id": "BIC REWRITE",
+      "fr": "BIC REWRITE",
+      "ru": "BIC REWRITE",
+      "pt-BR": "BIC REWRITE"
+    },
+    "menu.bic.self.check": {
+      "en-US": "BIC SELF-CHECK",
+      "en-GB": "BIC SELF-CHECK",
+      "id": "BIC SELF-CHECK",
+      "fr": "BIC SELF-CHECK",
+      "ru": "BIC SELF-CHECK",
+      "pt-BR": "BIC SELF-CHECK"
+    },
+    "menu.browser.sign.in.recommended": {
+      "en-US": "Browser sign-in [recommended]",
+      "en-GB": "Browser sign-in [recommended]",
+      "id": "masuk melalui browser [disarankan]",
+      "fr": "connexion par navigateur [recommandée]",
+      "ru": "вход через браузер [рекомендуется]",
+      "pt-BR": "login pelo navegador [recomendado]"
+    },
+    "menu.build.and.validate.indexes": {
+      "en-US": "Build and validate indexes",
+      "en-GB": "Build and validate indexes",
+      "id": "bangun dan validasi indeks",
+      "fr": "construire et valider les index",
+      "ru": "построить и проверить индексы",
+      "pt-BR": "criar e validar índices"
+    },
+    "menu.build.generic.governed.starter": {
+      "en-US": "Build generic governed starter",
+      "en-GB": "Build generic governed starter",
+      "id": "Bangun profil awal generik terkelola",
+      "fr": "Construire un profil initial générique gouverné",
+      "ru": "Создать типовой управляемый начальный профиль",
+      "pt-BR": "Criar perfil inicial genérico governado"
+    },
+    "menu.build.guided.regional.profile": {
+      "en-US": "Build guided regional profile",
+      "en-GB": "Build guided regional profile",
+      "id": "Bangun profil regional terpandu",
+      "fr": "Créer un profil régional guidé",
+      "ru": "Создать региональный профиль с подсказками",
+      "pt-BR": "Criar perfil regional guiado"
+    },
+    "menu.change.display.name": {
+      "en-US": "Change display name",
+      "en-GB": "Change display name",
+      "id": "ubah nama tampilan",
+      "fr": "changer le nom affiché",
+      "ru": "изменить отображаемое имя",
+      "pt-BR": "alterar nome de exibição"
+    },
+    "menu.change.iso": {
+      "en-US": "Change ISO",
+      "en-GB": "Change ISO",
+      "id": "Ubah ISO",
+      "fr": "Modifier ISO",
+      "ru": "Изменить ISO",
+      "pt-BR": "Alterar ISO"
+    },
+    "menu.change.model": {
+      "en-US": "Change model",
+      "en-GB": "Change model",
+      "id": "Ubah model",
+      "fr": "Changer de modèle",
+      "ru": "Изменить модель",
+      "pt-BR": "Alterar modelo"
+    },
+    "menu.change.operator.language": {
+      "en-US": "Change Operator language",
+      "en-GB": "Change Operator language",
+      "id": "ubah bahasa Operator",
+      "fr": "changer la langue de l’Operator",
+      "ru": "изменить язык Operator",
+      "pt-BR": "alterar idioma do Operator"
+    },
+    "menu.change.primary.audience.country": {
+      "en-US": "Change primary audience country",
+      "en-GB": "Change primary audience country",
+      "id": "Ubah negara audiens utama",
+      "fr": "Modifier le pays principal du public",
+      "ru": "Изменить основную страну аудитории",
+      "pt-BR": "Alterar país principal do público"
+    },
+    "menu.change.primary.country": {
+      "en-US": "Change primary country",
+      "en-GB": "Change primary country",
+      "id": "Ubah negara utama",
+      "fr": "Modifier le pays principal",
+      "ru": "Изменить основную страну",
+      "pt-BR": "Alterar país principal"
+    },
+    "menu.change.provider": {
+      "en-US": "Change provider",
+      "en-GB": "Change provider",
+      "id": "Ubah penyedia",
+      "fr": "Changer de fournisseur",
+      "ru": "Изменить провайдера",
+      "pt-BR": "Alterar provedor"
+    },
+    "menu.change.reasoning": {
+      "en-US": "Change reasoning",
+      "en-GB": "Change reasoning",
+      "id": "Ubah tingkat penalaran",
+      "fr": "Changer le niveau de raisonnement",
+      "ru": "Изменить уровень рассуждения",
+      "pt-BR": "Alterar raciocínio"
+    },
+    "menu.change.record.state": {
+      "en-US": "Change record state",
+      "en-GB": "Change record state",
+      "id": "ubah status rekaman",
+      "fr": "changer l’état de l’enregistrement",
+      "ru": "изменить состояние записи",
+      "pt-BR": "alterar estado do registro"
+    },
+    "menu.change.scope": {
+      "en-US": "Change scope",
+      "en-GB": "Change scope",
+      "id": "ubah cakupan",
+      "fr": "modifier la portée",
+      "ru": "изменить диапазон",
+      "pt-BR": "alterar escopo"
+    },
+    "menu.check.added.text": {
+      "en-US": "Check added text",
+      "en-GB": "Check added text",
+      "id": "Periksa teks tambahan",
+      "fr": "Vérifier le texte ajouté",
+      "ru": "Проверить добавленный текст",
+      "pt-BR": "Verificar texto adicionado"
+    },
+    "menu.check.competency.for.configured.languages": {
+      "en-US": "Check competency for configured languages",
+      "en-GB": "Check competency for configured languages",
+      "id": "Periksa kompetensi untuk bahasa yang dikonfigurasi",
+      "fr": "Vérifier la compétence pour les langues configurées",
+      "ru": "Проверить компетентность для настроенных языков",
+      "pt-BR": "Verificar competência para idiomas configurados"
+    },
+    "menu.check.consistency": {
+      "en-US": "Check consistency",
+      "en-GB": "Check consistency",
+      "id": "Periksa konsistensi",
+      "fr": "Vérifier la cohérence",
+      "ru": "Проверить согласованность",
+      "pt-BR": "Verificar consistência"
+    },
+    "menu.check.cross.references": {
+      "en-US": "Check cross-references",
+      "en-GB": "Check cross-references",
+      "id": "Periksa referensi silang",
+      "fr": "Vérifier les renvois",
+      "ru": "Проверить перекрёстные ссылки",
+      "pt-BR": "Verificar referências cruzadas"
+    },
+    "menu.check.footnotes": {
+      "en-US": "Check footnotes",
+      "en-GB": "Check footnotes",
+      "id": "Periksa catatan kaki",
+      "fr": "Vérifier les notes de bas de page",
+      "ru": "Проверить сноски",
+      "pt-BR": "Verificar notas de rodapé"
+    },
+    "menu.check.language.and.readability": {
+      "en-US": "Check language and readability",
+      "en-GB": "Check language and readability",
+      "id": "Periksa bahasa dan keterbacaan",
+      "fr": "Vérifier la langue et la lisibilité",
+      "ru": "Проверить язык и читаемость",
+      "pt-BR": "Verificar idioma e legibilidade"
+    },
+    "menu.check.llm.connection": {
+      "en-US": "Check LLM connection",
+      "en-GB": "Check LLM connection",
+      "id": "Periksa koneksi LLM",
+      "fr": "Vérifier la connexion LLM",
+      "ru": "Проверить подключение LLM",
+      "pt-BR": "Verificar conexão LLM"
+    },
+    "menu.check.model.competency": {
+      "en-US": "Check model competency",
+      "en-GB": "Check model competency",
+      "id": "Periksa kompetensi model",
+      "fr": "Vérifier la compétence du modèle",
+      "ru": "Проверить компетентность модели",
+      "pt-BR": "Verificar competência do modelo"
+    },
+    "menu.check.name.of.deity": {
+      "en-US": "Check Name of Deity",
+      "en-GB": "Check Name of Deity",
+      "id": "Periksa Nama Ilahi",
+      "fr": "Vérifier le Nom divin",
+      "ru": "Проверить Имя Божества",
+      "pt-BR": "Verificar Nome da Divindade"
+    },
+    "menu.check.source.text.drift.adjudication": {
+      "en-US": "Adjudicate WIP-Reference variance",
+      "en-GB": "Adjudicate WIP-Reference variance",
+      "id": "Periksa adjudikasi penyimpangan teks sumber",
+      "fr": "Vérifier l’arbitrage de dérive du texte source",
+      "ru": "Проверить разрешение расхождения с исходным текстом",
+      "pt-BR": "Verificar adjudicação de desvio do texto-fonte"
+    },
+    "menu.check.structure.and.completeness": {
+      "en-US": "Check structure and completeness",
+      "en-GB": "Check structure and completeness",
+      "id": "Periksa struktur dan kelengkapan",
+      "fr": "Vérifier la structure et l’exhaustivité",
+      "ru": "Проверить структуру и полноту",
+      "pt-BR": "Verificar estrutura e completude"
+    },
+    "menu.check.translation.and.meaning": {
+      "en-US": "Check translation and meaning",
+      "en-GB": "Check translation and meaning",
+      "id": "Periksa terjemahan dan makna",
+      "fr": "Vérifier la traduction et le sens",
+      "ru": "Проверить перевод и смысл",
+      "pt-BR": "Verificar tradução e significado"
+    },
+    "menu.choose.active.bic.job": {
+      "en-US": "Choose active BIC Job",
+      "en-GB": "Choose active BIC Job",
+      "id": "pilih BIC Job aktif",
+      "fr": "choisir le BIC Job actif",
+      "ru": "выбрать активный BIC Job",
+      "pt-BR": "escolher BIC Job ativo"
+    },
+    "menu.choose.active.job": {
+      "en-US": "Choose active Job",
+      "en-GB": "Choose active Job",
+      "id": "pilih Job aktif",
+      "fr": "choisir le Job actif",
+      "ru": "выбрать активный Job",
+      "pt-BR": "escolher Job ativo"
+    },
+    "menu.choose.active.saw.job": {
+      "en-US": "Choose active SAW Job",
+      "en-GB": "Choose active SAW Job",
+      "id": "pilih SAW Job aktif",
+      "fr": "choisir le SAW Job actif",
+      "ru": "выбрать активный SAW Job",
+      "pt-BR": "escolher SAW Job ativo"
+    },
+    "menu.choose.another.iso.language.code": {
+      "en-US": "Choose another ISO language code",
+      "en-GB": "Choose another ISO language code",
+      "id": "Pilih kode bahasa ISO lain",
+      "fr": "Choisir un autre code de langue ISO",
+      "ru": "Выбрать другой код языка ISO",
+      "pt-BR": "Escolher outro código de idioma ISO"
+    },
+    "menu.choose.book": {
+      "en-US": "Choose Book",
+      "en-GB": "Choose Book",
+      "id": "pilih kitab",
+      "fr": "choisir un livre",
+      "ru": "выбрать книгу",
+      "pt-BR": "escolher livro"
+    },
+    "menu.choose.codex.model": {
+      "en-US": "Choose Codex model",
+      "en-GB": "Choose Codex model",
+      "id": "pilih model Codex",
+      "fr": "choisir un modèle Codex",
+      "ru": "выбрать модель Codex",
+      "pt-BR": "escolher modelo Codex"
+    },
+    "menu.choose.existing.compatible.language.profile": {
+      "en-US": "Choose existing compatible Language Profile",
+      "en-GB": "Choose existing compatible Language Profile",
+      "id": "Pilih Profil Bahasa kompatibel yang ada",
+      "fr": "Choisir un profil de langue compatible existant",
+      "ru": "Выбрать существующий совместимый языковой профиль",
+      "pt-BR": "Escolher um Perfil de Idioma compatível existente"
+    },
+    "menu.choose.from.existing.profile.list": {
+      "en-US": "Choose from existing profile list",
+      "en-GB": "Choose from existing profile list",
+      "id": "Pilih dari daftar profil yang ada",
+      "fr": "Choisir dans la liste des profils existants",
+      "ru": "Выбрать из списка существующих профилей",
+      "pt-BR": "Escolher da lista de perfis existentes"
+    },
+    "menu.choose.interface.language": {
+      "en-US": "Choose interface language",
+      "en-GB": "Choose interface language",
+      "id": "Pilih bahasa antarmuka",
+      "fr": "Choisir la langue de l’interface",
+      "ru": "Выберите язык интерфейса",
+      "pt-BR": "Escolher idioma da interface"
+    },
+    "menu.clear.active.bic.job": {
+      "en-US": "Clear active BIC Job",
+      "en-GB": "Clear active BIC Job",
+      "id": "hapus BIC Job aktif",
+      "fr": "effacer le BIC Job actif",
+      "ru": "очистить активный BIC Job",
+      "pt-BR": "limpar BIC Job ativo"
+    },
+    "menu.clear.active.job.and.run.selections": {
+      "en-US": "Clear active Job and Run selections",
+      "en-GB": "Clear active Job and Run selections",
+      "id": "hapus pilihan Job dan Run aktif",
+      "fr": "effacer les sélections de Job et Run actifs",
+      "ru": "очистить выбор активных Job и Run",
+      "pt-BR": "limpar seleções de Job e Run ativos"
+    },
+    "menu.clear.active.run.selection": {
+      "en-US": "Clear active Run selection",
+      "en-GB": "Clear active Run selection",
+      "id": "hapus pilihan Run aktif",
+      "fr": "effacer la sélection du Run actif",
+      "ru": "очистить выбор активного Run",
+      "pt-BR": "limpar seleção do Run ativo"
+    },
+    "menu.clear.active.saw.job": {
+      "en-US": "Clear active SAW Job",
+      "en-GB": "Clear active SAW Job",
+      "id": "hapus SAW Job aktif",
+      "fr": "effacer le SAW Job actif",
+      "ru": "очистить активный SAW Job",
+      "pt-BR": "limpar SAW Job ativo"
+    },
+    "menu.clear.filters": {
+      "en-US": "Clear filters",
+      "en-GB": "Clear filters",
+      "id": "hapus filter",
+      "fr": "effacer les filtres",
+      "ru": "очистить фильтры",
+      "pt-BR": "limpar filtros"
+    },
+    "menu.clear.reviewed.status": {
+      "en-US": "Clear reviewed status",
+      "en-GB": "Clear reviewed status",
+      "id": "hapus status tinjauan",
+      "fr": "effacer l’état de révision",
+      "ru": "очистить состояние проверки",
+      "pt-BR": "limpar status de revisão"
+    },
+    "menu.clear.secondary.reporting.language": {
+      "en-US": "Clear secondary reporting language",
+      "en-GB": "Clear secondary reporting language",
+      "id": "hapus bahasa pelaporan sekunder",
+      "fr": "effacer la langue secondaire des rapports",
+      "ru": "очистить вторичный язык отчётов",
+      "pt-BR": "limpar idioma secundário de relatórios"
+    },
+    "menu.codex.models.and.reasoning": {
+      "en-US": "Codex models and reasoning",
+      "en-GB": "Codex models and reasoning",
+      "id": "model Codex dan penalaran",
+      "fr": "modèles Codex et raisonnement",
+      "ru": "модели Codex и рассуждение",
+      "pt-BR": "modelos Codex e raciocínio"
+    },
+    "menu.combine": {
+      "en-US": "Combine",
+      "en-GB": "Combine",
+      "id": "Combine",
+      "fr": "Combine",
+      "ru": "Combine",
+      "pt-BR": "Combine"
+    },
+    "menu.command.and.recovery.guides": {
+      "en-US": "Command and recovery guides",
+      "en-GB": "Command and recovery guides",
+      "id": "panduan perintah dan pemulihan",
+      "fr": "guides des commandes et de récupération",
+      "ru": "руководства по командам и восстановлению",
+      "pt-BR": "guias de comandos e recuperação"
+    },
+    "menu.complete.system.check": {
+      "en-US": "Complete system check",
+      "en-GB": "Complete system check",
+      "id": "pemeriksaan sistem lengkap",
+      "fr": "vérification complète du système",
+      "ru": "полная проверка системы",
+      "pt-BR": "verificação completa do sistema"
+    },
+    "menu.completed.runs": {
+      "en-US": "Completed Runs",
+      "en-GB": "Completed Runs",
+      "id": "Run selesai",
+      "fr": "Runs terminés",
+      "ru": "завершённые Runs",
+      "pt-BR": "Runs concluídos"
+    },
+    "menu.configure": {
+      "en-US": "Configure",
+      "en-GB": "Configure",
+      "id": "Konfigurasi",
+      "fr": "Configurer",
+      "ru": "Настроить",
+      "pt-BR": "Configurar"
+    },
+    "menu.configure.ai": {
+      "en-US": "Configure AI",
+      "en-GB": "Configure AI",
+      "id": "Konfigurasi AI",
+      "fr": "Configurer l’IA",
+      "ru": "Настроить ИИ",
+      "pt-BR": "Configurar IA"
+    },
+    "menu.configure.hosted.ai": {
+      "en-US": "Configure Hosted AI",
+      "en-GB": "Configure Hosted AI",
+      "id": "Konfigurasi AI Terhosting",
+      "fr": "Configurer l’IA hébergée",
+      "ru": "Настроить облачный ИИ",
+      "pt-BR": "Configurar IA hospedada"
+    },
+    "menu.configure.grammar.profiles": {
+      "en-US": "Configure grammar profiles",
+      "en-GB": "Configure grammar profiles",
+      "id": "Konfigurasikan profil tata bahasa",
+      "fr": "Configurer les profils grammaticaux",
+      "ru": "Настроить грамматические профили",
+      "pt-BR": "Configurar perfis gramaticais"
+    },
+    "menu.configure.languages": {
+      "en-US": "Configure languages",
+      "en-GB": "Configure languages",
+      "id": "Konfigurasi bahasa",
+      "fr": "Configurer les langues",
+      "ru": "Настроить языки",
+      "pt-BR": "Configurar idiomas"
+    },
+    "menu.configure.local.ai": {
+      "en-US": "Configure Local AI",
+      "en-GB": "Configure Local AI",
+      "id": "Konfigurasi AI Lokal",
+      "fr": "Configurer l’IA locale",
+      "ru": "Настроить локальный ИИ",
+      "pt-BR": "Configurar IA local"
+    },
+    "menu.configure.local.ai.models": {
+      "en-US": "Configure Local AI models",
+      "en-GB": "Configure Local AI models",
+      "id": "Konfigurasi model AI Lokal",
+      "fr": "Configurer les modèles d’IA locale",
+      "ru": "Настроить локальные модели ИИ",
+      "pt-BR": "Configurar modelos de IA local"
+    },
+    "menu.local.ai.actions": {
+      "en-US": "Local AI actions",
+      "en-GB": "Local AI actions",
+      "id": "Tindakan AI Lokal",
+      "fr": "Actions de l’IA locale",
+      "ru": "Действия локального ИИ",
+      "pt-BR": "Ações de IA local"
+    },
+    "menu.configure.paths.and.storage": {
+      "en-US": "Configure paths and storage",
+      "en-GB": "Configure paths and storage",
+      "id": "Konfigurasi jalur dan penyimpanan",
+      "fr": "Configurer les chemins et le stockage",
+      "ru": "Настроить пути и хранилище",
+      "pt-BR": "Configurar caminhos e armazenamento"
+    },
+    "menu.configure.sage": {
+      "en-US": "SAGE Maintenance",
+      "en-GB": "SAGE Maintenance",
+      "id": "Pemeliharaan SAGE",
+      "fr": "Maintenance de SAGE",
+      "ru": "Обслуживание SAGE",
+      "pt-BR": "Manutenção do SAGE"
+    },
+    "menu.configured.paths": {
+      "en-US": "Configured paths",
+      "en-GB": "Configured paths",
+      "id": "jalur yang dikonfigurasi",
+      "fr": "chemins configurés",
+      "ru": "настроенные пути",
+      "pt-BR": "caminhos configurados"
+    },
+    "menu.connect.codex.through.openai.chatgpt": {
+      "en-US": "Connect Codex through OpenAI/ChatGPT",
+      "en-GB": "Connect Codex through OpenAI/ChatGPT",
+      "id": "Hubungkan Codex melalui OpenAI/ChatGPT",
+      "fr": "Connecter Codex via OpenAI/ChatGPT",
+      "ru": "Подключить Codex через OpenAI/ChatGPT",
+      "pt-BR": "Conectar Codex via OpenAI/ChatGPT"
+    },
+    "menu.connect.openai.and.chatgpt": {
+      "en-US": "Connect OpenAI and ChatGPT",
+      "en-GB": "Connect OpenAI and ChatGPT",
+      "id": "hubungkan OpenAI dan ChatGPT",
+      "fr": "connecter OpenAI et ChatGPT",
+      "ru": "подключить OpenAI и ChatGPT",
+      "pt-BR": "conectar OpenAI e ChatGPT"
+    },
+    "menu.content.source.bic.source": {
+      "en-US": "CONTENT_SOURCE / BIC source",
+      "en-GB": "CONTENT_SOURCE / BIC source",
+      "id": "CONTENT_SOURCE / sumber BIC",
+      "fr": "CONTENT_SOURCE / source BIC",
+      "ru": "CONTENT_SOURCE / источник BIC",
+      "pt-BR": "CONTENT_SOURCE / fonte BIC"
+    },
+    "menu.continue.active.run": {
+      "en-US": "Continue active Run",
+      "en-GB": "Continue active Run",
+      "id": "lanjutkan Run aktif",
+      "fr": "continuer le Run actif",
+      "ru": "продолжить активный Run",
+      "pt-BR": "continuar Run ativo"
+    },
+    "menu.continue.run": {
+      "en-US": "Continue Run",
+      "en-GB": "Continue Run",
+      "id": "lanjutkan Run",
+      "fr": "continuer le Run",
+      "ru": "продолжить Run",
+      "pt-BR": "continuar Run"
+    },
+    "menu.continue.to.main.menu": {
+      "en-US": "Continue to Main Menu",
+      "en-GB": "Continue to Main Menu",
+      "id": "lanjutkan ke Menu Utama",
+      "fr": "continuer vers le menu principal",
+      "ru": "перейти в главное меню",
+      "pt-BR": "continuar para o menu principal"
+    },
+    "menu.create.a.bic.job": {
+      "en-US": "Create a BIC Job",
+      "en-GB": "Create a BIC Job",
+      "id": "buat BIC Job",
+      "fr": "créer un BIC Job",
+      "ru": "создать BIC Job",
+      "pt-BR": "criar BIC Job"
+    },
+    "menu.create.a.saw.job": {
+      "en-US": "Create a SAW Job",
+      "en-GB": "Create a SAW Job",
+      "id": "buat SAW Job",
+      "fr": "créer un SAW Job",
+      "ru": "создать SAW Job",
+      "pt-BR": "criar SAW Job"
+    },
+    "menu.create.job": {
+      "en-US": "Create Job",
+      "en-GB": "Create Job",
+      "id": "buat Job",
+      "fr": "créer un Job",
+      "ru": "создать Job",
+      "pt-BR": "criar Job"
+    },
+    "menu.derive.from.an.existing.profile": {
+      "en-US": "Derive from an existing profile",
+      "en-GB": "Derive from an existing profile",
+      "id": "Turunkan dari profil yang ada",
+      "fr": "Dériver d’un profil existant",
+      "ru": "Создать на основе существующего профиля",
+      "pt-BR": "Derivar de um perfil existente"
+    },
+    "menu.derive.from.profile": {
+      "en-US": "Derive from profile",
+      "en-GB": "Derive from profile",
+      "id": "Turunkan dari profil",
+      "fr": "Dériver du profil",
+      "ru": "Создать на основе профиля",
+      "pt-BR": "Derivar do perfil"
+    },
+    "menu.detected.original.language.projects": {
+      "en-US": "Detected original-language Projects",
+      "en-GB": "Detected original-language Projects",
+      "id": "Projects bahasa asli yang terdeteksi",
+      "fr": "Projects de langue originale détectés",
+      "ru": "обнаруженные Projects языков оригинала",
+      "pt-BR": "Projects de idioma original detectados"
+    },
+    "menu.device.code.sign.in": {
+      "en-US": "Device-code sign-in",
+      "en-GB": "Device-code sign-in",
+      "id": "masuk dengan kode perangkat",
+      "fr": "connexion par code d’appareil",
+      "ru": "вход по коду устройства",
+      "pt-BR": "login por código do dispositivo"
+    },
+    "menu.diagnostics.and.control.records": {
+      "en-US": "Diagnostics and control records",
+      "en-GB": "Diagnostics and control records",
+      "id": "Diagnostik dan catatan kontrol",
+      "fr": "Diagnostics et enregistrements de contrôle",
+      "ru": "Диагностика и контрольные записи",
+      "pt-BR": "Diagnósticos e registros de controle"
+    },
+    "menu.disable.local.ai": {
+      "en-US": "Disable Local AI",
+      "en-GB": "Disable Local AI",
+      "id": "Nonaktifkan AI Lokal",
+      "fr": "Désactiver l’IA locale",
+      "ru": "Отключить локальный ИИ",
+      "pt-BR": "Desativar IA local"
+    },
+    "menu.enable.local.ai": {
+      "en-US": "Enable Local AI",
+      "en-GB": "Enable Local AI",
+      "id": "Aktifkan AI Lokal",
+      "fr": "Activer l’IA locale",
+      "ru": "Включить локальный ИИ",
+      "pt-BR": "Ativar IA local"
+    },
+    "menu.enter.complete.scope.directly": {
+      "en-US": "Enter complete scope directly",
+      "en-GB": "Enter complete scope directly",
+      "id": "masukkan cakupan lengkap secara langsung",
+      "fr": "saisir directement la portée complète",
+      "ru": "ввести полный диапазон напрямую",
+      "pt-BR": "inserir escopo completo diretamente"
+    },
+    "menu.enter.scripture.ranges": {
+      "en-US": "Enter Scripture ranges",
+      "en-GB": "Enter Scripture ranges",
+      "id": "masukkan rentang Scripture",
+      "fr": "saisir des plages bibliques",
+      "ru": "ввести диапазоны Писания",
+      "pt-BR": "inserir intervalos das Escrituras"
+    },
+    "menu.evidence.state.export.view": {
+      "en-US": "Evidence-state export view",
+      "en-GB": "Evidence-state export view",
+      "id": "tampilan ekspor status bukti",
+      "fr": "vue d’exportation de l’état des preuves",
+      "ru": "представление экспорта состояния доказательств",
+      "pt-BR": "visão de exportação do estado da evidência"
+    },
+    "menu.execute.current.governed.task": {
+      "en-US": "Execute current governed task",
+      "en-GB": "Execute current governed task",
+      "id": "jalankan tugas terkendali saat ini",
+      "fr": "exécuter la tâche gouvernée actuelle",
+      "ru": "выполнить текущую управляемую задачу",
+      "pt-BR": "executar tarefa governada atual"
+    },
+    "menu.existing.grammar.profiles": {
+      "en-US": "Existing grammar profiles",
+      "en-GB": "Existing grammar profiles",
+      "id": "Profil tata bahasa yang ada",
+      "fr": "Profils grammaticaux existants",
+      "ru": "Существующие грамматические профили",
+      "pt-BR": "Perfis gramaticais existentes"
+    },
+    "menu.exit.sage": {
+      "en-US": "Exit SAGE",
+      "en-GB": "Exit SAGE",
+      "id": "Keluar dari SAGE",
+      "fr": "Quitter SAGE",
+      "ru": "Выйти из SAGE",
+      "pt-BR": "Sair do SAGE"
+    },
+    "menu.export.diagnostics": {
+      "en-US": "Export diagnostics",
+      "en-GB": "Export diagnostics",
+      "id": "Ekspor diagnostik",
+      "fr": "Exporter les diagnostics",
+      "ru": "Экспортировать диагностику",
+      "pt-BR": "Exportar diagnósticos"
+    },
+    "menu.export.global.diagnostics": {
+      "en-US": "Export global diagnostics",
+      "en-GB": "Export global diagnostics",
+      "id": "ekspor diagnostik global",
+      "fr": "exporter les diagnostics globaux",
+      "ru": "экспортировать глобальную диагностику",
+      "pt-BR": "exportar diagnósticos globais"
+    },
+    "menu.export.profile": {
+      "en-US": "Export profile",
+      "en-GB": "Export profile",
+      "id": "profil ekspor",
+      "fr": "profil d’exportation",
+      "ru": "профиль экспорта",
+      "pt-BR": "perfil de exportação"
+    },
+    "menu.export.run": {
+      "en-US": "Export Run",
+      "en-GB": "Export Run",
+      "id": "ekspor Run",
+      "fr": "exporter le Run",
+      "ru": "экспортировать Run",
+      "pt-BR": "exportar Run"
+    },
+    "menu.export.to.flex.or.combine": {
+      "en-US": "Export to FLEx or Combine",
+      "en-GB": "Export to FLEx or Combine",
+      "id": "ekspor ke FLEx atau Combine",
+      "fr": "exporter vers FLEx ou Combine",
+      "ru": "экспортировать в FLEx или Combine",
+      "pt-BR": "exportar para FLEx ou Combine"
+    },
+    "menu.exports": {
+      "en-US": "Exports",
+      "en-GB": "Exports",
+      "id": "ekspor",
+      "fr": "exportations",
+      "ru": "экспорт",
+      "pt-BR": "exportações"
+    },
+    "menu.filter.catalog": {
+      "en-US": "Filter catalog",
+      "en-GB": "Filter catalogue",
+      "id": "Filter katalog",
+      "fr": "Filtrer le catalogue",
+      "ru": "Фильтровать каталог",
+      "pt-BR": "Filtrar catálogo"
+    },
+    "menu.filter.projects": {
+      "en-US": "Filter Projects",
+      "en-GB": "Filter Projects",
+      "id": "filter Projects",
+      "fr": "filtrer les Projects",
+      "ru": "фильтровать Projects",
+      "pt-BR": "filtrar Projects"
+    },
+    "menu.findings.and.reports": {
+      "en-US": "Findings and reports",
+      "en-GB": "Findings and reports",
+      "id": "Temuan dan laporan",
+      "fr": "Constats et rapports",
+      "ru": "Выводы и отчёты",
+      "pt-BR": "Achados e relatórios"
+    },
+    "menu.first.time.setup": {
+      "en-US": "First-time setup",
+      "en-GB": "First-time setup",
+      "id": "penyiapan pertama",
+      "fr": "configuration initiale",
+      "ru": "первоначальная настройка",
+      "pt-BR": "configuração inicial"
+    },
+    "menu.flex": {
+      "en-US": "FLEx",
+      "en-GB": "FLEx",
+      "id": "FLEx",
+      "fr": "FLEx",
+      "ru": "FLEx",
+      "pt-BR": "FLEx"
+    },
+    "menu.focused.check": {
+      "en-US": "Targeted Check",
+      "en-GB": "Targeted Check",
+      "id": "pemeriksaan terarah",
+      "fr": "vérification ciblée",
+      "ru": "целевая проверка",
+      "pt-BR": "verificação direcionada"
+    },
+    "menu.focused.check.type": {
+      "en-US": "Targeted Check type",
+      "en-GB": "Targeted Check type",
+      "id": "jenis pemeriksaan terarah",
+      "fr": "type de vérification ciblée",
+      "ru": "тип целевой проверки",
+      "pt-BR": "tipo de verificação direcionada"
+    },
+    "menu.full.bible.fb": {
+      "en-US": "Full Bible [FB]",
+      "en-GB": "Full Bible [FB]",
+      "id": "seluruh Alkitab [FB]",
+      "fr": "Bible complète [FB]",
+      "ru": "вся Библия [FB]",
+      "pt-BR": "Bíblia completa [FB]"
+    },
+    "menu.full.rescan": {
+      "en-US": "Full rescan",
+      "en-GB": "Full rescan",
+      "id": "pindai ulang penuh",
+      "fr": "nouvelle analyse complète",
+      "ru": "полное повторное сканирование",
+      "pt-BR": "nova varredura completa"
+    },
+    "menu.generated.target.and.generations": {
+      "en-US": "Generated Target and Generations",
+      "en-GB": "Generated Target and Generations",
+      "id": "Target yang Dihasilkan dan Generasi",
+      "fr": "Target généré et générations",
+      "ru": "созданный Target и поколения",
+      "pt-BR": "Target gerado e gerações"
+    },
+    "menu.generations": {
+      "en-US": "Generations",
+      "en-GB": "Generations",
+      "id": "generasi",
+      "fr": "générations",
+      "ru": "поколения",
+      "pt-BR": "gerações"
+    },
+    "menu.global.operator.language": {
+      "en-US": "Global Operator language",
+      "en-GB": "Global Operator language",
+      "id": "bahasa Operator global",
+      "fr": "langue globale de l’Operator",
+      "ru": "глобальный язык Operator",
+      "pt-BR": "idioma global do Operator"
+    },
+    "menu.greek.and.hebrew.resources": {
+      "en-US": "Greek and Hebrew resources",
+      "en-GB": "Greek and Hebrew resources",
+      "id": "sumber daya Yunani dan Ibrani",
+      "fr": "ressources grecques et hébraïques",
+      "ru": "ресурсы греческого и еврейского языков",
+      "pt-BR": "recursos de grego e hebraico"
+    },
+    "menu.greek.grk": {
+      "en-US": "Greek [@GRK]",
+      "en-GB": "Greek [@GRK]",
+      "id": "Yunani [@GRK]",
+      "fr": "Grec [@GRK]",
+      "ru": "Греческий [@GRK]",
+      "pt-BR": "Grego [@GRK]"
+    },
+    "menu.hebrew.heb": {
+      "en-US": "Hebrew [@HEB]",
+      "en-GB": "Hebrew [@HEB]",
+      "id": "Ibrani [@HEB]",
+      "fr": "Hébreu [@HEB]",
+      "ru": "Еврейский [@HEB]",
+      "pt-BR": "Hebraico [@HEB]"
+    },
+    "menu.help": {
+      "en-US": "Help",
+      "en-GB": "Help",
+      "id": "Bantuan",
+      "fr": "Aide",
+      "ru": "Справка",
+      "pt-BR": "Ajuda"
+    },
+    "menu.how.sage.splits.large.scopes": {
+      "en-US": "How SAGE splits large scopes",
+      "en-GB": "How SAGE splits large scopes",
+      "id": "Cara SAGE membagi cakupan besar",
+      "fr": "Comment SAGE divise les grandes portées",
+      "ru": "Как SAGE разделяет большие диапазоны",
+      "pt-BR": "Como o SAGE divide escopos grandes"
+    },
+    "menu.import.combine.lift.snapshot": {
+      "en-US": "Import Combine LIFT snapshot",
+      "en-GB": "Import Combine LIFT snapshot",
+      "id": "impor snapshot Combine LIFT",
+      "fr": "Importer Combine LIFT snapshot",
+      "ru": "Импортировать Combine LIFT snapshot",
+      "pt-BR": "Importar Combine LIFT snapshot"
+    },
+    "menu.import.flex.lift.snapshot": {
+      "en-US": "Import FLEx LIFT snapshot",
+      "en-GB": "Import FLEx LIFT snapshot",
+      "id": "impor snapshot FLEx LIFT",
+      "fr": "Importer FLEx LIFT snapshot",
+      "ru": "Импортировать FLEx LIFT snapshot",
+      "pt-BR": "Importar FLEx LIFT snapshot"
+    },
+    "menu.import.governed.lexicon": {
+      "en-US": "Import governed lexicon",
+      "en-GB": "Import governed lexicon",
+      "id": "impor leksikon terkendali",
+      "fr": "importer le lexique gouverné",
+      "ru": "импортировать управляемый лексикон",
+      "pt-BR": "importar léxico governado"
+    },
+    "menu.import.rapidwords.folders.docx": {
+      "en-US": "Import RapidWords folders DOCX",
+      "en-GB": "Import RapidWords folders DOCX",
+      "id": "impor DOCX folder RapidWords",
+      "fr": "Importer dossiers RapidWords DOCX",
+      "ru": "Импортировать папки RapidWords DOCX",
+      "pt-BR": "Importar pastas RapidWords DOCX"
+    },
+    "menu.import.rwc.seed.xlsx": {
+      "en-US": "Import RWC seed XLSX",
+      "en-GB": "Import RWC seed XLSX",
+      "id": "impor XLSX seed RWC",
+      "fr": "Importer RWC seed XLSX",
+      "ru": "Импортировать RWC seed XLSX",
+      "pt-BR": "Importar RWC seed XLSX"
+    },
+    "menu.import.sil.semantic.domains.json": {
+      "en-US": "Import SIL Semantic Domains JSON",
+      "en-GB": "Import SIL Semantic Domains JSON",
+      "id": "impor JSON Domain Semantik SIL",
+      "fr": "Importer Domaines sémantiques SIL JSON",
+      "ru": "Импортировать семантические домены SIL JSON",
+      "pt-BR": "Importar Domínios Semânticos SIL JSON"
+    },
+    "menu.import.state": {
+      "en-US": "Import state",
+      "en-GB": "Import state",
+      "id": "status impor",
+      "fr": "état de l’importation",
+      "ru": "состояние импорта",
+      "pt-BR": "estado da importação"
+    },
+    "menu.inactive": {
+      "en-US": "Inactive",
+      "en-GB": "Inactive",
+      "id": "Tidak aktif",
+      "fr": "Inactif",
+      "ru": "Неактивно",
+      "pt-BR": "Inativo"
+    },
+    "menu.incomplete.runs": {
+      "en-US": "Incomplete Runs",
+      "en-GB": "Incomplete Runs",
+      "id": "Run belum selesai",
+      "fr": "Runs incomplets",
+      "ru": "незавершённые Runs",
+      "pt-BR": "Runs incompletos"
+    },
+    "menu.install.configured.model": {
+      "en-US": "Install configured model",
+      "en-GB": "Install configured model",
+      "id": "Instal model yang dikonfigurasi",
+      "fr": "Installer le modèle configuré",
+      "ru": "Установить настроенную модель",
+      "pt-BR": "Instalar modelo configurado"
+    },
+    "menu.install.ollama.on.this.host": {
+      "en-US": "Install Ollama on this host",
+      "en-GB": "Install Ollama on this host",
+      "id": "Instal Ollama di host ini",
+      "fr": "Installer Ollama sur cet hôte",
+      "ru": "Установить Ollama на этом компьютере",
+      "pt-BR": "Instalar Ollama neste host"
+    },
+    "menu.interface.language": {
+      "en-US": "Interface language",
+      "en-GB": "Interface language",
+      "id": "Bahasa antarmuka",
+      "fr": "Langue de l’interface",
+      "ru": "Язык интерфейса",
+      "pt-BR": "Idioma da interface"
+    },
+    "menu.invalid.project.folders": {
+      "en-US": "Invalid Project folders",
+      "en-GB": "Invalid Project folders",
+      "id": "Folder Project tidak valid",
+      "fr": "Dossiers Project non valides",
+      "ru": "Недопустимые папки Project",
+      "pt-BR": "Pastas Project inválidas"
+    },
+    "menu.invalid.choice.choose.one.listed.option": {
+      "en-US": "Invalid choice. Choose one listed option.",
+      "en-GB": "Invalid choice. Choose one listed option.",
+      "id": "Pilihan tidak valid. Pilih salah satu opsi yang tercantum.",
+      "fr": "Sélection non valide. Choisissez une option de la liste.",
+      "ru": "Недопустимый выбор. Выберите один из указанных вариантов.",
+      "pt-BR": "Seleção inválida. Escolha uma das opções listadas."
+    },
+    "menu.iso.language": {
+      "en-US": "ISO language",
+      "en-GB": "ISO language",
+      "id": "Bahasa ISO",
+      "fr": "Langue ISO",
+      "ru": "Язык ISO",
+      "pt-BR": "Idioma ISO"
+    },
+    "menu.job.data.folder": {
+      "en-US": "Job data folder",
+      "en-GB": "Job data folder",
+      "id": "folder data Job",
+      "fr": "dossier de données du Job",
+      "ru": "папка данных Job",
+      "pt-BR": "pasta de dados do Job"
+    },
+    "menu.job.management": {
+      "en-US": "Job management",
+      "en-GB": "Job management",
+      "id": "Pengelolaan Job",
+      "fr": "Gestion des Jobs",
+      "ru": "Управление Jobs",
+      "pt-BR": "Gerenciamento de Jobs"
+    },
+    "menu.job.reports": {
+      "en-US": "Job reports",
+      "en-GB": "Job reports",
+      "id": "laporan Job",
+      "fr": "rapports du Job",
+      "ru": "отчёты Job",
+      "pt-BR": "relatórios do Job"
+    },
+    "menu.job.settings": {
+      "en-US": "Job settings",
+      "en-GB": "Job settings",
+      "id": "pengaturan Job",
+      "fr": "paramètres du Job",
+      "ru": "настройки Job",
+      "pt-BR": "configurações do Job"
+    },
+    "menu.job.storage": {
+      "en-US": "Job storage",
+      "en-GB": "Job storage",
+      "id": "Penyimpanan Job",
+      "fr": "Stockage des Jobs",
+      "ru": "Хранилище Job",
+      "pt-BR": "Armazenamento de Jobs"
+    },
+    "menu.job.storage.maintenance": {
+      "en-US": "Job storage maintenance",
+      "en-GB": "Job storage maintenance",
+      "id": "Pemeliharaan penyimpanan Job",
+      "fr": "Maintenance du stockage des Jobs",
+      "ru": "Обслуживание хранилища Job",
+      "pt-BR": "Manutenção do armazenamento de Jobs"
+    },
+    "menu.jobs.and.projects": {
+      "en-US": "Jobs and Projects",
+      "en-GB": "Jobs and Projects",
+      "id": "Jobs dan Projects",
+      "fr": "Jobs et Projects",
+      "ru": "Jobs и Projects",
+      "pt-BR": "Jobs e Projects"
+    },
+    "menu.jobs.using.this.project": {
+      "en-US": "Jobs using this Project",
+      "en-GB": "Jobs using this Project",
+      "id": "Jobs yang menggunakan Project ini",
+      "fr": "Jobs utilisant ce Project",
+      "ru": "Jobs, использующие этот Project",
+      "pt-BR": "Jobs que usam este Project"
+    },
+    "menu.language": {
+      "en-US": "Language",
+      "en-GB": "Language",
+      "id": "Bahasa",
+      "fr": "Langue",
+      "ru": "Язык",
+      "pt-BR": "Idioma"
+    },
+    "menu.language.identification": {
+      "en-US": "Language identification",
+      "en-GB": "Language identification",
+      "id": "Identifikasi bahasa",
+      "fr": "Identification de la langue",
+      "ru": "Идентификация языка",
+      "pt-BR": "Identificação do idioma"
+    },
+    "menu.language.metadata.review": {
+      "en-US": "LANGUAGE METADATA REVIEW",
+      "en-GB": "LANGUAGE METADATA REVIEW",
+      "id": "TINJAUAN METADATA BAHASA",
+      "fr": "RÉVISION DES MÉTADONNÉES LINGUISTIQUES",
+      "ru": "ПРОВЕРКА ЯЗЫКОВЫХ МЕТАДАННЫХ",
+      "pt-BR": "REVISÃO DE METADADOS DE IDIOMA"
+    },
+    "menu.language.profile": {
+      "en-US": "Language Profile",
+      "en-GB": "Language Profile",
+      "id": "Profil Bahasa",
+      "fr": "Profil de langue",
+      "ru": "Языковой профиль",
+      "pt-BR": "Perfil de idioma"
+    },
+    "menu.language.profiles": {
+      "en-US": "Language Profiles",
+      "en-GB": "Language Profiles",
+      "id": "Profil Bahasa",
+      "fr": "Profils de langue",
+      "ru": "Языковые профили",
+      "pt-BR": "Perfis de idioma"
+    },
+    "menu.list.incomplete.transactions": {
+      "en-US": "List incomplete transactions",
+      "en-GB": "List incomplete transactions",
+      "id": "Daftar transaksi yang belum selesai",
+      "fr": "Lister les transactions incomplètes",
+      "ru": "Показать незавершённые транзакции",
+      "pt-BR": "Listar transações incompletas"
+    },
+    "menu.list.manage.sage.scripture.projects": {
+      "en-US": "List / manage SAGE Scripture Projects",
+      "en-GB": "List / manage SAGE Scripture Projects",
+      "id": "Daftar / kelola Project Kitab Suci SAGE",
+      "fr": "Lister / gérer les Projects bibliques SAGE",
+      "ru": "Список / управление проектами Писания SAGE",
+      "pt-BR": "Listar / gerenciar Projects das Escrituras SAGE"
+    },
+    "menu.list.reviewed.senses": {
+      "en-US": "List reviewed senses",
+      "en-GB": "List reviewed senses",
+      "id": "daftar makna yang ditinjau",
+      "fr": "lister les sens révisés",
+      "ru": "список проверенных значений",
+      "pt-BR": "listar sentidos revisados"
+    },
+    "menu.local.ai": {
+      "en-US": "Local AI",
+      "en-GB": "Local AI",
+      "id": "AI Lokal",
+      "fr": "IA locale",
+      "ru": "Локальный ИИ",
+      "pt-BR": "IA local"
+    },
+    "menu.main.menu": {
+      "en-US": "Main Menu",
+      "en-GB": "Main Menu",
+      "id": "Menu Utama",
+      "fr": "Menu principal",
+      "ru": "Главное меню",
+      "pt-BR": "Menu principal"
+    },
+    "menu.maintain.grammar.profiles": {
+      "en-US": "Maintain grammar profiles",
+      "en-GB": "Maintain grammar profiles",
+      "id": "Kelola profil tata bahasa",
+      "fr": "Gérer les profils grammaticaux",
+      "ru": "Управление грамматическими профилями",
+      "pt-BR": "Gerenciar perfis gramaticais"
+    },
+    "menu.maintain.job.storage": {
+      "en-US": "Maintain Job storage",
+      "en-GB": "Maintain Job storage",
+      "id": "Pelihara penyimpanan Job",
+      "fr": "Gérer le stockage des Job",
+      "ru": "Обслуживать хранилище Job",
+      "pt-BR": "Manter armazenamento de Job"
+    },
+    "menu.manage.active.jobs": {
+      "en-US": "Manage active Jobs",
+      "en-GB": "Manage active Jobs",
+      "id": "kelola Jobs aktif",
+      "fr": "gérer les Jobs actifs",
+      "ru": "управлять активными Jobs",
+      "pt-BR": "gerenciar Jobs ativos"
+    },
+    "menu.manage.jobs": {
+      "en-US": "MANAGE JOBS",
+      "en-GB": "MANAGE JOBS",
+      "id": "KELOLA JOBS",
+      "fr": "GÉRER LES JOBS",
+      "ru": "УПРАВЛЕНИЕ JOBS",
+      "pt-BR": "GERENCIAR JOBS"
+    },
+    "menu.manage.local.ai.models": {
+      "en-US": "Manage Local AI models",
+      "en-GB": "Manage Local AI models",
+      "id": "Kelola model AI Lokal",
+      "fr": "Gérer les modèles d’IA locale",
+      "ru": "Управление локальными моделями ИИ",
+      "pt-BR": "Gerenciar modelos de IA local"
+    },
+    "menu.manage.sage.scripture.projects": {
+      "en-US": "Manage SAGE Scripture Projects",
+      "en-GB": "Manage SAGE Scripture Projects",
+      "id": "Kelola Project Kitab Suci SAGE",
+      "fr": "Gérer les Projects bibliques SAGE",
+      "ru": "Управление проектами Писания SAGE",
+      "pt-BR": "Gerenciar Projects das Escrituras SAGE"
+    },
+    "menu.manage.saw.jobs": {
+      "en-US": "Manage SAW Jobs",
+      "en-GB": "Manage SAW Jobs",
+      "id": "Kelola SAW Jobs",
+      "fr": "Gérer les Jobs SAW",
+      "ru": "Управлять SAW Jobs",
+      "pt-BR": "Gerenciar Jobs SAW"
+    },
+    "menu.manage.source.data": {
+      "en-US": "Manage source data",
+      "en-GB": "Manage source data",
+      "id": "kelola data sumber",
+      "fr": "gérer les données sources",
+      "ru": "управление исходными данными",
+      "pt-BR": "gerenciar dados de origem"
+    },
+    "menu.memory.and.terminology": {
+      "en-US": "Memory and terminology",
+      "en-GB": "Memory and terminology",
+      "id": "memori dan terminologi",
+      "fr": "mémoire et terminologie",
+      "ru": "память и терминология",
+      "pt-BR": "memória e terminologia"
+    },
+    "menu.migrate.legacy.layout": {
+      "en-US": "Migrate legacy layout",
+      "en-GB": "Migrate legacy layout",
+      "id": "Migrasikan tata letak lama",
+      "fr": "Migrer la structure héritée",
+      "ru": "Мигрировать устаревшую структуру",
+      "pt-BR": "Migrar layout legado"
+    },
+    "menu.model.policy": {
+      "en-US": "Model policy",
+      "en-GB": "Model policy",
+      "id": "kebijakan model",
+      "fr": "politique des modèles",
+      "ru": "политика моделей",
+      "pt-BR": "política de modelos"
+    },
+    "menu.model.actions": {
+      "en-US": "Model actions",
+      "en-GB": "Model actions",
+      "id": "Tindakan model",
+      "fr": "Actions du modèle",
+      "ru": "Действия с моделью",
+      "pt-BR": "Ações do modelo"
+    },
+    "menu.new.task": {
+      "en-US": "New Task",
+      "en-GB": "New Task",
+      "id": "tugas baru",
+      "fr": "nouvelle tâche",
+      "ru": "новая задача",
+      "pt-BR": "nova tarefa"
+    },
+    "menu.new.testament.nt": {
+      "en-US": "New Testament [NT]",
+      "en-GB": "New Testament [NT]",
+      "id": "Perjanjian Baru [NT]",
+      "fr": "Nouveau Testament [NT]",
+      "ru": "Новый Завет [NT]",
+      "pt-BR": "Novo Testamento [NT]"
+    },
+    "menu.next": {
+      "en-US": "Next",
+      "en-GB": "Next",
+      "id": "Berikutnya",
+      "fr": "Suivant",
+      "ru": "Далее",
+      "pt-BR": "Próximo"
+    },
+    "menu.open.active.bic.job": {
+      "en-US": "Open active BIC Job",
+      "en-GB": "Open active BIC Job",
+      "id": "Buka BIC Job aktif",
+      "fr": "Ouvrir le BIC Job actif",
+      "ru": "Открыть активный BIC Job",
+      "pt-BR": "Abrir BIC Job ativo"
+    },
+    "menu.open.active.run": {
+      "en-US": "Open active Run",
+      "en-GB": "Open active Run",
+      "id": "buka Run aktif",
+      "fr": "ouvrir le Run actif",
+      "ru": "открыть активный Run",
+      "pt-BR": "abrir Run ativo"
+    },
+    "menu.open.active.saw.job": {
+      "en-US": "Open active SAW Job",
+      "en-GB": "Open active SAW Job",
+      "id": "Buka SAW Job aktif",
+      "fr": "Ouvrir le SAW Job actif",
+      "ru": "Открыть активный SAW Job",
+      "pt-BR": "Abrir SAW Job ativo"
+    },
+    "menu.open.another.run": {
+      "en-US": "Open another Run",
+      "en-GB": "Open another Run",
+      "id": "buka Run lain",
+      "fr": "ouvrir un autre Run",
+      "ru": "открыть другой Run",
+      "pt-BR": "abrir outro Run"
+    },
+    "menu.open.language.profile": {
+      "en-US": "Open language profile",
+      "en-GB": "Open language profile",
+      "id": "Buka profil bahasa",
+      "fr": "Ouvrir le profil de langue",
+      "ru": "Открыть языковой профиль",
+      "pt-BR": "Abrir perfil de idioma"
+    },
+    "menu.open.system.information": {
+      "en-US": "System information, recovery and diagnostics",
+      "en-GB": "System information, recovery and diagnostics",
+      "id": "Informasi, pemulihan, dan diagnostik sistem",
+      "fr": "Informations, récupération et diagnostics du système",
+      "ru": "Сведения, восстановление и диагностика системы",
+      "pt-BR": "Informações, recuperação e diagnósticos do sistema"
+    },
+    "menu.openai.and.chatgpt": {
+      "en-US": "OpenAI and ChatGPT",
+      "en-GB": "OpenAI and ChatGPT",
+      "id": "OpenAI dan ChatGPT",
+      "fr": "OpenAI et ChatGPT",
+      "ru": "OpenAI и ChatGPT",
+      "pt-BR": "OpenAI e ChatGPT"
+    },
+    "menu.original.language.resources": {
+      "en-US": "Original-language resources",
+      "en-GB": "Original-language resources",
+      "id": "Bahasa asli sumber daya",
+      "fr": "Langue originale ressources",
+      "ru": "Язык оригинала ресурсы",
+      "pt-BR": "Idioma original recursos"
+    },
+    "menu.original.language.review": {
+      "en-US": "Original-Language Review",
+      "en-GB": "Original-Language Review",
+      "id": "tinjauan bahasa asli",
+      "fr": "Langue originale révision",
+      "ru": "Язык оригинала проверка",
+      "pt-BR": "Idioma original revisão"
+    },
+    "menu.other.project.location": {
+      "en-US": "Other Project location",
+      "en-GB": "Other Project location",
+      "id": "Lokasi Project lain",
+      "fr": "Autre emplacement du Project",
+      "ru": "Другое расположение Project",
+      "pt-BR": "Outro local do Project"
+    },
+    "menu.outputs.and.reports": {
+      "en-US": "Outputs and reports",
+      "en-GB": "Outputs and reports",
+      "id": "Keluaran dan laporan",
+      "fr": "Sorties et rapports",
+      "ru": "Результаты и отчёты",
+      "pt-BR": "Saídas e relatórios"
+    },
+    "menu.paratext.project.catalog": {
+      "en-US": "Paratext Project Catalog",
+      "en-GB": "Paratext Project Catalogue",
+      "id": "Katalog Paratext Project",
+      "fr": "Catalogue des Paratext Projects",
+      "ru": "каталог Paratext Projects",
+      "pt-BR": "Catálogo de Paratext Projects"
+    },
+    "menu.paratext.projects.root": {
+      "en-US": "Paratext Projects root",
+      "en-GB": "Paratext Projects root",
+      "id": "root Paratext Projects",
+      "fr": "racine des Paratext Projects",
+      "ru": "корень Paratext Projects",
+      "pt-BR": "raiz dos Paratext Projects"
+    },
+    "menu.paths.and.storage": {
+      "en-US": "Paths and storage",
+      "en-GB": "Paths and storage",
+      "id": "jalur dan penyimpanan",
+      "fr": "chemins et stockage",
+      "ru": "пути и хранилище",
+      "pt-BR": "caminhos e armazenamento"
+    },
+    "menu.paths.and.workspace.locations": {
+      "en-US": "Paths and workspace locations",
+      "en-GB": "Paths and workspace locations",
+      "id": "jalur dan lokasi workspace",
+      "fr": "chemins et emplacements de l’espace de travail",
+      "ru": "пути и расположения рабочей области",
+      "pt-BR": "caminhos e locais do workspace"
+    },
+    "menu.portions": {
+      "en-US": "Portions",
+      "en-GB": "Portions",
+      "id": "bagian",
+      "fr": "portions",
+      "ru": "фрагменты",
+      "pt-BR": "porções"
+    },
+    "menu.preview.language.ownership": {
+      "en-US": "Preview language ownership",
+      "en-GB": "Preview language ownership",
+      "id": "pratinjau kepemilikan bahasa",
+      "fr": "aperçu de l’autorité linguistique",
+      "ru": "просмотр языковой принадлежности",
+      "pt-BR": "visualizar autoridade de idioma"
+    },
+    "menu.primary.sage.project": {
+      "en-US": "Primary SAGE Project",
+      "en-GB": "Primary SAGE Project",
+      "id": "SAGE Project utama",
+      "fr": "Project SAGE principal",
+      "ru": "Основной SAGE Project",
+      "pt-BR": "SAGE Project principal"
+    },
+    "menu.profile.role": {
+      "en-US": "Profile role",
+      "en-GB": "Profile role",
+      "id": "Peran profil",
+      "fr": "Rôle du profil",
+      "ru": "Роль профиля",
+      "pt-BR": "Função do perfil"
+    },
+    "menu.profile.starting.point": {
+      "en-US": "Profile starting point",
+      "en-GB": "Profile starting point",
+      "id": "Titik awal profil",
+      "fr": "Point de départ du profil",
+      "ru": "Исходный профиль",
+      "pt-BR": "Ponto inicial do perfil"
+    },
+    "menu.project.actions": {
+      "en-US": "PROJECT ACTIONS",
+      "en-GB": "PROJECT ACTIONS",
+      "id": "TINDAKAN PROJECT",
+      "fr": "ACTIONS DU PROJECT",
+      "ru": "ДЕЙСТВИЯ PROJECT",
+      "pt-BR": "AÇÕES DO PROJECT"
+    },
+    "menu.project.bindings": {
+      "en-US": "Project bindings",
+      "en-GB": "Project bindings",
+      "id": "ikatan Project",
+      "fr": "liaisons du Project",
+      "ru": "привязки Project",
+      "pt-BR": "vínculos do Project"
+    },
+    "menu.project.information": {
+      "en-US": "Project information",
+      "en-GB": "Project information",
+      "id": "informasi Project",
+      "fr": "informations du Project",
+      "ru": "информация о Project",
+      "pt-BR": "informações do Project"
+    },
+    "menu.project.location": {
+      "en-US": "Project location",
+      "en-GB": "Project location",
+      "id": "lokasi Project",
+      "fr": "emplacement du Project",
+      "ru": "расположение Project",
+      "pt-BR": "local do Project"
+    },
+    "menu.project.status.meanings": {
+      "en-US": "Project status meanings",
+      "en-GB": "Project status meanings",
+      "id": "arti status Project",
+      "fr": "signification des états du Project",
+      "ru": "значения состояний Project",
+      "pt-BR": "significados de status do Project"
+    },
+    "menu.project.storage": {
+      "en-US": "Project storage",
+      "en-GB": "Project storage",
+      "id": "penyimpanan Project",
+      "fr": "stockage du Project",
+      "ru": "хранилище Project",
+      "pt-BR": "armazenamento do Project"
+    },
+    "menu.publish.generated.target": {
+      "en-US": "Publish generated TARGET",
+      "en-GB": "Publish generated TARGET",
+      "id": "publikasikan TARGET yang dihasilkan",
+      "fr": "publier le TARGET généré",
+      "ru": "опубликовать созданный TARGET",
+      "pt-BR": "publicar TARGET gerado"
+    },
+    "menu.python.environment": {
+      "en-US": "Python environment",
+      "en-GB": "Python environment",
+      "id": "lingkungan Python",
+      "fr": "environnement Python",
+      "ru": "среда Python",
+      "pt-BR": "ambiente Python"
+    },
+    "menu.quick.rescan": {
+      "en-US": "Quick rescan",
+      "en-GB": "Quick rescan",
+      "id": "pindai ulang cepat",
+      "fr": "nouvelle analyse rapide",
+      "ru": "быстрое повторное сканирование",
+      "pt-BR": "nova varredura rápida"
+    },
+    "menu.rapidwords.folders": {
+      "en-US": "RapidWords folders",
+      "en-GB": "RapidWords folders",
+      "id": "folder RapidWords",
+      "fr": "dossiers RapidWords",
+      "ru": "папки RapidWords",
+      "pt-BR": "pastas RapidWords"
+    },
+    "menu.re.detect.from.projects.root": {
+      "en-US": "Re-detect from Projects root",
+      "en-GB": "Re-detect from Projects root",
+      "id": "Deteksi ulang dari root Projects",
+      "fr": "Redétecter depuis la racine des Projects",
+      "ru": "Повторно определить из корня Projects",
+      "pt-BR": "Detectar novamente a partir da raiz de Projects"
+    },
+    "menu.reasoning.level": {
+      "en-US": "Reasoning level",
+      "en-GB": "Reasoning level",
+      "id": "tingkat penalaran",
+      "fr": "niveau de raisonnement",
+      "ru": "уровень рассуждения",
+      "pt-BR": "nível de raciocínio"
+    },
+    "menu.rebuild.job.configuration": {
+      "en-US": "Rebuild Job configuration",
+      "en-GB": "Rebuild Job configuration",
+      "id": "bangun ulang konfigurasi Job",
+      "fr": "reconstruire la configuration du Job",
+      "ru": "пересобрать конфигурацию Job",
+      "pt-BR": "reconstruir configuração do Job"
+    },
+    "menu.recommend.a.model": {
+      "en-US": "Recommend a model",
+      "en-GB": "Recommend a model",
+      "id": "rekomendasikan model",
+      "fr": "recommander un modèle",
+      "ru": "рекомендовать модель",
+      "pt-BR": "recomendar um modelo"
+    },
+    "menu.recommended": {
+      "en-US": "Recommended",
+      "en-GB": "Recommended",
+      "id": "Disarankan",
+      "fr": "Recommandé",
+      "ru": "Рекомендуется",
+      "pt-BR": "Recomendado"
+    },
+    "menu.record.inspect.review": {
+      "en-US": "Record INSPECT review",
+      "en-GB": "Record INSPECT review",
+      "id": "catat tinjauan INSPECT",
+      "fr": "enregistrer la révision INSPECT",
+      "ru": "записать проверку INSPECT",
+      "pt-BR": "registrar revisão INSPECT"
+    },
+    "menu.records.by.state": {
+      "en-US": "Records by state",
+      "en-GB": "Records by state",
+      "id": "rekaman menurut status",
+      "fr": "enregistrements par état",
+      "ru": "записи по состоянию",
+      "pt-BR": "registros por estado"
+    },
+    "menu.recover.active.bic.job": {
+      "en-US": "Recover active BIC Job",
+      "en-GB": "Recover active BIC Job",
+      "id": "pulihkan BIC Job aktif",
+      "fr": "récupérer le BIC Job actif",
+      "ru": "восстановить активный BIC Job",
+      "pt-BR": "recuperar BIC Job ativo"
+    },
+    "menu.recover.active.saw.job": {
+      "en-US": "Recover active SAW Job",
+      "en-GB": "Recover active SAW Job",
+      "id": "pulihkan SAW Job aktif",
+      "fr": "récupérer le SAW Job actif",
+      "ru": "восстановить активный SAW Job",
+      "pt-BR": "recuperar SAW Job ativo"
+    },
+    "menu.recover.one.transaction": {
+      "en-US": "Recover one transaction",
+      "en-GB": "Recover one transaction",
+      "id": "Pulihkan satu transaksi",
+      "fr": "Récupérer une transaction",
+      "ru": "Восстановить одну транзакцию",
+      "pt-BR": "Recuperar uma transação"
+    },
+    "menu.recovery": {
+      "en-US": "Recovery",
+      "en-GB": "Recovery",
+      "id": "Pemulihan",
+      "fr": "Récupération",
+      "ru": "Восстановление",
+      "pt-BR": "Recuperação"
+    },
+    "menu.recovery.and.reset": {
+      "en-US": "Recovery and Reset",
+      "en-GB": "Recovery and Reset",
+      "id": "Pemulihan dan Reset",
+      "fr": "Récupération et réinitialisation",
+      "ru": "Восстановление и сброс",
+      "pt-BR": "Recuperação e redefinição"
+    },
+    "menu.recovery.diagnostics": {
+      "en-US": "Recovery and diagnostics",
+      "en-GB": "Recovery and diagnostics",
+      "id": "Pemulihan dan diagnostik",
+      "fr": "Récupération et diagnostics",
+      "ru": "Восстановление и диагностика",
+      "pt-BR": "Recuperação e diagnósticos"
+    },
+    "menu.system.recovery.and.diagnostics": {
+      "en-US": "System recovery and diagnostics",
+      "en-GB": "System recovery and diagnostics",
+      "id": "Pemulihan dan diagnostik sistem",
+      "fr": "Récupération et diagnostics du système",
+      "ru": "Восстановление и диагностика системы",
+      "pt-BR": "Recuperação e diagnósticos do sistema"
+    },
+    "menu.reset.sage.to.out.of.box.state": {
+      "en-US": "Reset SAGE to out-of-box state",
+      "en-GB": "Reset SAGE to out-of-box state",
+      "id": "Reset SAGE ke keadaan awal",
+      "fr": "Réinitialiser SAGE à l’état d’origine",
+      "ru": "Сбросить SAGE к исходному состоянию",
+      "pt-BR": "Redefinir o SAGE para o estado original"
+    },
+    "menu.system.information": {
+      "en-US": "System information",
+      "en-GB": "System information",
+      "id": "Informasi sistem",
+      "fr": "Informations système",
+      "ru": "Сведения о системе",
+      "pt-BR": "Informações do sistema"
+    },
+    "menu.system.actions": {
+      "en-US": "System actions",
+      "en-GB": "System actions",
+      "id": "Tindakan sistem",
+      "fr": "Actions système",
+      "ru": "Системные действия",
+      "pt-BR": "Ações do sistema"
+    },
+    "menu.sage.data.folders": {
+      "en-US": "SAGE data folders",
+      "en-GB": "SAGE data folders",
+      "id": "Folder data SAGE",
+      "fr": "Dossiers de données SAGE",
+      "ru": "Папки данных SAGE",
+      "pt-BR": "Pastas de dados do SAGE"
+    },
+    "menu.path.actions": {
+      "en-US": "Path actions",
+      "en-GB": "Path actions",
+      "id": "Tindakan jalur",
+      "fr": "Actions sur les chemins",
+      "ru": "Действия с путями",
+      "pt-BR": "Ações de caminhos"
+    },
+    "menu.language.actions": {
+      "en-US": "Language actions",
+      "en-GB": "Language actions",
+      "id": "Tindakan bahasa",
+      "fr": "Actions sur les langues",
+      "ru": "Действия с языками",
+      "pt-BR": "Ações de idiomas"
+    },
+    "menu.current.system.state.last.known": {
+      "en-US": "Current system state [last known]",
+      "en-GB": "Current system state [last known]",
+      "id": "Status sistem saat ini [terakhir diketahui]",
+      "fr": "État actuel du système [dernier état connu]",
+      "ru": "Текущее состояние системы [последнее известное]",
+      "pt-BR": "Estado atual do sistema [último conhecido]"
+    },
+    "menu.check.actions": {
+      "en-US": "Check actions",
+      "en-GB": "Check actions",
+      "id": "Tindakan pemeriksaan",
+      "fr": "Actions de vérification",
+      "ru": "Действия проверки",
+      "pt-BR": "Ações de verificação"
+    },
+    "menu.bic.job.storage": {
+      "en-US": "BIC Job storage",
+      "en-GB": "BIC Job storage",
+      "id": "Penyimpanan Job BIC",
+      "fr": "Stockage des Jobs BIC",
+      "ru": "Хранилище Job BIC",
+      "pt-BR": "Armazenamento de Jobs BIC"
+    },
+    "menu.saw.job.storage": {
+      "en-US": "SAW Job storage",
+      "en-GB": "SAW Job storage",
+      "id": "Penyimpanan Job SAW",
+      "fr": "Stockage des Jobs SAW",
+      "ru": "Хранилище Job SAW",
+      "pt-BR": "Armazenamento de Jobs SAW"
+    },
+    "menu.recovery.guides": {
+      "en-US": "Recovery guides",
+      "en-GB": "Recovery guides",
+      "id": "panduan pemulihan",
+      "fr": "guides de récupération",
+      "ru": "руководства по восстановлению",
+      "pt-BR": "guias de recuperação"
+    },
+    "menu.references.and.resources": {
+      "en-US": "References and resources",
+      "en-GB": "References and resources",
+      "id": "referensi dan sumber daya",
+      "fr": "références et ressources",
+      "ru": "ссылки и ресурсы",
+      "pt-BR": "referências e recursos"
+    },
+    "menu.reinitialize.job": {
+      "en-US": "Reinitialize Job",
+      "en-GB": "Reinitialise Job",
+      "id": "inisialisasi ulang Job",
+      "fr": "réinitialiser le Job",
+      "ru": "повторно инициализировать Job",
+      "pt-BR": "reinicializar Job"
+    },
+    "menu.reinstall.configured.model": {
+      "en-US": "Reinstall configured model",
+      "en-GB": "Reinstall configured model",
+      "id": "Instal ulang model yang dikonfigurasi",
+      "fr": "Réinstaller le modèle configuré",
+      "ru": "Переустановить настроенную модель",
+      "pt-BR": "Reinstalar modelo configurado"
+    },
+    "menu.rejected": {
+      "en-US": "REJECTED",
+      "en-GB": "REJECTED",
+      "id": "DITOLAK",
+      "fr": "REJETÉ",
+      "ru": "ОТКЛОНЕНО",
+      "pt-BR": "REJEITADO"
+    },
+    "menu.remove.job": {
+      "en-US": "Remove Job",
+      "en-GB": "Remove Job",
+      "id": "Hapus Job",
+      "fr": "Supprimer Job",
+      "ru": "Удалить Job",
+      "pt-BR": "Remover Job"
+    },
+    "menu.remove.project.from.sage": {
+      "en-US": "Remove Project from SAGE",
+      "en-GB": "Remove Project from SAGE",
+      "id": "hapus Project dari SAGE",
+      "fr": "retirer le Project de SAGE",
+      "ru": "удалить Project из SAGE",
+      "pt-BR": "remover Project do SAGE"
+    },
+    "menu.reporting.languages": {
+      "en-US": "Reporting languages",
+      "en-GB": "Reporting languages",
+      "id": "bahasa pelaporan",
+      "fr": "langues des rapports",
+      "ru": "языки отчётов",
+      "pt-BR": "idiomas de relatórios"
+    },
+    "menu.reports": {
+      "en-US": "Reports",
+      "en-GB": "Reports",
+      "id": "Laporan",
+      "fr": "Rapports",
+      "ru": "Отчёты",
+      "pt-BR": "Relatórios"
+    },
+    "menu.reports.and.exports": {
+      "en-US": "Reports and exports",
+      "en-GB": "Reports and exports",
+      "id": "Laporan dan ekspor",
+      "fr": "Rapports et exportations",
+      "ru": "Отчёты и экспорт",
+      "pt-BR": "Relatórios e exportações"
+    },
+    "menu.reports.and.history": {
+      "en-US": "Reports and history",
+      "en-GB": "Reports and history",
+      "id": "Laporan dan riwayat",
+      "fr": "Rapports et historique",
+      "ru": "Отчёты и история",
+      "pt-BR": "Relatórios e histórico"
+    },
+    "menu.rescan.paratext.projects": {
+      "en-US": "Rescan Paratext Projects",
+      "en-GB": "Rescan Paratext Projects",
+      "id": "Pindai ulang Paratext Projects",
+      "fr": "Réanalyser les Paratext Projects",
+      "ru": "Повторно сканировать Paratext Projects",
+      "pt-BR": "Examinar novamente Paratext Projects"
+    },
+    "menu.resource.folders": {
+      "en-US": "Resource folders",
+      "en-GB": "Resource folders",
+      "id": "folder sumber daya",
+      "fr": "dossiers de ressources",
+      "ru": "папки ресурсов",
+      "pt-BR": "pastas de recursos"
+    },
+    "menu.restart.active.run": {
+      "en-US": "Restart active Run",
+      "en-GB": "Restart active Run",
+      "id": "mulai ulang Run aktif",
+      "fr": "redémarrer le Run actif",
+      "ru": "перезапустить активный Run",
+      "pt-BR": "reiniciar Run ativo"
+    },
+    "menu.restart.one.bic.scope.target.unchanged": {
+      "en-US": "Restart one BIC scope [TARGET unchanged]",
+      "en-GB": "Restart one BIC scope [TARGET unchanged]",
+      "id": "Mulai ulang satu cakupan BIC [TARGET tidak berubah]",
+      "fr": "Redémarrer une portée BIC [TARGET inchangé]",
+      "ru": "Перезапустить один диапазон BIC [TARGET без изменений]",
+      "pt-BR": "Reiniciar um escopo BIC [TARGET inalterado]"
+    },
+    "menu.restart.with.current.settings": {
+      "en-US": "Restart with current settings",
+      "en-GB": "Restart with current settings",
+      "id": "mulai ulang dengan pengaturan saat ini",
+      "fr": "redémarrer avec les paramètres actuels",
+      "ru": "перезапустить с текущими настройками",
+      "pt-BR": "reiniciar com as configurações atuais"
+    },
+    "menu.restore.bundled.resources": {
+      "en-US": "Restore bundled resources",
+      "en-GB": "Restore bundled resources",
+      "id": "pulihkan sumber daya bawaan",
+      "fr": "restaurer les ressources fournies",
+      "ru": "восстановить встроенные ресурсы",
+      "pt-BR": "restaurar recursos incluídos"
+    },
+    "menu.restore.defaults": {
+      "en-US": "Restore defaults",
+      "en-GB": "Restore defaults",
+      "id": "Pulihkan default",
+      "fr": "Rétablir les valeurs par défaut",
+      "ru": "Восстановить значения по умолчанию",
+      "pt-BR": "Restaurar padrões"
+    },
+    "menu.return.for.review": {
+      "en-US": "RETURN_FOR_REVIEW",
+      "en-GB": "RETURN_FOR_REVIEW",
+      "id": "KEMBALIKAN_UNTUK_TINJAUAN",
+      "fr": "RENVOYER_POUR_RÉVISION",
+      "ru": "ВЕРНУТЬ_НА_ПРОВЕРКУ",
+      "pt-BR": "DEVOLVER_PARA_REVISÃO"
+    },
+    "menu.revert.one.target.scope": {
+      "en-US": "Revert one TARGET scope",
+      "en-GB": "Revert one TARGET scope",
+      "id": "kembalikan satu cakupan TARGET",
+      "fr": "rétablir une portée TARGET",
+      "ru": "откатить один диапазон TARGET",
+      "pt-BR": "reverter um escopo TARGET"
+    },
+    "menu.review.bound.projects": {
+      "en-US": "Review bound Projects",
+      "en-GB": "Review bound Projects",
+      "id": "Tinjau Project terikat",
+      "fr": "Examiner les Projects liés",
+      "ru": "Просмотреть связанные Projects",
+      "pt-BR": "Revisar Projects vinculados"
+    },
+    "menu.review.country.evidence": {
+      "en-US": "Review country evidence",
+      "en-GB": "Review country evidence",
+      "id": "Tinjau bukti negara",
+      "fr": "Examiner les indices de pays",
+      "ru": "Просмотреть данные о стране",
+      "pt-BR": "Revisar evidências de país"
+    },
+    "menu.review.decision": {
+      "en-US": "Review decision",
+      "en-GB": "Review decision",
+      "id": "keputusan tinjauan",
+      "fr": "décision de révision",
+      "ru": "решение проверки",
+      "pt-BR": "decisão de revisão"
+    },
+    "menu.review.evidence": {
+      "en-US": "Review evidence",
+      "en-GB": "Review evidence",
+      "id": "tinjau bukti",
+      "fr": "examiner les preuves",
+      "ru": "проверить доказательства",
+      "pt-BR": "revisar evidências"
+    },
+    "menu.review.language.evidence": {
+      "en-US": "Review language evidence",
+      "en-GB": "Review language evidence",
+      "id": "Tinjau bukti bahasa",
+      "fr": "Examiner les indices de langue",
+      "ru": "Просмотреть языковые данные",
+      "pt-BR": "Revisar evidências de idioma"
+    },
+    "menu.review.migration.plan": {
+      "en-US": "Review migration plan",
+      "en-GB": "Review migration plan",
+      "id": "Tinjau rencana migrasi",
+      "fr": "Examiner le plan de migration",
+      "ru": "Просмотреть план миграции",
+      "pt-BR": "Revisar plano de migração"
+    },
+    "menu.reviewed.status": {
+      "en-US": "Reviewed status",
+      "en-GB": "Reviewed status",
+      "id": "status tinjauan",
+      "fr": "état de révision",
+      "ru": "состояние проверки",
+      "pt-BR": "status de revisão"
+    },
+    "menu.roll.back.lexicon.import": {
+      "en-US": "Roll back lexicon import",
+      "en-GB": "Roll back lexicon import",
+      "id": "urungkan impor leksikon",
+      "fr": "annuler l’importation du lexique",
+      "ru": "откатить импорт лексикона",
+      "pt-BR": "reverter importação do léxico"
+    },
+    "menu.run": {
+      "en-US": "Run",
+      "en-GB": "Run",
+      "id": "Jalankan",
+      "fr": "Exécuter",
+      "ru": "Запустить",
+      "pt-BR": "Executar"
+    },
+    "menu.run.bic.check": {
+      "en-US": "Run BIC check",
+      "en-GB": "Run BIC check",
+      "id": "jalankan pemeriksaan BIC",
+      "fr": "exécuter le contrôle BIC",
+      "ru": "запустить проверку BIC",
+      "pt-BR": "executar verificação BIC"
+    },
+    "menu.run.disposition": {
+      "en-US": "Run disposition",
+      "en-GB": "Run disposition",
+      "id": "Disposisi Run",
+      "fr": "Disposition du Run",
+      "ru": "Действие с Run",
+      "pt-BR": "Destino do Run"
+    },
+    "menu.run.options": {
+      "en-US": "Run options",
+      "en-GB": "Run options",
+      "id": "Opsi Run",
+      "fr": "Options du Run",
+      "ru": "Параметры Run",
+      "pt-BR": "Opções de Run"
+    },
+    "menu.run.original.language.review": {
+      "en-US": "Run Original-Language Review",
+      "en-GB": "Run Original-Language Review",
+      "id": "Jalankan Tinjauan Bahasa Asli",
+      "fr": "Exécuter la revue en langue originale",
+      "ru": "Запустить проверку языка оригинала",
+      "pt-BR": "Executar revisão da língua original"
+    },
+    "menu.run.report.data": {
+      "en-US": "Run report data",
+      "en-GB": "Run report data",
+      "id": "data laporan Run",
+      "fr": "données de rapport du Run",
+      "ru": "данные отчёта Run",
+      "pt-BR": "dados de relatório do Run"
+    },
+    "menu.run.standard.qa": {
+      "en-US": "Run Standard QA",
+      "en-GB": "Run Standard QA",
+      "id": "Jalankan QA Standar",
+      "fr": "Exécuter le QA standard",
+      "ru": "Запустить стандартный QA",
+      "pt-BR": "Executar QA padrão"
+    },
+    "menu.run.status.and.blockers": {
+      "en-US": "Run status and blockers",
+      "en-GB": "Run status and blockers",
+      "id": "Status Run dan penghambat",
+      "fr": "État du Run et blocages",
+      "ru": "Состояние Run и блокировки",
+      "pt-BR": "Status e bloqueios do Run"
+    },
+    "menu.run.system.checks": {
+      "en-US": "Run system checks",
+      "en-GB": "Run system checks",
+      "id": "Jalankan pemeriksaan sistem",
+      "fr": "Exécuter les vérifications système",
+      "ru": "Запустить проверки системы",
+      "pt-BR": "Executar verificações do sistema"
+    },
+    "menu.run.targeted.check": {
+      "en-US": "Run Targeted Check",
+      "en-GB": "Run Targeted Check",
+      "id": "Jalankan Pemeriksaan Terarah",
+      "fr": "Exécuter la vérification ciblée",
+      "ru": "Запустить целевую проверку",
+      "pt-BR": "Executar verificação direcionada"
+    },
+    "menu.runs.and.plans": {
+      "en-US": "Runs and plans",
+      "en-GB": "Runs and plans",
+      "id": "Runs dan rencana",
+      "fr": "Runs et plans",
+      "ru": "Runs и планы",
+      "pt-BR": "Runs e planos"
+    },
+    "menu.runs.and.task.history": {
+      "en-US": "Runs and task history",
+      "en-GB": "Runs and task history",
+      "id": "Runs dan riwayat tugas",
+      "fr": "Runs et historique des tâches",
+      "ru": "Runs и история задач",
+      "pt-BR": "Runs e histórico de tarefas"
+    },
+    "menu.rwc.reference.sources": {
+      "en-US": "RWC reference sources",
+      "en-GB": "RWC reference sources",
+      "id": "sumber referensi RWC",
+      "fr": "sources de référence RWC",
+      "ru": "справочные источники RWC",
+      "pt-BR": "fontes de referência RWC"
+    },
+    "menu.rwc.semdom.flex.and.combine": {
+      "en-US": "RWC, SEMDOM, FLEx AND COMBINE",
+      "en-GB": "RWC, SEMDOM, FLEx AND COMBINE",
+      "id": "RWC, SEMDOM, FLEx DAN COMBINE",
+      "fr": "RWC, SEMDOM, FLEx ET COMBINE",
+      "ru": "RWC, SEMDOM, FLEx И COMBINE",
+      "pt-BR": "RWC, SEMDOM, FLEx E COMBINE"
+    },
+    "menu.sage.configuration": {
+      "en-US": "SAGE configuration",
+      "en-GB": "SAGE configuration",
+      "id": "konfigurasi SAGE",
+      "fr": "configuration SAGE",
+      "ru": "конфигурация SAGE",
+      "pt-BR": "configuração do SAGE"
+    },
+    "menu.sage.project": {
+      "en-US": "SAGE Project",
+      "en-GB": "SAGE Project",
+      "id": "SAGE Project",
+      "fr": "Project SAGE",
+      "ru": "SAGE Project",
+      "pt-BR": "SAGE Project"
+    },
+    "menu.sage.projects": {
+      "en-US": "SAGE Projects",
+      "en-GB": "SAGE Projects",
+      "id": "SAGE Projects",
+      "fr": "Projects SAGE",
+      "ru": "Projects SAGE",
+      "pt-BR": "Projects SAGE"
+    },
+    "menu.sage.scripture.projects": {
+      "en-US": "SAGE Scripture Projects",
+      "en-GB": "SAGE Scripture Projects",
+      "id": "Project Kitab Suci SAGE",
+      "fr": "Projects bibliques SAGE",
+      "ru": "Проекты Писания SAGE",
+      "pt-BR": "Projects das Escrituras SAGE"
+    },
+    "menu.saw": {
+      "en-US": "SAW",
+      "en-GB": "SAW",
+      "id": "SAW",
+      "fr": "SAW",
+      "ru": "SAW",
+      "pt-BR": "SAW"
+    },
+    "menu.saw.checks": {
+      "en-US": "SAW checks",
+      "en-GB": "SAW checks",
+      "id": "Pemeriksaan SAW",
+      "fr": "Contrôles SAW",
+      "ru": "Проверки SAW",
+      "pt-BR": "Verificações SAW"
+    },
+    "menu.saw.focused.check": {
+      "en-US": "SAW Targeted Check",
+      "en-GB": "SAW Targeted Check",
+      "id": "Pemeriksaan Terarah SAW",
+      "fr": "Contrôle ciblé SAW",
+      "ru": "Целевая проверка SAW",
+      "pt-BR": "Verificação direcionada SAW"
+    },
+    "menu.saw.job": {
+      "en-US": "SAW Job",
+      "en-GB": "SAW Job",
+      "id": "SAW Job",
+      "fr": "Job SAW",
+      "ru": "Job SAW",
+      "pt-BR": "Job SAW"
+    },
+    "menu.saw.jobs": {
+      "en-US": "SAW Jobs",
+      "en-GB": "SAW Jobs",
+      "id": "SAW Jobs",
+      "fr": "Jobs SAW",
+      "ru": "Jobs SAW",
+      "pt-BR": "Jobs SAW"
+    },
+    "menu.saw.normal.qa": {
+      "en-US": "SAW Standard QA",
+      "en-GB": "SAW Standard QA",
+      "id": "QA Standar SAW",
+      "fr": "QA standard SAW",
+      "ru": "Стандартная QA SAW",
+      "pt-BR": "QA padrão SAW"
+    },
+    "menu.saw.original.language.review": {
+      "en-US": "SAW Original-Language Review",
+      "en-GB": "SAW Original-Language Review",
+      "id": "Tinjauan bahasa asli SAW",
+      "fr": "Révision SAW en langue originale",
+      "ru": "Проверка SAW по языку оригинала",
+      "pt-BR": "Revisão SAW no idioma original"
+    },
+    "menu.saw.reports.and.history": {
+      "en-US": "SAW reports and history",
+      "en-GB": "SAW reports and history",
+      "id": "laporan dan riwayat SAW",
+      "fr": "rapports et historique SAW",
+      "ru": "отчёты и история SAW",
+      "pt-BR": "relatórios e histórico SAW"
+    },
+    "menu.saw.task": {
+      "en-US": "SAW Task",
+      "en-GB": "SAW Task",
+      "id": "tugas SAW",
+      "fr": "tâche SAW",
+      "ru": "задача SAW",
+      "pt-BR": "tarefa SAW"
+    },
+    "menu.scan.paratext.projects": {
+      "en-US": "Scan Paratext Projects",
+      "en-GB": "Scan Paratext Projects",
+      "id": "pindai Paratext Projects",
+      "fr": "analyser les Paratext Projects",
+      "ru": "сканировать Paratext Projects",
+      "pt-BR": "examinar Paratext Projects"
+    },
+    "menu.scope": {
+      "en-US": "Scope",
+      "en-GB": "Scope",
+      "id": "Cakupan",
+      "fr": "Portée",
+      "ru": "Диапазон",
+      "pt-BR": "Escopo"
+    },
+    "menu.scripture.books": {
+      "en-US": "Scripture books",
+      "en-GB": "Scripture books",
+      "id": "kitab Scripture",
+      "fr": "livres bibliques",
+      "ru": "книги Писания",
+      "pt-BR": "livros das Escrituras"
+    },
+    "menu.scripture.projects": {
+      "en-US": "Scripture Projects",
+      "en-GB": "Scripture Projects",
+      "id": "Project Kitab Suci",
+      "fr": "Projects bibliques",
+      "ru": "Projects Писания",
+      "pt-BR": "Projects das Escrituras"
+    },
+    "menu.search.runs": {
+      "en-US": "Search Runs",
+      "en-GB": "Search Runs",
+      "id": "cari Runs",
+      "fr": "rechercher des Runs",
+      "ru": "поиск Runs",
+      "pt-BR": "pesquisar Runs"
+    },
+    "menu.choose": {
+      "en-US": "Choose:",
+      "en-GB": "Choose:",
+      "id": "Pilih:",
+      "fr": "Choisir :",
+      "ru": "Выберите:",
+      "pt-BR": "Escolher:"
+    },
+    "menu.choose.bic.donor": {
+      "en-US": "CHOOSE BIC <DONOR>",
+      "en-GB": "CHOOSE BIC <DONOR>",
+      "id": "PILIH BIC <DONOR>",
+      "fr": "CHOISIR BIC <DONOR>",
+      "ru": "ВЫБРАТЬ BIC <DONOR>",
+      "pt-BR": "ESCOLHER BIC <DONOR>"
+    },
+    "menu.choose.bic.source": {
+      "en-US": "CHOOSE BIC <SOURCE>",
+      "en-GB": "CHOOSE BIC <SOURCE>",
+      "id": "PILIH BIC <SOURCE>",
+      "fr": "CHOISIR BIC <SOURCE>",
+      "ru": "ВЫБРАТЬ BIC <SOURCE>",
+      "pt-BR": "ESCOLHER BIC <SOURCE>"
+    },
+    "menu.choose.bic.target": {
+      "en-US": "CHOOSE BIC <TARGET>",
+      "en-GB": "CHOOSE BIC <TARGET>",
+      "id": "PILIH BIC <TARGET>",
+      "fr": "CHOISIR BIC <TARGET>",
+      "ru": "ВЫБРАТЬ BIC <TARGET>",
+      "pt-BR": "ESCOLHER BIC <TARGET>"
+    },
+    "menu.choose.language.profile": {
+      "en-US": "CHOOSE LANGUAGE PROFILE",
+      "en-GB": "CHOOSE LANGUAGE PROFILE",
+      "id": "Pilih Profil Bahasa",
+      "fr": "Choisir un profil de langue",
+      "ru": "Выбрать языковой профиль",
+      "pt-BR": "Escolher perfil de idioma"
+    },
+    "menu.choose.language.profile.for.job.role": {
+      "en-US": "CHOOSE LANGUAGE PROFILE FOR JOB ROLE",
+      "en-GB": "CHOOSE LANGUAGE PROFILE FOR JOB ROLE",
+      "id": "PILIH PROFIL BAHASA UNTUK PERAN JOB",
+      "fr": "CHOISIR LE PROFIL LINGUISTIQUE POUR LE RÔLE DU JOB",
+      "ru": "ВЫБРАТЬ ЯЗЫКОВОЙ ПРОФИЛЬ ДЛЯ РОЛИ JOB",
+      "pt-BR": "ESCOLHER PERFIL DE IDIOMA PARA A FUNÇÃO DO JOB"
+    },
+    "menu.choose.other.language": {
+      "en-US": "Choose other language",
+      "en-GB": "Choose other language",
+      "id": "Pilih bahasa lain",
+      "fr": "Choisir une autre langue",
+      "ru": "Выбрать другой язык",
+      "pt-BR": "Escolher outro idioma"
+    },
+    "menu.choose.secondary.reporting.language": {
+      "en-US": "CHOOSE SECONDARY REPORTING LANGUAGE",
+      "en-GB": "CHOOSE SECONDARY REPORTING LANGUAGE",
+      "id": "PILIH BAHASA PELAPORAN SEKUNDER",
+      "fr": "CHOISIR LA LANGUE SECONDAIRE DES RAPPORTS",
+      "ru": "ВЫБРАТЬ ВТОРИЧНЫЙ ЯЗЫК ОТЧЁТОВ",
+      "pt-BR": "ESCOLHER IDIOMA SECUNDÁRIO DE RELATÓRIOS"
+    },
+    "menu.no.secondary.reporting.language": {
+      "en-US": "No secondary reporting language",
+      "en-GB": "No secondary reporting language",
+      "id": "Tanpa bahasa pelaporan sekunder",
+      "fr": "Aucune langue secondaire des rapports",
+      "ru": "Без вторичного языка отчётов",
+      "pt-BR": "Sem idioma secundário de relatórios"
+    },
+    "menu.other.secondary.reporting.language": {
+      "en-US": "Other secondary reporting language",
+      "en-GB": "Other secondary reporting language",
+      "id": "Bahasa pelaporan sekunder lainnya",
+      "fr": "Autre langue secondaire des rapports",
+      "ru": "Другой вторичный язык отчётов",
+      "pt-BR": "Outro idioma secundário de relatórios"
+    },
+    "menu.use.target.language.recommended": {
+      "en-US": "Use TARGET language [Recommended]",
+      "en-GB": "Use TARGET language [Recommended]",
+      "id": "Gunakan bahasa TARGET [Direkomendasikan]",
+      "fr": "Utiliser la langue TARGET [Recommandé]",
+      "ru": "Использовать язык TARGET [Рекомендуется]",
+      "pt-BR": "Usar idioma do TARGET [Recomendado]"
+    },
+    "menu.use.wip.language.recommended": {
+      "en-US": "Use WIP language [Recommended]",
+      "en-GB": "Use WIP language [Recommended]",
+      "id": "Gunakan bahasa WIP [Direkomendasikan]",
+      "fr": "Utiliser la langue WIP [Recommandé]",
+      "ru": "Использовать язык WIP [Рекомендуется]",
+      "pt-BR": "Usar idioma do WIP [Recomendado]"
+    },
+    "menu.choose.run": {
+      "en-US": "Choose Run",
+      "en-GB": "Choose Run",
+      "id": "pilih Run",
+      "fr": "choisir un Run",
+      "ru": "выбрать Run",
+      "pt-BR": "escolher Run"
+    },
+    "menu.choose.sage.project": {
+      "en-US": "Choose SAGE Project",
+      "en-GB": "Choose SAGE Project",
+      "id": "pilih SAGE Project",
+      "fr": "choisir un SAGE Project",
+      "ru": "выбрать SAGE Project",
+      "pt-BR": "escolher SAGE Project"
+    },
+    "menu.choose.saw.reference": {
+      "en-US": "CHOOSE SAW <REFERENCE>",
+      "en-GB": "CHOOSE SAW <REFERENCE>",
+      "id": "PILIH SAW <REFERENCE>",
+      "fr": "CHOISIR SAW <REFERENCE>",
+      "ru": "ВЫБРАТЬ SAW <REFERENCE>",
+      "pt-BR": "ESCOLHER SAW <REFERENCE>"
+    },
+    "menu.choose.saw.wip": {
+      "en-US": "CHOOSE SAW <WIP>",
+      "en-GB": "CHOOSE SAW <WIP>",
+      "id": "PILIH SAW <WIP>",
+      "fr": "CHOISIR SAW <WIP>",
+      "ru": "ВЫБРАТЬ SAW <WIP>",
+      "pt-BR": "ESCOLHER SAW <WIP>"
+    },
+    "menu.choose.scripture.scope": {
+      "en-US": "CHOOSE SCRIPTURE SCOPE",
+      "en-GB": "CHOOSE SCRIPTURE SCOPE",
+      "id": "PILIH CAKUPAN SCRIPTURE",
+      "fr": "CHOISIR LA PORTÉE BIBLIQUE",
+      "ru": "ВЫБРАТЬ ДИАПАЗОН ПИСАНИЯ",
+      "pt-BR": "ESCOLHER ESCOPO DAS ESCRITURAS"
+    },
+    "menu.choose.semdom.or.folder.authority": {
+      "en-US": "Choose SEMDOM or folder authority",
+      "en-GB": "Choose SEMDOM or folder authority",
+      "id": "pilih otoritas SEMDOM atau folder",
+      "fr": "choisir l’autorité SEMDOM ou dossier",
+      "ru": "выбрать авторитет SEMDOM или папки",
+      "pt-BR": "escolher autoridade SEMDOM ou de pasta"
+    },
+    "menu.semantic.evidence.review": {
+      "en-US": "Semantic evidence review",
+      "en-GB": "Semantic evidence review",
+      "id": "tinjauan bukti semantik",
+      "fr": "révision des preuves sémantiques",
+      "ru": "проверка семантических доказательств",
+      "pt-BR": "revisão de evidência semântica"
+    },
+    "menu.set.imported.snapshot.state": {
+      "en-US": "Set imported snapshot state",
+      "en-GB": "Set imported snapshot state",
+      "id": "atur status snapshot impor",
+      "fr": "définir l’état du snapshot importé",
+      "ru": "задать состояние импортированного снимка",
+      "pt-BR": "definir estado do snapshot importado"
+    },
+    "menu.set.paratext.projects.root": {
+      "en-US": "Set Paratext Projects root",
+      "en-GB": "Set Paratext Projects root",
+      "id": "atur root Paratext Projects",
+      "fr": "définir la racine des Paratext Projects",
+      "ru": "задать корень Paratext Projects",
+      "pt-BR": "definir raiz dos Paratext Projects"
+    },
+    "menu.set.reasoning.level": {
+      "en-US": "Set reasoning level",
+      "en-GB": "Set reasoning level",
+      "id": "Atur tingkat penalaran",
+      "fr": "Définir le niveau de raisonnement",
+      "ru": "Установить уровень рассуждения",
+      "pt-BR": "Definir nível de raciocínio"
+    },
+    "menu.set.reviewed.status": {
+      "en-US": "Set reviewed status",
+      "en-GB": "Set reviewed status",
+      "id": "atur status tinjauan",
+      "fr": "définir l’état de révision",
+      "ru": "задать состояние проверки",
+      "pt-BR": "definir status de revisão"
+    },
+    "menu.set.secondary.reporting.language": {
+      "en-US": "Set secondary reporting language",
+      "en-GB": "Set secondary reporting language",
+      "id": "atur bahasa pelaporan sekunder",
+      "fr": "définir la langue secondaire des rapports",
+      "ru": "задать вторичный язык отчётов",
+      "pt-BR": "definir idioma secundário de relatórios"
+    },
+    "menu.show.catalog.summary": {
+      "en-US": "Show catalog summary",
+      "en-GB": "Show catalogue summary",
+      "id": "tampilkan ringkasan katalog",
+      "fr": "afficher le résumé du catalogue",
+      "ru": "показать сводку каталога",
+      "pt-BR": "mostrar resumo do catálogo"
+    },
+    "menu.show.configured.grammar.profiles": {
+      "en-US": "Show configured grammar profiles",
+      "en-GB": "Show configured grammar profiles",
+      "id": "Tampilkan profil tata bahasa yang dikonfigurasi",
+      "fr": "Afficher les profils grammaticaux configurés",
+      "ru": "Показать настроенные грамматические профили",
+      "pt-BR": "Mostrar perfis gramaticais configurados"
+    },
+    "menu.show.job.manifest": {
+      "en-US": "Show Job manifest",
+      "en-GB": "Show Job manifest",
+      "id": "tampilkan manifest Job",
+      "fr": "afficher le manifeste du Job",
+      "ru": "показать манифест Job",
+      "pt-BR": "mostrar manifesto do Job"
+    },
+    "menu.show.memory.folder": {
+      "en-US": "Show memory folder",
+      "en-GB": "Show memory folder",
+      "id": "tampilkan folder memori",
+      "fr": "afficher le dossier mémoire",
+      "ru": "показать папку памяти",
+      "pt-BR": "mostrar pasta de memória"
+    },
+    "menu.show.parsed.project.code.metadata": {
+      "en-US": "Show parsed project-code metadata",
+      "en-GB": "Show parsed project-code metadata",
+      "id": "tampilkan metadata kode Project yang telah diparsing",
+      "fr": "Afficher parsed project-code metadata",
+      "ru": "Показать parsed project-code metadata",
+      "pt-BR": "Mostrar parsed project-code metadata"
+    },
+    "menu.show.raw.sage.project.record": {
+      "en-US": "Show raw SAGE Project record",
+      "en-GB": "Show raw SAGE Project record",
+      "id": "tampilkan rekaman mentah SAGE Project",
+      "fr": "Afficher raw SAGE Project record",
+      "ru": "Показать raw SAGE Project record",
+      "pt-BR": "Mostrar raw SAGE Project record"
+    },
+    "menu.show.resource.details": {
+      "en-US": "Show resource details",
+      "en-GB": "Show resource details",
+      "id": "tampilkan detail sumber daya",
+      "fr": "afficher les détails de la ressource",
+      "ru": "показать сведения о ресурсе",
+      "pt-BR": "mostrar detalhes do recurso"
+    },
+    "menu.show.sage.data.folders": {
+      "en-US": "Show SAGE data folders",
+      "en-GB": "Show SAGE data folders",
+      "id": "tampilkan folder data SAGE",
+      "fr": "afficher les dossiers de données SAGE",
+      "ru": "показать папки данных SAGE",
+      "pt-BR": "mostrar pastas de dados do SAGE"
+    },
+    "menu.show.target.folder": {
+      "en-US": "Show TARGET folder",
+      "en-GB": "Show TARGET folder",
+      "id": "tampilkan folder TARGET",
+      "fr": "afficher le dossier TARGET",
+      "ru": "показать папку TARGET",
+      "pt-BR": "mostrar pasta TARGET"
+    },
+    "menu.show.task.commands": {
+      "en-US": "Show task commands",
+      "en-GB": "Show task commands",
+      "id": "tampilkan perintah tugas",
+      "fr": "afficher les commandes de tâche",
+      "ru": "показать команды задачи",
+      "pt-BR": "mostrar comandos da tarefa"
+    },
+    "menu.sil.semantic.domains": {
+      "en-US": "SIL Semantic Domains",
+      "en-GB": "SIL Semantic Domains",
+      "id": "Domain Semantik SIL",
+      "fr": "Domaines sémantiques SIL",
+      "ru": "семантические домены SIL",
+      "pt-BR": "Domínios Semânticos SIL"
+    },
+    "menu.source.references": {
+      "en-US": "Source references",
+      "en-GB": "Source references",
+      "id": "referensi sumber",
+      "fr": "références des sources",
+      "ru": "ссылки на источники",
+      "pt-BR": "referências de origem"
+    },
+    "menu.start.focused.check": {
+      "en-US": "Start Targeted Check",
+      "en-GB": "Start Targeted Check",
+      "id": "Mulai pemeriksaan terarah",
+      "fr": "Démarrer la vérification ciblée",
+      "ru": "Начать целевую проверку",
+      "pt-BR": "Iniciar verificação direcionada"
+    },
+    "menu.start.ollama": {
+      "en-US": "Start Ollama",
+      "en-GB": "Start Ollama",
+      "id": "Mulai Ollama",
+      "fr": "Démarrer Ollama",
+      "ru": "Запустить Ollama",
+      "pt-BR": "Iniciar Ollama"
+    },
+    "menu.start.original.language.review": {
+      "en-US": "Start Original-language review",
+      "en-GB": "Start Original-language review",
+      "id": "Mulai tinjauan bahasa sumber",
+      "fr": "Démarrer la revue de langue originale",
+      "ru": "Начать обзор языка оригинала",
+      "pt-BR": "Iniciar revisão de língua original"
+    },
+    "menu.status": {
+      "en-US": "Status",
+      "en-GB": "Status",
+      "id": "Status",
+      "fr": "État",
+      "ru": "Состояние",
+      "pt-BR": "Status"
+    },
+    "menu.stop.ollama": {
+      "en-US": "Stop Ollama",
+      "en-GB": "Stop Ollama",
+      "id": "Hentikan Ollama",
+      "fr": "Arrêter Ollama",
+      "ru": "Остановить Ollama",
+      "pt-BR": "Parar Ollama"
+    },
+    "menu.submit.current.task": {
+      "en-US": "Submit current task",
+      "en-GB": "Submit current task",
+      "id": "kirim tugas saat ini",
+      "fr": "soumettre la tâche actuelle",
+      "ru": "отправить текущую задачу",
+      "pt-BR": "enviar tarefa atual"
+    },
+    "menu.system.checks": {
+      "en-US": "System checks",
+      "en-GB": "System checks",
+      "id": "pemeriksaan sistem",
+      "fr": "vérifications du système",
+      "ru": "проверки системы",
+      "pt-BR": "verificações do sistema"
+    },
+    "menu.target.commit.history": {
+      "en-US": "TARGET commit history",
+      "en-GB": "TARGET commit history",
+      "id": "riwayat commit TARGET",
+      "fr": "historique des commits TARGET",
+      "ru": "история коммитов TARGET",
+      "pt-BR": "histórico de commits do TARGET"
+    },
+    "menu.target.generated.target": {
+      "en-US": "TARGET / generated target",
+      "en-GB": "TARGET / generated target",
+      "id": "TARGET / target yang dihasilkan",
+      "fr": "TARGET / cible générée",
+      "ru": "TARGET / сгенерированная цель",
+      "pt-BR": "TARGET / destino gerado"
+    },
+    "menu.target.generations": {
+      "en-US": "TARGET generations",
+      "en-GB": "TARGET generations",
+      "id": "generasi TARGET",
+      "fr": "générations TARGET",
+      "ru": "поколения TARGET",
+      "pt-BR": "gerações TARGET"
+    },
+    "menu.task.and.plan.files": {
+      "en-US": "Task and plan files",
+      "en-GB": "Task and plan files",
+      "id": "File tugas dan rencana",
+      "fr": "Fichiers de tâches et de plans",
+      "ru": "Файлы задач и планов",
+      "pt-BR": "Arquivos de tarefas e planos"
+    },
+    "menu.task.profile": {
+      "en-US": "Task profile",
+      "en-GB": "Task profile",
+      "id": "profil tugas",
+      "fr": "profil de tâche",
+      "ru": "профиль задачи",
+      "pt-BR": "perfil de tarefa"
+    },
+    "menu.test.access": {
+      "en-US": "Test access",
+      "en-GB": "Test access",
+      "id": "uji akses",
+      "fr": "tester l’accès",
+      "ru": "проверить доступ",
+      "pt-BR": "testar acesso"
+    },
+    "menu.test.local.ai": {
+      "en-US": "Test Local AI",
+      "en-GB": "Test Local AI",
+      "id": "Uji AI Lokal",
+      "fr": "Tester l’IA locale",
+      "ru": "Проверить локальный ИИ",
+      "pt-BR": "Testar IA local"
+    },
+    "menu.test.workflow.ai": {
+      "en-US": "Test workflow AI",
+      "en-GB": "Test workflow AI",
+      "id": "uji AI alur kerja",
+      "fr": "tester l’IA du workflow",
+      "ru": "проверить ИИ workflow",
+      "pt-BR": "testar IA do workflow"
+    },
+    "menu.update.ecosystem.language.profiles": {
+      "en-US": "UPDATE ECOSYSTEM LANGUAGE PROFILES",
+      "en-GB": "UPDATE ECOSYSTEM LANGUAGE PROFILES",
+      "id": "PERBARUI PROFIL BAHASA EKOSISTEM",
+      "fr": "METTRE À JOUR LES PROFILS LINGUISTIQUES DE L’ÉCOSYSTÈME",
+      "ru": "ОБНОВИТЬ ЯЗЫКОВЫЕ ПРОФИЛИ ЭКОСИСТЕМЫ",
+      "pt-BR": "ATUALIZAR PERFIS DE IDIOMA DO ECOSSISTEMA"
+    },
+    "menu.update.indexes": {
+      "en-US": "Update indexes",
+      "en-GB": "Update indexes",
+      "id": "perbarui indeks",
+      "fr": "mettre à jour les index",
+      "ru": "обновить индексы",
+      "pt-BR": "atualizar índices"
+    },
+    "menu.update.project.versification": {
+      "en-US": "UPDATE PROJECT VERSIFICATION",
+      "en-GB": "UPDATE PROJECT VERSIFICATION",
+      "id": "PERBARUI VERSIFIKASI PROJECT",
+      "fr": "METTRE À JOUR LA VERSIFICATION DU PROJECT",
+      "ru": "ОБНОВИТЬ ВЕРСИФИКАЦИЮ PROJECT",
+      "pt-BR": "ATUALIZAR VERSIFICAÇÃO DO PROJECT"
+    },
+    "menu.use": {
+      "en-US": "Use",
+      "en-GB": "Use",
+      "id": "Gunakan",
+      "fr": "Utiliser",
+      "ru": "Использовать",
+      "pt-BR": "Usar"
+    },
+    "menu.use.bundled": {
+      "en-US": "Use bundled",
+      "en-GB": "Use bundled",
+      "id": "Gunakan bawaan",
+      "fr": "Utiliser la ressource fournie",
+      "ru": "Использовать встроенный ресурс",
+      "pt-BR": "Usar recurso incluído"
+    },
+    "menu.use.detected.base.vrs.and.retry": {
+      "en-US": "Use detected base VRS and retry",
+      "en-GB": "Use detected base VRS and retry",
+      "id": "Gunakan VRS dasar yang terdeteksi dan coba lagi",
+      "fr": "Utiliser le VRS de base détecté et réessayer",
+      "ru": "Использовать обнаруженный базовый VRS и повторить",
+      "pt-BR": "Usar o VRS base detectado e tentar novamente"
+    },
+    "menu.use.detected.paratext.src.project": {
+      "en-US": "Use detected Paratext SRC Project",
+      "en-GB": "Use detected Paratext SRC Project",
+      "id": "gunakan Paratext SRC Project yang terdeteksi",
+      "fr": "utiliser le Paratext SRC Project détecté",
+      "ru": "использовать обнаруженный Paratext SRC Project",
+      "pt-BR": "usar Paratext SRC Project detectado"
+    },
+    "menu.use.other.local.resource": {
+      "en-US": "Use other local resource",
+      "en-GB": "Use other local resource",
+      "id": "gunakan sumber daya lokal lain",
+      "fr": "utiliser une autre ressource locale",
+      "ru": "использовать другой локальный ресурс",
+      "pt-BR": "usar outro recurso local"
+    },
+    "menu.use.other.location": {
+      "en-US": "Use <Other location>",
+      "en-GB": "Use <Other location>",
+      "id": "Gunakan <Lokasi lain>",
+      "fr": "Utiliser <Autre emplacement>",
+      "ru": "Использовать <Другое расположение>",
+      "pt-BR": "Usar <Outro local>"
+    },
+    "menu.use.paratext.root.for.base.vrs": {
+      "en-US": "Use Paratext root for base VRS",
+      "en-GB": "Use Paratext root for base VRS",
+      "id": "gunakan root Paratext untuk VRS dasar",
+      "fr": "utiliser la racine Paratext pour le VRS de base",
+      "ru": "использовать корень Paratext для базового VRS",
+      "pt-BR": "usar a raiz do Paratext para o VRS base"
+    },
+    "menu.use.unresolved.language.code.und": {
+      "en-US": "Use unresolved language code [und]",
+      "en-GB": "Use unresolved language code [und]",
+      "id": "Gunakan kode bahasa yang belum terselesaikan [und]",
+      "fr": "Utiliser le code de langue non résolu [und]",
+      "ru": "Использовать неразрешённый код языка [und]",
+      "pt-BR": "Usar código de idioma não resolvido [und]"
+    },
+    "menu.validate.all.sage.projects": {
+      "en-US": "Validate all SAGE Projects",
+      "en-GB": "Validate all SAGE Projects",
+      "id": "Validasi semua SAGE Projects",
+      "fr": "Valider tous les Projects SAGE",
+      "ru": "Проверить все Projects SAGE",
+      "pt-BR": "Validar todos os Projects SAGE"
+    },
+    "menu.validate.grammar.profiles": {
+      "en-US": "Validate grammar profiles",
+      "en-GB": "Validate grammar profiles",
+      "id": "Validasi profil tata bahasa",
+      "fr": "Valider les profils grammaticaux",
+      "ru": "Проверить грамматические профили",
+      "pt-BR": "Validar perfis gramaticais"
+    },
+    "menu.validate.job": {
+      "en-US": "Validate Job",
+      "en-GB": "Validate Job",
+      "id": "validasi Job",
+      "fr": "valider le Job",
+      "ru": "проверить Job",
+      "pt-BR": "validar Job"
+    },
+    "menu.validate.language.configuration": {
+      "en-US": "Validate language configuration",
+      "en-GB": "Validate language configuration",
+      "id": "Validasi konfigurasi bahasa",
+      "fr": "Valider la configuration des langues",
+      "ru": "Проверить конфигурацию языков",
+      "pt-BR": "Validar configuração de idiomas"
+    },
+    "menu.validate.project": {
+      "en-US": "Validate Project",
+      "en-GB": "Validate Project",
+      "id": "validasi Project",
+      "fr": "valider le Project",
+      "ru": "проверить Project",
+      "pt-BR": "validar Project"
+    },
+    "menu.validate.resources": {
+      "en-US": "Validate resources",
+      "en-GB": "Validate resources",
+      "id": "validasi sumber daya",
+      "fr": "valider les ressources",
+      "ru": "проверить ресурсы",
+      "pt-BR": "validar recursos"
+    },
+    "menu.validate.sage.projects": {
+      "en-US": "Validate SAGE Projects",
+      "en-GB": "Validate SAGE Projects",
+      "id": "validasi SAGE Projects",
+      "fr": "valider les SAGE Projects",
+      "ru": "проверить SAGE Projects",
+      "pt-BR": "validar SAGE Projects"
+    },
+    "menu.verify.current.generation": {
+      "en-US": "Verify current generation",
+      "en-GB": "Verify current generation",
+      "id": "verifikasi generasi saat ini",
+      "fr": "vérifier la génération actuelle",
+      "ru": "проверить текущее поколение",
+      "pt-BR": "verificar geração atual"
+    },
+    "menu.verify.job.layout": {
+      "en-US": "Verify Job layout",
+      "en-GB": "Verify Job layout",
+      "id": "Verifikasi tata letak Job",
+      "fr": "Vérifier la structure du Job",
+      "ru": "Проверить структуру Job",
+      "pt-BR": "Verificar layout de Job"
+    },
+    "menu.versification": {
+      "en-US": "Versification",
+      "en-GB": "Versification",
+      "id": "Versifikasi",
+      "fr": "Versification",
+      "ru": "Версификация",
+      "pt-BR": "Versificação"
+    },
+    "menu.wip.saw.review": {
+      "en-US": "WIP / SAW review",
+      "en-GB": "WIP / SAW review",
+      "id": "WIP / tinjauan SAW",
+      "fr": "WIP / révision SAW",
+      "ru": "WIP / проверка SAW",
+      "pt-BR": "WIP / revisão SAW"
+    }
+  }
+}
