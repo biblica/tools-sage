@@ -1,0 +1,59 @@
+name: SAGE Core CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qualify:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ['3.10', '3.12']
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONPYCACHEPREFIX: ${{ runner.temp }}/sage-pycache
+      SAGE_DISABLE_OPERATIONAL_LOG: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: |
+            system/requirements.txt
+            system/requirements-dev.txt
+            system/requirements-tui.txt
+
+      - name: Install qualification dependencies deterministically
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --no-deps -r system/requirements.txt -r system/requirements-dev.txt -r system/requirements-tui.txt
+          python -m pip check
+
+      - name: Compile Core outside the checkout
+        run: python -m compileall -q system/src system/tools
+
+      - name: Validate schemas
+        run: python system/tools/validate_schemas.py
+
+      - name: Validate package boundary
+        run: python system/tools/validate_package.py
+
+      - name: Run tests
+        run: python -m pytest -p no:cacheprovider system/tests
+
+      - name: Audit source package boundary
+        run: python system/tools/deep_audit.py . --mode source
+
+      - name: Verify tests did not modify Core
+        shell: bash
+        run: |
+          test -z "$(git status --porcelain --untracked-files=all)" || {
+            git status --short --untracked-files=all
+            exit 1
+          }

@@ -1,0 +1,115 @@
+schema_id: sage-saw-findings-2.0
+required:
+- schema_version
+- task_id
+- operation
+- stage
+- scope
+- coverage
+- review_receipts
+- findings
+operation_values:
+- qa
+- focused
+- ol
+stage_by_operation:
+  qa:
+  - STRUCTURAL_ADJUDICATION
+  - TRANSLATION_AND_MEANING_QA
+  - SELECTIVE_OL_ADJUDICATION
+  focused: FOCUSED_CHECK
+  ol: FOCUSED_OL
+coverage_required:
+- status
+- reviewed_references
+coverage_controls:
+  status: COMPLETE
+  references: exact_stage_coordinate_inventory
+structural_adjudication_required:
+- candidate_id
+- outcome
+- rationale
+structural_outcomes:
+- NO_FINDING
+- FINDING
+- INSUFFICIENT_DATA
+finding_required:
+- finding_id
+- target_reference
+- category
+- issue
+- required_action
+- action_level
+- confidence
+- evidence_ids
+- grammar_rule_ids
+- original_language_evidence
+controls:
+  stable_finding_ids: true
+  target_reference_inside_session_scope: true
+  structural_and_selective_ol_findings_inside_exact_stage_references: true
+  evidence_ids_must_be_routed: true
+  grammar_findings_cite_rule_ids: true
+  original_language_review_requires_ol_evidence: true
+  all_structural_candidates_reconciled: true
+  focused_and_ol_require_exact_focus_and_answer: true
+  deterministic_report_projection:
+    bilingual_language_authority_notice: required
+    primary_operator_language: governing_human_rendering
+    secondary_language: assistive_lower_confidence_translation
+    secondary_generation_cost: additional_model_usage_and_compilation_time
+    secondary_review_requirement: greater_than_single_language_report
+    canonical_machine_evidence: authoritative
+review_receipt_required:
+- receipt_id
+- work_unit_id
+- task_fingerprint
+- reviewed_references
+- checks_performed
+- evidence_summary
+review_receipt_controls:
+  exact_non_overlapping_stage_coordinate_coverage: true
+  task_fingerprint_must_match: true
+  all_required_checks_present: true
+  substantive_evidence_summary_required: true
+qa_composite_fields:
+  TRANSLATION_AND_MEANING_QA:
+    may_emit: ol_review_requests
+    ol_review_request_required:
+    - request_id
+    - deferred_finding_id
+    - target_reference
+    - question
+    - reason
+    - evidence_ids
+    deferred_issue_must_not_also_be_final_finding: true
+  SELECTIVE_OL_ADJUDICATION:
+    requires: ol_resolutions
+    exact_one_resolution_per_inherited_request: true
+    resolution_required:
+    - request_id
+    - target_reference
+    - outcome
+    - decision
+    - original_language_evidence
+    - rationale
+    - issue
+    - required_action
+    - action_level
+    - confidence
+    outcomes:
+    - FINDING
+    - NO_FINDING
+    - INSUFFICIENT_EVIDENCE
+    decisions:
+    - WIP_CLOSER_TO_SOURCE
+    - REFERENCE_CLOSER_TO_SOURCE
+    - BOTH_DEFENSIBLE
+    - INCONCLUSIVE
+    provider_findings: prohibited_controller_materializes_from_resolutions
+    evidence_identity: controller_injects_WIP_REFERENCE_and_testament_specific_OL_role
+    finding_outcome_uses_inherited_deferred_finding_id: true
+  STRUCTURAL_ADJUDICATION:
+    ol_evidence: prohibited
+    findings_must_correspond_to_structural_candidates: true
+operator_note_output: plain_text_copy_paste_ready_not_paratext_xml

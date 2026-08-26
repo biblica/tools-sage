@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "sources": {
+    "sil_semantic_domains": {
+      "authority_type": "semdom",
+      "selection_key": "sil_semdom",
+      "storage_directory": "sil-semdom",
+      "default_source_id": "sil-semdom-v4",
+      "content_file": "domains.json",
+      "role": "SEMANTIC_CLASSIFICATION_AUTHORITY",
+      "translation_authority": false,
+      "expected_format": "JSON",
+      "source_url": "https://semdom.org/data/semdom.json",
+      "metadata_url": "https://semdom.org/bibliography/",
+      "import_command": "sage rwc authority semdom --file SemDom.json"
+    },
+    "rapidwords_specific_first": {
+      "authority_type": "folders",
+      "selection_key": "rapidwords_folders",
+      "storage_directory": "rapidwords-folders",
+      "default_source_id": "rapidwords-specific-first-v4",
+      "content_file": "folders.json",
+      "role": "PROCESSING_AND_TRAVERSAL_METADATA",
+      "translation_authority": false,
+      "expected_format": "DOCX",
+      "source_url": "https://rapidwords.net/sites/default/files/docs/folder_divisions_specific_first.docx",
+      "import_command": "sage rwc authority folders --file folder_divisions_specific_first.docx"
+    }
+  }
+}

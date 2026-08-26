@@ -3,35 +3,41 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-cache/grammar/*
-cache/usj/*
-cache/versification/*
-cache/source-maps/*
-cache/section-indexes/*
-!cache/**/.gitkeep
-workspace-data/sage/state/*
-workspace-data/sage/locks/*
-workspace-data/sage/transactions/*
-workspace-data/sage/output/*
-workspace-data/bic/state/*
-workspace-data/bic/locks/*
-workspace-data/bic/transactions/*
-workspace-data/bic/memory/*
-workspace-data/bic/output/*
-workspace-data/saw/state/*
-workspace-data/saw/locks/*
-workspace-data/saw/transactions/*
-workspace-data/saw/indexes/*
-workspace-data/saw/output/*
-!workspace-data/**/.gitkeep
 
-# Local Paratext project directories are external resource data.
-projects/*/
+# SAGE Core is source-only. Runtime/operator roots are external to Git.
+/.venv/
+/cache/
+/state/
+/workspace_data/
+/jobs/
+/reports/
+/SAGEdata/
 
 .coverage
 coverage.xml
 htmlcov/
+build/
+dist/
+*.egg-info/
 
-# Local SAGE Python runtime.
-.venv/
-state/
+# Host/editor debris and interrupted writes.
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+__MACOSX/
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*~
+
+# Local release/handover outputs should be published outside the repository.
+/release/
+/artifacts/
+/handover/
+*.zip
+*.zip.sha256
+*.zip.hardening.json
+hardening-report.json

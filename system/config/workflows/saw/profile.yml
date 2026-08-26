@@ -1,0 +1,135 @@
+workflow:
+  id: saw
+  name: Scripture Analysis Workbench
+  purpose: Read-only analysis of one LWC work-in-progress translation against one
+    configured LWC Reference Project and bounded original-language evidence only when routed.
+  qualification_status: VALIDATED
+  baseline_version: A0002-r6
+  execution_model: SAGE_GOVERNED_TASK_V1
+bindings: {}
+evidence_policies:
+  default:
+    target_estimated_tokens: 18000
+    hard_estimated_tokens: 28000
+    hard_serialized_bytes: 196000
+    minimum_target_tokens: 6000
+    maximum_primary_verse_units: 220
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+  qa:
+    target_estimated_tokens: 18000
+    hard_estimated_tokens: 28000
+    hard_serialized_bytes: 196000
+    minimum_target_tokens: 6000
+    maximum_primary_verse_units: 220
+    maximum_primary_discourse_units: 0
+    preferred_primary_discourse_units: 4
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+  focused:
+    target_estimated_tokens: 12000
+    hard_estimated_tokens: 18000
+    hard_serialized_bytes: 126000
+    minimum_target_tokens: 3500
+    maximum_primary_verse_units: 120
+    maximum_primary_discourse_units: 2
+    context_before_verses: 2
+    context_after_verses: 2
+    allow_cross_chapter_units: true
+  ol:
+    target_estimated_tokens: 9000
+    hard_estimated_tokens: 14000
+    hard_serialized_bytes: 98000
+    minimum_target_tokens: 2500
+    maximum_primary_verse_units: 60
+    maximum_primary_discourse_units: 1
+    context_before_verses: 2
+    context_after_verses: 2
+    allow_cross_chapter_units: true
+check_policy:
+  version: "1.0"
+  standard_qa:
+    checks:
+      structure_completeness: true
+      translation_meaning: true
+      language_readability: true
+      consistency: true
+    usfm_contexts:
+      add:
+        markers: [add]
+        mode: MATERIAL_ONLY
+      nd:
+        markers: [nd]
+        mode: MATERIAL_ONLY
+      f:
+        markers: [f]
+        mode: STRUCTURE_ONLY
+      x:
+        markers: [x]
+        mode: STRUCTURE_ONLY
+    original_language:
+      source_text_drift_adjudication: PROHIBITED
+
+permissions:
+  may_write_projects: []
+  may_write_target: false
+  may_write_reference: false
+  may_write_original_language: false
+  may_write_bic_memory: false
+state_model:
+  operation_states:
+  - NOT_RUN
+  - READY
+  - IN_PROGRESS
+  - COMPLETE
+  - STALE
+  - BLOCKED
+  - ERROR
+  - ABANDONED
+qualification_gates:
+- operation_skills_registered_and_hashed
+- source_prompt_traceability_validated
+- provider_neutral_governed_task_contracts
+- fresh_initialization_and_resource_readiness
+- exact_wip_and_reference_bindings
+- project_bound_original_language_only
+- immutable_task_manifest_and_act_prompt
+- bounded_hashed_read_allowlist
+- exact_traversal_safe_write_allowlist
+- deterministic_preflight_and_vrs_evidence
+- structural_candidate_reconciliation
+- complete_coordinate_coverage
+- schema_validated_findings_and_deterministic_reports
+process:
+  stages:
+  - DETERMINISTIC_PREFLIGHT
+  - STRUCTURAL_ADJUDICATION
+  - TRANSLATION_AND_MEANING_QA
+  - SELECTIVE_OL_ADJUDICATION
+  - COVERAGE_RECONCILIATION
+  - DETERMINISTIC_FINALISATION
+  rules:
+  - Each task analyzes one WIP translation against one authorized REFERENCE.
+  - Every expected coordinate and structural candidate is reconciled.
+  - Scripture projects remain read-only; findings and reports are generated deterministically.
+  - Standard QA structural and meaning stages do not route OL Scripture.
+  - Standard translation-and-meaning QA uses sections/stories as preferred split points,
+    not mandatory work-unit boundaries. Adjacent complete sections are coalesced whenever
+    the measured packet satisfies every hard limit; four discourse units is a soft packing
+    preference rather than a hard ceiling. Oversized scopes split at section boundaries
+    where possible, while oversized individual sections use bounded lookahead and balanced
+    structural subdivision. Targeted
+    Check limits each primary evaluation to at most two intact discourse units, and standalone
+    Original-Language Review to one. SAGE does not split a prose paragraph, major list unit,
+    or operational poetry stanza unless that protected unit itself cannot fit a hard evidence
+    limit. Every partitioned task receives labeled
+    adjacent context-only evidence when available; context-only coordinates are excluded
+    from coverage and ordinary findings.
+  - Option 11 automatically adjudicates material WIP-Reference source-dependent variances;
+    it routes OT only to Job-bound Hebrew and NT only to Job-bound Greek. It remains distinct
+    from standalone Original-Language Review, which requires an explicit bounded question and
+    performs the detailed OL check.
+  - SAW final note material is plain Operator text; SAGE never creates or modifies
+    Paratext Notes XML.

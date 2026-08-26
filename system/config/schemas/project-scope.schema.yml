@@ -1,0 +1,33 @@
+schema_id: sage-project-scope-0.01
+required: [testament, canon, expected_books, roles]
+testament_values: [FB, OT, NT, PORTIONS]
+canon_values: [PROTESTANT_66, GREEK_NT_27, HEBREW_BIBLE_39, CUSTOM]
+roles:
+  values:
+    - CONTENT_SOURCE
+    - LEXICAL_DONOR
+    - REFERENCE
+    - AUXILIARY_SCRIPTURE
+    - ORIGINAL_LANGUAGE_GREEK
+    - ORIGINAL_LANGUAGE_HEBREW
+    - GENERATED_TARGET
+    - WIP
+  required: true
+  inferred: false
+expected_books:
+  accepted_forms: [auto, canonical_usfm_book_id_list]
+  rules:
+    PORTIONS_requires_explicit_list: true
+    CUSTOM_canon_requires_explicit_list: true
+    auto_allowed_for: [FB, OT, NT]
+content_state:
+  location: project.content_state
+  values: [LOCKED, UNDER_REVIEW]
+  inferred: false
+validation:
+  unexpected_observed_books: BLOCKED
+  missing_books_with_CONFIGURED_BOOKS_COMPLETE: BLOCKED
+  trusted_reference_requires_LOCKED: true
+  generated_target_requires_UNDER_REVIEW: true
+provenance:
+  include_roles_and_content_state_in_fingerprints: true

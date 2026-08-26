@@ -1,0 +1,128 @@
+workflow:
+  id: bic
+  name: Bible Index & Context
+  purpose: Controlled rewrite from one SOURCE into one generated TARGET, using a separate
+    lexical DONOR only for vocabulary evidence and conditionally authorized original-language
+    evidence for material risk.
+  qualification_status: VALIDATED
+  baseline_version: '4.00'
+  execution_model: SAGE_GOVERNED_TASK_V1
+bindings: {}
+evidence_policies:
+  default:
+    target_estimated_tokens: 18000
+    hard_estimated_tokens: 28000
+    hard_serialized_bytes: 196000
+    minimum_target_tokens: 6000
+    maximum_primary_verse_units: 220
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+  inspect:
+    target_estimated_tokens: 16000
+    hard_estimated_tokens: 24000
+    hard_serialized_bytes: 168000
+    minimum_target_tokens: 5000
+    maximum_primary_verse_units: 180
+    maximum_primary_discourse_units: 4
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+  rewrite:
+    target_estimated_tokens: 14000
+    hard_estimated_tokens: 22000
+    hard_serialized_bytes: 154000
+    minimum_target_tokens: 4500
+    maximum_primary_verse_units: 140
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+  self_check:
+    target_estimated_tokens: 12000
+    hard_estimated_tokens: 18000
+    hard_serialized_bytes: 126000
+    minimum_target_tokens: 3500
+    maximum_primary_verse_units: 120
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+permissions:
+  may_write_projects: []
+  may_write_memory: true
+  may_write_source: false
+  may_write_reference: false
+  published_target_generations_are_immutable: true
+process_rules:
+  - INSPECT limits each primary evaluation to at most four intact discourse units.
+    SAGE never splits a protected discourse unit merely to meet the focus ceiling;
+    adjacent context and the existing projected-handoff hard limits remain in force.
+  - REWRITE and SELF-CHECK retain their existing discourse and quality controls; this
+    quality-first refinement does not add new proactive auto-partitioning to them.
+state_model:
+  operation_states:
+  - NOT_RUN
+  - READY
+  - IN_PROGRESS
+  - COMPLETE
+  - STALE
+  - COMPLETED_WITH_CHALLENGES
+  - STAGED_VALIDATED
+  - STAGED_VALIDATED_WITH_CHALLENGES
+  - COMMITTED
+  - BLOCKED
+  - ERROR
+  - ABANDONED
+memory_model:
+  usable_state: APPROVED_FOR_USE
+  model_submission_state: PROPOSED
+  automatic_approval: false
+qualification_gates:
+- operation_skills_registered_and_hashed
+- source_skill_traceability_validated
+- provider_neutral_governed_task_contracts
+- fresh_initialization_and_resource_readiness
+- immutable_task_manifest_and_act_prompt
+- bounded_hashed_read_allowlist
+- exact_traversal_safe_write_allowlist
+- inspect_memory_transaction_committed
+- isolated_rewrite_and_self_check_contexts
+- usfm_and_project_grammar_output_validation
+- journalled_atomic_target_commit
+- rewrite_lexical_burden_and_risk_validation
+- bounded_ol_referral_and_risk_rated_reporting
+process:
+  stages:
+  - INSPECT
+  - REWRITE
+  - SELF_CHECK
+  - TRANSACTIONAL_COMMIT
+  rules:
+  - CONTENT_SOURCE is the sole content and translation authority for BIC.
+  - LEXICAL_DONOR is vocabulary evidence only; donor wording, sequence, syntax, propositions,
+    and verse-level content are never routed as translation authority.
+  - GENERATED_TARGET is a write destination only during INSPECT and REWRITE; existing
+    TARGET Scripture is never routed as input evidence.
+  - INSPECT produces proposals and challenges but no Scripture.
+  - Only APPROVED_FOR_USE memory enters REWRITE.
+  - Human memory review is optional provenance and never a REWRITE progression gate.
+  - SELF_CHECK receives no first-pass rationale and commits only after deterministic
+    validation.
+  - REWRITE produces a staged candidate, complete grammar assessment, and translation-challenge
+    report.
+  - Lexical burden is a tie-breaker only after semantic, force, agency, participant,
+    grammar, and discourse gates pass.
+  - Material semantic risk level 2 or higher triggers one automatic question-specific
+    original-language micro-check per material challenge. Raw SOURCE and OL Scripture
+    are released to the provider only for that challenge's single verse; VERB_CHOICE
+    checks resolve only the disputed verb's verbal sense/function.
+  - Resolved OL evidence updates and revalidates the candidate without an Operator
+    prompt.
+  - Unresolved post-OL risk level 3 is logged and carried into SELF_CHECK automatically.
+  - Unresolved post-OL risk level 4 continues with the recommended candidate and emits
+    a concise critical review item; REWRITE accepts no Operator candidate input.
+  - Linguistic uncertainty elevates the report and never blocks completion of the
+    current REWRITE operation.
+  - Human-facing challenge reports list only configured material issues, aggregate
+    lower-level matters, and consolidate repeated causes.
+  - Operational logs and reports use the configured logs-and-reports language channel;
+    translation challenges use their independent configured language channel.

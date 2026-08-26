@@ -1,0 +1,23 @@
+schema_id: sage-model-language-competency-1.0
+required:
+  - schema_version
+  - policy
+  - seed_models
+controls:
+  schema_version: '1.0'
+  tiers:
+    - EXCELLENT
+    - GOOD
+    - FAIR
+    - UNASSESSED
+  regional_project_identity: required
+  provider_model_id_is_release_key_when_no_finer_revision_is_exposed: true
+  provider_runtime_version_recorded_separately: true
+  accepted_evidence_sources:
+    - SAGE_RELEASE_SEED
+    - VERSIONED_REGISTRY
+    - MEASURED_EVALUATION
+  model_self_assessment: prohibited
+  new_model_release: require_versioned_or_measured_evidence
+  new_imported_language: registry_lookup_then_profile_resolution
+  older_model_release_records: immutable_history

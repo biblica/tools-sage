@@ -1,0 +1,35 @@
+schema_id: sage-paratext-project-catalog-2.0
+required: [schema_version, projects_root, scanned_utc, quick_scanned_utc, full_scanned_utc, projects, invalid_folders]
+controls:
+  schema_version: '2.0'
+  owner: derived_machine_state
+  path: SAGEdata/.system/state/paratext-project-catalog.json
+  scan_scope: immediate_children_only
+  quick_scan:
+    purpose: tree_only_discovery
+    discovery_gate: settings.xml_marker_presence_only
+    opens_project_files: false
+    reads_scripture_inventory: false
+    retains_cached_validation: true
+  full_scan:
+    purpose: rebuild_detailed_validation
+    discovery_gate: parseable_settings.xml_with_recognised_project_metadata
+    opens_project_files: true
+    validates_all_discovered_projects: true
+  lazy_validation:
+    enabled: true
+    trigger: selected_project_requires_detailed_metadata
+  menu_source: true
+  filters: [FB, NT, PORTIONS, language]
+  states:
+    discovery_status: [DISCOVERED]
+    detail_status: [PENDING, VALIDATED, INVALID]
+    project_status: [PENDING, READY, WARNING, INVALID]
+  project_metadata:
+    settings.xml: [Language, FullName, LanguageIsoCode]
+    canons.xml: included_books
+    custom.vrs: [name, base_vrs_comment, base_description]
+    sfm: actual_scripture_inventory
+  filesystem_authority:
+    books_and_vrs_are_rederived_on_full_or_target_validation: true
+    workflow_roles_inferred: false

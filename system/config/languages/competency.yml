@@ -1,0 +1,16 @@
+schema_version: '1.0'
+display:
+  tier_map:
+    EXCELLENT: HIGH
+    GOOD: HIGH
+    FAIR: MEDIUM
+    UNASSESSED: NOT CHECKED
+  baseline_profiles:
+    - en
+    - en-US
+    - en-GB
+assessment_scope:
+  - understand normal prose accurately
+  - identify grammar and wording problems
+  - compare two translations for differences in meaning
+  - explain findings clearly in the configured language

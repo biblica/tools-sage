@@ -2,32 +2,35 @@
 
 ## Normal resume
 
-Run `./sage`. If the last Run is unfinished, menu option **1** resumes it through its recorded SAGE checkpoint; SAGE does not blindly replay the previous shell command.
+Run `./sage` from the SAGE root. If the last Run is unfinished, menu option **1** resumes it through its recorded SAGE checkpoint; SAGE does not blindly replay the previous shell command.
 
 ## Interrupted setup
 
-Run `./sage`. Startup first revalidates Python and the managed `.venv`; guided setup then reads `state/setup-state.json` and continues from `next_step`.
+Run `./sage` from the SAGE root. Startup first resolves SAGEdata and revalidates Python and the managed `SAGEdata/.system/runtime/venv`; guided setup then reads `SAGEdata/.system/state/setup-state.json` and continues from `next_step`.
 
-## Recovery menu
+## Recovery menus
 
-Use **6 Recovery & diagnostics** to:
+Open **BIC > Recovery and diagnostics** or **SAW > Recovery and diagnostics** for recovery that belongs to a Job. Open **SAGE Maintenance > System recovery and diagnostics** for global state, configuration, and diagnostic actions. The experimental TUI remains read-only for workflow-changing recovery operations; use the classic governed action when a write is required.
 
-- recover/reset the active BIC or SAW Job;
+The workflow recovery menus can recover/reset the active Job and its Run. System recovery can:
+
 - rebuild derived runtime configurations and indexes;
 - show Project, Job, Run, and state paths;
 - export diagnostics;
 - clear only global active-Job/last-Run pointers.
+
+**Reset SAGE to out-of-box state** is the destructive installation-wide reset. It removes all local Projects, Jobs, Runs, reports, caches, custom profiles, Operator settings, and generated workspace data; preserves the managed SAGEdata runtime and packaged SAGE Core resources; writes `SAGEdata/.system/state/out-of-box-reset.json`; then exits so the next launch begins first-use Setup. It requires both a negative-default confirmation and the exact text `RESET SAGE`.
 
 Do not manually edit task manifests, ACT files, transaction journals, or `.sage` controller state.
 
 ## State locations
 
 ```text
-state/setup-state.json       resumable setup snapshot
-state/project-inventory.json  SAGE Projects
-state/last-run.json          last Run pointer
-state/active-jobs.json       active BIC/SAW Job pointers
-state/operator-cues.jsonl    append-only high-level operator cues
+SAGEdata/.system/state/setup-state.json       resumable setup snapshot
+SAGEdata/.system/state/project-inventory.json  SAGE Projects
+SAGEdata/.system/state/last-run.json          last Run pointer
+SAGEdata/.system/state/active-jobs.json       active BIC/SAW Job pointers
+SAGEdata/.system/state/operator-cues.jsonl    append-only high-level Operator cues
 jobs/.../.sage/state/        Job/Run controller state
 ```
 

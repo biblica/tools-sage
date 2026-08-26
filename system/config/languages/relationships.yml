@@ -1,0 +1,24 @@
+schema_version: '1.0'
+profiles:
+  en-GB: {parent: en, region: GB, name: British English}
+  en-US: {parent: en, region: US, name: US English}
+  fa-IR: {parent: fa, region: IR, name: Persian - Iran}
+  pes-IR: {parent: pes, region: IR, name: Iranian Persian}
+  prs-AF: {parent: prs, region: AF, name: Dari}
+  id-ID: {parent: id, region: ID, name: Indonesian - Indonesia}
+  ti-ER: {parent: ti, region: ER, name: Tigrinya - Eritrea}
+  ti-ET: {parent: ti, region: ET, name: Tigrinya - Ethiopia}
+  am-ET: {parent: am, region: ET, name: Amharic - Ethiopia}
+  ha-NG: {parent: ha, region: NG, name: Hausa - Nigeria}
+  ha-NE: {parent: ha, region: NE, name: Hausa - Niger}
+  fr-FR: {parent: fr, region: FR, name: French - France}
+  fr-011: {parent: fr, region: '011', name: French - Western Africa}
+  es-419: {parent: es, region: '419', name: Spanish - Latin America}
+  es-BR: {parent: es, region: BR, name: Spanish - Brazil}
+  pt-BR: {parent: pt, region: BR, name: Portuguese - Brazil}
+  pt-419: {parent: pt, region: '419', name: Portuguese - Latin America}
+  de-DE: {parent: de, region: DE, name: German - Germany}
+  ar-SA: {parent: ar, region: SA, name: Arabic - Saudi Arabia}
+  ar-145: {parent: ar, region: '145', name: Arabic - Western Asia}
+  hi-IN: {parent: hi, region: IN, name: Hindi - India}
+  uk-UA: {parent: uk, region: UA, name: Ukrainian - Ukraine}
