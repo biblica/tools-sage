@@ -3051,7 +3051,10 @@ class SageControlCenter:
         )
         if self._compact_saw_progress:
             scope = self._saw_task_scope_label(manifest, run)
-            self.io.write(f"Work unit {scope} requires retry: {event['reason_code']}")
+            self.io.write(
+                f"Work unit {scope} requires retry: {event['reason_code']} - {event['message']}"
+            )
+            self.io.write(f"Diagnostic report: {event['report_path']}")
             return event
         self.io.write()
         self.io.write(terminal_heading(event["disposition"]))
