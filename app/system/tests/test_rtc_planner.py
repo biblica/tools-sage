@@ -2,9 +2,9 @@
 
 import pytest
 
-from sage.errors import EvidenceLimitError
+from sage.errors import EvidenceLimitError, ValidationError
 from sage.evidence import EvidencePolicy, RTCSizingPolicy
-from sage.rtc_planner import plan_rtc_work_units
+from sage.rtc_planner import plan_rtc_work_units, vrs_source_equivalence_spans
 from sage.work_units import EvidenceRecord
 
 
@@ -56,6 +56,35 @@ def _sizing() -> RTCSizingPolicy:
         "minimum_overhead_reserve_tokens": 6000,
         "minimum_overhead_serialized_bytes": 24000,
     })
+
+
+def test_vrs_equivalence_spans_ignore_books_outside_requested_scope() -> None:
+    """A JHN RTC plan must not parse an unrelated BAR mapping from the base VRS."""
+    effective_vrs = {
+        "mappings": [
+            {"local": "BAR 6:1-73", "canonical": "LJE 1:1-73"},
+            {"local": "JHN 1:1-2", "canonical": "JHN 1:1-2"},
+        ]
+    }
+
+    spans = vrs_source_equivalence_spans(
+        effective_vrs,
+        requested_book="JHN",
+    )
+
+    assert [[ref.label() for ref in span] for span in spans] == [
+        ["JHN 1:1", "JHN 1:2"]
+    ]
+
+
+def test_rtc_planning_requires_a_canonical_66_book_paratext_id() -> None:
+    """Extended-canon Paratext IDs cannot become governed RTC work scopes."""
+    with pytest.raises(ValidationError) as caught:
+        vrs_source_equivalence_spans({}, requested_book="BAR")
+
+    assert caught.value.code == "RTC_CANONICAL_BOOK_ID_REQUIRED"
+    assert "three-character Paratext/USFM book ID" in caught.value.message
+    assert "Protestant 66-book canon" in caught.value.message
 
 
 def test_reference_heavy_rtc_package_is_resliced_after_wip_boundary_planning() -> None:

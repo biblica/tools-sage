@@ -6,6 +6,7 @@ import math
 from dataclasses import replace
 from typing import Any, Iterable, Mapping
 
+from .canon import PROTESTANT_66
 from .errors import ConfigurationError, EvidenceLimitError, ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy, measure_evidence
 from .references import expand_reference_atoms
@@ -21,14 +22,27 @@ RTC_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_1"
 
 def vrs_source_equivalence_spans(
     effective_vrs: Mapping[str, Any],
+    *,
+    requested_book: str,
 ) -> tuple[tuple[VerseRef, ...], ...]:
-    """Return local coordinate groups that an effective VRS keeps indivisible."""
+    """Return in-scope local coordinate groups that an effective VRS keeps indivisible."""
+    requested_book = str(requested_book).strip().upper()
+    if len(requested_book) != 3 or requested_book not in PROTESTANT_66:
+        raise ValidationError(
+            "RTC planning requires a three-character Paratext/USFM book ID from "
+            f"the Protestant 66-book canon; received {requested_book!r}",
+            code="RTC_CANONICAL_BOOK_ID_REQUIRED",
+            next_action="Use a canonical book ID such as JHN; extended-canon IDs are not supported.",
+        )
     spans: list[tuple[VerseRef, ...]] = []
     for value in effective_vrs.get("mappings", []):
         if not isinstance(value, Mapping):
             continue
         local = str(value.get("local") or "").strip()
         if not local:
+            continue
+        local_book = local.split(maxsplit=1)[0].upper()
+        if local_book != requested_book:
             continue
         refs = expand_reference_atoms(local)
         if len(refs) > 1:
