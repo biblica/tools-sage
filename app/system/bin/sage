@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+BIN_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+APP_ROOT=$(CDPATH= cd -- "$BIN_DIR/../.." && pwd)
+RUNTIME_BOOTSTRAP="$APP_ROOT/system/tools/bootstrap_python.sh"
+BOOTSTRAP_PROFILE=base
+for argument in "$@"; do
+    if [ "$argument" = "tui" ]; then
+        BOOTSTRAP_PROFILE=tui
+        break
+    fi
+done
+
+exec /bin/sh "$RUNTIME_BOOTSTRAP" "$APP_ROOT" "$BOOTSTRAP_PROFILE" launch "$@"

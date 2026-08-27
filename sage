@@ -1,4 +1,5 @@
 #!/bin/sh
 set -eu
-SAGE_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-exec "$SAGE_ROOT/system/bin/sage" "$@"
+BUNDLE_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+APP_ROOT="$BUNDLE_ROOT/app"
+exec "$APP_ROOT/system/bin/sage" "$@"

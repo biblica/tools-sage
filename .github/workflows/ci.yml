@@ -17,6 +17,9 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONPYCACHEPREFIX: ${{ runner.temp }}/sage-pycache
       SAGE_DISABLE_OPERATIONAL_LOG: '1'
+    defaults:
+      run:
+        working-directory: app
 
     steps:
       - uses: actions/checkout@v4
@@ -26,9 +29,9 @@ jobs:
           python-version: ${{ matrix.python }}
           cache: pip
           cache-dependency-path: |
-            system/requirements.txt
-            system/requirements-dev.txt
-            system/requirements-tui.txt
+            app/system/requirements.txt
+            app/system/requirements-dev.txt
+            app/system/requirements-tui.txt
 
       - name: Install qualification dependencies deterministically
         run: |
