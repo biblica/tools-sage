@@ -91,6 +91,14 @@ saw_rtc_composite:
   - DETERMINISTIC_FINALISATION
   stage_isolation: one_model_stage_per_governed_task
   focused_and_ol: remain_separate_bounded_operations
+  sizing_contract:
+    profile_field: rtc_sizing_required_for_saw_only
+    slicing_stream: WIP
+    reference_range: exact_primary_wip_range
+    components: [WIP, REF, OH, PACK]
+    wip_hard_limit: exclusive
+    package_hard_limit: inclusive_and_not_above_provider_handoff_limit
+    validation: pre_slice_and_post_pack_and_immediately_before_provider_execution
 optional_bindings:
   bic:
     ORIGINAL_LANGUAGE_GREEK: zero_or_one

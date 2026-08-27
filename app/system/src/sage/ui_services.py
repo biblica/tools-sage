@@ -331,6 +331,9 @@ class OperatorUIService:
         """Return one concise independent setup status for BIC or SAW."""
         job = self.store.active_job(tool)
         if job is None:
+            stale_pointer = self.store.stale_active_job_pointers().get(tool)
+            if stale_pointer:
+                return f"RECOVERY NEEDED - {stale_pointer} [Job manifest missing]"
             return "NOT CONFIGURED"
         ready_states = {"READY", "READY_WITH_ACTIONS", "READY_WITH_LIMITATIONS"}
         status = str(initialization.get(job.job_id, {}).get("status", ""))
@@ -348,6 +351,8 @@ class OperatorUIService:
         """Return the next prerequisite action from canonical live startup state."""
         if not self.settings_path.is_file():
             return "REPAIR_CONFIGURATION", "Repair SAGE configuration"
+        if self.store.stale_active_job_pointers():
+            return "RECOVER_ACTIVE_JOB_POINTERS", "Clear stale active Job and Run selections"
         scripture_status = str((scripture_resources or {}).get("status") or "NOT CHECKED")
         if scripture_status == "BLOCKED":
             return "VALIDATE_SCRIPTURE", "Resolve Scripture resource validation"

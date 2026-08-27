@@ -42,6 +42,7 @@ from .errors import (
     SageError,
     ValidationError,
 )
+from .display_paths import operator_path, operator_text
 from .platform_commands import (
     is_sage_launcher_token,
     render_sage_command,
@@ -71,6 +72,7 @@ from .human_output import (
 )
 from .locking import WorkspaceLock
 from .llm_tasks import execute_task
+from .llm_settings import load_llm_settings
 from .model_policy import task_profile_key
 from .model_service import ModelService
 from .executors import PROVIDER_IDS
@@ -78,6 +80,14 @@ from .natural_language import append_request_log, interpret_request
 from .init_remediation import run_guided_init_remediation, run_targeted_init_remediation
 from .operator_overrides import clear_operator_overrides
 from .profiles import WorkflowProfile, load_workflow_profile
+from .rtc_planner import (
+    RTC_HANDOFF_CONTRACT_VERSION,
+    RTC_PLANNER_VERSION,
+    RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+    package_summary,
+    plan_rtc_work_units,
+    rtc_slicing_policy,
+)
 from .guided_input import (
     GuidedArgumentParser,
     Suggestion,
@@ -334,14 +344,23 @@ def command_overview(args: argparse.Namespace) -> int:
         ).run_progress_snapshot(last[0], last[1])
     provider_state = "READY" if provider_ready is True else "NOT READY" if provider_ready is False else "NOT PROBED"
     setup_status = str(setup_state.get("status", "NOT_RUN"))
+    active_jobs = store.active_jobs()
+    stale_active_jobs = store.stale_active_job_pointers()
     result = {
-        "status": "READY" if setup_status in {"COMPLETE", "READY_WITH_ACTIONS"} and provider_ready is not False else "ACTION_REQUIRED",
+        "status": (
+            "READY"
+            if setup_status in {"COMPLETE", "READY_WITH_ACTIONS"}
+            and provider_ready is not False
+            and not stale_active_jobs
+            else "ACTION_REQUIRED"
+        ),
         "version": (config.root / "VERSION").read_text(encoding="utf-8").strip(),
         "release_status": standard.release_status,
         "public_release_ready": standard.public_release_ready,
         "setup": setup_status,
         "workspace": workspace_state.get("state", workspace_state.get("status", "NOT_INITIALISED")),
-        "active_jobs": store.active_jobs(),
+        "active_jobs": active_jobs,
+        "stale_active_jobs": stale_active_jobs,
         "selected_provider": selected_provider,
         "provider_ready": provider_ready,
         "provider_state": provider_state,
@@ -372,8 +391,14 @@ def command_overview(args: argparse.Namespace) -> int:
     print(f"Development status: {standard.release_status} - {readiness}")
     print(f"Setup: {result['setup']}")
     print(f"Workspace: {result['workspace']}")
-    print(f"BIC job: {result['active_jobs'].get('bic') or 'NONE'}")
-    print(f"SAW job: {result['active_jobs'].get('saw') or 'NONE'}")
+    for tool in ("bic", "saw"):
+        job_id = result["active_jobs"].get(tool)
+        display = (
+            f"STALE POINTER - {job_id} (Job manifest missing)"
+            if tool in result["stale_active_jobs"]
+            else job_id or "NONE"
+        )
+        print(f"{tool.upper()} job: {display}")
     model = result.get("selected_model") or "AUTO/provider default"
     effort = f" / {result['selected_reasoning_effort']}" if result.get("selected_reasoning_effort") else ""
     print(f"Model: {selected_provider} / {model}{effort} / {provider_state}")
@@ -3254,6 +3279,32 @@ def command_plan(args: argparse.Namespace) -> int:
         resource_role=selected_role,
     )
     selected = select_records_for_scope(all_records, scope)
+    rtc_sizing = None
+    reference_project_id: str | None = None
+    reference_result: dict[str, Any] | None = None
+    reference_records = ()
+    effective_policy = policy
+    if profile.workflow_id == "saw" and operation == "rtc":
+        if selected_role != "WIP":
+            raise ValidationError("SAW RTC planning must use the bound WIP as its slicing stream")
+        rtc_sizing = profile.require_rtc_sizing()
+        active_provider = str(load_llm_settings(config.root).get("selected_provider") or "")
+        rtc_sizing.validate_active_provider(active_provider)
+        effective_policy = rtc_slicing_policy(policy, rtc_sizing)
+        reference_project_id = profile.bindings["REFERENCE"]
+        reference_project = config.project(reference_project_id)
+        reference_result = compile_project_scope(config, reference_project, scope)
+        if reference_result.get("status") not in {"READY", "READY_WITH_WARNINGS"}:
+            raise ValidationError(
+                f"REFERENCE project {reference_project_id} is not ready for RTC package "
+                f"planning in {scope.label()}: {reference_result.get('status')}",
+                code="SAW_RTC_REFERENCE_NOT_READY",
+            )
+        reference_records = records_from_project_result(
+            reference_project_id,
+            reference_result,
+            resource_role="REFERENCE",
+        )
     contracts = _grammar_contracts(config, profile)
     evidence_contracts = {
         contract_role: {
@@ -3277,6 +3328,19 @@ def command_plan(args: argparse.Namespace) -> int:
             for role_name, contract in contracts.items()
         },
     }
+    if reference_result is not None:
+        shared_hashes.update({
+            "reference_resource_sha256": str(reference_result.get("resource_sha256", "")),
+            "reference_effective_vrs_sha256": str(
+                reference_result.get("effective_vrs", {}).get("effective_sha256", "")
+            ),
+            "reference_structure_policy_sha256": str(
+                reference_result.get("structure_policy", {}).get("effective_sha256", "")
+            ),
+            "reference_compiled_files_sha256": str(
+                reference_result.get("compiled_files_sha256", "")
+            ),
+        })
     plan_key = {
         "sage_version": standard.version,
         "usj_compiler": USJ_COMPILER,
@@ -3284,8 +3348,19 @@ def command_plan(args: argparse.Namespace) -> int:
         "operation": operation,
         "operator_scope": scope.label(),
         "project_id": project_id,
-        "policy": policy.to_dict(),
+        "policy": effective_policy.to_dict(),
         "shared_hashes": shared_hashes,
+        **(
+            {
+                "reference_project_id": reference_project_id,
+                "rtc_sizing": rtc_sizing.to_dict(),
+                "rtc_planner_version": RTC_PLANNER_VERSION,
+                "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
+                "prompt_schema_projection_version": RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+            }
+            if rtc_sizing is not None
+            else {}
+        ),
     }
     plan_fingerprint = sha256_bytes(serialize_evidence(plan_key))
     plan_digest = plan_fingerprint[:12].upper()
@@ -3317,17 +3392,38 @@ def command_plan(args: argparse.Namespace) -> int:
         ],
         "language_contracts": evidence_contracts,
         "language_profile_bindings": profile.language_profile_bindings,
+        **(
+            {
+                "reference_project_id": reference_project_id,
+                "reference_resource_sha256": reference_result.get("resource_sha256", ""),
+                "reference_compiled_files_sha256": reference_result.get("compiled_files_sha256", ""),
+            }
+            if reference_result is not None
+            else {}
+        ),
     }
-    units = plan_work_units(
-        selected,
-        policy,
-        unit_prefix=plan_id,
-        shared=shared,
-        context_pool=all_records,
-    )
+    rtc_packages: tuple[dict[str, Any], ...] = ()
+    if rtc_sizing is not None:
+        units, rtc_packages, effective_policy = plan_rtc_work_units(
+            selected,
+            policy,
+            rtc_sizing,
+            unit_prefix=plan_id,
+            shared=shared,
+            wip_context_pool=all_records,
+            reference_records=reference_records,
+        )
+    else:
+        units = plan_work_units(
+            selected,
+            policy,
+            unit_prefix=plan_id,
+            shared=shared,
+            context_pool=all_records,
+        )
     document = manifest(
         units,
-        policy,
+        effective_policy,
         operator_scope=scope.label(),
         project_id=project_id,
         plan_id=plan_id,
@@ -3336,6 +3432,22 @@ def command_plan(args: argparse.Namespace) -> int:
         operation=operation,
         shared_hashes=shared_hashes,
     )
+    if rtc_sizing is not None:
+        document.update({
+            "schema_version": "1.3",
+            "reference_project_id": reference_project_id,
+            "rtc_sizing": rtc_sizing.to_dict(),
+            "rtc_planner": {
+                "version": RTC_PLANNER_VERSION,
+                "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
+                "prompt_schema_projection_version": RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+                "slicing_stream": "WIP",
+                "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
+            },
+        })
+        for unit_document, package in zip(document["units"], rtc_packages, strict=True):
+            unit_document["rtc_package"] = package
+        document["summary"].update(package_summary(rtc_packages))
     output = _workflow_output_path(
         args.output,
         workflow.output_root,
@@ -3394,9 +3506,29 @@ def command_plan(args: argparse.Namespace) -> int:
         print(f"Project: {project_id} ({selected_role})")
         print(f"Work units: {summary['work_units']}")
         print(f"Primary coordinates: {summary['primary_atomic_coordinates']}")
-        print(f"Largest estimated packet tokens: {summary['largest_estimated_tokens']}")
-        print(f"Largest serialized packet bytes: {summary['largest_serialized_bytes']}")
-        print(f"Manifest: {output}")
+        if rtc_packages:
+            for index, (unit, package) in enumerate(
+                zip(document["units"], rtc_packages, strict=True), start=1
+            ):
+                print(menu_item(
+                    index,
+                    f"{unit['primary_scope']}   "
+                    f"WIP ~{package['wip']['estimated_tokens']:,} | "
+                    f"REF ~{package['ref']['estimated_tokens']:,} | "
+                    f"OH ~{package['oh']['estimated_tokens']:,} | "
+                    f"PACK ~{package['pack']['estimated_tokens']:,}"
+                ))
+            print(
+                "Largest work unit: "
+                f"WIP ~{summary['largest_wip_estimated_tokens']:,} | "
+                f"REF ~{summary['largest_ref_estimated_tokens']:,} | "
+                f"OH ~{summary['largest_oh_estimated_tokens']:,} | "
+                f"PACK ~{summary['largest_pack_estimated_tokens']:,}"
+            )
+        else:
+            print(f"Largest estimated packet tokens: {summary['largest_estimated_tokens']}")
+            print(f"Largest serialized packet bytes: {summary['largest_serialized_bytes']}")
+        print(f"Manifest: {operator_path(config.root, output)}")
     return 0
 
 
@@ -4618,18 +4750,29 @@ def main() -> None:
         if json_requested:
             print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         else:
+            display_root: Path | None = None
+            try:
+                settings_value = getattr(args, "settings", "ecosystem.yml") if args is not None else "ecosystem.yml"
+                display_root = _app_root_for_settings(_settings_path(settings_value))
+            except Exception:
+                display_root = None
+            display = (
+                (lambda value: operator_text(display_root, str(value)))
+                if display_root is not None
+                else (lambda value: str(value))
+            )
             print("SAGE ERROR", file=sys.stderr)
             print(f"Result: {payload.get('status', 'ERROR')}", file=sys.stderr)
             print(f"Reason code: {exc.code}", file=sys.stderr)
-            print(f"Message: {exc.message}", file=sys.stderr)
+            print(f"Message: {display(exc.message)}", file=sys.stderr)
             if exc.affected_scope:
-                print(f"Affected scope: {exc.affected_scope}", file=sys.stderr)
+                print(f"Affected scope: {display(exc.affected_scope)}", file=sys.stderr)
             for suggestion in payload.get("suggestions", []):
                 value = suggestion.get("value", suggestion)
                 label = suggestion.get("label", value)
-                print(f"Suggested alternative: {value} ({label})", file=sys.stderr)
+                print(f"Suggested alternative: {display(value)} ({display(label)})", file=sys.stderr)
             if exc.next_action:
-                print(f"Next action: {exc.next_action}", file=sys.stderr)
+                print(f"Next action: {display(exc.next_action)}", file=sys.stderr)
         raise SystemExit(2) from exc
     except KeyboardInterrupt:
         if logger is not None:

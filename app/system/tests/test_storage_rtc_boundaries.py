@@ -504,6 +504,78 @@ def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_roo
     ]
 
 
+def test_new_rtc_approved_plan_becomes_stale_when_reference_changes(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """Schema-1.3 approval fingerprints REF as well as the WIP slicing stream."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=3)
+    _initialize(package_root, root)
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-3")
+    runtime_settings = store.ensure_runtime_files(job)
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(package_root / "system" / "src")
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    preview_path = run.root / "plans" / "PREVIEW.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "sage.cli",
+            "--settings",
+            str(runtime_settings),
+            "--json",
+            "workflow",
+            "plan",
+            "--workflow",
+            "saw",
+            "--operation",
+            "rtc",
+            "--scope",
+            run.scope,
+            "--output",
+            str(preview_path),
+        ],
+        text=True,
+        capture_output=True,
+        env=env,
+        check=False,
+        timeout=40,
+    )
+    assert result.returncode == 0, result.stderr + result.stdout
+    approved = json.loads(result.stdout)
+    approved.update({
+        "approval_status": "OPERATOR_APPROVED",
+        "approved_job_id": job.job_id,
+        "approved_run_id": run.run_id,
+    })
+    approved_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
+    approved_path.write_text(json.dumps(approved), encoding="utf-8")
+    store.update_run(run, approved_work_plan_path=str(approved_path))
+
+    reference_file = storage_layout(root).projects_root / job.bindings["reference"] / "41MAT.SFM"
+    reference_file.write_text(
+        reference_file.read_text(encoding="utf-8") + "\\p Revised reference metadata.\n",
+        encoding="utf-8",
+    )
+    config = load_ecosystem(store.ensure_runtime_files(job))
+
+    with pytest.raises(ValidationError) as error:
+        create_act_task(
+            config,
+            workflow="saw",
+            operation="rtc",
+            output_project_id=job.bindings["wip"],
+            contemporary_source_id=job.bindings["reference"],
+            scope_value=run.scope,
+            job_id=job.job_id,
+            run_id=run.run_id,
+        )
+    assert error.value.code == "SAW_APPROVED_PLAN_STALE"
+
+
 @pytest.mark.parametrize(
     ("bridge_wip", "bridge_reference"),
     ((True, False), (False, True), (True, True)),

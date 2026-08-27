@@ -171,7 +171,7 @@ def test_first_launch_creates_external_managed_venv_and_receipt(tmp_path: Path) 
     state = json.loads((layout.state_root / "runtime-state.json").read_text(encoding="utf-8"))
     assert state["status"] == "READY"
     assert state["python_environment"] == "localdata/.system/runtime/venv"
-    assert state["dependency_validation"] == "exact-pins+only-binary+no-deps+pip-check"
+    assert state["dependency_validation"] == "exact-pins+only-binary+no-deps+pip-check+import-smoke"
     assert state["requirements_sha256"] == bootstrap._requirements_sha256(root / "system" / "requirements.txt")
 
 
@@ -187,11 +187,12 @@ def test_incomplete_existing_venv_runs_automatic_repair(tmp_path: Path, monkeypa
     statuses = iter([(False, ["openpyxl (missing)"]), (True, [])])
     monkeypatch.setattr(bootstrap, "_requirements_status", lambda python, req: next(statuses))
     monkeypatch.setattr(bootstrap, "_pip_check", lambda python: (True, ""))
+    monkeypatch.setattr(bootstrap, "_dependency_import_status", lambda python, reqs: (True, []))
     repaired: list[tuple[Path, Path]] = []
     monkeypatch.setattr(
         bootstrap,
         "_install_requirements",
-        lambda python, req: repaired.append((python, req)) is None or True,
+        lambda python, req, force_reinstall=False: repaired.append((python, req)) is None or True,
     )
     states: list[tuple[Path, Path, Path]] = []
     monkeypatch.setattr(
@@ -231,6 +232,64 @@ def test_bootstrap_requires_standard_library_venv_before_environment_changes(tmp
     assert not bootstrap.storage_layout(root).venv_root.exists()
 
 
+def test_bootstrap_blocks_macos_quarantine_before_environment_changes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A downloaded bundle must not install or import native wheels under quarantine."""
+    root = _root(tmp_path)
+    monkeypatch.setattr(bootstrap, "_macos_quarantine_path", lambda *paths: root.parent)
+
+    assert bootstrap.ensure_runtime(root) == 2
+    assert not bootstrap.storage_layout(root).venv_root.exists()
+
+
+def test_runtime_import_probe_loads_declared_modules(tmp_path: Path) -> None:
+    """READY requires real imports rather than distribution metadata alone."""
+    requirements = tmp_path / "requirements.txt"
+    requirements.write_text("PyYAML==6.0.3\nopenpyxl==3.1.5\ncertifi==2026.7.22\n", encoding="utf-8")
+
+    ready, details = bootstrap._dependency_import_status(Path(sys.executable), [requirements])
+
+    assert ready is True
+    assert details == []
+
+
+def test_runtime_import_failure_forces_one_pinned_reinstall(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A broken import is repaired even when pip metadata reports the exact versions."""
+    root = _root(tmp_path, "PyYAML==6.0.3\n")
+    venv_python = bootstrap._venv_python(root)
+    venv_python.parent.mkdir(parents=True)
+    venv_python.write_text("placeholder", encoding="utf-8")
+    monkeypatch.setattr(bootstrap, "_python_matches_bootstrap", lambda python: True)
+    monkeypatch.setattr(bootstrap, "_pip_is_available", lambda python: True)
+    monkeypatch.setattr(bootstrap, "_requirements_status", lambda python, req: (True, []))
+    monkeypatch.setattr(bootstrap, "_pip_check", lambda python: (True, ""))
+    import_statuses = iter([(False, ["PyYAML import failed"]), (True, [])])
+    monkeypatch.setattr(
+        bootstrap,
+        "_dependency_import_status",
+        lambda python, reqs: next(import_statuses),
+    )
+    repairs: list[tuple[Path, Path, bool]] = []
+    monkeypatch.setattr(
+        bootstrap,
+        "_install_requirements",
+        lambda python, req, force_reinstall=False: repairs.append(
+            (python, req, force_reinstall)
+        ) is None or True,
+    )
+    monkeypatch.setattr(bootstrap, "_write_runtime_state", lambda *args, **kwargs: None)
+    monkeypatch.setattr(bootstrap, "_write_host_capability", lambda *args, **kwargs: Path("receipt"))
+    monkeypatch.setattr(bootstrap, "_python_version", lambda python: "3.12.14")
+
+    assert bootstrap.ensure_runtime(root) == 0
+    assert repairs == [(venv_python, root / "system" / "requirements.txt", True)]
+
+
 def test_runtime_state_records_python_platform_and_dependency_contract(tmp_path: Path) -> None:
     """Persist enough detail to prove the deterministic preflight that allowed startup."""
     root = _root(tmp_path)
@@ -238,13 +297,13 @@ def test_runtime_state_records_python_platform_and_dependency_contract(tmp_path:
     state = json.loads((bootstrap.storage_layout(root).state_root / "runtime-state.json").read_text(encoding="utf-8"))
     assert state["python_minimum"] == "3.10"
     assert state["python_implementation"]
-    assert state["schema_version"] == 2
+    assert state["schema_version"] == 3
     assert state["python_runtime"] == "localdata/.system/runtime/python"
     assert state["python_runtime_provider"] == "sage-managed"
     assert state["python_runtime_version"]
     assert state["platform_system"] in {"Windows", "Darwin", "Linux"}
     assert state["platform_supported"] is True
-    assert state["dependency_validation"] == "exact-pins+only-binary+no-deps+pip-check"
+    assert state["dependency_validation"] == "exact-pins+only-binary+no-deps+pip-check+import-smoke"
 
 
 def test_runtime_state_records_an_approved_host_python_provider(
@@ -270,6 +329,11 @@ def test_platform_launchers_use_pinned_runtime_and_delegate_wrappers(package_roo
     windows = (package_root / "system/bin/sage.cmd").read_text(encoding="utf-8")
     assert "bootstrap_python.sh" in unix
     assert "bootstrap_python.ps1" in windows
+    runtime_bootstrap = POSIX_RUNTIME_BOOTSTRAP.read_text(encoding="utf-8")
+    assert "macos_launch_quarantine_path" in runtime_bootstrap
+    assert runtime_bootstrap.index("macos_launch_quarantine_path") < runtime_bootstrap.index(
+        '"$BOOTSTRAP_PYTHON" "$BOOTSTRAP_SCRIPT"'
+    )
     for name in ("bic", "saw"):
         text = (package_root / "system" / "bin" / name).read_text(encoding="utf-8")
         assert 'exec "$BIN_DIR/sage"' in text

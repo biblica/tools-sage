@@ -992,6 +992,21 @@ class JobStore:
                 value = {}
         return {tool: value.get(tool) if isinstance(value.get(tool), str) else None for tool in TOOL_IDS}
 
+    def stale_active_job_pointers(self) -> dict[str, str]:
+        """Return active pointers whose operator-facing Job manifest is unavailable."""
+        stale: dict[str, str] = {}
+        for tool, job_id in self.active_jobs().items():
+            if not job_id:
+                continue
+            try:
+                manifest = self.job_root(tool, job_id) / "job.yml"
+            except ValidationError:
+                stale[tool] = job_id
+                continue
+            if not manifest.is_file():
+                stale[tool] = job_id
+        return stale
+
     def set_active_job(self, tool: str, job_id: str | None) -> dict[str, str | None]:
         """Set the active Job for one workflow."""
         normalized = tool.strip().lower()
@@ -1013,9 +1028,20 @@ class JobStore:
         return state
 
     def active_job(self, tool: str) -> Job | None:
-        """Return the active Job for one workflow."""
-        job_id = self.active_jobs().get(tool.strip().lower())
-        return self.load_job(job_id, tool=tool) if job_id else None
+        """Return the active Job without letting a stale pointer block recovery UI."""
+        normalized = tool.strip().lower()
+        job_id = self.active_jobs().get(normalized)
+        if not job_id:
+            return None
+        # Preserve stale pointer/controller evidence for explicit recovery, but do not
+        # let a missing operator-facing Job manifest make all of SAGE unstartable.
+        try:
+            manifest = self.job_root(normalized, job_id) / "job.yml"
+        except ValidationError:
+            return None
+        if not manifest.is_file():
+            return None
+        return self.load_job(job_id, tool=normalized)
 
     def create_run(
         self,

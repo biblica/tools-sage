@@ -8,7 +8,7 @@ from typing import Any
 
 from .config import load_yaml, require_mapping, require_string
 from .errors import ConfigurationError, ValidationError
-from .evidence import EvidencePolicy
+from .evidence import EvidencePolicy, RTCSizingPolicy
 from .grammar import load_grammar_profile
 from .canon import PROJECT_ROLE_VALUES
 from .registry import EcosystemConfig, LanguageProfileVariantSpec, WorkflowSpec
@@ -102,6 +102,7 @@ class WorkflowProfile:
     bindings: dict[str, str]
     language_profile_bindings: dict[str, str]
     evidence_policies: dict[str, EvidencePolicy]
+    rtc_sizing: RTCSizingPolicy | None
     may_write_projects: tuple[str, ...]
     publication_root: Path | None
     raw: dict[str, Any]
@@ -115,6 +116,12 @@ class WorkflowProfile:
         if "default" in self.evidence_policies:
             return self.evidence_policies["default"]
         return EvidencePolicy()
+
+    def require_rtc_sizing(self) -> RTCSizingPolicy:
+        """Return the validated SAW RTC sizing policy or fail closed."""
+        if self.workflow_id != "saw" or self.rtc_sizing is None:
+            raise ConfigurationError("SAW workflow profile requires a valid rtc_sizing contract")
+        return self.rtc_sizing
 
 
 def _parse_bindings(
@@ -326,6 +333,11 @@ def load_workflow_profile(config: EcosystemConfig, workflow: WorkflowSpec) -> Wo
             )
     if workflow.workflow_id == "bic" and may_write_projects and workflow.publication_root is None:
         raise ConfigurationError("BIC publication_root is required when it may write generated projects")
+    rtc_sizing = (
+        RTCSizingPolicy.from_mapping(raw.get("rtc_sizing"))
+        if workflow.workflow_id == "saw"
+        else None
+    )
     return WorkflowProfile(
         workflow_id=workflow.workflow_id,
         name=require_string(section.get("name"), f"{workflow.workflow_id} profile workflow.name"),
@@ -336,6 +348,7 @@ def load_workflow_profile(config: EcosystemConfig, workflow: WorkflowSpec) -> Wo
             workflow.workflow_id,
             raw.get("evidence_policies", {}),
         ),
+        rtc_sizing=rtc_sizing,
         may_write_projects=may_write_projects,
         publication_root=workflow.publication_root,
         raw=raw,

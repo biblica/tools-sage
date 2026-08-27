@@ -1,5 +1,51 @@
 # SAGE macOS / Linux Recovery Cheat Sheet
 
+## macOS quarantine / malware warning
+
+A Chrome, Safari, AirDrop, or other downloaded ZIP can attach macOS quarantine provenance to the
+entire extracted SAGE tree. Because PyYAML includes a native `_yaml` extension, Gatekeeper can then
+show an "Apple could not verify ... is free of malware" warning when SAGE first imports it. This
+warning means the portable source ZIP and its nested native dependency are not notarized; it is not
+evidence that SAGE's dependency check found malware.
+
+SAGE does not remove quarantine automatically. It stops before dependency installation/import when
+quarantine is present. For a release ZIP, first keep the ZIP and its adjacent `.sha256` file together
+and verify the exact artifact from their containing directory:
+
+```sh
+shasum -a 256 -c SAGE-v0.01beta-Full-Distribution.zip.sha256
+```
+
+Only after that prints `OK`, and only when the checksum came from a trusted SAGE release channel,
+authorize that exact extracted copy:
+
+```sh
+/usr/bin/xattr -dr com.apple.quarantine "/absolute/path/to/SAGE-v0.01beta-Full-Distribution"
+```
+
+Then rerun `./sage`. Do not use `spctl --master-disable`, do not disable Gatekeeper globally, and do
+not remove quarantine from an unverified download. A public macOS distribution should be Developer
+ID-signed and notarized so this manual recovery is unnecessary.
+
+A Git source checkout contains read-only loose objects under `.git/objects`. Do not change their
+permissions and do not recursively run `xattr` across `.git`; those objects are data and are never
+executed by SAGE. If authorizing a trusted Git checkout rather than a release ZIP, scope removal to
+the runnable bundle boundaries:
+
+```sh
+sage_bundle="/absolute/path/to/SAGE"
+for sage_target in "$sage_bundle" "$sage_bundle/sage" "$sage_bundle/localdata"; do
+  /usr/bin/xattr -d com.apple.quarantine "$sage_target" 2>/dev/null || true
+done
+/usr/bin/xattr -dr com.apple.quarantine "$sage_bundle/app"
+if [ -d "$sage_bundle/localdata/.system/runtime" ]; then
+  /usr/bin/xattr -dr com.apple.quarantine "$sage_bundle/localdata/.system/runtime"
+fi
+```
+
+`Permission denied` messages for `.git/objects/*` from an earlier broad command are harmless once
+the SAGE root, `app`, `localdata`, and managed runtime no longer carry quarantine.
+
 ## Normal resume
 
 Run `./sage` from the SAGE root. If the last Run is unfinished, menu option **1** resumes it through its recorded SAGE checkpoint; SAGE does not blindly replay the previous shell command.

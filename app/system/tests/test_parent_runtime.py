@@ -184,6 +184,29 @@ def test_uninitialized_active_job_starts_at_main_and_defers_validation_to_workfl
     assert "MANAGE JOBS" not in rendered
 
 
+def test_startup_reports_stale_active_job_pointer_as_recoverable(make_workspace) -> None:
+    """A missing Job manifest must produce an actionable startup report, not a late crash."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    set_project_root(root, project_root=storage_layout(root).projects_root)
+    store = JobStore(root, root / "ecosystem.yml")
+    store.active_jobs_path.parent.mkdir(parents=True, exist_ok=True)
+    store.active_jobs_path.write_text(
+        '{"schema_version":"1.0","bic":null,"saw":"SAW_missing-usREF"}\n',
+        encoding="utf-8",
+    )
+    center = _center(root, [])
+
+    snapshot = center.ui_service.startup_readiness({"available": True, "ready": True})
+    center._render_startup_report({"available": True, "ready": True})  # noqa: SLF001
+
+    assert snapshot["status"] == "INCOMPLETE"
+    assert snapshot["requires_setup"] is True
+    assert snapshot["next_step"] == "RECOVER_ACTIVE_JOB_POINTERS"
+    assert "Job state                ACTION NEEDED - SAW SAW_missing-usREF [manifest missing]" in center.io.output.getvalue()
+    assert "Reason code              ACTIVE_JOB_POINTER_STALE" in center.io.output.getvalue()
+    assert "Overall                  INCOMPLETE" in center.io.output.getvalue()
+
+
 def test_missing_projects_root_prevents_setup_completion(make_workspace) -> None:
     """A clean empty inventory must not hide an unconfigured workstation Projects root."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")

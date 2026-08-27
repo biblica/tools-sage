@@ -30,9 +30,26 @@ clear_persisted_data_home = _STORAGE_MODULE.clear_persisted_data_home
 storage_layout = _STORAGE_MODULE.storage_layout
 
 MIN_PYTHON = (3, 10)
-RUNTIME_STATE_SCHEMA = 2
+RUNTIME_STATE_SCHEMA = 3
 RELEASE_STATE_SCHEMA = 1
 SUPPORTED_SYSTEMS = {"Windows", "Darwin", "Linux"}
+
+RUNTIME_IMPORT_MODULES = {
+    "certifi": "certifi",
+    "et-xmlfile": "et_xmlfile",
+    "linkify-it-py": "linkify_it",
+    "markdown-it-py": "markdown_it",
+    "mdit-py-plugins": "mdit_py_plugins",
+    "mdurl": "mdurl",
+    "openpyxl": "openpyxl",
+    "platformdirs": "platformdirs",
+    "pygments": "pygments",
+    "pyyaml": "yaml",
+    "rich": "rich",
+    "textual": "textual",
+    "typing-extensions": "typing_extensions",
+    "uc-micro-py": "uc_micro",
+}
 
 HOST_CAPABILITY_SCHEMA = 1
 BASIC_RAM_THRESHOLD_BYTES = 4 * 1024**3
@@ -283,6 +300,44 @@ def _platform_status() -> tuple[bool, str]:
     return system in SUPPORTED_SYSTEMS, system
 
 
+def _macos_quarantine_path(*candidates: Path) -> Path | None:
+    """Return the first quarantined launch/runtime boundary without bypassing Gatekeeper."""
+    if platform.system() != "Darwin":
+        return None
+    xattr = Path("/usr/bin/xattr")
+    if not xattr.is_file():
+        return None
+    seen: set[Path] = set()
+    for candidate in candidates:
+        normalized = candidate.resolve()
+        if normalized in seen or (not normalized.exists() and not normalized.is_symlink()):
+            continue
+        seen.add(normalized)
+        result = _run([str(xattr), "-p", "com.apple.quarantine", str(normalized)])
+        if result.returncode == 0:
+            return normalized
+    return None
+
+
+def _macos_quarantine_tree_path(*candidates: Path) -> Path | None:
+    """Return the first runtime tree containing quarantined descendants."""
+    if platform.system() != "Darwin":
+        return None
+    xattr = Path("/usr/bin/xattr")
+    if not xattr.is_file():
+        return None
+    for candidate in candidates:
+        normalized = candidate.resolve()
+        if not normalized.exists():
+            continue
+        result = _run(
+            [str(xattr), "-r", "-p", "com.apple.quarantine", str(normalized)]
+        )
+        if result.returncode == 0:
+            return normalized
+    return None
+
+
 def _venv_module_available() -> bool:
     """Return whether the bootstrap interpreter can create standard-library virtual environments."""
     result = _run([sys.executable, "-c", "import venv"])
@@ -403,6 +458,74 @@ raise SystemExit(1 if missing else 0)
     return result.returncode == 0, [str(item) for item in details]
 
 
+def _declared_import_probes(requirements: list[Path]) -> list[dict[str, str]]:
+    """Map declared distributions to their runtime import names."""
+    probes: list[dict[str, str]] = []
+    for manifest in requirements:
+        for raw in manifest.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            requirement_text, separator, marker = line.partition(";")
+            requirement_text = requirement_text.strip()
+            distribution = requirement_text.split("==", 1)[0].split("[", 1)[0].strip()
+            normalized = re.sub(r"[-_.]+", "-", distribution).casefold()
+            module = RUNTIME_IMPORT_MODULES.get(normalized)
+            if module is not None:
+                probes.append(
+                    {
+                        "distribution": distribution,
+                        "module": module,
+                        "marker": marker.strip() if separator else "",
+                    }
+                )
+    return probes
+
+
+def _dependency_import_status(
+    python: Path,
+    requirements: list[Path],
+) -> tuple[bool, list[str]]:
+    """Import every declared runtime module so metadata-only checks cannot report READY."""
+    probes = _declared_import_probes(requirements)
+    if not probes:
+        return True, []
+    validator = r'''
+import importlib
+import json
+import sys
+from pip._vendor.packaging.markers import Marker
+
+failures = []
+imported = set()
+for probe in json.loads(sys.argv[1]):
+    distribution = probe["distribution"]
+    module = probe["module"]
+    marker = probe["marker"]
+    if marker and not Marker(marker).evaluate():
+        continue
+    if module in imported:
+        continue
+    try:
+        importlib.import_module(module)
+    except Exception as exc:
+        failures.append(f"{distribution} import failed: {type(exc).__name__}: {exc}")
+    else:
+        imported.add(module)
+print(json.dumps(failures))
+raise SystemExit(1 if failures else 0)
+'''
+    result = _run([str(python), "-c", validator, json.dumps(probes, sort_keys=True)])
+    try:
+        details = json.loads((result.stdout or "[]").strip() or "[]")
+    except json.JSONDecodeError:
+        detail = (result.stderr or result.stdout or "runtime import validation failed").strip()
+        details = [detail]
+    if result.returncode != 0 and not details:
+        details = [(result.stderr or f"runtime import process exited {result.returncode}").strip()]
+    return result.returncode == 0, [str(item) for item in details]
+
+
 def _pip_check(python: Path) -> tuple[bool, str]:
     """Run pip's installed-package consistency check inside the SAGE virtual environment."""
     result = _run([str(python), "-m", "pip", "check"])
@@ -434,7 +557,12 @@ def _create_venv(root: Path) -> bool:
     return result.returncode == 0
 
 
-def _install_requirements(python: Path, requirements: Path) -> bool:
+def _install_requirements(
+    python: Path,
+    requirements: Path,
+    *,
+    force_reinstall: bool = False,
+) -> bool:
     """Synchronize one exact-pinned manifest without dependency re-resolution."""
     if not _ensure_pip(python):
         return False
@@ -444,20 +572,19 @@ def _install_requirements(python: Path, requirements: Path) -> bool:
             _write(f"  - {error}")
         return False
     _write(f"Installing / repairing pinned SAGE dependencies from {requirements.name}...")
-    result = _run(
-        [
-            str(python),
-            "-m",
-            "pip",
-            "install",
-            "--disable-pip-version-check",
-            "--only-binary=:all:",
-            "--no-deps",
-            "-r",
-            str(requirements),
-        ],
-        capture=False,
-    )
+    args = [
+        str(python),
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--only-binary=:all:",
+        "--no-deps",
+    ]
+    if force_reinstall:
+        args.append("--force-reinstall")
+    args.extend(["-r", str(requirements)])
+    result = _run(args, capture=False)
     return result.returncode == 0
 
 
@@ -499,7 +626,7 @@ def _write_runtime_state(
         "python_runtime_version": os.environ.get("SAGE_MANAGED_PYTHON_VERSION") or _python_version(sys.executable),
         "platform_system": system,
         "platform_supported": system_ready,
-        "dependency_validation": "exact-pins+only-binary+no-deps+pip-check",
+        "dependency_validation": "exact-pins+only-binary+no-deps+pip-check+import-smoke",
         "dependency_profile": profile,
         "requirements_sha256": _requirements_sha256(requirements),
         "supplemental_requirements_sha256": (
@@ -533,6 +660,22 @@ def ensure_runtime(root: Path, *, profile: str = "base") -> int:
     normalized_profile = profile.strip().lower() or "base"
     if normalized_profile not in {"base", "tui"}:
         return _blocked(f"Unknown dependency profile: {profile}")
+
+    quarantined = _macos_quarantine_path(
+        root.parent,
+        root,
+        root / "system" / "bin" / "sage",
+        root / "system" / "tools" / "bootstrap_python.sh",
+        root / "system" / "tools" / "bootstrap_runtime.py",
+        layout.data_root,
+        layout.venv_root,
+    )
+    if quarantined is not None:
+        return _blocked(
+            f"macOS quarantine is attached to the SAGE launch/runtime boundary: {quarantined}",
+            "SAGE stopped before installing or importing native Python dependencies and did not bypass Gatekeeper.",
+            "Verify the release checksum, then follow app/docs/macos-linux/RECOVERY.md to authorize this exact SAGE copy.",
+        )
     requirements = root / "system" / "requirements.txt"
     supplemental_requirements = (
         root / "system" / "requirements-tui.txt"
@@ -597,7 +740,17 @@ def ensure_runtime(root: Path, *, profile: str = "base") -> int:
     requirements_ok = all(row[1] for row in validation_rows)
     missing = [item for path, _ready, details in validation_rows for item in details]
     pip_ok, pip_detail = _pip_check(venv_python)
-    if not requirements_ok or not pip_ok:
+    imports_ok, import_details = True, []
+    if requirements_ok and pip_ok:
+        quarantined_runtime = _macos_quarantine_tree_path(layout.venv_root)
+        if quarantined_runtime is not None:
+            return _blocked(
+                f"macOS quarantine is attached inside the managed Python environment: {quarantined_runtime}",
+                "SAGE stopped before importing native Python dependencies and did not bypass Gatekeeper.",
+                "Verify the release checksum, then follow app/docs/macos-linux/RECOVERY.md to authorize this exact SAGE copy.",
+            )
+        imports_ok, import_details = _dependency_import_status(venv_python, requirement_files)
+    if not requirements_ok or not pip_ok or not imports_ok:
         _write("SAGE PRE-CHECK")
         _write()
         _write("Python environment: INCOMPLETE")
@@ -609,16 +762,35 @@ def ensure_runtime(root: Path, *, profile: str = "base") -> int:
             _write("Dependency consistency check:")
             for line in pip_detail.splitlines():
                 _write(f"  - {line}")
+        if not imports_ok:
+            _write("Runtime import validation:")
+            for line in import_details:
+                _write(f"  - {line}")
         _write("Synchronizing the managed environment to the pinned dependency manifests.")
+        force_dependency_reinstall = not pip_ok or not imports_ok
         for path, ready, _details in validation_rows:
-            if not ready and not _install_requirements(venv_python, path):
+            if (not ready or force_dependency_reinstall) and not _install_requirements(
+                venv_python,
+                path,
+                force_reinstall=force_dependency_reinstall,
+            ):
                 return _blocked("Dependency installation failed. See the platform ERRORS.md cheat sheet.")
         validation_rows = [(path, *_requirements_status(venv_python, path)) for path in requirement_files]
         requirements_ok = all(row[1] for row in validation_rows)
         missing = [item for path, _ready, details in validation_rows for item in details]
         pip_ok, pip_detail = _pip_check(venv_python)
-        if not requirements_ok or not pip_ok:
-            details = missing or ([pip_detail] if pip_detail else [])
+        imports_ok, import_details = True, []
+        if requirements_ok and pip_ok:
+            quarantined_runtime = _macos_quarantine_tree_path(layout.venv_root)
+            if quarantined_runtime is not None:
+                return _blocked(
+                    f"macOS quarantine is attached inside the repaired Python environment: {quarantined_runtime}",
+                    "SAGE stopped before importing native Python dependencies and did not bypass Gatekeeper.",
+                    "Verify the release checksum, then follow app/docs/macos-linux/RECOVERY.md to authorize this exact SAGE copy.",
+                )
+            imports_ok, import_details = _dependency_import_status(venv_python, requirement_files)
+        if not requirements_ok or not pip_ok or not imports_ok:
+            details = missing or import_details or ([pip_detail] if pip_detail else [])
             return _blocked("The repaired environment still failed validation.", *details)
 
     release_receipt = _apply_pre_release_boundary(root)

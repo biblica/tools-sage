@@ -8,7 +8,7 @@ import re
 from dataclasses import asdict, dataclass
 from typing import Any, Mapping
 
-from .errors import EvidenceLimitError, ValidationError
+from .errors import ConfigurationError, EvidenceLimitError, ValidationError
 
 WORD_RE = re.compile(r"\w+", re.UNICODE)
 
@@ -93,6 +93,145 @@ class EvidencePolicy:
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable representation for reports and state files."""
         return asdict(self)
+
+
+@dataclass(frozen=True)
+class RTCSizingPolicy:
+    """Release-governed sizing contract for a complete SAW RTC handoff."""
+
+    provider: str
+    estimator: str
+    wip_target_min_tokens: int
+    wip_target_max_tokens: int
+    wip_hard_exclusive_tokens: int
+    governed_wip_ceiling_tokens: int
+    package_hard_max_tokens: int
+    provider_handoff_max_tokens: int
+    package_hard_serialized_bytes: int
+    minimum_reference_reserve_tokens: int
+    minimum_overhead_reserve_tokens: int
+    minimum_overhead_serialized_bytes: int
+
+    # Keep all release-governed RTC parameters together: parsing, cross-field
+    # validation and exact-handoff enforcement must evolve as one contract.
+
+    @classmethod
+    def from_mapping(cls, value: Mapping[str, Any] | None) -> "RTCSizingPolicy":
+        """Load the required RTC policy and reject contradictory limits up front."""
+        if not isinstance(value, Mapping):
+            raise ConfigurationError("SAW rtc_sizing must be a mapping")
+        text_fields = ("provider", "estimator")
+        integer_fields = (
+            "wip_target_min_tokens",
+            "wip_target_max_tokens",
+            "wip_hard_exclusive_tokens",
+            "governed_wip_ceiling_tokens",
+            "package_hard_max_tokens",
+            "provider_handoff_max_tokens",
+            "package_hard_serialized_bytes",
+            "minimum_reference_reserve_tokens",
+            "minimum_overhead_reserve_tokens",
+            "minimum_overhead_serialized_bytes",
+        )
+        missing = [name for name in (*text_fields, *integer_fields) if name not in value]
+        if missing:
+            raise ConfigurationError(
+                "SAW rtc_sizing is missing required parameters: " + ", ".join(missing)
+            )
+        text: dict[str, str] = {}
+        for name in text_fields:
+            raw = value.get(name)
+            if not isinstance(raw, str) or not raw.strip():
+                raise ConfigurationError(f"SAW rtc_sizing.{name} must be a nonempty string")
+            text[name] = raw.strip().lower() if name == "provider" else raw.strip()
+        integers: dict[str, int] = {}
+        for name in integer_fields:
+            raw = value.get(name)
+            if not isinstance(raw, int) or isinstance(raw, bool) or raw <= 0:
+                raise ConfigurationError(f"SAW rtc_sizing.{name} must be a positive integer")
+            integers[name] = raw
+        policy = cls(**text, **integers)
+        failures: list[str] = []
+        if policy.wip_target_min_tokens > policy.wip_target_max_tokens:
+            failures.append("WIP target minimum exceeds target maximum")
+        if policy.wip_target_max_tokens >= policy.wip_hard_exclusive_tokens:
+            failures.append("WIP target maximum must be below the exclusive WIP hard maximum")
+        if policy.wip_hard_exclusive_tokens > policy.governed_wip_ceiling_tokens:
+            failures.append("WIP hard maximum exceeds the governed slicer ceiling")
+        if policy.package_hard_max_tokens > policy.provider_handoff_max_tokens:
+            failures.append("RTC package maximum exceeds the provider handoff maximum")
+        minimum_required = (
+            policy.wip_hard_exclusive_tokens - 1
+            + policy.minimum_reference_reserve_tokens
+            + policy.minimum_overhead_reserve_tokens
+        )
+        if policy.package_hard_max_tokens < minimum_required:
+            failures.append(
+                "RTC package capacity cannot hold the maximum WIP slice plus required "
+                "REFERENCE and overhead reserves"
+            )
+        if failures:
+            raise ConfigurationError("Invalid SAW rtc_sizing: " + "; ".join(failures))
+        return policy
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return the complete release-governed sizing contract."""
+        return asdict(self)
+
+    def validate_active_provider(self, provider: str) -> None:
+        """Require planning to use the provider whose handoff cap governs the policy."""
+        active = provider.strip().lower()
+        if active != self.provider:
+            raise ConfigurationError(
+                f"SAW rtc_sizing is governed for provider {self.provider}, but the active "
+                f"workflow provider is {active or 'not configured'}"
+            )
+
+    def enforce_handoff(
+        self,
+        measurement: Mapping[str, Any],
+        *,
+        scope: str,
+    ) -> None:
+        """Enforce the complete package and WIP component on an exact provider handoff."""
+        projection = measurement.get("evidence_projection")
+        by_class = (
+            projection.get("by_evidence_class", {})
+            if isinstance(projection, Mapping)
+            else {}
+        )
+        subject = by_class.get("SUBJECT_TEXT", {}) if isinstance(by_class, Mapping) else {}
+        wip_tokens = int(subject.get("model_estimated_tokens", 0)) if isinstance(subject, Mapping) else 0
+        total_tokens = int(measurement.get("total_estimated_tokens", 0))
+        total_bytes = int(measurement.get("total_bytes", 0))
+        failures: list[str] = []
+        if wip_tokens <= 0:
+            failures.append("WIP component measurement is missing")
+        elif wip_tokens >= self.wip_hard_exclusive_tokens:
+            failures.append(
+                f"WIP estimated tokens {wip_tokens} >= {self.wip_hard_exclusive_tokens}"
+            )
+        if total_tokens > self.package_hard_max_tokens:
+            failures.append(
+                f"package estimated tokens {total_tokens} > {self.package_hard_max_tokens}"
+            )
+        if total_tokens > self.provider_handoff_max_tokens:
+            failures.append(
+                f"provider handoff estimated tokens {total_tokens} > "
+                f"{self.provider_handoff_max_tokens}"
+            )
+        if total_bytes > self.package_hard_serialized_bytes:
+            failures.append(
+                f"package bytes {total_bytes} > {self.package_hard_serialized_bytes}"
+            )
+        if failures:
+            raise EvidenceLimitError(
+                "Exact SAW RTC package exceeds governed sizing limits: " + "; ".join(failures),
+                code="SAW_RTC_PACKAGE_LIMIT_EXCEEDED",
+                affected_scope=scope,
+                next_action="Reslice the WIP at a smaller discourse boundary and rebuild the RTC package.",
+                details={"handoff": dict(measurement), "rtc_sizing": self.to_dict()},
+            )
 
 
 def serialize_evidence(value: Any) -> bytes:

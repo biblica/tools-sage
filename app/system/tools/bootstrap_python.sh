@@ -22,6 +22,7 @@ shift 3
 
 canonical_app_root=$(CDPATH= cd -- "$APP_ROOT" 2>/dev/null && pwd -P) || canonical_app_root=$APP_ROOT
 APP_ROOT=$canonical_app_root
+BUNDLE_ROOT=$(CDPATH= cd -- "$APP_ROOT/.." 2>/dev/null && pwd -P) || BUNDLE_ROOT="$APP_ROOT/.."
 
 MANIFEST="$APP_ROOT/system/config/python-runtime.json"
 BOOTSTRAP_SCRIPT="$APP_ROOT/system/tools/bootstrap_runtime.py"
@@ -44,6 +45,7 @@ RUNTIME_PROVIDER=""
 RUNTIME_SOURCE_PATH=""
 SELECTED_PYTHON_VERSION=""
 NEXT_ACTION=attempt
+RECOVERY_ONLY=0
 
 fail() {
     LAST_ERROR=$1
@@ -306,7 +308,7 @@ select_python_runtime() {
     RUNTIME_ROOT="$DATA_HOME/.system/runtime"
     MANAGED_PYTHON="$RUNTIME_ROOT/$PYTHON_PATH"
     if [ "$FORCE_REINSTALL" -eq 0 ]; then
-        if ! has_macos_quarantine "$MANAGED_PYTHON" && python_matches_manifest "$MANAGED_PYTHON"; then
+        if ! has_macos_quarantine_tree "$RUNTIME_ROOT/python" && python_matches_manifest "$MANAGED_PYTHON"; then
             BOOTSTRAP_PYTHON=$MANAGED_PYTHON
             RUNTIME_PROVIDER=sage-managed
             RUNTIME_SOURCE_PATH=$MANAGED_PYTHON
@@ -344,6 +346,39 @@ has_macos_quarantine() {
     [ "$HOST_SYSTEM" = "Darwin" ] || return 1
     [ -x /usr/bin/xattr ] || return 1
     /usr/bin/xattr -p com.apple.quarantine "$target" >/dev/null 2>&1
+}
+
+has_macos_quarantine_tree() {
+    target=$1
+    [ "$HOST_SYSTEM" = "Darwin" ] || return 1
+    [ -x /usr/bin/xattr ] || return 1
+    [ -e "$target" ] || return 1
+    /usr/bin/xattr -r -p com.apple.quarantine "$target" >/dev/null 2>&1
+}
+
+macos_launch_quarantine_path() {
+    [ "$HOST_SYSTEM" = "Darwin" ] || return 1
+    [ -x /usr/bin/xattr ] || return 1
+    for quarantine_candidate in \
+        "$BUNDLE_ROOT" \
+        "$APP_ROOT" \
+        "$APP_ROOT/system/bin/sage" \
+        "$APP_ROOT/system/tools/bootstrap_python.sh" \
+        "$APP_ROOT/system/tools/bootstrap_runtime.py" \
+        "$DATA_HOME" \
+        "$DATA_HOME/.system/runtime/venv"
+    do
+        [ -e "$quarantine_candidate" ] || continue
+        if /usr/bin/xattr -p com.apple.quarantine "$quarantine_candidate" >/dev/null 2>&1; then
+            printf '%s\n' "$quarantine_candidate"
+            return 0
+        fi
+    done
+    if has_macos_quarantine_tree "$DATA_HOME/.system/runtime/venv"; then
+        printf '%s\n' "$DATA_HOME/.system/runtime/venv"
+        return 0
+    fi
+    return 1
 }
 
 clear_verified_archive_quarantine() {
@@ -401,7 +436,7 @@ install_python_runtime() {
     ARCHIVE_PATH="$DOWNLOAD_ROOT/$ARCHIVE_NAME"
 
     if [ "$FORCE_REINSTALL" -eq 0 ]; then
-        if has_macos_quarantine "$MANAGED_PYTHON"; then
+        if has_macos_quarantine_tree "$PYTHON_ROOT"; then
             printf '%s\n' "The existing managed Python is quarantined; reinstalling it from the verified archive."
         elif python_matches_manifest "$MANAGED_PYTHON"; then
             return 0
@@ -440,7 +475,7 @@ install_python_runtime() {
         return 1
     fi
     STAGED_PYTHON="$STAGE_ROOT/$PYTHON_PATH"
-    if has_macos_quarantine "$STAGED_PYTHON"; then
+    if has_macos_quarantine_tree "$STAGE_ROOT/python"; then
         rm -rf "$STAGE_ROOT"
         fail "macOS quarantined the unpacked Python runtime even after verification; SAGE did not bypass Gatekeeper."
         return 1
@@ -475,8 +510,14 @@ render_block_report() {
         "Platform: $PLATFORM_KEY" \
         "Approved Python: CPython $PYTHON_VERSION" \
         "Reason: $LAST_ERROR" \
-        'Available actions:' \
-        '  1. Install the SAGE Python runtime again' >&2
+        'Available actions:' >&2
+    if [ "$RECOVERY_ONLY" -eq 1 ]; then
+        printf '%s\n' \
+            '  1. Exit SAGE and follow the checksum-first macOS quarantine recovery guide' \
+            'SAGE will not change or disable macOS security settings.' >&2
+        return
+    fi
+    printf '%s\n' '  1. Install the SAGE Python runtime again' >&2
     if [ "$HOST_SYSTEM" = "Darwin" ] && homebrew_command >/dev/null 2>&1; then
         printf '%s\n' \
             "  2. Install approved Python $PYTHON_MINOR with Homebrew" \
@@ -490,6 +531,10 @@ render_block_report() {
 }
 
 request_retry_or_exit() {
+    if [ "$RECOVERY_ONLY" -eq 1 ]; then
+        printf '%s\n' 'macOS quarantine recovery is required before SAGE can start; exiting SAGE.' >&2
+        return 1
+    fi
     if [ ! -t 0 ]; then
         printf '%s\n' 'Non-interactive launch: exiting SAGE.' >&2
         return 1
@@ -533,6 +578,7 @@ prepare_install() {
     RUNTIME_SHA256=""
     RUNTIME_URL=""
     DATA_HOME=""
+    RECOVERY_ONLY=0
     detect_platform || return 1
     [ -f "$MANIFEST" ] || {
         fail "The governed Python runtime manifest is missing: $MANIFEST"
@@ -549,7 +595,14 @@ prepare_install() {
         fail "The governed Python runtime manifest has no complete entry for $PLATFORM_KEY."
         return 1
     fi
-    resolve_data_home "$@"
+    resolve_data_home "$@" || return 1
+    quarantined_path=$(macos_launch_quarantine_path 2>/dev/null || true)
+    if [ -n "$quarantined_path" ]; then
+        RECOVERY_ONLY=1
+        fail "macOS quarantine is attached to the SAGE launch/runtime boundary: $quarantined_path. SAGE stopped before installing or importing native Python dependencies and did not bypass Gatekeeper. Verify the release checksum, then follow app/docs/macos-linux/RECOVERY.md to authorize this exact SAGE copy."
+        return 1
+    fi
+    return 0
 }
 
 while :; do
