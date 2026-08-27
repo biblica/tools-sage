@@ -877,6 +877,29 @@ def test_ai_menu_probes_on_open_and_groups_cycle_and_management_actions(make_wor
     assert "Check competency for configured languages" not in rendered
 
 
+def test_rtc_policy_menu_omits_mandatory_cross_reference_toggle(make_workspace) -> None:
+    """Keep cross-reference review always on and reuse item 10 for the OL policy."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["10", "1"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    policy = center._rtc_policy_menu("JHN 1:1")
+
+    assert policy is not None
+    assert policy["usfm_contexts"]["x"] == "NORMAL"
+    assert policy["original_language"]["source_text_drift_adjudication"] == "ENABLED"
+    rendered = output.getvalue()
+    assert "Check cross-references" not in rendered
+    assert "10. Adjudicate WIP-Reference variance" in rendered
+    assert "11. Adjudicate WIP-Reference variance" not in rendered
+
+
 def test_sage_maintenance_submenus_put_relevant_state_before_actions(
     make_workspace,
     monkeypatch,

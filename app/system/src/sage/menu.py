@@ -2298,7 +2298,6 @@ class SageControlCenter:
             ("add", r"Check added text        \add...\add*"),
             ("nd", r"Check Name of Deity     \nd...\nd*"),
             ("f", r"Check footnotes         \f...\f*"),
-            ("x", r"Check cross-references  \x...\x*"),
         ]
         policy_cycle = ("NORMAL", "MATERIAL_ONLY", "STRUCTURE_ONLY")
         while True:
@@ -2313,7 +2312,7 @@ class SageControlCenter:
                 self.io.write(menu_item(index, f"{label:<40}{policy['usfm_contexts'][key].replace('_', ' ')}"))
             self.io.write_menu_header("Original-language evidence [Choose number to toggle]", major=False)
             drift = str((policy.get("original_language") or {}).get("source_text_drift_adjudication") or "PROHIBITED")
-            self.io.write(menu_item(11, f"{'Adjudicate WIP-Reference variance':<40}{drift}"))
+            self.io.write(menu_item(10, f"{'Adjudicate WIP-Reference variance':<40}{drift}"))
             self.io.write_menu_footer(include_back=True)
             value = self.io.read("Choose: ").strip().casefold()
             if value == "a":
@@ -2348,7 +2347,7 @@ class SageControlCenter:
                 key = check_rows[int(value) - 3][0]
                 policy["checks"][key] = not policy["checks"][key]
                 continue
-            if value in {"7", "8", "9", "10"}:
+            if value in {"7", "8", "9"}:
                 key = context_rows[int(value) - 7][0]
                 current = str(policy["usfm_contexts"][key]).upper()
                 try:
@@ -2357,7 +2356,7 @@ class SageControlCenter:
                     position = 0
                 policy["usfm_contexts"][key] = policy_cycle[(position + 1) % len(policy_cycle)]
                 continue
-            if value == "11":
+            if value == "10":
                 current = str((policy.get("original_language") or {}).get("source_text_drift_adjudication") or "PROHIBITED").upper()
                 policy.setdefault("original_language", {})["source_text_drift_adjudication"] = (
                     "ENABLED" if current == "PROHIBITED" else "PROHIBITED"
