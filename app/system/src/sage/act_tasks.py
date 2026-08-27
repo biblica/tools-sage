@@ -3930,6 +3930,8 @@ def create_act_task(
                     rtc_stage=rtc_stage,
                     rtc_predecessor_files=rtc_predecessor_files,
                     expected_ol_request_ids=expected_ol_request_ids,
+                    expected_ol_requests=expected_ol_requests,
+                    rtc_stage_references=rtc_stage_references,
                 )
             raise
         identity["context_budget"] = {
