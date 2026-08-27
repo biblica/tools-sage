@@ -3414,10 +3414,12 @@ def command_plan(args: argparse.Namespace) -> int:
             wip_context_pool=all_records,
             reference_records=reference_records,
             wip_equivalence_spans=vrs_source_equivalence_spans(
-                dict(result.get("effective_vrs") or {})
+                dict(result.get("effective_vrs") or {}),
+                requested_book=scope.book,
             ),
             reference_equivalence_spans=vrs_source_equivalence_spans(
-                dict((reference_result or {}).get("effective_vrs") or {})
+                dict((reference_result or {}).get("effective_vrs") or {}),
+                requested_book=scope.book,
             ),
         )
     else:
