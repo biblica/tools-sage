@@ -4,14 +4,16 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# SAGE Core is source-only. Runtime/operator roots are external to Git.
+# SAGE app is source-only. Runtime/operator data lives in the portable bundle's
+# ignored localdata directory (or an explicitly selected external data home).
+/localdata/*
+!/localdata/README.md
 /.venv/
 /cache/
 /state/
 /workspace_data/
 /jobs/
 /reports/
-/SAGEdata/
 
 .coverage
 coverage.xml

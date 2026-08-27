@@ -1,3 +1,3 @@
 @echo off
-call "%~dp0system\bin\sage.cmd" %*
+call "%~dp0app\system\bin\sage.cmd" %*
 exit /b %ERRORLEVEL%

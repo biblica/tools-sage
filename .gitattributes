@@ -11,18 +11,19 @@
 *.vrs text eol=lf
 *.sh text eol=lf
 /sage text eol=lf
-/system/bin/sage text eol=lf
-/system/bin/bic text eol=lf
-/system/bin/saw text eol=lf
+/app/sage-python text eol=lf
+/app/system/bin/sage text eol=lf
+/app/system/bin/bic text eol=lf
+/app/system/bin/saw text eol=lf
 
 # Native Windows launchers remain CRLF.
 *.cmd text eol=crlf
 
 # Governed bundled Paratext resources retain their source-compatible CRLF form.
-/system/resources/scripture/original-language/**/*.SFM text eol=crlf
-/system/resources/scripture/original-language/**/BookNames.xml text eol=crlf
-/system/resources/scripture/original-language/**/Settings.xml text eol=crlf
+/app/system/resources/scripture/original-language/**/*.SFM text eol=crlf
+/app/system/resources/scripture/original-language/**/BookNames.xml text eol=crlf
+/app/system/resources/scripture/original-language/**/Settings.xml text eol=crlf
 
 # Hash-pinned historical source text intentionally retains terminal whitespace semantics.
-/system/skills/consolidate/SKILL.md whitespace=-blank-at-eof
-/system/skills/consolidate/references/ORIGINAL-CONTRACT.md whitespace=-blank-at-eof
+/app/system/skills/consolidate/SKILL.md whitespace=-blank-at-eof
+/app/system/skills/consolidate/references/ORIGINAL-CONTRACT.md whitespace=-blank-at-eof
