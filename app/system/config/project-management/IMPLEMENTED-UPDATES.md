@@ -13,10 +13,10 @@ before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/re
   atomic Scripture coordinates. An unchanged indivisible verse bridge such as `JHN 1:1-2` no longer
   produces a false `SAW_APPROVED_PLAN_STALE` result when runtime validation expands it to verses 1
   and 2. Genuine missing, extra, duplicated, or reordered coordinates still fail closed. The later
-  Standard-QA task separately seals `VERSE_BRIDGE_MAPPING` as a structure/completeness check and
+  RTC task separately seals `VERSE_BRIDGE_MAPPING` as a structure/completeness check and
   `VERSE_BRIDGE_CONTENT` as a translation/meaning check.
 - **Verification:** The existing exact approved-partition regression passes, and end-to-end cases
-  create the composite SAW QA stage for a bridged WIP only, a bridged REFERENCE only, and both
+  create the composite SAW RTC stage for a bridged WIP only, a bridged REFERENCE only, and both
   resources bridged, without rebuilding the valid approved plan.
 
 ### IMP-20260826-021 — Direct safe Project-removal action
@@ -65,7 +65,7 @@ before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/re
   headings, a `> `-prefixed label plus an unindented full-width `─` underline for minor headings, and
   `┌─┐ / │ / └─┘` for A-F footers, with one blank line before and after each block. Footer rows
   begin with two spaces before `A.`/`D.` to match numeric-choice indentation.
-  Standard QA and Configure AI now use the same renderer instead of private separator layouts.
+  Reference Text Comparison (RTC) and Configure AI now use the same renderer instead of private separator layouts.
   System Information is nested below its recovery-menu heading, with a single-line **System
   Actions** divider before the numbered operations. SAGE data folders are displayed as information
   inside that block instead of consuming a numbered action. The redundant **LLM status** subheading

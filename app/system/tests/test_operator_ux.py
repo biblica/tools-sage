@@ -213,16 +213,16 @@ def test_saw_composite_creation_reports_plan_without_requiring_act_path(
     make_workspace,
     monkeypatch,
 ) -> None:
-    """A composite QA stage continues immediately without being formatted as one ACT."""
+    """A composite RTC stage continues immediately without being formatted as one ACT."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     plan_path = run.root / "plans" / "composite.json"
     planned = store.update_run(
         run,
         status="COMPOSITE",
-        current_stage="TRANSLATION_AND_MEANING_QA",
+        current_stage="REFERENCE_TEXT_COMPARISON",
         plan_path=str(plan_path),
         task_manifests=["task-1.json", "task-2.json"],
     )
@@ -234,7 +234,7 @@ def test_saw_composite_creation_reports_plan_without_requiring_act_path(
             planned,
             {
                 "status": "COMPOSITE",
-                "current_stage": "TRANSLATION_AND_MEANING_QA",
+                "current_stage": "REFERENCE_TEXT_COMPARISON",
                 "plan_path": str(plan_path),
                 "task_manifests": ["task-1.json", "task-2.json"],
             },
@@ -253,7 +253,7 @@ def test_saw_composite_creation_reports_plan_without_requiring_act_path(
 
     assert result.plan_path == str(plan_path)
     assert continued == [str(plan_path)]
-    assert "Created SAW Standard QA composite plan" not in center.io.output.getvalue()
+    assert "Created SAW Reference Text Comparison (RTC) composite plan" not in center.io.output.getvalue()
     assert center.io.output.getvalue() == ""
 
 
@@ -265,7 +265,7 @@ def test_unexpected_run_continuation_error_is_bounded_at_menu_boundary(
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     center = _center(root, [""])
     monkeypatch.setattr(center, "ensure_initialized", lambda _job: {"state": "READY"})
 
@@ -288,7 +288,7 @@ def test_saw_continuation_displays_composite_unit_progress(make_workspace, monke
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     plan_path = run.root / "plans" / "composite.json"
     run = store.update_run(run, plan_path=str(plan_path), status="COMPOSITE")
     manifest_path = run.root / "tasks" / "unit-1" / "task-manifest.json"
@@ -300,7 +300,7 @@ def test_saw_continuation_displays_composite_unit_progress(make_workspace, monke
             "status": "NEXT_WORK_UNIT",
             "completed_units": 0,
             "total_units": 10,
-            "composite_stage": "TRANSLATION_AND_MEANING_QA",
+            "composite_stage": "REFERENCE_TEXT_COMPARISON",
             "next_unit": {
                 "manifest_path": str(manifest_path),
                 "scope": "MAT 1:1-2",
@@ -322,7 +322,7 @@ def test_saw_plan_continuation_advances_all_submitted_units_without_menu_round_t
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     plan_path = run.root / "plans" / "composite.json"
     run = store.update_run(run, plan_path=str(plan_path), status="COMPOSITE")
     manifests = [
@@ -335,14 +335,14 @@ def test_saw_plan_continuation_advances_all_submitted_units_without_menu_round_t
                 "status": "NEXT_WORK_UNIT",
                 "completed_units": 0,
                 "total_units": 2,
-                "composite_stage": "TRANSLATION_AND_MEANING_QA",
+                "composite_stage": "REFERENCE_TEXT_COMPARISON",
                 "next_unit": {"manifest_path": str(manifests[0]), "scope": "MAT 1:1-12"},
             },
             {
                 "status": "NEXT_WORK_UNIT",
                 "completed_units": 1,
                 "total_units": 2,
-                "composite_stage": "TRANSLATION_AND_MEANING_QA",
+                "composite_stage": "REFERENCE_TEXT_COMPARISON",
                 "next_unit": {"manifest_path": str(manifests[1]), "scope": "MAT 1:13-25"},
             },
             {"status": "COMPLETE"},
@@ -376,7 +376,7 @@ def test_continue_executes_and_submits_the_same_task_without_second_menu_round_t
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     center = _center(root, [])
     states = iter(("TASK_CREATED", "OUTPUT_READY"))
     launches: list[bool] = []
@@ -385,7 +385,7 @@ def test_continue_executes_and_submits_the_same_task_without_second_menu_round_t
     monkeypatch.setattr(
         center,
         "_task_state",
-        lambda _path: (next(states), {"operation": "qa"}),
+        lambda _path: (next(states), {"operation": "rtc"}),
     )
 
     def fake_launch(_job, _run, _path, *, pause=True):
@@ -415,7 +415,7 @@ def test_menu_declares_external_task_paths_at_controller_boundary(make_workspace
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     center = _center(root, [])
     manifest_path = run.root / "tasks" / "unit-1" / "task-manifest.json"
     commands: list[list[str]] = []
@@ -449,7 +449,7 @@ def test_rejected_saw_submission_defers_retry_policy_to_task_boundary(make_works
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     center = _center(root, [])
     manifest_path = run.root / "tasks" / "unit-1" / "task-manifest.json"
 
@@ -502,7 +502,7 @@ def test_restart_menu_action_explains_preservation_and_activates_replacement(
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     center = _center(root, ["y"])
     monkeypatch.setattr(center, "ensure_initialized", lambda _job: {"state": "READY"})
 
@@ -614,7 +614,7 @@ def test_ai_recommended_settings_are_reported_as_status(make_workspace) -> None:
             """Return one release-governed recommendation profile."""
             return {
                 "task_profiles": {
-                    "saw.qa": {
+                    "saw.rtc": {
                         "preferred_models": ["gpt-5.6-terra"],
                         "target_reasoning_effort": "medium",
                         "minimum_reasoning_effort": "medium",
@@ -627,7 +627,7 @@ def test_ai_recommended_settings_are_reported_as_status(make_workspace) -> None:
     rendered = center.io.output.getvalue()
     assert "Selected model: gpt-5.6-sol" in rendered
     assert "Reasoning override: high" in rendered
-    assert "SAW QA: gpt-5.6-terra, reasoning medium [allowed medium..high]" in rendered
+    assert "SAW RTC: gpt-5.6-terra, reasoning medium [allowed medium..high]" in rendered
 
 
 def test_codex_transport_preflight_fails_fast_with_network_diagnostic(make_workspace, monkeypatch) -> None:

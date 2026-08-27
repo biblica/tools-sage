@@ -13,12 +13,12 @@ from sage.language_identification import (
     resolve_country,
     resolve_country_input,
 )
-from sage.saw_policy import default_standard_qa_policy, should_elevate, write_run_policy_snapshot
+from sage.saw_policy import default_rtc_policy, should_elevate, write_run_policy_snapshot
 
 
-def test_beta_standard_qa_policy_defaults(package_root: Path) -> None:
+def test_beta_rtc_policy_defaults(package_root: Path) -> None:
     """Verify Beta enables four standard checks and uses explicit marker-context policy modes."""
-    policy = default_standard_qa_policy(package_root / "system/config/workflows/saw/profile.yml")
+    policy = default_rtc_policy(package_root / "system/config/workflows/saw/profile.yml")
     assert all(policy["checks"].values())
     assert policy["usfm_contexts"]["add"] == "MATERIAL_ONLY"
     assert policy["usfm_contexts"]["nd"] == "MATERIAL_ONLY"
@@ -37,11 +37,11 @@ def test_beta_material_only_omits_nonmaterial_without_downgrading() -> None:
 
 
 def test_beta_run_policy_snapshot_is_immutable(tmp_path: Path) -> None:
-    """Verify the effective Standard-QA policy is sealed once inside a Run and cannot drift later."""
-    policy = default_standard_qa_policy()
+    """Verify the effective RTC policy is sealed once inside a Run and cannot drift later."""
+    policy = default_rtc_policy()
     path = write_run_policy_snapshot(tmp_path, policy)
     assert json.loads(path.read_text(encoding="utf-8"))["usfm_contexts"]["add"] == "MATERIAL_ONLY"
-    changed = default_standard_qa_policy()
+    changed = default_rtc_policy()
     changed["usfm_contexts"]["add"] = "NORMAL"
     with pytest.raises(ValidationError) as caught:
         write_run_policy_snapshot(tmp_path, changed)

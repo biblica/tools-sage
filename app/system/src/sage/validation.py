@@ -104,7 +104,7 @@ REQUIRED_PACKAGE_PATHS = {
     "system/skills/bic-inspect/SKILL.md",
     "system/skills/bic-rewrite/SKILL.md",
     "system/skills/bic-self-check/SKILL.md",
-    "system/skills/saw-qa/SKILL.md",
+    "system/skills/saw-rtc/SKILL.md",
     "system/skills/saw-focused-check/SKILL.md",
     "system/skills/saw-ol-review/SKILL.md",
     "system/src/sage/consolidation.py",

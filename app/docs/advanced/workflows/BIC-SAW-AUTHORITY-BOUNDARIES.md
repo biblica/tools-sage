@@ -48,9 +48,9 @@ Invariants:
 
 - WIP lifecycle state is `UNDER_REVIEW`.
 - SAW Scripture inputs are WIP, REFERENCE, and only the configured applicable OL resource when OL is routed.
-- Standard QA is composite: deterministic preflight/structural triage -> conditional structural adjudication -> required translation/meaning QA -> conditional selective OL adjudication -> deterministic finalization. Targeted Check and Original-Language Review remain separate bounded operations.
+- Reference Text Comparison (RTC) is composite: deterministic preflight/structural triage -> conditional structural adjudication -> required Reference Text Comparison (RTC) -> conditional selective OL adjudication -> deterministic finalization. Targeted Check and Original-Language Review remain separate bounded operations.
 - SAW has no external Scripture write capability and never creates/modifies Paratext Notes XML; final note material is plain text for Operator copy/paste.
-- Local indexes/semantic signals are `PROJECT_INDEX_EVIDENCE`: governed retrieval/triage evidence only, not autonomous findings, Scripture authority, or translation authority. QA predecessor evidence must retain same-Job, same-Run, WIP, and REFERENCE lineage.
+- Local indexes/semantic signals are `PROJECT_INDEX_EVIDENCE`: governed retrieval/triage evidence only, not autonomous findings, Scripture authority, or translation authority. RTC predecessor evidence must retain same-Job, same-Run, WIP, and REFERENCE lineage.
 
 ## No interface between workflows
 

@@ -61,7 +61,7 @@ def saw_document(task: dict, *, include_receipts: bool = True) -> dict:
         "task_id": task["task_id"],
         "operation": task["operation"],
         "stage": {
-            "qa": "TRANSLATION_AND_MEANING_QA",
+            "rtc": "REFERENCE_TEXT_COMPARISON",
             "focused": "FOCUSED_CHECK",
             "ol": "FOCUSED_OL",
         }[task["operation"]],
@@ -201,7 +201,7 @@ def test_saw_rejects_coverage_without_review_receipt(
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -213,7 +213,7 @@ def test_saw_rejects_coverage_without_review_receipt(
     )
     with pytest.raises(ValidationError) as caught:
         submit_act_task(config, manifest)
-    assert caught.value.code == "QA_REVIEW_EVIDENCE_MISSING"
+    assert caught.value.code == "RTC_REVIEW_EVIDENCE_MISSING"
 
 
 def test_project_review_required_is_provisional_without_execution_gate(
@@ -235,7 +235,7 @@ def test_project_review_required_is_provisional_without_execution_gate(
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -255,7 +255,7 @@ def test_project_review_required_is_provisional_without_execution_gate(
     documented = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:2",
@@ -275,7 +275,7 @@ def test_skill_registry_routes_no_legacy_contracts(package_root: Path) -> None:
             for path in reference_root.glob("*")
             if path.is_file()
             and not path.name.startswith("ORIGINAL-")
-            and path.name != "RUN-QA.md"
+            and path.name != "RUN-RTC.md"
         )
         text = "\n".join(path.read_text(encoding="utf-8") for path in files)
         assert "system/tools/bic.py" not in text
@@ -307,18 +307,18 @@ def test_pytest_cache_provider_is_disabled_and_reset_removes_state(
     assert operator_file.is_file()
 
 
-def test_normal_qa_context_excludes_ol_and_raw_profile(
+def test_rtc_context_excludes_ol_and_raw_profile(
     package_root: Path,
     make_workspace,
 ) -> None:
-    """Verify that Standard QA routes neither OL text nor a raw profile."""
+    """Verify that Reference Text Comparison (RTC) routes neither OL text nor a raw profile."""
     root = make_workspace(qualification_status="VALIDATED")
     initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -346,7 +346,7 @@ def test_task_budget_uses_exact_projected_handoff_and_retains_governance_measure
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",

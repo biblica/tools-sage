@@ -8,31 +8,31 @@ Use the smallest SAW mode that matches the Operator's intent:
 
 | Operator intent | Use | OL Scripture | Typical scope |
 |---|---|---|---|
-| Review a passage systematically for translation/meaning quality | **Standard QA** | Not supplied to ordinary stages; when option 11 is enabled, SAGE may route only a bounded unresolved source-rendering conflict to selective OL adjudication | Chapter, section, book, or other planned QA scope |
+| Review a passage systematically for translation/meaning quality | **Reference Text Comparison (RTC)** | Not supplied to ordinary stages; when option 11 is enabled, SAGE may route only a bounded unresolved source-rendering conflict to selective OL adjudication | Chapter, section, book, or other planned RTC scope |
 | Answer one specific question about the WIP using the WIP and authorized REFERENCE | **Targeted Check** | **No** | One issue, passage, feature, or tightly bounded question |
 | Answer one specific question that requires direct Greek/Hebrew evidence | **Original-Language Review** | **Yes**, exactly the applicable configured OL resource | Verse or short verse range with one explicit OL question |
 
 In shorthand:
 
 ```text
-Standard QA             = broad systematic QA
+Reference Text Comparison (RTC)             = broad systematic reference-text comparison
 Targeted Check          = one bounded question, no OL Scripture
 Original-Language Review = one bounded question requiring OL Scripture
 ```
 
-## 1. Standard QA
+## 1. Reference Text Comparison (RTC)
 
-Choose **Standard QA** when the Operator wants SAGE to perform the normal, systematic SAW quality-assurance workflow across the selected scope rather than investigate one preselected issue.
+Choose **Reference Text Comparison (RTC)** when the Operator wants SAGE to perform the normal, systematic SAW Reference Text Comparison workflow across the selected scope rather than investigate one preselected issue.
 
 Example Operator intents:
 
-- "Run Standard QA on Amos 1."
+- "Run Reference Text Comparison (RTC) on Amos 1."
 - "Review Philippians for translation and meaning issues."
 - "Check this chapter systematically against the REFERENCE."
 
-Standard QA is a composite governed operation. Its structural and translation/meaning stages do not receive OL Scripture. If option 11, **Adjudicate WIP–Reference variance**, is `ENABLED`, the meaning stage defers every material content-bearing variance whose correctness depends on the source. SAGE automatically routes OT requests to Job-bound Hebrew and NT requests to Job-bound Greek. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency remain direct findings. This internal adjudication is not the separate detailed Original-Language Review, which requires one explicit bounded question.
+Reference Text Comparison (RTC) is a composite governed operation. Its structural and translation/meaning stages do not receive OL Scripture. If option 11, **Adjudicate WIP–Reference variance**, is `ENABLED`, the meaning stage defers every material content-bearing variance whose correctness depends on the source. SAGE automatically routes OT requests to Job-bound Hebrew and NT requests to Job-bound Greek. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency remain direct findings. This internal adjudication is not the separate detailed Original-Language Review, which requires one explicit bounded question.
 
-Use Standard QA when the Operator does not already know the specific issue that needs investigation.
+Use Reference Text Comparison (RTC) when the Operator does not already know the specific issue that needs investigation.
 
 ## 2. Targeted Check
 
@@ -45,7 +45,7 @@ Examples:
 - "Does the WIP preserve the contrast expressed by the REFERENCE in this paragraph?"
 - "Check only the quotation-boundary issue in Matthew 5:17-20."
 
-A Targeted Check must remain bounded to the declared question. It must not broaden into Standard QA.
+A Targeted Check must remain bounded to the declared question. It must not broaden into Reference Text Comparison (RTC).
 
 **Targeted Check never receives Greek or Hebrew Scripture.** If answering the question requires direct original-language adjudication, use Original-Language Review instead.
 
@@ -78,7 +78,7 @@ Operator concern:
 
 > "I want SAGE to check all translation/meaning issues in Romans 1."
 
-Use: **Standard QA**.
+Use: **Reference Text Comparison (RTC)**.
 
 Reason: the Operator is asking SAGE to discover and assess issues systematically. A specific issue has not been selected in advance.
 
@@ -126,13 +126,13 @@ WIP                          <project>
 REFERENCE                    <project>
 
 Active Run
-  Check                      <Standard QA / Targeted Check / Original-Language Review>
+  Check                      <Reference Text Comparison (RTC) / Targeted Check / Original-Language Review>
   Task                       <current task / NONE>
   Scope                      <scope>
   Progress                   <status>
 
   1. Continue active Run
-  2. Standard QA
+  2. Reference Text Comparison (RTC)
   3. Targeted Check
   4. Original-Language Review
 
@@ -150,11 +150,11 @@ When an active Run exists, **Continue active Run** must show enough context abov
 
 | beta Operator wording | Current machine/runtime wording | Rule |
 |---|---|---|
-| **Standard QA** | `qa`; historically "Normal QA" | Change Operator-facing prose to Standard QA. Preserve `qa` machine identifier. |
+| **Reference Text Comparison (RTC)** | `rtc` | Canonical public name and machine operation. |
 | **Targeted Check** | `focused`; historically "Focused Check" | Change Operator-facing prose to Targeted Check. Preserve `focused` machine identifier until deliberate migration. |
 | **Original-Language Review** | `ol` | Keep machine identifier `ol`; use full Operator term on first reference. |
 
-Do not use **Basic QA**: it implies reduced rigor. Do not use **Normal QA** as the canonical beta Operator term. Do not use **Focused Check** as the canonical beta Operator term because "focused" describes scope but can be misread as implying original-language investigation.
+Do not use **Basic RTC**: it implies reduced rigor. Use **Reference Text Comparison (RTC)** as the canonical beta Operator term. Do not use **Focused Check** as the canonical beta Operator term because "focused" describes scope but can be misread as implying original-language investigation.
 ## Compact execution feedback
 
 The default Operator terminal must not print provider receipts, ACT paths, selection modes, repeated submission states, or aggregate JSON paths while a normal SAW Run is progressing. Stable Run parameters are printed once, followed by one replaceable work-unit progress line:
@@ -164,7 +164,7 @@ SAW_paPCVv1-usNIVv2
 ========================================================================
 
 paPCVv1 checked against usNIVv2
-Checking Standard QA for PHM
+Checking Reference Text Comparison (RTC) for PHM
 Using gpt-5.6-terra High
 
 ------------------------------------------------------------------------

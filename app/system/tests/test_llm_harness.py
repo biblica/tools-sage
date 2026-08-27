@@ -403,17 +403,17 @@ def test_task_executor_materializes_only_exact_allowlist(make_workspace, monkeyp
 def test_saw_provider_schema_requests_only_stage_semantics() -> None:
     """SAW provider schema omits deterministic identity, coverage, and receipt boilerplate."""
     manifest = {
-        "task_id": "saw-qa-mat-example",
+        "task_id": "saw-rtc-mat-example",
         "task_fingerprint": "fingerprint",
         "workflow": "saw",
-        "operation": "qa",
-        "qa_stage": "TRANSLATION_AND_MEANING_QA",
+        "operation": "rtc",
+        "rtc_stage": "REFERENCE_TEXT_COMPARISON",
         "scope": "MAT 1:1",
         "focus": None,
         "check_type": None,
         "expected_references": ["MAT 1:1"],
         "review_requirements": {
-            "expected_work_unit_ids": ["SAW-QA-U001"],
+            "expected_work_unit_ids": ["SAW-RTC-U001"],
             "required_checks": ["MEANING_EQUIVALENCE", "GRAMMAR"],
         },
         "allowed_writes": ["output/findings.json"],
@@ -441,16 +441,16 @@ def test_saw_provider_schema_requests_only_stage_semantics() -> None:
 def test_saw_semantic_result_materializes_identity_coverage_and_receipt_locally() -> None:
     """SAGE expands compact SAW semantics to the canonical findings document before submission."""
     manifest = {
-        "task_id": "saw-qa-mat-example",
+        "task_id": "saw-rtc-mat-example",
         "task_fingerprint": "fingerprint",
-        "operation": "qa",
-        "qa_stage": "TRANSLATION_AND_MEANING_QA",
+        "operation": "rtc",
+        "rtc_stage": "REFERENCE_TEXT_COMPARISON",
         "scope": "MAT 1:1-2",
         "focus": None,
         "check_type": None,
         "expected_references": ["MAT 1:1", "MAT 1:2"],
         "review_requirements": {
-            "expected_work_unit_ids": ["SAW-QA-U001"],
+            "expected_work_unit_ids": ["SAW-RTC-U001"],
             "required_checks": ["MEANING_EQUIVALENCE", "GRAMMAR"],
         },
     }
@@ -464,12 +464,12 @@ def test_saw_semantic_result_materializes_identity_coverage_and_receipt_locally(
 
     assert document["schema_version"] == "2.0"
     assert document["task_id"] == manifest["task_id"]
-    assert document["stage"] == "TRANSLATION_AND_MEANING_QA"
+    assert document["stage"] == "REFERENCE_TEXT_COMPARISON"
     assert document["coverage"] == {
         "status": "COMPLETE",
         "reviewed_references": ["MAT 1:1", "MAT 1:2"],
     }
-    assert document["review_receipts"][0]["work_unit_id"] == "SAW-QA-U001"
+    assert document["review_receipts"][0]["work_unit_id"] == "SAW-RTC-U001"
     assert document["review_receipts"][0]["task_fingerprint"] == "fingerprint"
     assert document["review_receipts"][0]["checks_performed"] == [
         "MEANING_EQUIVALENCE",
@@ -484,11 +484,11 @@ def test_saw_semantic_result_materializes_identity_coverage_and_receipt_locally(
 def test_selective_ol_schema_materializes_role_specific_finding_evidence() -> None:
     """Option 11 returns resolutions while SAGE owns finding evidence identity."""
     manifest = {
-        "task_id": "saw-qa-exo-selective",
+        "task_id": "saw-rtc-exo-selective",
         "task_fingerprint": "fingerprint",
         "workflow": "saw",
-        "operation": "qa",
-        "qa_stage": "SELECTIVE_OL_ADJUDICATION",
+        "operation": "rtc",
+        "rtc_stage": "SELECTIVE_OL_ADJUDICATION",
         "scope": "EXO 1:10",
         "expected_references": ["EXO 1:10"],
         "allowed_evidence_ids": [
@@ -498,7 +498,7 @@ def test_selective_ol_schema_materializes_role_specific_finding_evidence() -> No
             "role": "ORIGINAL_LANGUAGE_HEBREW", "project": "HEB", "routing": "DIRECT"
         }],
         "review_requirements": {
-            "expected_work_unit_ids": ["SAW-QA-EXO-U001"],
+            "expected_work_unit_ids": ["SAW-RTC-EXO-U001"],
             "required_checks": ["WIP_REFERENCE_SOURCE_ADJUDICATION"],
         },
         "allowed_writes": ["output/findings.json"],
@@ -534,7 +534,7 @@ def test_selective_ol_schema_materializes_role_specific_finding_evidence() -> No
 def test_saw_provider_object_is_materialised_as_canonical_json_text() -> None:
     """The sealed transport serializes a schema-constrained SAW object deterministically."""
     manifest = {
-        "task_id": "saw-qa-mat-example",
+        "task_id": "saw-rtc-mat-example",
         "allowed_writes": ["output/findings.json"],
     }
     document = {"schema_version": "2.0", "task_id": manifest["task_id"]}

@@ -84,11 +84,11 @@ Example:
 |---|---|
 | Workflow | `SAW` |
 | Compact Run key | `PAPCV-A3A03DAC` |
-| Compact unit/stage key | `QA-PH-99846F75` |
+| Compact unit/stage key | `RTC-PH-99846F75` |
 | Item sequence | `0001` |
-| Canonical ITEM code | `SAW_PAPCV-A3A03DAC_QA-PH-99846F75_0001` |
+| Canonical ITEM code | `SAW_PAPCV-A3A03DAC_RTC-PH-99846F75_0001` |
 | LLM-local handle retained as | `submitted_id: F001` |
 
-Do not generate `SAW-SAW-...-SAW-QA...`. Run and unit identifiers may already contain the
+Do not generate `SAW-SAW-...-SAW-RTC...`. Run and unit identifiers may already contain the
 workflow token for their own namespace; the ITEM assembler removes that redundant top-level
 prefix before composing the final global code.

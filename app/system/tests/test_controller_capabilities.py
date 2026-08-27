@@ -68,18 +68,18 @@ def test_stage_reset_removes_only_selected_workflow_stage(make_workspace) -> Non
     """Preserve another workflow and another stage while writing an audit receipt."""
     root = make_workspace()
     config = load_ecosystem(root / "ecosystem.yml")
-    qa_root, qa_control = _task_control(config, "saw", "qa", "SAW-QA-001")
+    rtc_root, rtc_control = _task_control(config, "saw", "rtc", "SAW-RTC-001")
     ol_root, ol_control = _task_control(config, "saw", "ol", "SAW-OL-001")
     bic_root, bic_control = _task_control(config, "bic", "inspect", "BIC-INSPECT-001")
-    plan_path = config.workflow("saw").output_root / "plans" / "SAW-QA-PLAN.json"
+    plan_path = config.workflow("saw").output_root / "plans" / "SAW-RTC-PLAN.json"
     _write_json(
         plan_path,
         {
             "schema_version": "1.0",
             "status": "PARTITIONED",
-            "plan_id": "SAW-QA-PLAN",
+            "plan_id": "SAW-RTC-PLAN",
             "workflow": "saw",
-            "operation": "qa",
+            "operation": "rtc",
             "work_units": [],
         },
     )
@@ -87,15 +87,15 @@ def test_stage_reset_removes_only_selected_workflow_stage(make_workspace) -> Non
     result = reset_workflow_stage(
         config,
         workflow_id="saw",
-        stage="qa",
+        stage="rtc",
         operator="operator-1",
-        decision_id="RESET-SAW-QA-001",
-        notes="Restart bounded QA only.",
+        decision_id="RESET-SAW-RTC-001",
+        notes="Restart bounded RTC only.",
     )
     assert result["workflow"] == "saw"
-    assert result["stage"] == "qa"
-    assert result["task_ids"] == ["SAW-QA-001"]
-    assert not qa_root.exists() and not qa_control.exists() and not plan_path.exists()
+    assert result["stage"] == "rtc"
+    assert result["task_ids"] == ["SAW-RTC-001"]
+    assert not rtc_root.exists() and not rtc_control.exists() and not plan_path.exists()
     assert ol_root.exists() and ol_control.exists()
     assert bic_root.exists() and bic_control.exists()
     assert Path(result["receipt_path"]).is_file()
@@ -127,7 +127,7 @@ def test_saw_continuation_returns_exact_next_unit_and_aggregate_action(make_work
     active_root = runtime.workflow("saw").output_root / "active"
     units = []
     for index in range(1, 4):
-        task_root = active_root / f"SAW-QA-{index:03d}"
+        task_root = active_root / f"SAW-RTC-{index:03d}"
         manifest_path = task_root / "task-manifest.json"
         _write_json(manifest_path, {"task_id": task_root.name})
         units.append(
@@ -138,15 +138,15 @@ def test_saw_continuation_returns_exact_next_unit_and_aggregate_action(make_work
                 "manifest_path": str(manifest_path.resolve()),
             }
         )
-    plan_path = plans_root / "SAW-QA-PLAN.json"
+    plan_path = plans_root / "SAW-RTC-PLAN.json"
     _write_json(
         plan_path,
         {
             "schema_version": "1.0",
             "status": "PARTITIONED",
-            "plan_id": "SAW-QA-PLAN",
+            "plan_id": "SAW-RTC-PLAN",
             "workflow": "saw",
-            "operation": "qa",
+            "operation": "rtc",
             "job_id": job.job_id,
             "work_units": units,
         },

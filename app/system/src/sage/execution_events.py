@@ -149,8 +149,8 @@ def classify_exception(
     elif code in _BINDING_CODES or "BINDING_MISMATCH" in code:
         disposition, boundary, retry = "BLOCKED", "JOB_CREATION", "AFTER_CORRECTION"
     elif any(fragment in code for fragment in _OUTPUT_CODE_FRAGMENTS) or code in {
-        "QA_REVIEW_EVIDENCE_INCOMPLETE",
-        "QA_REVIEW_EVIDENCE_MISSING",
+        "RTC_REVIEW_EVIDENCE_INCOMPLETE",
+        "RTC_REVIEW_EVIDENCE_MISSING",
         "SAW_TASK_RESULT_INVALID",
     }:
         disposition, boundary, retry = "TASK_OUTPUT_REJECTED", "TASK_ATTEMPT", "RETRY_SAME_TASK"

@@ -1,4 +1,4 @@
-"""Beta SAW Standard-QA check selection and USFM-context policy."""
+"""Beta SAW RTC check selection and USFM-context policy."""
 from __future__ import annotations
 
 import json
@@ -27,15 +27,15 @@ OL_DRIFT_STATES = {"PROHIBITED", "ENABLED"}
 DEFAULT_ORIGINAL_LANGUAGE = {"source_text_drift_adjudication": "PROHIBITED"}
 
 
-def default_standard_qa_policy(profile_path: Path | None = None) -> dict[str, Any]:
-    """Load governed Standard-QA defaults, falling back to compiled Beta defaults."""
+def default_rtc_policy(profile_path: Path | None = None) -> dict[str, Any]:
+    """Load governed RTC defaults, falling back to compiled Beta defaults."""
     checks = dict(DEFAULT_CHECKS)
     contexts = dict(DEFAULT_CONTEXTS)
     version = "1.0"
     original_language = dict(DEFAULT_ORIGINAL_LANGUAGE)
     if profile_path and profile_path.is_file():
         raw = yaml.safe_load(profile_path.read_text(encoding="utf-8-sig")) or {}
-        section = dict(raw.get("check_policy") or {}).get("standard_qa") or {}
+        section = dict(raw.get("check_policy") or {}).get("rtc") or {}
         version = str(dict(raw.get("check_policy") or {}).get("version") or version)
         checks.update({str(k): bool(v) for k, v in dict(section.get("checks") or {}).items() if k in checks})
         for key, value in dict(section.get("usfm_contexts") or {}).items():
@@ -54,8 +54,8 @@ def default_standard_qa_policy(profile_path: Path | None = None) -> dict[str, An
     }
 
 
-def validate_standard_qa_policy(policy: Mapping[str, Any]) -> dict[str, Any]:
-    """Normalize one effective Standard-QA policy and reject ambiguous modes."""
+def validate_rtc_policy(policy: Mapping[str, Any]) -> dict[str, Any]:
+    """Normalize one effective RTC policy and reject ambiguous modes."""
     checks = dict(DEFAULT_CHECKS)
     checks.update({str(k): bool(v) for k, v in dict(policy.get("checks") or {}).items() if k in checks})
     contexts = dict(DEFAULT_CONTEXTS)
@@ -101,19 +101,19 @@ def load_run_policy_snapshot(run_root: Path, *, profile_path: Path | None = None
     """Load one immutable Run policy snapshot, or the governed defaults when absent."""
     path = run_root / "check-policy.json"
     if not path.is_file():
-        return default_standard_qa_policy(profile_path)
+        return default_rtc_policy(profile_path)
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValidationError("Run check-policy snapshot is invalid", code="SAW_POLICY_INVALID") from exc
     if not isinstance(raw, dict):
         raise ValidationError("Run check-policy snapshot must contain an object", code="SAW_POLICY_INVALID")
-    return validate_standard_qa_policy(raw)
+    return validate_rtc_policy(raw)
 
 
 def write_run_policy_snapshot(run_root: Path, policy: Mapping[str, Any]) -> Path:
     """Persist an immutable effective policy snapshot inside one Run."""
-    normalized = validate_standard_qa_policy(policy)
+    normalized = validate_rtc_policy(policy)
     path = run_root / "check-policy.json"
     if path.exists():
         existing = json.loads(path.read_text(encoding="utf-8"))

@@ -4,7 +4,7 @@
 2. Run native **Windows x86-64** acceptance with no system Python: verify the pinned CPython download/SHA-256/install and Install-again/Exit report before exercising a real Paratext Projects root, Codex ChatGPT login, and one governed BIC/SAW cycle.
 3. Run native **macOS Intel** acceptance from the exact release ZIP with a root path containing spaces and no system Python. Apple Silicon CPython 3.12.14 bootstrap is locally qualified; Intel still requires native artifact acceptance.
 4. Run clean **Linux x86-64 and ARM64** release-host acceptance with no system Python and outbound package access to qualify both pinned runtime artifacts, dependency installation, and one real Project/provider workflow.
-5. Exercise Normal SAW QA against representative real Project scopes to tune deterministic preflight thresholds and selective-OL request granularity without changing authority boundaries.
+5. Exercise SAW Reference Text Comparison (RTC) against representative real Project scopes to tune deterministic preflight thresholds and selective-OL request granularity without changing authority boundaries.
 6. Exercise broad Book/section scopes on real translations to validate the current pre-Run work/token preview, structural splitting, and Change-scope recovery path under realistic text sizes.
 7. Continue menu-first convergence for any remaining low-frequency CLI-only maintenance actions; keep direct CLI syntax documented as a shortcut rather than the primary operator story.
 8. Decide during the Beta development whether to retire the narrow internal compatibility aliases whose Python names still contain legacy Project-registration terminology. They are not operator-facing and should not be renamed during the Beta development without a migration reason.

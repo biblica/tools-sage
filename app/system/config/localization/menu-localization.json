@@ -2315,13 +2315,13 @@
       "ru": "данные отчёта Run",
       "pt-BR": "dados de relatório do Run"
     },
-    "menu.run.standard.qa": {
-      "en-US": "Run Standard QA",
-      "en-GB": "Run Standard QA",
-      "id": "Jalankan QA Standar",
-      "fr": "Exécuter le QA standard",
-      "ru": "Запустить стандартный QA",
-      "pt-BR": "Executar QA padrão"
+    "menu.run.standard.rtc": {
+      "en-US": "Run Reference Text Comparison (RTC)",
+      "en-GB": "Run Reference Text Comparison (RTC)",
+      "id": "Jalankan RTC Standar",
+      "fr": "Exécuter le RTC standard",
+      "ru": "Запустить стандартный RTC",
+      "pt-BR": "Executar RTC padrão"
     },
     "menu.run.status.and.blockers": {
       "en-US": "Run status and blockers",
@@ -2451,13 +2451,13 @@
       "ru": "Jobs SAW",
       "pt-BR": "Jobs SAW"
     },
-    "menu.saw.normal.qa": {
-      "en-US": "SAW Standard QA",
-      "en-GB": "SAW Standard QA",
-      "id": "QA Standar SAW",
-      "fr": "QA standard SAW",
-      "ru": "Стандартная QA SAW",
-      "pt-BR": "QA padrão SAW"
+    "menu.saw.normal.rtc": {
+      "en-US": "SAW Reference Text Comparison (RTC)",
+      "en-GB": "SAW Reference Text Comparison (RTC)",
+      "id": "RTC Standar SAW",
+      "fr": "RTC standard SAW",
+      "ru": "Стандартная RTC SAW",
+      "pt-BR": "RTC padrão SAW"
     },
     "menu.saw.original.language.review": {
       "en-US": "SAW Original-Language Review",

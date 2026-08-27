@@ -79,7 +79,7 @@ and batches the approved findings into the owning Job's main report catalog:
 localdata/reports/<job-id>/<BOOK>/
 ```
 
-For SAW QA, Operator reports are chapter-scoped with an explicit three-digit chapter component:
+For SAW Reference Text Comparison (RTC), Operator reports are chapter-scoped with an explicit three-digit chapter component:
 
 ```text
 GEN/GEN_001_ACTION-REPORT.md

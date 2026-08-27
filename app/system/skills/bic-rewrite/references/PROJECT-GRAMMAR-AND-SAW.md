@@ -5,7 +5,7 @@ Project grammar is selected from the language profile bound to each resource in 
 - BIC INSPECT: SOURCE-language contract only;
 - BIC REWRITE and SELF-CHECK: SOURCE- and TARGET-language contracts;
 - SAW structural adjudication: WIP contract when applicable;
-- SAW translation/meaning QA and Targeted Check: WIP contract;
+- SAW translation/meaning RTC and Targeted Check: WIP contract;
 - SAW selective or standalone original-language review: WIP contract plus only the bounded OL evidence explicitly routed for that stage.
 
 `ACTIVE`, `PROJECT_REVIEW_REQUIRED`, and `AI_DRAFTED` are accepted operational states. `AI_DRAFTED` identifies a profile based on an LLM's general knowledge of the target language and does not imply Team/project approval or known provenance to specific model-training sources. `PROJECT_REVIEW_REQUIRED` remains usable with review attention unless an exact governed review decision changes its effective status. `INACTIVE`, corrupt, role-incompatible, or structurally incomplete profiles are execution defects.

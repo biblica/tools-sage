@@ -5,7 +5,7 @@
 **SAGE** means **Scripture Analysis and Generation Engine**. It is a menu-first controller for two independent Scripture workflows:
 
 - **BIC — Bible Index & Context** — `SOURCE + DONOR -> TARGET`.
-- **SAW — Scripture Analysis Workbench** — `WIP + REFERENCE (+ OL) -> findings`.
+- **SAW — Scripture Analysis Workbench** — `WIP + REFERENCE -> findings`, with bounded OL clarification only for qualifying source-text discrepancies.
 
 ## Run SAGE
 
@@ -24,7 +24,7 @@ Startup classifies the host as **BASIC** when available RAM is below 4 GiB, logi
 
 Release qualification uses deterministic hardening shards plus a formal combine gate. Every discovered test module must be scheduled exactly once, every shard must bind to the same governed source SHA-256, and schema/package/deep-audit gates must remain green with no source mutation.
 
-`0.01beta` keeps the proven compact model handoff established during earlier development and makes its planning quality-first. Full controller-routed context remains locally measured for audit/fallback, while partitioning and Run progress use the projected provider handoff that is rebuilt and hard-gated again at execution. SAW meaning QA is section-led: complete `\s*`/`\ms*` story blocks remain intact whenever hard limits permit, four discourse units is a soft packing preference rather than a hard ceiling, and oversized sections are divided into balanced structural portions after bounded lookahead. Targeted Check remains capped at two intact discourse units, standalone OL Review at one, and BIC INSPECT at four; protected discourse units are not split unless a single unit itself cannot fit a hard evidence limit. Codex readiness/catalog state is verified once per governed task and reused only as a validation snapshot across its bounded phases; reasoning levels and evidence authority are unchanged. See `docs/advanced/models-and-ai/MODEL-HANDOFF-OPTIMIZATION.md`.
+`0.01beta` keeps the compact provider handoff and makes Reference Text Comparison (RTC) planning discourse-first. RTC governs the original WIP slice toward about 6,000 estimated tokens, prefers clean discourse boundaries in the 5,000–7,000 range, and never intentionally plans a WIP packet at 8,000 tokens or above. The configured Reference Project follows the exact same Scripture range. Complete RTC handoff is targeted below 28,000 estimated tokens and hard-stopped at 32,000. OL is not carried in the normal RTC package; a qualifying major WIP–Reference source-text discrepancy creates a separate bounded OL clarification package for only the affected coordinate(s). Prose prefers sections/pericopes and paragraphs; poetry preserves Psalm/song units and operational stanzas, with consecutive `\q`/`\qN` lines remaining together until a governed poetry break. See `docs/advanced/models-and-ai/MODEL-HANDOFF-OPTIMIZATION.md`.
 
 The source ZIP contains the launchers, `app/`, and an empty `localdata/` seed represented by its README. It does **not** contain a Python runtime, Python virtual environment, Jobs, reports, imported Projects, local resources, caches, or machine state. First launch reuses a validated approved host CPython 3.12 when available; otherwise it installs the architecture-specific runtime at `localdata/.system/runtime/python` from `system/config/python-runtime.json`. It then creates the environment at `localdata/.system/runtime/venv`. Startup prints the exact application root, localdata root, managed-environment path, Python version, runtime provider, and pre-release state-policy status before application setup begins.
 

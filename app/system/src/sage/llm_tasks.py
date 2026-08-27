@@ -212,10 +212,10 @@ def _saw_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
         },
     }
     operation = str(manifest.get("operation", ""))
-    stage = str(manifest.get("qa_stage") or {
+    stage = str(manifest.get("rtc_stage") or {
         "focused": "FOCUSED_CHECK",
         "ol": "FOCUSED_OL",
-    }.get(operation, "TRANSLATION_AND_MEANING_QA"))
+    }.get(operation, "REFERENCE_TEXT_COMPARISON"))
     if not (operation == "ol" or stage == "SELECTIVE_OL_ADJUDICATION"):
         finding["properties"]["original_language_evidence"] = {
             "type": "string",
@@ -237,7 +237,7 @@ def _saw_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
             "items": structural_adjudication,
         }
         required.append("structural_adjudications")
-    if stage == "TRANSLATION_AND_MEANING_QA":
+    if stage == "REFERENCE_TEXT_COMPARISON":
         properties["ol_review_requests"] = {"type": "array", "items": ol_request}
         required.append("ol_review_requests")
     if stage == "SELECTIVE_OL_ADJUDICATION":
@@ -267,10 +267,10 @@ def _materialize_saw_findings(
             code="LLM_PROVIDER_RESPONSE_INVALID",
         )
     operation = str(manifest.get("operation", ""))
-    stage = str(manifest.get("qa_stage") or {
+    stage = str(manifest.get("rtc_stage") or {
         "focused": "FOCUSED_CHECK",
         "ol": "FOCUSED_OL",
-    }.get(operation, "TRANSLATION_AND_MEANING_QA"))
+    }.get(operation, "REFERENCE_TEXT_COMPARISON"))
     findings = semantic.get("findings", [])
     if stage != "SELECTIVE_OL_ADJUDICATION" and not isinstance(findings, list):
         raise ValidationError(
@@ -591,7 +591,7 @@ def _prompt(
                     "task_id": manifest.get("task_id"),
                     "workflow": manifest.get("workflow"),
                     "operation": manifest.get("operation"),
-                    "qa_stage": manifest.get("qa_stage"),
+                    "rtc_stage": manifest.get("rtc_stage"),
                     "scope": manifest.get("scope"),
                     "allowed_writes": manifest.get("allowed_writes"),
                     "expected_references": manifest.get("expected_references", []),

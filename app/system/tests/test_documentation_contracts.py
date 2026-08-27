@@ -85,7 +85,7 @@ def test_routed_skill_material_has_no_obsolete_operational_contracts() -> None:
         text = "\n".join(item.read_text(encoding="utf-8") for item in candidates)
         for token in forbidden:
             assert token not in text, f"{token!r} remains in routed material for {path.parent.name}"
-        assert "Normal QA uses OL" not in text
+        assert "Reference Text Comparison (RTC) uses OL" not in text
 
 
 def test_documented_recovery_and_generation_flags_match_cli() -> None:
@@ -278,7 +278,7 @@ def test_bic_and_saw_documented_flows_match_enforced_scope() -> None:
     assert "no human receipt is required" in bic
     assert "urgency 3" in bic.casefold() and "carried" in bic.casefold()
     assert "--grammar-override-id" in bic
-    assert "Standard QA is one Operator operation" in saw
+    assert "Reference Text Comparison (RTC) is one Operator operation" in saw
     assert "Targeted Check" in saw and "Original-Language Review" in saw
     assert "task-bound review evidence" in saw
     assert "work units" in saw
@@ -290,7 +290,7 @@ def test_beta_current_operator_grammar_is_consistent() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     handover = (ROOT / "docs" / "advanced" / "release" / "HANDOVER.md").read_text(encoding="utf-8")
     human = (ROOT / "docs" / "advanced" / "architecture" / "HUMAN-OUTPUT-AND-LOGGING.md").read_text(encoding="utf-8")
-    saw_skill = (ROOT / "system" / "skills" / "saw-qa" / "SKILL.md").read_text(encoding="utf-8")
+    saw_skill = (ROOT / "system" / "skills" / "saw-rtc" / "SKILL.md").read_text(encoding="utf-8")
     focused_skill = (ROOT / "system" / "skills" / "saw-focused-check" / "SKILL.md").read_text(encoding="utf-8")
     ol_skill = (ROOT / "system" / "skills" / "saw-ol-review" / "SKILL.md").read_text(encoding="utf-8")
     localization = json.loads((ROOT / "system" / "config" / "localization" / "menu-localization.json").read_text(encoding="utf-8"))
@@ -386,7 +386,7 @@ def test_guided_cli_and_init_options_are_in_command_help() -> None:
     assert "--help" in cheat
     routing = (ROOT / "docs" / "advanced" / "workflows" / "NATURAL-LANGUAGE-COMMAND-ROUTING.md").read_text(encoding="utf-8")
     assert "--no-prompt" in routing
-    assert './system/bin/sage request "Run QA on Amos for NPU"' in routing
+    assert './system/bin/sage request "Run RTC on Amos for NPU"' in routing
     limitations = (ROOT / "docs" / "KNOWN-LIMITATIONS.md").read_text(encoding="utf-8")
     assert "`./system/bin/sage request`" in limitations
     assert "not unrestricted model-driven execution" in limitations
@@ -586,7 +586,7 @@ def test_representative_documented_commands_parse() -> None:
         ["--settings", "ecosystem.yml", "project", "init", "--non-interactive", "--clear-overrides"],
         ["--settings", "ecosystem.yml", "workspace", "validate"],
         ["--settings", "ecosystem.yml", "workspace", "initialize"],
-        ["--settings", "ecosystem.yml", "request", "Run QA on Amos for NPU"],
+        ["--settings", "ecosystem.yml", "request", "Run RTC on Amos for NPU"],
         [
             "--settings", "ecosystem.yml", "task", "create",
             "--workflow", "bic", "--operation", "inspect",
@@ -595,7 +595,7 @@ def test_representative_documented_commands_parse() -> None:
         ],
         [
             "--settings", "ecosystem.yml", "task", "create",
-            "--workflow", "saw", "--operation", "qa",
+            "--workflow", "saw", "--operation", "rtc",
             "--output-project", "ukrNPUv0", "--contemporary-source", "usNIVv2",
             "--scope", "AMO 1:1-9:15", "--grammar-override-id", "GRAMMAR_REVIEW_ID",
         ],

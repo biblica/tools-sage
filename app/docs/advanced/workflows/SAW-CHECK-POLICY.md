@@ -1,6 +1,6 @@
-# SAW Standard-QA Check Policy — Beta
+# SAW Reference Text Comparison (RTC) Check Policy — Beta
 
-Standard QA can split work into four check groups: structure/completeness, translation/meaning, language/readability, and consistency. All are enabled by default and may be toggled before the Run starts.
+Reference Text Comparison (RTC) can split work into four check groups: structure/completeness, translation/meaning, language/readability, and consistency. All are enabled by default and may be toggled before the Run starts.
 
 Verse bridges remain indivisible records throughout planning. During the later translation/meaning
 stage, **structure/completeness** checks their coordinate mapping and **translation/meaning** checks
@@ -24,10 +24,10 @@ The classic UI presents primary actions first, then check toggles and text-polic
 
 ```text
 ╔══════════════════════════════════════════════════════════════════════╗
-║ STANDARD QA: LUK 1:1-10                                             ║
+║ STANDARD RTC: LUK 1:1-10                                             ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
-  1. Run Standard QA
+  1. Run Reference Text Comparison (RTC)
   2. Restore defaults
 
 > Checks [Choose number to toggle ON/OFF]
@@ -63,4 +63,4 @@ The classic UI presents primary actions first, then check toggles and text-polic
 
 ## WIP–Reference source adjudication
 
-Standard QA stores `source_text_drift_adjudication` as `PROHIBITED` or `ENABLED` for schema compatibility. When enabled, option 11 automatically defers every material content-bearing WIP–Reference variance whose correctness depends on the source. SAGE routes OT requests to the Job-bound Hebrew resource and NT requests to the Job-bound Greek resource. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency remain direct QA findings. This internal adjudication is distinct from the separate Original-Language Review, which requires an explicit bounded question and performs a detailed OL check.
+Reference Text Comparison (RTC) stores `source_text_drift_adjudication` as `PROHIBITED` or `ENABLED` for schema compatibility. When enabled, option 11 automatically defers every material content-bearing WIP–Reference variance whose correctness depends on the source. SAGE routes OT requests to the Job-bound Hebrew resource and NT requests to the Job-bound Greek resource. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency remain direct RTC findings. This internal adjudication is distinct from the separate Original-Language Review, which requires an explicit bounded question and performs a detailed OL check.

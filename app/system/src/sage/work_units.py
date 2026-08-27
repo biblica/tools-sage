@@ -721,6 +721,7 @@ def _coalesce_adjacent_ranges(
         return ranges
     packed: list[tuple[int, int]] = []
     for start, end in ranges:
+        merge = False
         if packed and _fits(
             records,
             packed[-1][0],
@@ -730,6 +731,19 @@ def _coalesce_adjacent_ranges(
             context_positions,
             packet_sizer,
         ):
+            merge = True
+            if policy.preferred_max_estimated_tokens:
+                combined, _, _, _ = _measure_candidate(
+                    records,
+                    packed[-1][0],
+                    end,
+                    policy,
+                    context_pool,
+                    context_positions,
+                    packet_sizer,
+                )
+                merge = combined.estimated_tokens <= policy.preferred_max_estimated_tokens
+        if merge:
             packed[-1] = (packed[-1][0], end)
         else:
             packed.append((start, end))
@@ -790,6 +804,8 @@ def _rebalance_short_tail(
     if last_measurement.estimated_tokens >= policy.minimum_target_tokens:
         return
     prior_start, _ = ranges[-2]
+    # RTC-style soft packing must not erase a clean tail boundary merely because
+    # the combined packet remains below the absolute hard ceiling.
     if _fits(
         records,
         prior_start,
@@ -799,9 +815,19 @@ def _rebalance_short_tail(
         context_positions,
         packet_sizer,
     ):
-        ranges[-2] = (prior_start, last_end)
-        ranges.pop()
-        return
+        combined, _, _, _ = _measure_candidate(
+            records,
+            prior_start,
+            last_end,
+            policy,
+            context_pool,
+            context_positions,
+            packet_sizer,
+        )
+        if not policy.preferred_max_estimated_tokens or combined.estimated_tokens <= policy.preferred_max_estimated_tokens:
+            ranges[-2] = (prior_start, last_end)
+            ranges.pop()
+            return
 
     candidates: list[tuple[int, int, int, int, int]] = []
     for split_end in range(prior_start, last_end):

@@ -112,7 +112,7 @@ def marker_sequence(text: str) -> tuple[str, ...]:
 
 _LAYOUT_MARKER_RE = re.compile(
     r"^(?:p|m|po|pr|cls|pmo|pm|pmc|pmr|pi\d*|mi\d*|nb|pc|ph\d*|"
-    r"q\d*|qr|qc|qa|qm\d*|qd|lh|li\d*|lf|lim\d*|tr|tc\d*|th\d*|tcr\d*|"
+    r"q\d*|qr|qc|rtc|qm\d*|qd|lh|li\d*|lf|lim\d*|tr|tc\d*|th\d*|tcr\d*|"
     r"thr\d*|b)$"
 )
 
@@ -306,10 +306,10 @@ def _atomic_reference_labels(value: str) -> set[str]:
             labels.add(VerseRef(scope.book, scope.start_chapter, verse).label())
     return labels
 
-def _normalised_stage(operation: str, qa_stage: str | None = None) -> str:
-    """Return the exact stage required by one SAW operation or composite QA subtask."""
-    if operation == "qa":
-        return qa_stage or "TRANSLATION_AND_MEANING_QA"
+def _normalised_stage(operation: str, rtc_stage: str | None = None) -> str:
+    """Return the exact stage required by one SAW operation or composite RTC subtask."""
+    if operation == "rtc":
+        return rtc_stage or "REFERENCE_TEXT_COMPARISON"
     return {"focused": "FOCUSED_CHECK", "ol": "FOCUSED_OL"}[operation]
 
 
@@ -328,7 +328,7 @@ def validate_saw_findings(
     task_fingerprint: str = "",
     required_review_checks: Sequence[str] = (),
     expected_work_unit_ids: Sequence[str] = (),
-    qa_stage: str | None = None,
+    rtc_stage: str | None = None,
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
@@ -341,7 +341,7 @@ def validate_saw_findings(
         "task_id": task_id,
         "operation": operation,
         "scope": scope_value,
-        "stage": _normalised_stage(operation, qa_stage),
+        "stage": _normalised_stage(operation, rtc_stage),
     }
     for key, value in expected_identity.items():
         actual = str(document.get(key, "")).lower() if key == "operation" else document.get(key)
@@ -355,7 +355,7 @@ def validate_saw_findings(
             raise ValidationError("SAW findings focus does not match the ACT task")
         _require_string(document.get("answer"), "SAW bounded answer")
     elif document.get("focus") not in (None, ""):
-        raise ValidationError("SAW QA findings must not introduce a focus question")
+        raise ValidationError("SAW Reference Text Comparison (RTC) findings must not introduce a focus question")
     if document.get("check_type") != check_type:
         raise ValidationError("SAW findings check_type does not match the ACT task")
 
@@ -374,7 +374,7 @@ def validate_saw_findings(
     if not isinstance(raw_receipts, list) or not raw_receipts:
         raise ValidationError(
             "SAW review receipts are required; coordinate coverage alone is not review evidence",
-            code="QA_REVIEW_EVIDENCE_MISSING",
+            code="RTC_REVIEW_EVIDENCE_MISSING",
             affected_scope=scope_value,
         )
     receipt_refs: list[str] = []
@@ -397,7 +397,7 @@ def validate_saw_findings(
         if required_checks - checks:
             raise ValidationError(
                 f"review_receipts[{index}] omits required checks: " + ", ".join(sorted(required_checks - checks)),
-                code="QA_REVIEW_EVIDENCE_INCOMPLETE",
+                code="RTC_REVIEW_EVIDENCE_INCOMPLETE",
                 affected_scope=scope_value,
             )
         if task_fingerprint and receipt.get("task_fingerprint") != task_fingerprint:
@@ -415,13 +415,13 @@ def validate_saw_findings(
     if len(receipt_refs) != len(set(receipt_refs)) or set(receipt_refs) != set(expected_references):
         raise ValidationError(
             "SAW review receipts do not provide exact, non-overlapping evidence coverage",
-            code="QA_REVIEW_EVIDENCE_INCOMPLETE",
+            code="RTC_REVIEW_EVIDENCE_INCOMPLETE",
             affected_scope=scope_value,
         )
     if expected_work_unit_ids and seen_unit_ids != set(expected_work_unit_ids):
         raise ValidationError(
             "SAW review receipts do not reconcile the exact work-unit inventory",
-            code="QA_REVIEW_EVIDENCE_INCOMPLETE",
+            code="RTC_REVIEW_EVIDENCE_INCOMPLETE",
             affected_scope=scope_value,
         )
 
@@ -471,7 +471,7 @@ def validate_saw_findings(
     raw_requests = document.get("ol_review_requests", [])
     if not isinstance(raw_requests, list) or any(not isinstance(item, dict) for item in raw_requests):
         raise ValidationError("SAW ol_review_requests must be a list of objects")
-    if operation == "qa" and _normalised_stage(operation, qa_stage) == "TRANSLATION_AND_MEANING_QA":
+    if operation == "rtc" and _normalised_stage(operation, rtc_stage) == "REFERENCE_TEXT_COMPARISON":
         seen_request_ids: set[str] = set()
         seen_deferred_ids: set[str] = set()
         for index, request in enumerate(raw_requests, start=1):
@@ -501,7 +501,7 @@ def validate_saw_findings(
                 "evidence_ids": evidence_ids,
             })
     elif raw_requests:
-        raise ValidationError("OL review requests may be emitted only by the SAW QA meaning stage")
+        raise ValidationError("OL review requests may be emitted only by the SAW Reference Text Comparison (RTC) meaning stage")
 
     expected_request_map = {
         str(item.get("request_id", "")).upper(): dict(item) for item in expected_ol_requests
@@ -574,9 +574,9 @@ def validate_saw_findings(
         })
     if expected_request_set:
         if seen_resolution_ids != expected_request_set:
-            raise ValidationError("SAW QA OL stage does not reconcile the exact requested OL issue inventory")
+            raise ValidationError("SAW Reference Text Comparison (RTC) OL stage does not reconcile the exact requested OL issue inventory")
     elif ol_resolutions:
-        raise ValidationError("ol_resolutions are valid only for a requested SAW QA OL stage")
+        raise ValidationError("ol_resolutions are valid only for a requested SAW Reference Text Comparison (RTC) OL stage")
     resolved_ol_request_ids = [row["request_id"] for row in ol_resolutions]
     declared_resolved = [value.upper() for value in _string_list(document.get("resolved_ol_request_ids", []), "resolved_ol_request_ids", allow_empty=True)]
     if declared_resolved and declared_resolved != resolved_ol_request_ids:
@@ -608,11 +608,11 @@ def validate_saw_findings(
             raise ValidationError(
                 f"findings[{index}].target_reference is outside the bounded task scope"
             )
-        stage_name = _normalised_stage(operation, qa_stage)
-        if operation == "qa" and stage_name in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"}:
+        stage_name = _normalised_stage(operation, rtc_stage)
+        if operation == "rtc" and stage_name in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"}:
             if not _atomic_reference_labels(reference).issubset(set(expected_references)):
                 raise ValidationError(
-                    f"findings[{index}].target_reference is outside the exact composite-QA stage references"
+                    f"findings[{index}].target_reference is outside the exact composite-RTC stage references"
                 )
         category = str(row.get("category", "")).strip().upper()
         if category not in _ALLOWED_CATEGORIES:
@@ -650,8 +650,8 @@ def validate_saw_findings(
         if category == "GRAMMAR" and not cited_grammar_rules:
             raise ValidationError(f"findings[{index}] grammar finding must cite grammar_rule_ids")
         ol_evidence = str(row.get("original_language_evidence", "")).strip()
-        stage_name = _normalised_stage(operation, qa_stage)
-        ol_stage = operation == "ol" or (operation == "qa" and stage_name == "SELECTIVE_OL_ADJUDICATION")
+        stage_name = _normalised_stage(operation, rtc_stage)
+        ol_stage = operation == "ol" or (operation == "rtc" and stage_name == "SELECTIVE_OL_ADJUDICATION")
         if ol_stage and not ol_evidence:
             raise ValidationError(
                 f"findings[{index}].original_language_evidence is required for OL review"
@@ -674,8 +674,8 @@ def validate_saw_findings(
                 "original_language_evidence": ol_evidence,
             }
         )
-    stage_name = _normalised_stage(operation, qa_stage)
-    if operation == "qa" and stage_name == "TRANSLATION_AND_MEANING_QA":
+    stage_name = _normalised_stage(operation, rtc_stage)
+    if operation == "rtc" and stage_name == "REFERENCE_TEXT_COMPARISON":
         deferred_ids = {row["deferred_finding_id"] for row in ol_review_requests}
         overlap = deferred_ids & seen_ids
         if overlap:
@@ -683,7 +683,7 @@ def validate_saw_findings(
                 "Meaning-stage findings cannot simultaneously be final findings and deferred OL issues: "
                 + ", ".join(sorted(overlap))
             )
-    if operation == "qa" and stage_name == "SELECTIVE_OL_ADJUDICATION":
+    if operation == "rtc" and stage_name == "SELECTIVE_OL_ADJUDICATION":
         expected_finding_ids = {
             str(row["finding_id"]) for row in ol_resolutions if row["outcome"] == "FINDING"
         }
@@ -696,7 +696,7 @@ def validate_saw_findings(
             resolution = resolution_by_finding[finding["finding_id"]]
             if finding["target_reference"] != resolution["target_reference"]:
                 raise ValidationError("Selective OL finding reference must match its OL resolution")
-    if operation == "qa" and stage_name == "STRUCTURAL_ADJUDICATION":
+    if operation == "rtc" and stage_name == "STRUCTURAL_ADJUDICATION":
         structural_finding_ids = {
             str(row["finding_id"]) for row in adjudications.values() if row["outcome"] == "FINDING"
         }
@@ -712,7 +712,7 @@ def validate_saw_findings(
         "schema_version": "2.0",
         "task_id": task_id,
         "operation": operation,
-        "stage": _normalised_stage(operation, qa_stage),
+        "stage": _normalised_stage(operation, rtc_stage),
         "scope": scope_value,
         "focus": focus,
         "check_type": check_type,
@@ -932,8 +932,11 @@ def render_action_report(document: Mapping[str, Any]) -> str:
         if isinstance(raw_events, Mapping):
             rendering_event_rows = raw_events
     wip, reference = _operator_project_names(document)
+    report_title = _report_label(document, "report.saw_action_report")
+    if str(document.get("operation") or "").strip().lower() == "rtc":
+        report_title = f"Reference Text Comparison (RTC) — {report_title}"
     lines = [
-        "# " + _report_label(document, "report.saw_action_report"),
+        "# " + report_title,
         "",
         f"- Projects: `{wip}` checked against `{reference}`",
         f"- {_report_label(document, 'label.scope')}: `{document['scope']}`",

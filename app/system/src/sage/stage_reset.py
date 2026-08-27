@@ -18,7 +18,7 @@ from .transactions import FileTransaction, incomplete_transactions
 
 STAGES: dict[str, tuple[str, ...]] = {
     "bic": ("inspect", "rewrite", "self_check"),
-    "saw": ("qa", "focused", "ol"),
+    "saw": ("rtc", "focused", "ol"),
 }
 _BIC_DOWNSTREAM = {
     "inspect": {"rewrite", "self_check"},

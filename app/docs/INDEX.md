@@ -10,7 +10,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [TUI](TUI.md) — experimental/unstable v0.01beta Textual shell, migration boundary, keyboard/mouse controls, and parity plan.
 - [Scripture Project Operator Cheat Sheet](PROJECT-OPERATOR-CHEAT-SHEET.md) — discovery, Add-to-SAGE, Project maintenance, Job-owned reports, reporting languages, and original-language resources.
 - [BIC Cheat Sheet](BIC-CHEAT-SHEET.md) — BIC Job, Run, task, state, and recovery quick reference.
-- [SAW Cheat Sheet](SAW-CHEAT-SHEET.md) — SAW Standard QA, Targeted Check, Original-Language Review, finalization, and read-only boundaries.
+- [SAW Cheat Sheet](SAW-CHEAT-SHEET.md) — SAW Reference Text Comparison (RTC), Targeted Check, Original-Language Review, finalization, and read-only boundaries.
 - [Good Practice](GOOD-PRACTICE.md) — safe operating and source-maintenance habits.
 - [Known Limitations](KNOWN-LIMITATIONS.md) — explicit functional and platform limits.
 - [Windows Cheat Sheet](windows/CHEAT-SHEET.md), [Recovery](windows/RECOVERY.md), and [Errors](windows/ERRORS.md).

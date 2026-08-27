@@ -555,7 +555,7 @@ def check_all_skills(root: Path, errors: list[str], counts: dict[str, int]) -> N
                 for item in sorted(reference_root.iterdir())
                 if item.is_file()
                 and not item.name.startswith("ORIGINAL-")
-                and item.name != "RUN-QA.md"
+                and item.name != "RUN-RTC.md"
             )
         routed_text = "\n".join(item.read_text(encoding="utf-8") for item in candidates)
         for token, label in {**ROUTED_CONTRACT_FORBIDDEN, **forbidden_context}.items():
@@ -772,7 +772,7 @@ def check_skill_registry(root: Path, errors: list[str], counts: dict[str, int]) 
         ("bic", "inspect"),
         ("bic", "rewrite"),
         ("bic", "self_check"),
-        ("saw", "qa"),
+        ("saw", "rtc"),
         ("saw", "focused"),
         ("saw", "ol"),
     }

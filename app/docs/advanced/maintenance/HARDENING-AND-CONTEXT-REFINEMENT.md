@@ -30,9 +30,9 @@ Conditional BIC OL clarification remains controller-derived and material-risk ga
 
 This transport refinement does not modify the protected rewrite-detail or protected verb-selection contracts.
 
-## SAW Standard QA discourse units
+## SAW Reference Text Comparison (RTC) discourse units
 
-Translation-and-meaning QA preserves deterministic discourse units and coalesces adjacent sections while the measured packet remains within every configured hard limit. Four primary discourse units is a soft packing preference for normal meaning QA, not a ceiling. Focused review uses at most two intact units and standalone Original-Language Review one. This retains enough neighboring discourse to avoid context-starved microtasks while preventing broad specialist checks from diluting evaluation focus.
+Reference Text Comparison (RTC) preserves deterministic discourse units while balancing the original WIP packet around 6,000 estimated tokens. Clean boundaries are preferred between 5,000 and 7,000; adjacent units are not greedily packed beyond the 7,000 preferred ceiling, and no WIP packet may be planned at 8,000 tokens or above. Focused review uses at most two intact units and standalone Original-Language Review one. OL clarification triggered by RTC is a separate finding-scoped package, not an expansion of the parent RTC slice.
 
 - Prose: one body paragraph.
 - Lists: `\lh` breaks list flow; each `\li1` starts a major unit; following subordinate `\li2+` paragraphs stay with that major unit; `\lf` breaks list flow.

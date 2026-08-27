@@ -37,17 +37,17 @@
       "qualification_status": "VALIDATED",
       "transformation_summary": "Aligned to current SAGE SOURCE/DONOR/TARGET authority boundaries, unified Project/Job/Run governance, local-first semantic evidence, protected BIC 4 policy, and deterministic submission validation, closed local-evidence boundary, and general-linguistic-competence limit."
     },
-    "saw-qa": {
+    "saw-rtc": {
       "workflow": "saw",
-      "operation": "qa",
-      "file": "system/skills/saw-qa/SKILL.md",
+      "operation": "rtc",
+      "file": "system/skills/saw-rtc/SKILL.md",
       "source_system": "SAW",
       "source_version": "A0002-r6",
-      "original_file": "system/skills/saw-qa/references/ORIGINAL-WORKFLOW-PROMPT.md",
-      "original_sha256": "adf4b38415e667939853c5af8871400122c9dcb7af3eee83d3857b45bfa62532",
-      "adapted_sha256": "69452148bd612fd6113a02c9a32aef4329008f2daccd65227505b2243a0e4101",
+      "original_file": "system/skills/saw-rtc/references/ORIGINAL-WORKFLOW-PROMPT.md",
+      "original_sha256": "c7728b5a2daeb3a0d3f914e5b9fce1bb9ea6ea4b52e085890c1cba456a08717c",
+      "adapted_sha256": "f9909a7ae085e731869393be242c5bb54c86171b56e01625e946ad6196c71819",
       "qualification_status": "VALIDATED",
-      "transformation_summary": "Beta Standard QA terminology, primary verse-bridge mapping/content checks, bounded selective-OL authority, local-first evidence, and deterministic submission validation."
+      "transformation_summary": "Beta Reference Text Comparison (RTC) terminology, primary verse-bridge mapping/content checks, bounded selective-OL authority, local-first evidence, and deterministic submission validation."
     },
     "saw-focused-check": {
       "workflow": "saw",
@@ -57,7 +57,7 @@
       "source_version": "A0002-r6",
       "original_file": "system/skills/saw-focused-check/references/ORIGINAL-WORKFLOW-PROMPT.md",
       "original_sha256": "14b5bb01a196f20a22aef3fbbc06582678d20da36eb64164482caa54bcdbf501",
-      "adapted_sha256": "f6beb76493c83a255dbc2094d24f680ae82821d2ac2f53a018f0d488b9fca35d",
+      "adapted_sha256": "679dc8c53edbbb186f2159a9b16c885fc3dd5024c718f3d024fb36f760bbd90b",
       "qualification_status": "VALIDATED",
       "transformation_summary": "Beta Targeted Check terminology; bounded WIP/REFERENCE question with no OL Scripture, local-first evidence, and deterministic submission validation."
     },
@@ -69,7 +69,7 @@
       "source_version": "A0002-r6",
       "original_file": "system/skills/saw-ol-review/references/ORIGINAL-WORKFLOW-PROMPT.md",
       "original_sha256": "e4b41d7281d8c9003344de7ceba5fa264c07ccd70b230378597911b1debbee43",
-      "adapted_sha256": "419a26f665ea9ada1f5a7e8512a510ea86f96550c4a5a540b02d5cffdbc94b40",
+      "adapted_sha256": "bfde5a553f8fe0bb5222f57b340f2307fa1e18421be28c3af3d5f588b198de06",
       "qualification_status": "VALIDATED",
       "transformation_summary": "Beta Original-Language Review authority: routed GRK/HEB is primary textual authority for the bounded source-text question; configured Reference Project remains the comparison context."
     }

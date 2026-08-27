@@ -61,7 +61,7 @@ def initialize(package_root: Path, root: Path) -> None:
 def saw_document(task: dict, *, findings: list[dict] | None = None, answer: str = "") -> dict:
     """Build a complete bounded SAW submission fixture for this test."""
     stage = {
-        "qa": "TRANSLATION_AND_MEANING_QA",
+        "rtc": "REFERENCE_TEXT_COMPARISON",
         "focused": "FOCUSED_CHECK",
         "ol": "FOCUSED_OL",
     }[task["operation"]]
@@ -220,7 +220,7 @@ def test_act_creation_requires_initialization(make_workspace):
         create_act_task(
             config,
             workflow="saw",
-            operation="qa",
+            operation="rtc",
             output_project_id="usWIP",
             contemporary_source_id="usNIVv2",
             scope_value="MAT 1",
@@ -255,7 +255,7 @@ def test_job_runtime_initialization_authorizes_act_without_root_state(package_ro
     task = create_act_task(
         load_ecosystem(runtime_path),
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -268,17 +268,17 @@ def test_act_task_routes_ol_only_for_ol_operation(package_root, make_workspace):
     root = make_workspace(qualification_status="VALIDATED")
     initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
-    qa = create_act_task(
+    rtc = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:2",
     )
-    assert qa["original_language_sources"] == []
-    assert not (Path(qa["manifest_path"]).parent / "packet" / "original-language.usj.json").exists()
-    packet = Path(qa["manifest_path"]).parent / "packet" / "reference.usj.json"
+    assert rtc["original_language_sources"] == []
+    assert not (Path(rtc["manifest_path"]).parent / "packet" / "original-language.usj.json").exists()
+    packet = Path(rtc["manifest_path"]).parent / "packet" / "reference.usj.json"
     comparison = json.loads(packet.read_text(encoding="utf-8"))
     assert comparison["sage"]["atomic_references"] == ["MAT 1:2"]
     assert [record["number"] for record in comparison["sage"]["verse_records"]] == ["2"]
@@ -327,7 +327,7 @@ def test_act_rejects_working_contemporary_source(package_root, make_workspace):
         create_act_task(
             config,
             workflow="saw",
-            operation="qa",
+            operation="rtc",
             output_project_id="usWIP",
             contemporary_source_id="usNIVv2",
             scope_value="MAT 1",
@@ -345,7 +345,7 @@ def test_blocked_project_cannot_create_task(package_root, make_workspace):
         create_act_task(
             config,
             workflow="saw",
-            operation="qa",
+            operation="rtc",
             output_project_id="usWIP",
             contemporary_source_id="usNIVv2",
             scope_value="MAT 1",
@@ -360,7 +360,7 @@ def test_manifest_mutation_is_rejected(package_root, make_workspace):
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1",
@@ -384,7 +384,7 @@ def test_write_allowlist_escape_is_rejected(package_root, make_workspace):
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1",
@@ -406,7 +406,7 @@ def test_empty_saw_object_is_rejected(package_root, make_workspace):
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1",
@@ -425,7 +425,7 @@ def test_valid_saw_output_renders_reports(package_root, make_workspace):
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -651,7 +651,7 @@ def test_evaluation_queue_is_sequential_and_has_platform_commands(package_root, 
         "--scope",
         "MAT 1",
         "--operation",
-        "qa",
+        "rtc",
     )
     assert result.returncode == 0, result.stderr + result.stdout
     payload = json.loads(result.stdout)
@@ -670,7 +670,7 @@ def test_act_prompt_mutation_is_rejected(package_root, make_workspace):
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -694,7 +694,7 @@ def test_settings_drift_is_rejected_at_submission(package_root, make_workspace):
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -722,7 +722,7 @@ def test_unlisted_output_is_rejected(package_root, make_workspace):
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -743,7 +743,7 @@ def test_completed_task_cannot_be_resubmitted(package_root, make_workspace):
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",

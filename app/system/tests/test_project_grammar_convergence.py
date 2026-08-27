@@ -41,13 +41,13 @@ def _initialize(package_root: Path, root: Path) -> None:
 
 
 
-def _qa_stage_document(manifest: dict, *, ol_request: bool = False, resolved_ids: list[str] | None = None) -> dict:
-    """Build one complete no-finding SAW QA stage submission for transition tests."""
+def _rtc_stage_document(manifest: dict, *, ol_request: bool = False, resolved_ids: list[str] | None = None) -> dict:
+    """Build one complete no-finding SAW RTC stage submission for transition tests."""
     document = {
         "schema_version": "2.0",
         "task_id": manifest["task_id"],
-        "operation": "qa",
-        "stage": manifest["qa_stage"],
+        "operation": "rtc",
+        "stage": manifest["rtc_stage"],
         "scope": manifest["scope"],
         "focus": None,
         "check_type": None,
@@ -71,7 +71,7 @@ def _qa_stage_document(manifest: dict, *, ol_request: bool = False, resolved_ids
                 "task_fingerprint": manifest["task_fingerprint"],
                 "reviewed_references": list(manifest["expected_references"]),
                 "checks_performed": list(manifest["review_requirements"]["required_checks"]),
-                "evidence_summary": "Reviewed every bounded coordinate against every evidence source and required check routed to this isolated QA stage.",
+                "evidence_summary": "Reviewed every bounded coordinate against every evidence source and required check routed to this isolated RTC stage.",
             }
         ],
         "findings": [],
@@ -261,24 +261,24 @@ def test_bic_cohort_pins_target_identity_and_target_grammar(package_root: Path, 
     assert not any(name == "target.usfm" for name in routed)
 
 
-def test_normal_qa_starts_as_composite_meaning_stage_without_ol(package_root: Path, make_workspace) -> None:
-    """Create one composite Standard QA plan whose first model stage has no OL evidence."""
+def test_rtc_starts_as_composite_meaning_stage_without_ol(package_root: Path, make_workspace) -> None:
+    """Create one composite Reference Text Comparison (RTC) plan whose first model stage has no OL evidence."""
     root = make_workspace(qualification_status="VALIDATED")
     _initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
     result = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
     )
     assert result["status"] == "COMPOSITE"
-    assert result["current_stage"] in {"STRUCTURAL_ADJUDICATION", "TRANSLATION_AND_MEANING_QA"}
+    assert result["current_stage"] in {"STRUCTURAL_ADJUDICATION", "REFERENCE_TEXT_COMPARISON"}
     manifest = json.loads(Path(result["manifest_path"]).read_text(encoding="utf-8"))
     assert manifest["job_id"] and manifest["run_id"]
-    if manifest["qa_stage"] in {"STRUCTURAL_ADJUDICATION", "TRANSLATION_AND_MEANING_QA"}:
+    if manifest["rtc_stage"] in {"STRUCTURAL_ADJUDICATION", "REFERENCE_TEXT_COMPARISON"}:
         assert not manifest["original_language_sources"]
         assert not any(str(row["path"]).endswith("original-language.usj.json") for row in manifest["allowed_reads"])
 
@@ -318,7 +318,7 @@ def test_live_skill_contracts_have_no_stale_authority_terms(package_root: Path) 
             files.append(skill)
         refs = root / "references"
         if refs.is_dir():
-            files.extend(p for p in refs.iterdir() if p.is_file() and not p.name.startswith("ORIGINAL-") and p.name != "RUN-QA.md")
+            files.extend(p for p in refs.iterdir() if p.is_file() and not p.name.startswith("ORIGINAL-") and p.name != "RUN-RTC.md")
     text = "\n".join(path.read_text(encoding="utf-8") for path in files)
     assert re.search(r"(?<!AI_)\bDRAFT\b", text) is None
     assert "reviewed-target" not in text.casefold()
@@ -328,41 +328,41 @@ def test_live_skill_contracts_have_no_stale_authority_terms(package_root: Path) 
     assert "Apply the routed `PROTECTED-REWRITE-DETAIL-RULES.md`" not in inspect_text
 
 
-def test_composite_qa_meaning_to_selective_ol_to_final_text(package_root: Path, make_workspace) -> None:
-    """Carry one Standard QA Run through bounded meaning -> OL delta -> deterministic finalization."""
+def test_composite_rtc_meaning_to_selective_ol_to_final_text(package_root: Path, make_workspace) -> None:
+    """Carry one Reference Text Comparison (RTC) Run through bounded meaning -> OL delta -> deterministic finalization."""
     root = make_workspace(qualification_status="VALIDATED")
     _initialize(package_root, root)
     saw_profile = root / "system" / "config" / "workflows" / "saw" / "profile.yml"
     saw_raw = yaml.safe_load(saw_profile.read_text(encoding="utf-8"))
-    saw_raw["check_policy"]["standard_qa"]["original_language"]["source_text_drift_adjudication"] = "ENABLED"
+    saw_raw["check_policy"]["rtc"]["original_language"]["source_text_drift_adjudication"] = "ENABLED"
     _write_yaml(saw_profile, saw_raw)
     config = load_ecosystem(root / "ecosystem.yml")
     result = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
     )
-    assert result["current_stage"] == "TRANSLATION_AND_MEANING_QA"
+    assert result["current_stage"] == "REFERENCE_TEXT_COMPARISON"
     meaning_manifest_path = Path(result["manifest_path"])
     meaning_manifest = json.loads(meaning_manifest_path.read_text(encoding="utf-8"))
     output = meaning_manifest_path.parent / "output" / "findings.json"
-    output.write_text(json.dumps(_qa_stage_document(meaning_manifest, ol_request=True)), encoding="utf-8")
+    output.write_text(json.dumps(_rtc_stage_document(meaning_manifest, ol_request=True)), encoding="utf-8")
     submit_act_task(config, meaning_manifest_path)
 
     advanced = continue_saw_plan(config, Path(result["plan_path"]))
     assert advanced["composite_stage"] == "SELECTIVE_OL_ADJUDICATION"
     ol_manifest_path = Path(advanced["next_unit"]["manifest_path"])
     ol_manifest = json.loads(ol_manifest_path.read_text(encoding="utf-8"))
-    assert ol_manifest["qa_stage"] == "SELECTIVE_OL_ADJUDICATION"
+    assert ol_manifest["rtc_stage"] == "SELECTIVE_OL_ADJUDICATION"
     assert ol_manifest["review_requirements"]["expected_ol_request_ids"] == ["OLR-1"]
     assert [row["project"] for row in ol_manifest["original_language_sources"]] == ["GRK"]
-    assert any("qa-predecessor" in str(row["path"]) for row in ol_manifest["allowed_reads"])
+    assert any("rtc-predecessor" in str(row["path"]) for row in ol_manifest["allowed_reads"])
 
     ol_output = ol_manifest_path.parent / "output" / "findings.json"
-    ol_output.write_text(json.dumps(_qa_stage_document(ol_manifest, resolved_ids=["OLR-1"])), encoding="utf-8")
+    ol_output.write_text(json.dumps(_rtc_stage_document(ol_manifest, resolved_ids=["OLR-1"])), encoding="utf-8")
     submit_act_task(config, ol_manifest_path)
     plan_document = json.loads(Path(result["plan_path"]).read_text(encoding="utf-8"))
     reports_root = storage_layout(root).reports_root / plan_document["job_id"] / "MAT"
@@ -429,5 +429,5 @@ def test_composite_qa_meaning_to_selective_ol_to_final_text(package_root: Path, 
     repaired = continue_saw_plan(config, plan_path)
     repaired_text = Path(repaired["report_path"]).read_text(encoding="utf-8")
     assert repaired_text != "stale collision\n"
-    assert repaired_text.startswith("# SAW Action Report\n")
+    assert repaired_text.startswith("# Reference Text Comparison (RTC) — SAW Action Report\n")
     assert "- Scope: `MAT 1`" in repaired_text

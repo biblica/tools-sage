@@ -330,7 +330,12 @@ class LocalTransformService:
     def _deterministic_report_summary(facts: Mapping[str, Any]) -> str:
         """Render a concise report summary from controller-owned counts and identifiers."""
         workflow = str(facts.get("workflow") or "SAGE").upper()
-        operation = str(facts.get("operation") or "report").replace("_", " ")
+        operation_id = str(facts.get("operation") or "report").strip().lower()
+        operation = (
+            "Reference Text Comparison (RTC)"
+            if operation_id == "rtc"
+            else operation_id.replace("_", " ")
+        )
         scope = str(facts.get("scope") or "the requested scope")
         item_kind = str(facts.get("item_kind") or "item")
         item_count = int(facts.get("item_count") or 0)

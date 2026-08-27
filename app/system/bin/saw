@@ -56,7 +56,7 @@ Authority model:
 
 Commands:
   status       Show SAW qualification and resource readiness
-  qa           Create one bounded Standard QA ACT task
+  rtc           Create one bounded Reference Text Comparison (RTC) ACT task
   focused      Create one bounded Targeted Check ACT task
   ol           Create one bounded original-language review ACT task
   submit       Validate and finalize one completed task
@@ -67,12 +67,12 @@ when possible. Use --no-prompt or --json for structured INPUT_REQUIRED output.
 
 Examples:
   ./system/bin/saw status
-  ./system/bin/saw qa --wip ukrNPUv0 --reference usNIVv2 --scope "AMO 1:1-9:15" --grammar-override-id GRAMMAR_REVIEW_ID
+  ./system/bin/saw rtc --wip ukrNPUv0 --reference usNIVv2 --scope "AMO 1:1-9:15" --grammar-override-id GRAMMAR_REVIEW_ID
   ./system/bin/saw focused --wip faTMNv0 --reference usNIVv2 --scope "JHN 1:1-5" --focus "Is the participant reference clear?" --type PARTICIPANT_REFERENCE --grammar-override-id GRAMMAR_REVIEW_ID
   ./system/bin/saw ol --wip faTMNv0 --reference usNIVv2 --scope "JHN 1:1-5" --focus "Does the WIP preserve the grammatical relationship?" --grammar-override-id GRAMMAR_REVIEW_ID
   ./system/bin/saw submit --task localdata/work/jobs/saw/JOB_ID/runs/RUN_ID/tasks/TASK_ID/task-manifest.json
 
-If QA returns a partition plan, execute every unit and aggregate with ./system/bin/sage task aggregate --plan PATH.
+If RTC returns a partition plan, execute every unit and aggregate with ./system/bin/sage task aggregate --plan PATH.
 HELP
         ;;
     *) run_sage shortcut --workflow saw "$COMMAND" -- "$@" ;;

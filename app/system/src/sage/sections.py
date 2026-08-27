@@ -138,7 +138,7 @@ def index_usfm_structure(
     records: list[dict[str, Any]] = []
 
     def reset_discourse_unit() -> None:
-        """Close the active natural QA unit at one explicit structural breaker."""
+        """Close the active natural RTC unit at one explicit structural breaker."""
         nonlocal active_discourse_unit_id
         nonlocal active_discourse_unit_kind
         nonlocal active_discourse_unit_marker
@@ -147,7 +147,7 @@ def index_usfm_structure(
         active_discourse_unit_marker = ""
 
     def start_discourse_unit(kind: str, marker: str) -> None:
-        """Start one deterministic prose/list/poetry unit for bounded SAW meaning QA."""
+        """Start one deterministic prose/list/poetry unit for bounded SAW RTC."""
         nonlocal discourse_sequence
         nonlocal active_discourse_unit_id
         nonlocal active_discourse_unit_kind
