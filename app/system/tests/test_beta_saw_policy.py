@@ -13,7 +13,12 @@ from sage.language_identification import (
     resolve_country,
     resolve_country_input,
 )
-from sage.saw_policy import default_rtc_policy, should_elevate, write_run_policy_snapshot
+from sage.saw_policy import (
+    default_rtc_policy,
+    should_elevate,
+    validate_rtc_policy,
+    write_run_policy_snapshot,
+)
 
 
 def test_beta_rtc_policy_defaults(package_root: Path) -> None:
@@ -26,6 +31,12 @@ def test_beta_rtc_policy_defaults(package_root: Path) -> None:
     assert policy["usfm_contexts"]["x"] == "NORMAL"
     assert "qt" not in policy["usfm_contexts"]
     assert policy["original_language"]["source_text_drift_adjudication"] == "PROHIBITED"
+
+
+def test_beta_rtc_policy_keeps_cross_reference_review_normal() -> None:
+    """Do not permit callers to weaken the mandatory cross-reference review policy."""
+    policy = validate_rtc_policy({"usfm_contexts": {"x": "STRUCTURE_ONLY"}})
+    assert policy["usfm_contexts"]["x"] == "NORMAL"
 
 
 def test_beta_material_only_omits_nonmaterial_without_downgrading() -> None:

@@ -42,6 +42,8 @@ def default_rtc_policy(profile_path: Path | None = None) -> dict[str, Any]:
             mode = str(dict(value).get("mode") if isinstance(value, dict) else value).upper()
             if mode in POLICY_MODES and str(key).lstrip("\\") in contexts:
                 contexts[str(key).lstrip("\\")] = mode
+        # Cross-reference review is a mandatory RTC contract, not an Operator policy.
+        contexts["x"] = "NORMAL"
         ol_section = dict(section.get("original_language") or {})
         drift = str(ol_section.get("source_text_drift_adjudication") or original_language["source_text_drift_adjudication"]).upper()
         if drift in OL_DRIFT_STATES:
@@ -67,6 +69,8 @@ def validate_rtc_policy(policy: Mapping[str, Any]) -> dict[str, Any]:
         if mode not in POLICY_MODES:
             raise ValidationError(f"Unsupported SAW text policy mode: {value}", code="SAW_POLICY_MODE_INVALID")
         contexts[normalized_key] = mode
+    # Keep every input path aligned with the always-on cross-reference review contract.
+    contexts["x"] = "NORMAL"
     original_language = dict(DEFAULT_ORIGINAL_LANGUAGE)
     ol_value = dict(policy.get("original_language") or {}).get("source_text_drift_adjudication")
     if ol_value is not None:
