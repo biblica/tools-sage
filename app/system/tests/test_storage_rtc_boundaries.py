@@ -13,7 +13,7 @@ import yaml
 
 from sage.storage import storage_layout
 from sage.act_outputs import validate_saw_findings
-from sage.act_tasks import create_act_task, submit_act_task
+from sage.act_tasks import aggregate_act_plan, create_act_task, submit_act_task
 from sage.bounded_target import merge_bounded_usfm, revert_target_scope
 from sage.canon import PROJECT_ROLE_VALUES
 from sage.errors import ConfigurationError, TransactionError, ValidationError
@@ -445,7 +445,9 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
     make_workspace,
     monkeypatch,
 ) -> None:
-    """Automatic partitioning must retain each inherited OL request and exact source scope."""
+    """Sparse selective-OL partitions must retain requests and aggregate exact stage coverage."""
+    # Maintenance invariant: verse 2 is intentionally unrequested; it must never enter
+    # either child manifests or the selective-stage aggregate for requests at 1 and 3.
     root = make_workspace(qualification_status="VALIDATED", verse_max=3)
     _initialize(package_root, root)
     saw_profile = root / "system" / "config" / "workflows" / "saw" / "profile.yml"
@@ -465,15 +467,7 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
     meaning_path = Path(plan["manifest_path"])
     meaning_manifest = json.loads(meaning_path.read_text(encoding="utf-8"))
     meaning = _meaning_document(meaning_manifest, request_ref="MAT 1:1")
-    meaning["ol_review_requests"].extend([
-        {
-            "request_id": "OLR-2",
-            "deferred_finding_id": "OL-F-002",
-            "target_reference": "MAT 1:2",
-            "question": "Resolve the second exact bounded semantic ambiguity from the OL evidence.",
-            "reason": "WIP and REFERENCE evidence do not resolve the second issue.",
-            "evidence_ids": [meaning_manifest["allowed_evidence_ids"][0]],
-        },
+    meaning["ol_review_requests"].append(
         {
             "request_id": "OLR-3",
             "deferred_finding_id": "OL-F-003",
@@ -481,8 +475,8 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
             "question": "Resolve the third exact bounded semantic ambiguity from the OL evidence.",
             "reason": "WIP and REFERENCE evidence do not resolve the third issue.",
             "evidence_ids": [meaning_manifest["allowed_evidence_ids"][0]],
-        },
-    ])
+        }
+    )
     (meaning_path.parent / "output" / "findings.json").write_text(
         json.dumps(meaning),
         encoding="utf-8",
@@ -506,7 +500,7 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
     original_partition_policy = act_tasks._partition_evidence_policy
 
     def one_verse_partition_policy(workflow, operation, policy):
-        """Make the regression fixture create one governed child per requested verse."""
+        """Expose whether an unrequested WIP coordinate leaks into selective-OL work."""
         return replace(
             original_partition_policy(workflow, operation, policy),
             maximum_primary_verse_units=1,
@@ -528,18 +522,68 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
     ]
     assert [manifest["scope"] for manifest in manifests] == [
         "MAT 1:1",
-        "MAT 1:2",
         "MAT 1:3",
     ]
-    for index, manifest in enumerate(manifests, start=1):
-        reference = f"MAT 1:{index}"
-        request_id = f"OLR-{index}"
+    assert [
+        manifest["review_requirements"]["expected_ol_request_ids"]
+        for manifest in manifests
+    ] == [["OLR-1"], ["OLR-3"]]
+    assert [
+        manifest["review_requirements"]["stage_references"]
+        for manifest in manifests
+    ] == [["MAT 1:1"], ["MAT 1:3"]]
+    assert [manifest["expected_references"] for manifest in manifests] == [
+        ["MAT 1:1"], ["MAT 1:3"]
+    ]
+
+    for index, (manifest, manifest_path_value) in enumerate(
+        zip(manifests, selective_stage["task_manifests"], strict=True),
+        start=1,
+    ):
         requirements = manifest["review_requirements"]
-        assert requirements["expected_ol_request_ids"] == [request_id]
-        assert [row["request_id"] for row in requirements["expected_ol_requests"]] == [request_id]
-        assert requirements["stage_references"] == [reference]
-        assert manifest["expected_references"] == [reference]
-        assert manifest["packets"]["original_language"]["atomic_references"] == [reference]
+        request = requirements["expected_ol_requests"][0]
+        document = {
+            "schema_version": "2.0",
+            "narrative_language": manifest["narrative_language"],
+            "task_id": manifest["task_id"],
+            "operation": "rtc",
+            "stage": "SELECTIVE_OL_ADJUDICATION",
+            "scope": manifest["scope"],
+            "focus": None,
+            "check_type": None,
+            "coverage": {
+                "status": "COMPLETE",
+                "reviewed_references": list(manifest["expected_references"]),
+            },
+            "review_receipts": [{
+                "receipt_id": f"R-OL-PARTITION-{index}",
+                "work_unit_id": requirements["expected_work_unit_ids"][0],
+                "task_fingerprint": manifest["task_fingerprint"],
+                "reviewed_references": list(manifest["expected_references"]),
+                "checks_performed": list(requirements["required_checks"]),
+                "evidence_summary": "Reviewed the inherited selective-OL request.",
+            }],
+            "structural_adjudications": [],
+            "ol_resolutions": [{
+                "request_id": request["request_id"],
+                "target_reference": request["target_reference"],
+                "outcome": "NO_FINDING",
+                "original_language_evidence": "The routed Greek evidence resolves the inherited question.",
+                "rationale": "No discrepancy remains after exact OL adjudication.",
+            }],
+            "findings": [],
+        }
+        manifest_path = Path(manifest_path_value)
+        (manifest_path.parent / "output" / "findings.json").write_text(
+            json.dumps(document), encoding="utf-8"
+        )
+        submit_act_task(config, manifest_path)
+
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.load_job(str(composite["job_id"]), tool="saw")
+    runtime_config = load_ecosystem(store.ensure_runtime_files(job))
+    aggregate = aggregate_act_plan(runtime_config, Path(selective_stage["plan_path"]))
+    assert aggregate["coverage"]["reviewed_references"] == ["MAT 1:1", "MAT 1:3"]
 
 
 def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_root: Path, make_workspace) -> None:

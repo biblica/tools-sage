@@ -2235,6 +2235,22 @@ def _partition_act_request(
         resource_role="WIP" if workflow == "saw" else "CONTENT_SOURCE",
     )
     selected = select_records_for_scope(records, scope)
+    stage_spans = tuple(
+        expand_reference_atoms(str(value))
+        for value in rtc_stage_references
+        if str(value).strip()
+    )
+    if stage_spans:
+        stage_atoms = {ref for span in stage_spans for ref in span}
+        selected = tuple(
+            record for record in selected if stage_atoms.intersection(record.refs)
+        )
+        if not selected:
+            raise ValidationError(
+                "Composite RTC stage references do not intersect the partition scope",
+                code="SAW_RTC_STAGE_COVERAGE_INVALID",
+                affected_scope=scope.label(),
+            )
     derived = _partition_evidence_policy(workflow, operation, policy)
     plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
     units = plan_work_units(
@@ -2248,6 +2264,7 @@ def _partition_act_request(
             "complete_context_limits": policy.to_dict(),
         },
         context_pool=records,
+        required_spans=stage_spans,
     )
     if len(units) <= 1:
         raise EvidenceLimitError(
@@ -2263,7 +2280,11 @@ def _partition_act_request(
         unit_scope_obj = parse_scope(unit_scope)
         child_expected_ol_requests = [dict(row) for row in expected_ol_requests if _scope_intersects(unit_scope_obj, str(row.get("target_reference") or ""))]
         child_expected_ids = [str(row.get("request_id") or "") for row in child_expected_ol_requests]
-        child_stage_references = [str(value) for value in rtc_stage_references if _scope_intersects(unit_scope_obj, str(value))]
+        child_stage_references = (
+            [ref.label() for ref in sorted(unit.primary_refs)]
+            if stage_spans
+            else []
+        )
         child = create_act_task(
             config,
             workflow=workflow,
@@ -2289,18 +2310,37 @@ def _partition_act_request(
             context_before_references=unit_record["context_before"],
             context_after_references=unit_record["context_after"],
         )
+        child_manifest = load_json(Path(str(child["manifest_path"])))
+        child_atoms = list(atomic_reference_labels(
+            str(value) for value in child_manifest.get("expected_references", [])
+        ))
+        planned_atoms = [ref.label() for ref in sorted(unit.primary_refs)]
+        if child_atoms != planned_atoms:
+            raise ValidationError(
+                "Partitioned SAW work-unit atoms differ from the generated sealed task",
+                code="SAW_RTC_STAGE_COVERAGE_INVALID",
+                affected_scope=unit_scope,
+                next_action="Restart the affected Run with current settings; coverage boundaries will not change silently.",
+                details={
+                    "unit_id": unit.unit_id,
+                    "planned_atoms": planned_atoms,
+                    "task_atoms": child_atoms,
+                },
+            )
         children.append({
             "unit_id": unit.unit_id,
             "scope": unit_scope,
             "task_id": child["task_id"],
             "manifest_path": child["manifest_path"],
             "task_fingerprint": child["task_fingerprint"],
-            "primary_coverage_atoms": [
-                ref.label() for ref in sorted(unit.primary_refs)
-            ],
+            "primary_coverage_atoms": child_atoms,
             "context_budget": child.get("context_budget"),
         })
-    expected_refs = [ref.label() for unit in units for ref in sorted(unit.primary_refs)]
+    expected_refs = [
+        atom
+        for child in children
+        for atom in child["primary_coverage_atoms"]
+    ]
     plan = {
         "schema_version": "1.0",
         "status": "PARTITIONED",
@@ -4217,6 +4257,10 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             raise ValidationError(
                 f"Work unit {unit_id} result coverage differs from its immutable plan",
                 code="AGGREGATE_COVERAGE_MISMATCH",
+                next_action=(
+                    "Restart this Run with current settings; sealed work-unit coverage "
+                    "cannot be rewritten safely."
+                ),
                 details=_coverage_reconciliation_details(
                     unit_atoms,
                     result_atoms,
