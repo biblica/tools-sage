@@ -341,7 +341,7 @@ def make_workspace(tmp_path: Path):
                         "add": {"markers": ["add"], "mode": "MATERIAL_ONLY"},
                         "nd": {"markers": ["nd"], "mode": "MATERIAL_ONLY"},
                         "f": {"markers": ["f"], "mode": "STRUCTURE_ONLY"},
-                        "x": {"markers": ["x"], "mode": "STRUCTURE_ONLY"},
+                        "x": {"markers": ["x"], "mode": "NORMAL"},
                     },
                     "original_language": {"source_text_drift_adjudication": "PROHIBITED"},
                 },

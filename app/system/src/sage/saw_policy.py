@@ -21,7 +21,7 @@ DEFAULT_CONTEXTS = {
     "add": "MATERIAL_ONLY",
     "nd": "MATERIAL_ONLY",
     "f": "STRUCTURE_ONLY",
-    "x": "STRUCTURE_ONLY",
+    "x": "NORMAL",
 }
 OL_DRIFT_STATES = {"PROHIBITED", "ENABLED"}
 DEFAULT_ORIGINAL_LANGUAGE = {"source_text_drift_adjudication": "PROHIBITED"}

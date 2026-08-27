@@ -11,6 +11,6 @@ def test_operator_paths_are_checkout_relative_only_for_display(tmp_path: Path) -
     internal = tmp_path / "SAGE" / "localdata" / "reports" / "report.md"
     external = tmp_path / "outside" / "report.md"
 
-    assert operator_path(app, internal) == ".../localdata/reports/report.md"
+    assert operator_path(app, internal) == "SAGE/localdata/reports/report.md"
     assert operator_path(app, external) == str(external.resolve())
-    assert operator_text(app, f"Report: {internal}") == "Report: .../localdata/reports/report.md"
+    assert operator_text(app, f"Report: {internal}") == "Report: SAGE/localdata/reports/report.md"

@@ -771,8 +771,10 @@ def test_operator_approved_saw_plan_reconciles_verse_bridge_coordinates(
     required_checks = manifest["review_requirements"]["required_checks"]
     assert "VERSE_BRIDGE_MAPPING" in required_checks
     assert "VERSE_BRIDGE_CONTENT" in required_checks
+    assert "CROSS_REFERENCE" in required_checks
     act_text = (manifest_path.parent / "ACT.md").read_text(encoding="utf-8")
     assert "check the complete bridged text" in act_text
+    assert "Review every WIP and Reference cross-reference span" in act_text
     assert "Canonical report narrative MUST use the Job-owned language tag `en`" in act_text
 
 

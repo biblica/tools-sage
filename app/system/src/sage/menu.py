@@ -2241,7 +2241,11 @@ class SageControlCenter:
                     ("6", "Recovery and diagnostics"),
                     ("B", "Back"),
                 )
-            choice = self.io.choose("SAW CHECKS", options)
+            choice = self.io.choose(
+                "SAW CHECKS",
+                options,
+                blank_before=("4",) if run is None else ("5",),
+            )
             if choice == "B":
                 return
             if run is None:
@@ -2517,28 +2521,32 @@ class SageControlCenter:
         self.io.write(f"Planned work:  {summary.get('work_units', len(units))} work unit(s)")
         if not rtc_preview and policy.get("hard_estimated_tokens") is not None:
             self.io.write(f"Token limit:   {policy['hard_estimated_tokens']:,}")
+        if rtc_preview and units and any(unit.get("rtc_package") for unit in units):
+            self.io.write()
+            self.io.write(
+                f"{'#':>3}  {'SCOPE':<20} {'WIP':>9} {'REF':>9} {'OH':>9} {'PACK':>10}"
+            )
         for index, unit in enumerate(units, 1):
             package = dict(unit.get("rtc_package") or {})
             if rtc_preview and package:
-                self.io.write(menu_item(
-                    index,
-                    f"{unit.get('primary_scope', '?'):<20} "
-                    f"WIP ~{int(dict(package.get('wip') or {}).get('estimated_tokens', 0)):,} | "
-                    f"REF ~{int(dict(package.get('ref') or {}).get('estimated_tokens', 0)):,} | "
-                    f"OH ~{int(dict(package.get('oh') or {}).get('estimated_tokens', 0)):,} | "
-                    f"PACK ~{int(dict(package.get('pack') or {}).get('estimated_tokens', 0)):,}"
-                ))
+                self.io.write(
+                    f"{index:>3}. {str(unit.get('primary_scope', '?')):<20} "
+                    f"{'~' + format(int(dict(package.get('wip') or {}).get('estimated_tokens', 0)), ','):>9} "
+                    f"{'~' + format(int(dict(package.get('ref') or {}).get('estimated_tokens', 0)), ','):>9} "
+                    f"{'~' + format(int(dict(package.get('oh') or {}).get('estimated_tokens', 0)), ','):>9} "
+                    f"{'~' + format(int(dict(package.get('pack') or {}).get('estimated_tokens', 0)), ','):>10}"
+                )
             else:
                 measurement = dict(unit.get("measurement") or {})
                 tokens = measurement.get("estimated_tokens", "?")
                 self.io.write(menu_item(index, f"{unit.get('primary_scope', '?'):<20} ~{tokens} estimated packet tokens"))
         if rtc_preview and units and any(unit.get("rtc_package") for unit in units):
             self.io.write(
-                "Largest work unit: "
-                f"WIP ~{int(summary.get('largest_wip_estimated_tokens', 0)):,} | "
-                f"REF ~{int(summary.get('largest_ref_estimated_tokens', 0)):,} | "
-                f"OH ~{int(summary.get('largest_oh_estimated_tokens', 0)):,} | "
-                f"PACK ~{int(summary.get('largest_pack_estimated_tokens', 0)):,}"
+                f"{'':>3}  {'Largest work unit':<20} "
+                f"{'~' + format(int(summary.get('largest_wip_estimated_tokens', 0)), ','):>9} "
+                f"{'~' + format(int(summary.get('largest_ref_estimated_tokens', 0)), ','):>9} "
+                f"{'~' + format(int(summary.get('largest_oh_estimated_tokens', 0)), ','):>9} "
+                f"{'~' + format(int(summary.get('largest_pack_estimated_tokens', 0)), ','):>10}"
             )
         else:
             self.io.write(f"Largest work unit: ~{summary.get('largest_estimated_tokens', 0)} estimated packet tokens")
@@ -3384,7 +3392,9 @@ class SageControlCenter:
                 self.io.write(f"{'Status':<20}COMPLETE")
                 report_directory = str(result.get("report_directory") or "").strip()
                 if report_directory:
-                    self.io.write(f"{'Reports':<20}{report_directory}")
+                    self.io.write(
+                        f"{'Reports':<20}{operator_path(self.root, report_directory)}"
+                    )
                 self.io.pause()
                 return run
             raise ValidationError(f"Unsupported SAW continuation status: {status}")

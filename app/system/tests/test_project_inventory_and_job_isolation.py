@@ -428,8 +428,8 @@ def test_pre_run_preview_supports_change_scope(make_workspace) -> None:
     assert "Change scope" in output.getvalue()
 
 
-def test_rtc_pre_run_preview_renders_inline_package_components(make_workspace) -> None:
-    """RTC preview reports WIP/REF/OH/PACK inline without exposing system limit lines."""
+def test_rtc_pre_run_preview_renders_aligned_package_component_columns(make_workspace) -> None:
+    """RTC preview reports WIP/REF/OH/PACK as columns without system limit lines."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
@@ -465,7 +465,9 @@ def test_rtc_pre_run_preview_renders_inline_package_components(make_workspace) -
     rendered = output.getvalue()
     assert action == "CANCEL"
     assert "Reference Text Comparison (RTC)" in rendered
-    assert "WIP ~6,100 | REF ~5,900 | OH ~6,000 | PACK ~18,000" in rendered
+    assert "  #  SCOPE                      WIP       REF        OH       PACK" in rendered
+    assert "  1. MAT 1:1-10              ~6,100    ~5,900    ~6,000    ~18,000" in rendered
+    assert "     Largest work unit       ~6,100    ~5,900    ~6,000    ~18,000" in rendered
     assert "Token limit:" not in rendered
 
 
