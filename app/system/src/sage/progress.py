@@ -129,11 +129,19 @@ def _task_weight(manifest: Mapping[str, Any], basis: str) -> int:
     if basis == PROGRESS_BASIS_ACT_ESTIMATED_TOKENS:
         governance = budget.get("governance_context")
         if isinstance(governance, Mapping):
-            raw = governance.get(
-                "final_estimated_tokens", governance.get("estimated_tokens", 1)
-            )
+            raw = governance.get("final_estimated_tokens", governance.get("estimated_tokens"))
         else:
-            raw = budget.get("final_estimated_tokens", budget.get("estimated_tokens", 1))
+            raw = None
+        # Historical manifests may carry a controller-context token estimate. New
+        # manifests intentionally do not tokenize controller-only data, so this
+        # legacy display basis falls back to the actual provider handoff weight.
+        if raw is None:
+            handoff = budget.get("provider_handoff")
+            raw = (
+                handoff.get("total_estimated_tokens")
+                if isinstance(handoff, Mapping)
+                else budget.get("final_estimated_tokens", budget.get("estimated_tokens", 1))
+            )
     else:
         handoff = budget.get("provider_handoff")
         if isinstance(handoff, Mapping):

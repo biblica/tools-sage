@@ -76,6 +76,7 @@ def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(tmp_path:
                                 "required_action": "Приберіть додану ознаку тимчасовості.",
                             }
                         ],
+                        "events": [],
                     },
                     ensure_ascii=False,
                 ),
@@ -108,6 +109,102 @@ def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(tmp_path:
     assert len(calls) == 1
     receipt = storage_layout(sage_root).diagnostics_root / "report-renderings" / "RUT_ACTION-REPORT-SECONDARY-RENDERING.json"
     assert receipt.is_file()
+
+
+def test_secondary_rendering_sends_exactly_one_report_item_per_provider_request(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    """Findings and events are isolated, then assembled by the Python controller."""
+    document = _document()
+    document["findings"].append(
+        {
+            "finding_id": "SAW-RUT-001-0002",
+            "target_reference": "RUT 1:1",
+            "category": "CONSISTENCY",
+            "issue": "A second independent report item.",
+            "required_action": "Review the second item.",
+            "action_level": "REVIEW",
+            "confidence": "MEDIUM",
+            "evidence_ids": ["REFERENCE", "WIP"],
+            "grammar_rule_ids": [],
+            "original_language_evidence": "",
+        }
+    )
+    document["execution_events"] = [
+        {
+            "event_id": "EVT-001",
+            "message": "One controller-recorded execution event.",
+            "next_action": "Inspect its diagnostic.",
+        }
+    ]
+    calls = []
+
+    class FakeExecutor:
+        """Render the exact schema-enumerated item for each isolated request."""
+
+        def execute(self, request):
+            """Return one translation for the single schema-enumerated report item."""
+            calls.append(request)
+            properties = request.schema["properties"]
+            finding_ids = properties["findings"]["items"]["properties"]["finding_id"]["enum"]
+            event_ids = properties["events"]["items"]["properties"]["event_id"]["enum"]
+            findings = [
+                {
+                    "finding_id": finding_id,
+                    "issue": f"UK issue for {finding_id}",
+                    "required_action": f"UK action for {finding_id}",
+                }
+                for finding_id in finding_ids
+            ]
+            events = [
+                {
+                    "event_id": event_id,
+                    "message": f"UK message for {event_id}",
+                    "next_action": f"UK action for {event_id}",
+                }
+                for event_id in event_ids
+            ]
+            return ProviderResponse(
+                provider="codex",
+                model="gpt-test",
+                reasoning_effort="medium",
+                content=json.dumps(
+                    {
+                        "schema_version": "1.0",
+                        "secondary_language": "uk",
+                        "findings": findings,
+                        "events": events,
+                    }
+                ),
+            )
+
+    monkeypatch.setattr("sage.report_translation.make_executor", lambda provider, settings: FakeExecutor())
+    sage_root = tmp_path / "SAGE" / "app"
+    sage_root.mkdir(parents=True)
+    rendered = ensure_secondary_saw_report_rendering(
+        sage_root,
+        tmp_path / "RUT_ACTION-REPORT.md",
+        document,
+    )
+
+    assert len(calls) == 3
+    assert all(
+        request.schema["properties"]["findings"]["maxItems"]
+        + request.schema["properties"]["events"]["maxItems"]
+        == 1
+        for request in calls
+    )
+    assert [
+        sum(identifier in request.prompt for request in calls)
+        for identifier in ["SAW-RUT-001-0001", "SAW-RUT-001-0002", "EVT-001"]
+    ] == [1, 1, 1]
+    receipt = rendered["report_renderings"]
+    assert receipt["status"] == "AVAILABLE"
+    assert receipt["rendering_unit"] == "ONE_REPORT_ITEM_PER_PROVIDER_REQUEST"
+    assert receipt["provider_request_count"] == 3
+    assert set(receipt["findings"]) == {"SAW-RUT-001-0001", "SAW-RUT-001-0002"}
+    assert set(receipt["events"]) == {"EVT-001"}
 
 
 def test_secondary_rendering_failure_is_visible_without_invalidating_primary_report(tmp_path: Path, monkeypatch) -> None:

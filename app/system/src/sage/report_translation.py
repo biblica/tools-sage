@@ -142,80 +142,21 @@ def _parse_translation_response(
     return rows, events
 
 
-def ensure_secondary_saw_report_rendering(
-    root: Path,
-    report_path: Path,
-    document: Mapping[str, Any],
+def _translation_schema(
+    secondary_language: str,
+    *,
+    expected_ids: list[str],
+    expected_event_ids: list[str],
 ) -> dict[str, Any]:
-    """Attach or generate one assistive secondary rendering without changing canonical findings.
-
-    Failure to create the assistive secondary rendering never invalidates the governed
-    primary report. Instead the report receives an explicit DEGRADED rendering status.
-    """
-    # Keep this orchestration linear: cache validation, provider rendering, then degraded fallback.
-    result = deepcopy(dict(document))
-    source_info = _translation_source(document)
-    if source_info is None:
-        result.pop("report_renderings", None)
-        return result
-    source, primary, secondary = source_info
-    source_sha256 = sha256_bytes(_canonical_bytes(source))
-    cache_path = _rendering_path(root, report_path)
-    if cache_path.is_file():
-        try:
-            cached = json.loads(cache_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            cached = None
-        if (
-            isinstance(cached, dict)
-            and cached.get("schema_version") == "1.0"
-            and cached.get("source_sha256") == source_sha256
-            and cached.get("primary_language") == primary
-            and cached.get("secondary_language") == secondary
-            and cached.get("status") == "AVAILABLE"
-            and isinstance(cached.get("findings"), dict)
-        ):
-            result["report_renderings"] = cached
-            return result
-
-    if local_ai_enabled(root):
-        rejected = {
-            "schema_version": "1.0",
-            "status": "DEGRADED",
-            "authority": "ASSISTIVE_TRANSLATION_ONLY",
-            "primary_language": primary,
-            "secondary_language": secondary,
-            "source_sha256": source_sha256,
-            "provider": None,
-            "model": None,
-            "reasoning_effort": None,
-            "findings": {},
-            "events": {},
-            "reason_code": LOCAL_AI_EXTERNAL_RENDERING_REQUIRED,
-            "diagnostic": (
-                "Secondary rendering was rejected for this Job because it requires Hosted AI "
-                "while Local AI is enabled; the governing primary report remains available."
-            ),
-        }
-        atomic_write_json(cache_path, rejected)
-        result["report_renderings"] = rejected
-        return result
-
-    settings = load_llm_settings(root)
-    provider = str(settings.get("selected_provider") or "codex").strip().lower()
-    item = dict((settings.get("providers") or {}).get(provider) or {})
-    model = str(item.get("model") or "").strip() or None
-    reasoning = str(item.get("reasoning_effort") or "").strip().lower() or None
-    expected_ids = [row["finding_id"] for row in source["findings"]]
-    expected_event_ids = [row["event_id"] for row in source.get("events", [])]
-    schema = {
+    """Build the exact one-item secondary-rendering response schema."""
+    return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "additionalProperties": False,
         "required": ["schema_version", "secondary_language", "findings", "events"],
         "properties": {
             "schema_version": {"type": "string", "const": "1.0"},
-            "secondary_language": {"type": "string", "const": secondary},
+            "secondary_language": {"type": "string", "const": secondary_language},
             "findings": {
                 "type": "array",
                 "minItems": len(expected_ids),
@@ -248,37 +189,151 @@ def ensure_secondary_saw_report_rendering(
             },
         },
     }
-    prompt = "\n".join(
+
+
+def _translation_prompt(source: Mapping[str, Any]) -> str:
+    """Render one provider prompt containing exactly one report item."""
+    return "\n".join(
         [
-            "SAGE ASSISTIVE SECONDARY REPORT RENDERING",
+            "SAGE ASSISTIVE SECONDARY REPORT RENDERING — ONE ITEM",
             "",
-            "Render only the supplied human-facing report prose in the requested secondary language.",
+            "Render only the single supplied human-facing report item in the requested secondary language.",
             "The primary text is already governed and validated. Do not correct, reinterpret, summarize, expand, or add evidence.",
-            "Preserve finding_id exactly. Preserve Scripture references, quoted source-language strings, IDs, codes, and technical tokens when they should remain unchanged.",
+            "Preserve finding_id or event_id exactly. Preserve Scripture references, quoted source-language strings, IDs, codes, and technical tokens when they should remain unchanged.",
             "Preserve explicit Project IDs and GRK OL/HEB OL labels; do not replace them with generic source or reference terms.",
-            "Render issue and required_action faithfully in that language. If required_action is empty, return it empty.",
+            "For a finding, render issue and required_action faithfully. For an event, render message and next_action faithfully. Preserve an empty action as empty.",
             "Return only JSON matching the supplied schema.",
             "",
             json.dumps(source, ensure_ascii=False, sort_keys=True),
         ]
     )
+
+
+def ensure_secondary_saw_report_rendering(
+    root: Path,
+    report_path: Path,
+    document: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Attach or generate one assistive secondary rendering without changing canonical findings.
+
+    Failure to create the assistive secondary rendering never invalidates the governed
+    primary report. Instead the report receives an explicit DEGRADED rendering status.
+    """
+    # Keep this orchestration linear: cache validation, provider rendering, then degraded fallback.
+    result = deepcopy(dict(document))
+    source_info = _translation_source(document)
+    if source_info is None:
+        result.pop("report_renderings", None)
+        return result
+    source, primary, secondary = source_info
+    expected_ids = [row["finding_id"] for row in source["findings"]]
+    expected_event_ids = [row["event_id"] for row in source.get("events", [])]
+    expected_request_count = len(expected_ids) + len(expected_event_ids)
+    source_sha256 = sha256_bytes(_canonical_bytes(source))
+    cache_path = _rendering_path(root, report_path)
+    if cache_path.is_file():
+        try:
+            cached = json.loads(cache_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            cached = None
+        if (
+            isinstance(cached, dict)
+            and cached.get("schema_version") == "1.0"
+            and cached.get("source_sha256") == source_sha256
+            and cached.get("primary_language") == primary
+            and cached.get("secondary_language") == secondary
+            and cached.get("status") == "AVAILABLE"
+            and cached.get("rendering_unit") == "ONE_REPORT_ITEM_PER_PROVIDER_REQUEST"
+            and cached.get("provider_request_count") == expected_request_count
+            and isinstance(cached.get("findings"), dict)
+            and set(cached["findings"]) == set(expected_ids)
+            and isinstance(cached.get("events"), dict)
+            and set(cached["events"]) == set(expected_event_ids)
+        ):
+            result["report_renderings"] = cached
+            return result
+
+    if local_ai_enabled(root):
+        rejected = {
+            "schema_version": "1.0",
+            "status": "DEGRADED",
+            "authority": "ASSISTIVE_TRANSLATION_ONLY",
+            "primary_language": primary,
+            "secondary_language": secondary,
+            "source_sha256": source_sha256,
+            "provider": None,
+            "model": None,
+            "reasoning_effort": None,
+            "findings": {},
+            "events": {},
+            "reason_code": LOCAL_AI_EXTERNAL_RENDERING_REQUIRED,
+            "diagnostic": (
+                "Secondary rendering was rejected for this Job because it requires Hosted AI "
+                "while Local AI is enabled; the governing primary report remains available."
+            ),
+        }
+        atomic_write_json(cache_path, rejected)
+        result["report_renderings"] = rejected
+        return result
+
+    settings = load_llm_settings(root)
+    provider = str(settings.get("selected_provider") or "codex").strip().lower()
+    item = dict((settings.get("providers") or {}).get(provider) or {})
+    model = str(item.get("model") or "").strip() or None
+    reasoning = str(item.get("reasoning_effort") or "").strip().lower() or None
     try:
         executor = make_executor(provider, settings)
-        response = executor.execute(
-            ProviderRequest(
-                prompt=prompt,
-                schema=schema,
-                model=model,
-                reasoning_effort=reasoning,
-                timeout_seconds=300,
+        secondary_rows: dict[str, dict[str, str]] = {}
+        secondary_events: dict[str, dict[str, str]] = {}
+        responses = []
+        item_sources = [
+            {
+                "primary_language": primary,
+                "secondary_language": secondary,
+                "findings": [row],
+                "events": [],
+            }
+            for row in source["findings"]
+        ] + [
+            {
+                "primary_language": primary,
+                "secondary_language": secondary,
+                "findings": [],
+                "events": [row],
+            }
+            for row in source.get("events", [])
+        ]
+        for item_source in item_sources:
+            item_ids = [row["finding_id"] for row in item_source["findings"]]
+            item_event_ids = [row["event_id"] for row in item_source["events"]]
+            response = executor.execute(
+                ProviderRequest(
+                    prompt=_translation_prompt(item_source),
+                    schema=_translation_schema(
+                        secondary,
+                        expected_ids=item_ids,
+                        expected_event_ids=item_event_ids,
+                    ),
+                    model=model,
+                    reasoning_effort=reasoning,
+                    timeout_seconds=300,
+                )
             )
-        )
-        secondary_rows, secondary_events = _parse_translation_response(
-            response.content,
-            secondary_language=secondary,
-            expected_ids=expected_ids,
-            expected_event_ids=expected_event_ids,
-        )
+            item_rows, item_events = _parse_translation_response(
+                response.content,
+                secondary_language=secondary,
+                expected_ids=item_ids,
+                expected_event_ids=item_event_ids,
+            )
+            secondary_rows.update(item_rows)
+            secondary_events.update(item_events)
+            responses.append(response)
+        if set(secondary_rows) != set(expected_ids) or set(secondary_events) != set(expected_event_ids):
+            raise ValidationError(
+                "Individually rendered report items do not reconcile the exact report inventory",
+                code="SECONDARY_REPORT_RENDERING_INVALID",
+            )
+        response = responses[-1]
         receipt = {
             "schema_version": "1.0",
             "status": "AVAILABLE",
@@ -289,6 +344,8 @@ def ensure_secondary_saw_report_rendering(
             "provider": response.provider,
             "model": response.model or model,
             "reasoning_effort": response.reasoning_effort or reasoning,
+            "rendering_unit": "ONE_REPORT_ITEM_PER_PROVIDER_REQUEST",
+            "provider_request_count": len(responses),
             "findings": secondary_rows,
             "events": secondary_events,
         }

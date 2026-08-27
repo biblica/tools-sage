@@ -33,7 +33,7 @@ from .bic_memory import (
 from .canon import NT_27, OT_39, resolve_expected_books
 from .config import load_json, load_yaml, require_mapping, require_string
 from .errors import ConfigurationError, EvidenceLimitError, InputRequiredError, ValidationError
-from .evidence import EvidencePolicy, estimate_tokens
+from .evidence import EvidencePolicy
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
     AUTHORIZED_LEXICAL_EVIDENCE,
@@ -1599,10 +1599,9 @@ def _context_measurement(
     act_text: str,
     manifest_without_budget: dict[str, Any],
 ) -> dict[str, Any]:
-    """Measure the complete controller-routed local context for audit/fallback reporting."""
+    """Inventory controller-routed bytes without treating them as model tokens."""
     contributors: list[dict[str, Any]] = []
     total_bytes = 0
-    total_tokens = 0
     for item in allowed_reads:
         try:
             path = resolve_declared_path(root, item["path"], "context measurement read")
@@ -1610,10 +1609,8 @@ def _context_measurement(
             raise ValidationError(str(exc), code="EXTERNAL_PATH_ESCAPE") from exc
         text = path.read_text(encoding="utf-8-sig", errors="replace")
         size = len(text.encode("utf-8"))
-        tokens = estimate_tokens(text)
-        contributors.append({"path": item["path"], "bytes": size, "estimated_tokens": tokens})
+        contributors.append({"path": item["path"], "bytes": size})
         total_bytes += size
-        total_tokens += tokens
     generated = {
         "ACT.md": act_text,
         "task-manifest.json": json.dumps(
@@ -1622,16 +1619,12 @@ def _context_measurement(
     }
     for label, text in generated.items():
         size = len(text.encode("utf-8"))
-        tokens = estimate_tokens(text)
-        contributors.append({"path": label, "bytes": size, "estimated_tokens": tokens})
+        contributors.append({"path": label, "bytes": size})
         total_bytes += size
-        total_tokens += tokens
-    contributors.sort(key=lambda item: (item["estimated_tokens"], item["bytes"]), reverse=True)
+    contributors.sort(key=lambda item: item["bytes"], reverse=True)
     return {
-        "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
-        "measurement_scope": "controller_routed_reads+ACT+manifest",
+        "measurement_scope": "controller_inventory_not_provider_handoff",
         "serialized_bytes": total_bytes,
-        "estimated_tokens": total_tokens,
         "top_contributors": contributors[:8],
     }
 
@@ -2194,6 +2187,171 @@ def _partition_evidence_policy(
     )
 
 
+def _scope_for_case_atoms(atoms: Sequence[VerseRef]) -> ScriptureScope:
+    """Return the smallest contiguous authorization scope containing one OL case."""
+    ordered = sorted(set(atoms))
+    if not ordered:
+        raise ValidationError("Selective OL case has no Scripture coordinates")
+    if any(ref.book != ordered[0].book for ref in ordered):
+        raise ValidationError("Selective OL case cannot cross Scripture books")
+    first = ordered[0]
+    last = ordered[-1]
+    return ScriptureScope(
+        book=first.book,
+        start_chapter=first.chapter,
+        start_verse=first.verse,
+        end_chapter=last.chapter,
+        end_verse=last.verse,
+    )
+
+
+def _partition_selective_ol_cases(
+    config: EcosystemConfig,
+    *,
+    workflow: str,
+    operation: str,
+    output_project_id: str,
+    contemporary_source_id: str,
+    lexical_donor_id: str | None,
+    scope: ScriptureScope,
+    focus: str | None,
+    check_type: str | None,
+    predecessor_task: str | None,
+    grammar_override_id: str | None,
+    plan_seed: str,
+    job_id: str | None,
+    run_id: str | None,
+    rtc_predecessor_files: Sequence[str],
+    expected_ol_request_ids: Sequence[str],
+    expected_ol_requests: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Create exactly one isolated model task for each inherited selective-OL case."""
+    requests = [dict(row) for row in expected_ol_requests]
+    declared_ids = [str(value).strip().upper() for value in expected_ol_request_ids]
+    request_ids = [str(row.get("request_id") or "").strip().upper() for row in requests]
+    if not requests or any(not value for value in request_ids):
+        raise ValidationError(
+            "Selective OL adjudication requires a nonempty inherited request inventory",
+            code="SAW_OL_REQUEST_INVENTORY_INVALID",
+        )
+    if request_ids != declared_ids or len(request_ids) != len(set(request_ids)):
+        raise ValidationError(
+            "Selective OL request identities must be exact, ordered, and run-unique",
+            code="SAW_OL_REQUEST_INVENTORY_INVALID",
+        )
+
+    policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy(operation)
+    plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
+    children: list[dict[str, Any]] = []
+    created_tasks: list[dict[str, Any]] = []
+    # Keep request order as the immutable parent aggregate declared it; task IDs and
+    # aggregation reconciliation both depend on this stable one-case sequence.
+    for index, request in enumerate(requests, start=1):
+        target_reference = str(request.get("target_reference") or "").strip()
+        atoms = tuple(sorted(set(expand_reference_atoms(target_reference))))
+        if not atoms or any(not scope.contains(ref) for ref in atoms):
+            raise ValidationError(
+                f"Selective OL request {request_ids[index - 1]} is outside the parent scope",
+                code="SAW_OL_REQUEST_INVENTORY_INVALID",
+                affected_scope=scope.label(),
+            )
+        case_scope = _scope_for_case_atoms(atoms)
+        unit_id = f"{plan_id}-U{index:03d}"
+        atom_labels = [ref.label() for ref in atoms]
+        child = create_act_task(
+            config,
+            workflow=workflow,
+            operation=operation,
+            output_project_id=output_project_id,
+            contemporary_source_id=contemporary_source_id,
+            lexical_donor_id=lexical_donor_id,
+            scope_value=case_scope.label(),
+            focus=focus,
+            check_type=check_type,
+            predecessor_task=predecessor_task,
+            grammar_override_id=grammar_override_id,
+            auto_partition=False,
+            parent_plan_id=plan_id,
+            work_unit_id=unit_id,
+            job_id=job_id,
+            run_id=run_id,
+            rtc_stage="SELECTIVE_OL_ADJUDICATION",
+            rtc_predecessor_files=rtc_predecessor_files,
+            expected_ol_request_ids=[request_ids[index - 1]],
+            expected_ol_requests=[request],
+            rtc_stage_references=atom_labels,
+        )
+        created_tasks.append(child)
+        manifest = load_json(Path(str(child["manifest_path"])))
+        child_atoms = list(atomic_reference_labels(
+            str(value) for value in manifest.get("expected_references", [])
+        ))
+        child_request_ids = list(
+            dict(manifest.get("review_requirements") or {}).get(
+                "expected_ol_request_ids", []
+            )
+        )
+        if child_atoms != atom_labels or child_request_ids != [request_ids[index - 1]]:
+            raise ValidationError(
+                "Selective OL case task differs from its one-request controller plan",
+                code="SAW_OL_CASE_ISOLATION_INVALID",
+                affected_scope=case_scope.label(),
+                details={
+                    "unit_id": unit_id,
+                    "planned_request_id": request_ids[index - 1],
+                    "task_request_ids": child_request_ids,
+                    "planned_atoms": atom_labels,
+                    "task_atoms": child_atoms,
+                },
+            )
+        children.append({
+            "unit_id": unit_id,
+            "scope": case_scope.label(),
+            "task_id": child["task_id"],
+            "manifest_path": child["manifest_path"],
+            "task_fingerprint": child["task_fingerprint"],
+            "primary_coverage_atoms": child_atoms,
+            "ol_request_ids": child_request_ids,
+            "context_budget": child.get("context_budget"),
+        })
+
+    if len(created_tasks) == 1:
+        return {
+            **created_tasks[0],
+            "partition_basis": "ONE_OL_REQUEST_PER_MODEL_TASK",
+        }
+
+    expected_refs = sorted({
+        atom
+        for child in children
+        for atom in child["primary_coverage_atoms"]
+    }, key=lambda value: next(iter(expand_reference_atoms(value))))
+    plan = {
+        "schema_version": "1.0",
+        "status": "PARTITIONED",
+        "plan_id": plan_id,
+        "workflow": workflow,
+        "operation": operation,
+        "rtc_stage": "SELECTIVE_OL_ADJUDICATION",
+        "partition_basis": "ONE_OL_REQUEST_PER_MODEL_TASK",
+        "requested_scope": scope.label(),
+        "output_project": output_project_id,
+        "contemporary_source": contemporary_source_id,
+        "lexical_donor": None,
+        "job_id": job_id,
+        "run_id": run_id,
+        "policy": policy.to_dict(),
+        "expected_references": expected_refs,
+        "expected_ol_request_ids": request_ids,
+        "work_units": children,
+        "created_utc": utc_now(),
+    }
+    plan_root = plan_container(config.workflow(workflow), run_id)
+    plan_path = plan_root / f"{plan_id}.json"
+    atomic_write_json(plan_path, plan)
+    return {**plan, "plan_path": str(plan_path)}
+
+
 def _partition_act_request(
     config: EcosystemConfig,
     *,
@@ -2225,6 +2383,26 @@ def _partition_act_request(
             f"{workflow}/{operation} requires an operator-approved bounded scope before execution",
             affected_scope=scope.label(),
             next_action="Run INSPECT on bounded work units, optionally record review provenance, then create matching REWRITE tasks.",
+        )
+    if rtc_stage == "SELECTIVE_OL_ADJUDICATION":
+        return _partition_selective_ol_cases(
+            config,
+            workflow=workflow,
+            operation=operation,
+            output_project_id=output_project_id,
+            contemporary_source_id=contemporary_source_id,
+            lexical_donor_id=lexical_donor_id,
+            scope=scope,
+            focus=focus,
+            check_type=check_type,
+            predecessor_task=predecessor_task,
+            grammar_override_id=grammar_override_id,
+            plan_seed=plan_seed,
+            job_id=job_id,
+            run_id=run_id,
+            rtc_predecessor_files=rtc_predecessor_files,
+            expected_ol_request_ids=expected_ol_request_ids,
+            expected_ol_requests=expected_ol_requests,
         )
     profile = load_workflow_profile(config, config.workflow(workflow))
     policy = profile.evidence_policy(operation)
@@ -2886,6 +3064,37 @@ def create_act_task(
     seed = sha256_bytes(
         json.dumps(pre_identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     )
+    if (
+        workflow == "saw"
+        and operation == "rtc"
+        and rtc_stage == "SELECTIVE_OL_ADJUDICATION"
+        and auto_partition
+        and work_unit_id is None
+    ):
+        return _partition_act_request(
+            config,
+            workflow=workflow,
+            operation=operation,
+            output_project_id=output.project_id,
+            contemporary_source_id=source.project_id,
+            lexical_donor_id=lexical_donor_id,
+            scope=scope,
+            focus=focus,
+            check_type=normalized_check_type,
+            predecessor_task=predecessor_task,
+            grammar_override_id=grammar_override_id,
+            compiled=compiled,
+            source_project_id=source.project_id,
+            output_project_id_for_records=output.project_id,
+            plan_seed=seed,
+            job_id=job_id,
+            run_id=run_id,
+            rtc_stage=rtc_stage,
+            rtc_predecessor_files=rtc_predecessor_files,
+            expected_ol_request_ids=expected_ol_request_ids,
+            expected_ol_requests=expected_ol_requests,
+            rtc_stage_references=rtc_stage_references,
+        )
     base_task_id = f"{workflow}-{operation}-{scope.book.lower()}-{seed[:12]}"
     task_id = base_task_id
     sequence = 1
@@ -3204,10 +3413,21 @@ def create_act_task(
                 rtc_predecessor_packets.append(destination)
 
         skill_read_paths = _skill_files(skill)
+        rtc_controller_predecessor_packets = (
+            rtc_predecessor_packets
+            if rtc_stage == "SELECTIVE_OL_ADJUDICATION"
+            else []
+        )
+        rtc_model_predecessor_packets = (
+            []
+            if rtc_stage == "SELECTIVE_OL_ADJUDICATION"
+            else rtc_predecessor_packets
+        )
         process_paths: list[Path] = [
             config.settings_path,
             config.workflow(workflow).profile_path,
             *skill_read_paths,
+            *rtc_controller_predecessor_packets,
         ]
         if workflow == "saw":
             process_paths.append(config.root / "system" / "config" / "schemas" / "saw-findings.schema.yml")
@@ -3223,7 +3443,7 @@ def create_act_task(
             *inherited_ol_paths,
             *governance_packets,
             *predecessor_governance_packets,
-            *rtc_predecessor_packets,
+            *rtc_model_predecessor_packets,
             *semantic_packets,
             *extra_inputs,
         ]
@@ -3265,7 +3485,7 @@ def create_act_task(
         )
         classify(governance_packets, DERIVED_EVIDENCE)
         classify(predecessor_governance_packets, DERIVED_EVIDENCE)
-        classify(rtc_predecessor_packets, DERIVED_EVIDENCE)
+        classify(rtc_model_predecessor_packets, DERIVED_EVIDENCE)
         classify(semantic_packets, PROJECT_INDEX_EVIDENCE)
         classify(extra_inputs, STRUCTURAL_EVIDENCE)
         classify([target_grammar_path, source_grammar_path], LINGUISTIC_COMPETENCE_RULES)
@@ -3918,37 +4138,14 @@ def create_act_task(
         budget_reads = [*governance_inputs, *allowed_reads, *conditional_reads]
         governance_telemetry = _context_measurement(config.root, budget_reads, act_text, base_manifest)
         policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy(operation)
-
-        # Plan against the exact first provider handoff rather than the pre-projection
-        # governance bundle. The legacy/full context remains recorded for audit and
-        # diagnostics, while execution re-measures and enforces the serialized handoff
-        # immediately before any provider call.
-        from .llm_tasks import estimate_initial_handoff
-
-        planning_handoff = estimate_initial_handoff(
-            config, manifest=base_manifest, act_text=act_text
+        budget_operation = (
+            f"{workflow}/{operation}/{rtc_stage}"
+            if rtc_stage
+            else f"{workflow}/{operation}"
         )
-        planning_telemetry = {
-            "serialized_bytes": int(planning_handoff["total_bytes"]),
-            "estimated_tokens": int(planning_handoff["total_estimated_tokens"]),
-        }
-        try:
-            _enforce_context_budget(
-                planning_telemetry,
-                policy,
-                operation=f"{workflow}/{operation}",
-                scope=scope,
-                primary_verse_units=len(expected_references),
-            )
-            _enforce_rtc_sizing(
-                config,
-                planning_handoff,
-                workflow=workflow,
-                operation=operation,
-                rtc_stage=rtc_stage,
-                scope=scope,
-            )
-        except EvidenceLimitError:
+
+        def partition_after_evidence_limit(error: EvidenceLimitError) -> dict[str, Any]:
+            """Route either task-creation budget checkpoint through the same fallback."""
             if auto_partition and (workflow == "saw" or operation == "inspect"):
                 import shutil
                 shutil.rmtree(task_root, ignore_errors=True)
@@ -3976,7 +4173,37 @@ def create_act_task(
                     expected_ol_requests=expected_ol_requests,
                     rtc_stage_references=rtc_stage_references,
                 )
-            raise
+            raise error
+
+        # Plan only against the exact provider handoff. Controller-only inputs retain
+        # a byte inventory for audit; they are neither token-estimated nor budgeted.
+        from .llm_tasks import estimate_initial_handoff
+
+        planning_handoff = estimate_initial_handoff(
+            config, manifest=base_manifest, act_text=act_text
+        )
+        planning_telemetry = {
+            "serialized_bytes": int(planning_handoff["total_bytes"]),
+            "estimated_tokens": int(planning_handoff["total_estimated_tokens"]),
+        }
+        try:
+            _enforce_context_budget(
+                planning_telemetry,
+                policy,
+                operation=budget_operation,
+                scope=scope,
+                primary_verse_units=len(expected_references),
+            )
+            _enforce_rtc_sizing(
+                config,
+                planning_handoff,
+                workflow=workflow,
+                operation=operation,
+                rtc_stage=rtc_stage,
+                scope=scope,
+            )
+        except EvidenceLimitError as exc:
+            return partition_after_evidence_limit(exc)
         identity["context_budget"] = {
             "estimator": str(planning_handoff.get("estimator") or "SAGE_MULTILINGUAL_HEURISTIC_1"),
             "measurement_scope": "projected_provider_handoff",
@@ -4011,7 +4238,6 @@ def create_act_task(
         identity["context_budget"]["governance_context"] = {
             **governance_telemetry,
             "final_serialized_bytes": int(final_governance["serialized_bytes"]),
-            "final_estimated_tokens": int(final_governance["estimated_tokens"]),
         }
         fingerprint = sha256_bytes(
             json.dumps(identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -4024,24 +4250,27 @@ def create_act_task(
             "task_fingerprint": fingerprint,
             "created_utc": created_utc,
         }
-        _enforce_context_budget(
-            {
-                "serialized_bytes": int(identity["context_budget"]["final_serialized_bytes"]),
-                "estimated_tokens": int(identity["context_budget"]["final_estimated_tokens"]),
-            },
-            policy,
-            operation=f"{workflow}/{operation}",
-            scope=scope,
-            primary_verse_units=len(expected_references),
-        )
-        _enforce_rtc_sizing(
-            config,
-            final_handoff,
-            workflow=workflow,
-            operation=operation,
-            rtc_stage=rtc_stage,
-            scope=scope,
-        )
+        try:
+            _enforce_context_budget(
+                {
+                    "serialized_bytes": int(identity["context_budget"]["final_serialized_bytes"]),
+                    "estimated_tokens": int(identity["context_budget"]["final_estimated_tokens"]),
+                },
+                policy,
+                operation=budget_operation,
+                scope=scope,
+                primary_verse_units=len(expected_references),
+            )
+            _enforce_rtc_sizing(
+                config,
+                final_handoff,
+                workflow=workflow,
+                operation=operation,
+                rtc_stage=rtc_stage,
+                scope=scope,
+            )
+        except EvidenceLimitError as exc:
+            return partition_after_evidence_limit(exc)
         atomic_write_json(manifest_path, manifest)
         atomic_write_text(act_path, act_text)
         manifest_sha256 = sha256_file(manifest_path)
@@ -4142,6 +4371,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
     ]
     observed: list[str] = []
     planned_by_unit: list[str] = []
+    planned_ol_request_ids: list[str] = []
     receipts: list[dict[str, Any]] = []
     findings: list[dict[str, Any]] = []
     adjudications: list[dict[str, Any]] = []
@@ -4174,6 +4404,18 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             config.root, str(unit.get("manifest_path", "")), "SAW work-unit manifest"
         )
         manifest = load_json(manifest_path)
+        unit_ol_request_ids = unit.get("ol_request_ids")
+        if not isinstance(unit_ol_request_ids, list):
+            unit_ol_request_ids = list(
+                dict(manifest.get("review_requirements") or {}).get(
+                    "expected_ol_request_ids", []
+                )
+            )
+        planned_ol_request_ids.extend(
+            str(value).strip().upper()
+            for value in unit_ol_request_ids
+            if str(value).strip()
+        )
         planned_fingerprint = str(unit.get("task_fingerprint") or "")
         if planned_fingerprint and str(manifest.get("task_fingerprint") or "") != planned_fingerprint:
             raise ValidationError(
@@ -4295,7 +4537,11 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
                 reason="DUPLICATE_PLANNED_ATOM",
             ),
         )
-    if len(planned_by_unit) != len(set(planned_by_unit)) or set(planned_by_unit) != set(expected):
+    selective_ol_cases = plan.get("rtc_stage") == "SELECTIVE_OL_ADJUDICATION"
+    if (
+        (not selective_ol_cases and len(planned_by_unit) != len(set(planned_by_unit)))
+        or set(planned_by_unit) != set(expected)
+    ):
         reason = (
             "DUPLICATE_PRIMARY_OWNER"
             if len(planned_by_unit) != len(set(planned_by_unit))
@@ -4310,7 +4556,10 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
                 reason=reason,
             ),
         )
-    if len(observed) != len(set(observed)) or set(observed) != set(expected):
+    if (
+        (not selective_ol_cases and len(observed) != len(set(observed)))
+        or set(observed) != set(expected)
+    ):
         raise ValidationError(
             "Accepted work-unit results do not reconcile exact plan coverage",
             code="AGGREGATE_COVERAGE_MISMATCH",
@@ -4320,6 +4569,21 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
                 reason="MISSING_WORK_UNIT_RESULT",
             ),
         )
+    if selective_ol_cases:
+        resolved_request_ids = [str(value).strip().upper() for value in resolved_ol_request_ids]
+        if (
+            len(planned_ol_request_ids) != len(set(planned_ol_request_ids))
+            or len(resolved_request_ids) != len(set(resolved_request_ids))
+            or set(resolved_request_ids) != set(planned_ol_request_ids)
+        ):
+            raise ValidationError(
+                "Selective OL work units do not reconcile one resolution per isolated request",
+                code="SAW_OL_CASE_ISOLATION_INVALID",
+                details={
+                    "planned_request_ids": planned_ol_request_ids,
+                    "resolved_request_ids": resolved_request_ids,
+                },
+            )
     aggregate = {
         "schema_version": "1.0",
         "status": "FINALIZED",
