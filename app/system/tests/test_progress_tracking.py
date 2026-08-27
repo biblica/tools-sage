@@ -310,3 +310,22 @@ def test_cli_status_json_exposes_canonical_active_job_progress(make_workspace, c
     assert progress["percent"] == 25
     assert "[██░░░░░░░░]  25%" in progress["line"]
     assert progress["activity"] == "OL / staw-original-language-review / RUNNING"
+
+
+def test_cli_status_exposes_stale_active_job_pointer(make_workspace, capsys) -> None:
+    """Top-level status must identify a pointer whose Job manifest is unavailable."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    store.active_jobs_path.parent.mkdir(parents=True, exist_ok=True)
+    store.active_jobs_path.write_text(
+        '{"schema_version":"1.0","bic":null,"saw":"SAW_missing-usREF"}\n',
+        encoding="utf-8",
+    )
+    store.write_setup_state({"status": "COMPLETE"})
+    args = argparse.Namespace(settings=str(root / "ecosystem.yml"), json=True, live=False)
+
+    assert command_overview(args) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "ACTION_REQUIRED"
+    assert payload["stale_active_jobs"] == {"saw": "SAW_missing-usREF"}

@@ -2323,6 +2323,14 @@
       "ru": "Запустить стандартный RTC",
       "pt-BR": "Executar RTC padrão"
     },
+    "menu.run.reference.text.comparison": {
+      "en-US": "Run Reference Text Comparison",
+      "en-GB": "Run Reference Text Comparison",
+      "id": "Jalankan Perbandingan Teks Referensi",
+      "fr": "Exécuter la comparaison du texte de référence",
+      "ru": "Запустить сравнение с эталонным текстом",
+      "pt-BR": "Executar comparação do texto de referência"
+    },
     "menu.run.status.and.blockers": {
       "en-US": "Run status and blockers",
       "en-GB": "Run status and blockers",

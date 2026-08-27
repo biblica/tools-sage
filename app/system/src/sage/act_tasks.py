@@ -58,6 +58,7 @@ from .grammar_governance import (
 from .hashing import sha256_bytes, sha256_file
 from .human_output import report_language_authority, render_report_language_authority
 from .locking import WorkspaceLock
+from .llm_settings import load_llm_settings
 from .references import ScriptureScope, parse_scope, parse_scope_set
 from .profiles import load_workflow_profile
 from .platform_commands import render_sage_command
@@ -70,6 +71,11 @@ from .runtime_paths import (
     validate_context_id,
     workflow_memory_root,
     workflow_for_task,
+)
+from .rtc_planner import (
+    RTC_HANDOFF_CONTRACT_VERSION,
+    RTC_PLANNER_VERSION,
+    RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
 )
 from .scripture import compile_project_scope, discover_book_ids
 from .saw_policy import load_run_policy_snapshot
@@ -1635,6 +1641,29 @@ def _enforce_context_budget(
         )
 
 
+def _enforce_rtc_sizing(
+    config: EcosystemConfig,
+    measurement: Mapping[str, Any],
+    *,
+    workflow: str,
+    operation: str,
+    rtc_stage: str | None,
+    scope: ScriptureScope,
+) -> None:
+    """Apply component-aware RTC limits to the exact task-creation projection."""
+    if (
+        workflow != "saw"
+        or operation != "rtc"
+        or rtc_stage != "REFERENCE_TEXT_COMPARISON"
+    ):
+        return
+    sizing = load_workflow_profile(config, config.workflow("saw")).require_rtc_sizing()
+    sizing.validate_active_provider(
+        str(load_llm_settings(config.root).get("selected_provider") or "")
+    )
+    sizing.enforce_handoff(measurement, scope=scope.label())
+
+
 def _required_review_checks(
     operation: str,
     check_type: str | None,
@@ -1783,6 +1812,82 @@ def _approved_saw_rtc_work_plan(
             next_action="Rebuild and approve the affected SAW Run plan.",
         )
 
+    rtc_plan_schema = str(plan.get("schema_version") or "") == "1.3"
+    rtc_sizing_contract = None
+    if rtc_plan_schema:
+        profile = load_workflow_profile(config, config.workflow("saw"))
+        reference_project_id = str(plan.get("reference_project_id") or "")
+        if reference_project_id != str(profile.bindings.get("REFERENCE") or ""):
+            raise ValidationError(
+                "SAW REFERENCE binding changed after work-unit approval",
+                code="SAW_APPROVED_PLAN_STALE",
+                affected_scope=scope.label(),
+                next_action="Rebuild and approve the affected SAW Run plan.",
+            )
+        sizing = profile.require_rtc_sizing()
+        rtc_sizing_contract = sizing
+        sizing.validate_active_provider(
+            str(load_llm_settings(config.root).get("selected_provider") or "")
+        )
+        if dict(plan.get("rtc_sizing") or {}) != sizing.to_dict():
+            raise ValidationError(
+                "SAW RTC sizing policy changed after work-unit approval",
+                code="SAW_APPROVED_PLAN_STALE",
+                affected_scope=scope.label(),
+                next_action="Rebuild and approve the affected SAW Run plan.",
+            )
+        expected_planner = {
+            "version": RTC_PLANNER_VERSION,
+            "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
+            "prompt_schema_projection_version": RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+            "slicing_stream": "WIP",
+            "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
+        }
+        if dict(plan.get("rtc_planner") or {}) != expected_planner:
+            raise ValidationError(
+                "SAW RTC planner/prompt/schema contract changed after work-unit approval",
+                code="SAW_APPROVED_PLAN_STALE",
+                affected_scope=scope.label(),
+                next_action="Rebuild and approve the affected SAW Run plan.",
+            )
+        reference = config.project(reference_project_id)
+        reference_compiled = compile_project_scope(config, reference, scope)
+        if reference_compiled.get("status") not in READY_RESOURCE_STATES:
+            raise ValidationError(
+                "SAW REFERENCE is no longer ready for the approved work plan",
+                code="SAW_APPROVED_PLAN_STALE",
+                affected_scope=scope.label(),
+                next_action="Correct the REFERENCE resource, then rebuild and approve the Run plan.",
+            )
+        reference_hashes = {
+            "reference_resource_sha256": str(reference_compiled.get("resource_sha256") or ""),
+            "reference_compiled_files_sha256": str(
+                reference_compiled.get("compiled_files_sha256") or ""
+            ),
+            "reference_effective_vrs_sha256": str(
+                dict(reference_compiled.get("effective_vrs") or {}).get("effective_sha256") or ""
+            ),
+            "reference_structure_policy_sha256": str(
+                dict(reference_compiled.get("structure_policy") or {}).get("effective_sha256") or ""
+            ),
+        }
+        missing_reference_hashes = [
+            key for key in reference_hashes if not str(hashes.get(key) or "")
+        ]
+        changed_reference_hashes = [
+            key
+            for key, value in reference_hashes.items()
+            if str(hashes.get(key) or "") != value
+        ]
+        if missing_reference_hashes or changed_reference_hashes:
+            raise ValidationError(
+                "SAW REFERENCE or its planning contract changed after work-unit approval: "
+                + ", ".join(sorted(set(missing_reference_hashes + changed_reference_hashes))),
+                code="SAW_APPROVED_PLAN_STALE",
+                affected_scope=scope.label(),
+                next_action="Rebuild and approve the affected SAW Run plan.",
+            )
+
     records = records_from_project_result(
         output_project_id,
         compiled,
@@ -1802,6 +1907,37 @@ def _approved_saw_rtc_work_plan(
                 code="SAW_APPROVED_PLAN_INVALID",
                 affected_scope=scope.label(),
             )
+        if rtc_plan_schema:
+            package = unit.get("rtc_package")
+            if not isinstance(package, Mapping) or rtc_sizing_contract is None:
+                raise ValidationError(
+                    f"Approved SAW work unit {unit_id} lacks its RTC package projection",
+                    code="SAW_APPROVED_PLAN_INVALID",
+                    affected_scope=primary_scope,
+                    next_action="Rebuild and approve the affected SAW Run plan.",
+                )
+            try:
+                wip_tokens = int(dict(package.get("wip") or {})["estimated_tokens"])
+                pack_tokens = int(dict(package.get("pack") or {})["estimated_tokens"])
+                pack_bytes = int(dict(package.get("pack") or {})["serialized_bytes"])
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ValidationError(
+                    f"Approved SAW work unit {unit_id} has an invalid RTC package projection",
+                    code="SAW_APPROVED_PLAN_INVALID",
+                    affected_scope=primary_scope,
+                ) from exc
+            if (
+                wip_tokens >= rtc_sizing_contract.wip_hard_exclusive_tokens
+                or pack_tokens > rtc_sizing_contract.package_hard_max_tokens
+                or pack_tokens > rtc_sizing_contract.provider_handoff_max_tokens
+                or pack_bytes > rtc_sizing_contract.package_hard_serialized_bytes
+            ):
+                raise ValidationError(
+                    f"Approved SAW work unit {unit_id} no longer fits RTC sizing limits",
+                    code="SAW_APPROVED_PLAN_STALE",
+                    affected_scope=primary_scope,
+                    next_action="Rebuild and approve the affected SAW Run plan.",
+                )
         seen_unit_ids.add(unit_id)
         parsed_unit = parse_scope(primary_scope)
         refs_inside_unit = True
@@ -1875,24 +2011,33 @@ def _create_approved_saw_rtc_stage(
     stage_plan_id = f"{parent_plan_id}-{rtc_stage}"
     children: list[dict[str, Any]] = []
     for unit in units:
-        child = create_act_task(
-            config,
-            workflow="saw",
-            operation="rtc",
-            output_project_id=output_project_id,
-            contemporary_source_id=contemporary_source_id,
-            scope_value=str(unit["primary_scope"]),
-            grammar_override_id=grammar_override_id,
-            auto_partition=False,
-            parent_plan_id=stage_plan_id,
-            work_unit_id=str(unit["unit_id"]),
-            job_id=job_id,
-            run_id=run_id,
-            rtc_stage=rtc_stage,
-            rtc_predecessor_files=rtc_predecessor_files,
-            context_before_references=[str(value) for value in unit.get("context_before", [])],
-            context_after_references=[str(value) for value in unit.get("context_after", [])],
-        )
+        try:
+            child = create_act_task(
+                config,
+                workflow="saw",
+                operation="rtc",
+                output_project_id=output_project_id,
+                contemporary_source_id=contemporary_source_id,
+                scope_value=str(unit["primary_scope"]),
+                grammar_override_id=grammar_override_id,
+                auto_partition=False,
+                parent_plan_id=stage_plan_id,
+                work_unit_id=str(unit["unit_id"]),
+                job_id=job_id,
+                run_id=run_id,
+                rtc_stage=rtc_stage,
+                rtc_predecessor_files=rtc_predecessor_files,
+                context_before_references=[str(value) for value in unit.get("context_before", [])],
+                context_after_references=[str(value) for value in unit.get("context_after", [])],
+            )
+        except EvidenceLimitError as exc:
+            raise ValidationError(
+                "Approved SAW RTC work-unit boundaries no longer fit the exact provider handoff",
+                code="SAW_APPROVED_PLAN_STALE",
+                affected_scope=str(unit.get("primary_scope") or scope.label()),
+                next_action="Rebuild and approve the affected SAW Run plan; boundaries will not change silently.",
+                details={"limit_error": exc.to_dict()},
+            ) from exc
         children.append({
             "unit_id": str(unit["unit_id"]),
             "scope": str(unit["primary_scope"]),
@@ -3693,6 +3838,14 @@ def create_act_task(
                 scope=scope,
                 primary_verse_units=len(expected_references),
             )
+            _enforce_rtc_sizing(
+                config,
+                planning_handoff,
+                workflow=workflow,
+                operation=operation,
+                rtc_stage=rtc_stage,
+                scope=scope,
+            )
         except EvidenceLimitError:
             if auto_partition and (workflow == "saw" or operation == "inspect"):
                 import shutil
@@ -3776,6 +3929,14 @@ def create_act_task(
             operation=f"{workflow}/{operation}",
             scope=scope,
             primary_verse_units=len(expected_references),
+        )
+        _enforce_rtc_sizing(
+            config,
+            final_handoff,
+            workflow=workflow,
+            operation=operation,
+            rtc_stage=rtc_stage,
+            scope=scope,
         )
         atomic_write_json(manifest_path, manifest)
         atomic_write_text(act_path, act_text)

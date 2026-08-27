@@ -399,6 +399,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/config.py`
 - `system/src/sage/consolidation.py`
 - `system/src/sage/coverage.py`
+- `system/src/sage/display_paths.py`
 - `system/src/sage/data`
 - `system/src/sage/data/iso-3166-1.json`
 - `system/src/sage/data/iso-639-3.json`
@@ -462,6 +463,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/rewrite_risk.py`
 - `system/src/sage/runtime_paths.py`
 - `system/src/sage/runtime_status.py`
+- `system/src/sage/rtc_planner.py`
 - `system/src/sage/saw_policy.py`
 - `system/src/sage/schema_validation.py`
 - `system/src/sage/scripture.py`
@@ -511,6 +513,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_controller_capabilities.py`
 - `system/tests/test_core_hardening.py`
 - `system/tests/test_dev8_governance.py`
+- `system/tests/test_display_paths.py`
 - `system/tests/test_documentation_contracts.py`
 - `system/tests/test_findings_and_coverage.py`
 - `system/tests/test_generations.py`
@@ -546,6 +549,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_resource_discovery.py`
 - `system/tests/test_resource_roots_and_project_creation.py`
 - `system/tests/test_rewrite_risk.py`
+- `system/tests/test_rtc_planner.py`
 - `system/tests/test_runtime.py`
 - `system/tests/test_schema_validation.py`
 - `system/tests/test_scope_and_auto_resolution.py`

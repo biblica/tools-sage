@@ -1307,7 +1307,8 @@ def _enforce_handoff_budget(
     """Fail closed when the exact serialized provider handoff exceeds workflow policy."""
     workflow = str(manifest.get("workflow", "")).strip().lower()
     operation = str(manifest.get("operation", "")).strip().lower()
-    policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy(operation)
+    profile = load_workflow_profile(config, config.workflow(workflow))
+    policy = profile.evidence_policy(operation)
     failures: list[str] = []
     if int(measurement["total_bytes"]) > policy.hard_serialized_bytes:
         failures.append(f"bytes {measurement['total_bytes']} > {policy.hard_serialized_bytes}")
@@ -1323,7 +1324,19 @@ def _enforce_handoff_budget(
             next_action="Partition or narrow the governed task before provider execution.",
             details={"handoff": measurement, "policy": policy.to_dict()},
         )
-    return {**measurement, "policy": policy.to_dict()}
+    result = {**measurement, "policy": policy.to_dict()}
+    if (
+        workflow == "saw"
+        and operation == "rtc"
+        and str(manifest.get("rtc_stage") or "") == "REFERENCE_TEXT_COMPARISON"
+    ):
+        sizing = profile.require_rtc_sizing()
+        sizing.validate_active_provider(
+            str(load_llm_settings(config.root).get("selected_provider") or "")
+        )
+        sizing.enforce_handoff(measurement, scope=str(manifest.get("scope") or ""))
+        result["rtc_sizing"] = sizing.to_dict()
+    return result
 
 
 def _safe_output_path(task_root: Path, relative: str) -> Path:

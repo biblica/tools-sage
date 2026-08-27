@@ -315,6 +315,22 @@ def test_remove_job_deletes_only_job_owned_state(make_workspace) -> None:
     assert all(path.is_dir() for path in project_paths)
 
 
+def test_missing_active_job_manifest_does_not_block_recovery_ui(make_workspace) -> None:
+    """Keep stale pointer evidence while treating its missing Job as unavailable."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    store.active_jobs_path.parent.mkdir(parents=True, exist_ok=True)
+    store.active_jobs_path.write_text(
+        '{"schema_version":"1.0","bic":null,"saw":"SAW_missing-usREF"}\n',
+        encoding="utf-8",
+    )
+
+    assert store.active_job("saw") is None
+    assert store.active_jobs()["saw"] == "SAW_missing-usREF"
+    assert store.stale_active_job_pointers() == {"saw": "SAW_missing-usREF"}
+    assert store.active_jobs_path.is_file()
+
+
 def test_pre_run_preview_supports_change_scope(make_workspace) -> None:
     """The preview must let the operator return to scope selection before a Run exists."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
@@ -336,6 +352,47 @@ def test_pre_run_preview_supports_change_scope(make_workspace) -> None:
     assert action == "CHANGE"
     assert "REVIEW WORK BEFORE RUNNING" in output.getvalue()
     assert "Change scope" in output.getvalue()
+
+
+def test_rtc_pre_run_preview_renders_inline_package_components(make_workspace) -> None:
+    """RTC preview reports WIP/REF/OH/PACK inline without exposing system limit lines."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        io=MenuIO(input_func=ScriptedInput(["A"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+    center.controller = lambda _job, _args: {
+        "summary": {
+            "work_units": 1,
+            "largest_wip_estimated_tokens": 6100,
+            "largest_ref_estimated_tokens": 5900,
+            "largest_oh_estimated_tokens": 6000,
+            "largest_pack_estimated_tokens": 18000,
+        },
+        "policy": {"hard_estimated_tokens": 7999},
+        "units": [{
+            "primary_scope": "MAT 1:1-10",
+            "rtc_package": {
+                "wip": {"estimated_tokens": 6100},
+                "ref": {"estimated_tokens": 5900},
+                "oh": {"estimated_tokens": 6000},
+                "pack": {"estimated_tokens": 18000},
+            },
+        }],
+    }
+
+    action = center._review_work_before_run(job, operation="rtc", scope="MAT 1:1-10")
+
+    rendered = output.getvalue()
+    assert action == "CANCEL"
+    assert "Reference Text Comparison (RTC)" in rendered
+    assert "WIP ~6,100 | REF ~5,900 | OH ~6,000 | PACK ~18,000" in rendered
+    assert "Token limit:" not in rendered
 
 
 def test_existing_ecosystem_can_register_packaged_ukrainian_wip_and_retry_job(make_workspace) -> None:

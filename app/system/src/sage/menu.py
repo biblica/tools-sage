@@ -20,6 +20,7 @@ from .atomic import atomic_write_json, atomic_write_text
 from .canon import NT_27, OT_39
 from .external_access import READ_ONLY_SCRIPTURE, READ_WRITE_SCRIPTURE, READ_WRITE_TARGET
 from .errors import ConfigurationError, InputRequiredError, OperatorCancelledError, SageError, ValidationError
+from .display_paths import operator_path, operator_text
 from .execution_events import classify_exception, record_exception_event, terminal_heading
 from .task_retry import archive_rejected_task_output
 from .hashing import sha256_file
@@ -424,10 +425,7 @@ def _json_file(path: Path) -> dict[str, Any]:
 
 def _relative(root: Path, path: Path) -> str:
     """Implement ` relative` in the deterministic terminal control flow."""
-    try:
-        return path.resolve().relative_to(root.resolve()).as_posix()
-    except ValueError:
-        return str(path.resolve())
+    return operator_path(root, path)
 
 
 class SageControlCenter:
@@ -591,6 +589,8 @@ class SageControlCenter:
     def _render_startup_report(self, ai: dict[str, Any]) -> None:
         """Render the live prerequisite report before normal menu entry."""
         projects_root_status, projects_root = self._setup_projects_root_status()
+        readiness = self.ui_service.startup_readiness(ai)
+        stale_pointers = self.store.stale_active_job_pointers()
         catalogue = load_paratext_catalog(self.root)
         summary = catalog_summary(catalogue)
         self.io.write()
@@ -605,10 +605,19 @@ class SageControlCenter:
         self.io.write(f"{'Projects discovered':<25}{summary.get('discovered', summary.get('projects', 0))}")
         self.io.write(f"{'Projects pending':<25}{summary.get('pending', 0)}")
         self._write_ai_status(ai)
-        overall = "READY" if projects_root_status == "READY" and bool(ai.get("ready")) else "INCOMPLETE"
+        if stale_pointers:
+            detail = ", ".join(f"{tool.upper()} {job_id}" for tool, job_id in sorted(stale_pointers.items()))
+            self.io.write(f"{'Job state':<25}ACTION NEEDED - {detail} [manifest missing]")
+        overall = str(readiness.get("status") or "INCOMPLETE")
         self.io.write()
         self.io.write(f"{'Overall':<25}{overall}")
-        if not ai.get("ready"):
+        if stale_pointers:
+            self.io.write(f"{'Reason code':<25}ACTIVE_JOB_POINTER_STALE")
+            self.io.write(
+                f"{'Next action':<25}Open SAGE Maintenance > System recovery and diagnostics > "
+                "Clear active Job and Run selections."
+            )
+        elif not ai.get("ready"):
             self.io.write(f"{'Reason code':<25}{ai.get('reason_code') or 'AI_CONNECTION_FAILED'}")
             self.io.write(f"{'Next action':<25}Open AI Setup and test the connection.")
 
@@ -733,14 +742,7 @@ class SageControlCenter:
 
     def _setup_workflow_status(self, tool: str, init_results: dict[str, Any]) -> str:
         """Return one concise independent setup status for BIC or SAW."""
-        project = self.store.active_job(tool)
-        if project is None:
-            return "NOT CONFIGURED"
-        ready_states = {"READY", "READY_WITH_ACTIONS", "READY_WITH_LIMITATIONS"}
-        status = str(init_results.get(project.job_id, {}).get("status", ""))
-        if status in ready_states:
-            return f"READY - {project.display_name}"
-        return f"CONFIGURED - {project.display_name} [validation needed]"
+        return self.ui_service.workflow_setup_status(tool, init_results)
 
     def _setup_live_initialisation_results(
         self,
@@ -1714,6 +1716,7 @@ class SageControlCenter:
                 "LOGIN_CHATGPT",
                 "VALIDATE_SCRIPTURE",
                 "CONFIGURE_PROJECT_ROOT",
+                "RECOVER_ACTIVE_JOB_POINTERS",
             }
             self.io.write(
                 "System:    "
@@ -1932,7 +1935,7 @@ class SageControlCenter:
             operation = self.io.choose(
                 "SAW Task",
                 (
-                    ("1", "Run Reference Text Comparison (RTC)"),
+                    ("1", "Run Reference Text Comparison"),
                     ("2", "Run Targeted Check"),
                     ("3", "Run Original-Language Review"),
                     ("B", "Back"),
@@ -2515,16 +2518,42 @@ class SageControlCenter:
         self.io.write()
         self.io.write("REVIEW WORK BEFORE RUNNING")
         self.io.write("-" * 72)
-        self.io.write(f"Operation:     {project.tool.upper()} {operation.upper()}")
+        rtc_preview = project.tool == "saw" and operation.strip().lower() == "rtc"
+        operation_label = (
+            "Reference Text Comparison (RTC)"
+            if rtc_preview
+            else f"{project.tool.upper()} {operation.upper()}"
+        )
+        self.io.write(f"Operation:     {operation_label}")
         self.io.write(f"Scope:         {scope}")
         self.io.write(f"Planned work:  {summary.get('work_units', len(units))} work unit(s)")
-        if policy.get("hard_estimated_tokens") is not None:
+        if not rtc_preview and policy.get("hard_estimated_tokens") is not None:
             self.io.write(f"Token limit:   {policy['hard_estimated_tokens']:,}")
         for index, unit in enumerate(units, 1):
-            measurement = dict(unit.get("measurement") or {})
-            tokens = measurement.get("estimated_tokens", "?")
-            self.io.write(menu_item(index, f"{unit.get('primary_scope', '?'):<20} ~{tokens} estimated packet tokens"))
-        self.io.write(f"Largest work unit: ~{summary.get('largest_estimated_tokens', 0)} estimated packet tokens")
+            package = dict(unit.get("rtc_package") or {})
+            if rtc_preview and package:
+                self.io.write(menu_item(
+                    index,
+                    f"{unit.get('primary_scope', '?'):<20} "
+                    f"WIP ~{int(dict(package.get('wip') or {}).get('estimated_tokens', 0)):,} | "
+                    f"REF ~{int(dict(package.get('ref') or {}).get('estimated_tokens', 0)):,} | "
+                    f"OH ~{int(dict(package.get('oh') or {}).get('estimated_tokens', 0)):,} | "
+                    f"PACK ~{int(dict(package.get('pack') or {}).get('estimated_tokens', 0)):,}"
+                ))
+            else:
+                measurement = dict(unit.get("measurement") or {})
+                tokens = measurement.get("estimated_tokens", "?")
+                self.io.write(menu_item(index, f"{unit.get('primary_scope', '?'):<20} ~{tokens} estimated packet tokens"))
+        if rtc_preview and units and any(unit.get("rtc_package") for unit in units):
+            self.io.write(
+                "Largest work unit: "
+                f"WIP ~{int(summary.get('largest_wip_estimated_tokens', 0)):,} | "
+                f"REF ~{int(summary.get('largest_ref_estimated_tokens', 0)):,} | "
+                f"OH ~{int(summary.get('largest_oh_estimated_tokens', 0)):,} | "
+                f"PACK ~{int(summary.get('largest_pack_estimated_tokens', 0)):,}"
+            )
+        else:
+            self.io.write(f"Largest work unit: ~{summary.get('largest_estimated_tokens', 0)} estimated packet tokens")
         choice = self.io.choose(
             "Next",
             (("1", "Run"), ("2", "Change scope"), ("B", "Back")),
@@ -3056,13 +3085,13 @@ class SageControlCenter:
             self.io.write(
                 f"Work unit {scope} requires retry: {event['reason_code']} - {event['message']}"
             )
-            self.io.write(f"Diagnostic report: {event['report_path']}")
+            self.io.write(f"Diagnostic report: {operator_path(self.root, event['report_path'])}")
             return event
         self.io.write()
         self.io.write(terminal_heading(event["disposition"]))
         self.io.write(f"Reason: {event['reason_code']}")
         self.io.write(f"Affected boundary: {event['blocks']}")
-        self.io.write(f"Message: {event['message']}")
+        self.io.write(f"Message: {operator_text(self.root, str(event['message']))}")
         blocking_issues = list((exc.details or {}).get("blocking_issues", []))
         if blocking_issues:
             self.io.write("Blocking defects:")
@@ -3075,8 +3104,8 @@ class SageControlCenter:
             if len(blocking_issues) > 12:
                 self.io.write(f"  ... {len(blocking_issues) - 12} additional defect(s).")
         if event.get("next_action"):
-            self.io.write(f"Next action: {event['next_action']}")
-        self.io.write(f"Diagnostic report: {event['report_path']}")
+            self.io.write(f"Next action: {operator_text(self.root, str(event['next_action']))}")
+        self.io.write(f"Diagnostic report: {operator_path(self.root, event['report_path'])}")
         if pause:
             self.io.pause()
         return event
@@ -5362,7 +5391,7 @@ class SageControlCenter:
             "bic.inspect": "BIC INSPECT",
             "bic.rewrite": "BIC REWRITE",
             "bic.self_check": "BIC SELF-CHECK",
-            "saw.rtc": "SAW Reference Text Comparison (RTC)",
+            "saw.rtc": "SAW RTC",
             "saw.focused": "SAW focused",
             "saw.ol": "SAW original-language",
         }
@@ -6869,7 +6898,7 @@ class SageControlCenter:
             ],
         }
         destination.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
-        self.io.write(f"Diagnostics: {destination}")
+        self.io.write(f"Diagnostics: {operator_path(self.root, destination)}")
         if pause:
             self.io.pause()
         return destination
@@ -6901,11 +6930,11 @@ class SageControlCenter:
         """Render an actionable operator error: event, impact, and next action."""
         self.io.write("SAGE ERROR")
         self.io.write("-" * 72)
-        self.io.write(f"What happened: {exc.message}")
+        self.io.write(f"What happened: {operator_text(self.root, exc.message)}")
         self.io.write(f"Reason code:   {exc.code}")
         self.io.write("Why it matters: The requested action did not complete; existing governed Project and Job data was not silently changed.")
         if exc.next_action:
-            self.io.write(f"Next action:   {exc.next_action}")
+            self.io.write(f"Next action:   {operator_text(self.root, exc.next_action)}")
         else:
             self.io.write("Next action:   Review the details above, correct the indicated configuration or input, and retry.")
         self.io.pause()
