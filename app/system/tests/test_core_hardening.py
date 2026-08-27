@@ -336,11 +336,11 @@ def test_rtc_context_excludes_ol_and_raw_profile(
     )
 
 
-def test_task_budget_uses_exact_projected_handoff_and_retains_governance_measurement(
+def test_task_budget_uses_exact_projected_handoff_and_keeps_controller_byte_inventory(
     package_root: Path,
     make_workspace,
 ) -> None:
-    """Plan against the provider representation while retaining the legacy full-context audit metric."""
+    """Budget only the provider representation; inventory controller inputs as bytes."""
     root = make_workspace(qualification_status="VALIDATED")
     initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
@@ -358,7 +358,11 @@ def test_task_budget_uses_exact_projected_handoff_and_retains_governance_measure
     assert budget["planning_basis"] == "PROJECTED_HANDOFF_ESTIMATED_TOKENS"
     assert budget["measurement_scope"] == "projected_provider_handoff"
     assert budget["final_estimated_tokens"] == budget["provider_handoff"]["total_estimated_tokens"]
-    assert governance["final_estimated_tokens"] >= budget["final_estimated_tokens"]
+    assert governance["measurement_scope"] == "controller_inventory_not_provider_handoff"
+    assert governance["final_serialized_bytes"] >= budget["final_serialized_bytes"]
+    assert "estimated_tokens" not in governance
+    assert "final_estimated_tokens" not in governance
+    assert all("estimated_tokens" not in row for row in governance["top_contributors"])
 
     dry = execute_task(config, task_manifest=Path(task["manifest_path"]), dry_run=True)
     assert dry["handoff_measurement"]["total_estimated_tokens"] == budget["final_estimated_tokens"]

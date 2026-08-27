@@ -357,13 +357,20 @@ def test_composite_rtc_meaning_to_selective_ol_to_final_text(package_root: Path,
     assert advanced["composite_stage"] == "SELECTIVE_OL_ADJUDICATION"
     ol_manifest_path = Path(advanced["next_unit"]["manifest_path"])
     ol_manifest = json.loads(ol_manifest_path.read_text(encoding="utf-8"))
+    ol_request = ol_manifest["review_requirements"]["expected_ol_requests"][0]
+    ol_request_id = ol_request["request_id"]
     assert ol_manifest["rtc_stage"] == "SELECTIVE_OL_ADJUDICATION"
-    assert ol_manifest["review_requirements"]["expected_ol_request_ids"] == ["OLR-1"]
+    assert ol_manifest["review_requirements"]["expected_ol_request_ids"] == [ol_request_id]
+    assert ol_request["submitted_request_id"] == "OLR-1"
     assert [row["project"] for row in ol_manifest["original_language_sources"]] == ["GRK"]
-    assert any("rtc-predecessor" in str(row["path"]) for row in ol_manifest["allowed_reads"])
+    assert not any("rtc-predecessor" in str(row["path"]) for row in ol_manifest["allowed_reads"])
+    assert any("rtc-predecessor" in str(row["path"]) for row in ol_manifest["governance_inputs"])
 
     ol_output = ol_manifest_path.parent / "output" / "findings.json"
-    ol_output.write_text(json.dumps(_rtc_stage_document(ol_manifest, resolved_ids=["OLR-1"])), encoding="utf-8")
+    ol_output.write_text(
+        json.dumps(_rtc_stage_document(ol_manifest, resolved_ids=[ol_request_id])),
+        encoding="utf-8",
+    )
     submit_act_task(config, ol_manifest_path)
     plan_document = json.loads(Path(result["plan_path"]).read_text(encoding="utf-8"))
     reports_root = storage_layout(root).reports_root / plan_document["job_id"] / "MAT"

@@ -129,7 +129,48 @@ def globalize_result_finding_ids(
     value["finding_count"] = len(assigned)
     value["structural_adjudications"] = _remap_rows("structural_adjudications")
     value["ol_resolutions"] = _remap_rows("ol_resolutions")
+    value["ol_review_requests"] = globalize_ol_review_request_ids(
+        value.get("ol_review_requests", []),
+        unit_id=unit_id,
+        run_id=run_id,
+        prefix=prefix,
+    )
     return value
+
+
+def globalize_ol_review_request_ids(
+    requests: Iterable[dict[str, Any]],
+    *,
+    unit_id: str,
+    run_id: str,
+    prefix: str = "TR",
+) -> list[dict[str, Any]]:
+    """Assign deterministic run-global identities to task-local OL review cases."""
+    rows = list(requests)
+    if any(not isinstance(row, dict) for row in rows):
+        raise ValidationError("OL review requests must be a list of mappings")
+    prefix_key = _id_part(prefix, maximum=8)
+    run_key = _id_part(_without_redundant_prefix(run_id, prefix_key), maximum=18)
+    unit_key = _id_part(
+        _without_redundant_prefix(unit_id, prefix_key),
+        maximum=18,
+    )
+    result: list[dict[str, Any]] = []
+    for sequence, submitted in enumerate(rows, start=1):
+        row = dict(submitted)
+        request_id = str(row.get("request_id") or "").strip()
+        deferred_id = str(row.get("deferred_finding_id") or "").strip()
+        if not request_id or not deferred_id:
+            raise ValidationError("OL review request lacks its local request/deferred identity")
+        if row.get("submitted_request_id") and row.get("submitted_deferred_finding_id"):
+            result.append(row)
+            continue
+        row["submitted_request_id"] = request_id
+        row["submitted_deferred_finding_id"] = deferred_id
+        row["request_id"] = f"OLR-{run_key}-{unit_key}-{sequence:04d}"
+        row["deferred_finding_id"] = f"OLF-{run_key}-{unit_key}-{sequence:04d}"
+        result.append(row)
+    return result
 
 def validate_global_finding_ids(findings: Iterable[dict[str, Any]]) -> None:
     """Require one nonempty unique global ID for every normalized finding."""

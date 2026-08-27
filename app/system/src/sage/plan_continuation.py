@@ -10,7 +10,11 @@ from .atomic import atomic_write_json, atomic_write_text
 from .act_outputs import render_action_report, render_plain_text_from_markdown
 from .storage import resolve_persisted_path, storage_layout
 from .errors import ValidationError
-from .findings import globalize_result_finding_ids, validate_global_finding_ids
+from .findings import (
+    globalize_ol_review_request_ids,
+    globalize_result_finding_ids,
+    validate_global_finding_ids,
+)
 from .hashing import sha256_file
 from .human_output import report_language_authority
 from .consolidation import consolidate_result_documents
@@ -722,7 +726,12 @@ def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[
         predecessor_files = [str(result_path)]
     elif stage_name == "REFERENCE_TEXT_COMPARISON":
         meaning = _load_object(Path(str(result_path)), "SAW RTC meaning-stage result")
-        requests = list(meaning.get("ol_review_requests", []))
+        requests = globalize_ol_review_request_ids(
+            list(meaning.get("ol_review_requests", [])),
+            unit_id=f"{plan['plan_id']}-{stage_name}",
+            run_id=str(plan.get("run_id") or plan["plan_id"]),
+            prefix="SAW",
+        )
         drift_state = str(
             dict((plan.get("rtc_policy") or {}).get("original_language") or {}).get(
                 "source_text_drift_adjudication", "PROHIBITED"

@@ -10,6 +10,7 @@ from sage.coverage import CoverageAssessment, assess_coverage
 from sage.errors import ValidationError
 from sage.findings import (
     assign_global_finding_ids,
+    globalize_ol_review_request_ids,
     resolve_finding,
     validate_finding_references,
 )
@@ -48,6 +49,48 @@ def test_saw_global_item_id_uses_hierarchy_separators_without_duplicate_prefixes
         "SAW_PAPCV-A3A03DAC_RTC-PH-99846F75_0001"
     )
     assert normalized[0]["submitted_id"] == "F001"
+
+
+def test_ol_request_ids_become_run_unique_and_remain_stable() -> None:
+    """Controller identity replaces repeated task-local OL request handles."""
+    local_request = {
+        "request_id": "OLR-1",
+        "deferred_finding_id": "OL-F-001",
+        "target_reference": "JHN 1:1",
+    }
+    first = globalize_ol_review_request_ids(
+        [local_request],
+        unit_id="SAW-RTC-JHN-U001",
+        run_id="SAW-JHN-RUN-001",
+        prefix="SAW",
+    )[0]
+    second = globalize_ol_review_request_ids(
+        [local_request],
+        unit_id="SAW-RTC-JHN-U002",
+        run_id="SAW-JHN-RUN-001",
+        prefix="SAW",
+    )[0]
+
+    assert first["request_id"] != second["request_id"]
+    assert first["deferred_finding_id"] != second["deferred_finding_id"]
+    assert first["submitted_request_id"] == second["submitted_request_id"] == "OLR-1"
+    assert first["submitted_deferred_finding_id"] == "OL-F-001"
+    assert globalize_ol_review_request_ids(
+        [first],
+        unit_id="SAW-RTC-JHN-U001",
+        run_id="SAW-JHN-RUN-001",
+        prefix="SAW",
+    ) == [first]
+
+    legacy_aggregate = globalize_ol_review_request_ids(
+        [local_request, {**local_request, "target_reference": "JHN 1:2"}],
+        unit_id="SAW-RTC-JHN-PLAN-REFERENCE_TEXT_COMPARISON",
+        run_id="SAW-JHN-RUN-001",
+        prefix="SAW",
+    )
+    assert len({row["request_id"] for row in legacy_aggregate}) == 2
+    assert [row["submitted_request_id"] for row in legacy_aggregate] == ["OLR-1", "OLR-1"]
+
 
 def test_vrs_mapped_original_language_reference_is_authorized(tmp_path: Path) -> None:
     """Verify that VRS mapping authorizes an original-language reference."""

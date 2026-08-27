@@ -353,11 +353,18 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     next_stage = continue_saw_plan(config, Path(plan["plan_path"]))
     ol_path = Path(next_stage["next_unit"]["manifest_path"])
     ol = json.loads(ol_path.read_text(encoding="utf-8"))
+    request = ol["review_requirements"]["expected_ol_requests"][0]
+    request_id = request["request_id"]
+    deferred_finding_id = request["deferred_finding_id"]
     assert ol["expected_references"] == ["MAT 1:2"]
-    assert ol["review_requirements"]["expected_ol_request_ids"] == ["OLR-1"]
+    assert ol["review_requirements"]["expected_ol_request_ids"] == [request_id]
+    assert request["submitted_request_id"] == "OLR-1"
+    assert request["submitted_deferred_finding_id"] == "OL-F-001"
     assert ol["packets"]["original_language"]["evidence_id"] == "ORIGINAL_LANGUAGE_GREEK"
     assert "ORIGINAL_LANGUAGE_GREEK" in ol["allowed_evidence_ids"]
     assert "ORIGINAL_LANGUAGE" not in ol["allowed_evidence_ids"]
+    assert not any("rtc-predecessor" in str(row["path"]) for row in ol["allowed_reads"])
+    assert any("rtc-predecessor" in str(row["path"]) for row in ol["governance_inputs"])
 
     bad = {
         "schema_version": "2.0",
@@ -379,15 +386,15 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
         }],
         "structural_adjudications": [],
         "ol_resolutions": [{
-            "request_id": "OLR-1",
+            "request_id": request_id,
             "target_reference": "MAT 1:2",
             "outcome": "FINDING",
-            "finding_id": "OL-F-001",
+            "finding_id": deferred_finding_id,
             "original_language_evidence": "",
             "rationale": "Claims a finding without evidence.",
         }],
         "findings": [{
-            "finding_id": "OL-F-001",
+            "finding_id": deferred_finding_id,
             "target_reference": "MAT 1:2",
             "category": "MEANING",
             "issue": "Fixture issue.",
@@ -424,7 +431,7 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     bad_path.unlink()
     good = dict(bad)
     good["ol_resolutions"] = [{
-        "request_id": "OLR-1",
+        "request_id": request_id,
         "target_reference": "MAT 1:2",
         "outcome": "NO_FINDING",
         "original_language_evidence": "The routed Greek evidence resolves the inherited question without supporting a finding.",
@@ -436,16 +443,16 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     submit_act_task(config, ol_path)
     final = continue_saw_plan(config, Path(plan["plan_path"]))
     aggregate = json.loads(Path(final["aggregate_path"]).read_text(encoding="utf-8"))
-    assert aggregate["ol_review_requests"][0]["request_id"] == "OLR-1"
+    assert aggregate["ol_review_requests"][0]["request_id"] == request_id
+    assert aggregate["ol_review_requests"][0]["submitted_request_id"] == "OLR-1"
     assert aggregate["ol_resolutions"][0]["outcome"] == "NO_FINDING"
 
 
 def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
     package_root: Path,
     make_workspace,
-    monkeypatch,
 ) -> None:
-    """Sparse selective-OL partitions must retain requests and aggregate exact stage coverage."""
+    """Every selective-OL request gets one isolated task and exact aggregation."""
     # Maintenance invariant: verse 2 is intentionally unrequested; it must never enter
     # either child manifests or the selective-stage aggregate for requests at 1 and 3.
     root = make_workspace(qualification_status="VALIDATED", verse_max=3)
@@ -483,32 +490,6 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
     )
     submit_act_task(config, meaning_path)
 
-    from dataclasses import replace
-    import sage.act_tasks as act_tasks
-
-    original_enforce = act_tasks._enforce_context_budget
-    enforce_calls = 0
-
-    def force_parent_partition(telemetry, policy, **kwargs):
-        """Force only the parent selective-OL task through its partition fallback."""
-        nonlocal enforce_calls
-        enforce_calls += 1
-        if enforce_calls == 1:
-            raise act_tasks.EvidenceLimitError("Force the selective-OL parent through partitioning.")
-        return original_enforce(telemetry, policy, **kwargs)
-
-    original_partition_policy = act_tasks._partition_evidence_policy
-
-    def one_verse_partition_policy(workflow, operation, policy):
-        """Expose whether an unrequested WIP coordinate leaks into selective-OL work."""
-        return replace(
-            original_partition_policy(workflow, operation, policy),
-            maximum_primary_verse_units=1,
-        )
-
-    monkeypatch.setattr(act_tasks, "_enforce_context_budget", force_parent_partition)
-    monkeypatch.setattr(act_tasks, "_partition_evidence_policy", one_verse_partition_policy)
-
     next_stage = continue_saw_plan(config, Path(plan["plan_path"]))
     assert next_stage["status"] == "NEXT_WORK_UNIT"
     composite = json.loads(Path(plan["plan_path"]).read_text(encoding="utf-8"))
@@ -525,9 +506,18 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
         "MAT 1:3",
     ]
     assert [
-        manifest["review_requirements"]["expected_ol_request_ids"]
+        len(manifest["review_requirements"]["expected_ol_request_ids"])
         for manifest in manifests
-    ] == [["OLR-1"], ["OLR-3"]]
+    ] == [1, 1]
+    request_ids = [
+        manifest["review_requirements"]["expected_ol_request_ids"][0]
+        for manifest in manifests
+    ]
+    assert len(request_ids) == len(set(request_ids)) == 2
+    assert [
+        manifest["review_requirements"]["expected_ol_requests"][0]["submitted_request_id"]
+        for manifest in manifests
+    ] == ["OLR-1", "OLR-3"]
     assert [
         manifest["review_requirements"]["stage_references"]
         for manifest in manifests
@@ -535,6 +525,14 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
     assert [manifest["expected_references"] for manifest in manifests] == [
         ["MAT 1:1"], ["MAT 1:3"]
     ]
+    assert all(
+        not any("rtc-predecessor" in str(row["path"]) for row in manifest["allowed_reads"])
+        for manifest in manifests
+    )
+    assert all(
+        any("rtc-predecessor" in str(row["path"]) for row in manifest["governance_inputs"])
+        for manifest in manifests
+    )
 
     for index, (manifest, manifest_path_value) in enumerate(
         zip(manifests, selective_stage["task_manifests"], strict=True),
@@ -584,6 +582,7 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
     runtime_config = load_ecosystem(store.ensure_runtime_files(job))
     aggregate = aggregate_act_plan(runtime_config, Path(selective_stage["plan_path"]))
     assert aggregate["coverage"]["reviewed_references"] == ["MAT 1:1", "MAT 1:3"]
+    assert aggregate["resolved_ol_request_ids"] == request_ids
 
 
 def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_root: Path, make_workspace) -> None:
