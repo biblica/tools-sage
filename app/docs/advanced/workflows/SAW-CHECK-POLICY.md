@@ -2,10 +2,12 @@
 
 Reference Text Comparison (RTC) can split work into four check groups: structure/completeness, translation/meaning, language/readability, and consistency. All are enabled by default and may be toggled before the Run starts.
 
-Verse bridges remain indivisible records throughout planning. During the later translation/meaning
-stage, **structure/completeness** checks their coordinate mapping and **translation/meaning** checks
-the complete text covered by the bridge against all corresponding WIP and Reference content. This
-applies when only one Project uses a bridge and when both Projects use bridges.
+Verse bridges remain indivisible source spans throughout planning. Every internal RTC boundary is
+closed against both WIP and REFERENCE bridge/equivalence spans, while canonical verse atoms remain
+the sole primary-coverage ownership keys. During the later translation/meaning stage,
+**structure/completeness** checks bridge coordinate mapping and **translation/meaning** checks the
+complete bridged text against all corresponding WIP and Reference content. This applies when only
+one Project uses a bridge and when both Projects use bridges.
 
 Text-context policy is marker-class based:
 

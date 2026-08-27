@@ -103,7 +103,8 @@ def test_saw_plan_uses_independent_wip_without_bic_generation_pin(package_root: 
     assert result.returncode == 0, result.stderr + result.stdout
     payload = json.loads(result.stdout)
     assert payload["project_id"] == "usWIP"
-    assert payload["schema_version"] == "1.3"
+    assert payload["schema_version"] == "1.4"
+    assert payload["rtc_planner"]["boundary_streams"] == ["WIP", "REFERENCE"]
     assert payload["reference_project_id"] == "usNIVv2"
     assert payload["shared_hashes"]["reference_resource_sha256"]
     package = payload["units"][0]["rtc_package"]

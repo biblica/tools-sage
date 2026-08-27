@@ -1,6 +1,7 @@
 schema_id: sage-saw-findings-2.0
 required:
 - schema_version
+- narrative_language
 - task_id
 - operation
 - stage
@@ -45,6 +46,11 @@ finding_required:
 - grammar_rule_ids
 - original_language_evidence
 controls:
+  narrative_language:
+    authority: CANONICAL_REPORT_NARRATIVE
+    must_match_act: true
+    generated_prose_uses_bound_language: true
+    explicit_source_quotations_remain_verbatim: true
   stable_finding_ids: true
   target_reference_inside_session_scope: true
   structural_and_selective_ol_findings_inside_exact_stage_references: true
@@ -55,7 +61,7 @@ controls:
   focused_and_ol_require_exact_focus_and_answer: true
   deterministic_report_projection:
     bilingual_language_authority_notice: required
-    primary_operator_language: governing_human_rendering
+    primary_job_language: governing_human_rendering
     secondary_language: assistive_lower_confidence_translation
     secondary_generation_cost: additional_model_usage_and_compilation_time
     secondary_review_requirement: greater_than_single_language_report

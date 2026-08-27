@@ -235,6 +235,43 @@ def normalize_scope_set(value: str) -> str:
     """Return a canonical display string for a semicolon-separated reference set."""
     return "; ".join(scope.label() for scope in parse_scope_set(value))
 
+
+def expand_reference_atoms(values: str | Iterable[str]) -> tuple[VerseRef, ...]:
+    """Expand verse/range labels into ordered atomic Scripture coordinates.
+
+    Coverage reconciliation deliberately uses this one contract rather than raw
+    bridge labels.  Chapter/book scopes and cross-chapter ranges cannot be
+    expanded safely without an effective VRS, so governed coverage inventories
+    must supply verse-bounded, single-chapter portions.
+    """
+    raw_values = (values,) if isinstance(values, str) else tuple(values)
+    atoms: list[VerseRef] = []
+    for value in raw_values:
+        label = str(value).strip()
+        if not label:
+            raise ValidationError("Scripture coverage references must not be empty")
+        for scope in parse_scope_set(label):
+            if scope.start_chapter is None or scope.start_verse is None:
+                raise ValidationError(
+                    f"Coverage reference must identify verse coordinates: {label}"
+                )
+            end_chapter = scope.end_chapter or scope.start_chapter
+            end_verse = scope.end_verse or scope.start_verse
+            if end_chapter != scope.start_chapter:
+                raise ValidationError(
+                    f"Coverage reference portions may not cross chapters: {label}"
+                )
+            atoms.extend(
+                VerseRef(scope.book, scope.start_chapter, verse)
+                for verse in range(scope.start_verse, end_verse + 1)
+            )
+    return tuple(atoms)
+
+
+def atomic_reference_labels(values: str | Iterable[str]) -> tuple[str, ...]:
+    """Return ordered atomic labels for a governed coverage inventory."""
+    return tuple(ref.label() for ref in expand_reference_atoms(values))
+
 def expand_scope(
     scope: ScriptureScope,
     available: Iterable[VerseRef],

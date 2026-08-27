@@ -14,7 +14,14 @@ from .hashing import sha256_file
 from .human_output import catalogue_text, render_report_language_authority
 from .iso_languages import iso_language
 from .language_identification import resolve_country
-from .references import BOOK_ORDER, ScriptureScope, normalize_scope_set, parse_scope, parse_scope_set
+from .references import (
+    BOOK_ORDER,
+    ScriptureScope,
+    atomic_reference_labels,
+    normalize_scope_set,
+    parse_scope,
+    parse_scope_set,
+)
 from .usj import compile_usfm_file, parse_usj_units
 from .vrs import VerseRef
 
@@ -294,17 +301,7 @@ def _scope_contains_reference(parent: ScriptureScope, value: str) -> bool:
 
 def _atomic_reference_labels(value: str) -> set[str]:
     """Expand one or more submitted verse/range portions into atomic labels."""
-    labels: set[str] = set()
-    for scope in parse_scope_set(value):
-        if scope.start_chapter is None or scope.start_verse is None:
-            raise ValidationError(f"Stage-bound finding/reference must identify verse coordinates: {value}")
-        end_chapter = scope.end_chapter or scope.start_chapter
-        end_verse = scope.end_verse or scope.start_verse
-        if end_chapter != scope.start_chapter:
-            raise ValidationError(f"Stage-bound finding/reference portions may not cross chapters: {value}")
-        for verse in range(scope.start_verse, end_verse + 1):
-            labels.add(VerseRef(scope.book, scope.start_chapter, verse).label())
-    return labels
+    return set(atomic_reference_labels(value))
 
 def _normalised_stage(operation: str, rtc_stage: str | None = None) -> str:
     """Return the exact stage required by one SAW operation or composite RTC subtask."""
@@ -331,12 +328,24 @@ def validate_saw_findings(
     rtc_stage: str | None = None,
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
+    narrative_language: str | None = None,
 ) -> dict[str, Any]:
     """Validate staged SAW findings, complete coverage, and bounded focus answers."""
     # Validation order is deliberate: scope and schema checks precede evidence and coverage acceptance.
     document = load_json_object(path, "SAW findings")
     if document.get("schema_version") != "2.0":
         raise ValidationError("SAW findings schema_version must be '2.0'")
+    if narrative_language is not None:
+        contract = document.get("narrative_language")
+        if not isinstance(contract, Mapping):
+            raise ValidationError("SAW findings narrative_language contract is missing")
+        if contract != {
+            "tag": narrative_language,
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        }:
+            raise ValidationError(
+                "SAW findings narrative_language does not match the ACT task"
+            )
     expected_identity = {
         "task_id": task_id,
         "operation": operation,
@@ -748,7 +757,17 @@ def validate_bic_inspect_output(
 
 def _report_languages(document: Mapping[str, Any]) -> tuple[str, str | None]:
     """Return primary and optional secondary human-report language tags."""
+    narrative = document.get("narrative_language")
     authority = document.get("language_authority")
+    if isinstance(narrative, Mapping):
+        primary = str(narrative.get("tag") or "").strip()
+        if primary:
+            secondary = (
+                str(authority.get("secondary_language") or "").strip() or None
+                if isinstance(authority, Mapping)
+                else None
+            )
+            return primary, secondary if secondary != primary else None
     if not isinstance(authority, Mapping):
         return "en", None
     primary = str(authority.get("primary_language") or "en").strip() or "en"

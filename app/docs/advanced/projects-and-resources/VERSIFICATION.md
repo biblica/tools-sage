@@ -21,7 +21,7 @@ Base VRS files reside directly under the configured base-VRS root. A custom VRS 
 
 ## SAW preflight policy
 
-Versification-coordinate differences are advisory for SAW and do not block Project readiness or Run creation. This includes `EXPECTED_COORDINATE_MISSING`, `EXPECTED_CHAPTER_MISSING`, `COORDINATE_OUTSIDE_VRS`, and `EXCLUDED_COORDINATE_PRESENT`. SAGE reports the effective VRS, uses `eng.vrs` as the default when no Project VRS is stated, retains the advisory with the Run, and renders it in the SAW Action Report.
+Versification-coordinate differences are advisory for SAW and do not block Project readiness or Run creation. This includes `EXPECTED_COORDINATE_MISSING`, `EXPECTED_CHAPTER_MISSING`, `COORDINATE_OUTSIDE_VRS`, and `EXCLUDED_COORDINATE_PRESENT`. SAGE uses `eng.vrs` as the default when no Project VRS is stated, silently retains the advisory with the Run during routine preflight, and renders it in the SAW Action Report. Explicit Job validation may show an advisory count and details.
 
 This policy does **not** suppress Scripture integrity defects. Malformed USFM/USJ structure, missing Scripture files, duplicate/overlapping verse ranges, invalid book identity, or other non-versification resource defects remain blocking.
 

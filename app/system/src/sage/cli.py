@@ -87,6 +87,7 @@ from .rtc_planner import (
     package_summary,
     plan_rtc_work_units,
     rtc_slicing_policy,
+    vrs_source_equivalence_spans,
 )
 from .guided_input import (
     GuidedArgumentParser,
@@ -3412,6 +3413,12 @@ def command_plan(args: argparse.Namespace) -> int:
             shared=shared,
             wip_context_pool=all_records,
             reference_records=reference_records,
+            wip_equivalence_spans=vrs_source_equivalence_spans(
+                dict(result.get("effective_vrs") or {})
+            ),
+            reference_equivalence_spans=vrs_source_equivalence_spans(
+                dict((reference_result or {}).get("effective_vrs") or {})
+            ),
         )
     else:
         units = plan_work_units(
@@ -3434,7 +3441,7 @@ def command_plan(args: argparse.Namespace) -> int:
     )
     if rtc_sizing is not None:
         document.update({
-            "schema_version": "1.3",
+            "schema_version": "1.4",
             "reference_project_id": reference_project_id,
             "rtc_sizing": rtc_sizing.to_dict(),
             "rtc_planner": {
@@ -3442,6 +3449,7 @@ def command_plan(args: argparse.Namespace) -> int:
                 "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
                 "prompt_schema_projection_version": RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
                 "slicing_stream": "WIP",
+                "boundary_streams": ["WIP", "REFERENCE"],
                 "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
             },
         })

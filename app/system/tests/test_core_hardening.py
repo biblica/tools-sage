@@ -58,6 +58,7 @@ def saw_document(task: dict, *, include_receipts: bool = True) -> dict:
     """Build a complete bounded SAW submission fixture for this test."""
     value = {
         "schema_version": "2.0",
+        "narrative_language": task["narrative_language"],
         "task_id": task["task_id"],
         "operation": task["operation"],
         "stage": {

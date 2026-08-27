@@ -132,7 +132,7 @@ def test_bilingual_reports_declare_primary_authority_and_secondary_confidence() 
         "canonical_machine_evidence": "AUTHORITATIVE",
     }
     notice = render_report_language_authority(authority, markdown=True)
-    assert "`en` is the governing Operator-language rendering" in notice
+    assert "`en` is the governing Job-primary rendering" in notice
     assert "`id` is an assistive secondary translation" in notice
     assert "may contain ambiguity" in notice
     assert "adds model usage and report compilation time" in notice
@@ -234,7 +234,7 @@ def test_translation_report_lists_material_and_aggregates_minor() -> None:
     assert "Tantangan Terjemahan BIC / BIC Translation Challenges" in report
     assert "Pilihan / Selected: **remain**" in report
     assert "Hal minor digabungkan / Minor matters aggregated: `4`" in report
-    assert "`en` is the governing Operator-language rendering" in report
+    assert "`en` is the governing Job-primary rendering" in report
     assert "`id` is an assistive secondary translation" in report
     assert report.count("TC-1") == 0
     assert report.count("3JN 1:4") == 1

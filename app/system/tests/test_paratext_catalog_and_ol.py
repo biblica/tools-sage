@@ -241,7 +241,7 @@ def test_missing_bundled_ol_corpus_is_nonfatal_and_reported(package_root: Path) 
 
 
 def test_job_secondary_reporting_language_flows_to_bic_runtime(make_workspace) -> None:
-    """Verify a Job adds a secondary report language to the global primary language."""
+    """Verify a Job carries its primary and optional secondary languages into BIC runtime."""
     root = make_workspace()
     target_path = storage_layout(root).projects_root / "usBOLx1"
     register_project(
@@ -276,6 +276,7 @@ def test_job_secondary_reporting_language_flows_to_bic_runtime(make_workspace) -
     assert runtime["human_output"]["translation_challenges"]["primary_language"] == "en"
     assert runtime["human_output"]["translation_challenges"]["secondary_language"] == "uk"
     assert yaml.safe_load(job.manifest_path.read_text(encoding="utf-8"))["reporting"] == {
+        "primary_language": "en",
         "secondary_language": "uk"
     }
 

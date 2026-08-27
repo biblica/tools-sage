@@ -4,18 +4,36 @@ from __future__ import annotations
 
 import math
 from dataclasses import replace
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 from .errors import ConfigurationError, EvidenceLimitError, ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy, measure_evidence
+from .references import expand_reference_atoms
 from .work_units import EvidenceRecord, WorkUnit, build_evidence_packet, plan_work_units
 from .vrs import VerseRef
 
 
-RTC_PLANNER_VERSION = "SAGE_RTC_PACKAGE_PLANNER_V1"
+RTC_PLANNER_VERSION = "SAGE_RTC_PACKAGE_PLANNER_V2"
 RTC_HANDOFF_CONTRACT_VERSION = "SAGE_GOVERNED_TASK_V1"
 RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "SAW_RTC_REFERENCE_TEXT_COMPARISON_V1"
 RTC_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_1"
+
+
+def vrs_source_equivalence_spans(
+    effective_vrs: Mapping[str, Any],
+) -> tuple[tuple[VerseRef, ...], ...]:
+    """Return local coordinate groups that an effective VRS keeps indivisible."""
+    spans: list[tuple[VerseRef, ...]] = []
+    for value in effective_vrs.get("mappings", []):
+        if not isinstance(value, Mapping):
+            continue
+        local = str(value.get("local") or "").strip()
+        if not local:
+            continue
+        refs = expand_reference_atoms(local)
+        if len(refs) > 1:
+            spans.append(refs)
+    return tuple(spans)
 
 
 def rtc_slicing_policy(base: EvidencePolicy, sizing: RTCSizingPolicy) -> EvidencePolicy:
@@ -49,6 +67,13 @@ def _records_for_refs(
 ) -> tuple[EvidenceRecord, ...]:
     """Return ordered records intersecting an exact WIP-derived coordinate inventory."""
     return tuple(record for record in records if refs.intersection(record.refs))
+
+
+def _indivisible_source_spans(
+    records: Iterable[EvidenceRecord],
+) -> tuple[tuple[VerseRef, ...], ...]:
+    """Return every multi-coordinate source record that no RTC boundary may bisect."""
+    return tuple(record.refs for record in records if len(record.refs) > 1)
 
 
 def _component_packet(
@@ -138,6 +163,11 @@ def _measure_package(
     )
     return {
         "projection": RTC_PLANNER_VERSION,
+        "primary_coverage_atoms": [ref.label() for ref in sorted(primary_refs)],
+        "source_spans": {
+            "WIP": [record.reference for record in unit.primary],
+            "REFERENCE": [record.reference for record in reference_primary],
+        },
         "wip": _component(wip_measurement),
         "ref": _component(reference_measurement),
         "oh": overhead,
@@ -222,11 +252,19 @@ def plan_rtc_work_units(
     shared: dict[str, Any],
     wip_context_pool: Iterable[EvidenceRecord],
     reference_records: Iterable[EvidenceRecord],
+    wip_equivalence_spans: Iterable[Iterable[VerseRef]] = (),
+    reference_equivalence_spans: Iterable[Iterable[VerseRef]] = (),
 ) -> tuple[tuple[WorkUnit, ...], tuple[dict[str, Any], ...], EvidencePolicy]:
-    """Plan WIP boundaries, correlate REF, validate PACK, and reslice when required."""
+    """Plan WIP+REF-safe boundaries, validate complete packages, and reslice."""
     selected = tuple(wip_records)
     context = tuple(wip_context_pool)
     reference = tuple(reference_records)
+    required_spans = (
+        _indivisible_source_spans(selected)
+        + _indivisible_source_spans(reference)
+        + tuple(tuple(span) for span in wip_equivalence_spans)
+        + tuple(tuple(span) for span in reference_equivalence_spans)
+    )
     policy = rtc_slicing_policy(base_policy, sizing)
     for _attempt in range(12):
         try:
@@ -236,8 +274,17 @@ def plan_rtc_work_units(
                 unit_prefix=unit_prefix,
                 shared=shared,
                 context_pool=context,
+                required_spans=required_spans,
             )
         except EvidenceLimitError as exc:
+            if exc.code == "WORK_UNIT_REQUIRED_SPAN_EXCEEDS_LIMIT":
+                raise EvidenceLimitError(
+                    "SAW RTC cannot preserve a WIP/REFERENCE bridge or VRS equivalence span within governed limits",
+                    code="SAW_RTC_UNSPLITTABLE_BRIDGE",
+                    affected_scope=exc.affected_scope,
+                    next_action="Narrow the operator scope or correct the oversized indivisible source span.",
+                    details=exc.details,
+                ) from exc
             raise EvidenceLimitError(
                 f"SAW RTC WIP cannot be split below its exclusive hard maximum: {exc.message}",
                 code="SAW_RTC_UNSPLITTABLE_WIP",

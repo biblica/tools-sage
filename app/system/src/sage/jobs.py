@@ -48,7 +48,9 @@ class Job:
     profiles: dict[str, str]
     defaults: dict[str, Any]
     progress_quantifier: dict[str, Any]
+    primary_report_language: str
     secondary_report_language: str | None
+    reporting_contract_persisted: bool
     configuration_revision: int
     root: Path
     manifest_path: Path
@@ -284,12 +286,26 @@ class JobStore:
         except ValueError as exc:
             raise ConfigurationError(f"Job {manifest_job_id} has invalid progress quantifier: {exc}") from exc
         reporting = require_mapping(raw.get("reporting", {}), "job reporting")
-        unsupported_reporting = sorted(set(reporting) - {"secondary_language"})
+        unsupported_reporting = sorted(set(reporting) - {"primary_language", "secondary_language"})
         if unsupported_reporting:
             raise ConfigurationError(
                 f"Job {manifest_job_id} has unsupported reporting fields: "
                 + ", ".join(unsupported_reporting)
             )
+        reporting_contract_persisted = "primary_language" in reporting
+        primary_value = reporting.get("primary_language")
+        if primary_value in (None, ""):
+            # Compatibility for pre-language-governance Jobs.  Runtime refresh persists
+            # this resolved value into reporting.primary_language before task creation.
+            primary_value = defaults.get("report_language")
+        if primary_value in (None, ""):
+            primary_value = load_ecosystem(self.settings_path).human_output.operator_language
+        elif str(primary_value).strip().upper() == "OPERATOR_LANGUAGE":
+            primary_value = load_ecosystem(self.settings_path).human_output.operator_language
+        primary_report_language = canonical_language_tag(
+            str(primary_value),
+            "job reporting primary_language",
+        )
         secondary_value = reporting.get("secondary_language")
         secondary_report_language = (
             None
@@ -299,6 +315,10 @@ class JobStore:
                 "job reporting secondary_language",
             )
         )
+        if secondary_report_language == primary_report_language:
+            raise ConfigurationError(
+                f"Job {manifest_job_id} secondary reporting language must differ from its primary language"
+            )
         status = require_string(raw.get("status"), "job status").upper()
         if status not in {"ACTIVE", "INACTIVE", "ARCHIVED"}:
             raise ConfigurationError(f"Unsupported Job status: {status}")
@@ -318,7 +338,9 @@ class JobStore:
             display_name=require_string(raw.get("display_name", manifest_job_id), "job display_name"),
             status=status, bindings=bindings, profiles=profiles, defaults=defaults,
             progress_quantifier=progress_quantifier,
+            primary_report_language=primary_report_language,
             secondary_report_language=secondary_report_language,
+            reporting_contract_persisted=reporting_contract_persisted,
             configuration_revision=revision, root=path.parent, manifest_path=path,
             controller_root=self.controller_jobs_root / job_tool / manifest_job_id,
         )
@@ -467,6 +489,7 @@ class JobStore:
         bindings: dict[str, str],
         profiles: dict[str, str] | None = None,
         defaults: dict[str, Any] | None = None,
+        primary_report_language: str | None = None,
         secondary_report_language: str | None = None,
         overwrite: bool = False,
     ) -> Job:
@@ -523,6 +546,15 @@ class JobStore:
             bindings=bindings,
             profiles=profiles,
         )
+        system_default = load_ecosystem(self.settings_path).human_output.operator_language
+        legacy_default = dict(defaults or {}).get("report_language")
+        requested_primary = primary_report_language or legacy_default or system_default
+        if str(requested_primary).strip().upper() == "OPERATOR_LANGUAGE":
+            requested_primary = system_default
+        canonical_primary = canonical_language_tag(
+            str(requested_primary),
+            "job reporting primary_language",
+        )
         canonical_secondary = (
             canonical_language_tag(
                 secondary_report_language,
@@ -531,10 +563,9 @@ class JobStore:
             if secondary_report_language
             else None
         )
-        operator_language = load_ecosystem(self.settings_path).human_output.operator_language
-        if canonical_secondary == operator_language:
+        if canonical_secondary == canonical_primary:
             raise ValidationError(
-                "Job secondary reporting language must differ from the global Operator language",
+                "Job secondary reporting language must differ from its primary reporting language",
                 code="JOB_REPORTING_LANGUAGE_CONFLICT",
             )
         root = self.job_root(normalized_tool, normalized_id)
@@ -567,6 +598,7 @@ class JobStore:
             "defaults": defaults or {},
             "progress_quantifier": DEFAULT_JOB_PROGRESS_POLICY.to_dict(),
             "reporting": {
+                "primary_language": canonical_primary,
                 "secondary_language": canonical_secondary,
             },
             "configuration_revision": 1,
@@ -596,14 +628,19 @@ class JobStore:
         if defaults is not None:
             raw["defaults"] = dict(defaults)
         if reporting is not None:
-            unsupported_reporting = sorted(set(reporting) - {"secondary_language"})
+            unsupported_reporting = sorted(set(reporting) - {"primary_language", "secondary_language"})
             if unsupported_reporting:
                 raise ValidationError(
-                    "Job reporting accepts only secondary_language",
+                    "Job reporting accepts only primary_language and secondary_language",
                     code="JOB_REPORTING_FIELD_INVALID",
                     details={"unsupported": unsupported_reporting},
                 )
-            secondary = reporting.get("secondary_language")
+            primary = reporting.get("primary_language", project.primary_report_language)
+            canonical_primary = canonical_language_tag(
+                str(primary),
+                "job reporting primary_language",
+            )
+            secondary = reporting.get("secondary_language", project.secondary_report_language)
             canonical_secondary = (
                 canonical_language_tag(
                     str(secondary),
@@ -612,13 +649,15 @@ class JobStore:
                 if secondary not in (None, "")
                 else None
             )
-            operator_language = load_ecosystem(self.settings_path).human_output.operator_language
-            if canonical_secondary == operator_language:
+            if canonical_secondary == canonical_primary:
                 raise ValidationError(
-                    "Job secondary reporting language must differ from the global Operator language",
+                    "Job secondary reporting language must differ from its primary reporting language",
                     code="JOB_REPORTING_LANGUAGE_CONFLICT",
                 )
-            raw["reporting"] = {"secondary_language": canonical_secondary}
+            raw["reporting"] = {
+                "primary_language": canonical_primary,
+                "secondary_language": canonical_secondary,
+            }
         if status is not None:
             normalized_status = status.strip().upper()
             if normalized_status not in {"ACTIVE", "INACTIVE", "ARCHIVED"}:
@@ -745,9 +784,10 @@ class JobStore:
             f"- Tool: `{str(payload['tool']).upper()}`",
             f"- Job: `{payload.get('job_id')}`",
             f"- Status: `{payload['status']}`",
+            f"- Primary report language: `{dict(payload.get('reporting') or {}).get('primary_language') or 'MISSING'}`",
             f"- Secondary report language: `{dict(payload.get('reporting') or {}).get('secondary_language') or 'NONE'}`",
             "",
-            "When a secondary report language is configured, the primary Operator-language rendering governs interpretation. The secondary rendering is assistive, has lower unverified translation confidence, and must be checked against the primary before action. It adds model usage and report compilation time and requires more human review than a single-language report. Canonical machine evidence remains authoritative.",
+            "The Job-owned primary language governs canonical report narrative. When an optional secondary report language is configured, its downstream rendering is assistive, has lower unverified translation confidence, and must be checked against the primary before action. It adds model usage and report compilation time and requires more human review than a single-language report. Canonical machine evidence remains authoritative.",
             "",
             "## Bound resources",
             "",
@@ -944,13 +984,14 @@ class JobStore:
             workflow_data[workflow_id] = entry
         raw["workflows"] = workflow_data
 
-        # The global Operator language is always primary. Each Job may add one secondary
-        # reporting language without changing Project identity or global interface settings.
+        # Report language is immutable Job-owned configuration at runtime. The global
+        # Operator language is only the creation default for new Jobs; interface language
+        # and optional downstream secondary rendering remain independent.
         reporting_project_id = (
             project.bindings.get("generated_target") if project.tool == "bic" else project.bindings.get("wip")
         )
         human = dict(require_mapping(raw.get("human_output", {}), "human_output"))
-        primary = str(human.get("operator_language") or "en")
+        primary = project.primary_report_language
         secondary = project.secondary_report_language
         bilingual = bool(secondary and secondary != primary)
         logs = dict(require_mapping(human.get("logs_and_reports", {}), "human_output.logs_and_reports"))
@@ -969,6 +1010,7 @@ class JobStore:
             "configuration_revision": project.configuration_revision,
             "original_language_resources": active_ol_provenance(self.sage_root),
             "reporting_project": reporting_project_id,
+            "report_language": primary,
             "secondary_report_language": secondary,
         }
         atomic_write_text(project.runtime_settings_path, _safe_yaml(raw))
@@ -978,6 +1020,17 @@ class JobStore:
 
     def ensure_runtime_files(self, project: Job) -> Path:
         """Refresh and validate derived Job runtime files against current SAGE configuration."""
+        if not project.reporting_contract_persisted:
+            # One deterministic compatibility upgrade converts a legacy implicit-primary
+            # Job into the explicit Job-owned contract before any governed task can run.
+            upgraded = self.revise_job(
+                project,
+                reporting={
+                    "primary_language": project.primary_report_language,
+                    "secondary_language": project.secondary_report_language,
+                },
+            )
+            return upgraded.runtime_settings_path
         return self.write_runtime_files(project)
 
     def active_jobs(self) -> dict[str, str | None]:

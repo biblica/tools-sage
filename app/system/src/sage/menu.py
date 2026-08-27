@@ -1492,7 +1492,7 @@ class SageControlCenter:
                 self.io.pause()
 
     def operator_language_menu(self) -> None:
-        """Configure the one global Operator language used as report/log primary."""
+        """Configure the global Operator language used as the default for new Jobs."""
         while True:
             config = load_ecosystem(self.store.settings_path)
             self.io.write()
@@ -1503,8 +1503,8 @@ class SageControlCenter:
             self.io.write(f"Status: {policy.status(config.human_output.operator_language)}")
             self.io.write("Selectable: " + ", ".join(policy.selectable()))
             self.io.write("Operational candidate priorities: " + ", ".join(policy.operational_priorities))
-            self.io.write("This is the primary language for operator-facing logs and reports.")
-            self.io.write("Each Job may optionally add one secondary reporting language.")
+            self.io.write("This is the default primary report language for newly created Jobs.")
+            self.io.write("Each Job owns its primary language and may optionally add one secondary language.")
             self.io.write("A secondary rendering adds model usage, compilation time, and human-review effort.")
             choice = self.io.choose(
                 "Global Operator language",
@@ -1512,7 +1512,8 @@ class SageControlCenter:
             )
             if choice == "B": return
             if choice == "2":
-                self.io.write(f"Global primary: {config.human_output.operator_language}")
+                self.io.write(f"New-Job primary default: {config.human_output.operator_language}")
+                self.io.write("Job primary: required and snapshotted when the Job is created.")
                 self.io.write("Job secondary: optional; configure it in that Job's settings.")
                 self.io.write("Secondary output requires more human review than a single-language report.")
                 self.io.pause()
@@ -1539,19 +1540,6 @@ class SageControlCenter:
                     )
                 )
                 continue
-            conflicts = [
-                job.job_id
-                for tool in TOOL_IDS
-                for job in self.store.discover(tool, include_archived=True)
-                if job.secondary_report_language == requested
-            ]
-            if conflicts:
-                raise ValidationError(
-                    "Operator language matches the secondary language of existing Jobs",
-                    code="JOB_REPORTING_LANGUAGE_CONFLICT",
-                    next_action="Clear or change the secondary reporting language for: " + ", ".join(conflicts),
-                    details={"jobs": conflicts, "language": requested},
-                )
             raw, _override_path, _resolutions = load_effective_settings(self.store.settings_path)
             human = dict(raw.get("human_output") or {})
             out = dict(human.get("logs_and_reports") or {})
@@ -1564,7 +1552,7 @@ class SageControlCenter:
             write_local_settings(self.store.settings_path, {"human_output": human})
             load_ecosystem(self.store.settings_path)
             invalidate_runtime_settings(self.root)
-            self.io.write("Operator language saved. Job runtime configuration will refresh automatically.")
+            self.io.write("Operator language saved as the default primary language for new Jobs.")
             self.io.pause()
 
     def system_diagnostics_menu(self) -> None:
@@ -1866,7 +1854,7 @@ class SageControlCenter:
                 "5": "Choose a Book, then leave range blank for the whole book or enter 1, 1-3, 1:1-10, or 1:1-2:20. Expert entry such as LUK 1:1-10 remains available.",
                 "6": "Before a Run, SAGE shows measured work units and conservative estimated packet tokens; sections are preferred split points only when the combined packet does not fit.",
                 "7": "READY can be used directly; WARNING is usable with a disclosed issue; ERROR requires correction before affected work.",
-                "8": "The global Operator language is the primary language for logs and reports. Each Job may add one optional secondary reporting language.",
+                "8": "The global Operator language is the default primary language for new Jobs. Each Job owns one required primary and may add one optional secondary reporting language.",
                 "9": "@GRK and @HEB are governed original-language resources and are not ordinary SAGE Projects.",
             }
             if choice == "10": self._show_support_docs()
@@ -2704,25 +2692,9 @@ class SageControlCenter:
             blockers = list(findings.get("blockers") or [])
             advisories = list(findings.get("advisories") or [])
             self._pending_saw_vrs_advisories = advisories
-            if advisories:
-                self.io.write()
-                self.io.write("SAW VERSIFICATION ADVISORY")
-                self.io.write("-" * 72)
-                self.io.write(
-                    "SAGE will report these coordinate differences and continue. "
-                    "ENG/KJV (eng.vrs) is the default when a Project does not state another VRS."
-                )
-                for index, row in enumerate(advisories[:20], 1):
-                    self.io.write(
-                        menu_item(index, f"{row['scope']} | {row['role']} {row['project_id']} | {row['code']} | {row['reference']}")
-                    )
-                    self.io.write(
-                        f"   {row['message']} Effective: {row['effective_vrs']}; "
-                        f"default-compatible: {row['default_vrs']}."
-                    )
-                if len(advisories) > 20:
-                    self.io.write(f"... {len(advisories) - 20} additional VRS advisory item(s).")
-                self.io.write("These advisories will be retained in the SAW report and do not block Run creation.")
+            # Routine Run preflight keeps non-blocking VRS differences silent in the
+            # interactive UI. They remain persisted with the Run and available in the
+            # final Action Report and explicit Job-validation surfaces.
             if not blockers:
                 return "READY"
             self.io.write()
@@ -4139,7 +4111,7 @@ class SageControlCenter:
             if requested == operator_language:
                 self.show_error(
                     ValidationError(
-                        "Job secondary reporting language must differ from the global Operator language",
+                        "Job secondary reporting language must differ from its primary reporting language",
                         code="JOB_REPORTING_LANGUAGE_CONFLICT",
                     )
                 )
@@ -4147,19 +4119,19 @@ class SageControlCenter:
             return True, requested
 
     def _job_settings_menu(self, project: Job) -> None:
-        """Configure Job-owned display and optional secondary report language settings."""
+        """Configure Job-owned primary and optional secondary report languages."""
         while True:
             project = self.store.load_job(project.job_id, tool=project.tool)
-            operator = load_ecosystem(self.store.settings_path).human_output.operator_language
+            primary = project.primary_report_language
             secondary = project.secondary_report_language
             self.io.write()
             self.io.write(f"JOB SETTINGS - {project.job_id}")
             self.io.write("-" * 72)
-            self.io.write(f"Primary report language:   {operator} [GLOBAL OPERATOR LANGUAGE]")
+            self.io.write(f"Primary report language:   {primary} [JOB, REQUIRED]")
             self.io.write(f"Secondary report language: {secondary or 'NONE'} [JOB]")
             if secondary:
                 self.io.write(
-                    "Authority: the primary Operator-language rendering governs; "
+                    "Authority: the primary Job-language rendering governs; "
                     "the secondary is assistive and may contain ambiguity."
                 )
                 self.io.write(
@@ -4171,14 +4143,48 @@ class SageControlCenter:
                 (
                     ("1", "Set secondary reporting language"),
                     ("2", "Clear secondary reporting language"),
-                    ("3", "Show Job manifest"),
+                    ("3", "Set primary reporting language"),
+                    ("4", "Show Job manifest"),
                     ("B", "Back"),
                 ),
             )
             if choice == "B":
                 return
-            if choice == "3":
+            if choice == "4":
                 self.io.write(project.manifest_path.read_text(encoding="utf-8"))
+                self.io.pause()
+                continue
+            if choice == "3":
+                config = load_ecosystem(self.store.settings_path)
+                requested = canonical_language_tag(
+                    self.io.text("Primary reporting language", default=primary),
+                    "job primary reporting language",
+                )
+                if requested not in config.human_output.operator_language_policy.selectable():
+                    self.show_error(
+                        ValidationError(
+                            f"Primary reporting language {requested} is not approved or enabled",
+                            code="OPERATOR_LANGUAGE_NOT_CANDIDATE",
+                            next_action="Enable the canonical tag in the Operator language policy first.",
+                        )
+                    )
+                    continue
+                if requested == secondary:
+                    self.show_error(
+                        ValidationError(
+                            "Job primary and secondary reporting languages must differ",
+                            code="JOB_REPORTING_LANGUAGE_CONFLICT",
+                        )
+                    )
+                    continue
+                project = self.store.revise_job(
+                    project,
+                    reporting={
+                        "primary_language": requested,
+                        "secondary_language": secondary,
+                    },
+                )
+                self.io.write(f"Job primary reporting language saved: {requested}")
                 self.io.pause()
                 continue
             if choice == "2":
@@ -4193,7 +4199,7 @@ class SageControlCenter:
             changed, requested = self._choose_secondary_reporting_language(
                 role=audience_role,
                 project_language=audience_language,
-                operator_language=operator,
+                operator_language=primary,
                 current=secondary,
             )
             if not changed:
@@ -4259,7 +4265,7 @@ class SageControlCenter:
             )
             if secondary_report_language:
                 self.io.write()
-                self.io.write("Primary Operator-language rendering governs.")
+                self.io.write("Primary Job-language rendering governs.")
                 self.io.write("Secondary rendering is assistive and has lower,")
                 self.io.write("unverified translation confidence.")
             choice = self.io.choose(

@@ -54,7 +54,7 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 - Active Job runtime validation is isolated by tool. Inactive empty workflow templates do not invalidate the active BIC/SAW Job.
 - Removing a Job deletes only Job-owned state. Removing a Project from SAGE deletes only SAGE inventory state and is blocked while any Job still uses it.
 - Governed `@GRK` / `@HEB` aliases are separate from the ordinary SAGE Project Inventory and support explicit bundled, recognized Paratext, or local source selection.
-- Reporting remains on the legacy global-primary + optional Job-secondary runtime contract in this localization patch. The approved architecture is Job-owned primary and optional secondary reporting; Projects never own reporting settings. Interface localization does not change report-language authority.
+- Reporting uses a required Job-owned primary language and an optional Job-owned secondary language. The global Operator language is snapshotted only as the default when a Job is created; Projects never own reporting settings. Every narrative-generating ACT binds the primary language explicitly, while interface and secondary languages remain outside canonical provider prompts.
 
 ## Runtime/provider state
 

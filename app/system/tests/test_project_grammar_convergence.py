@@ -45,6 +45,7 @@ def _rtc_stage_document(manifest: dict, *, ol_request: bool = False, resolved_id
     """Build one complete no-finding SAW RTC stage submission for transition tests."""
     document = {
         "schema_version": "2.0",
+        "narrative_language": manifest["narrative_language"],
         "task_id": manifest["task_id"],
         "operation": "rtc",
         "stage": manifest["rtc_stage"],

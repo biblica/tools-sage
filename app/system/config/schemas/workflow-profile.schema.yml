@@ -94,6 +94,7 @@ saw_rtc_composite:
   sizing_contract:
     profile_field: rtc_sizing_required_for_saw_only
     slicing_stream: WIP
+    boundary_streams: [WIP, REFERENCE]
     reference_range: exact_primary_wip_range
     components: [WIP, REF, OH, PACK]
     wip_hard_limit: exclusive
