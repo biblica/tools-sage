@@ -81,7 +81,7 @@ check_policy:
         mode: STRUCTURE_ONLY
       x:
         markers: [x]
-        mode: STRUCTURE_ONLY
+        mode: NORMAL
     original_language:
       source_text_drift_adjudication: PROHIBITED
 

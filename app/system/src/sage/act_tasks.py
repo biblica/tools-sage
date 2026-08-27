@@ -1710,6 +1710,7 @@ def _required_review_checks(
                 "TERMINOLOGY",
                 "PARTICIPANT_REFERENCE",
                 "QUOTATION_STRUCTURE",
+                "CROSS_REFERENCE",
             ]
         required: list[str] = []
         if checks.get("translation_meaning", True):
@@ -1720,6 +1721,7 @@ def _required_review_checks(
             required.extend(["TERMINOLOGY", "PARTICIPANT_REFERENCE"])
         if checks.get("structure_completeness", True):
             required.extend(["QUOTATION_STRUCTURE", "VERSE_BRIDGE_MAPPING"])
+        required.append("CROSS_REFERENCE")
         return required
     if operation == "focused":
         return [check_type or "CUSTOM_BOUNDED_CHECK"]
@@ -3751,6 +3753,7 @@ def create_act_task(
                         if drift_enabled
                         else "7. Source-text drift adjudication is PROHIBITED. Do not emit ol_review_requests; assess only from the authorized non-OL evidence routed to this stage."
                     ),
+                    "8. Review every WIP and Reference cross-reference span (`\\x ... \\x*`) under the sealed x-context policy. At minimum verify balanced containers and valid field structure. In NORMAL mode also compare presence, payload, ordering, and Scripture targets; report missing, malformed, unexpected, or materially mismatched cross-references at the owning WIP coordinate.",
                 ])
             else:
                 act_lines.extend([

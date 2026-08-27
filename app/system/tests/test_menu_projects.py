@@ -649,6 +649,38 @@ def test_completed_saw_run_is_history_not_an_active_menu_run(make_workspace) -> 
     assert not pointer.exists()
 
 
+def test_saw_job_menu_visually_separates_work_from_administration(make_workspace) -> None:
+    """Use the shared blank-line convention without adding section headings."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store, projects = _bootstrap(root)
+    saw = next(project for project in projects if project.tool == "saw")
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["a"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    center._saw_job_menu(saw)
+
+    rendered = output.getvalue()
+    assert "  3. Run Original-Language Review\n\n  4. Reports and exports" in rendered
+
+    store.create_run(saw, operation="rtc", scope="JHN 1")
+    output.seek(0)
+    output.truncate(0)
+    center.io.input_func = ScriptedInput(["a"])
+
+    center._saw_job_menu(saw)
+
+    rendered = output.getvalue()
+    assert "  4. Run Original-Language Review\n\n  5. Reports and exports" in rendered
+    assert "WORK\n" not in rendered
+    assert "ADMINISTRATION\n" not in rendered
+
+
 
 def test_main_menu_separates_scripture_project_management_from_workflows(make_workspace) -> None:
     """The Project administration entry is explicit and visually separated from BIC/SAW."""

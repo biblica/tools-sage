@@ -21,11 +21,11 @@ def operator_path(app_root: Path, value: str | Path) -> str:
         relative = path.relative_to(root)
     except ValueError:
         return str(path)
-    return "..." if not relative.parts else f".../{relative.as_posix()}"
+    return "SAGE" if not relative.parts else f"SAGE/{relative.as_posix()}"
 
 
 def operator_text(app_root: Path, value: str) -> str:
     """Shorten embedded absolute SAGE paths in one human-facing diagnostic string."""
     root = sage_checkout_root(app_root)
     prefix = str(root)
-    return value.replace(prefix + "/", ".../").replace(prefix + "\\", ".../")
+    return value.replace(prefix + "/", "SAGE/").replace(prefix + "\\", "SAGE/")

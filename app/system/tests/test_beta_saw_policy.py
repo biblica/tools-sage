@@ -23,7 +23,7 @@ def test_beta_rtc_policy_defaults(package_root: Path) -> None:
     assert policy["usfm_contexts"]["add"] == "MATERIAL_ONLY"
     assert policy["usfm_contexts"]["nd"] == "MATERIAL_ONLY"
     assert policy["usfm_contexts"]["f"] == "STRUCTURE_ONLY"
-    assert policy["usfm_contexts"]["x"] == "STRUCTURE_ONLY"
+    assert policy["usfm_contexts"]["x"] == "NORMAL"
     assert "qt" not in policy["usfm_contexts"]
     assert policy["original_language"]["source_text_drift_adjudication"] == "PROHIBITED"
 
