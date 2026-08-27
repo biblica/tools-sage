@@ -126,7 +126,7 @@ TARGET write authority is granted only by an explicitly authorized BIC TARGET Jo
 
 ## Reporting languages
 
-The global Operator language defaults to `en` and supplies the primary language for Operator-facing logs and reports. Normal menus expose only `approved` languages and configured `candidates`; a `pilot_only` tag must be added manually to `human_output.operator_language_policy.candidates` by an advanced Operator before evaluation. Each Job may add one optional secondary reporting language. Projects carry Scripture identity and capabilities only; they do not own language settings or report files. Canonical report data remains Job-owned; polished reports are published to root `localdata/reports/<job-id>/`.
+The global Operator language defaults to `en` and supplies the primary-language default captured when a Job is created. Normal menus expose only `approved` languages and configured `candidates`; a `pilot_only` tag must be added manually to `human_output.operator_language_policy.candidates` by an advanced Operator before evaluation. Each Job owns one required primary reporting language and may add one optional secondary language. Projects carry Scripture identity and capabilities only; they do not own language settings or report files. Canonical report data remains Job-owned; polished reports are published to root `localdata/reports/<job-id>/`.
 
 ## Original-language resources
 

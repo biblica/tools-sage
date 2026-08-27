@@ -47,7 +47,7 @@ minor_summary:
   - notes
 human_reporting:
   bilingual_language_authority_notice: required
-  primary_operator_language: governing_human_rendering
+  primary_job_language: governing_human_rendering
   secondary_language: assistive_lower_confidence_translation
   secondary_generation_cost: additional_model_usage_and_compilation_time
   secondary_review_requirement: greater_than_single_language_report

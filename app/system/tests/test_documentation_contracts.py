@@ -811,7 +811,7 @@ def test_hardening_uses_canonical_maintenance_script_interfaces() -> None:
 
 
 def test_human_output_and_challenge_materiality_are_documented() -> None:
-    """Verify global-primary, Job-secondary, and concise material reporting contracts."""
+    """Verify Job-owned language and concise material reporting contracts."""
     guide = (ROOT / "docs" / "advanced" / "architecture" / "HUMAN-OUTPUT-AND-LOGGING.md").read_text(encoding="utf-8")
     ecosystem = yaml.safe_load((ROOT / "ecosystem.yml").read_text(encoding="utf-8"))
     assert "logs_and_reports" in guide

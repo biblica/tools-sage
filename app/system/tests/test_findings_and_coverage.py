@@ -286,3 +286,95 @@ def test_partition_aggregation_globalizes_duplicate_provider_finding_ids(make_wo
     assert {row["submitted_id"] for row in result["findings"]} == {"F001"}
     assert len({row["finding_id"] for row in result["findings"]}) == 2
     assert all(row["finding_id"].startswith("SAW_") for row in result["findings"])
+
+
+def test_partition_aggregation_expands_legacy_raw_bridge_plan_coverage(make_workspace) -> None:
+    """Legacy stage plans with raw bridge labels finalize against atomic child coverage."""
+    import json
+
+    from sage.act_tasks import aggregate_act_plan
+    from sage.registry import load_ecosystem
+
+    root = make_workspace()
+    config = load_ecosystem(root / "ecosystem.yml")
+    plans_root = config.workflow("saw").output_root / "plans"
+    active_root = config.workflow("saw").output_root / "active"
+    plan_id = "SAW-RTC-MAT-LEGACY-BRIDGE"
+    run_id = "SAW-RUN-BRIDGE"
+    job_id = "SAW_usWIP-usNIVv2"
+    lineage = {"project.usWIP": "WIP-SHA", "project.usNIVv2": "REF-SHA"}
+    unit_refs = (("MAT 1:1", "MAT 1:2"), ("MAT 1:3",))
+    units = []
+    for index, references in enumerate(unit_refs, start=1):
+        unit_id = f"{plan_id}-U{index:03d}"
+        task_root = active_root / unit_id
+        manifest = task_root / "task-manifest.json"
+        validation = task_root / "validation"
+        validation.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(
+            json.dumps({
+                "task_id": unit_id,
+                "expected_references": list(references),
+            }) + "\n",
+            encoding="utf-8",
+        )
+        (validation / "submission.json").write_text(
+            json.dumps({
+                "status": "FINALIZED",
+                "task_id": unit_id,
+                "scope": "MAT 1:1-2" if index == 1 else "MAT 1:3",
+            }) + "\n",
+            encoding="utf-8",
+        )
+        (validation / "normalized-findings.json").write_text(
+            json.dumps({
+                "task_id": unit_id,
+                "job_id": job_id,
+                "run_id": run_id,
+                "output_project": "usWIP",
+                "contemporary_source": "usNIVv2",
+                "resource_fingerprints": lineage,
+                "resource_bindings": {"wip": "usWIP", "reference": "usNIVv2"},
+                "coverage": {
+                    "status": "COMPLETE",
+                    "reviewed_references": list(references),
+                },
+                "review_receipts": [],
+                "structural_adjudications": [],
+                "ol_review_requests": [],
+                "ol_resolutions": [],
+                "resolved_ol_request_ids": [],
+                "findings": [],
+                "finding_count": 0,
+            }) + "\n",
+            encoding="utf-8",
+        )
+        units.append({
+            "unit_id": unit_id,
+            "task_id": unit_id,
+            "manifest_path": str(manifest.resolve()),
+        })
+    plan_path = plans_root / f"{plan_id}.json"
+    plan_path.parent.mkdir(parents=True, exist_ok=True)
+    plan_path.write_text(
+        json.dumps({
+            "workflow": "saw",
+            "status": "PARTITIONED",
+            "plan_id": plan_id,
+            "job_id": job_id,
+            "run_id": run_id,
+            "requested_scope": "MAT 1:1-3",
+            "output_project": "usWIP",
+            "contemporary_source": "usNIVv2",
+            "expected_references": ["MAT 1:1-2", "MAT 1:3"],
+            "work_units": units,
+        }) + "\n",
+        encoding="utf-8",
+    )
+
+    result = aggregate_act_plan(config, plan_path)
+
+    assert result["coverage"]["reviewed_references"] == [
+        "MAT 1:1", "MAT 1:2", "MAT 1:3"
+    ]
+    assert result["coverage"]["legacy_raw_spans_expanded"] == ["MAT 1:1-2"]

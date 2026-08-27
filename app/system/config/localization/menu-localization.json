@@ -2715,6 +2715,14 @@
       "ru": "задать состояние проверки",
       "pt-BR": "definir status de revisão"
     },
+    "menu.set.primary.reporting.language": {
+      "en-US": "Set primary reporting language",
+      "en-GB": "Set primary reporting language",
+      "id": "atur bahasa pelaporan utama",
+      "fr": "définir la langue principale des rapports",
+      "ru": "задать основной язык отчётов",
+      "pt-BR": "definir idioma principal de relatórios"
+    },
     "menu.set.secondary.reporting.language": {
       "en-US": "Set secondary reporting language",
       "en-GB": "Set secondary reporting language",

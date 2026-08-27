@@ -1,4 +1,4 @@
-schema_id: sage-act-task-2.3
+schema_id: sage-act-task-2.4
 required:
 - schema_version
 - execution_mode
@@ -26,6 +26,7 @@ required:
 - allowed_writes
 - output_grammar
 - human_output
+- narrative_language
 - forbidden_actions
 - task_fingerprint
 canonical_resource_bindings:
@@ -49,7 +50,7 @@ project_context:
   run_id: required_for_all_governed_tasks
   direct_cli: must_resolve_or_create_persisted_job_and_run
 controls:
-  schema_version: '2.3'
+  schema_version: '2.4'
   execution_mode: SAGE_GOVERNED_TASK_V1
   output_project_projection:
     cardinality: exactly_one
@@ -87,9 +88,18 @@ controls:
   submit_command_required: true
   resubmission: prohibited
   job_isolation: all_governed_tasks_have_persisted_job_id_and_run_id
+  narrative_language:
+    cardinality: exactly_one
+    owner: job_reporting.primary_language
+    authority: CANONICAL_REPORT_NARRATIVE
+    provider_binding: explicit_tag_and_language_name
+    source_language_inference: prohibited
+    interface_language_in_provider_prompt: prohibited
+    secondary_language_in_canonical_provider_prompt: prohibited
+    clear_mismatch_retry: at_most_one
   human_output_language_authority:
     bilingual_reports: required
-    primary_operator_language: governing_human_rendering
+    primary_job_language: governing_human_rendering
     secondary_language: assistive_lower_confidence_translation
     secondary_generation_cost: additional_model_usage_and_compilation_time
     secondary_review_requirement: greater_than_single_language_report

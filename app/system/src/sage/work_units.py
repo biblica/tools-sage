@@ -306,8 +306,10 @@ class WorkUnit:
             "unit_id": self.unit_id,
             "primary_scope": _range_label(self.primary),
             "primary_references": [record.reference for record in self.primary],
+            "primary_coverage_atoms": [ref.label() for ref in sorted(self.primary_refs)],
             "context_before": [record.reference for record in self.context_before],
             "context_after": [record.reference for record in self.context_after],
+            "context_atoms": [ref.label() for ref in sorted(self.context_refs)],
             "context_mode": "CONTEXT_ONLY",
             "primary_atomic_coordinates": self.primary_atomic_count,
             "measurement": self.measurement.to_dict(),
@@ -757,6 +759,55 @@ def _coalesce_adjacent_ranges(
     )
     return packed
 
+
+def _close_required_span_boundaries(
+    ranges: list[tuple[int, int]],
+    records: tuple[EvidenceRecord, ...],
+    required_spans: Iterable[Iterable[VerseRef]],
+) -> tuple[list[tuple[int, int]], list[list[str]]]:
+    """Move proposed boundaries through every intersecting indivisible source span.
+
+    WIP bridges are already indivisible ``EvidenceRecord`` objects.  This closure
+    additionally protects spans from another active source (for RTC, REFERENCE)
+    and VRS equivalence groups.  Extending one boundary through a span naturally
+    repeats until it reaches a stable boundary, including opposing bridge chains.
+    """
+    positions = {
+        ref: index
+        for index, record in enumerate(records)
+        for ref in record.refs
+    }
+    forbidden: set[int] = set()
+    active_spans: list[list[str]] = []
+    for values in required_spans:
+        span = tuple(sorted(set(values)))
+        covered_positions = sorted({positions[ref] for ref in span if ref in positions})
+        if len(covered_positions) < 2:
+            continue
+        start = covered_positions[0]
+        end = covered_positions[-1]
+        forbidden.update(range(start, end))
+        active_spans.append([ref.label() for ref in span])
+    if not forbidden or len(ranges) < 2:
+        return ranges, active_spans
+
+    closed: list[tuple[int, int]] = []
+    start = 0
+    final_index = len(records) - 1
+    for _, proposed_end in ranges:
+        if proposed_end < start:
+            continue
+        end = proposed_end
+        while end < final_index and end in forbidden:
+            end += 1
+        closed.append((start, end))
+        start = end + 1
+        if start > final_index:
+            break
+    if start <= final_index:
+        closed.append((start, final_index))
+    return closed, active_spans
+
 def _validate_records(records: tuple[EvidenceRecord, ...]) -> None:
     """Require ordered, unique, non-empty records before work-unit planning begins."""
     if not records:
@@ -919,8 +970,9 @@ def plan_work_units(
     unit_prefix: str,
     shared: dict[str, Any] | None = None,
     context_pool: Iterable[EvidenceRecord] | None = None,
+    required_spans: Iterable[Iterable[VerseRef]] = (),
 ) -> tuple[WorkUnit, ...]:
-    """Plan stable contiguous units with exact coverage and real context routing."""
+    """Plan stable contiguous units with exact coverage and source-span-safe boundaries."""
     # Partition contiguously and verify exact coverage after budgeting; no coordinate may be lost or duplicated.
     ordered = tuple(records)
     _validate_records(ordered)
@@ -954,6 +1006,28 @@ def plan_work_units(
         context_positions,
         packet_sizer,
     )
+    ranges, active_required_spans = _close_required_span_boundaries(
+        ranges,
+        ordered,
+        required_spans,
+    )
+
+    for unit_start, unit_end in ranges:
+        if not _fits(
+            ordered,
+            unit_start,
+            unit_end,
+            policy,
+            full_context,
+            context_positions,
+            packet_sizer,
+        ):
+            raise EvidenceLimitError(
+                "Preserving an indivisible source bridge/equivalence span exceeds a governed work-unit limit",
+                code="WORK_UNIT_REQUIRED_SPAN_EXCEEDS_LIMIT",
+                affected_scope=_range_label(ordered[unit_start : unit_end + 1]),
+                details={"required_spans": active_required_spans},
+            )
 
     units: list[WorkUnit] = []
     for index, (unit_start, unit_end) in enumerate(ranges, start=1):

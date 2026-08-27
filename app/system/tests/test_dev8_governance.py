@@ -67,6 +67,7 @@ def saw_document(task: dict, *, findings: list[dict] | None = None, answer: str 
     }[task["operation"]]
     value = {
         "schema_version": "2.0",
+        "narrative_language": task["narrative_language"],
         "task_id": task["task_id"],
         "operation": task["operation"],
         "stage": stage,

@@ -96,8 +96,8 @@ def test_saw_job_runtime_ignores_unbound_inactive_bic_template(make_workspace) -
     assert bic.bindings == {}
 
 
-def test_global_operator_language_and_job_secondary_are_runtime_owned(make_workspace) -> None:
-    """The global language is primary; the Job alone may add or clear a secondary."""
+def test_job_primary_and_optional_secondary_are_runtime_owned(make_workspace) -> None:
+    """Each Job snapshots one primary and may independently add or clear a secondary."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     settings_path = root / "ecosystem.yml"
     raw = yaml.safe_load(settings_path.read_text(encoding="utf-8"))
@@ -130,15 +130,17 @@ def test_global_operator_language_and_job_secondary_are_runtime_owned(make_works
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         profiles={},
         defaults={},
+        primary_report_language="fr",
         secondary_report_language="uk",
     )
     runtime = yaml.safe_load(job.runtime_settings_path.read_text(encoding="utf-8"))
+    assert job.primary_report_language == "fr"
     assert job.secondary_report_language == "uk"
-    assert runtime["human_output"]["operator_language"] == "id"
-    assert runtime["human_output"]["logs_and_reports"]["primary_language"] == "id"
+    assert runtime["human_output"]["operator_language"] == "fr"
+    assert runtime["human_output"]["logs_and_reports"]["primary_language"] == "fr"
     assert runtime["human_output"]["logs_and_reports"]["secondary_language"] == "uk"
     assert runtime["human_output"]["logs_and_reports"]["bilingual"] is True
-    assert runtime["human_output"]["translation_challenges"]["primary_language"] == "id"
+    assert runtime["human_output"]["translation_challenges"]["primary_language"] == "fr"
     assert runtime["human_output"]["translation_challenges"]["secondary_language"] == "uk"
 
     revised = store.revise_job(job, reporting={"secondary_language": None})
@@ -148,8 +150,80 @@ def test_global_operator_language_and_job_secondary_are_runtime_owned(make_works
     assert revised_runtime["human_output"]["logs_and_reports"]["bilingual"] is False
 
     with pytest.raises(ValidationError) as caught:
-        store.revise_job(revised, reporting={"secondary_language": "id"})
+        store.revise_job(revised, reporting={"secondary_language": "fr"})
     assert caught.value.code == "JOB_REPORTING_LANGUAGE_CONFLICT"
+
+
+def test_legacy_job_primary_is_snapshotted_during_runtime_refresh(make_workspace) -> None:
+    """A legacy secondary-only Job is upgraded once before it can create provider tasks."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="saw",
+        job_id="SAW_usWIP-usNIVv2",
+        display_name="Legacy reporting upgrade",
+        bindings={"wip": "usWIP", "reference": "usNIVv2"},
+        profiles={},
+        defaults={},
+        secondary_report_language="uk",
+    )
+    raw = yaml.safe_load(job.manifest_path.read_text(encoding="utf-8"))
+    raw["reporting"].pop("primary_language")
+    job.manifest_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+
+    legacy = store.load_job(job.job_id, tool="saw")
+    assert legacy.reporting_contract_persisted is False
+    assert legacy.primary_report_language == "en"
+
+    store.ensure_runtime_files(legacy)
+    upgraded = store.load_job(job.job_id, tool="saw")
+    persisted = yaml.safe_load(upgraded.manifest_path.read_text(encoding="utf-8"))
+    assert upgraded.reporting_contract_persisted is True
+    assert persisted["reporting"] == {"primary_language": "en", "secondary_language": "uk"}
+    assert upgraded.configuration_revision == 2
+
+
+def test_global_default_change_does_not_rewrite_existing_job_primary(make_workspace) -> None:
+    """A Job keeps the primary language captured when it was created."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    settings_path = root / "ecosystem.yml"
+    store = JobStore(root, settings_path)
+    job = store.create_job(
+        tool="saw",
+        job_id="SAW_usWIP-usNIVv2",
+        display_name="Stable report language",
+        bindings={"wip": "usWIP", "reference": "usNIVv2"},
+        profiles={},
+        defaults={},
+    )
+    assert job.primary_report_language == "en"
+
+    raw = yaml.safe_load(settings_path.read_text(encoding="utf-8"))
+    raw["human_output"] = {
+        "operator_language": "id",
+        "logs_and_reports": {
+            "primary_language": "OPERATOR_LANGUAGE",
+            "secondary_language": None,
+            "bilingual": False,
+            "verbosity": "normal",
+        },
+        "translation_challenges": {
+            "primary_language": "OPERATOR_LANGUAGE",
+            "secondary_language": None,
+            "bilingual": False,
+            "minimum_individual_urgency": 2,
+            "aggregate_lower_levels": True,
+            "consolidate_repeated_cause": True,
+            "render_only_material_fields": True,
+        },
+        "machine_records": {"language": "canonical", "localise_codes": False},
+    }
+    settings_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+    reloaded = store.load_job(job.job_id, tool="saw")
+    store.ensure_runtime_files(reloaded)
+    runtime = yaml.safe_load(reloaded.runtime_settings_path.read_text(encoding="utf-8"))
+    assert reloaded.primary_report_language == "en"
+    assert runtime["human_output"]["logs_and_reports"]["primary_language"] == "en"
 
 
 def test_persian_project_requires_explicit_regional_profile_before_registration(make_workspace, tmp_path: Path) -> None:
@@ -751,6 +825,55 @@ def test_saw_preflight_reports_daniel_eng_org_differences_without_blocking(make_
     refs = {row["reference"] for row in findings["advisories"]}
     assert {"DAN 3:31", "DAN 3:32", "DAN 3:33", "DAN 4:35"}.issubset(refs)
     assert all(row["default_vrs"] == "eng.vrs" for row in findings["advisories"])
+
+
+def test_routine_saw_preflight_keeps_vrs_advisory_details_out_of_ui(make_workspace) -> None:
+    """Non-blocking coordinate differences persist without cluttering Run preflight."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="saw",
+        job_id="SAW_usWIP-usNIVv2",
+        display_name="Silent VRS advisory",
+        bindings={"wip": "usWIP", "reference": "usNIVv2"},
+        profiles={},
+        defaults={},
+    )
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        io=MenuIO(input_func=ScriptedInput([]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+    advisory = {
+        "role": "SAW OL GREEK",
+        "project_id": "GRK",
+        "scope": "JHN 4:43-5:30",
+        "status": "ADVISORY",
+        "code": "EXPECTED_COORDINATE_MISSING",
+        "reference": "JHN 5:4",
+        "message": "Coordinate is expected by the effective VRS.",
+        "effective_vrs": "org.vrs",
+        "default_vrs": "eng.vrs",
+    }
+    center._saw_preview_findings = lambda *_args, **_kwargs: {
+        "blockers": [],
+        "advisories": [advisory],
+    }
+
+    status = center._preflight_saw_preview(
+        job,
+        {"units": [{"primary_scope": "JHN 4:43-5:30"}]},
+        require_original_language=True,
+    )
+
+    assert status == "READY"
+    assert center._pending_saw_vrs_advisories == [advisory]
+    rendered = output.getvalue()
+    assert "SAW VERSIFICATION ADVISORY" not in rendered
+    assert "EXPECTED_COORDINATE_MISSING" not in rendered
+    assert "JHN 5:4" not in rendered
 
 
 def test_vrs_only_project_differences_do_not_block_saw_initialization(make_workspace) -> None:

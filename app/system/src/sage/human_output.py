@@ -1,8 +1,8 @@
 """Localize human-facing reports and emit readable operational log events.
 
 Machine records remain canonical and language-neutral. This module renders only
-human-facing labels and messages according to the global Operator language and
-the optional Job secondary language.
+human-facing labels and messages according to the required Job primary language
+and the optional Job secondary language.
 """
 
 from __future__ import annotations
@@ -84,7 +84,7 @@ class HumanOutputSpec:
 
 @dataclass(frozen=True)
 class OperatorLanguagePolicy:
-    """Govern which primary Operator languages are exposed for ordinary selection."""
+    """Govern which report-language defaults are exposed for ordinary selection."""
 
     approved: tuple[str, ...]
     candidates: tuple[str, ...]
@@ -805,7 +805,7 @@ def render_report_language_authority(
     if not primary or not secondary or primary == secondary:
         return ""
     notice = (
-        f"Language authority: `{primary}` is the governing Operator-language rendering for "
+        f"Language authority: `{primary}` is the governing Job-primary rendering for "
         f"interpreting this human report; this authority is not a guarantee that every finding "
         f"is correct. `{secondary}` is an assistive secondary translation with lower, unverified "
         f"translation confidence and may contain ambiguity. Verify it against `{primary}` before "

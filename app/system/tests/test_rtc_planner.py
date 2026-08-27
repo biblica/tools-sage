@@ -1,5 +1,8 @@
 """RTC WIP slicing and complete correlated-package validation."""
 
+import pytest
+
+from sage.errors import EvidenceLimitError
 from sage.evidence import EvidencePolicy, RTCSizingPolicy
 from sage.rtc_planner import plan_rtc_work_units
 from sage.work_units import EvidenceRecord
@@ -16,6 +19,22 @@ def _record(verse: int, text: str, *, role: str) -> EvidenceRecord:
         section_id="MAT-S1",
         paragraph_id=f"MAT-P{(verse - 1) // 3}",
         discourse_unit_id=f"MAT-D{(verse - 1) // 3}",
+        discourse_unit_kind="PARAGRAPH",
+        discourse_unit_marker="p",
+    )
+
+
+def _bridge_record(start: int, end: int, text: str, *, role: str) -> EvidenceRecord:
+    """Build one indivisible bridged source record for boundary regressions."""
+    return EvidenceRecord(
+        book="MAT",
+        chapter=1,
+        verse_start=start,
+        verse_end=end,
+        payload={"body_text": text, "resource_role": role},
+        section_id="MAT-S1",
+        paragraph_id=f"MAT-P{(start - 1) // 3}",
+        discourse_unit_id=f"MAT-D{(start - 1) // 3}",
         discourse_unit_kind="PARAGRAPH",
         discourse_unit_marker="p",
     )
@@ -70,3 +89,128 @@ def test_reference_heavy_rtc_package_is_resliced_after_wip_boundary_planning() -
     assert all(item["wip"]["estimated_tokens"] < 8000 for item in packages)
     assert all(item["pack"]["estimated_tokens"] <= 32000 for item in packages)
     assert all(item["pack"]["serialized_bytes"] <= 224000 for item in packages)
+
+
+def test_reference_bridge_moves_internal_wip_boundary_to_its_far_edge() -> None:
+    """A REFERENCE 3-4 span keeps WIP atoms 3 and 4 in one primary owner."""
+    wip = tuple(_record(verse, "w" * 6000, role="WIP") for verse in range(1, 7))
+    reference = (
+        _record(1, "r" * 200, role="REFERENCE"),
+        _record(2, "r" * 200, role="REFERENCE"),
+        _bridge_record(3, 4, "r" * 400, role="REFERENCE"),
+        _record(5, "r" * 200, role="REFERENCE"),
+        _record(6, "r" * 200, role="REFERENCE"),
+    )
+    base = EvidencePolicy(
+        target_estimated_tokens=28000,
+        hard_estimated_tokens=32000,
+        hard_serialized_bytes=224000,
+        minimum_target_tokens=6000,
+        maximum_primary_verse_units=220,
+        context_before_verses=0,
+        context_after_verses=0,
+    )
+
+    units, packages, _ = plan_rtc_work_units(
+        wip,
+        base,
+        _sizing(),
+        unit_prefix="SAW-RTC-MAT-REF-BRIDGE",
+        shared={},
+        wip_context_pool=wip,
+        reference_records=reference,
+    )
+
+    owners = {
+        ref.label(): unit.unit_id
+        for unit in units
+        for ref in unit.primary_refs
+    }
+    assert len(units) == 2
+    assert owners["MAT 1:3"] == owners["MAT 1:4"]
+    assert packages[0]["source_spans"]["REFERENCE"] == [
+        "MAT 1:1", "MAT 1:2", "MAT 1:3-4"
+    ]
+    assert packages[0]["primary_coverage_atoms"] == [
+        "MAT 1:1", "MAT 1:2", "MAT 1:3", "MAT 1:4"
+    ]
+
+
+def test_opposing_wip_and_reference_bridges_close_boundary_until_stable() -> None:
+    """REF 3-4 reaches WIP 4-5, so the stable far edge is after atom 5."""
+    wip = (
+        _record(1, "w" * 6000, role="WIP"),
+        _record(2, "w" * 6000, role="WIP"),
+        _record(3, "w" * 6000, role="WIP"),
+        _bridge_record(4, 5, "w" * 12000, role="WIP"),
+        _record(6, "w" * 6000, role="WIP"),
+        _record(7, "w" * 6000, role="WIP"),
+    )
+    reference = (
+        _record(1, "r" * 200, role="REFERENCE"),
+        _record(2, "r" * 200, role="REFERENCE"),
+        _bridge_record(3, 4, "r" * 400, role="REFERENCE"),
+        _record(5, "r" * 200, role="REFERENCE"),
+        _record(6, "r" * 200, role="REFERENCE"),
+        _record(7, "r" * 200, role="REFERENCE"),
+    )
+    base = EvidencePolicy(
+        target_estimated_tokens=28000,
+        hard_estimated_tokens=32000,
+        hard_serialized_bytes=224000,
+        minimum_target_tokens=6000,
+        maximum_primary_verse_units=220,
+        context_before_verses=0,
+        context_after_verses=0,
+    )
+
+    units, packages, _ = plan_rtc_work_units(
+        wip,
+        base,
+        _sizing(),
+        unit_prefix="SAW-RTC-MAT-OPPOSING-BRIDGES",
+        shared={},
+        wip_context_pool=wip,
+        reference_records=reference,
+    )
+
+    assert len(units) == 2
+    assert [ref.label() for ref in sorted(units[0].primary_refs)] == [
+        "MAT 1:1", "MAT 1:2", "MAT 1:3", "MAT 1:4", "MAT 1:5"
+    ]
+    assert packages[0]["source_spans"]["WIP"][-1] == "MAT 1:4-5"
+    assert "MAT 1:3-4" in packages[0]["source_spans"]["REFERENCE"]
+
+
+def test_bridge_integrity_blocks_when_far_edge_exceeds_hard_wip_limit() -> None:
+    """A hard WIP limit wins over the soft target without splitting REF 3-5."""
+    wip = tuple(_record(verse, "w" * 6500, role="WIP") for verse in range(1, 7))
+    reference = (
+        _record(1, "r" * 200, role="REFERENCE"),
+        _record(2, "r" * 200, role="REFERENCE"),
+        _bridge_record(3, 5, "r" * 600, role="REFERENCE"),
+        _record(6, "r" * 200, role="REFERENCE"),
+    )
+    base = EvidencePolicy(
+        target_estimated_tokens=28000,
+        hard_estimated_tokens=32000,
+        hard_serialized_bytes=224000,
+        minimum_target_tokens=6000,
+        maximum_primary_verse_units=220,
+        context_before_verses=0,
+        context_after_verses=0,
+    )
+
+    with pytest.raises(EvidenceLimitError) as caught:
+        plan_rtc_work_units(
+            wip,
+            base,
+            _sizing(),
+            unit_prefix="SAW-RTC-MAT-BRIDGE-HARD-LIMIT",
+            shared={},
+            wip_context_pool=wip,
+            reference_records=reference,
+        )
+
+    assert caught.value.code == "SAW_RTC_UNSPLITTABLE_BRIDGE"
+    assert caught.value.details["required_spans"]

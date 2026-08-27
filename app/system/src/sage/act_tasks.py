@@ -59,7 +59,14 @@ from .hashing import sha256_bytes, sha256_file
 from .human_output import report_language_authority, render_report_language_authority
 from .locking import WorkspaceLock
 from .llm_settings import load_llm_settings
-from .references import ScriptureScope, parse_scope, parse_scope_set
+from .language_codes import canonical_language_tag
+from .references import (
+    ScriptureScope,
+    atomic_reference_labels,
+    expand_reference_atoms,
+    parse_scope,
+    parse_scope_set,
+)
 from .profiles import load_workflow_profile
 from .platform_commands import render_sage_command
 from .registry import EcosystemConfig, ProjectSpec, load_ecosystem
@@ -120,6 +127,25 @@ SAW_CHECK_TYPES = {
     "MEANING_EQUIVALENCE",
     "CUSTOM_BOUNDED_CHECK",
 }
+
+
+def _narrative_language_contract(config: EcosystemConfig) -> dict[str, str]:
+    """Return the required concrete Job-owned language contract for generated narrative."""
+    value = str(config.human_output.logs_and_reports.primary_language or "").strip()
+    if value.upper() == "OPERATOR_LANGUAGE":
+        value = config.human_output.operator_language
+    try:
+        tag = canonical_language_tag(value, "ACT narrative report language")
+    except ConfigurationError as exc:
+        raise ValidationError(
+            "ACT creation requires one resolved Job-owned primary report language",
+            code="ACT_REPORT_LANGUAGE_MISSING",
+            next_action="Set the Job primary reporting language and recreate the task.",
+        ) from exc
+    return {
+        "tag": tag,
+        "authority": "CANONICAL_REPORT_NARRATIVE",
+    }
 
 require_canonical_operation_set(ACT_OPERATIONS["bic"])
 _SAFE_OUTPUT_RE = re.compile(r"^output/[A-Za-z0-9][A-Za-z0-9._-]*$")
@@ -1812,7 +1838,7 @@ def _approved_saw_rtc_work_plan(
             next_action="Rebuild and approve the affected SAW Run plan.",
         )
 
-    rtc_plan_schema = str(plan.get("schema_version") or "") == "1.3"
+    rtc_plan_schema = str(plan.get("schema_version") or "") in {"1.3", "1.4"}
     rtc_sizing_contract = None
     if rtc_plan_schema:
         profile = load_workflow_profile(config, config.workflow("saw"))
@@ -1841,6 +1867,7 @@ def _approved_saw_rtc_work_plan(
             "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
             "prompt_schema_projection_version": RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
             "slicing_stream": "WIP",
+            "boundary_streams": ["WIP", "REFERENCE"],
             "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
         }
         if dict(plan.get("rtc_planner") or {}) != expected_planner:
@@ -1940,28 +1967,25 @@ def _approved_saw_rtc_work_plan(
                 )
         seen_unit_ids.add(unit_id)
         parsed_unit = parse_scope(primary_scope)
-        refs_inside_unit = True
-        unit_refs: list[VerseRef] = []
-        for value in refs:
-            for ref_scope in parse_scope_set(value):
-                if ref_scope.start_chapter is None or ref_scope.start_verse is None:
-                    refs_inside_unit = False
-                    break
-                end_chapter = ref_scope.end_chapter or ref_scope.start_chapter
-                end_verse = ref_scope.end_verse or ref_scope.start_verse
-                if end_chapter != ref_scope.start_chapter:
-                    refs_inside_unit = False
-                    break
-                atomic_refs = [
-                    VerseRef(ref_scope.book, ref_scope.start_chapter, verse)
-                    for verse in range(ref_scope.start_verse, end_verse + 1)
-                ]
-                if any(not parsed_unit.contains(ref) for ref in atomic_refs):
-                    refs_inside_unit = False
-                    break
-                unit_refs.extend(atomic_refs)
-            if not refs_inside_unit:
-                break
+        try:
+            unit_refs = list(expand_reference_atoms(refs))
+        except ValidationError as exc:
+            raise ValidationError(
+                f"Approved SAW work unit {unit_id} has an invalid primary inventory",
+                code="SAW_APPROVED_PLAN_INVALID",
+                affected_scope=primary_scope,
+            ) from exc
+        refs_inside_unit = all(parsed_unit.contains(ref) for ref in unit_refs)
+        declared_atoms = unit.get("primary_coverage_atoms")
+        if declared_atoms is not None:
+            if not isinstance(declared_atoms, list) or atomic_reference_labels(
+                str(value) for value in declared_atoms
+            ) != tuple(ref.label() for ref in unit_refs):
+                raise ValidationError(
+                    f"Approved SAW work unit {unit_id} has inconsistent canonical coverage atoms",
+                    code="SAW_APPROVED_PLAN_INVALID",
+                    affected_scope=primary_scope,
+                )
         if parsed_unit.book != scope.book or not refs_inside_unit:
             raise ValidationError(
                 f"Approved SAW work unit {unit_id} has references outside {primary_scope}",
@@ -2011,6 +2035,10 @@ def _create_approved_saw_rtc_stage(
     stage_plan_id = f"{parent_plan_id}-{rtc_stage}"
     children: list[dict[str, Any]] = []
     for unit in units:
+        raw_atoms = unit.get("primary_coverage_atoms")
+        if not isinstance(raw_atoms, list) or not raw_atoms:
+            raw_atoms = unit.get("primary_references", [])
+        unit_atoms = list(atomic_reference_labels(str(value) for value in raw_atoms))
         try:
             child = create_act_task(
                 config,
@@ -2038,12 +2066,29 @@ def _create_approved_saw_rtc_stage(
                 next_action="Rebuild and approve the affected SAW Run plan; boundaries will not change silently.",
                 details={"limit_error": exc.to_dict()},
             ) from exc
+        child_manifest = load_json(Path(str(child["manifest_path"])))
+        child_atoms = list(child_manifest.get("expected_references", []))
+        if child_atoms != unit_atoms:
+            raise ValidationError(
+                "Approved SAW RTC work-unit atoms differ from the generated sealed task",
+                code="SAW_APPROVED_PLAN_STALE",
+                affected_scope=str(unit.get("primary_scope") or scope.label()),
+                next_action="Rebuild and approve the affected SAW Run plan.",
+                details={
+                    "unit_id": str(unit.get("unit_id") or ""),
+                    "planned_atoms": unit_atoms,
+                    "task_atoms": child_atoms,
+                },
+            )
+        package = dict(unit.get("rtc_package") or {})
         children.append({
             "unit_id": str(unit["unit_id"]),
             "scope": str(unit["primary_scope"]),
             "task_id": child["task_id"],
             "manifest_path": child["manifest_path"],
             "task_fingerprint": child["task_fingerprint"],
+            "primary_coverage_atoms": unit_atoms,
+            "source_spans": dict(package.get("source_spans") or {}),
             "context_budget": child.get("context_budget"),
         })
     if len(children) == 1:
@@ -2075,9 +2120,9 @@ def _create_approved_saw_rtc_stage(
         "approved_work_plan_path": approved_plan.get("approved_manifest_path"),
         "approved_work_plan_fingerprint": approved_plan.get("plan_fingerprint"),
         "expected_references": [
-            str(ref)
-            for unit in units
-            for ref in unit.get("primary_references", [])
+            atom
+            for unit in children
+            for atom in unit.get("primary_coverage_atoms", [])
         ],
         "work_units": children,
         "created_utc": utc_now(),
@@ -2248,6 +2293,9 @@ def _partition_act_request(
             "task_id": child["task_id"],
             "manifest_path": child["manifest_path"],
             "task_fingerprint": child["task_fingerprint"],
+            "primary_coverage_atoms": [
+                ref.label() for ref in sorted(unit.primary_refs)
+            ],
             "context_budget": child.get("context_budget"),
         })
     expected_refs = [ref.label() for unit in units for ref in sorted(unit.primary_refs)]
@@ -2756,8 +2804,9 @@ def create_act_task(
                     separators=(",", ":"),
                 ).encode("utf-8")
             )
+    narrative_language = _narrative_language_contract(config)
     pre_identity = {
-        "schema_version": "2.3",
+        "schema_version": "2.4",
         "execution_mode": "SAGE_GOVERNED_TASK_V1",
         "workflow": workflow,
         "operation": operation,
@@ -2784,6 +2833,7 @@ def create_act_task(
         "check_type": normalized_check_type,
         "skill_id": skill.skill_id,
         "settings_sha256": sha256_file(config.settings_path),
+        "narrative_language": narrative_language,
         "project_fingerprints": project_fingerprints,
         "predecessor_task_id": predecessor.get("task_id") if predecessor else None,
         "parent_plan_id": parent_plan_id,
@@ -3377,7 +3427,7 @@ def create_act_task(
             for role, project_id in canonical_resource_bindings.items()
         }
         identity = {
-            "schema_version": "2.3",
+            "schema_version": "2.4",
             "execution_mode": "SAGE_GOVERNED_TASK_V1",
             "workflow": workflow,
             "operation": operation,
@@ -3518,6 +3568,7 @@ def create_act_task(
             "allowed_reads": allowed_reads,
             "conditional_reads": conditional_reads,
             "allowed_writes": list(expected_outputs),
+            "narrative_language": narrative_language,
             "human_output": {
                 "logs_and_reports": {
                     "primary_language": config.human_output.logs_and_reports.primary_language,
@@ -3636,7 +3687,15 @@ def create_act_task(
                 f"- Selected project grammar profile: `{target_profile.language}/{target_profile.profile_id}` "
                 f"(`{target_profile.status}`)"
             )
-        act_lines.extend(["", "## Process brief", ""])
+        act_lines.extend([
+            "",
+            "## Process brief",
+            "",
+            f"Canonical report narrative MUST use the Job-owned language tag `{narrative_language['tag']}`.",
+            "WIP, REFERENCE, SOURCE, original-language evidence, interface localization, and downstream secondary localization MUST NOT determine canonical narrative language.",
+            "Preserve explicitly supplied source quotations verbatim; keep canonical JSON keys, identifiers, and governed enum values unchanged.",
+            "",
+        ])
         if workflow == "bic" and operation == "inspect":
             act_lines.extend([
                 "1. Inspect only the bounded SOURCE packet, decontextualized DONOR vocabulary evidence, and routed source-language grammar evidence; routine INSPECT does not route OL Scripture.",
@@ -3984,6 +4043,34 @@ def create_act_task(
 
 
 
+def _coverage_reconciliation_details(
+    expected: Sequence[str],
+    observed: Sequence[str],
+    *,
+    reason: str,
+    unit_id: str | None = None,
+) -> dict[str, Any]:
+    """Return bounded exact-coverage diagnostics for one failed reconciliation."""
+    expected_set = set(expected)
+    observed_set = set(observed)
+    details: dict[str, Any] = {
+        "reason": reason,
+        "missing_coordinates": sorted(expected_set - observed_set),
+        "extra_coordinates": sorted(observed_set - expected_set),
+        "duplicate_expected_coordinates": sorted({
+            value for value in expected if expected.count(value) > 1
+        }),
+        "duplicate_observed_coordinates": sorted({
+            value for value in observed if observed.count(value) > 1
+        }),
+        "expected_coordinate_count": len(expected),
+        "observed_coordinate_count": len(observed),
+    }
+    if unit_id:
+        details["unit_id"] = unit_id
+    return details
+
+
 def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any]:
     """Aggregate validated SAW work units with exact plan-level coverage."""
     # Maintenance invariant: aggregate only same-Job/same-Run work with stable WIP/REFERENCE fingerprints.
@@ -3996,8 +4083,20 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         raise ValidationError(f"Invalid ACT aggregate plan: {exc}") from exc
     if plan.get("workflow") != "saw" or plan.get("status") != "PARTITIONED":
         raise ValidationError("Only PARTITIONED SAW plans can be aggregated")
-    expected = list(plan.get("expected_references", []))
+    raw_expected = [str(value) for value in plan.get("expected_references", [])]
+    try:
+        expected = list(atomic_reference_labels(raw_expected))
+    except ValidationError as exc:
+        raise ValidationError(
+            "Aggregate plan contains a non-canonical coverage inventory",
+            code="AGGREGATE_COVERAGE_MISMATCH",
+            details={"reason": "PLAN_COVERAGE_INVALID", "error": exc.message},
+        ) from exc
+    legacy_raw_spans = [
+        value for value in raw_expected if len(expand_reference_atoms(value)) > 1
+    ]
     observed: list[str] = []
+    planned_by_unit: list[str] = []
     receipts: list[dict[str, Any]] = []
     findings: list[dict[str, Any]] = []
     adjudications: list[dict[str, Any]] = []
@@ -4008,9 +4107,42 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
     lineage_fingerprints: dict[str, str] | None = None
     lineage_bindings: dict[str, Any] | None = None
     lineage_display_names: dict[str, str] | None = None
+    seen_unit_ids: set[str] = set()
+    seen_task_ids: set[str] = set()
     for unit in plan.get("work_units", []):
+        unit_id = str(unit.get("unit_id") or "").strip()
+        task_id = str(unit.get("task_id") or "").strip()
+        if not unit_id or unit_id in seen_unit_ids or (task_id and task_id in seen_task_ids):
+            raise ValidationError(
+                "Aggregate plan contains a duplicate or missing work-unit/result identity",
+                code="AGGREGATE_COVERAGE_MISMATCH",
+                details={
+                    "reason": "DUPLICATE_WORK_UNIT_RESULT",
+                    "unit_id": unit_id,
+                    "task_id": task_id,
+                },
+            )
+        seen_unit_ids.add(unit_id)
+        if task_id:
+            seen_task_ids.add(task_id)
         manifest_path = resolve_persisted_path(
             config.root, str(unit.get("manifest_path", "")), "SAW work-unit manifest"
+        )
+        manifest = load_json(manifest_path)
+        planned_fingerprint = str(unit.get("task_fingerprint") or "")
+        if planned_fingerprint and str(manifest.get("task_fingerprint") or "") != planned_fingerprint:
+            raise ValidationError(
+                f"Work unit {unit_id} task fingerprint differs from its aggregate plan",
+                code="AGGREGATE_COVERAGE_MISMATCH",
+                details={"reason": "WORK_UNIT_PLAN_DRIFT", "unit_id": unit_id},
+            )
+        raw_unit_atoms = unit.get("primary_coverage_atoms")
+        if not isinstance(raw_unit_atoms, list) or not raw_unit_atoms:
+            raw_unit_atoms = manifest.get("expected_references", [])
+        unit_atoms = (
+            list(atomic_reference_labels(str(value) for value in raw_unit_atoms))
+            if isinstance(raw_unit_atoms, list) and raw_unit_atoms
+            else []
         )
         validation_root = manifest_path.parent / "validation"
         submission_path = validation_root / "submission.json"
@@ -4059,11 +4191,36 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             raise ValidationError("Aggregated work-unit resource lineage is inconsistent")
         globalized = globalize_result_finding_ids(
             normalized,
-            unit_id=str(unit.get("unit_id") or submission.get("task_id") or "UNIT"),
+            unit_id=unit_id or str(submission.get("task_id") or "UNIT"),
             run_id=str(plan.get("run_id") or plan.get("plan_id") or "RUN"),
             prefix="SAW",
         )
-        observed.extend(globalized["coverage"]["reviewed_references"])
+        result_atoms = list(atomic_reference_labels(
+            str(value)
+            for value in globalized["coverage"]["reviewed_references"]
+        ))
+        # Legacy partition plans did not persist per-unit atoms. Their sealed child
+        # manifest remains the immutable coverage authority; synthetic pre-contract
+        # fixtures fall back to their already validated normalized result.
+        if not unit_atoms:
+            unit_atoms = list(result_atoms)
+        if (
+            len(result_atoms) != len(set(result_atoms))
+            or len(unit_atoms) != len(set(unit_atoms))
+            or set(result_atoms) != set(unit_atoms)
+        ):
+            raise ValidationError(
+                f"Work unit {unit_id} result coverage differs from its immutable plan",
+                code="AGGREGATE_COVERAGE_MISMATCH",
+                details=_coverage_reconciliation_details(
+                    unit_atoms,
+                    result_atoms,
+                    reason="RESULT_COVERAGE_DRIFT",
+                    unit_id=unit_id,
+                ),
+            )
+        planned_by_unit.extend(unit_atoms)
+        observed.extend(unit_atoms)
         receipts.extend(globalized.get("review_receipts", []))
         adjudications.extend(globalized.get("structural_adjudications", []))
         ol_review_requests.extend(globalized.get("ol_review_requests", []))
@@ -4071,16 +4228,48 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         resolved_ol_request_ids.extend(globalized.get("resolved_ol_request_ids", []))
         findings.extend(globalized.get("findings", []))
         child_results.append({
-            "unit_id": unit.get("unit_id"),
+            "unit_id": unit_id,
             "task_id": submission.get("task_id"),
             "scope": submission.get("scope"),
+            "primary_coverage_atoms": unit_atoms,
+            "source_spans": dict(unit.get("source_spans") or {}),
             "submission_sha256": sha256_file(submission_path),
         })
     validate_global_finding_ids(findings)
-    if len(observed) != len(set(observed)) or set(observed) != set(expected):
+    if len(expected) != len(set(expected)):
+        raise ValidationError(
+            "Aggregate plan duplicates canonical expected coverage",
+            code="AGGREGATE_COVERAGE_MISMATCH",
+            details=_coverage_reconciliation_details(
+                expected,
+                planned_by_unit,
+                reason="DUPLICATE_PLANNED_ATOM",
+            ),
+        )
+    if len(planned_by_unit) != len(set(planned_by_unit)) or set(planned_by_unit) != set(expected):
+        reason = (
+            "DUPLICATE_PRIMARY_OWNER"
+            if len(planned_by_unit) != len(set(planned_by_unit))
+            else "MISSING_PRIMARY_OWNER"
+        )
         raise ValidationError(
             "Aggregated work units do not reconcile exact, non-overlapping plan coverage",
             code="AGGREGATE_COVERAGE_MISMATCH",
+            details=_coverage_reconciliation_details(
+                expected,
+                planned_by_unit,
+                reason=reason,
+            ),
+        )
+    if len(observed) != len(set(observed)) or set(observed) != set(expected):
+        raise ValidationError(
+            "Accepted work-unit results do not reconcile exact plan coverage",
+            code="AGGREGATE_COVERAGE_MISMATCH",
+            details=_coverage_reconciliation_details(
+                expected,
+                observed,
+                reason="MISSING_WORK_UNIT_RESULT",
+            ),
         )
     aggregate = {
         "schema_version": "1.0",
@@ -4095,7 +4284,11 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         "resource_display_names": lineage_display_names or {},
         "resource_fingerprints": lineage_fingerprints or {},
         "rtc_stage": plan.get("rtc_stage"),
-        "coverage": {"status": "COMPLETE", "reviewed_references": expected},
+        "coverage": {
+            "status": "COMPLETE",
+            "reviewed_references": expected,
+            "legacy_raw_spans_expanded": legacy_raw_spans,
+        },
         "review_receipts": receipts,
         "structural_adjudications": adjudications,
         "ol_review_requests": ol_review_requests,
@@ -4105,6 +4298,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         "finding_count": len(findings),
         "work_units": child_results,
         "finalized_utc": utc_now(),
+        "narrative_language": _narrative_language_contract(config),
     }
     authority = report_language_authority(
         config.human_output.logs_and_reports,
@@ -4225,8 +4419,15 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         raise ValidationError("ACT task execution_mode is not a supported governed task mode")
     if raw.get("workflow") != workflow or raw.get("operation") != control.get("operation"):
         raise ValidationError("ACT workflow or operation differs from trusted control")
-    if raw.get("schema_version") != "2.3":
-        raise ValidationError("ACT task schema_version must be 2.3")
+    if raw.get("schema_version") != "2.4":
+        raise ValidationError("ACT task schema_version must be 2.4")
+    expected_narrative_language = _narrative_language_contract(config)
+    if raw.get("narrative_language") != expected_narrative_language:
+        raise ValidationError(
+            "ACT narrative language is missing or differs from the owning Job",
+            code="ACT_REPORT_LANGUAGE_MISMATCH",
+            next_action="Recreate the task from the current Job configuration.",
+        )
     if raw.get("evidence_policy") != task_evidence_policy(workflow):
         raise ValidationError(
             "ACT task evidence policy is missing or differs from the canonical local-evidence boundary",
@@ -4523,6 +4724,9 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 rtc_stage=raw.get("rtc_stage"),
                 expected_ol_request_ids=list((raw.get("review_requirements") or {}).get("expected_ol_request_ids", [])),
                 expected_ol_requests=list((raw.get("review_requirements") or {}).get("expected_ol_requests", [])),
+                narrative_language=str(
+                    dict(raw.get("narrative_language") or {}).get("tag") or ""
+                ),
             )
         except ValidationError as exc:
             if exc.code != "VALIDATION_ERROR":

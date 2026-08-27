@@ -43,9 +43,10 @@ Preserve exact command names, identifiers, schema fields, status values, filenam
 - Preserve canonical machine records across reporting languages. Never localize commands, paths,
   identifiers, hashes, status codes, evidence IDs, or Scripture coordinates.
 
-The current implementation still inherits the Job primary report language from the global Operator
-language. [Purpose and function drift report](../maintenance/PURPOSE-FUNCTION-DRIFT-REPORT.md) records the required
-schema, menu, runtime, catalog, and validation adjustment.
+The global Operator language supplies only the creation default. SAGE snapshots that value into the
+Job manifest, after which the Job-owned primary remains stable until an explicit Job revision.
+[Purpose and function drift report](../maintenance/PURPOSE-FUNCTION-DRIFT-REPORT.md) records the
+completed schema, menu, runtime, catalog, and validation adjustment.
 
 ## Canonical terminology
 
@@ -76,7 +77,7 @@ schema, menu, runtime, catalog, and validation adjustment.
 - Original language: use `original-language` adjectivally; introduce `OL` only after the full term.
 - Task controls: `ACT.md` and `task-manifest.json`.
 - Project context: every governed analytical task belongs to one persistent Job and one bounded Run built from SAGE Projects. Direct commands and natural-language routing must not create Job-less or Run-less BIC/SAW tasks.
-- Reporting-language settings: `ecosystem.yml` owns the global Operator language (default `en`) and its `approved`, `candidates`, and `pilot_only` policy lists. Normal menus expose only approved languages and candidates. An advanced Operator must manually add a `pilot_only` tag to `candidates` before controlled evaluation. Each Job may store one optional secondary reporting language in `job.yml`. A secondary rendering adds model usage and report compilation time and requires more human review than a single-language report. A SAGE Project never stores report-language settings.
+- Reporting-language settings: `ecosystem.yml` owns the global Operator language (default `en`) used as the creation default and its `approved`, `candidates`, and `pilot_only` policy lists. Normal menus expose only approved languages and candidates. An advanced Operator must manually add a `pilot_only` tag to `candidates` before controlled evaluation. Each Job stores one required primary and may store one optional secondary reporting language in `job.yml`. ACTs bind only the primary for canonical narrative; secondary rendering is downstream and adds model usage, compilation time, and human-review effort. A SAGE Project never stores report-language settings.
 - Job report ownership: use `Job report catalog` for the canonical machine record under
   `jobs/<tool>/<job-id>/report_data/`. Use `Operator reports catalog` for polished output under
   `localdata/reports/<job-id>/<BOOK>/`. The `<job-id>` identifies the owning Job, never a Project.
@@ -106,7 +107,7 @@ schema, menu, runtime, catalog, and validation adjustment.
 - Classic interactive-screen grammar: enclose every major menu title with the complete double-line set `╔═╗ / ║ / ╚═╝`. Render minor section headings with a `> ` prefix followed by an unindented, full-width `─` underline. Enclose the global A-F footer with the complete single-line set `┌─┐ / │ / └─┘`. Leave one blank line before and after each block. Indent footer keys with two spaces (`  A.`, `  D.`), matching the numeric-choice field. Put primary/commit actions before configurable options. Use fixed-width label columns instead of literal tab characters. Optional free-text/path prompts that accept cancellation must say `[Enter to cancel]` and must treat empty input as Back/cancel, not as an error.
 - Compact-list grammar: primary Operator lists show only differentiating fields. Repeated role/status/path metadata belongs in a selected-item detail view. Grammar-profile candidate lists should expose script compactly, for example `fa-IR [Arab]`.
 - SAW execution-feedback grammar: print stable Job/Run parameters once, then one replaceable `Working on SAW work unit n/N: <scope>` spinner line. Provider, model-selection, receipt, ACT, task-ID, and aggregate-path details remain in governed records/diagnostics rather than the default progress stream.
-- Bilingual SAW finding grammar: render `Issue` immediately followed by `Proposed action` for the primary Operator language, then render `Issue` immediately followed by `Proposed action` for the secondary assistive language. Do not separate Issue blocks from their same-language actions.
+- Bilingual SAW finding grammar: render `Issue` immediately followed by `Proposed action` for the primary Job language, then render `Issue` immediately followed by `Proposed action` for the secondary assistive language. Do not separate Issue blocks from their same-language actions.
 - Scripture format: `USFM`.
 - Versification: define `VRS` at first use for a general audience.
 - Natural-language interface: `natural-language request`, `interpretation`, `canonical command`, and `advisory-only`.
@@ -143,14 +144,14 @@ Use urgency levels `0` through `4`. Linguistic uncertainty produces `COMPLETED_W
 
 ## Human-output language and materiality
 
-Use these configuration terms for the two human-output channels, which share the global primary language and optional Job secondary language:
+Use these configuration terms for the two human-output channels, which share the Job primary language and optional Job secondary language:
 
 - `logs_and_reports`: operational logs, non-JSON command summaries, INIT and validation reports, status summaries, errors, and remediation messages;
 - `translation_challenges`: concise linguistic challenge summaries, evidence, alternatives, and actions.
 
 A bilingual rendering is one canonical record displayed in two languages; never double the challenge or event count. Preserve commands, codes, project IDs, Scripture coordinates, candidate forms, paths, and hashes exactly. List only material translation challenges individually, consolidate repeated causes, and aggregate minor or automatically resolved matters. Put diagnostic vectors and hashes in machine records, not normal human reports.
 
-Every bilingual report must state that the primary Operator-language rendering governs interpretation but does not guarantee that every finding is correct. It must identify the secondary rendering as assistive, lower-confidence, unverified translation that may contain ambiguity and must be checked against the primary before action. Canonical machine records, reason codes, evidence IDs, and Scripture coordinates remain authoritative.
+Every bilingual report must state that the Job-primary rendering governs interpretation but does not guarantee that every finding is correct. It must identify the secondary rendering as assistive, lower-confidence, unverified translation that may contain ambiguity and must be checked against the primary before action. Canonical machine records, reason codes, evidence IDs, and Scripture coordinates remain authoritative.
 
 ### Final Beta Language/Profile hierarchy
 

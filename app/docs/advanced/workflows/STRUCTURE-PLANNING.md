@@ -19,16 +19,22 @@ Planning first identifies intact spans at governed section markers. For RTC, adj
 - chapter boundaries are weak fallbacks;
 - `\m` continues a preceding body block but can begin a new block after a header or poetry break;
 - `\s3` remains structural context but is not a split candidate;
-- verse bridges are atomic and may not be cut.
+- WIP and REFERENCE verse bridges are indivisible source spans and may not be cut.
 
 ## Evidence rules
 
 Each requested coordinate occurs in exactly one primary unit. Adjacent context may be supplied for interpretation but is marked context-only and is not an ordinary finding location. Plan identity includes resources, VRS, structure policy, grammar contracts, compiler version, operation, and scope.
 
-At SAW execution time, SAGE expands approved ranged labels and current WIP records to the same atomic
-coordinate inventory before comparing them. An indivisible verse bridge remains one work-unit record,
-but its covered coordinates reconcile exactly without requiring the Operator to rebuild an unchanged
-approved plan.
+For RTC, the WIP stream still supplies discourse and size proposals, but planner V2 validates every
+proposed boundary against both active Scripture sources and local VRS equivalence spans. A boundary
+crossing either source is moved through the far edge and checked again until stable; the completed
+WIP/REFERENCE package is then remeasured. A hard-limit conflict blocks rather than splitting the span.
+
+At SAW execution and finalization time, SAGE expands approved ranged labels and current WIP records
+to the same atomic coordinate inventory. Raw bridge labels remain source metadata;
+`primary_coverage_atoms` are the immutable ownership keys. Existing partition plans created before
+that field was introduced are expanded deterministically during aggregation, so a valid completed
+Run can retry finalization without weakening exact coverage reconciliation.
 
 Plans and packets remain inside the owning workflow output root and outside immutable publication folders.
 

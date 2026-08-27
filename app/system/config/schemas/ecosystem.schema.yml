@@ -49,7 +49,7 @@ human_output_contract:
   operator_language:
     scope: global
     default: en
-    purpose: primary_language_for_operator_facing_logs_and_reports
+    purpose: operator_logs_and_default_primary_report_language_for_new_jobs
   operator_language_policy:
     approved: [en]
     candidates: [id, fr, es, pt-BR, pt-PT, ru]
@@ -71,13 +71,20 @@ human_output_contract:
     secondary_generation_cost: additional_model_usage_and_compilation_time
     secondary_review_requirement: greater_than_single_language_report
     canonical_machine_evidence: authoritative
+  primary_reporting_language:
+    scope: per_job
+    path: jobs/<tool>/<job-id>/job.yml
+    cardinality: exactly_one
+    creation_default: human_output.operator_language
+    ownership_after_creation: immutable_job_snapshot_until_explicit_job_revision
+    provider_binding: required_for_every_narrative_generating_act
   per_project_reporting_override: prohibited
   logs_and_reports:
-    primary_language: OPERATOR_LANGUAGE
+    primary_language: job_reporting.primary_language
     optional_secondary_language: job_reporting.secondary_language
     verbosity_values: [quiet, normal, verbose, debug]
   translation_challenges:
-    primary_language: OPERATOR_LANGUAGE
+    primary_language: job_reporting.primary_language
     optional_secondary_language: job_reporting.secondary_language
     minimum_individual_urgency: 0-4
     aggregate_lower_levels: true

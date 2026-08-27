@@ -243,7 +243,7 @@ def test_scripted_control_center_can_open_and_exit(make_workspace) -> None:
 
 
 def test_operator_and_job_language_menus_persist_separate_ownership(make_workspace) -> None:
-    """The menus store the global primary and Job secondary in their proper manifests."""
+    """The menus store the new-Job default and Job languages in their proper manifests."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
     global_center = SageControlCenter(

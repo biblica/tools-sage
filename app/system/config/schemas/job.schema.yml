@@ -8,6 +8,7 @@ required:
 - bindings
 - profiles
 - defaults
+- reporting
 - configuration_revision
 optional:
   reporting: [secondary_language]
@@ -49,7 +50,8 @@ controls:
   project_inventory_roles: none_role_neutral
   effective_roles: assigned_by_job_binding
   reporting:
-    primary_language: global_operator_language
+    primary_language: exactly_one_job_owned_canonical_language_tag
+    creation_default: global_operator_language_snapshotted_at_job_creation
     secondary_language: zero_or_one_canonical_language_tag
     secondary_must_differ_from_primary: true
     bilingual: derived_when_secondary_is_present

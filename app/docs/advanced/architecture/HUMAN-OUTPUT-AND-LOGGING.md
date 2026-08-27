@@ -1,6 +1,6 @@
 # Human output, reports, and logging
 
-SAGE stores canonical machine records once. One global Operator language is the primary language for human-facing output, and each Job may add one secondary reporting language.
+SAGE stores canonical machine records once. Every Job owns one required primary reporting language and may add one optional secondary reporting language.
 
 ## Interface localization
 
@@ -36,16 +36,17 @@ human_output:
     localise_codes: false
 ```
 
-`operator_language` is global and defaults to `en`. It controls the primary language for operational log messages, non-JSON command summaries, INIT reports, validation summaries, status summaries, errors, guided-remediation messages, and translation-challenge reports. Recognized headings and labels are rendered in the effective language order; canonical values are not changed.
+`operator_language` is global and defaults to `en`. It controls global operational output and is snapshotted as the primary reporting-language default when a new Job is created. Once created, the Job-owned value governs that Job's reports and narrative-generating ACTs. Recognized headings and labels are rendered in the effective language order; canonical values are not changed.
 
-The legacy reporting policy still classifies report-language tags as `approved`, `candidates`, or `pilot_only`. That policy is distinct from the six interface-localization columns above. An advanced Operator may still edit the legacy reporting candidate lists in `ecosystem.yml` for controlled reporting evaluation, but that does not change which interface locales are shipped. In this localization patch the former global Operator-language menu is no longer part of the normal Configure surface; the approved target is to replace that legacy primary with required Job-owned reporting language. Until that migration is complete, changing interface language must never be treated as changing report language.
+The reporting policy classifies report-language tags as `approved`, `candidates`, or `pilot_only`. That policy is distinct from the six interface-localization columns above. An advanced Operator may edit the reporting candidate lists in `ecosystem.yml` for controlled evaluation, but that does not change which interface locales are shipped. Changing interface language never changes report language.
 
 The legacy reporting operational-priority candidates remain Indonesian `id` and French `fr`, in that order. `operational_priorities` controls reporting implementation/evaluation attention only; it does not govern menu-localization availability.
 
-Each Job may store one optional secondary reporting language:
+Each Job stores one required primary and may store one optional secondary reporting language:
 
 ```yaml
 reporting:
+  primary_language: en
   secondary_language: id
 ```
 
@@ -54,14 +55,14 @@ The setting is stored at `jobs/<tool>/<job-id>/job.yml` and can be changed from 
 Effective report configuration is:
 
 ```text
-global Operator language -> Job optional secondary language
+global new-Job default -> Job required primary -> optional downstream secondary
 ```
 
-When a Job secondary language is present and differs from the global primary, both ordinary reports and translation-challenge reports are bilingual. Without it, the Job reports only in the global Operator language. Projects do not own report-language configuration.
+When a Job secondary language is present and differs from its primary, downstream human reports may be bilingual. Without it, the Job reports only in its own primary language. Secondary language is omitted from canonical provider handoffs. Projects do not own report-language configuration.
 
-Every bilingual human report must carry a language-authority notice. The primary Operator-language rendering governs interpretation of the human report, but that status is not a guarantee that every finding is correct. The secondary rendering is an assistive translation with lower, unverified translation confidence and may contain ambiguity; the Operator must verify it against the primary rendering before acting. Producing a secondary rendering adds model usage and report compilation time and requires more human review than a single-language report. Canonical machine records, reason codes, evidence IDs, and Scripture coordinates remain authoritative in every language.
+Every bilingual human report must carry a language-authority notice. The primary Job-language rendering governs interpretation of the human report, but that status is not a guarantee that every finding is correct. The secondary rendering is an assistive translation with lower, unverified translation confidence and may contain ambiguity; the Operator must verify it against the primary rendering before acting. Producing a secondary rendering adds model usage and report compilation time and requires more human review than a single-language report. Canonical machine records, reason codes, evidence IDs, and Scripture coordinates remain authoritative in every language.
 
-The menu localization source governs terminal menu labels and prompts only. Report rendering remains on the separate reporting contract above until the Job-owned reporting migration is implemented. IDs, paths, status codes, and machine records are never localized.
+The menu localization source governs terminal menu labels and prompts only. Report rendering follows the separate Job-owned reporting contract above. IDs, paths, status codes, and machine records are never localized.
 
 Language aliases may be used where supported: `OPERATOR_LANGUAGE`, `SOURCE_LANGUAGE`, `TARGET_LANGUAGE`, and `REFERENCE_LANGUAGE`. Project IDs, commands, paths, Scripture coordinates, candidate forms, hashes, status codes, and event codes are never localized.
 

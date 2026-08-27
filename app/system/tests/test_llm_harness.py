@@ -47,6 +47,18 @@ def _synthetic_task(root: Path, *, conditional: bool = False) -> Path:
         "workflow": "bic",
         "operation": "rewrite" if conditional else "inspect",
         "scope": "MAT 1:1",
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        },
+        "interface_language": "fr",
+        "human_output": {
+            "logs_and_reports": {
+                "primary_language": "en",
+                "secondary_language": "uk",
+                "bilingual": True,
+            }
+        },
         "evidence_policy": task_evidence_policy("bic"),
         "allowed_reads": [
             {
@@ -381,6 +393,9 @@ def test_task_executor_materializes_only_exact_allowlist(make_workspace, monkeyp
 
         def execute(self, request):
             """Return the exact synthetic response required by this regression test."""
+            assert "CANONICAL REPORT NARRATIVE LANGUAGE: English (`en`)" in request.prompt
+            assert "interface_language" not in request.prompt
+            assert "secondary_language" not in request.prompt
             payload = {
                 "schema_version": "1.0",
                 "task_id": "synthetic-task-1",
@@ -400,6 +415,137 @@ def test_task_executor_materializes_only_exact_allowlist(make_workspace, monkeyp
     assert not any(path.startswith("output/") and path != "output/result.txt" for path in files)
 
 
+def test_provider_handoff_blocks_missing_narrative_language() -> None:
+    """A provider schema cannot be built without one explicit Job-owned report language."""
+    with pytest.raises(ValidationError) as caught:
+        _output_schema({"task_id": "missing-language", "allowed_writes": ["output/result.txt"]})
+    assert caught.value.code == "LLM_TASK_REPORT_LANGUAGE_MISSING"
+
+
+def test_clear_spanish_saw_narrative_gets_one_english_correction_retry(
+    make_workspace, monkeypatch
+) -> None:
+    """A clear source-language leak is rejected once before canonical findings are written."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    wip_evidence = root / "synthetic-wip-es.txt"
+    reference_evidence = root / "synthetic-reference-es.txt"
+    wip_evidence.write_text("\u00bfQui\u00e9n puede aceptar esta ense\u00f1anza?\n", encoding="utf-8")
+    reference_evidence.write_text("Nadie puede aceptar esta ense\u00f1anza.\n", encoding="utf-8")
+    task = storage_layout(root, create=True).system_root / "synthetic-saw-language-task"
+    task.mkdir(parents=True, exist_ok=True)
+    (task / "ACT.md").write_text("# Governed task\nReturn bounded findings.\n", encoding="utf-8")
+    manifest = {
+        "task_id": "synthetic-saw-language-1",
+        "task_fingerprint": "language-fingerprint",
+        "execution_mode": "SAGE_GOVERNED_TASK_V1",
+        "workflow": "saw",
+        "operation": "focused",
+        "rtc_stage": None,
+        "scope": "MAT 1:1",
+        "focus": "Does the WIP preserve the Reference question?",
+        "check_type": "MEANING_EQUIVALENCE",
+        "evidence_policy": task_evidence_policy("saw"),
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        },
+        "allowed_reads": [
+            {
+                "path": wip_evidence.relative_to(root).as_posix(),
+                "sha256": sha256_file(wip_evidence),
+                "evidence_class": AUTHORIZED_CONTENT_EVIDENCE,
+            },
+            {
+                "path": reference_evidence.relative_to(root).as_posix(),
+                "sha256": sha256_file(reference_evidence),
+                "evidence_class": AUTHORIZED_CONTENT_EVIDENCE,
+            },
+        ],
+        "conditional_reads": [],
+        "allowed_writes": ["output/findings.json"],
+        "allowed_evidence_ids": ["WIP", "REFERENCE"],
+        "expected_references": ["MAT 1:1"],
+        "review_requirements": {
+            "expected_work_unit_ids": ["SAW-LANGUAGE-U001"],
+            "required_checks": ["MEANING_EQUIVALENCE"],
+        },
+    }
+    manifest_path = task / "task-manifest.json"
+    atomic_write_json(manifest_path, manifest)
+    prompts: list[str] = []
+
+    # The fake provider intentionally leaks the Spanish evidence language once so
+    # this remains an execution-boundary regression rather than a detector unit test.
+    class FakeExecutor:
+        """Return a Spanish leak followed by the corrected English narrative."""
+
+        def status(self, **_kwargs):
+            """Expose a deterministic live catalog for policy routing."""
+            return _fake_codex_status()
+
+        def execute(self, request):
+            """Capture the bounded correction retry and return one schema envelope."""
+            prompts.append(request.prompt)
+            spanish = len(prompts) == 1
+            semantic = {
+                "review_summary": (
+                    "La traducción cambia la pregunta de referencia y por eso la forma debe revisarse con la evidencia disponible."
+                    if spanish
+                    else "The translation changes the Reference question, so the form must be revised from the available evidence."
+                ),
+                "findings": [{
+                    "finding_id": "F001",
+                    "target_reference": "MAT 1:1",
+                    "category": "MEANING",
+                    "issue": (
+                        "La traducción cambia la pregunta y el significado de la referencia en esta forma."
+                        if spanish
+                        else "The translation changes the question and meaning of the Reference in this form."
+                    ),
+                    "required_action": (
+                        "Debe conservar la pregunta y revisar la traducción con la evidencia de referencia."
+                        if spanish
+                        else "Preserve the question and revise the translation from the Reference evidence."
+                    ),
+                    "action_level": "CHANGE",
+                    "confidence": "HIGH",
+                    "evidence_ids": ["WIP", "REFERENCE"],
+                    "grammar_rule_ids": [],
+                    "original_language_evidence": "",
+                }],
+                "answer": (
+                    "La traducción no conserva la pregunta de referencia y debe revisarse."
+                    if spanish
+                    else "The translation does not preserve the Reference question and must be revised."
+                ),
+                "structural_adjudications": [],
+            }
+            payload = {
+                "schema_version": "1.0",
+                "task_id": manifest["task_id"],
+                "files": {"output/findings.json": semantic},
+            }
+            return ProviderResponse(
+                "codex", request.model, json.dumps(payload), {"attempt": len(prompts)}, request.reasoning_effort
+            )
+
+    monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
+    result = execute_task(load_ecosystem(root / "ecosystem.yml"), task_manifest=manifest_path, provider="codex")
+
+    assert len(prompts) == 2
+    assert "\u00bfQui\u00e9n puede aceptar esta ense\u00f1anza?" in prompts[0]
+    assert "Nadie puede aceptar esta ense\u00f1anza." in prompts[0]
+    assert "LANGUAGE-CORRECTION RETRY" in prompts[1]
+    assert result["language_retry_count"] == 1
+    assert result["phase_count"] == 2
+    findings = json.loads((task / "output" / "findings.json").read_text(encoding="utf-8"))
+    assert findings["narrative_language"] == {
+        "tag": "en",
+        "authority": "CANONICAL_REPORT_NARRATIVE",
+    }
+    assert findings["findings"][0]["issue"].startswith("The translation")
+
+
 def test_saw_provider_schema_requests_only_stage_semantics() -> None:
     """SAW provider schema omits deterministic identity, coverage, and receipt boilerplate."""
     manifest = {
@@ -417,6 +563,10 @@ def test_saw_provider_schema_requests_only_stage_semantics() -> None:
             "required_checks": ["MEANING_EQUIVALENCE", "GRAMMAR"],
         },
         "allowed_writes": ["output/findings.json"],
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        },
     }
 
     schema = _output_schema(manifest)
@@ -436,6 +586,7 @@ def test_saw_provider_schema_requests_only_stage_semantics() -> None:
     assert "reference" not in finding_properties
     assert "required_action" in finding_properties
     assert "recommended_action" not in finding_properties
+    assert "English (`en`)" in finding_properties["issue"]["description"]
 
 
 def test_saw_semantic_result_materializes_identity_coverage_and_receipt_locally() -> None:
@@ -452,6 +603,10 @@ def test_saw_semantic_result_materializes_identity_coverage_and_receipt_locally(
         "review_requirements": {
             "expected_work_unit_ids": ["SAW-RTC-U001"],
             "required_checks": ["MEANING_EQUIVALENCE", "GRAMMAR"],
+        },
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
         },
     }
     semantic = {
@@ -502,6 +657,10 @@ def test_selective_ol_schema_materializes_role_specific_finding_evidence() -> No
             "required_checks": ["WIP_REFERENCE_SOURCE_ADJUDICATION"],
         },
         "allowed_writes": ["output/findings.json"],
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        },
     }
     schema = _output_schema(manifest)["properties"]["files"]["properties"]["output/findings.json"]
     assert set(schema["required"]) == {"review_summary", "ol_resolutions"}

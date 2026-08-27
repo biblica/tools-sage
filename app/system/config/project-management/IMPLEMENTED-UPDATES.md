@@ -3,6 +3,38 @@
 This is an append-only implementation ledger. New entries go first. Historical version detail from
 before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/release/RELEASE-NOTES.md`.
 
+## 2026-08-27
+
+### IMP-20260827-002 — RTC bridge-safe slicing and atomic finalization
+
+- **Version:** `0.01beta`
+- **Milestone:** `MS-BETA-REQUALIFY`
+- **Implemented:** Made canonical verse atoms authoritative for work-unit ownership and aggregation
+  while retaining WIP/REFERENCE bridge labels as source metadata. RTC planner V2 now closes every
+  proposed internal boundary across WIP bridges, REFERENCE bridges, and active local VRS
+  equivalence spans before complete-package measurement. New stage plans persist per-unit atoms;
+  legacy partition plans expand raw ranged keys deterministically during retry. Exact aggregate
+  reconciliation remains fail-closed and now reports missing, extra, duplicate, ownership, and
+  result-drift details. Routine Run preflight silently retains non-blocking VRS advisories instead
+  of rendering them in the interactive UI.
+- **Verification:** Regressions cover REFERENCE bridge boundary extension, atomic source-span
+  metadata, legacy raw-bridge finalization, duplicate primary ownership, and silent-but-persisted
+  VRS advisories. The complete test suite passes with two platform-dependent skips.
+
+### IMP-20260827-001 — Job-owned canonical report-language enforcement
+
+- **Version:** `0.01beta`
+- **Milestone:** `MS-BETA-REQUALIFY`
+- **Implemented:** Made primary report language required and Job-owned, retained secondary report
+  language as optional downstream localization, and limited the global Operator language to the
+  default snapshotted for new Jobs. Narrative-generating ACTs and provider schemas now bind the
+  concrete Job language explicitly, canonical SAW findings record that authority, and a
+  conservative post-response check performs at most one correction retry for a clear mismatch.
+  Interface and secondary-language values are not sent as canonical narrative authority.
+- **Verification:** Regression coverage proves existing Jobs keep their primary language, legacy
+  Jobs receive one deterministic compatibility upgrade, missing ACT language blocks handoff, and
+  clear Spanish narrative is rejected and retried before English canonical findings are written.
+
 ## 2026-08-26
 
 ### IMP-20260826-022 — Approved SAW verse-bridge plan reconciliation fixed

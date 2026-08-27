@@ -103,6 +103,7 @@ def _meaning_document(manifest: dict, *, request_ref: str | None = None) -> dict
     """Return one complete meaning-stage output with an optional OL deferral."""
     document = {
         "schema_version": "2.0",
+        "narrative_language": manifest["narrative_language"],
         "task_id": manifest["task_id"],
         "operation": "rtc",
         "stage": "REFERENCE_TEXT_COMPARISON",
@@ -259,6 +260,11 @@ def test_direct_bic_chain_reuses_same_run(package_root: Path, make_workspace) ->
     assert inspect["job_id"] == rewrite["job_id"]
     assert inspect["run_id"] == rewrite["run_id"]
     manifest = json.loads(Path(rewrite["manifest_path"]).read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == "2.4"
+    assert manifest["narrative_language"] == {
+        "tag": "en",
+        "authority": "CANONICAL_REPORT_NARRATIVE",
+    }
     assert manifest["resource_bindings"] == {
         "SOURCE": "idKKHv0",
         "DONOR": "usNIVv2",
@@ -355,6 +361,7 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
 
     bad = {
         "schema_version": "2.0",
+        "narrative_language": ol["narrative_language"],
         "task_id": ol["task_id"],
         "operation": "rtc",
         "stage": "SELECTIVE_OL_ADJUDICATION",
@@ -508,7 +515,7 @@ def test_new_rtc_approved_plan_becomes_stale_when_reference_changes(
     package_root: Path,
     make_workspace,
 ) -> None:
-    """Schema-1.3 approval fingerprints REF as well as the WIP slicing stream."""
+    """Current RTC approval fingerprints REF as well as both boundary streams."""
     root = make_workspace(qualification_status="VALIDATED", verse_max=3)
     _initialize(package_root, root)
     store = JobStore(root, root / "ecosystem.yml")
@@ -664,6 +671,7 @@ def test_operator_approved_saw_plan_reconciles_verse_bridge_coordinates(
     assert "VERSE_BRIDGE_CONTENT" in required_checks
     act_text = (manifest_path.parent / "ACT.md").read_text(encoding="utf-8")
     assert "check the complete bridged text" in act_text
+    assert "Canonical report narrative MUST use the Job-owned language tag `en`" in act_text
 
 
 
