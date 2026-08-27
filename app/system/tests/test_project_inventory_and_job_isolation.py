@@ -303,7 +303,7 @@ def test_remove_job_deletes_only_job_owned_state(make_workspace) -> None:
         defaults={},
     )
     store.set_active_job("saw", job.job_id)
-    run = store.create_run(job, operation="qa", scope="MAT 1:1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1")
     project_paths = [storage_layout(root).projects_root / "usWIP", storage_layout(root).projects_root / "usNIVv2"]
     assert run.root.is_dir()
 

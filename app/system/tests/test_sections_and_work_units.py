@@ -74,7 +74,7 @@ def test_section_index_ignores_s3_and_preserves_cross_chapter_section() -> None:
 
 
 def test_qa_and_b_are_poetry_block_boundaries_but_q_lines_are_not() -> None:
-    """Verify that QA and b are poetry block boundaries but q lines are not."""
+    """Verify that RTC and b are poetry block boundaries but q lines are not."""
     text = (
         "\\id PSA Fixture\n"
         "\\c 119\n"
@@ -253,7 +253,7 @@ def test_short_jude_sections_coalesce_into_one_fitting_work_unit() -> None:
         context_after_verses=0,
     )
 
-    units = plan_work_units(records, policy, unit_prefix="JUD-QA")
+    units = plan_work_units(records, policy, unit_prefix="JUD-RTC")
 
     assert [unit.to_dict()["primary_scope"] for unit in units] == ["JUD 1:1-25"]
     assert units[0].split_boundary == "END_OF_SCOPE"
@@ -290,7 +290,7 @@ def test_oversized_section_is_split_into_balanced_story_parts() -> None:
         context_after_verses=0,
     )
 
-    units = plan_work_units(records, policy, unit_prefix="MAT-QA")
+    units = plan_work_units(records, policy, unit_prefix="MAT-RTC")
 
     assert len(units) == 2
     assert [len(unit.primary) for unit in units] == [3, 3]
@@ -417,7 +417,7 @@ def test_work_unit_manifest_uses_current_schema_version() -> None:
         plan_id="TEST-PLAN",
         plan_fingerprint="a" * 64,
         workflow_id="saw",
-        operation="qa",
+        operation="rtc",
     )
     assert document["schema_version"] == "1.2"
     assert document["plan_fingerprint"] == "a" * 64
@@ -460,7 +460,7 @@ def test_nested_headers_preserve_strongest_split_signal() -> None:
 
 
 def test_psalms_book_override_makes_c_and_cl_very_strong_qa_strong_and_b_last_resort() -> None:
-    """Verify that psalms book override makes c and cl very strong QA strong and b last resort."""
+    """Verify that psalms book override makes c and cl very strong RTC strong and b last resort."""
     text = (
         "\\id PSA Fixture\n"
         "\\c 1\n"
@@ -488,7 +488,7 @@ def test_psalms_book_override_makes_c_and_cl_very_strong_qa_strong_and_b_last_re
 
 
 def test_non_psalms_keep_default_chapter_qa_and_b_scores() -> None:
-    """Verify that non psalms keep default chapter QA and b scores."""
+    """Verify that non psalms keep default chapter RTC and b scores."""
     text = (
         "\\id MAT Fixture\n"
         "\\c 1\n"
@@ -503,3 +503,88 @@ def test_non_psalms_keep_default_chapter_qa_and_b_scores() -> None:
     assert any(item["marker"] == "c" and item["score"] == 10 for item in indexed[0]["boundaries_before"])
     assert any(item["marker"] == "qa" and item["score"] == 95 for item in indexed[0]["boundaries_before"])
     assert any(item["marker"] == "b" and item["score"] == 70 for item in indexed[1]["boundaries_before"])
+
+
+def test_rtc_wip_policy_balances_near_six_thousand_without_packing_to_hard_max() -> None:
+    """RTC WIP slicing targets about 6k tokens and keeps every planned packet below 8k."""
+    records = tuple(
+        EvidenceRecord(
+            book="MAT",
+            chapter=1,
+            verse_start=verse,
+            verse_end=verse,
+            payload={"body_text": (f"word{verse} " * 550)},
+            boundaries_before=(
+                ({"kind": "PARAGRAPH", "marker": "p", "score": 30},)
+                if verse > 1 else ()
+            ),
+            section_id="MAT-S001",
+            discourse_unit_id=f"MAT-D{verse:03d}",
+            discourse_unit_kind="PROSE_PARAGRAPH",
+            discourse_unit_marker="p",
+        )
+        for verse in range(1, 15)
+    )
+    policy = EvidencePolicy(
+        target_estimated_tokens=6000,
+        hard_estimated_tokens=7999,
+        hard_serialized_bytes=100000,
+        minimum_target_tokens=5000,
+        preferred_max_estimated_tokens=7000,
+        maximum_primary_verse_units=80,
+        context_before_verses=0,
+        context_after_verses=0,
+    )
+
+    units = plan_work_units(records, policy, unit_prefix="SAW-RTC-MAT")
+
+    assert len(units) == 2
+    assert all(unit.measurement.estimated_tokens < 8000 for unit in units)
+    assert all(5000 <= unit.measurement.estimated_tokens <= 7200 for unit in units)
+
+
+def test_rtc_soft_pack_limit_does_not_merge_clean_sections_toward_eight_thousand() -> None:
+    """Adjacent clean discourse sections stay separate when merging would exceed the 7k preference."""
+    records = tuple(
+        EvidenceRecord(
+            book="MAT",
+            chapter=1,
+            verse_start=verse,
+            verse_end=verse,
+            payload={"body_text": (f"word{verse} " * 800)},
+            boundaries_before=(
+                ({"kind": "SECTION", "marker": "s1", "score": 80},)
+                if verse == 4 else ()
+            ),
+            section_id="MAT-S001" if verse <= 3 else "MAT-S002",
+            discourse_unit_id=f"MAT-D{verse:03d}",
+            discourse_unit_kind="PROSE_PARAGRAPH",
+            discourse_unit_marker="p",
+        )
+        for verse in range(1, 7)
+    )
+    policy = EvidencePolicy(
+        target_estimated_tokens=6000,
+        hard_estimated_tokens=7999,
+        hard_serialized_bytes=100000,
+        minimum_target_tokens=5000,
+        preferred_max_estimated_tokens=7000,
+        maximum_primary_verse_units=80,
+        context_before_verses=0,
+        context_after_verses=0,
+    )
+
+    units = plan_work_units(records, policy, unit_prefix="SAW-RTC-MAT")
+
+    assert [unit.to_dict()["primary_scope"] for unit in units] == ["MAT 1:1-3", "MAT 1:4-6"]
+
+    no_soft_limit = EvidencePolicy(
+        target_estimated_tokens=6000,
+        hard_estimated_tokens=7999,
+        hard_serialized_bytes=100000,
+        minimum_target_tokens=5000,
+        maximum_primary_verse_units=80,
+        context_before_verses=0,
+        context_after_verses=0,
+    )
+    assert len(plan_work_units(records, no_soft_limit, unit_prefix="SAW-RTC-MAT-NOSOFT")) == 1

@@ -146,7 +146,7 @@ def test_saw_packet_names_express_wip_and_reference(package_root: Path, make_wor
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -186,7 +186,7 @@ def test_external_base_vrs_is_hashed_into_packet_without_becoming_task_path(
     task = create_act_task(
         load_ecosystem(settings),
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",

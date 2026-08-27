@@ -64,7 +64,7 @@ process_contracts:
   saw:
   - DETERMINISTIC_PREFLIGHT
   - STRUCTURAL_ADJUDICATION
-  - TRANSLATION_AND_MEANING_QA
+  - REFERENCE_TEXT_COMPARISON
   - SELECTIVE_OL_ADJUDICATION
   - COVERAGE_RECONCILIATION
   - DETERMINISTIC_FINALISATION
@@ -81,12 +81,12 @@ external_access_contract:
   saw_external_writes: prohibited
   bic_target_external_write: optional_SFM_only
   all_external_vrs_writes: prohibited
-saw_qa_composite:
-  public_operation: qa
+saw_rtc_composite:
+  public_operation: rtc
   stages:
   - DETERMINISTIC_PREFLIGHT
   - STRUCTURAL_ADJUDICATION_IF_REQUIRED
-  - TRANSLATION_AND_MEANING_QA_REQUIRED
+  - REFERENCE_TEXT_COMPARISON_REQUIRED
   - SELECTIVE_OL_ADJUDICATION_IF_REQUIRED
   - DETERMINISTIC_FINALISATION
   stage_isolation: one_model_stage_per_governed_task

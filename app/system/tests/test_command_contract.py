@@ -100,7 +100,7 @@ def test_workflow_launchers_use_canonical_task_commands(package_root: Path) -> N
     assert bic.returncode == saw.returncode == 0
     assert "task create" not in bic.stdout  # wrapper presents concise workflow verbs
     assert "inspect" in bic.stdout and "self-check" in bic.stdout
-    assert "qa" in saw.stdout and "focused" in saw.stdout and "ol" in saw.stdout
+    assert "rtc" in saw.stdout and "focused" in saw.stdout and "ol" in saw.stdout
     assert "--source" in bic.stdout and "--donor" in bic.stdout and "--target" in bic.stdout
     assert "--wip" in saw.stdout and "--reference" in saw.stdout
 

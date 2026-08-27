@@ -9,13 +9,13 @@ required:
 - review_receipts
 - findings
 operation_values:
-- qa
+- rtc
 - focused
 - ol
 stage_by_operation:
-  qa:
+  rtc:
   - STRUCTURAL_ADJUDICATION
-  - TRANSLATION_AND_MEANING_QA
+  - REFERENCE_TEXT_COMPARISON
   - SELECTIVE_OL_ADJUDICATION
   focused: FOCUSED_CHECK
   ol: FOCUSED_OL
@@ -72,8 +72,8 @@ review_receipt_controls:
   task_fingerprint_must_match: true
   all_required_checks_present: true
   substantive_evidence_summary_required: true
-qa_composite_fields:
-  TRANSLATION_AND_MEANING_QA:
+rtc_composite_fields:
+  REFERENCE_TEXT_COMPARISON:
     may_emit: ol_review_requests
     ol_review_request_required:
     - request_id

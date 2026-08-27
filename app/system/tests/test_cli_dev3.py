@@ -98,7 +98,7 @@ def test_saw_plan_uses_independent_wip_without_bic_generation_pin(package_root: 
     root = make_workspace(configured=True)
     result = run_cli(
         package_root, root, "--json", "workflow", "plan",
-        "--workflow", "saw", "--operation", "qa", "--scope", "MAT 1"
+        "--workflow", "saw", "--operation", "rtc", "--scope", "MAT 1"
     )
     assert result.returncode == 0, result.stderr + result.stdout
     payload = json.loads(result.stdout)
@@ -123,7 +123,7 @@ def test_chapter_plan_ignores_defects_in_other_chapters(package_root: Path, make
         "--workflow",
         "saw",
         "--operation",
-        "qa",
+        "rtc",
         "--scope",
         "MAT 1",
     )
@@ -159,7 +159,7 @@ def test_scoped_saw_plan_preserves_wip_resource_identity(
         "--workflow",
         "saw",
         "--operation",
-        "qa",
+        "rtc",
         "--scope",
         "MAT 1:1",
     )
@@ -202,7 +202,7 @@ def test_scope_limited_saw_plan_preserves_multibook_wip_identity(
         "--workflow",
         "saw",
         "--operation",
-        "qa",
+        "rtc",
         "--scope",
         "MAT 1",
     )

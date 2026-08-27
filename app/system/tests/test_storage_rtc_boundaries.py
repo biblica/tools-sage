@@ -1,4 +1,4 @@
-"""Bounded storage, composite-QA, project-grammar, and recovery invariants."""
+"""Bounded storage, composite-RTC, project-grammar, and recovery invariants."""
 
 from __future__ import annotations
 
@@ -104,8 +104,8 @@ def _meaning_document(manifest: dict, *, request_ref: str | None = None) -> dict
     document = {
         "schema_version": "2.0",
         "task_id": manifest["task_id"],
-        "operation": "qa",
-        "stage": "TRANSLATION_AND_MEANING_QA",
+        "operation": "rtc",
+        "stage": "REFERENCE_TEXT_COMPARISON",
         "scope": manifest["scope"],
         "focus": None,
         "check_type": None,
@@ -291,7 +291,7 @@ def test_saw_submission_canonicalizes_provider_local_finding_id_syntax(package_r
     _initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
     plan = create_act_task(
-        config, workflow="saw", operation="qa", output_project_id="usWIP",
+        config, workflow="saw", operation="rtc", output_project_id="usWIP",
         contemporary_source_id="usNIVv2", scope_value="MAT 1:1-3"
     )
     manifest_path = Path(plan["manifest_path"])
@@ -331,17 +331,17 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     _initialize(package_root, root)
     saw_profile = root / "system" / "config" / "workflows" / "saw" / "profile.yml"
     saw_raw = yaml.safe_load(saw_profile.read_text(encoding="utf-8"))
-    saw_raw["check_policy"]["standard_qa"]["original_language"]["source_text_drift_adjudication"] = "ENABLED"
+    saw_raw["check_policy"]["rtc"]["original_language"]["source_text_drift_adjudication"] = "ENABLED"
     saw_profile.write_text(yaml.safe_dump(saw_raw, sort_keys=False), encoding="utf-8")
     config = load_ecosystem(root / "ecosystem.yml")
-    plan = create_act_task(config, workflow="saw", operation="qa", output_project_id="usWIP", contemporary_source_id="usNIVv2", scope_value="MAT 1:1-3")
-    assert plan["current_stage"] == "TRANSLATION_AND_MEANING_QA"
+    plan = create_act_task(config, workflow="saw", operation="rtc", output_project_id="usWIP", contemporary_source_id="usNIVv2", scope_value="MAT 1:1-3")
+    assert plan["current_stage"] == "REFERENCE_TEXT_COMPARISON"
     meaning_path = Path(plan["manifest_path"])
     meaning = json.loads(meaning_path.read_text(encoding="utf-8"))
     act_text = (meaning_path.parent / "ACT.md").read_text(encoding="utf-8")
     assert "Defer every material content-bearing variance" in act_text
     assert "OT requests to the Job-bound Hebrew resource and NT requests to the Job-bound Greek resource" in act_text
-    assert "Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency defects remain direct QA findings" in act_text
+    assert "Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency defects remain direct RTC findings" in act_text
     (meaning_path.parent / "output" / "findings.json").write_text(json.dumps(_meaning_document(meaning, request_ref="MAT 1:2")), encoding="utf-8")
     submit_act_task(config, meaning_path)
     next_stage = continue_saw_plan(config, Path(plan["plan_path"]))
@@ -356,7 +356,7 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     bad = {
         "schema_version": "2.0",
         "task_id": ol["task_id"],
-        "operation": "qa",
+        "operation": "rtc",
         "stage": "SELECTIVE_OL_ADJUDICATION",
         "scope": ol["scope"],
         "focus": None,
@@ -398,8 +398,8 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
         validate_saw_findings(
             bad_path,
             task_id=ol["task_id"],
-            operation="qa",
-            qa_stage="SELECTIVE_OL_ADJUDICATION",
+            operation="rtc",
+            rtc_stage="SELECTIVE_OL_ADJUDICATION",
             scope_value=ol["scope"],
             focus=None,
             check_type=None,
@@ -434,22 +434,22 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
 
 
 def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_root: Path, make_workspace) -> None:
-    """Meaning QA must execute the exact work units approved before Run creation."""
+    """Meaning RTC must execute the exact work units approved before Run creation."""
     root = make_workspace(qualification_status="VALIDATED", verse_max=3)
     _initialize(package_root, root)
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1:1-3")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-3")
     config = load_ecosystem(store.ensure_runtime_files(job))
     compiled = compile_project_scope(
         config, config.project(job.bindings["wip"]), parse_scope("MAT 1:1-3")
     )
     approved = {
         "schema_version": "1.2",
-        "plan_id": "SAW-QA-MAT-APPROVED",
+        "plan_id": "SAW-RTC-MAT-APPROVED",
         "plan_fingerprint": "a" * 64,
         "workflow_id": "saw",
-        "operation": "qa",
+        "operation": "rtc",
         "operator_scope": "MAT 1:1-3",
         "project_id": job.bindings["wip"],
         "approval_status": "OPERATOR_APPROVED",
@@ -463,14 +463,14 @@ def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_roo
         },
         "units": [
             {
-                "unit_id": "SAW-QA-MAT-APPROVED-U001",
+                "unit_id": "SAW-RTC-MAT-APPROVED-U001",
                 "primary_scope": "MAT 1:1-2",
                 "primary_references": ["MAT 1:1", "MAT 1:2"],
                 "context_before": [],
                 "context_after": ["MAT 1:3"],
             },
             {
-                "unit_id": "SAW-QA-MAT-APPROVED-U002",
+                "unit_id": "SAW-RTC-MAT-APPROVED-U002",
                 "primary_scope": "MAT 1:3",
                 "primary_references": ["MAT 1:3"],
                 "context_before": ["MAT 1:2"],
@@ -485,7 +485,7 @@ def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_roo
     result = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id=job.bindings["wip"],
         contemporary_source_id=job.bindings["reference"],
         scope_value=run.scope,
@@ -494,13 +494,13 @@ def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_roo
     )
 
     assert result["status"] == "COMPOSITE"
-    assert result["current_stage"] == "TRANSLATION_AND_MEANING_QA"
+    assert result["current_stage"] == "REFERENCE_TEXT_COMPARISON"
     assert result["approved_work_plan_fingerprint"] == "a" * 64
     stage_plan = json.loads(Path(result["stages"][0]["plan_path"]).read_text(encoding="utf-8"))
     assert [item["scope"] for item in stage_plan["work_units"]] == ["MAT 1:1-2", "MAT 1:3"]
     manifests = [json.loads(Path(item["manifest_path"]).read_text(encoding="utf-8")) for item in stage_plan["work_units"]]
     assert [item["work_unit_id"] for item in manifests] == [
-        "SAW-QA-MAT-APPROVED-U001", "SAW-QA-MAT-APPROVED-U002"
+        "SAW-RTC-MAT-APPROVED-U001", "SAW-RTC-MAT-APPROVED-U002"
     ]
 
 
@@ -534,17 +534,17 @@ def test_operator_approved_saw_plan_reconciles_verse_bridge_coordinates(
     _initialize(package_root, root)
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="qa", scope="MAT 1:1-3")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-3")
     config = load_ecosystem(store.ensure_runtime_files(job))
     compiled = compile_project_scope(
         config, config.project(job.bindings["wip"]), parse_scope(run.scope)
     )
     approved = {
         "schema_version": "1.2",
-        "plan_id": "SAW-QA-MAT-BRIDGE-APPROVED",
+        "plan_id": "SAW-RTC-MAT-BRIDGE-APPROVED",
         "plan_fingerprint": "b" * 64,
         "workflow_id": "saw",
-        "operation": "qa",
+        "operation": "rtc",
         "operator_scope": run.scope,
         "project_id": job.bindings["wip"],
         "approval_status": "OPERATOR_APPROVED",
@@ -557,7 +557,7 @@ def test_operator_approved_saw_plan_reconciles_verse_bridge_coordinates(
             "structure_policy_sha256": compiled["structure_policy"]["effective_sha256"],
         },
         "units": [{
-            "unit_id": "SAW-QA-MAT-BRIDGE-APPROVED-U001",
+            "unit_id": "SAW-RTC-MAT-BRIDGE-APPROVED-U001",
             "primary_scope": run.scope,
             "primary_references": (
                 ["MAT 1:1-2", "MAT 1:3"]
@@ -575,7 +575,7 @@ def test_operator_approved_saw_plan_reconciles_verse_bridge_coordinates(
     result = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id=job.bindings["wip"],
         contemporary_source_id=job.bindings["reference"],
         scope_value=run.scope,
@@ -596,7 +596,7 @@ def test_operator_approved_saw_plan_reconciles_verse_bridge_coordinates(
 
 
 def test_structural_stage_covers_only_candidate_coordinates(package_root: Path, make_workspace) -> None:
-    """Structural adjudication must use candidate coordinates rather than claiming parent QA coverage."""
+    """Structural adjudication must use candidate coordinates rather than claiming parent RTC coverage."""
     root = make_workspace(qualification_status="VALIDATED", verse_max=3)
     (storage_layout(root).projects_root / "usWIP/custom.vrs").write_text("#! &MAT 1:2-3 = MAT 1:2\n", encoding="utf-8")
     settings = root / "ecosystem.yml"
@@ -606,7 +606,7 @@ def test_structural_stage_covers_only_candidate_coordinates(package_root: Path, 
     _initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
     plan = create_act_task(
-        config, workflow="saw", operation="qa", output_project_id="usWIP",
+        config, workflow="saw", operation="rtc", output_project_id="usWIP",
         contemporary_source_id="usNIVv2", scope_value="MAT 1:1-3",
     )
     assert plan["current_stage"] == "STRUCTURAL_ADJUDICATION"
@@ -632,7 +632,7 @@ def test_current_contract_surfaces_have_no_removed_workflow_vocabulary(package_r
     forbidden = (
         "sessions, pins",
         "review an existing `usbol` target",
-        "saw qa - review a bounded target",
+        "saw rtc - review a bounded target",
         "deterministic preflight/direct findings",
         "generation pin",
     )
@@ -672,9 +672,9 @@ def test_saw_finding_accepts_discontiguous_portion_reporting(tmp_path: Path) -> 
     """One finding may cite multiple bounded portions without turning the citation into a book token."""
     payload = {
         "schema_version": "2.0",
-        "task_id": "saw-qa-amo-fixture",
-        "operation": "qa",
-        "stage": "TRANSLATION_AND_MEANING_QA",
+        "task_id": "saw-rtc-amo-fixture",
+        "operation": "rtc",
+        "stage": "REFERENCE_TEXT_COMPARISON",
         "scope": "AMO 1:11-15",
         "focus": None,
         "check_type": None,
@@ -721,9 +721,9 @@ def test_saw_finding_accepts_discontiguous_portion_reporting(tmp_path: Path) -> 
     path.write_text(json.dumps(payload), encoding="utf-8")
     result = validate_saw_findings(
         path,
-        task_id="saw-qa-amo-fixture",
-        operation="qa",
-        qa_stage="TRANSLATION_AND_MEANING_QA",
+        task_id="saw-rtc-amo-fixture",
+        operation="rtc",
+        rtc_stage="REFERENCE_TEXT_COMPARISON",
         scope_value="AMO 1:11-15",
         focus=None,
         check_type=None,
@@ -748,9 +748,9 @@ def test_saw_finding_discontiguous_portion_must_remain_inside_work_unit(tmp_path
     """Every portion in a multi-part finding citation remains bounded by the immutable task scope."""
     payload = {
         "schema_version": "2.0",
-        "task_id": "saw-qa-amo-fixture",
-        "operation": "qa",
-        "stage": "TRANSLATION_AND_MEANING_QA",
+        "task_id": "saw-rtc-amo-fixture",
+        "operation": "rtc",
+        "stage": "REFERENCE_TEXT_COMPARISON",
         "scope": "AMO 1:11-15",
         "focus": None,
         "check_type": None,
@@ -783,9 +783,9 @@ def test_saw_finding_discontiguous_portion_must_remain_inside_work_unit(tmp_path
     with pytest.raises(ValidationError, match="outside the bounded task scope"):
         validate_saw_findings(
             path,
-            task_id="saw-qa-amo-fixture",
-            operation="qa",
-            qa_stage="TRANSLATION_AND_MEANING_QA",
+            task_id="saw-rtc-amo-fixture",
+            operation="rtc",
+            rtc_stage="REFERENCE_TEXT_COMPARISON",
             scope_value="AMO 1:11-15",
             focus=None,
             check_type=None,
@@ -800,12 +800,12 @@ def test_saw_finding_discontiguous_portion_must_remain_inside_work_unit(tmp_path
 
 
 def test_meaning_stage_rejects_stale_original_language_filler(package_root: Path, make_workspace) -> None:
-    """A non-OL QA stage cannot preserve legacy 'not consulted/prohibited' OL text."""
+    """A non-OL RTC stage cannot preserve legacy 'not consulted/prohibited' OL text."""
     root = make_workspace(qualification_status="VALIDATED", verse_max=2)
     _initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
     plan = create_act_task(
-        config, workflow="saw", operation="qa", output_project_id="usWIP",
+        config, workflow="saw", operation="rtc", output_project_id="usWIP",
         contemporary_source_id="usNIVv2", scope_value="MAT 1:1-2",
     )
     manifest_path = Path(plan["manifest_path"])

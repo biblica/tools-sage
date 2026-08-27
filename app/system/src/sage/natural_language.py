@@ -358,12 +358,12 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
             )
         )
 
-    saw_qa = _phrase_score(
+    saw_rtc = _phrase_score(
         text,
         (
-            ("run qa", 1.0),
+            ("run rtc", 1.0),
             ("quality assurance", 1.0),
-            ("qa", 0.94),
+            ("rtc", 0.94),
             ("review translation", 0.78),
             ("review", 0.58),
             ("check", 0.52),
@@ -401,7 +401,7 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
         bic_rewrite += 0.08
         bic_self += 0.08
     if _contains_phrase(text, "saw") or "npu" in text or "tmn" in text:
-        saw_qa += 0.08
+        saw_rtc += 0.08
         saw_focused += 0.08
         saw_ol += 0.08
     if "from" in text and " to " in f" {text} ":
@@ -412,21 +412,21 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
     if _contains_phrase(text, "rewrite"):
         bic_inspect -= 0.18
     if saw_focused > 0:
-        saw_qa -= 0.16
+        saw_rtc -= 0.16
     if saw_ol > 0:
-        saw_qa -= 0.18
+        saw_rtc -= 0.18
 
     add(
-        "saw.qa",
-        "SAW QA",
-        ("task", "create", "--workflow", "saw", "--operation", "qa"),
-        saw_qa,
+        "saw.rtc",
+        "SAW Reference Text Comparison (RTC)",
+        ("task", "create", "--workflow", "saw", "--operation", "rtc"),
+        saw_rtc,
         read_only=False,
         state_changing=True,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         group="saw",
-        explanation="Create a bounded read-only Scripture QA ACT task; task state and reports are written.",
+        explanation="Create a bounded read-only Reference Text Comparison (RTC) ACT task; task state and reports are written.",
         needs_scope=True,
         needs_projects=True,
     )
@@ -856,7 +856,7 @@ def related_operations() -> list[dict[str, str]]:
         {"command_id": "bic.inspect", "label": "BIC INSPECT - analyze a bounded source scope"},
         {"command_id": "bic.rewrite", "label": "BIC REWRITE - generate a candidate after review"},
         {"command_id": "bic.self_check", "label": "BIC SELF-CHECK - validate and commit a rewrite"},
-        {"command_id": "saw.qa", "label": "SAW QA - review a bounded WIP scope"},
+        {"command_id": "saw.rtc", "label": "SAW Reference Text Comparison (RTC) - review a bounded WIP scope"},
         {"command_id": "saw.focused", "label": "SAW Targeted Check - answer one bounded question"},
         {"command_id": "saw.ol", "label": "SAW OL Review - inspect one original-language question"},
         {"command_id": "project.init", "label": "Guided INIT - review recoverable settings"},

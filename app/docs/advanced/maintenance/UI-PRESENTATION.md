@@ -53,7 +53,7 @@ Rules:
 ╚══════════════════════════════════════════════════════════════════════╝
 
 paPCVv1 checked against usNIVv2
-Checking Standard QA for PHM
+Checking Reference Text Comparison (RTC) for PHM
 Using gpt-5.6-terra High
 
 Working on SAW work unit 1/3: PHM 1:1-7      |

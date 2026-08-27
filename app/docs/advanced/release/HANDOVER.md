@@ -21,8 +21,8 @@ Any governed source or test change after qualification begins invalidates all re
 
 ## Operator-testing focus
 
-- Validate section-preferred SAW QA slicing on real books, especially adjacent short sections and oversized sections.
-- Validate later QA stages remain bounded to each child scope and do not inherit unrelated whole-book evidence.
+- Validate section-preferred SAW Reference Text Comparison (RTC) slicing on real books, especially adjacent short sections and oversized sections.
+- Validate later RTC stages remain bounded to each child scope and do not inherit unrelated whole-book evidence.
 - Validate chapter-scoped final reports contain only that chapter's findings/evidence and use actual configured Project names.
 - Validate Configure AI entry readiness, toggle behavior without implicit rechecks, and explicit connection testing.
 - Validate numeric menu alignment at one-, two-, and three-digit option numbers.

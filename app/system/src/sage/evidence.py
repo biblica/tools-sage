@@ -35,6 +35,7 @@ class EvidencePolicy:
     hard_estimated_tokens: int = 28000
     hard_serialized_bytes: int = 196000
     minimum_target_tokens: int = 6000
+    preferred_max_estimated_tokens: int = 0
     maximum_primary_verse_units: int = 220
     context_before_verses: int = 1
     context_after_verses: int = 1
@@ -52,6 +53,7 @@ class EvidencePolicy:
             "hard_estimated_tokens",
             "hard_serialized_bytes",
             "minimum_target_tokens",
+            "preferred_max_estimated_tokens",
             "maximum_primary_verse_units",
             "context_before_verses",
             "context_after_verses",
@@ -74,6 +76,10 @@ class EvidencePolicy:
             raise ValidationError("hard_estimated_tokens must not be below target_estimated_tokens")
         if policy.minimum_target_tokens > policy.target_estimated_tokens:
             raise ValidationError("minimum_target_tokens must not exceed target_estimated_tokens")
+        if policy.preferred_max_estimated_tokens and policy.preferred_max_estimated_tokens < policy.target_estimated_tokens:
+            raise ValidationError("preferred_max_estimated_tokens must not be below target_estimated_tokens")
+        if policy.preferred_max_estimated_tokens > policy.hard_estimated_tokens:
+            raise ValidationError("preferred_max_estimated_tokens must not exceed hard_estimated_tokens")
         if policy.hard_serialized_bytes <= 0:
             raise ValidationError("hard_serialized_bytes must be positive")
         if policy.maximum_primary_verse_units <= 0:

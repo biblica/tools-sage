@@ -43,14 +43,14 @@ def run_cli(
     )
 
 
-def test_qa_request_maps_to_registered_saw_command(make_workspace) -> None:
-    """Verify that QA request maps to registered SAW command."""
+def test_rtc_request_maps_to_registered_saw_command(make_workspace) -> None:
+    """Verify that RTC request maps to registered SAW command."""
     root = make_workspace(configured=True)
     config = load_ecosystem(root / "ecosystem.yml")
-    result = interpret_request("Run QA on Amos for WIP", config)
+    result = interpret_request("Run RTC on Amos for WIP", config)
     top = result["most_likely_command"]
     assert result["status"] == "INTERPRETATION_REQUIRED"
-    assert top["command_id"] == "saw.qa"
+    assert top["command_id"] == "saw.rtc"
     assert top["output_project"] == "usWIP"
     assert top["contemporary_source"] == "usNIVv2"
     assert top["scope"] == "AMO"
@@ -62,7 +62,7 @@ def test_qa_request_maps_to_registered_saw_command(make_workspace) -> None:
 def test_unknown_book_is_corrected_inside_command_proposal(package_root: Path) -> None:
     """Verify that unknown book is corrected inside command proposal."""
     config = load_ecosystem(package_root / "ecosystem.yml")
-    result = interpret_request("run qa jun 10-11", config)
+    result = interpret_request("run rtc jun 10-11", config)
     top = result["most_likely_command"]
     assert top["scope"] == "JHN 10-11"
     assert top["corrections"] == [
@@ -98,7 +98,7 @@ def test_ambiguous_bic_request_returns_ranked_existing_commands(make_workspace) 
     result = interpret_request("Review 3 John from KKH to BOL", config)
     command_ids = [item["command_id"] for item in result["command_proposals"]]
     assert command_ids[0] == "bic.inspect"
-    assert "saw.qa" in command_ids
+    assert "saw.rtc" in command_ids
     assert result["exact_match"] is False
     assert result["operator_choices"][1] == "Execute the suggested command"
 
@@ -129,17 +129,17 @@ def test_noninteractive_request_returns_interpretation_and_audit_log(
         "--json",
         "--no-prompt",
         "request",
-        "Run QA on Matthew for BOL",
+        "Run RTC on Matthew for BOL",
     )
     assert result.returncode == 0, result.stderr
     payload = json.loads(result.stdout)
     assert payload["decision"] == "INTERPRETATION_REQUIRED"
-    assert payload["most_likely_command"]["command_id"] == "saw.qa"
+    assert payload["most_likely_command"]["command_id"] == "saw.rtc"
     assert payload["most_likely_command"]["scope"] == "MAT"
     log = Path(payload["request_log"])
     assert log.is_file()
     record = json.loads(log.read_text(encoding="utf-8").splitlines()[-1])
-    assert record["original_request"] == "Run QA on Matthew for BOL"
+    assert record["original_request"] == "Run RTC on Matthew for BOL"
     assert record["decision"] == "INTERPRETATION_RETURNED"
 
 
@@ -153,7 +153,7 @@ def test_interactive_request_menu_places_command_at_option_two_and_can_cancel(
         package_root,
         root,
         "request",
-        "Run QA on Matthew for BOL",
+        "Run RTC on Matthew for BOL",
         input_text="7\n",
         force_interactive=True,
     )
@@ -172,7 +172,7 @@ def test_advisory_mode_never_executes_project_command(package_root: Path, make_w
         "--json",
         "--no-prompt",
         "request",
-        "Run QA on Matthew for BOL",
+        "Run RTC on Matthew for BOL",
         "--advisory",
     )
     assert result.returncode == 0, result.stderr

@@ -99,7 +99,7 @@ controls:
     cardinality: exactly_one
     object: resolved_schema
     scope: per_governed_resource_context
-qa_composite_stages:
+rtc_composite_stages:
 - STRUCTURAL_ADJUDICATION
-- TRANSLATION_AND_MEANING_QA
+- REFERENCE_TEXT_COMPARISON
 - SELECTIVE_OL_ADJUDICATION

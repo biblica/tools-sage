@@ -22,7 +22,7 @@ Provider execution failures pause the current task rather than invalidate the Ru
 
 ## Optional OL
 
-Normal SAW QA requires WIP + REFERENCE. BIC core execution requires SOURCE + DONOR + TARGET. Original-language resources are conditional: a non-ready GRK/HEB resource produces `READY_WITH_LIMITATIONS` for normal workflow readiness and blocks only an invoked OL-required stage for the applicable testament.
+Normal SAW Reference Text Comparison (RTC) requires WIP + REFERENCE. BIC core execution requires SOURCE + DONOR + TARGET. Original-language resources are conditional: a non-ready GRK/HEB resource produces `READY_WITH_LIMITATIONS` for normal workflow readiness and blocks only an invoked OL-required stage for the applicable testament.
 
 ## BIC commit preflight
 

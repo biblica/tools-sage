@@ -203,18 +203,18 @@ def test_planner_honours_an_explicit_primary_discourse_ceiling() -> None:
         context_before_verses=0,
         context_after_verses=0,
     )
-    units = plan_work_units(records, policy, unit_prefix="SAW-QA")
+    units = plan_work_units(records, policy, unit_prefix="SAW-RTC")
     assert len(units) == 2
     assert [[item.verse_start for item in unit.primary] for unit in units] == [[1, 2], [3, 4]]
     assert all(len(unit.to_dict()["primary_discourse_units"]) == 1 for unit in units)
 
 
 def test_normal_saw_policy_coalesces_short_discourse_units(package_root: Path) -> None:
-    """The shipped QA policy must not turn every short paragraph into a microtask."""
+    """The shipped RTC policy must not turn every short paragraph into a microtask."""
     profile = yaml.safe_load(
         (package_root / "system" / "config" / "workflows" / "saw" / "profile.yml").read_text(encoding="utf-8")
     )
-    policy = EvidencePolicy.from_mapping(profile["evidence_policies"]["qa"])
+    policy = EvidencePolicy.from_mapping(profile["evidence_policies"]["rtc"])
     records = tuple(
         EvidenceRecord(
             book="MAT",
@@ -229,7 +229,7 @@ def test_normal_saw_policy_coalesces_short_discourse_units(package_root: Path) -
         for verse in range(1, 9)
     )
 
-    units = plan_work_units(records, policy, unit_prefix="SAW-QA")
+    units = plan_work_units(records, policy, unit_prefix="SAW-RTC")
 
     assert policy.maximum_primary_discourse_units == 0
     assert policy.preferred_primary_discourse_units == 4
@@ -242,15 +242,15 @@ def test_normal_saw_policy_coalesces_short_discourse_units(package_root: Path) -
 
 
 def test_shipped_focus_batch_caps_sharpen_model_work_without_splitting_discourse(package_root: Path) -> None:
-    """Ship conservative discourse-unit caps for QA/focused/OL and BIC INSPECT focus."""
+    """Ship conservative discourse-unit caps for RTC/focused/OL and BIC INSPECT focus."""
     saw = yaml.safe_load(
         (package_root / "system" / "config" / "workflows" / "saw" / "profile.yml").read_text(encoding="utf-8")
     )
     bic = yaml.safe_load(
         (package_root / "system" / "config" / "workflows" / "bic" / "profile.yml").read_text(encoding="utf-8")
     )
-    assert saw["evidence_policies"]["qa"]["maximum_primary_discourse_units"] == 0
-    assert saw["evidence_policies"]["qa"]["preferred_primary_discourse_units"] == 4
+    assert saw["evidence_policies"]["rtc"]["maximum_primary_discourse_units"] == 0
+    assert saw["evidence_policies"]["rtc"]["preferred_primary_discourse_units"] == 4
     assert saw["evidence_policies"]["focused"]["maximum_primary_discourse_units"] == 2
     assert saw["evidence_policies"]["ol"]["maximum_primary_discourse_units"] == 1
     assert bic["evidence_policies"]["inspect"]["maximum_primary_discourse_units"] == 4
@@ -268,10 +268,10 @@ def test_explicit_discourse_partition_routes_real_context_packets(package_root: 
         (storage_layout(root).projects_root / project_id / "41MAT.SFM").write_text(text, encoding="utf-8")
     profile_path = root / "system" / "config" / "workflows" / "saw" / "profile.yml"
     profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
-    profile["evidence_policies"]["qa"] = dict(profile["evidence_policies"]["default"])
-    profile["evidence_policies"]["qa"]["maximum_primary_discourse_units"] = 1
-    profile["evidence_policies"]["qa"]["context_before_verses"] = 1
-    profile["evidence_policies"]["qa"]["context_after_verses"] = 1
+    profile["evidence_policies"]["rtc"] = dict(profile["evidence_policies"]["default"])
+    profile["evidence_policies"]["rtc"]["maximum_primary_discourse_units"] = 1
+    profile["evidence_policies"]["rtc"]["context_before_verses"] = 1
+    profile["evidence_policies"]["rtc"]["context_after_verses"] = 1
     profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
     _initialize_fixture(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
@@ -279,11 +279,11 @@ def test_explicit_discourse_partition_routes_real_context_packets(package_root: 
     result = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1-4",
-        qa_stage="TRANSLATION_AND_MEANING_QA",
+        rtc_stage="REFERENCE_TEXT_COMPARISON",
     )
     assert result["status"] == "PARTITIONED"
     assert [row["scope"] for row in result["work_units"]] == ["MAT 1:1-2", "MAT 1:3-4"]
@@ -291,7 +291,7 @@ def test_explicit_discourse_partition_routes_real_context_packets(package_root: 
     for row in result["work_units"]:
         manifest = __import__("json").loads(Path(row["manifest_path"]).read_text(encoding="utf-8"))
         manifests.append(manifest)
-        assert manifest["qa_stage"] == "TRANSLATION_AND_MEANING_QA"
+        assert manifest["rtc_stage"] == "REFERENCE_TEXT_COMPARISON"
         assert manifest["context_budget"]["policy"]["maximum_primary_discourse_units"] == 1
         assert manifest["packets"]["context_contemporary_source"]["context_mode"] == "CONTEXT_ONLY"
         assert manifest["packets"]["context_output_project"]["context_mode"] == "CONTEXT_ONLY"

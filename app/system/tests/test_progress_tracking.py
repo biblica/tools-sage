@@ -58,7 +58,7 @@ def test_run_progress_is_token_weighted_and_advances_only_on_finalized_tasks(tmp
     """Weight unequal ACT tasks by sealed token estimate and advance only after governed finalization."""
     first = tmp_path / "run" / "tasks" / "task-1" / "task.json"
     second = tmp_path / "run" / "tasks" / "task-2" / "task.json"
-    _task_manifest(first, task_id="task-1", operation="qa", skill_id="saw-qa", tokens=1000)
+    _task_manifest(first, task_id="task-1", operation="rtc", skill_id="saw-rtc", tokens=1000)
     _task_manifest(second, task_id="task-2", operation="ol", skill_id="staw-original-language-review", tokens=3000)
     validation = first.parent / "validation"
     validation.mkdir()
@@ -96,8 +96,8 @@ def test_progress_prefers_projected_handoff_but_preserves_legacy_raw_basis(tmp_p
             json.dumps(
                 {
                     "task_id": task_id,
-                    "operation": "qa",
-                    "skill": {"id": "saw-qa"},
+                    "operation": "rtc",
+                    "skill": {"id": "saw-rtc"},
                     "context_budget": {
                         "final_estimated_tokens": projected,
                         "provider_handoff": {"total_estimated_tokens": projected},
@@ -116,14 +116,14 @@ def test_progress_prefers_projected_handoff_but_preserves_legacy_raw_basis(tmp_p
         root=tmp_path,
         task_manifests=(str(first), str(second)),
         run_status="PARTITIONED_IN_PROGRESS",
-        current_stage="TRANSLATION_AND_MEANING_QA",
+        current_stage="REFERENCE_TEXT_COMPARISON",
         basis=PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS,
     )
     legacy = quantify_run(
         root=tmp_path,
         task_manifests=(str(first), str(second)),
         run_status="PARTITIONED_IN_PROGRESS",
-        current_stage="TRANSLATION_AND_MEANING_QA",
+        current_stage="REFERENCE_TEXT_COMPARISON",
         basis=PROGRESS_BASIS_ACT_ESTIMATED_TOKENS,
     )
 
@@ -161,7 +161,7 @@ def test_run_terminal_result_is_separate_and_blocked_requires_reason(make_worksp
         profiles={},
         defaults={},
     )
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
 
     with pytest.raises(ValidationError, match="requires result_reason"):
         store.update_run(run, status="BLOCKED")
@@ -170,7 +170,7 @@ def test_run_terminal_result_is_separate_and_blocked_requires_reason(make_worksp
     assert blocked.result == "BLOCKED"
     assert blocked.result_reason == "AI_AUTH_REQUIRED"
 
-    replacement = store.create_run(job, operation="qa", scope="MAT 2")
+    replacement = store.create_run(job, operation="rtc", scope="MAT 2")
     done = store.update_run(replacement, status="COMPLETE", current_stage="COMPLETE")
     assert done.result == "DONE"
     assert store.active_run(job) is None
@@ -189,7 +189,7 @@ def test_completed_run_pointer_is_not_reported_as_active(make_workspace) -> None
         profiles={},
         defaults={},
     )
-    run = store.create_run(job, operation="qa", scope="EXO 1-2")
+    run = store.create_run(job, operation="rtc", scope="EXO 1-2")
     completed = store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
     pointer = job.controller_state_root / "active-run.json"
     pointer.parent.mkdir(parents=True, exist_ok=True)
@@ -218,10 +218,10 @@ def test_ui_service_reports_persisted_run_progress(make_workspace) -> None:
         profiles={},
         defaults={},
     )
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     first = run.root / "tasks" / "task-1" / "task.json"
     second = run.root / "tasks" / "task-2" / "task.json"
-    _task_manifest(first, task_id="task-1", operation="qa", skill_id="saw-qa", tokens=1000)
+    _task_manifest(first, task_id="task-1", operation="rtc", skill_id="saw-rtc", tokens=1000)
     _task_manifest(second, task_id="task-2", operation="ol", skill_id="staw-original-language-review", tokens=3000)
     validation = first.parent / "validation"
     validation.mkdir()
@@ -254,10 +254,10 @@ def _progress_run(root):
         profiles={},
         defaults={},
     )
-    run = store.create_run(job, operation="qa", scope="MAT 1")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     first = run.root / "tasks" / "task-1" / "task.json"
     second = run.root / "tasks" / "task-2" / "task.json"
-    _task_manifest(first, task_id="task-1", operation="qa", skill_id="saw-qa", tokens=1000)
+    _task_manifest(first, task_id="task-1", operation="rtc", skill_id="saw-rtc", tokens=1000)
     _task_manifest(second, task_id="task-2", operation="ol", skill_id="staw-original-language-review", tokens=3000)
     validation = first.parent / "validation"
     validation.mkdir()

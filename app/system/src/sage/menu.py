@@ -39,7 +39,7 @@ from .ollama_policy import (
 from .iso_languages import iso_language, regional_profile_candidates, preferred_operational_primary
 from .language_identification import resolve_country, resolve_country_input
 from .language_profiles import ensure_language_profile_namespace, language_profile_status
-from .saw_policy import default_standard_qa_policy, write_run_policy_snapshot
+from .saw_policy import default_rtc_policy, write_run_policy_snapshot
 from .interface_localization import (
     InterfaceLocalizer,
     LANGUAGE_DISPLAY_NAMES,
@@ -1932,13 +1932,13 @@ class SageControlCenter:
             operation = self.io.choose(
                 "SAW Task",
                 (
-                    ("1", "Run Standard QA"),
+                    ("1", "Run Reference Text Comparison (RTC)"),
                     ("2", "Run Targeted Check"),
                     ("3", "Run Original-Language Review"),
                     ("B", "Back"),
                 ),
             )
-            operation_id = {"1": "qa", "2": "focused", "3": "ol"}.get(operation)
+            operation_id = {"1": "rtc", "2": "focused", "3": "ol"}.get(operation)
             if operation_id is not None:
                 self.store.record_cue(
                     "NEW_TASK_SELECTED",
@@ -2227,7 +2227,7 @@ class SageControlCenter:
             if run is None:
                 self.io.write("Active Run                   NONE")
                 options = (
-                    ("1", "Run Standard QA"),
+                    ("1", "Run Reference Text Comparison (RTC)"),
                     ("2", "Run Targeted Check"),
                     ("3", "Run Original-Language Review"),
                     ("4", "Reports and exports"),
@@ -2243,7 +2243,7 @@ class SageControlCenter:
                 self.io.write(f"  Status                     {run.status}")
                 options = (
                     ("1", "Continue active Run"),
-                    ("2", "Run Standard QA"),
+                    ("2", "Run Reference Text Comparison (RTC)"),
                     ("3", "Run Targeted Check"),
                     ("4", "Run Original-Language Review"),
                     ("5", "Reports and exports"),
@@ -2259,14 +2259,14 @@ class SageControlCenter:
                 elif choice == "5":
                     self.recovery_menu(project)
                 else:
-                    {"1": lambda: self.start_saw_run(project, "qa"),
+                    {"1": lambda: self.start_saw_run(project, "rtc"),
                      "2": lambda: self.start_saw_run(project, "focused"),
                      "3": lambda: self.start_saw_run(project, "ol")}[choice]()
             else:
                 if choice == "1":
                     self.continue_run(project, run)
                 elif choice == "2":
-                    self.start_saw_run(project, "qa")
+                    self.start_saw_run(project, "rtc")
                 elif choice == "3":
                     self.start_saw_run(project, "focused")
                 elif choice == "4":
@@ -2279,14 +2279,14 @@ class SageControlCenter:
     @staticmethod
     def _saw_operation_label(operation: str) -> str:
         """Return the Beta Operator label while preserving stable machine operation IDs."""
-        return {"qa": "Standard QA", "focused": "Targeted Check", "ol": "Original-Language Review"}.get(
+        return {"rtc": "Reference Text Comparison (RTC)", "focused": "Targeted Check", "ol": "Original-Language Review"}.get(
             str(operation).lower(), str(operation).upper()
         )
 
-    def _standard_qa_policy_menu(self, scope: str) -> dict[str, Any] | None:
-        """Let the Operator tune Standard-QA checks/policies before the Run snapshot is sealed."""
+    def _rtc_policy_menu(self, scope: str) -> dict[str, Any] | None:
+        """Let the Operator tune RTC checks/policies before the Run snapshot is sealed."""
         profile_path = self.root / "system" / "config" / "workflows" / "saw" / "profile.yml"
-        defaults = default_standard_qa_policy(profile_path)
+        defaults = default_rtc_policy(profile_path)
         policy = {
             "policy_version": defaults["policy_version"],
             "checks": dict(defaults["checks"]),
@@ -2307,8 +2307,8 @@ class SageControlCenter:
         ]
         policy_cycle = ("NORMAL", "MATERIAL_ONLY", "STRUCTURE_ONLY")
         while True:
-            self.io.write_menu_header(f"STANDARD QA: {scope}")
-            self.io.write(menu_item(1, "Run Standard QA"))
+            self.io.write_menu_header(f"REFERENCE TEXT COMPARISON (RTC): {scope}")
+            self.io.write(menu_item(1, "Run Reference Text Comparison (RTC)"))
             self.io.write(menu_item(2, "Restore defaults"))
             self.io.write_menu_header("Checks [Choose number to toggle ON/OFF]", major=False)
             for index, (key, label) in enumerate(check_rows, 3):
@@ -2331,14 +2331,14 @@ class SageControlCenter:
                 self.io.language_handler()
                 continue
             if value in {"e", "?"} and self.io.help_handler:
-                self.io.help_handler("STANDARD QA")
+                self.io.help_handler("REFERENCE TEXT COMPARISON (RTC)")
                 continue
             if value == "f" and self.io.status_handler:
                 self.io.status_handler()
                 continue
             if value == "1":
                 if not any(bool(item) for item in policy.get("checks", {}).values()):
-                    self.io.write("Enable at least one Standard QA check before running.")
+                    self.io.write("Enable at least one Reference Text Comparison (RTC) check before running.")
                     continue
                 return policy
             if value == "2":
@@ -2390,8 +2390,8 @@ class SageControlCenter:
             if scope is None:
                 return
             effective_policy = None
-            if operation == "qa":
-                effective_policy = self._standard_qa_policy_menu(scope)
+            if operation == "rtc":
+                effective_policy = self._rtc_policy_menu(scope)
                 if effective_policy is None:
                     return
             review = self._review_work_before_run(
@@ -2404,7 +2404,7 @@ class SageControlCenter:
             if action != "RUN":
                 return
             ol_variance_enabled = bool(
-                operation == "qa"
+                operation == "rtc"
                 and str(
                     dict((effective_policy or {}).get("original_language") or {}).get(
                         "source_text_drift_adjudication", "PROHIBITED"
@@ -2433,7 +2433,7 @@ class SageControlCenter:
                 run,
                 approved_work_plan_path=str(approved_plan_path),
             )
-            if operation == "qa" and effective_policy is not None:
+            if operation == "rtc" and effective_policy is not None:
                 write_run_policy_snapshot(run.root, effective_policy)
             self._persist_saw_vrs_advisories(
                 run,
@@ -3007,13 +3007,13 @@ class SageControlCenter:
     @staticmethod
     def _saw_task_scope_label(manifest: dict[str, Any], run: Run) -> str:
         """Return the exact stage boundary represented by one SAW task."""
-        if str(manifest.get("qa_stage") or "") in {
+        if str(manifest.get("rtc_stage") or "") in {
             "STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"
         }:
             references = [
                 str(value).strip()
                 for value in (
-                    manifest.get("qa_stage_references")
+                    manifest.get("rtc_stage_references")
                     or manifest.get("expected_references")
                     or []
                 )
@@ -3044,7 +3044,7 @@ class SageControlCenter:
             run_id=run.run_id,
             task_id=str(manifest.get("task_id") or "") or None,
             operation=str(manifest.get("operation") or run.operation or "") or None,
-            stage=str(manifest.get("qa_stage") or run.current_stage or "") or None,
+            stage=str(manifest.get("rtc_stage") or run.current_stage or "") or None,
             requested_scope=run.scope,
             work_unit_scope=(self._saw_task_scope_label(manifest, run) if manifest else None),
             job_root=project.root,
@@ -3365,7 +3365,7 @@ class SageControlCenter:
                     run = self.store.update_run(
                         run,
                         status="COMPOSITE_IN_PROGRESS",
-                        current_stage=str(result.get("composite_stage") or "QA"),
+                        current_stage=str(result.get("composite_stage") or "RTC"),
                     )
                     continue
                 run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
@@ -4749,7 +4749,7 @@ class SageControlCenter:
                 "project_decisions": [], "approved_exceptions": [],
                 "governance": {"authority": "project_team_required", "human_approval_required": True},
                 "evidence_priority": ["bounded_project_text", "approved_project_decisions", "declared_contemporary_source", "relevant_original_language_source"],
-                "usage": {"apply_to": ["qa", "focused", "ol"], "report_rule_ids": True},
+                "usage": {"apply_to": ["rtc", "focused", "ol"], "report_rule_ids": True},
                 "finding_requirements": ["Cite each applicable rule ID.", "Separate grammar findings from general meaning findings."],
                 "restrictions": ["Do not invent project rules.", "Do not promote this starter profile to approved Project grammar without human review."],
                 "provenance": {"type": "SAGE_GUIDED_STARTER", "project_validated": False},
@@ -5362,7 +5362,7 @@ class SageControlCenter:
             "bic.inspect": "BIC INSPECT",
             "bic.rewrite": "BIC REWRITE",
             "bic.self_check": "BIC SELF-CHECK",
-            "saw.qa": "SAW QA",
+            "saw.rtc": "SAW Reference Text Comparison (RTC)",
             "saw.focused": "SAW focused",
             "saw.ol": "SAW original-language",
         }
@@ -5383,7 +5383,7 @@ class SageControlCenter:
             ("1", "BIC INSPECT", "bic", "inspect"),
             ("2", "BIC REWRITE", "bic", "rewrite"),
             ("3", "BIC SELF-CHECK", "bic", "self_check"),
-            ("4", "SAW Standard QA", "saw", "qa"),
+            ("4", "SAW Reference Text Comparison (RTC)", "saw", "rtc"),
             ("5", "SAW Targeted Check", "saw", "focused"),
             ("6", "SAW original-language review", "saw", "ol"),
         )

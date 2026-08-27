@@ -37,7 +37,7 @@ def test_saw_global_item_id_uses_hierarchy_separators_without_duplicate_prefixes
     """Keep SAW ITEM codes compact, hierarchical, and free of repeated SAW prefixes."""
     normalized = assign_global_finding_ids(
         {
-            "SAW-QA-PH-99846F75": [
+            "SAW-RTC-PH-99846F75": [
                 {"finding_id": "F001", "target_reference": "PHM 1:1"}
             ]
         },
@@ -45,7 +45,7 @@ def test_saw_global_item_id_uses_hierarchy_separators_without_duplicate_prefixes
         prefix="SAW",
     )
     assert normalized[0]["finding_id"] == (
-        "SAW_PAPCV-A3A03DAC_QA-PH-99846F75_0001"
+        "SAW_PAPCV-A3A03DAC_RTC-PH-99846F75_0001"
     )
     assert normalized[0]["submitted_id"] == "F001"
 
@@ -220,7 +220,7 @@ def test_partition_aggregation_globalizes_duplicate_provider_finding_ids(make_wo
     config = load_ecosystem(root / "ecosystem.yml")
     plans_root = config.workflow("saw").output_root / "plans"
     active_root = config.workflow("saw").output_root / "active"
-    plan_id = "SAW-QA-RUT-DUPLICATE-ID"
+    plan_id = "SAW-RTC-RUT-DUPLICATE-ID"
     run_id = "SAW-RUN-001"
     job_id = "SAW_usWIP-usNIVv2"
     units = []

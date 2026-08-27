@@ -9,7 +9,7 @@ SAGE planning is deterministic preprocessing; it is not analytical completion.
 
 The planner compiles strict USFM/USJ records, applies the governed structure policy, measures the serialized evidence packet, and divides the requested scope at preferred boundaries while preserving exact primary-coordinate coverage.
 
-Planning first identifies intact spans at governed section markers. It then coalesces adjacent spans while the complete measured packet remains within every hard token, byte, verse, chapter, and discourse limit. If the scope must be divided, section markers are preferred split points. Only an individually oversized section is subdivided at a balanced natural discourse/paragraph boundary. This keeps a short book such as Jude in one work unit when it fits instead of turning each heading into a separate model task.
+Planning first identifies intact spans at governed section markers. For RTC, adjacent spans are packed toward the 6,000-token WIP target but normally stop at the 7,000-token preferred packing ceiling; the WIP packet must remain below the 8,000-token hard slice limit. A complete protected discourse unit may use the 7,000–7,999 headroom rather than be split merely to hit the target. If a protected unit itself is too large, SAGE chooses a balanced natural discourse/paragraph boundary. Other workflows retain their configured limits.
 
 ## Boundary preference
 
@@ -34,7 +34,7 @@ Plans and packets remain inside the owning workflow output root and outside immu
 
 ## Normal SAW discourse units
 
-The deterministic discourse layer sits inside a section-preferred planner. Normal SAW `TRANSLATION_AND_MEANING_QA` keeps complete `\s*`/`\ms*` sections intact, but coalesces adjacent sections whenever their combined measured packet fits. Section headings become split points only when a split is actually required. Four discourse units is a soft packing preference, not a hard ceiling. If an individual section is oversized, SAGE looks through its remainder and chooses balanced structural subdivisions rather than greedily filling one packet and leaving a tiny tail. Focused SAW review remains capped at two intact units and standalone OL Review at one; BIC INSPECT is capped at four. Hard projected-handoff token/byte/verse limits still apply, and a protected discourse unit is not split unless the unit itself cannot fit a hard limit.
+The deterministic discourse layer sits inside a section-preferred planner. SAW `REFERENCE_TEXT_COMPARISON` targets about 6,000 estimated WIP tokens, searches for clean section/stanza/paragraph boundaries across the preferred 5,000–7,000 range, and hard-stops the original WIP packet below 8,000. Complete protected discourse units remain intact when they fit; oversized units are divided at balanced natural boundaries rather than greedily filling one packet and leaving a tiny tail. The Reference Project is then correlated to the exact same Scripture range. Focused SAW review remains capped at two intact units and standalone OL Review at one; BIC INSPECT remains governed by its own profile.
 
 - **Prose:** each ordinary body paragraph is one discourse unit.
 - **Lists:** `\lh` breaks/heads list flow; each `\li1` starts a major unit; following subordinate `\li2+` paragraphs remain in that `\li1` unit; the next `\li1` starts another unit; `\lf` breaks/ends list flow.

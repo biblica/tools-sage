@@ -36,7 +36,7 @@ local/user resource
 ```
 
 The Resource Hub must never write an unreviewed contribution directly into a running Core tree.
-Promotion to Core occurs only through the normal source-control, QA, review, and release process.
+Promotion to Core occurs only through the normal source-control, RTC, review, and release process.
 
 ## Planned capabilities
 

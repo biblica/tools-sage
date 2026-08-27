@@ -10,7 +10,7 @@
 - A new TARGET book can be created progressively from bounded commits; insertion into an existing book requires the relevant chapter structure to exist rather than inventing surrounding USFM structure.
 - The operating contract assumes Paratext/PTLite editors are closed while SAGE executes. v0.01beta does not implement cross-application editor locking.
 - SAGE/SAW does not create or modify Paratext Notes XML. SAW emits plain Operator note text for manual copy/paste.
-- Normal SAW QA can require multiple isolated model stages; it is one Operator operation, not one guaranteed model call.
+- Normal SAW Reference Text Comparison (RTC) can require multiple isolated model stages; it is one Operator operation, not one guaranteed model call.
 - WDA / Word Data Analysis is future work and is not implemented as part of SAW.
 - Existing-target/BASE_TARGET revision is future work and is not part of BIC.
 - BIC and SAW remain independent; SAGE provides no direct BIC TARGET→SAW WIP handoff.
@@ -18,5 +18,5 @@
 - SAGE can enforce a sealed local context, explicit evidence classes, no web/tool access from governed model tasks, and provenance-bound conclusions. It cannot prove that a general-purpose model contains no latent pretrained Scripture knowledge; the enforceable rule is that model recall/pretraining is never an authorized evidence source and substantive Job conclusions must be supportable from routed local evidence.
 - Optional `./system/bin/sage request` remains bounded controller-owned natural-language command routing; it is not unrestricted model-driven execution and cannot bypass registered commands, Project/Job/Run governance, validation, or authority rules.
 
-- Normal SAW QA meaning review is intentionally partitioned to deterministic discourse units. Poetry units are operational structural chunks, not AI-inferred literary stanza analysis.
+- Normal SAW Reference Text Comparison (RTC) meaning review is intentionally partitioned to deterministic discourse units. Poetry units are operational structural chunks, not AI-inferred literary stanza analysis.
 - BIC conditional OL micro-checks are intentionally single-verse. A genuinely cross-verse linguistic dependency must be surfaced as an unresolved challenge rather than silently broadening provider Scripture context.

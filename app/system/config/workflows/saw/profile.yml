@@ -17,10 +17,10 @@ evidence_policies:
     context_before_verses: 1
     context_after_verses: 1
     allow_cross_chapter_units: true
-  qa:
-    target_estimated_tokens: 18000
-    hard_estimated_tokens: 28000
-    hard_serialized_bytes: 196000
+  rtc:
+    target_estimated_tokens: 28000
+    hard_estimated_tokens: 32000
+    hard_serialized_bytes: 224000
     minimum_target_tokens: 6000
     maximum_primary_verse_units: 220
     maximum_primary_discourse_units: 0
@@ -50,7 +50,7 @@ evidence_policies:
     allow_cross_chapter_units: true
 check_policy:
   version: "1.0"
-  standard_qa:
+  rtc:
     checks:
       structure_completeness: true
       translation_meaning: true
@@ -106,7 +106,7 @@ process:
   stages:
   - DETERMINISTIC_PREFLIGHT
   - STRUCTURAL_ADJUDICATION
-  - TRANSLATION_AND_MEANING_QA
+  - REFERENCE_TEXT_COMPARISON
   - SELECTIVE_OL_ADJUDICATION
   - COVERAGE_RECONCILIATION
   - DETERMINISTIC_FINALISATION
@@ -114,19 +114,19 @@ process:
   - Each task analyzes one WIP translation against one authorized REFERENCE.
   - Every expected coordinate and structural candidate is reconciled.
   - Scripture projects remain read-only; findings and reports are generated deterministically.
-  - Standard QA structural and meaning stages do not route OL Scripture.
-  - Standard translation-and-meaning QA uses sections/stories as preferred split points,
-    not mandatory work-unit boundaries. Adjacent complete sections are coalesced whenever
-    the measured packet satisfies every hard limit; four discourse units is a soft packing
-    preference rather than a hard ceiling. Oversized scopes split at section boundaries
-    where possible, while oversized individual sections use bounded lookahead and balanced
-    structural subdivision. Targeted
-    Check limits each primary evaluation to at most two intact discourse units, and standalone
-    Original-Language Review to one. SAGE does not split a prose paragraph, major list unit,
-    or operational poetry stanza unless that protected unit itself cannot fit a hard evidence
-    limit. Every partitioned task receives labeled
-    adjacent context-only evidence when available; context-only coordinates are excluded
-    from coverage and ordinary findings.
+  - Reference Text Comparison (RTC) structural and meaning stages do not route OL Scripture.
+  - >-
+    Reference Text Comparison (RTC) governs the original WIP slice independently from the
+    complete provider handoff: target about 6000 estimated WIP tokens, prefer natural discourse
+    boundaries in the 5000-7000 range, and never plan a WIP slice at 8000 tokens or above.
+    The REFERENCE follows the exact same Scripture range. Complete RTC handoff is soft-targeted
+    below 28000 estimated tokens and hard-stopped at 32000; crossing the hard guard requires
+    reslicing, not a larger handoff. Prose prefers section/pericope then paragraph boundaries.
+    Poetry preserves whole Psalm/song units and operational stanzas formed by consecutive q/qN
+    lines; q-level indentation changes do not create stanza boundaries. Colon/clause splitting is
+    emergency-only when a protected stanza itself cannot fit. Targeted Check limits each primary
+    evaluation to at most two intact discourse units, and standalone Original-Language Review to
+    one. Adjacent context-only evidence remains labeled and excluded from coverage/findings.
   - Option 11 automatically adjudicates material WIP-Reference source-dependent variances;
     it routes OT only to Job-bound Hebrew and NT only to Job-bound Greek. It remains distinct
     from standalone Original-Language Review, which requires an explicit bounded question and

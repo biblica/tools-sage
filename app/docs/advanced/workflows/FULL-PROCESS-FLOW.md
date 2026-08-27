@@ -31,7 +31,7 @@ INSPECT
 
 The model-facing REWRITE/SELF-CHECK artifact remains bounded. Commit replaces only the governed scope in the bound TARGET book and preserves every out-of-scope verse/marker block. Routine INSPECT does not route OL Scripture. A BIC Job has exactly one bound TARGET Project. That TARGET may be stored internally or mapped to one Paratext/PTLite project folder; those are alternative storage bindings for the same TARGET. SOURCE is the sole content authority. DONOR is vocabulary-only evidence and is decontextualized before model routing. Existing TARGET Scripture is not routed during INSPECT/REWRITE.
 
-## SAW Standard QA
+## SAW Reference Text Comparison (RTC)
 
 ```text
 WIP + authorized REFERENCE
@@ -42,7 +42,7 @@ deterministic preflight / structural triage
         +--> STRUCTURAL ADJUDICATION       [conditional AI stage]
         |
         v
-TRANSLATION / MEANING QA                  [required AI stage]
+TRANSLATION / MEANING RTC                  [required AI stage]
         |
         +--> SELECTIVE OL ADJUDICATION     [conditional AI stage]
         |
@@ -56,7 +56,7 @@ batch finalized Run results into Job report catalog
         `--> reports/<BOOK>/<SCOPE>_<DATE>_<SERIAL>_OPERATOR-NOTE.txt
 ```
 
-Each AI stage is an isolated governed task inside the same Run. The structural stage is covered only for routed structural-candidate coordinates; the required meaning stage covers the complete parent QA Run scope. Structural and meaning stages receive no OL Scripture. The meaning stage may defer exact issues to OL using request IDs plus reserved deferred finding IDs. Only the selective OL stage receives the exact requested coordinates and configured Job-bound GRK/HEB evidence. It must return one structured OL resolution per request; finalization preserves that request/resolution ledger.
+Each AI stage is an isolated governed task inside the same Run. The structural stage is covered only for routed structural-candidate coordinates; the required meaning stage covers the complete parent RTC Run scope. Structural and meaning stages receive no OL Scripture. The meaning stage may defer exact issues to OL using request IDs plus reserved deferred finding IDs. Only the selective OL stage receives the exact requested coordinates and configured Job-bound GRK/HEB evidence. It must return one structured OL resolution per request; finalization preserves that request/resolution ledger.
 
 Run-local tasks, validation receipts, and raw final results remain governed Job provenance.
 Deterministic finalization consolidates compatible chapter results, stores the canonical combined

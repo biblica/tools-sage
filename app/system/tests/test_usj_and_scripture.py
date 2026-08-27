@@ -84,7 +84,7 @@ def test_mismatched_explicit_note_field_closure_remains_an_error() -> None:
 
 
 def test_qa_heading_is_structure_not_visible_verse_text() -> None:
-    """Verify that QA heading is structure not visible verse text."""
+    """Verify that RTC heading is structure not visible verse text."""
     text = (
         "\\id PSA Fixture\n"
         "\\c 119\n"

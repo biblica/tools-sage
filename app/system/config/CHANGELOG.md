@@ -52,7 +52,7 @@
 ### Workflow/operator continuity
 
 - Retained role-neutral SAGE Project inventory with Job-scoped BIC/SAW authority.
-- Retained governed Standard QA, Targeted Check, Original-Language Review, bounded work-unit planning, source-provenance handling, and chapter/report behavior.
+- Retained governed Reference Text Comparison (RTC), Targeted Check, Original-Language Review, bounded work-unit planning, source-provenance handling, and chapter/report behavior.
 - Corrected approved SAW-plan reconciliation so an unchanged verse bridge is compared by its exact
   atomic coordinates instead of being falsely reported as stale because its display label is ranged.
 - Retained cross-platform Codex/Ollama administration boundaries and host-capability detection.

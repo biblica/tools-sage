@@ -29,7 +29,7 @@ Interactive mode is the default when SAGE is attached to a terminal. SAGE:
 Example (`JUN 10-11` is the invalid entered scope):
 
 ```text
-Input: run qa jun 10-11
+Input: run rtc jun 10-11
 
 Scripture book 'JUN' was not recognized.
 Possible corrections:

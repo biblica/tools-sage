@@ -22,7 +22,7 @@ qualification:
       - bic.inspect
       - bic.rewrite
       - bic.self_check
-      - saw.qa
+      - saw.rtc
       - saw.focused
       - saw.ol
   gpt-5.6-terra:
@@ -30,7 +30,7 @@ qualification:
     basis: balanced analytical baseline
     workflows:
       - bic.inspect
-      - saw.qa
+      - saw.rtc
       - saw.focused
   gpt-5.6-luna:
     status: UTILITY_ONLY
@@ -43,7 +43,7 @@ qualification:
       - bic.inspect
       - bic.rewrite
       - bic.self_check
-      - saw.qa
+      - saw.rtc
       - saw.focused
       - saw.ol
 task_profiles:
@@ -73,7 +73,7 @@ task_profiles:
     target_reasoning_effort: xhigh
     minimum_reasoning_effort: high
     maximum_reasoning_effort: xhigh
-  saw.qa:
+  saw.rtc:
     base_complexity: R2
     preferred_models:
       - gpt-5.6-terra

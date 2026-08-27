@@ -12,10 +12,11 @@ import pytest
 import yaml
 
 from sage.storage import storage_layout
-from sage.act_tasks import create_act_task, submit_act_task
+from sage.act_tasks import _partition_evidence_policy, create_act_task, submit_act_task
 from sage.bounded_target import extract_scope_usfm
 from sage.build_policy import ENABLED_AUTOMATED_PROVIDER_IDS, FUTURE_PROVIDER_IDS
 from sage.errors import ConfigurationError, ValidationError
+from sage.evidence import EvidencePolicy
 from sage.executors.base import ProviderRequest
 from sage.executors.ollama import OllamaExecutor
 from sage.executors import PROVIDER_IDS, make_executor
@@ -35,6 +36,26 @@ from sage.scripture import discover_usfm_files
 from sage.jobs import JobStore, default_job_name
 from sage.vrs import resolve_project_vrs_paths
 
+
+
+
+def test_rtc_partition_policy_governs_wip_below_eight_thousand() -> None:
+    """RTC derives a 6k WIP target with 7k preferred and strict sub-8k hard packet limits."""
+    complete = EvidencePolicy(
+        target_estimated_tokens=28000,
+        hard_estimated_tokens=32000,
+        hard_serialized_bytes=224000,
+        minimum_target_tokens=6000,
+        maximum_primary_verse_units=220,
+    )
+
+    derived = _partition_evidence_policy("saw", "rtc", complete)
+
+    assert derived.target_estimated_tokens == 6000
+    assert derived.minimum_target_tokens == 5000
+    assert derived.preferred_max_estimated_tokens == 7000
+    assert derived.hard_estimated_tokens == 7999
+    assert derived.maximum_primary_verse_units == 80
 
 def _initialize(package_root: Path, root: Path) -> None:
     """Initialize one disposable workspace through the public CLI."""
@@ -256,7 +277,7 @@ def test_saw_job_binding_assigns_reference_purpose_to_locked_project(package_roo
     task = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
@@ -265,7 +286,7 @@ def test_saw_job_binding_assigns_reference_purpose_to_locked_project(package_roo
     alternate = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id="usWIP",
         contemporary_source_id="usNIRVv2",
         scope_value="MAT 1:1",

@@ -240,7 +240,7 @@
     },
     "finding": {
       "label": "finding",
-      "definition": "Supported QA conclusion, primarily used by SAW."
+      "definition": "Supported RTC conclusion, primarily used by SAW."
     },
     "challenge": {
       "label": "challenge",

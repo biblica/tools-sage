@@ -139,7 +139,7 @@ SAFE_ID_RE = re.compile(r"[^A-Za-z0-9._-]+")
 PRIMARY_ROLE = {"bic": "CONTENT_SOURCE", "saw": "WIP"}
 ALLOWED_OPERATIONS = {
     "bic": {"inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check"},
-    "saw": {"qa", "focused", "ol"},
+    "saw": {"rtc", "focused", "ol"},
 }
 SHORTCUT_COMMANDS: dict[str, dict[str, tuple[str, ...]]] = {
     "bic": {
@@ -157,7 +157,7 @@ SHORTCUT_COMMANDS: dict[str, dict[str, tuple[str, ...]]] = {
     },
     "saw": {
         "status": ("workflow", "status", "--workflow", "saw"),
-        "qa": ("task", "create", "--workflow", "saw", "--operation", "qa"),
+        "rtc": ("task", "create", "--workflow", "saw", "--operation", "rtc"),
         "focused": ("task", "create", "--workflow", "saw", "--operation", "focused"),
         "ol": ("task", "create", "--workflow", "saw", "--operation", "ol"),
         "submit": ("task", "submit"),
@@ -2075,7 +2075,7 @@ def command_act_create(args: argparse.Namespace) -> int:
             print(f"Work units: {len(result['work_units'])}")
             print(f"Plan file: {result['plan_path']}")
         elif result.get("status") == "COMPOSITE":
-            print("SAGE SAW QA COMPOSITE PLAN")
+            print("SAGE SAW Reference Text Comparison (RTC) COMPOSITE PLAN")
             print(f"Plan: {result['plan_id']}")
             print(f"Scope: {result['requested_scope']}")
             print(f"Current stage: {result['current_stage']}")
@@ -2654,7 +2654,7 @@ def command_evaluation_plan(args: argparse.Namespace) -> int:
     focus = args.focus.strip() if isinstance(args.focus, str) and args.focus.strip() else None
     if args.operation in {"focused", "ol"} and not focus:
         raise ValidationError(f"SAW {args.operation} evaluation requires --focus")
-    if args.operation == "qa" and focus:
+    if args.operation == "rtc" and focus:
         raise ValidationError("--focus is valid only for focused or ol evaluation")
     entries: list[dict[str, Any]] = []
     for index, entry in enumerate(evaluation.entries, start=1):
@@ -4001,7 +4001,7 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--workflow", dest="workflow_id", choices=("bic", "saw"), required=True)
     parser.add_argument(
         "--operation",
-        choices=("inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check", "qa", "focused", "ol"),
+        choices=("inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check", "rtc", "focused", "ol"),
         required=True,
         help="Operation permitted by the selected workflow",
     )
@@ -4401,7 +4401,7 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     evaluation_plan = evaluation_actions.add_parser("plan", help="Validate and write a sequential multi-project queue")
     evaluation_plan.add_argument("--set", dest="set_id", required=True)
     evaluation_plan.add_argument("--scope", required=True)
-    evaluation_plan.add_argument("--operation", choices=("qa", "focused", "ol"), default="qa")
+    evaluation_plan.add_argument("--operation", choices=("rtc", "focused", "ol"), default="rtc")
     evaluation_plan.add_argument("--focus", help="One bounded question; required for focused and ol queues")
     evaluation_plan.add_argument("--type", dest="check_type", choices=tuple(sorted(SAW_CHECK_TYPES)))
     evaluation_plan.set_defaults(handler=command_evaluation_plan)
@@ -4474,7 +4474,7 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     workflow_reset.add_argument("--workflow", dest="workflow_id", choices=tuple(sorted(STAGES)), required=True)
     workflow_reset.add_argument(
         "--stage",
-        choices=("inspect", "rewrite", "self-check", "qa", "focused", "ol"),
+        choices=("inspect", "rewrite", "self-check", "rtc", "focused", "ol"),
         required=True,
     )
     workflow_reset.add_argument("--decision-id", required=True)

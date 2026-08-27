@@ -1,0 +1,3 @@
+interface:
+  display_name: "SAW RTC"
+  short_description: "Check one reviewed Scripture project in one bounded RTC task."

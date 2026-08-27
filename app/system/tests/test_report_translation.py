@@ -17,7 +17,7 @@ def _document() -> dict:
     return {
         "schema_version": "2.0",
         "task_id": "SAW-RUT-001",
-        "operation": "qa",
+        "operation": "rtc",
         "stage": "COMPOSITE_FINALIZED",
         "scope": "RUT",
         "resource_bindings": {"WIP": "ukrNPUv1", "REFERENCE": "usNIVv2"},

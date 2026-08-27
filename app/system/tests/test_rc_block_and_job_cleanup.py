@@ -324,7 +324,7 @@ def test_windows_workflow_launcher_preserves_shifted_arguments_in_python(monkeyp
         workflow_id="saw",
         arguments=[
             "--", "--settings", r"C:\SAGE Work\ecosystem.yml", "--json", "--debug",
-            "qa", "--wip", "ukrNPUv1", "--reference", "usNASB", "--scope", "JUD 1:1-25",
+            "rtc", "--wip", "ukrNPUv1", "--reference", "usNASB", "--scope", "JUD 1:1-25",
         ],
         settings="ecosystem.yml",
         json=False,
@@ -332,7 +332,7 @@ def test_windows_workflow_launcher_preserves_shifted_arguments_in_python(monkeyp
     )
     assert command_launcher_shortcut(args) == 0
     assert captured["settings"] == r"C:\SAGE Work\ecosystem.yml"
-    assert captured["shortcut_command"] == "qa"
+    assert captured["shortcut_command"] == "rtc"
     assert captured["arguments"] == [
         "--wip", "ukrNPUv1", "--reference", "usNASB", "--scope", "JUD 1:1-25",
     ]

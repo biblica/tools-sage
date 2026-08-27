@@ -147,7 +147,7 @@ def test_bilingual_reports_declare_primary_authority_and_secondary_confidence() 
 
     document = {
         "task_id": "SAW-001",
-        "operation": "qa",
+        "operation": "rtc",
         "stage": "COMPOSITE_FINALIZED",
         "scope": "GEN 1",
         "coverage": {"status": "COMPLETE", "reviewed_references": ["GEN 1:1"]},
@@ -393,7 +393,7 @@ def test_action_report_renders_nonblocking_versification_advisories() -> None:
     """SAW Action Report must retain VRS differences that were advisory at preflight."""
     document = {
         "task_id": "SAW-DAN-001",
-        "operation": "qa",
+        "operation": "rtc",
         "stage": "COMPOSITE_FINALIZED",
         "scope": "DAN",
         "coverage": {"status": "COMPLETE", "reviewed_references": ["DAN 3:30", "DAN 4:1"]},
@@ -423,7 +423,7 @@ def test_saw_action_report_uses_compact_project_ids_and_omits_empty_ol_metadata(
     document = {
         "task_id": "SAW-DAN-001",
         "job_id": "SAW_fixture",
-        "operation": "qa",
+        "operation": "rtc",
         "stage": "COMPOSITE_FINALIZED",
         "scope": "DAN 1",
         "resource_bindings": {"WIP": "ukrNPUv1", "REFERENCE": "usNIVv2"},

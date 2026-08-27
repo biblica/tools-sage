@@ -77,14 +77,17 @@ Task creation now records two independent measurements:
 
 The exact handoff is reconstructed and hard-gated again immediately before provider execution. A planning estimate therefore cannot authorize an oversized provider request. Historical Jobs that explicitly record the legacy `ACT_ESTIMATED_TOKENS` progress basis remain readable; new Jobs use `PROJECTED_HANDOFF_ESTIMATED_TOKENS`.
 
-Focus batching is intentionally structural rather than aggressive token chopping. Shipped soft focus ceilings are:
+RTC batching is discourse-first and governed from the original WIP contribution rather than by filling the complete model context. The shipped RTC geometry is:
 
-- SAW normal translation/meaning QA: at most 4 intact primary discourse units;
-- SAW Targeted Checks: at most 2 intact primary discourse units;
-- standalone SAW OL review: at most 1 intact primary discourse unit;
-- BIC INSPECT: at most 4 intact primary discourse units.
+- WIP target: about 6,000 estimated tokens;
+- preferred discourse packing range: 5,000–7,000 estimated WIP tokens;
+- hard WIP packet limit: strictly below 8,000 estimated tokens;
+- complete WIP+REFERENCE provider handoff target: below 28,000 estimated tokens;
+- complete RTC provider handoff hard guard: 32,000 estimated tokens.
 
-A prose paragraph, major list unit, or operational poetry stanza remains indivisible merely to meet the focus ceiling. Adjacent context routing and all existing hard verse/token limits remain in force. BIC REWRITE and SELF_CHECK are not newly auto-partitioned by this change; they continue to follow approved bounded INSPECT lineage.
+The WIP establishes the canonical Scripture range and the configured Reference Project follows exactly that range. OL Scripture is not budgeted into the normal RTC package. If RTC identifies a qualifying material WIP–Reference source-text discrepancy, SAGE creates a new finding-scoped OL clarification task containing only the affected WIP/REFERENCE coordinate(s), the applicable Job-bound GRK/HEB evidence, provenance, and the exact question. The parent RTC package is not enlarged or rerun.
+
+A prose paragraph, major list unit, or operational poetry stanza remains indivisible merely to meet the 6k target when it still fits below the hard WIP slice limit. Targeted Check remains capped at two intact primary discourse units, standalone SAW OL review at one, and BIC INSPECT at four. BIC REWRITE and SELF_CHECK continue to follow approved bounded INSPECT lineage.
 
 ## 7. Task-scoped provider readiness
 

@@ -180,7 +180,7 @@ def test_report_summary_uses_compact_view_and_separate_artifact(make_workspace, 
     before = canonical.read_bytes()
     document = {
         "workflow": "saw",
-        "operation": "qa",
+        "operation": "rtc",
         "scope": "MAT 1:1",
         "status": "COMPLETE",
         "findings": [
@@ -206,7 +206,7 @@ def test_report_summary_uses_compact_view_and_separate_artifact(make_workspace, 
     assert artifact["critical_unresolved_ids"] == ["F-001"]
     assert artifact["item_ids"] == ["F-001"]
     assert artifact["summary"] == (
-        "SAW qa report for MAT 1:1: 1 finding. Critical unresolved: F-001."
+        "SAW Reference Text Comparison (RTC) report for MAT 1:1: 1 finding. Critical unresolved: F-001."
     )
 
 
@@ -221,7 +221,7 @@ def test_report_summary_does_not_depend_on_local_model(make_workspace, tmp_path:
 
     destination = service.write_report_executive_summary(
         canonical,
-        {"workflow": "saw", "operation": "qa", "scope": "MAT 1:1", "findings": []},
+        {"workflow": "saw", "operation": "rtc", "scope": "MAT 1:1", "findings": []},
     )
 
     assert destination is not None and destination.is_file()

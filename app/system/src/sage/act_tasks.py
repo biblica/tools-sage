@@ -90,13 +90,13 @@ from .work_units import plan_work_units, records_from_project_result, select_rec
 
 ACT_OPERATIONS = {
     "bic": {"inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check"},
-    "saw": {"qa", "focused", "ol"},
+    "saw": {"rtc", "focused", "ol"},
 }
 CONTEMPORARY_ROLES = {"REFERENCE"}
 READY_RESOURCE_STATES = {"READY", "READY_WITH_WARNINGS"}
-SAW_QA_STAGES = {
+SAW_RTC_STAGES = {
     "STRUCTURAL_ADJUDICATION",
-    "TRANSLATION_AND_MEANING_QA",
+    "REFERENCE_TEXT_COMPARISON",
     "SELECTIVE_OL_ADJUDICATION",
 }
 
@@ -259,7 +259,7 @@ def load_skill_registry(root: Path) -> dict[tuple[str, str], SkillBinding]:
                 item for item in sorted(reference_root.iterdir())
                 if item.is_file()
                 and not item.name.upper().startswith("ORIGINAL-")
-                and item.name.upper() != "RUN-QA.MD"
+                and item.name.upper() != "RUN-RTC.MD"
             )
         forbidden_contracts = {
             "system/tools/bic.py": "obsolete BIC script command",
@@ -307,7 +307,7 @@ def _skill_files(skill: SkillBinding) -> list[Path]:
             path for path in sorted(references.iterdir())
             if path.is_file()
             and not path.name.upper().startswith("ORIGINAL-")
-            and path.name.upper() != "RUN-QA.MD"
+            and path.name.upper() != "RUN-RTC.MD"
         )
     return files
 
@@ -484,7 +484,7 @@ def _validate_task_projects(
     *,
     operation: str | None = None,
     job_id: str | None = None,
-    qa_stage: str | None = None,
+    rtc_stage: str | None = None,
 ) -> tuple[ProjectSpec, ProjectSpec, str, ProjectSpec | None]:
     """Validate required projects and resolve optional passage-relevant OL evidence."""
     output = config.project(output_project_id)
@@ -516,7 +516,7 @@ def _validate_task_projects(
     ol_role, ol_project = _select_ol_project(
         config,
         scope,
-        required=(workflow == "saw" and (operation == "ol" or qa_stage == "SELECTIVE_OL_ADJUDICATION")),
+        required=(workflow == "saw" and (operation == "ol" or rtc_stage == "SELECTIVE_OL_ADJUDICATION")),
         workflow=workflow,
         job_id=job_id,
     )
@@ -1054,7 +1054,7 @@ def _write_reference_inventory_usj_packet(
     *,
     parent_scope: ScriptureScope,
 ) -> tuple[dict[str, Any], str]:
-    """Write exact composite-QA coordinates as deterministic bounded comparison USJ."""
+    """Write exact composite-RTC coordinates as deterministic bounded comparison USJ."""
     raw = source.read_bytes()
     text = raw.decode("utf-8-sig")
     usj = compile_usfm_text(text, source.name)
@@ -1063,7 +1063,7 @@ def _write_reference_inventory_usj_packet(
         raise ValidationError(f"Task input {source.name} has parser errors: {', '.join(parser_errors[:8])}")
     requested_scopes = [scope for value in reference_values for scope in parse_scope_set(value)]
     if not requested_scopes:
-        raise ValidationError("Composite QA stage reference inventory must not be empty")
+        raise ValidationError("Composite RTC stage reference inventory must not be empty")
     selected: list[dict[str, Any]] = []
     refs: set[VerseRef] = set()
     for unit in parse_usj_units(usj):
@@ -1078,12 +1078,12 @@ def _write_reference_inventory_usj_packet(
             continue
         if intersection != unit_refs:
             raise ValidationError(
-                f"Composite QA stage inventory cuts through a verse bridge in {source.name}; include the complete bridge"
+                f"Composite RTC stage inventory cuts through a verse bridge in {source.name}; include the complete bridge"
             )
         selected.append(unit)
         refs.update(unit_refs)
     if not selected:
-        raise ValidationError("Composite QA stage references are absent from the routed Scripture resource")
+        raise ValidationError("Composite RTC stage references are absent from the routed Scripture resource")
     lines = [f"\\id {parent_scope.book} SAGE bounded stage comparison evidence"]
     current_chapter: int | None = None
     for unit in selected:
@@ -1322,7 +1322,7 @@ def _structural_candidates(
     project: ProjectSpec,
     scope: ScriptureScope,
 ) -> list[dict[str, Any]]:
-    """Derive structural QA candidates that require explicit SAW adjudication."""
+    """Derive structural RTC candidates that require explicit SAW adjudication."""
     schema = load_project_vrs(config, project)
     candidates: list[dict[str, Any]] = []
     for mapping in schema.mappings:
@@ -1404,7 +1404,7 @@ def _write_saw_preflight(
         ],
         "model_owned_outputs": ["review_summary", "semantic_findings", "stage_adjudications"],
         "stage_1": "REQUIRES_ADJUDICATION" if candidates else "AUTO_PASS",
-        "stage_2": "TRANSLATION_AND_MEANING_QA",
+        "stage_2": "REFERENCE_TEXT_COMPARISON",
         "finalize": "PYTHON_VALIDATION_MERGE_COVERAGE_AND_RENDER",
         "expected_references": expected_refs,
         "evidence_ids": [
@@ -1638,16 +1638,16 @@ def _enforce_context_budget(
 def _required_review_checks(
     operation: str,
     check_type: str | None,
-    qa_stage: str | None = None,
-    qa_policy: Mapping[str, Any] | None = None,
+    rtc_stage: str | None = None,
+    rtc_policy: Mapping[str, Any] | None = None,
 ) -> list[str]:
-    """Return exact review checks for one SAW task or composite-QA stage."""
-    if operation == "qa":
-        if qa_stage == "STRUCTURAL_ADJUDICATION":
+    """Return exact review checks for one SAW task or composite-RTC stage."""
+    if operation == "rtc":
+        if rtc_stage == "STRUCTURAL_ADJUDICATION":
             return ["STRUCTURAL_ADJUDICATION"]
-        if qa_stage == "SELECTIVE_OL_ADJUDICATION":
+        if rtc_stage == "SELECTIVE_OL_ADJUDICATION":
             return ["WIP_REFERENCE_SOURCE_ADJUDICATION"]
-        checks = dict((qa_policy or {}).get("checks") or {})
+        checks = dict((rtc_policy or {}).get("checks") or {})
         if not checks:
             return [
                 "MEANING_EQUIVALENCE",
@@ -1692,7 +1692,7 @@ def _scope_intersects(scope: ScriptureScope, reference: str) -> bool:
     return False
 
 
-def _approved_saw_qa_work_plan(
+def _approved_saw_rtc_work_plan(
     config: EcosystemConfig,
     *,
     job_id: str,
@@ -1726,7 +1726,7 @@ def _approved_saw_qa_work_plan(
     plan = load_json(plan_path)
     expected_identity = {
         "workflow_id": "saw",
-        "operation": "qa",
+        "operation": "rtc",
         "operator_scope": scope.label(),
         "project_id": output_project_id,
         "approved_job_id": job_id,
@@ -1856,7 +1856,7 @@ def _approved_saw_qa_work_plan(
     return {**plan, "approved_manifest_path": str(plan_path)}
 
 
-def _create_approved_saw_qa_stage(
+def _create_approved_saw_rtc_stage(
     config: EcosystemConfig,
     *,
     approved_plan: Mapping[str, Any],
@@ -1867,18 +1867,18 @@ def _create_approved_saw_qa_stage(
     parent_plan_id: str,
     job_id: str,
     run_id: str,
-    qa_stage: str,
-    qa_predecessor_files: Sequence[str],
+    rtc_stage: str,
+    rtc_predecessor_files: Sequence[str],
 ) -> dict[str, Any]:
-    """Create the exact approved work units for a partitionable SAW QA stage."""
+    """Create the exact approved work units for a partitionable SAW RTC stage."""
     units = [dict(item) for item in approved_plan.get("units", [])]
-    stage_plan_id = f"{parent_plan_id}-{qa_stage}"
+    stage_plan_id = f"{parent_plan_id}-{rtc_stage}"
     children: list[dict[str, Any]] = []
     for unit in units:
         child = create_act_task(
             config,
             workflow="saw",
-            operation="qa",
+            operation="rtc",
             output_project_id=output_project_id,
             contemporary_source_id=contemporary_source_id,
             scope_value=str(unit["primary_scope"]),
@@ -1888,8 +1888,8 @@ def _create_approved_saw_qa_stage(
             work_unit_id=str(unit["unit_id"]),
             job_id=job_id,
             run_id=run_id,
-            qa_stage=qa_stage,
-            qa_predecessor_files=qa_predecessor_files,
+            rtc_stage=rtc_stage,
+            rtc_predecessor_files=rtc_predecessor_files,
             context_before_references=[str(value) for value in unit.get("context_before", [])],
             context_after_references=[str(value) for value in unit.get("context_after", [])],
         )
@@ -1920,8 +1920,8 @@ def _create_approved_saw_qa_stage(
         "status": "PARTITIONED",
         "plan_id": stage_plan_id,
         "workflow": "saw",
-        "operation": "qa",
-        "qa_stage": qa_stage,
+        "operation": "rtc",
+        "rtc_stage": rtc_stage,
         "requested_scope": scope.label(),
         "output_project": output_project_id,
         "contemporary_source": contemporary_source_id,
@@ -1943,7 +1943,7 @@ def _create_approved_saw_qa_stage(
 
 
 def _scope_project_predecessor(document: Mapping[str, Any], scope: ScriptureScope) -> dict[str, Any]:
-    """Project inherited QA evidence to one child scope without mutating its governed source result."""
+    """Project inherited RTC evidence to one child scope without mutating its governed source result."""
     result = dict(document)
     result["scope"] = scope.label()
     coverage = dict(result.get("coverage") or {})
@@ -1965,6 +1965,43 @@ def _scope_project_predecessor(document: Mapping[str, Any], scope: ScriptureScop
     result["work_units"] = [dict(row) for row in result.get("work_units", []) if isinstance(row, Mapping) and _scope_intersects(scope, str(row.get("scope") or ""))]
     return result
 
+def _partition_evidence_policy(
+    workflow: str,
+    operation: str,
+    policy: EvidencePolicy,
+) -> EvidencePolicy:
+    """Derive the primary-stream policy used to choose partition boundaries."""
+    input_multiplier = 2 + (1 if workflow == "bic" or operation == "ol" else 0)
+    if workflow == "saw" and operation == "rtc":
+        # RTC is governed from the original WIP packet. The REFERENCE follows the
+        # selected Scripture range, while OL clarification is a separate exception task.
+        target_tokens = 6000
+        hard_tokens = 7999
+        minimum_tokens = 5000
+        preferred_max_tokens = 7000
+    else:
+        hard_tokens = max(2500, policy.hard_estimated_tokens // input_multiplier - 1800)
+        target_tokens = max(
+            1800,
+            min(policy.target_estimated_tokens // input_multiplier, hard_tokens * 3 // 4),
+        )
+        minimum_tokens = min(policy.minimum_target_tokens, target_tokens)
+        preferred_max_tokens = 0
+    return EvidencePolicy(
+        target_estimated_tokens=target_tokens,
+        hard_estimated_tokens=hard_tokens,
+        hard_serialized_bytes=max(18000, policy.hard_serialized_bytes // input_multiplier - 12000),
+        minimum_target_tokens=minimum_tokens,
+        preferred_max_estimated_tokens=preferred_max_tokens,
+        maximum_primary_verse_units=min(policy.maximum_primary_verse_units, 80),
+        maximum_primary_discourse_units=policy.maximum_primary_discourse_units,
+        preferred_primary_discourse_units=policy.preferred_primary_discourse_units,
+        context_before_verses=policy.context_before_verses,
+        context_after_verses=policy.context_after_verses,
+        allow_cross_chapter_units=policy.allow_cross_chapter_units,
+    )
+
+
 def _partition_act_request(
     config: EcosystemConfig,
     *,
@@ -1984,11 +2021,11 @@ def _partition_act_request(
     plan_seed: str,
     job_id: str | None,
     run_id: str | None,
-    qa_stage: str | None = None,
-    qa_predecessor_files: Sequence[str] = (),
+    rtc_stage: str | None = None,
+    rtc_predecessor_files: Sequence[str] = (),
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
-    qa_stage_references: Sequence[str] = (),
+    rtc_stage_references: Sequence[str] = (),
 ) -> dict[str, Any]:
     """Connect the work-unit planner to ACT generation for oversized requests."""
     if workflow == "bic" and operation not in {"inspect"}:
@@ -2006,22 +2043,7 @@ def _partition_act_request(
         resource_role="WIP" if workflow == "saw" else "CONTENT_SOURCE",
     )
     selected = select_records_for_scope(records, scope)
-    input_multiplier = 2 + (1 if workflow == "bic" or operation == "ol" else 0)
-    hard_tokens = max(2500, policy.hard_estimated_tokens // input_multiplier - 1800)
-    target_tokens = max(1800, min(policy.target_estimated_tokens // input_multiplier, hard_tokens * 3 // 4))
-    minimum_tokens = min(policy.minimum_target_tokens, target_tokens)
-    derived = EvidencePolicy(
-        target_estimated_tokens=target_tokens,
-        hard_estimated_tokens=hard_tokens,
-        hard_serialized_bytes=max(18000, policy.hard_serialized_bytes // input_multiplier - 12000),
-        minimum_target_tokens=minimum_tokens,
-        maximum_primary_verse_units=min(policy.maximum_primary_verse_units, 80),
-        maximum_primary_discourse_units=policy.maximum_primary_discourse_units,
-        preferred_primary_discourse_units=policy.preferred_primary_discourse_units,
-        context_before_verses=policy.context_before_verses,
-        context_after_verses=policy.context_after_verses,
-        allow_cross_chapter_units=policy.allow_cross_chapter_units,
-    )
+    derived = _partition_evidence_policy(workflow, operation, policy)
     plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
     units = plan_work_units(
         selected,
@@ -2049,7 +2071,7 @@ def _partition_act_request(
         unit_scope_obj = parse_scope(unit_scope)
         child_expected_ol_requests = [dict(row) for row in expected_ol_requests if _scope_intersects(unit_scope_obj, str(row.get("target_reference") or ""))]
         child_expected_ids = [str(row.get("request_id") or "") for row in child_expected_ol_requests]
-        child_stage_references = [str(value) for value in qa_stage_references if _scope_intersects(unit_scope_obj, str(value))]
+        child_stage_references = [str(value) for value in rtc_stage_references if _scope_intersects(unit_scope_obj, str(value))]
         child = create_act_task(
             config,
             workflow=workflow,
@@ -2067,11 +2089,11 @@ def _partition_act_request(
             work_unit_id=unit.unit_id,
             job_id=job_id,
             run_id=run_id,
-            qa_stage=qa_stage,
-            qa_predecessor_files=qa_predecessor_files,
+            rtc_stage=rtc_stage,
+            rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=child_expected_ids,
             expected_ol_requests=child_expected_ol_requests,
-            qa_stage_references=child_stage_references,
+            rtc_stage_references=child_stage_references,
             context_before_references=unit_record["context_before"],
             context_after_references=unit_record["context_after"],
         )
@@ -2090,7 +2112,7 @@ def _partition_act_request(
         "plan_id": plan_id,
         "workflow": workflow,
         "operation": operation,
-        "qa_stage": qa_stage,
+        "rtc_stage": rtc_stage,
         "requested_scope": scope.label(),
         "output_project": output_project_id,
         "contemporary_source": contemporary_source_id,
@@ -2109,7 +2131,7 @@ def _partition_act_request(
     return {**plan, "plan_path": str(plan_path)}
 
 def _stage_record(result: Mapping[str, Any], stage: str) -> dict[str, Any]:
-    """Normalize one task or partitioned-plan result into a composite QA stage record."""
+    """Normalize one task or partitioned-plan result into a composite RTC stage record."""
     if result.get("status") == "PARTITIONED":
         return {
             "stage": stage,
@@ -2125,7 +2147,7 @@ def _stage_record(result: Mapping[str, Any], stage: str) -> dict[str, Any]:
     }
 
 
-def _create_saw_qa_composite(
+def _create_saw_rtc_composite(
     config: EcosystemConfig,
     *,
     output_project_id: str,
@@ -2136,16 +2158,16 @@ def _create_saw_qa_composite(
     run_id: str,
     auto_partition: bool,
 ) -> dict[str, Any]:
-    """Create the first governed stage of one composite Normal SAW QA Run."""
+    """Create the first governed stage of one composite SAW RTC Run."""
     output = config.project(output_project_id)
     job_store = JobStore(config.root, config.settings_path)
     owning_job = job_store.load_job(job_id, tool="saw")
     run = job_store.load_run(owning_job, run_id)
-    qa_policy = load_run_policy_snapshot(
+    rtc_policy = load_run_policy_snapshot(
         run.root,
         profile_path=config.root / "system" / "config" / "workflows" / "saw" / "profile.yml",
     )
-    approved_work_plan = _approved_saw_qa_work_plan(
+    approved_work_plan = _approved_saw_rtc_work_plan(
         config,
         job_id=job_id,
         run_id=run_id,
@@ -2153,8 +2175,8 @@ def _create_saw_qa_composite(
         scope=scope,
     )
     candidates = _structural_candidates(config, output, scope)
-    structure_enabled = bool(dict(qa_policy.get("checks") or {}).get("structure_completeness", True))
-    first_stage = "STRUCTURAL_ADJUDICATION" if candidates and structure_enabled else "TRANSLATION_AND_MEANING_QA"
+    structure_enabled = bool(dict(rtc_policy.get("checks") or {}).get("structure_completeness", True))
+    first_stage = "STRUCTURAL_ADJUDICATION" if candidates and structure_enabled else "REFERENCE_TEXT_COMPARISON"
     plan_seed = sha256_bytes(
         json.dumps(
             {
@@ -2168,7 +2190,7 @@ def _create_saw_qa_composite(
             separators=(",", ":"),
         ).encode("utf-8")
     )
-    plan_id = f"SAW-QA-{scope.book}-{plan_seed[:10].upper()}"
+    plan_id = f"SAW-RTC-{scope.book}-{plan_seed[:10].upper()}"
     stage_references = sorted({
         ref
         for candidate in candidates
@@ -2177,7 +2199,7 @@ def _create_saw_qa_composite(
     result = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id=output_project_id,
         contemporary_source_id=contemporary_source_id,
         scope_value=scope.label(),
@@ -2186,17 +2208,17 @@ def _create_saw_qa_composite(
         parent_plan_id=plan_id,
         job_id=job_id,
         run_id=run_id,
-        qa_stage=first_stage,
-        qa_stage_references=stage_references,
+        rtc_stage=first_stage,
+        rtc_stage_references=stage_references,
     )
     stage = _stage_record(result, first_stage)
     plan = {
         "schema_version": "1.0",
-        "plan_type": "SAW_QA_COMPOSITE",
+        "plan_type": "SAW_RTC_COMPOSITE",
         "status": "COMPOSITE_IN_PROGRESS",
         "plan_id": plan_id,
         "workflow": "saw",
-        "operation": "qa",
+        "operation": "rtc",
         "job_id": job_id,
         "run_id": run_id,
         "requested_scope": scope.label(),
@@ -2204,7 +2226,7 @@ def _create_saw_qa_composite(
         "contemporary_source": contemporary_source_id,
         "grammar_override_id": grammar_override_id,
         "structural_stage_required": bool(candidates and structure_enabled),
-        "qa_policy": qa_policy,
+        "rtc_policy": rtc_policy,
         "approved_work_plan_path": (
             approved_work_plan.get("approved_manifest_path")
             if approved_work_plan is not None
@@ -2254,11 +2276,11 @@ def create_act_task(
     work_unit_id: str | None = None,
     job_id: str | None = None,
     run_id: str | None = None,
-    qa_stage: str | None = None,
-    qa_predecessor_files: Sequence[str] = (),
+    rtc_stage: str | None = None,
+    rtc_predecessor_files: Sequence[str] = (),
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
-    qa_stage_references: Sequence[str] = (),
+    rtc_stage_references: Sequence[str] = (),
     context_before_references: Sequence[str] = (),
     context_after_references: Sequence[str] = (),
 ) -> dict[str, Any]:
@@ -2267,10 +2289,10 @@ def create_act_task(
     operation = operation.strip().lower()
     if workflow not in ACT_OPERATIONS or operation not in ACT_OPERATIONS[workflow]:
         raise ValidationError(f"Unsupported ACT operation: {workflow}/{operation}")
-    if qa_stage is not None:
-        qa_stage = qa_stage.strip().upper()
-        if workflow != "saw" or operation != "qa" or qa_stage not in SAW_QA_STAGES:
-            raise ValidationError(f"Unsupported internal SAW QA stage: {qa_stage}")
+    if rtc_stage is not None:
+        rtc_stage = rtc_stage.strip().upper()
+        if workflow != "saw" or operation != "rtc" or rtc_stage not in SAW_RTC_STAGES:
+            raise ValidationError(f"Unsupported internal SAW RTC stage: {rtc_stage}")
     focus = focus.strip() if isinstance(focus, str) and focus.strip() else None
     if focus and ("\n" in focus or len(focus) > 600):
         raise ValidationError("--focus must be one bounded single-line question of at most 600 characters")
@@ -2345,15 +2367,15 @@ def create_act_task(
     job_store = JobStore(config.root, config.settings_path)
     owning_job = job_store.load_job(job_id, tool=workflow)
     config = load_ecosystem(job_store.ensure_runtime_files(owning_job))
-    qa_policy: dict[str, Any] | None = None
-    if workflow == "saw" and operation == "qa":
+    rtc_policy: dict[str, Any] | None = None
+    if workflow == "saw" and operation == "rtc":
         run = job_store.load_run(owning_job, run_id)
-        qa_policy = load_run_policy_snapshot(
+        rtc_policy = load_run_policy_snapshot(
             run.root,
             profile_path=config.root / "system" / "config" / "workflows" / "saw" / "profile.yml",
         )
-    if workflow == "saw" and operation == "qa" and qa_stage is None:
-        return _create_saw_qa_composite(
+    if workflow == "saw" and operation == "rtc" and rtc_stage is None:
+        return _create_saw_rtc_composite(
             config,
             output_project_id=output_project_id,
             contemporary_source_id=contemporary_source_id,
@@ -2371,7 +2393,7 @@ def create_act_task(
         scope,
         operation=operation,
         job_id=job_id,
-        qa_stage=qa_stage,
+        rtc_stage=rtc_stage,
     )
     lexical_donor = (
         _resolve_bic_lexical_donor(
@@ -2386,7 +2408,7 @@ def create_act_task(
     )
     lexical_donor_id = lexical_donor.project_id if lexical_donor is not None else None
     route_ol = workflow == "saw" and (
-        operation == "ol" or (operation == "qa" and qa_stage == "SELECTIVE_OL_ADJUDICATION")
+        operation == "ol" or (operation == "rtc" and rtc_stage == "SELECTIVE_OL_ADJUDICATION")
     )
     conditional_ol = workflow == "bic" and operation == "rewrite" and ol_project is not None
     readiness_projects: list[tuple[str, ProjectSpec]] = [
@@ -2406,12 +2428,12 @@ def create_act_task(
     )
     if (
         workflow == "saw"
-        and operation == "qa"
-        and qa_stage == "TRANSLATION_AND_MEANING_QA"
+        and operation == "rtc"
+        and rtc_stage == "REFERENCE_TEXT_COMPARISON"
         and auto_partition
         and work_unit_id is None
     ):
-        approved_work_plan = _approved_saw_qa_work_plan(
+        approved_work_plan = _approved_saw_rtc_work_plan(
             config,
             job_id=job_id,
             run_id=run_id,
@@ -2419,7 +2441,7 @@ def create_act_task(
             scope=scope,
         )
         if approved_work_plan is not None:
-            return _create_approved_saw_qa_stage(
+            return _create_approved_saw_rtc_stage(
                 config,
                 approved_plan=approved_work_plan,
                 output_project_id=output.project_id,
@@ -2429,8 +2451,8 @@ def create_act_task(
                 parent_plan_id=parent_plan_id or str(approved_work_plan["plan_id"]),
                 job_id=job_id,
                 run_id=run_id,
-                qa_stage=qa_stage,
-                qa_predecessor_files=qa_predecessor_files,
+                rtc_stage=rtc_stage,
+                rtc_predecessor_files=rtc_predecessor_files,
             )
     # Focus-oriented batching is expressed as a discourse-unit ceiling, never a
     # verse-chopping rule. Protected paragraphs/lists/poetry units remain indivisible
@@ -2438,7 +2460,7 @@ def create_act_task(
     focus_partition_eligible = (
         (workflow == "saw" and (
             operation in {"focused", "ol"}
-            or (operation == "qa" and qa_stage == "TRANSLATION_AND_MEANING_QA")
+            or (operation == "rtc" and rtc_stage == "REFERENCE_TEXT_COMPARISON")
         ))
         or (workflow == "bic" and operation == "inspect")
     )
@@ -2462,7 +2484,7 @@ def create_act_task(
                         {
                             "workflow": workflow,
                             "operation": operation,
-                            "qa_stage": qa_stage,
+                            "rtc_stage": rtc_stage,
                             "scope": scope.label(),
                             "job_id": job_id,
                             "run_id": run_id,
@@ -2490,11 +2512,11 @@ def create_act_task(
                     plan_seed=plan_seed,
                     job_id=job_id,
                     run_id=run_id,
-                    qa_stage=qa_stage,
-                    qa_predecessor_files=qa_predecessor_files,
+                    rtc_stage=rtc_stage,
+                    rtc_predecessor_files=rtc_predecessor_files,
                     expected_ol_request_ids=expected_ol_request_ids,
                     expected_ol_requests=expected_ol_requests,
-                    qa_stage_references=qa_stage_references,
+                    rtc_stage_references=rtc_stage_references,
                 )
     conditional_ol_attention: dict[str, Any] | None = None
     if conditional_ol:
@@ -2594,7 +2616,7 @@ def create_act_task(
         "execution_mode": "SAGE_GOVERNED_TASK_V1",
         "workflow": workflow,
         "operation": operation,
-        "qa_stage": qa_stage,
+        "rtc_stage": rtc_stage,
         "job_id": job_id,
         "run_id": run_id,
         "output_project": output.project_id,
@@ -2642,7 +2664,7 @@ def create_act_task(
 
     try:
         packet_records: dict[str, Any] = {}
-        stage_reference_values = [str(value).strip() for value in qa_stage_references if str(value).strip()]
+        stage_reference_values = [str(value).strip() for value in rtc_stage_references if str(value).strip()]
         contemporary_packet = packet_root / (
             "source.usj.json" if workflow == "bic" else "reference.usj.json"
         )
@@ -2650,7 +2672,7 @@ def create_act_task(
             _write_reference_inventory_usj_packet(
                 source_file, stage_reference_values, contemporary_packet, parent_scope=scope
             )
-            if workflow == "saw" and operation == "qa" and stage_reference_values
+            if workflow == "saw" and operation == "rtc" and stage_reference_values
             else _write_scope_usj_packet(source_file, scope, contemporary_packet)
         )
         packet_records["contemporary_source"]["evidence_id"] = "SOURCE" if workflow == "bic" else "REFERENCE"
@@ -2685,7 +2707,7 @@ def create_act_task(
                 _write_reference_inventory_usj_packet(
                     ol_file, stage_reference_values, ol_packet, parent_scope=scope
                 )
-                if workflow == "saw" and operation == "qa" and stage_reference_values
+                if workflow == "saw" and operation == "rtc" and stage_reference_values
                 else _write_scope_usj_packet(ol_file, scope, ol_packet)
             )
             packet_records["original_language"]["evidence_id"] = (
@@ -2736,7 +2758,7 @@ def create_act_task(
                 _write_reference_inventory_usj_packet(
                     output_file, stage_reference_values, target_packet, parent_scope=scope
                 )
-                if workflow == "saw" and operation == "qa" and stage_reference_values
+                if workflow == "saw" and operation == "rtc" and stage_reference_values
                 else _write_scope_usj_packet(output_file, scope, target_packet)
             )
             packet_records["output_project"]["evidence_id"] = "WIP"
@@ -2884,9 +2906,9 @@ def create_act_task(
             )
             conditional_paths.append(conditional_vrs_path)
 
-        qa_predecessor_packets: list[Path] = []
-        if qa_predecessor_files:
-            for index, value in enumerate(qa_predecessor_files, start=1):
+        rtc_predecessor_packets: list[Path] = []
+        if rtc_predecessor_files:
+            for index, value in enumerate(rtc_predecessor_files, start=1):
                 source_path = Path(value).expanduser()
                 if not source_path.is_absolute():
                     source_path = (config.root / source_path).resolve()
@@ -2898,51 +2920,51 @@ def create_act_task(
                     or plan_is_governed(config.workflow("saw"), source_path.parent)
                 )
                 if not allowed_parent or not source_path.is_file():
-                    raise ValidationError("SAW QA predecessor evidence is not governed or is missing")
+                    raise ValidationError("SAW RTC predecessor evidence is not governed or is missing")
                 try:
                     predecessor_document = json.loads(source_path.read_text(encoding="utf-8"))
                 except (OSError, json.JSONDecodeError) as exc:
-                    raise ValidationError("SAW QA predecessor evidence must be a governed JSON result") from exc
+                    raise ValidationError("SAW RTC predecessor evidence must be a governed JSON result") from exc
                 if not isinstance(predecessor_document, dict):
-                    raise ValidationError("SAW QA predecessor evidence must be a JSON object")
+                    raise ValidationError("SAW RTC predecessor evidence must be a JSON object")
                 if str(predecessor_document.get("job_id", "")) != job_id:
                     raise ValidationError(
-                        "SAW QA predecessor belongs to a different Job",
+                        "SAW RTC predecessor belongs to a different Job",
                         code="SAW_PREDECESSOR_JOB_MISMATCH",
                     )
                 if str(predecessor_document.get("run_id", "")) != run_id:
                     raise ValidationError(
-                        "SAW QA predecessor belongs to a different Run",
+                        "SAW RTC predecessor belongs to a different Run",
                         code="SAW_PREDECESSOR_RUN_MISMATCH",
                     )
                 if str(predecessor_document.get("output_project", "")) != output.project_id:
                     raise ValidationError(
-                        "SAW QA predecessor WIP resource does not match this task",
+                        "SAW RTC predecessor WIP resource does not match this task",
                         code="SAW_PREDECESSOR_RESOURCE_MISMATCH",
                     )
                 if str(predecessor_document.get("contemporary_source", "")) != source.project_id:
                     raise ValidationError(
-                        "SAW QA predecessor REFERENCE resource does not match this task",
+                        "SAW RTC predecessor REFERENCE resource does not match this task",
                         code="SAW_PREDECESSOR_RESOURCE_MISMATCH",
                     )
                 predecessor_fingerprints = predecessor_document.get("resource_fingerprints")
                 if not isinstance(predecessor_fingerprints, dict):
                     raise ValidationError(
-                        "SAW QA predecessor lacks governed resource fingerprints",
+                        "SAW RTC predecessor lacks governed resource fingerprints",
                         code="SAW_PREDECESSOR_FINGERPRINT_MISSING",
                     )
                 for project_id in (output.project_id, source.project_id):
                     key = f"project.{project_id}"
                     if str(predecessor_fingerprints.get(key, "")) != str(project_fingerprints.get(project_id, "")):
                         raise ValidationError(
-                            f"SAW QA predecessor resource fingerprint changed: {project_id}",
+                            f"SAW RTC predecessor resource fingerprint changed: {project_id}",
                             code="SAW_PREDECESSOR_FINGERPRINT_MISMATCH",
                         )
-                destination = packet_root / f"qa-predecessor-{index}.json"
+                destination = packet_root / f"rtc-predecessor-{index}.json"
                 scoped_predecessor = _scope_project_predecessor(predecessor_document, scope)
                 scoped_predecessor["source_result_sha256"] = sha256_file(source_path)
                 atomic_write_json(destination, scoped_predecessor)
-                qa_predecessor_packets.append(destination)
+                rtc_predecessor_packets.append(destination)
 
         skill_read_paths = _skill_files(skill)
         process_paths: list[Path] = [
@@ -2964,7 +2986,7 @@ def create_act_task(
             *inherited_ol_paths,
             *governance_packets,
             *predecessor_governance_packets,
-            *qa_predecessor_packets,
+            *rtc_predecessor_packets,
             *semantic_packets,
             *extra_inputs,
         ]
@@ -3006,7 +3028,7 @@ def create_act_task(
         )
         classify(governance_packets, DERIVED_EVIDENCE)
         classify(predecessor_governance_packets, DERIVED_EVIDENCE)
-        classify(qa_predecessor_packets, DERIVED_EVIDENCE)
+        classify(rtc_predecessor_packets, DERIVED_EVIDENCE)
         classify(semantic_packets, PROJECT_INDEX_EVIDENCE)
         classify(extra_inputs, STRUCTURAL_EVIDENCE)
         classify([target_grammar_path, source_grammar_path], LINGUISTIC_COMPETENCE_RULES)
@@ -3067,7 +3089,7 @@ def create_act_task(
         structural_candidate_ids = [
             row["candidate_id"] for row in (preflight or {}).get("structural_candidates", [])
         ]
-        if workflow == "saw" and operation == "qa" and qa_stage != "STRUCTURAL_ADJUDICATION":
+        if workflow == "saw" and operation == "rtc" and rtc_stage != "STRUCTURAL_ADJUDICATION":
             structural_candidate_ids = []
         default_evidence_ids = (
             [
@@ -3214,7 +3236,7 @@ def create_act_task(
             "execution_mode": "SAGE_GOVERNED_TASK_V1",
             "workflow": workflow,
             "operation": operation,
-            "qa_stage": qa_stage,
+            "rtc_stage": rtc_stage,
             "job_id": job_id,
             "run_id": run_id,
             "resource_bindings": canonical_resource_bindings,
@@ -3241,11 +3263,11 @@ def create_act_task(
             "scope": scope.label(),
             "focus": focus,
             "check_type": normalized_check_type,
-            "qa_stage": qa_stage,
-            "qa_expected_ol_request_ids": [str(value).upper() for value in expected_ol_request_ids],
-            "qa_expected_ol_requests": [dict(value) for value in expected_ol_requests],
-            "qa_stage_references": list(stage_reference_values),
-            "qa_policy": qa_policy if workflow == "saw" and operation == "qa" else None,
+            "rtc_stage": rtc_stage,
+            "rtc_expected_ol_request_ids": [str(value).upper() for value in expected_ol_request_ids],
+            "rtc_expected_ol_requests": [dict(value) for value in expected_ol_requests],
+            "rtc_stage_references": list(stage_reference_values),
+            "rtc_policy": rtc_policy if workflow == "saw" and operation == "rtc" else None,
             "parent_plan_id": parent_plan_id,
             "work_unit_id": work_unit_id or task_id,
             "context_references": {
@@ -3255,7 +3277,7 @@ def create_act_task(
             },
             "review_requirements": (
                 {
-                    "required_checks": _required_review_checks(operation, normalized_check_type, qa_stage, qa_policy),
+                    "required_checks": _required_review_checks(operation, normalized_check_type, rtc_stage, rtc_policy),
                     "controller_checks": list((preflight or {}).get("controller_checks", [])),
                     "expected_work_unit_ids": [work_unit_id or task_id],
                     "expected_ol_request_ids": [str(value).upper() for value in expected_ol_request_ids],
@@ -3448,7 +3470,7 @@ def create_act_task(
                 else ["- Original-language source: `NOT_ROUTED_FOR_THIS_OPERATION`"]
             ),
             f"- Run scope: `{scope.label()}`",
-            *( [f"- Stage references: `{', '.join(expected_references)}`"] if workflow == "saw" and operation == "qa" and qa_stage in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"} else [f"- Scope: `{scope.label()}`"] ),
+            *( [f"- Stage references: `{', '.join(expected_references)}`"] if workflow == "saw" and operation == "rtc" and rtc_stage in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"} else [f"- Scope: `{scope.label()}`"] ),
             *(
                 [
                     f"- Context before (context-only): `{', '.join(context_before) or 'NONE'}`",
@@ -3498,30 +3520,30 @@ def create_act_task(
                 "4. Correct only supported fidelity, USFM, project-grammar, or governed candidate-decision issues.",
                 "5. Complete the rule-by-rule grammar assessment for the final candidate.",
             ])
-        elif operation == "qa":
-            act_lines.append(f"Composite QA stage: `{qa_stage}`.")
-            if qa_stage == "STRUCTURAL_ADJUDICATION":
+        elif operation == "rtc":
+            act_lines.append(f"Composite RTC stage: `{rtc_stage}`.")
+            if rtc_stage == "STRUCTURAL_ADJUDICATION":
                 act_lines.extend([
                     "1. Adjudicate only the supplied deterministic structural candidates.",
                     "2. Do not perform the translation-and-meaning review in this stage.",
                     "3. Ordinary VRS mappings are not findings unless the bounded evidence proves a real issue.",
                     "4. Do not request or use original-language Scripture in this stage.",
                 ])
-            elif qa_stage == "TRANSLATION_AND_MEANING_QA":
+            elif rtc_stage == "REFERENCE_TEXT_COMPARISON":
                 drift_enabled = str(
-                    dict((qa_policy or {}).get("original_language") or {}).get(
+                    dict((rtc_policy or {}).get("original_language") or {}).get(
                         "source_text_drift_adjudication", "PROHIBITED"
                     )
                 ).upper() == "ENABLED"
                 act_lines.extend([
-                    "1. Perform only the Standard-QA checks enabled in the sealed qa_policy across every bounded primary coordinate in this work unit.",
+                    "1. Perform only the RTC checks enabled in the sealed rtc_policy across every bounded primary coordinate in this work unit.",
                     "2. SAGE has already formed and bounded this work unit deterministically. Do not re-plan, split, merge, or certify its mechanical boundaries.",
                     f"3. Use {source.project_id} as the authorized Reference Project, the {output.project_id} grammar contract, local semantic evidence, any routed structural-stage result, and the explicitly labeled boundary context when present.",
                     "4. Context-only coordinates may inform interpretation but must not appear in ordinary findings or OL requests.",
                     "5. Treat each WIP or Reference verse bridge as one indivisible record while reviewing every coordinate it covers. Check bridge mapping under structure/completeness and check the complete bridged text against all corresponding WIP and Reference content under translation/meaning, whether their bridge shapes match or differ.",
                     "6. Do not read original-language Scripture in this stage.",
                     (
-                        f"7. Automatic WIP-Reference source adjudication is ENABLED. Defer every material content-bearing variance where choosing between {output.project_id} and {source.project_id} depends on the source text. Emit one bounded ol_review_requests entry per variance and do not finalize that same issue in this stage. SAGE routes OT requests to the Job-bound Hebrew resource and NT requests to the Job-bound Greek resource. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency defects remain direct QA findings and must not be routed to OL."
+                        f"7. Automatic WIP-Reference source adjudication is ENABLED. Defer every material content-bearing variance where choosing between {output.project_id} and {source.project_id} depends on the source text. Emit one bounded ol_review_requests entry per variance and do not finalize that same issue in this stage. SAGE routes OT requests to the Job-bound Hebrew resource and NT requests to the Job-bound Greek resource. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency defects remain direct RTC findings and must not be routed to OL."
                         if drift_enabled
                         else "7. Source-text drift adjudication is PROHIBITED. Do not emit ol_review_requests; assess only from the authorized non-OL evidence routed to this stage."
                     ),
@@ -3530,14 +3552,14 @@ def create_act_task(
                 act_lines.extend([
                     "1. Automatically adjudicate exactly the material WIP-Reference variance requests inherited from the meaning stage.",
                     f"2. Compare {output.project_id} and {source.project_id} with the testament-correct Job-bound Hebrew (OT) or Greek (NT) packet.",
-                    "3. Decide which rendering is closer to the routed source, whether both are defensible, or whether the evidence is inconclusive. Do not broaden this internal adjudication into the separate detailed Original-Language Review operation or into grammar, structure, style, consistency, or general QA.",
+                    "3. Decide which rendering is closer to the routed source, whether both are defensible, or whether the evidence is inconclusive. Do not broaden this internal adjudication into the separate detailed Original-Language Review operation or into grammar, structure, style, consistency, or general RTC.",
                     "4. Return exactly one structured ol_resolutions object per inherited request. A FINDING outcome must use that request's deferred_finding_id, cite actual routed OL evidence, and explain the source-text basis for the adjudication.",
                     f"5. For Operator-facing drift adjudication, state the source comparison as one of: {output.project_id} CLOSER TO SOURCE; {source.project_id} CLOSER TO SOURCE; BOTH DEFENSIBLE; INCONCLUSIVE. Do not emit bare WIP/REFERENCE role labels as the decision.",
                 ])
         elif operation == "focused":
             act_lines.extend([
                 "1. Answer the one focus question only, using the routed evidence and check type.",
-                "2. Do not broaden into Standard QA.",
+                "2. Do not broaden into Reference Text Comparison (RTC).",
                 "3. Semantically review every assigned primary coordinate and structural candidate; SAGE owns mechanical coverage and receipts.",
             ])
         else:
@@ -3693,8 +3715,8 @@ def create_act_task(
                     plan_seed=seed,
                     job_id=job_id,
                     run_id=run_id,
-                    qa_stage=qa_stage,
-                    qa_predecessor_files=qa_predecessor_files,
+                    rtc_stage=rtc_stage,
+                    rtc_predecessor_files=rtc_predecessor_files,
                     expected_ol_request_ids=expected_ol_request_ids,
                 )
             raise
@@ -3911,7 +3933,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         "resource_bindings": lineage_bindings or {},
         "resource_display_names": lineage_display_names or {},
         "resource_fingerprints": lineage_fingerprints or {},
-        "qa_stage": plan.get("qa_stage"),
+        "rtc_stage": plan.get("rtc_stage"),
         "coverage": {"status": "COMPLETE", "reviewed_references": expected},
         "review_receipts": receipts,
         "structural_adjudications": adjudications,
@@ -4292,7 +4314,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 final_status = "STAGED_VALIDATED"
     else:
         grammar = raw.get("project_grammar") or {}
-        if operation == "qa" and raw.get("qa_stage") == "SELECTIVE_OL_ADJUDICATION":
+        if operation == "rtc" and raw.get("rtc_stage") == "SELECTIVE_OL_ADJUDICATION":
             sources = [
                 dict(item)
                 for item in raw.get("original_language_sources", [])
@@ -4337,7 +4359,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 task_fingerprint=str(raw.get("task_fingerprint", "")),
                 required_review_checks=list((raw.get("review_requirements") or {}).get("required_checks", [])),
                 expected_work_unit_ids=list((raw.get("review_requirements") or {}).get("expected_work_unit_ids", [])),
-                qa_stage=raw.get("qa_stage"),
+                rtc_stage=raw.get("rtc_stage"),
                 expected_ol_request_ids=list((raw.get("review_requirements") or {}).get("expected_ol_request_ids", [])),
                 expected_ol_requests=list((raw.get("review_requirements") or {}).get("expected_ol_requests", [])),
             )

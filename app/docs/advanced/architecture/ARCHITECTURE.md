@@ -123,7 +123,7 @@ Conditional OL remains governed by the protected REWRITE policy. If REWRITE uses
 
 ## 8. SAW read-only analysis
 
-SAW WIP uses lifecycle `UNDER_REVIEW`, but lifecycle does not grant write permission. SAW compiles bounded WIP and REFERENCE evidence, local triage, findings, and reports without modifying external Scripture. Standard QA is: deterministic preflight/structural triage -> conditional structural adjudication -> required translation/meaning QA -> conditional selective OL adjudication -> deterministic merge/coverage/finalization. OL is resolved from the configured SAW Job binding, never a global role scan. Targeted Check and standalone Original-Language Review remain separate bounded operations. SAW emits plain Operator note text and never Paratext Notes XML.
+SAW WIP uses lifecycle `UNDER_REVIEW`, but lifecycle does not grant write permission. SAW compiles bounded WIP and REFERENCE evidence, local triage, findings, and reports without modifying external Scripture. Reference Text Comparison (RTC) is: deterministic preflight/structural triage -> conditional structural adjudication -> required Reference Text Comparison (RTC) -> conditional selective OL adjudication -> deterministic merge/coverage/finalization. OL is resolved from the configured SAW Job binding, never a global role scan. Targeted Check and standalone Original-Language Review remain separate bounded operations. SAW emits plain Operator note text and never Paratext Notes XML.
 
 ## 9. Provider-neutral task boundary
 

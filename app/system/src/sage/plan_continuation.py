@@ -342,7 +342,7 @@ def _chapter_result_documents(
             plan = _load_object(candidate, "finalized Job report plan")
         except ValidationError:
             continue
-        if plan.get("plan_type") != "SAW_QA_COMPOSITE":
+        if plan.get("plan_type") != "SAW_RTC_COMPOSITE":
             continue
         if plan.get("status") != "FINALIZED":
             continue
@@ -380,8 +380,8 @@ def _ensure_finalized_report_layout(
     if not aggregate_path.is_absolute():
         aggregate_path = (config.root / aggregate_path).resolve()
     if not aggregate_path.is_file():
-        raise ValidationError("Finalized composite QA plan is missing its aggregate result")
-    document = _load_object(aggregate_path, "composite QA aggregate")
+        raise ValidationError("Finalized composite RTC plan is missing its aggregate result")
+    document = _load_object(aggregate_path, "composite RTC aggregate")
     documents, source_paths = _chapter_result_documents(
         path,
         requested_scope,
@@ -546,7 +546,7 @@ def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict
 
 
 def _composite_stage_result(config: EcosystemConfig, stage: dict[str, Any]) -> tuple[str, str | None, dict[str, Any] | None]:
-    """Return state, result path, and continuation details for one composite QA stage."""
+    """Return state, result path, and continuation details for one composite RTC stage."""
     if stage.get("kind") == "TASK":
         manifest = resolve_persisted_path(
             config.root, str(stage.get("manifest_path", "")), "composite stage manifest"
@@ -567,7 +567,7 @@ def _composite_stage_result(config: EcosystemConfig, stage: dict[str, Any]) -> t
             }
         receipt = _load_object(submission, f"submission for {stage.get('stage')}")
         if receipt.get("status") != "FINALIZED" or not normalized.is_file():
-            raise ValidationError(f"Composite QA stage {stage.get('stage')} is not FINALIZED")
+            raise ValidationError(f"Composite RTC stage {stage.get('stage')} is not FINALIZED")
         return "FINALIZED", str(normalized), None
     if stage.get("kind") == "PARTITIONED_PLAN":
         child = resolve_persisted_path(
@@ -583,7 +583,7 @@ def _composite_stage_result(config: EcosystemConfig, stage: dict[str, Any]) -> t
         if continuation.get("status") == "READY_TO_AGGREGATE":
             continuation["aggregate_plan_path"] = str(child)
         return "PENDING", None, continuation
-    raise ValidationError(f"Unsupported composite QA stage kind: {stage.get('kind')}")
+    raise ValidationError(f"Unsupported composite RTC stage kind: {stage.get('kind')}")
 
 
 
@@ -601,8 +601,8 @@ def _run_versification_advisories(plan_path: Path) -> list[dict[str, Any]]:
     return [dict(row) for row in rows if isinstance(row, dict)]
 
 
-def _finalize_composite_qa(config: EcosystemConfig, path: Path, plan: dict[str, Any]) -> dict[str, Any]:
-    """Merge completed Normal-QA stages and render deterministic Operator-facing outputs."""
+def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str, Any]) -> dict[str, Any]:
+    """Merge completed RTC stages and render deterministic Operator-facing outputs."""
     findings: list[dict[str, Any]] = []
     adjudications: list[dict[str, Any]] = []
     receipts: list[dict[str, Any]] = []
@@ -615,7 +615,7 @@ def _finalize_composite_qa(config: EcosystemConfig, path: Path, plan: dict[str, 
     for stage in plan.get("stages", []):
         state, result_path, _ = _composite_stage_result(config, stage)
         if state != "FINALIZED" or not result_path:
-            raise ValidationError("Cannot finalize composite QA before every created stage is FINALIZED")
+            raise ValidationError("Cannot finalize composite RTC before every created stage is FINALIZED")
         result = _load_object(Path(result_path), f"composite result for {stage.get('stage')}")
         stage_results.append({"stage": stage.get("stage"), "result_path": result_path})
         if not resource_bindings and isinstance(result.get("resource_bindings"), dict):
@@ -623,7 +623,7 @@ def _finalize_composite_qa(config: EcosystemConfig, path: Path, plan: dict[str, 
         if not resource_display_names and isinstance(result.get("resource_display_names"), dict):
             resource_display_names = dict(result["resource_display_names"])
         refs = list((result.get("coverage") or {}).get("reviewed_references", []))
-        if stage.get("stage") == "TRANSLATION_AND_MEANING_QA":
+        if stage.get("stage") == "REFERENCE_TEXT_COMPARISON":
             coverage_refs = refs
         globalized = globalize_result_finding_ids(
             result,
@@ -638,14 +638,14 @@ def _finalize_composite_qa(config: EcosystemConfig, path: Path, plan: dict[str, 
         findings.extend(globalized.get("findings", []))
     validate_global_finding_ids(findings)
     if not coverage_refs:
-        raise ValidationError("Composite QA finalization is missing meaning-stage coordinate coverage")
+        raise ValidationError("Composite RTC finalization is missing meaning-stage coordinate coverage")
     document = {
         "schema_version": "2.0",
         "task_id": plan["plan_id"],
         "job_id": plan["job_id"],
         "run_id": plan["run_id"],
         "workflow": "saw",
-        "operation": "qa",
+        "operation": "rtc",
         "resource_bindings": resource_bindings,
         "resource_display_names": resource_display_names,
         "stage": "COMPOSITE_FINALIZED",
@@ -702,11 +702,11 @@ def _finalize_composite_qa(config: EcosystemConfig, path: Path, plan: dict[str, 
     }
 
 
-def _continue_saw_qa_composite(config: EcosystemConfig, path: Path, plan: dict[str, Any]) -> dict[str, Any]:
-    """Advance one composite Normal-QA plan by exactly one governed stage/action."""
+def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str, Any]) -> dict[str, Any]:
+    """Advance one composite RTC plan by exactly one governed stage/action."""
     stages = plan.get("stages")
     if not isinstance(stages, list) or not stages or any(not isinstance(item, dict) for item in stages):
-        raise ValidationError("Composite SAW QA plan has no valid stage inventory")
+        raise ValidationError("Composite SAW RTC plan has no valid stage inventory")
     current = stages[-1]
     state, result_path, continuation = _composite_stage_result(config, current)
     if state != "FINALIZED":
@@ -717,25 +717,25 @@ def _continue_saw_qa_composite(config: EcosystemConfig, path: Path, plan: dict[s
     expected_requests: list[dict[str, Any]] = []
     stage_references: list[str] = []
     if stage_name == "STRUCTURAL_ADJUDICATION":
-        next_stage = "TRANSLATION_AND_MEANING_QA"
+        next_stage = "REFERENCE_TEXT_COMPARISON"
         expected_ids: list[str] = []
         predecessor_files = [str(result_path)]
-    elif stage_name == "TRANSLATION_AND_MEANING_QA":
-        meaning = _load_object(Path(str(result_path)), "SAW QA meaning-stage result")
+    elif stage_name == "REFERENCE_TEXT_COMPARISON":
+        meaning = _load_object(Path(str(result_path)), "SAW RTC meaning-stage result")
         requests = list(meaning.get("ol_review_requests", []))
         drift_state = str(
-            dict((plan.get("qa_policy") or {}).get("original_language") or {}).get(
+            dict((plan.get("rtc_policy") or {}).get("original_language") or {}).get(
                 "source_text_drift_adjudication", "PROHIBITED"
             )
         ).upper()
         if requests and drift_state != "ENABLED":
             raise ValidationError(
-                "Standard QA emitted original-language review requests while source-text drift adjudication is prohibited",
+                "Reference Text Comparison (RTC) emitted original-language review requests while source-text drift adjudication is prohibited",
                 code="SAW_OL_REQUEST_PROHIBITED",
                 next_action="Retry the same meaning-stage task; do not emit ol_review_requests unless the Run policy enables source-text drift adjudication.",
             )
         if not requests:
-            return _finalize_composite_qa(config, path, plan)
+            return _finalize_composite_rtc(config, path, plan)
         next_stage = "SELECTIVE_OL_ADJUDICATION"
         expected_requests = [dict(item) for item in requests]
         expected_ids = [str(item.get("request_id", "")).upper() for item in requests]
@@ -753,15 +753,15 @@ def _continue_saw_qa_composite(config: EcosystemConfig, path: Path, plan: dict[s
             if value
         ]
     elif stage_name == "SELECTIVE_OL_ADJUDICATION":
-        return _finalize_composite_qa(config, path, plan)
+        return _finalize_composite_rtc(config, path, plan)
     else:
-        raise ValidationError(f"Unsupported composite QA stage: {stage_name}")
+        raise ValidationError(f"Unsupported composite RTC stage: {stage_name}")
 
     from .act_tasks import _stage_record, create_act_task
     result = create_act_task(
         config,
         workflow="saw",
-        operation="qa",
+        operation="rtc",
         output_project_id=str(plan["output_project"]),
         contemporary_source_id=str(plan["contemporary_source"]),
         scope_value=str(plan["requested_scope"]),
@@ -770,11 +770,11 @@ def _continue_saw_qa_composite(config: EcosystemConfig, path: Path, plan: dict[s
         parent_plan_id=str(plan["plan_id"]),
         job_id=str(plan.get("job_id") or plan["job_id"]),
         run_id=str(plan.get("run_id") or plan["run_id"]),
-        qa_stage=next_stage,
-        qa_predecessor_files=predecessor_files,
+        rtc_stage=next_stage,
+        rtc_predecessor_files=predecessor_files,
         expected_ol_request_ids=expected_ids,
         expected_ol_requests=expected_requests,
-        qa_stage_references=stage_references,
+        rtc_stage_references=stage_references,
     )
     new_stage = _stage_record(result, next_stage)
     stages.append(new_stage)
@@ -783,13 +783,13 @@ def _continue_saw_qa_composite(config: EcosystemConfig, path: Path, plan: dict[s
     atomic_write_json(path, plan)
     new_state, _, new_continuation = _composite_stage_result(config, new_stage)
     if new_state == "FINALIZED":
-        raise ValidationError("New composite QA stage unexpectedly finalized before execution")
+        raise ValidationError("New composite RTC stage unexpectedly finalized before execution")
     assert new_continuation is not None
     return {**new_continuation, "plan_id": plan.get("plan_id"), "plan_path": str(path), "composite_stage": next_stage}
 
 
 def continue_saw_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any]:
-    """Continue either a partitioned SAW plan or the staged composite Normal-QA plan."""
+    """Continue either a partitioned SAW plan or the staged composite RTC plan."""
     path = plan_path.expanduser().resolve()
     plan = _load_object(path, "SAW continuation plan")
     job_id = str(plan.get("job_id", "")).strip()
@@ -800,7 +800,7 @@ def continue_saw_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any
     config = load_ecosystem(store.ensure_runtime_files(job))
     if not plan_is_governed(config.workflow("saw"), path):
         raise ValidationError("SAW continuation plan must be inside the governed plans directory")
-    if plan.get("plan_type") == "SAW_QA_COMPOSITE":
+    if plan.get("plan_type") == "SAW_RTC_COMPOSITE":
         if plan.get("status") == "FINALIZED":
             plan = _ensure_finalized_report_layout(config, path, plan)
             return {
@@ -813,5 +813,5 @@ def continue_saw_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any
                 "operator_note_text_path": plan.get("operator_note_text_path"),
                 "consolidated_data_path": plan.get("consolidated_data_path"),
             }
-        return _continue_saw_qa_composite(config, path, plan)
+        return _continue_saw_rtc_composite(config, path, plan)
     return _continue_partitioned_plan(config, path)

@@ -78,7 +78,7 @@ Reporting language is a separate authority. In this localization patch, the exis
 
 Finalized Run findings remain as governed Job data. SAGE consolidates compatible results for the
 same chapter/scope and publishes polished output at `localdata/reports/<job-id>/<BOOK>/`. For example,
-SAW QA on `GEN 1` publishes
+SAW Reference Text Comparison (RTC) on `GEN 1` publishes
 `localdata/reports/<job-id>/GEN/GEN-001_YYYY-MM-DD_001_ACTION-REPORT.md` and its matching
 `_OPERATOR-NOTE.txt`. The canonical consolidation record remains under the Job's `report_data/`
 folder. Findings sharing a verse/category are not guessed to conflict. When an upstream validator

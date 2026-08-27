@@ -11,13 +11,13 @@ SAW binds exactly one `WIP` and one authorized `REFERENCE`. Scripture Projects r
 The Job menu exposes:
 
 1. Continue active Run — only when a Run exists; context shows Job, check, task/stage, scope, and status.
-2. Standard QA
+2. Reference Text Comparison (RTC)
 3. Targeted Check
 4. Original-Language Review
 
-## Standard QA
+## Reference Text Comparison (RTC)
 
-Broad systematic QA over a selected scope. The Operator can enable/disable four standard check groups: structure/completeness, translation/meaning, language/readability, and consistency. Ordinary stages do not receive OL Scripture; a justified bounded issue may be routed internally to selective OL adjudication.
+Broad systematic RTC over a selected scope. The Operator can enable/disable four standard check groups: structure/completeness, translation/meaning, language/readability, and consistency. Ordinary stages do not receive OL Scripture; a justified bounded issue may be routed internally to selective OL adjudication.
 
 ### Text policy
 
@@ -40,7 +40,7 @@ One explicit focus and a verse or short verse range. Exactly the applicable conf
 
 ## Natural-language entry
 
-Natural-language entry may request Standard QA, a Targeted Check, or an Original-Language Review. Recoverable missing or ambiguous Operator input returns `INPUT_REQUIRED`; reserve `BLOCKED` for a confirmed in-scope technical or integrity failure.
+Natural-language entry may request Reference Text Comparison (RTC), a Targeted Check, or an Original-Language Review. Recoverable missing or ambiguous Operator input returns `INPUT_REQUIRED`; reserve `BLOCKED` for a confirmed in-scope technical or integrity failure.
 
 ## Run state
 

@@ -88,7 +88,7 @@ def grammar_profile(profile_id: str, language: str, role: str) -> dict[str, Any]
                     "relevant_original_language_source",
                 ],
                 "usage": {
-                    "apply_to": ["rewrite", "self_check", "qa", "focused", "ol"],
+                    "apply_to": ["rewrite", "self_check", "rtc", "focused", "ol"],
                     "report_rule_ids": True,
                 },
                 "finding_requirements": [
@@ -316,7 +316,7 @@ def make_workspace(tmp_path: Path):
             "evidence_policies": {"default": DEFAULT_POLICY, "focused": DEFAULT_POLICY},
             "check_policy": {
                 "version": "1.0",
-                "standard_qa": {
+                "rtc": {
                     "checks": {
                         "structure_completeness": True,
                         "translation_meaning": True,
@@ -337,12 +337,12 @@ def make_workspace(tmp_path: Path):
                 "stages": [
                     "DETERMINISTIC_PREFLIGHT",
                     "STRUCTURAL_ADJUDICATION",
-                    "TRANSLATION_AND_MEANING_QA",
+                    "REFERENCE_TEXT_COMPARISON",
                     "SELECTIVE_OL_ADJUDICATION",
                     "COVERAGE_RECONCILIATION",
                     "DETERMINISTIC_FINALISATION",
                 ],
-                "rules": ["Fixture SAW composite QA contract."],
+                "rules": ["Fixture SAW composite RTC contract."],
             },
             "qualification_gates": ["fixture_gate"],
         }

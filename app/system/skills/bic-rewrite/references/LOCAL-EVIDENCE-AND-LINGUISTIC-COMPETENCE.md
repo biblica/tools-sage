@@ -54,7 +54,7 @@ Every file exposed to a model task has one explicit `evidence_class`. Unclassifi
 - `WIP`: subject under analysis, never its own comparison authority.
 - `REFERENCE`: authorized LWC comparison/content authority.
 - Original-language content is conditional bounded evidence only when the configured local GRK/HEB resource is explicitly routed.
-- QA predecessor material must preserve same-Job, same-Run, WIP, and REFERENCE lineage.
+- RTC predecessor material must preserve same-Job, same-Run, WIP, and REFERENCE lineage.
 
 ## Project indexes
 

@@ -210,7 +210,7 @@ def test_runs_and_tasks_remain_inside_their_own_job(make_workspace) -> None:
     bic = next(project for project in projects if project.tool == "bic")
     saw = next(project for project in projects if project.tool == "saw")
     bic_run = store.create_run(bic, operation="bic", scope="MAT 1:1-2")
-    saw_run = store.create_run(saw, operation="qa", scope="MAT 1:1-2")
+    saw_run = store.create_run(saw, operation="rtc", scope="MAT 1:1-2")
 
     bic_config = load_ecosystem(bic.runtime_settings_path)
     saw_config = load_ecosystem(saw.runtime_settings_path)
@@ -412,7 +412,7 @@ def test_job_management_can_open_the_active_saw_job(make_workspace) -> None:
     assert "Open active SAW Job" in rendered
     assert f"{saw.job_id} - {saw.display_name} [ACTIVE]" in rendered
     assert f"SAW JOB - {saw.job_id}" in rendered
-    assert "Run Standard QA" in rendered
+    assert "Run Reference Text Comparison (RTC)" in rendered
 
 
 def test_job_management_uses_the_same_open_active_grammar_for_bic(make_workspace) -> None:
@@ -611,7 +611,7 @@ def test_saw_flow_selects_job_then_exposes_checks_and_back_is_hierarchical(make_
     assert "Choose active Job [SAW]" in rendered
     assert f"SAW JOB - {saw.job_id}" in rendered
     assert "Active Run                   NONE" in rendered
-    assert "Run Standard QA" in rendered
+    assert "Run Reference Text Comparison (RTC)" in rendered
     assert "Run Targeted Check" in rendered
     assert "Run Original-Language Review" in rendered
     assert "SAW RUN OPTIONS" not in rendered
@@ -623,7 +623,7 @@ def test_completed_saw_run_is_history_not_an_active_menu_run(make_workspace) -> 
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store, projects = _bootstrap(root)
     saw = next(project for project in projects if project.tool == "saw")
-    run = store.create_run(saw, operation="qa", scope="EXO 1-2")
+    run = store.create_run(saw, operation="rtc", scope="EXO 1-2")
     completed = store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
     pointer = saw.controller_state_root / "active-run.json"
     pointer.parent.mkdir(parents=True, exist_ok=True)
@@ -645,7 +645,7 @@ def test_completed_saw_run_is_history_not_an_active_menu_run(make_workspace) -> 
     rendered = output.getvalue()
     assert "Active Run                   NONE" in rendered
     assert "Continue active Run" not in rendered
-    assert "Run Standard QA" in rendered
+    assert "Run Reference Text Comparison (RTC)" in rendered
     assert not pointer.exists()
 
 

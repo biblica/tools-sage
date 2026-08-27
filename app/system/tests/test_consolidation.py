@@ -18,7 +18,7 @@ def _document(*, job_id: str, task_id: str, issue: str, finding_id: str) -> dict
         "task_id": task_id,
         "job_id": job_id,
         "run_id": task_id,
-        "operation": "qa",
+        "operation": "rtc",
         "stage": "COMPOSITE_FINALIZED",
         "scope": "GEN 1",
         "coverage": {"status": "COMPLETE", "reviewed_references": ["GEN 1:1"]},
@@ -155,7 +155,7 @@ def test_chapter_catalog_accumulates_finalized_scopes_from_same_book(tmp_path: P
     first_plan.write_text(
         json.dumps(
             {
-                "plan_type": "SAW_QA_COMPOSITE",
+                "plan_type": "SAW_RTC_COMPOSITE",
                 "status": "FINALIZED",
                 "requested_scope": "GEN 1:1",
                 "aggregate_path": str(first_raw),
