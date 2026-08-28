@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 
 import pytest
+import yaml
 
 from sage.errors import EvidenceLimitError, ValidationError
 from sage.evidence import EvidencePolicy
@@ -13,6 +14,7 @@ from sage.stc import (
     finalize_stc_run,
     plan_stc_work_units,
     stc_authority_family,
+    stc_package_measurements,
     validate_stc_submission,
 )
 from sage.work_units import EvidenceRecord
@@ -69,6 +71,38 @@ def test_stc_planning_sizes_wip_and_ol_sfm_together() -> None:
         "JHN 1:1", "JHN 1:2", "JHN 1:3", "JHN 1:4"
     }
     assert all(unit.measurement.estimated_tokens <= 120 for unit in units)
+
+
+def test_stc_short_scope_is_not_split_by_a_discourse_count_cap(package_root) -> None:
+    """STC keeps a sub-target short book together unless a routed-SFM hard limit requires a split."""
+    raw = yaml.safe_load(
+        (package_root / "system" / "config" / "workflows" / "saw" / "profile.yml").read_text(
+            encoding="utf-8"
+        )
+    )
+    policy = EvidencePolicy.from_mapping(raw["evidence_policies"]["stc"])
+    wip = tuple(_record("JHN", verse, "word", role="WIP") for verse in range(1, 26))
+    ol = tuple(_record("JHN", verse, "λόγος", role="GRK") for verse in range(1, 26))
+
+    units = plan_stc_work_units(wip, ol, policy, unit_prefix="STC-JHN")
+
+    assert policy.maximum_primary_discourse_units == 0
+    assert len(units) == 1
+    assert units[0].measurement.estimated_tokens < 1000
+
+
+def test_stc_package_exposes_wip_source_and_combined_route_measurements() -> None:
+    """STC operator display data names both routed streams and their combined size."""
+    wip = tuple(_record("JHN", verse, "word", role="WIP") for verse in range(1, 3))
+    ol = tuple(_record("JHN", verse, "λόγος", role="GRK") for verse in range(1, 3))
+    units = plan_stc_work_units(wip, ol, _policy(), unit_prefix="STC-JHN")
+
+    package = stc_package_measurements(units, ol)[0]
+
+    assert package["route"]["estimated_tokens"] == (
+        package["wip"]["estimated_tokens"] + package["ol"]["estimated_tokens"]
+    )
+    assert package["analysis_route"] == "STC_CORRESPONDENCE"
 
 
 def test_stc_planning_fails_closed_when_ol_coverage_is_missing() -> None:

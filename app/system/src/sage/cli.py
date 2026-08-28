@@ -140,6 +140,13 @@ from .work_units import (
     select_records_for_scope,
 )
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, plan_sfm_work_units
+from .stc import (
+    STC_ANALYSIS_ROUTE,
+    plan_stc_work_units,
+    stc_authority_family,
+    stc_package_measurements,
+    stc_package_summary,
+)
 from .evidence import serialize_evidence
 from .ui_format import menu_item
 from .usj import USJ_COMPILER
@@ -3285,6 +3292,10 @@ def command_plan(args: argparse.Namespace) -> int:
     reference_project_id: str | None = None
     reference_result: dict[str, Any] | None = None
     reference_records = ()
+    stc_authority_family_id: str | None = None
+    stc_ol_project_id: str | None = None
+    stc_ol_result: dict[str, Any] | None = None
+    stc_ol_records = ()
     effective_policy = policy
     if profile.workflow_id == "saw" and operation == "rtc":
         if selected_role != "WIP":
@@ -3307,6 +3318,35 @@ def command_plan(args: argparse.Namespace) -> int:
             reference_result,
             resource_role="REFERENCE",
         )
+    elif profile.workflow_id == "saw" and operation == "stc":
+        if selected_role != "WIP":
+            raise ValidationError("SAW STC planning must use the bound WIP as its slicing stream")
+        stc_authority_family_id = stc_authority_family(scope.book)
+        ol_binding = (
+            "ORIGINAL_LANGUAGE_GREEK"
+            if stc_authority_family_id == "GRK"
+            else "ORIGINAL_LANGUAGE_HEBREW"
+        )
+        stc_ol_project_id = str(profile.bindings.get(ol_binding) or "")
+        if not stc_ol_project_id:
+            raise ValidationError(
+                f"SAW STC requires the applicable {ol_binding} binding",
+                code="STC_OL_AUTHORITY_MISSING",
+            )
+        stc_ol_project = config.project(stc_ol_project_id)
+        stc_ol_result = compile_project_scope(config, stc_ol_project, scope)
+        if stc_ol_result.get("status") not in {"READY", "READY_WITH_WARNINGS"}:
+            raise ValidationError(
+                f"Primary OL project {stc_ol_project_id} is not ready for STC package "
+                f"planning in {scope.label()}: {stc_ol_result.get('status')}",
+                code="STC_OL_AUTHORITY_NOT_READY",
+            )
+        all_stc_ol_records = records_from_project_result(
+            stc_ol_project_id,
+            stc_ol_result,
+            resource_role=stc_authority_family_id,
+        )
+        stc_ol_records = select_records_for_scope(all_stc_ol_records, scope)
     contracts = _grammar_contracts(config, profile)
     evidence_contracts = {
         contract_role: {
@@ -3343,6 +3383,19 @@ def command_plan(args: argparse.Namespace) -> int:
                 reference_result.get("compiled_files_sha256", "")
             ),
         })
+    if stc_ol_result is not None:
+        shared_hashes.update({
+            "primary_ol_resource_sha256": str(stc_ol_result.get("resource_sha256", "")),
+            "primary_ol_effective_vrs_sha256": str(
+                stc_ol_result.get("effective_vrs", {}).get("effective_sha256", "")
+            ),
+            "primary_ol_structure_policy_sha256": str(
+                stc_ol_result.get("structure_policy", {}).get("effective_sha256", "")
+            ),
+            "primary_ol_compiled_files_sha256": str(
+                stc_ol_result.get("compiled_files_sha256", "")
+            ),
+        })
     plan_key = {
         "sage_version": standard.version,
         "usj_compiler": USJ_COMPILER,
@@ -3361,6 +3414,15 @@ def command_plan(args: argparse.Namespace) -> int:
                 "prompt_schema_projection_version": RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
             }
             if rtc_sizing is not None
+            else {}
+        ),
+        **(
+            {
+                "primary_ol_project_id": stc_ol_project_id,
+                "authority_family": stc_authority_family_id,
+                "analysis_route": STC_ANALYSIS_ROUTE,
+            }
+            if stc_ol_result is not None
             else {}
         ),
     }
@@ -3403,8 +3465,20 @@ def command_plan(args: argparse.Namespace) -> int:
             if reference_result is not None
             else {}
         ),
+        **(
+            {
+                "primary_ol_project_id": stc_ol_project_id,
+                "primary_ol_resource_sha256": stc_ol_result.get("resource_sha256", ""),
+                "primary_ol_compiled_files_sha256": stc_ol_result.get("compiled_files_sha256", ""),
+                "authority_family": stc_authority_family_id,
+                "analysis_route": STC_ANALYSIS_ROUTE,
+            }
+            if stc_ol_result is not None
+            else {}
+        ),
     }
     rtc_packages: tuple[dict[str, Any], ...] = ()
+    stc_packages: tuple[dict[str, Any], ...] = ()
     if rtc_sizing is not None:
         units, rtc_packages, effective_policy = plan_rtc_work_units(
             selected,
@@ -3423,6 +3497,15 @@ def command_plan(args: argparse.Namespace) -> int:
                 requested_book=scope.book,
             ),
         )
+    elif stc_ol_result is not None:
+        units = plan_stc_work_units(
+            selected,
+            stc_ol_records,
+            policy,
+            unit_prefix=plan_id,
+            context_pool=all_records,
+        )
+        stc_packages = stc_package_measurements(units, stc_ol_records)
     else:
         units = plan_sfm_work_units(
             selected,
@@ -3463,6 +3546,16 @@ def command_plan(args: argparse.Namespace) -> int:
         for unit_document, package in zip(document["units"], rtc_packages, strict=True):
             unit_document["rtc_package"] = package
         document["summary"].update(package_summary(rtc_packages))
+    elif stc_ol_result is not None:
+        document.update({
+            "primary_ol_project_id": stc_ol_project_id,
+            "authority_family": stc_authority_family_id,
+            "analysis_route": STC_ANALYSIS_ROUTE,
+            "sizing_basis": "WIP_PLUS_PRIMARY_OL_ROUTED_SFM",
+        })
+        for unit_document, package in zip(document["units"], stc_packages, strict=True):
+            unit_document["stc_package"] = package
+        document["summary"].update(stc_package_summary(stc_packages))
     output = _workflow_output_path(
         args.output,
         workflow.output_root,
@@ -3536,6 +3629,23 @@ def command_plan(args: argparse.Namespace) -> int:
                 "Largest work unit: "
                 f"WIP ~{summary['largest_wip_estimated_tokens']:,} | "
                 f"REF ~{summary['largest_ref_estimated_tokens']:,} | "
+                f"ROUTE ~{summary['largest_route_estimated_tokens']:,}"
+            )
+        elif stc_packages:
+            for index, (unit, package) in enumerate(
+                zip(document["units"], stc_packages, strict=True), start=1
+            ):
+                print(menu_item(
+                    index,
+                    f"{unit['primary_scope']}   "
+                    f"WIP ~{package['wip']['estimated_tokens']:,} | "
+                    f"SRC ~{package['ol']['estimated_tokens']:,} | "
+                    f"ROUTE ~{package['route']['estimated_tokens']:,}"
+                ))
+            print(
+                "Largest work unit: "
+                f"WIP ~{summary['largest_wip_estimated_tokens']:,} | "
+                f"SRC ~{summary['largest_ol_estimated_tokens']:,} | "
                 f"ROUTE ~{summary['largest_route_estimated_tokens']:,}"
             )
         else:

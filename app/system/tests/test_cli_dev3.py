@@ -116,6 +116,31 @@ def test_saw_plan_uses_independent_wip_without_bic_generation_pin(package_root: 
     assert package["route"]["estimated_tokens"] <= 32000
 
 
+def test_stc_plan_measures_wip_and_primary_source_as_one_route(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """STC preview uses the same WIP-plus-primary-OL route as STC execution."""
+    root = make_workspace(configured=True, verse_max=3)
+
+    result = run_cli(
+        package_root, root, "--json", "workflow", "plan",
+        "--workflow", "saw", "--operation", "stc", "--scope", "MAT 1"
+    )
+
+    assert result.returncode == 0, result.stderr + result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["primary_ol_project_id"] == "GRK"
+    assert payload["authority_family"] == "GRK"
+    assert payload["analysis_route"] == "STC_CORRESPONDENCE"
+    assert payload["sizing_basis"] == "WIP_PLUS_PRIMARY_OL_ROUTED_SFM"
+    assert payload["shared_hashes"]["primary_ol_resource_sha256"]
+    package = payload["units"][0]["stc_package"]
+    assert package["route"]["estimated_tokens"] == (
+        package["wip"]["estimated_tokens"] + package["ol"]["estimated_tokens"]
+    )
+
+
 def test_chapter_plan_ignores_defects_in_other_chapters(package_root: Path, make_workspace) -> None:
     """Evidence planning blocks only defects intersecting the requested chapter."""
     root = make_workspace(configured=True, verse_max=3)

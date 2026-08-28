@@ -9,15 +9,17 @@ from typing import Any, Iterable, Mapping
 from .atomic import atomic_write_json, atomic_write_text
 from .canon import NT_27, OT_39
 from .errors import ValidationError
-from .evidence import EvidencePolicy
+from .evidence import EvidenceMeasurement, EvidencePolicy
 from .hashing import sha256_bytes
 from .references import expand_reference_atoms, parse_scope
-from .sfm_slicer import SfmAnalysisRoute, SfmStream, plan_sfm_work_units
+from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
 from .work_units import EvidenceRecord, WorkUnit
+from .vrs import VerseRef
 
 STC_FINDING_CATEGORIES = {"OMISSION", "ADDITION", "VARIATION", "CONSISTENCY"}
 STC_ANALYSIS_ROUTE = "STC_CORRESPONDENCE"
 STC_RESULT_VERSION = "1.0"
+STC_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_1"
 
 
 def stc_authority_family(book: str) -> str:
@@ -61,6 +63,75 @@ def plan_stc_work_units(
         route=route,
         context_pool=tuple(context_pool) if context_pool is not None else selected,
     )
+
+
+def _records_for_refs(
+    records: Iterable[EvidenceRecord], refs: frozenset[VerseRef]
+) -> tuple[EvidenceRecord, ...]:
+    """Select source records intersecting the requested canonical coordinates."""
+    return tuple(record for record in records if refs.intersection(record.refs))
+
+
+def _component(measurement: EvidenceMeasurement) -> dict[str, Any]:
+    """Render one routed-SFM measurement component for STC audit and display."""
+    return {
+        "estimator": STC_ESTIMATOR,
+        "estimated_tokens": measurement.estimated_tokens,
+        "serialized_bytes": measurement.serialized_bytes,
+        "basis": "ROUTED_SFM_ONLY",
+    }
+
+
+def stc_package_measurements(
+    units: Iterable[WorkUnit],
+    ol_records: Iterable[EvidenceRecord],
+) -> tuple[dict[str, Any], ...]:
+    """Measure WIP, primary OL, and combined STC routed-SFM review items."""
+    original_language = tuple(ol_records)
+    packages: list[dict[str, Any]] = []
+    for unit in units:
+        wip_slice = tuple(sorted(
+            (*unit.context_before, *unit.primary, *unit.context_after),
+            key=lambda item: (item.chapter, item.verse_start, item.verse_end),
+        ))
+        ol_slice = _records_for_refs(original_language, unit.primary_refs)
+        covered = frozenset(ref for record in ol_slice for ref in record.refs)
+        if covered != unit.primary_refs:
+            missing = sorted(unit.primary_refs - covered)
+            raise ValidationError(
+                "SAW STC primary OL does not cover the complete WIP slice: "
+                + ", ".join(ref.label() for ref in missing),
+                code="SFM_ROUTE_PRIMARY_COVERAGE_MISMATCH",
+            )
+        packages.append({
+            "sizing_basis": "ROUTED_SFM_ONLY",
+            "analysis_route": STC_ANALYSIS_ROUTE,
+            "primary_coverage_atoms": [ref.label() for ref in sorted(unit.primary_refs)],
+            "wip": _component(measure_sfm_slice(wip_slice)),
+            "ol": _component(measure_sfm_slice(ol_slice)),
+            "route": _component(unit.measurement),
+        })
+    return tuple(packages)
+
+
+def stc_package_summary(packages: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
+    """Return STC routed-SFM maxima for operator plan display."""
+    values = tuple(packages)
+    return {
+        "largest_wip_estimated_tokens": max(
+            (int(item["wip"]["estimated_tokens"]) for item in values), default=0
+        ),
+        "largest_ol_estimated_tokens": max(
+            (int(item["ol"]["estimated_tokens"]) for item in values), default=0
+        ),
+        "largest_route_estimated_tokens": max(
+            (int(item["route"]["estimated_tokens"]) for item in values), default=0
+        ),
+        "largest_route_serialized_bytes": max(
+            (int(item["route"]["serialized_bytes"]) for item in values), default=0
+        ),
+        "sizing_basis": "ROUTED_SFM_ONLY",
+    }
 
 
 def _stable_finding_id(work_unit_id: str, finding: Mapping[str, Any]) -> str:

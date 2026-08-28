@@ -2414,7 +2414,7 @@ class SageControlCenter:
             preflight = self._preflight_saw_preview(
                 project,
                 preview,
-                require_original_language=ol_variance_enabled,
+                require_original_language=(operation == "stc" or ol_variance_enabled),
             )
             if preflight == "CHANGE":
                 continue
@@ -2516,6 +2516,7 @@ class SageControlCenter:
         self.io.write("REVIEW WORK BEFORE RUNNING")
         self.io.write("-" * 72)
         rtc_preview = project.tool == "saw" and operation.strip().lower() == "rtc"
+        stc_preview = project.tool == "saw" and operation.strip().lower() == "stc"
         operation_label = (
             "Reference Text Comparison (RTC)"
             if rtc_preview
@@ -2524,12 +2525,17 @@ class SageControlCenter:
         self.io.write(f"Operation:     {operation_label}")
         self.io.write(f"Scope:         {scope}")
         self.io.write(f"Planned work:  {summary.get('work_units', len(units))} work unit(s)")
-        if not rtc_preview and policy.get("hard_estimated_tokens") is not None:
+        if not rtc_preview and not stc_preview and policy.get("hard_estimated_tokens") is not None:
             self.io.write(f"Token limit:   {policy['hard_estimated_tokens']:,}")
         if rtc_preview and units and any(unit.get("rtc_package") for unit in units):
             self.io.write()
             self.io.write(
                 f"{'#':>3}  {'SCOPE':<20} {'WIP':>9} {'REF':>9} {'ROUTE':>10}"
+            )
+        elif stc_preview and units and any(unit.get("stc_package") for unit in units):
+            self.io.write()
+            self.io.write(
+                f"{'#':>3}  {'SCOPE':<20} {'WIP':>9} {'SRC':>9} {'ROUTE':>10}"
             )
         for index, unit in enumerate(units, 1):
             package = dict(unit.get("rtc_package") or {})
@@ -2540,6 +2546,14 @@ class SageControlCenter:
                     f"{'~' + format(int(dict(package.get('ref') or {}).get('estimated_tokens', 0)), ','):>9} "
                     f"{'~' + format(int(dict(package.get('route') or {}).get('estimated_tokens', 0)), ','):>10}"
                 )
+            elif stc_preview and unit.get("stc_package"):
+                stc_package = dict(unit.get("stc_package") or {})
+                self.io.write(
+                    f"{index:>3}. {str(unit.get('primary_scope', '?')):<20} "
+                    f"{'~' + format(int(dict(stc_package.get('wip') or {}).get('estimated_tokens', 0)), ','):>9} "
+                    f"{'~' + format(int(dict(stc_package.get('ol') or {}).get('estimated_tokens', 0)), ','):>9} "
+                    f"{'~' + format(int(dict(stc_package.get('route') or {}).get('estimated_tokens', 0)), ','):>10}"
+                )
             else:
                 measurement = dict(unit.get("measurement") or {})
                 tokens = measurement.get("estimated_tokens", "?")
@@ -2549,6 +2563,13 @@ class SageControlCenter:
                 f"{'':>3}  {'Largest work unit':<20} "
                 f"{'~' + format(int(summary.get('largest_wip_estimated_tokens', 0)), ','):>9} "
                 f"{'~' + format(int(summary.get('largest_ref_estimated_tokens', 0)), ','):>9} "
+                f"{'~' + format(int(summary.get('largest_route_estimated_tokens', 0)), ','):>10}"
+            )
+        elif stc_preview and units and any(unit.get("stc_package") for unit in units):
+            self.io.write(
+                f"{'':>3}  {'Largest work unit':<20} "
+                f"{'~' + format(int(summary.get('largest_wip_estimated_tokens', 0)), ','):>9} "
+                f"{'~' + format(int(summary.get('largest_ol_estimated_tokens', 0)), ','):>9} "
                 f"{'~' + format(int(summary.get('largest_route_estimated_tokens', 0)), ','):>10}"
             )
         else:
@@ -2570,10 +2591,12 @@ class SageControlCenter:
         """Return blocking resource defects and non-blocking VRS advisories per SAW work unit."""
         runtime_settings = self.store.ensure_runtime_files(project)
         config = load_ecosystem(runtime_settings)
-        base_bindings = (
-            ("SAW WIP", str(project.bindings.get("wip") or "")),
-            ("SAW REFERENCE", str(project.bindings.get("reference") or "")),
-        )
+        operation = str(preview.get("operation") or "").strip().lower()
+        base_bindings = [("SAW WIP", str(project.bindings.get("wip") or ""))]
+        if operation != "stc":
+            base_bindings.append(
+                ("SAW REFERENCE", str(project.bindings.get("reference") or ""))
+            )
         units = list(preview.get("units") or [])
         blockers: list[dict[str, str]] = []
         advisories: list[dict[str, str]] = []
