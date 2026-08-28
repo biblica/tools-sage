@@ -9,6 +9,7 @@ from typing import Any, Iterable, Mapping
 
 PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS = "ROUTED_SFM_ESTIMATED_TOKENS"
 PROGRESS_BASIS_ACT_ESTIMATED_TOKENS = "ACT_ESTIMATED_TOKENS"
+PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS = "PROJECTED_HANDOFF_ESTIMATED_TOKENS"
 PROGRESS_ADVANCEMENT_FINALIZED_TASKS = "FINALIZED_TASKS_ONLY"
 PROGRESS_VISUAL_CELLS = 10
 TERMINAL_RESULTS = {"DONE", "FAILED", "BLOCKED", "CANCELLED"}
@@ -85,10 +86,12 @@ class RunProgress:
 
 
 def validate_job_progress_policy(raw: Mapping[str, Any] | None) -> JobProgressPolicy:
-    """Validate an additive Job progress policy or return the canonical default."""
+    """Validate a Job progress policy and normalize preserved pre-alpha basis names."""
     if not raw:
         return DEFAULT_JOB_PROGRESS_POLICY
     basis = str(raw.get("basis") or PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS).upper()
+    if basis == PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS:
+        basis = PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS
     advancement = str(raw.get("advancement") or PROGRESS_ADVANCEMENT_FINALIZED_TASKS).upper()
     try:
         visual_cells = int(raw.get("visual_cells", PROGRESS_VISUAL_CELLS))

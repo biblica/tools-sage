@@ -74,7 +74,10 @@ controls:
     tui_visual_cells: 10
     tui_percent: conservative_integer
     concurrency: exactly_one_active_run
-    legacy_basis_accepted: ACT_ESTIMATED_TOKENS
+    legacy_basis_accepted:
+    - ACT_ESTIMATED_TOKENS
+    - PROJECTED_HANDOFF_ESTIMATED_TOKENS
+    legacy_projected_handoff_normalization: ROUTED_SFM_ESTIMATED_TOKENS
   runtime_files: derived_not_authoritative
   bic_memory_boundary: job_local
   bic_generation_boundary: job_local
