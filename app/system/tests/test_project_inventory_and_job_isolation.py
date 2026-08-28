@@ -498,6 +498,46 @@ def test_rtc_pre_run_preview_renders_aligned_routed_sfm_columns(make_workspace) 
     assert "Token limit:" not in rendered
 
 
+def test_stc_pre_run_preview_renders_aligned_routed_sfm_columns(make_workspace) -> None:
+    """STC preview mirrors the RTC table with WIP/SRC/ROUTE columns."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        io=MenuIO(input_func=ScriptedInput(["A"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+    center.controller = lambda _job, _args: {
+        "summary": {
+            "work_units": 1,
+            "largest_wip_estimated_tokens": 610,
+            "largest_ol_estimated_tokens": 390,
+            "largest_route_estimated_tokens": 1000,
+        },
+        "policy": {"hard_estimated_tokens": 18000},
+        "units": [{
+            "primary_scope": "MAT 1:1-10",
+            "stc_package": {
+                "wip": {"estimated_tokens": 610},
+                "ol": {"estimated_tokens": 390},
+                "route": {"estimated_tokens": 1000},
+            },
+        }],
+    }
+
+    action = center._review_work_before_run(job, operation="stc", scope="MAT 1:1-10")
+
+    rendered = output.getvalue()
+    assert action == "CANCEL"
+    assert "  #  SCOPE                      WIP       SRC      ROUTE" in rendered
+    assert "  1. MAT 1:1-10                ~610      ~390     ~1,000" in rendered
+    assert "     Largest work unit         ~610      ~390     ~1,000" in rendered
+    assert "Token limit:" not in rendered
+
+
 def test_existing_ecosystem_can_register_packaged_ukrainian_wip_and_retry_job(make_workspace) -> None:
     """An existing pre-Beta ecosystem can recover Ukrainian SAW Job creation in-menu."""
     import copy
@@ -754,6 +794,43 @@ def test_option_11_preflight_requires_testament_specific_ol_binding(make_workspa
         for row in findings["blockers"]
     )
     assert store.list_runs(job) == []
+
+
+def test_stc_preflight_requires_source_but_does_not_validate_reference(make_workspace) -> None:
+    """STC preflight is independent from REFERENCE and validates its primary OL source."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED", verse_max=2)
+    reference = storage_layout(root).projects_root / "usNIVv2" / "41MAT.SFM"
+    reference.write_text(
+        "\\id MAT Fixture\n\\c 1\n\\p\n\\v 1 One.\n\\v 1 Duplicate.\n",
+        encoding="utf-8",
+    )
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="saw",
+        job_id="SAW_usWIP-usNIVv2",
+        display_name="STC independent preflight",
+        bindings={
+            "wip": "usWIP",
+            "reference": "usNIVv2",
+            "original_language_greek": "GRK",
+        },
+        profiles={},
+        defaults={},
+    )
+    center = SageControlCenter(
+        sage_root=root,
+        io=MenuIO(input_func=ScriptedInput([]), output=io.StringIO()),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    findings = center._saw_preview_findings(
+        job,
+        {"operation": "stc", "units": [{"primary_scope": "MAT 1:1-2"}]},
+        require_original_language=True,
+    )
+
+    assert findings["blockers"] == []
 
 
 def test_catalogued_project_without_declared_vrs_defaults_to_eng(make_workspace, tmp_path: Path) -> None:

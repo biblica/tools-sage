@@ -42,7 +42,7 @@ evidence_policies:
     hard_serialized_bytes: 126000
     minimum_target_tokens: 3500
     maximum_primary_verse_units: 120
-    maximum_primary_discourse_units: 2
+    maximum_primary_discourse_units: 0
     context_before_verses: 1
     context_after_verses: 1
     allow_cross_chapter_units: true
