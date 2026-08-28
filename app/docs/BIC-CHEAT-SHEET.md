@@ -85,7 +85,7 @@ REWRITE applies the complete protected BIC contract. SOURCE remains exclusive co
 
 A successful REWRITE submission returns `STAGED_VALIDATED` or `STAGED_VALIDATED_WITH_CHALLENGES`; it does not commit TARGET.
 
-Conditional OL evidence may be opened only under the pinned material-risk policy. v0.01beta releases each material challenge separately as a micro-adjudication: raw SOURCE and applicable OL Scripture are restricted to that challenge's single verse, only relevant local evidence is routed, and a `VERB_CHOICE` referral asks only for the disputed verb's verbal sense/function. The provider returns a bounded semantic decision/optional one-verse replacement; SAGE merges it into the existing REWRITE locally instead of re-sending and regenerating all REWRITE outputs. Surrounding Scripture is not added automatically. Linguistic risk never asks the Operator to choose or override a candidate.
+Conditional OL evidence may be opened only under the pinned material-risk policy. v0.02alpha1 releases each material challenge separately as a micro-adjudication: raw SOURCE and applicable OL Scripture are restricted to that challenge's single verse, only relevant local evidence is routed, and a `VERB_CHOICE` referral asks only for the disputed verb's verbal sense/function. The provider returns a bounded semantic decision/optional one-verse replacement; SAGE merges it into the existing REWRITE locally instead of re-sending and regenerating all REWRITE outputs. Surrounding Scripture is not added automatically. Linguistic risk never asks the Operator to choose or override a candidate.
 
 ## 4. SELF-CHECK
 

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS = "PROJECTED_HANDOFF_ESTIMATED_TOKENS"
+PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS = "ROUTED_SFM_ESTIMATED_TOKENS"
 PROGRESS_BASIS_ACT_ESTIMATED_TOKENS = "ACT_ESTIMATED_TOKENS"
 PROGRESS_ADVANCEMENT_FINALIZED_TASKS = "FINALIZED_TASKS_ONLY"
 PROGRESS_VISUAL_CELLS = 10
@@ -25,7 +25,7 @@ FINAL_TASK_STATUSES = {
 class JobProgressPolicy:
     """Describe how one sequential Job quantifies progress without exposing token detail in the TUI."""
 
-    basis: str = PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS
+    basis: str = PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS
     advancement: str = PROGRESS_ADVANCEMENT_FINALIZED_TASKS
     visual_cells: int = PROGRESS_VISUAL_CELLS
 
@@ -88,14 +88,14 @@ def validate_job_progress_policy(raw: Mapping[str, Any] | None) -> JobProgressPo
     """Validate an additive Job progress policy or return the canonical default."""
     if not raw:
         return DEFAULT_JOB_PROGRESS_POLICY
-    basis = str(raw.get("basis") or PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS).upper()
+    basis = str(raw.get("basis") or PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS).upper()
     advancement = str(raw.get("advancement") or PROGRESS_ADVANCEMENT_FINALIZED_TASKS).upper()
     try:
         visual_cells = int(raw.get("visual_cells", PROGRESS_VISUAL_CELLS))
     except (TypeError, ValueError) as exc:
         raise ValueError("Job progress visual_cells must be an integer") from exc
     if basis not in {
-        PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS,
+        PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS,
         PROGRESS_BASIS_ACT_ESTIMATED_TOKENS,
     }:
         raise ValueError(f"Unsupported Job progress basis: {basis}")
@@ -122,7 +122,7 @@ def _resolve_task_path(root: Path, value: str) -> Path:
 
 
 def _task_weight(manifest: Mapping[str, Any], basis: str) -> int:
-    """Return the workload weight for the requested progress basis with legacy compatibility."""
+    """Return progress weight without granting transport telemetry any sizing authority."""
     budget = manifest.get("context_budget")
     if not isinstance(budget, Mapping):
         return 1
@@ -132,20 +132,19 @@ def _task_weight(manifest: Mapping[str, Any], basis: str) -> int:
             raw = governance.get("final_estimated_tokens", governance.get("estimated_tokens"))
         else:
             raw = None
-        # Historical manifests may carry a controller-context token estimate. New
-        # manifests intentionally do not tokenize controller-only data, so this
-        # legacy display basis falls back to the actual provider handoff weight.
+        # Historical ACT-weight manifests can still expose their explicit controller
+        # token field; absent that field, progress falls back only to routed SFM.
         if raw is None:
-            handoff = budget.get("provider_handoff")
+            routed = budget.get("routed_sfm")
             raw = (
-                handoff.get("total_estimated_tokens")
-                if isinstance(handoff, Mapping)
+                routed.get("total_estimated_tokens")
+                if isinstance(routed, Mapping)
                 else budget.get("final_estimated_tokens", budget.get("estimated_tokens", 1))
             )
     else:
-        handoff = budget.get("provider_handoff")
-        if isinstance(handoff, Mapping):
-            raw = handoff.get(
+        routed = budget.get("routed_sfm")
+        if isinstance(routed, Mapping):
+            raw = routed.get(
                 "total_estimated_tokens", budget.get("final_estimated_tokens", 1)
             )
         else:
@@ -187,7 +186,7 @@ def quantify_run(
     task_manifests: Iterable[str],
     run_status: str,
     current_stage: str,
-    basis: str = PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS,
+    basis: str = PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS,
     result: str | None = None,
     reason_code: str | None = None,
 ) -> RunProgress:

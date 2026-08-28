@@ -264,6 +264,12 @@ def make_workspace(tmp_path: Path):
                 simple_usfm(verses=verse_max),
                 encoding="utf-8",
             )
+            if project_id in {"GRK", "HEB"}:
+                family = project_id.lower()
+                shutil.copy2(
+                    PACKAGE_ROOT / "system" / "resources" / "scripture" / "original-language" / family / "authority-profile.yml",
+                    folder / "authority-profile.yml",
+                )
 
         write_yaml(
             root / "system" / "config" / "profiles" / "grammar" / "id" / "source.yml",
@@ -319,13 +325,8 @@ def make_workspace(tmp_path: Path):
                 "wip_target_min_tokens": 6000,
                 "wip_target_max_tokens": 7000,
                 "wip_hard_exclusive_tokens": 8000,
-                "governed_wip_ceiling_tokens": 8000,
-                "package_hard_max_tokens": 32000,
-                "provider_handoff_max_tokens": 32000,
-                "package_hard_serialized_bytes": 224000,
-                "minimum_reference_reserve_tokens": 8000,
-                "minimum_overhead_reserve_tokens": 6000,
-                "minimum_overhead_serialized_bytes": 24000,
+                "route_hard_max_tokens": 32000,
+                "route_hard_serialized_bytes": 224000,
             },
             "evidence_policies": {"default": DEFAULT_POLICY, "focused": DEFAULT_POLICY},
             "check_policy": {

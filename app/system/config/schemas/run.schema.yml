@@ -22,7 +22,7 @@ controls:
   task_manifests: immutable_task_paths_inside_run
   progress:
     policy_source: owning_job.progress_quantifier
-    basis: PROJECTED_HANDOFF_ESTIMATED_TOKENS
+    basis: ROUTED_SFM_ESTIMATED_TOKENS
     completed: finalized_ACT_task_weights
     total: sealed_ACT_task_weights
     persisted_percent: prohibited

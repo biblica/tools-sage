@@ -15,6 +15,11 @@ controls:
       bundled_path: system/resources/scripture/original-language/heb
   source_types: [BUNDLED, PARATEXT, LOCAL]
   default_source: BUNDLED
+  authority_cardinality:
+    primary_per_family: exactly_one_when_configured
+    secondary_per_family: zero_or_more
+    secondary_default_effect: INERT_UNLESS_EXPLICITLY_ROUTED
+    secondary_route_rule: explicit_review_item_required
   read_only: true
   ordinary_sage_project_inventory: false
   automatic_paratext_patterns: [grcSRCv#, hboSRCv#]

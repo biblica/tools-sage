@@ -7,9 +7,9 @@ SAGE planning is deterministic preprocessing; it is not analytical completion.
   --scope "PHP 1-4" --write-packets
 ```
 
-The planner compiles strict USFM/USJ records, applies the governed structure policy, measures the serialized evidence packet, and divides the requested scope at preferred boundaries while preserving exact primary-coordinate coverage.
+The planner compiles strict structural records, applies the governed structure policy, measures only the SFM streams actually routed to the review item, and divides the requested scope at preferred boundaries while preserving exact primary-coordinate coverage. Controller USJ/provenance structures remain available for deterministic validation but do not participate in sizing.
 
-Planning first identifies intact spans at governed section markers. For RTC, adjacent spans are packed toward the 6,000-token WIP target but normally stop at the 7,000-token preferred packing ceiling; the WIP packet must remain below the 8,000-token hard slice limit. A complete protected discourse unit may use the 7,000–7,999 headroom rather than be split merely to hit the target. If a protected unit itself is too large, SAGE chooses a balanced natural discourse/paragraph boundary. Other workflows retain their configured limits.
+Planning first identifies intact spans at governed section markers. For RTC, adjacent spans are packed toward the 6,000-token WIP soft target but normally stop at the 7,000-token preferred packing ceiling; a WIP slice must remain below the 8,000-token WIP hard limit and the complete routed WIP+REFERENCE review item must remain below its configured route hard limit. A complete protected discourse unit may use the WIP headroom rather than be split merely to hit the target. If a protected unit itself is too large, SAGE chooses a balanced natural discourse/paragraph boundary. STC uses the same general slicer with WIP+PRIMARY-OL as its route. Other workflows supply their own review-item stream profile and limits.
 
 ## Boundary preference
 
@@ -25,10 +25,7 @@ Planning first identifies intact spans at governed section markers. For RTC, adj
 
 Each requested coordinate occurs in exactly one primary unit. Adjacent context may be supplied for interpretation but is marked context-only and is not an ordinary finding location. Plan identity includes resources, VRS, structure policy, grammar contracts, compiler version, operation, and scope.
 
-For RTC, the WIP stream still supplies discourse and size proposals, but planner V2 validates every
-proposed boundary against both active Scripture sources and local VRS equivalence spans. A boundary
-crossing either source is moved through the far edge and checked again until stable; the completed
-WIP/REFERENCE package is then remeasured. A hard-limit conflict blocks rather than splitting the span.
+For RTC, the WIP stream supplies discourse/soft-target proposals, while the general slicer validates every proposed boundary against both active Scripture streams and local VRS equivalence spans. A boundary crossing either source is moved through the far edge and checked again until stable; the completed routed WIP+REFERENCE SFM is then remeasured. A hard-limit conflict blocks rather than splitting the protected span. STC additionally protects connected WIP-bridge and OL-correspondence spans and remeasures the complete WIP+PRIMARY-OL SFM route.
 
 At SAW execution and finalization time, SAGE expands approved ranged labels and current WIP records
 to the same atomic coordinate inventory. Raw bridge labels remain source metadata;

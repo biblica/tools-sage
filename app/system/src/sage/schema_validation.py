@@ -26,6 +26,7 @@ SCHEMA_OWNERS: dict[str, str] = {
     "llm-execution-receipt.schema.yml": "system/src/sage/llm_tasks.py",
     "model-language-competency.schema.yml": "system/src/sage/model_language_competency.py",
     "model-policy.schema.yml": "system/src/sage/model_policy.py",
+    "ol-authority-profile.schema.yml": "system/src/sage/original_language_resources.py",
     "original-language-resources.schema.yml": "system/src/sage/original_language_resources.py",
     "paratext-project-catalog.schema.yml": "system/src/sage/paratext_catalog.py",
     "project-code.schema.yml": "system/src/sage/project_codes.py",
@@ -183,7 +184,9 @@ def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> l
 
     language_schema = schemas["language-profile-registry.schema.yml"]
     for language, record in (ecosystem.get("language_profiles") or {}).items():
-        required = [str(item) for item in language_schema.get("required_per_namespace", [])]
+        is_alias = isinstance(record, dict) and record.get("profile_alias") not in (None, "")
+        requirement_key = "required_per_alias_namespace" if is_alias else "required_per_concrete_namespace"
+        required = [str(item) for item in language_schema.get(requirement_key, [])]
         missing = _missing(record, required)
         if missing:
             errors.append(f"ecosystem.yml.language_profiles.{language} missing: {', '.join(missing)}")
@@ -209,6 +212,17 @@ def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> l
                     errors.append(
                         f"ecosystem.yml.evaluation_sets.{set_id}.entries[{index}] missing: {', '.join(missing)}"
                     )
+
+    ol_authority_schema = schemas["ol-authority-profile.schema.yml"]
+    for family in ("grk", "heb"):
+        path = root / f"system/resources/scripture/original-language/{family}/authority-profile.yml"
+        errors.extend(
+            _validate_required_shape(
+                ol_authority_schema,
+                _load_data(path),
+                str(path.relative_to(root)),
+            )
+        )
 
     return errors
 
@@ -267,7 +281,7 @@ def validate_schema_contracts(root: Path) -> dict[str, Any]:
         "schema_count": len(paths),
         "schema_ids": len(ids),
         "owner_count": len(SCHEMA_OWNERS),
-        "source_instance_groups": 7,
+        "source_instance_groups": 8,
         "errors": errors,
         "warnings": warnings,
     }

@@ -513,8 +513,8 @@ def parse_skill_frontmatter(path: Path) -> dict[str, Any]:
 def check_all_skills(root: Path, errors: list[str], counts: dict[str, int]) -> None:
     """Validate every provider-neutral routed Skill and its active references."""
     paths = sorted((root / "system" / "skills").glob("*/SKILL.md"))
-    if len(paths) != 6:
-        errors.append(f"Expected 6 governed analytical Skill files, found {len(paths)}")
+    if len(paths) != 7:
+        errors.append(f"Expected 7 governed analytical Skill files, found {len(paths)}")
     forbidden_context = {
         "Cline": "provider-specific Cline instruction",
         "SWITCH TO ACT MODE": "obsolete mode-switch instruction",
@@ -773,6 +773,7 @@ def check_skill_registry(root: Path, errors: list[str], counts: dict[str, int]) 
         ("bic", "rewrite"),
         ("bic", "self_check"),
         ("saw", "rtc"),
+        ("saw", "stc"),
         ("saw", "focused"),
         ("saw", "ol"),
     }
@@ -959,12 +960,16 @@ def audit(root: Path, mode: str) -> dict[str, Any]:
     current_rc_match = re.search(r"(?i)rc\d+(?:\.\d+)?", version)
     current_rc_token = current_rc_match.group(0).casefold() if current_rc_match else None
     pre_release_text_re = re.compile(
-        r"(?i)\b(?:\d+\.\d+-(?:alpha|beta|dev|rc\d+)(?:\.\d+)?|rc\d+(?:\.\d+)?)\b"
+        r"(?i)\b(?:\d+\.\d+(?:-?(?:alpha|beta|dev)(?:\d+(?:\.\d+)?)?|-?rc\d+(?:\.\d+)?)|rc\d+(?:\.\d+)?)\b"
     )
     historical_text_exemptions = {
         "docs/advanced/maintenance/HARDENING-AND-CONTEXT-REFINEMENT.md",
         "docs/advanced/release/IMPLEMENTATION-REPORT.md",
         "docs/advanced/maintenance/MACOS-LINUX-PATH-EXECUTION-REPORT.md",
+        "docs/advanced/maintenance/WINDOWS-CODEX-EXECUTION-AUDIT.md",
+        "system/config/project-management/IMPLEMENTED-UPDATES.md",
+        "system/config/project-management/MILESTONES.md",
+        "system/config/project-management/VERSIONING-POLICY.md",
         "docs/advanced/release/RELEASE-NOTES.md",
         "docs/advanced/release/TEST-AND-VALIDATION-REPORT.md",
         "system/config/CHANGELOG.md",
@@ -1016,11 +1021,23 @@ def audit(root: Path, mode: str) -> dict[str, Any]:
                 and not rel.startswith("system/tests/")
                 and "/references/ORIGINAL-" not in f"/{rel}"
             ):
-                stale_tokens = {
-                    match.group(0)
-                    for match in pre_release_text_re.finditer(text)
-                    if match.group(0).casefold() not in {current_pre_release, current_rc_token}
-                }
+                stale_tokens: set[str] = set()
+                for match in pre_release_text_re.finditer(text):
+                    token = match.group(0)
+                    if token.casefold() in {current_pre_release, current_rc_token}:
+                        continue
+                    line_start = text.rfind("\n", 0, match.start()) + 1
+                    line_end = text.find("\n", match.end())
+                    line = text[line_start:] if line_end < 0 else text[line_start:line_end]
+                    alpha_branch_lineage = (
+                        rel == "docs/advanced/release/HANDOVER.md"
+                        and f"{token} remains the mainline baseline" in line
+                        and version in line
+                        and "parallel Alpha branch" in line
+                    )
+                    if alpha_branch_lineage:
+                        continue
+                    stale_tokens.add(token)
                 if stale_tokens:
                     errors.append(
                         f"Previous pre-release reference in current source text: {rel}: "

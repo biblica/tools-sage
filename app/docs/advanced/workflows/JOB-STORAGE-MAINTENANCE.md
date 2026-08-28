@@ -1,6 +1,6 @@
 # Job storage maintenance
 
-SAGE v0.01beta removes unused legacy directory creation from new Jobs/Runs and provides evidence-preserving maintenance for existing trees.
+SAGE v0.02alpha1 removes unused legacy directory creation from new Jobs/Runs and provides evidence-preserving maintenance for existing trees.
 
 ## Current layout
 
@@ -17,7 +17,7 @@ Use **BIC > Maintain Job storage** or **SAW > Maintain Job storage**, or use CLI
 
 The audit carries a stable structural SHA-256. Apply refuses a stale audit if the Job tree changed. Empty retired directories may be removed. Recognized legacy polished reports are copied to `localdata/reports/<job-id>/LEGACY/<run-id>/`, hash-verified, and only then removed from the old path. Unknown/non-empty content is always preserved for review.
 
-## Final Beta ownership
+## Alpha ownership
 
 - `localdata/reports/` is reserved for finalized Operator-facing deliverables outside Git-controlled Core.
 - `jobs/.../diagnostics/` and `jobs/.../runs/.../diagnostics/` contain technical execution/validation diagnostics.

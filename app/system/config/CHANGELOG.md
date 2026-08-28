@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.02alpha1
+
+- Added Source Text Correspondence (STC) with WIP-to-PRIMARY OL correspondence and fail-closed exact coverage/finalization.
+- Unified BIC/RTC/STC review sizing under routed-SFM-only deterministic slicing.
+- Added universal governed linguistic-profile routing for bounded model-facing requests, including historical GRK/HEB authority profiles.
+- Added setup-selected ADVANCED host capability at >=16 GiB available RAM and >=16 logical CPUs with a hardening ceiling of 6 workers; BASIC/STANDARD remain capped at 2/4.
+- Updated SAW operator order to RTC -> STC -> Targeted Check -> Original-Language Review.
+
 ## 0.01beta
 
 `0.01beta` is the first group-testing baseline published from the current Git-managed architecture. Unpublished internal development labels are intentionally not part of the public changelog.
@@ -52,8 +60,10 @@
 ### Workflow/operator continuity
 
 - Retained role-neutral SAGE Project inventory with Job-scoped BIC/SAW authority.
-- Retained governed Reference Text Comparison (RTC), Targeted Check, Original-Language Review, bounded work-unit planning, source-provenance handling, and chapter/report behavior.
+- Added governed Source Text Correspondence (STC) as an independent WIP-to-PRIMARY-OL review (NT -> GRK, OT -> HEB), alongside retained RTC, Targeted Check, and Original-Language Review operations.
+- Unified BIC/RTC/STC Scripture sizing under routed-SFM-only deterministic planning; controller JSON, prompts, schemas, linguistic profiles, and provider transport overhead no longer affect Scripture slicing or token limits.
+- Added complete model-facing LANGUAGE_PROFILE / source-bound OL_AUTHORITY_PROFILE routing, including explicit Ancient/NT Greek and Biblical/Ancient Hebrew register protection.
 - Corrected approved SAW-plan reconciliation so an unchanged verse bridge is compared by its exact
   atomic coordinates instead of being falsely reported as stale because its display label is ranged.
-- Retained cross-platform Codex/Ollama administration boundaries and host-capability detection.
+- Retained cross-platform Codex/Ollama administration boundaries and extended setup-selected host capability to BASIC (2 workers), STANDARD (4), and ADVANCED (6; requires at least 16 GiB available RAM and 16 logical CPUs).
 - Retained the classic terminal menu and scriptable CLI as authoritative Beta interfaces; Textual remains experimental/unstable.

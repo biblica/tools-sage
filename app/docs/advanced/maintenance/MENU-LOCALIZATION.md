@@ -16,7 +16,7 @@ interface:
   menu_localization_source: system/config/localization/menu-localization.json
 ```
 
-Supported interface languages in v0.01beta are `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`.
+Supported interface languages in v0.02alpha1 are `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`.
 
 ## Menu grammar
 
@@ -43,7 +43,7 @@ The editable localization source is documented in `system/config/localization/RE
 
 ## Release rebuild task
 
-Before every Beta, RC, or release source freeze, review the canonical menu text changed since the
+Before every Alpha, Beta, RC, or release source freeze, review the canonical menu text changed since the
 previous version and rebuild `system/config/localization/menu-localization.json`:
 
 1. Extract/review current static menu titles, instructions, and option labels plus the governed

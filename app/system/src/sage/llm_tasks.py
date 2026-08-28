@@ -11,9 +11,9 @@ from typing import Any
 from .atomic import atomic_write_json, atomic_write_text
 from .bounded_target import extract_scope_usfm, merge_bounded_usfm
 from .errors import ConfigurationError, EvidenceLimitError, ValidationError
-from .evidence import estimate_tokens
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
+    AUTHORITY_INTERPRETATION_RULES,
     LINGUISTIC_COMPETENCE_RULES,
     PROCESS_CONTROL,
     PROJECT_INDEX_EVIDENCE,
@@ -28,6 +28,7 @@ from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
 from .model_policy import cache_provider_catalog, recommend_model, validate_explicit_selection
 from .profiles import load_workflow_profile
+from .sfm_slicer import measure_sfm_text
 from .references import parse_scope
 from .registry import EcosystemConfig
 from .storage import StorageError, declare_governed_path, resolve_declared_path
@@ -1026,18 +1027,26 @@ def _micro_scope_reads(
     raw_scripture_seen = False
     retained_classes = {
         AUTHORIZED_CONTENT_EVIDENCE,
+        AUTHORITY_INTERPRETATION_RULES,
         LINGUISTIC_COMPETENCE_RULES,
         PROJECT_INDEX_EVIDENCE,
         STRUCTURAL_EVIDENCE,
     }
     for path, content, evidence_class in [*normal_reads, *conditional_reads]:
         normalized = path.replace("\\", "/")
+        is_comparison_sfm = normalized.endswith(
+            ("/packet/source.sfm", "/packet/original-language.sfm")
+        )
         is_comparison_usj = normalized.endswith(
             ("/packet/source.usj.json", "/packet/original-language.usj.json")
         )
-        if is_comparison_usj:
+        if is_comparison_sfm or is_comparison_usj:
             raw_scripture_seen = True
-            scoped = _extract_scope_usj(content, reference)
+            scoped = (
+                extract_scope_usfm(content, reference)
+                if is_comparison_sfm
+                else _extract_scope_usj(content, reference)
+            )
             if not scoped.strip():
                 raise ValidationError(
                     f"Conditional OL micro-scope {reference} is absent from {path}",
@@ -1048,7 +1057,7 @@ def _micro_scope_reads(
         elif validate_read_class(evidence_class) in retained_classes:
             focused.append((path, content, evidence_class))
     if not raw_scripture_seen:
-        # Synthetic/provider-contract tests may use plain evidence files; governed BIC tasks use USJ packets.
+        # Synthetic/provider-contract tests may use plain evidence files; governed BIC tasks use SFM packets.
         return [*normal_reads, *conditional_reads]
     return focused
 
@@ -1415,11 +1424,11 @@ def _apply_bic_ol_micro_result(
 
 
 def _read_projection_measurement(reads: list[tuple[str, str, str]]) -> dict[str, Any]:
-    """Quantify deterministic evidence compression before provider serialization."""
+    """Measure transport bytes for all reads and sizing tokens only for routed SFM."""
     raw_bytes = 0
     model_bytes = 0
-    raw_tokens = 0
-    model_tokens = 0
+    sfm_bytes = 0
+    sfm_tokens = 0
     projected_count = 0
     by_class: dict[str, dict[str, int]] = {}
     for path, content, evidence_class in reads:
@@ -1427,12 +1436,13 @@ def _read_projection_measurement(reads: list[tuple[str, str, str]]) -> dict[str,
         model_content, projection = _model_read_content(path, content, normalized_class)
         raw_size = len(content.encode("utf-8"))
         model_size = len(model_content.encode("utf-8"))
-        raw_estimate = estimate_tokens(content)
-        model_estimate = estimate_tokens(model_content)
+        is_sfm = Path(path).suffix.lower() == ".sfm"
+        routed_tokens = measure_sfm_text(content).estimated_tokens if is_sfm else 0
+        routed_bytes = raw_size if is_sfm else 0
         raw_bytes += raw_size
         model_bytes += model_size
-        raw_tokens += raw_estimate
-        model_tokens += model_estimate
+        sfm_bytes += routed_bytes
+        sfm_tokens += routed_tokens
         projected_count += int(projection is not None)
         bucket = by_class.setdefault(
             normalized_class,
@@ -1440,61 +1450,59 @@ def _read_projection_measurement(reads: list[tuple[str, str, str]]) -> dict[str,
                 "read_count": 0,
                 "raw_bytes": 0,
                 "model_bytes": 0,
-                "raw_estimated_tokens": 0,
-                "model_estimated_tokens": 0,
+                "routed_sfm_bytes": 0,
+                "routed_sfm_estimated_tokens": 0,
             },
         )
         bucket["read_count"] += 1
         bucket["raw_bytes"] += raw_size
         bucket["model_bytes"] += model_size
-        bucket["raw_estimated_tokens"] += raw_estimate
-        bucket["model_estimated_tokens"] += model_estimate
-    saved_tokens = max(0, raw_tokens - model_tokens)
-    saved_bytes = max(0, raw_bytes - model_bytes)
+        bucket["routed_sfm_bytes"] += routed_bytes
+        bucket["routed_sfm_estimated_tokens"] += routed_tokens
     return {
         "read_count": len(reads),
         "projected_read_count": projected_count,
         "raw_bytes": raw_bytes,
         "model_bytes": model_bytes,
-        "saved_bytes": saved_bytes,
-        "raw_estimated_tokens": raw_tokens,
-        "model_estimated_tokens": model_tokens,
-        "saved_estimated_tokens": saved_tokens,
-        "estimated_token_reduction_percent": round((saved_tokens / raw_tokens) * 100, 1) if raw_tokens else 0.0,
+        "routed_sfm_bytes": sfm_bytes,
+        "routed_sfm_estimated_tokens": sfm_tokens,
         "by_evidence_class": by_class,
     }
 
 
-def _handoff_measurement(
+def _route_measurement(
     prompt: str, schema: dict[str, Any], reads: list[tuple[str, str, str]] | None = None
 ) -> dict[str, Any]:
-    """Measure the exact provider handoff and optional pre-serialization evidence projection."""
+    """Measure SFM-only analytical sizing plus byte-only provider transport telemetry."""
     schema_text = json.dumps(schema, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     prompt_bytes = len(prompt.encode("utf-8"))
     schema_bytes = len(schema_text.encode("utf-8"))
-    combined = prompt + "\n" + schema_text
-    measurement = {
+    projection = _read_projection_measurement(reads or [])
+    sfm_bytes = int(projection["routed_sfm_bytes"])
+    sfm_tokens = int(projection["routed_sfm_estimated_tokens"])
+    transport_bytes = prompt_bytes + schema_bytes + int(projection["model_bytes"])
+    return {
         "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
-        "measurement_scope": "provider_prompt_plus_output_schema",
+        "measurement_scope": "routed_analysis_sfm_only",
+        "total_bytes": sfm_bytes,
+        "total_estimated_tokens": sfm_tokens,
+        "routed_sfm_bytes": sfm_bytes,
+        "routed_sfm_estimated_tokens": sfm_tokens,
+        "transport_measurement_scope": "provider_payload_bytes_telemetry_only",
+        "transport_bytes": transport_bytes,
         "prompt_bytes": prompt_bytes,
         "schema_bytes": schema_bytes,
-        "total_bytes": prompt_bytes + schema_bytes,
-        "prompt_estimated_tokens": estimate_tokens(prompt),
-        "schema_estimated_tokens": estimate_tokens(schema_text),
-        "total_estimated_tokens": estimate_tokens(combined),
+        "evidence_projection": projection,
     }
-    if reads is not None:
-        measurement["evidence_projection"] = _read_projection_measurement(reads)
-    return measurement
 
 
-def estimate_initial_handoff(
+def _measure_task_route(
     config: EcosystemConfig,
     *,
     manifest: dict[str, Any],
     act_text: str,
 ) -> dict[str, Any]:
-    """Measure the exact first provider handoff without contacting a provider.
+    """Measure routed SFM sizing plus provider transport telemetry without contacting a provider.
 
     Task planning uses the same projection, prompt and response-schema construction as
     execution. Full governance context remains separately measurable by the controller.
@@ -1502,15 +1510,15 @@ def estimate_initial_handoff(
     reads = [_verified_read(config, dict(item)) for item in manifest.get("allowed_reads", [])]
     schema = _output_schema(manifest)
     prompt = _prompt(manifest=manifest, act_text=act_text, reads=reads)
-    return _handoff_measurement(prompt, schema, reads)
+    return _route_measurement(prompt, schema, reads)
 
 
-def _enforce_handoff_budget(
+def _enforce_routed_sfm_budget(
     config: EcosystemConfig,
     manifest: dict[str, Any],
     measurement: dict[str, Any],
 ) -> dict[str, Any]:
-    """Fail closed when the exact serialized provider handoff exceeds workflow policy."""
+    """Fail closed when routed analysis SFM exceeds the workflow policy."""
     workflow = str(manifest.get("workflow", "")).strip().lower()
     operation = str(manifest.get("operation", "")).strip().lower()
     profile = load_workflow_profile(config, config.workflow(workflow))
@@ -1524,7 +1532,7 @@ def _enforce_handoff_budget(
         )
     if failures:
         raise EvidenceLimitError(
-            "Exact LLM handoff exceeds governed hard limit: " + "; ".join(failures),
+            "Routed analysis SFM exceeds governed hard limit: " + "; ".join(failures),
             code="LLM_HANDOFF_CONTEXT_LIMIT_EXCEEDED",
             affected_scope=str(manifest.get("scope", "")) or None,
             next_action="Partition or narrow the governed task before provider execution.",
@@ -1540,7 +1548,7 @@ def _enforce_handoff_budget(
         sizing.validate_active_provider(
             str(load_llm_settings(config.root).get("selected_provider") or "")
         )
-        sizing.enforce_handoff(measurement, scope=str(manifest.get("scope") or ""))
+        sizing.enforce_route(measurement, scope=str(manifest.get("scope") or ""))
         result["rtc_sizing"] = sizing.to_dict()
     return result
 
@@ -1616,7 +1624,7 @@ def execute_task(
     requested_reasoning = reasoning_effort if reasoning_effort is not None else persisted_reasoning
     prompt = _prompt(manifest=manifest, act_text=act_text, reads=normal_reads)
     prompt_sha = sha256_bytes(prompt.encode("utf-8"))
-    first_handoff = _enforce_handoff_budget(config, manifest, _handoff_measurement(prompt, schema, normal_reads))
+    first_handoff = _enforce_routed_sfm_budget(config, manifest, _route_measurement(prompt, schema, normal_reads))
 
     if dry_run:
         return {
@@ -1770,8 +1778,8 @@ def execute_task(
                 "Return a complete fresh response for the same sealed task and schema. Use the same evidence and scope; preserve identifiers, enum values, and source quotations.",
             ]
         )
-        correction_measurement = _enforce_handoff_budget(
-            config, manifest, _handoff_measurement(correction_prompt, schema, normal_reads)
+        correction_measurement = _enforce_routed_sfm_budget(
+            config, manifest, _route_measurement(correction_prompt, schema, normal_reads)
         )
         handoff_measurements.append(
             {"phase": 2, **correction_measurement, "mode": "REPORT_LANGUAGE_CORRECTION"}
@@ -1830,8 +1838,8 @@ def execute_task(
             candidate_verse=candidate_verse,
         )
         phase_number = base_phase_count + request_index
-        measurement = _enforce_handoff_budget(
-            config, manifest, _handoff_measurement(conditional_prompt, micro_schema, focused_reads)
+        measurement = _enforce_routed_sfm_budget(
+            config, manifest, _route_measurement(conditional_prompt, micro_schema, focused_reads)
         )
         handoff_measurements.append({"phase": phase_number, **measurement, "mode": "BIC_OL_MICRO"})
         conditional_micro_scopes.append(dict(conditional_request))

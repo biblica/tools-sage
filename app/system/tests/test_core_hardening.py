@@ -329,18 +329,23 @@ def test_rtc_context_excludes_ol_and_raw_profile(
     assert not any(
         path.endswith("system/config/profiles/grammar/en/bol-target.yml") for path in paths
     )
-    assert any(path.endswith("project-grammar-contract.json") for path in paths)
+    assert any(path.endswith("wip-grammar-contract.json") for path in paths)
+    assert not any(path.endswith("reference-grammar-contract.json") for path in paths)
+    profiles = {row["stream_id"]: row for row in task["linguistic_profile_bindings"]}
+    assert profiles["WIP"]["path"] == profiles["REFERENCE"]["path"]
+    assert profiles["WIP"]["sha256"] == profiles["REFERENCE"]["sha256"]
+    assert {item["stream_id"] for item in task["linguistic_profile_bindings"]} >= {"WIP", "REFERENCE"}
     assert (
         task["context_budget"]["final_estimated_tokens"]
         <= task["context_budget"]["policy"]["hard_estimated_tokens"]
     )
 
 
-def test_task_budget_uses_exact_projected_handoff_and_keeps_controller_byte_inventory(
+def test_task_budget_uses_routed_sfm_only_and_keeps_controller_byte_inventory(
     package_root: Path,
     make_workspace,
 ) -> None:
-    """Budget only the provider representation; inventory controller inputs as bytes."""
+    """Budget only routed analysis SFM; inventory all other provider/controller material as bytes."""
     root = make_workspace(qualification_status="VALIDATED")
     initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
@@ -355,10 +360,10 @@ def test_task_budget_uses_exact_projected_handoff_and_keeps_controller_byte_inve
 
     budget = task["context_budget"]
     governance = budget["governance_context"]
-    assert budget["planning_basis"] == "PROJECTED_HANDOFF_ESTIMATED_TOKENS"
-    assert budget["measurement_scope"] == "projected_provider_handoff"
-    assert budget["final_estimated_tokens"] == budget["provider_handoff"]["total_estimated_tokens"]
-    assert governance["measurement_scope"] == "controller_inventory_not_provider_handoff"
+    assert budget["planning_basis"] == "ROUTED_SFM_ONLY"
+    assert budget["measurement_scope"] == "routed_analysis_sfm_only"
+    assert budget["final_estimated_tokens"] == budget["routed_sfm"]["total_estimated_tokens"]
+    assert governance["measurement_scope"] == "controller_inventory_only"
     assert governance["final_serialized_bytes"] >= budget["final_serialized_bytes"]
     assert "estimated_tokens" not in governance
     assert "final_estimated_tokens" not in governance

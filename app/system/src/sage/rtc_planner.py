@@ -1,20 +1,19 @@
-"""Complete-package sizing for discourse-first SAW Reference Text Comparison plans."""
+"""Discourse-first SAW RTC planning from routed WIP+Reference SFM only."""
 
 from __future__ import annotations
 
-import math
-from dataclasses import replace
 from typing import Any, Iterable, Mapping
 
 from .canon import PROTESTANT_66
 from .errors import ConfigurationError, EvidenceLimitError, ValidationError
-from .evidence import EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy, measure_evidence
+from .evidence import EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy
 from .references import expand_reference_atoms
-from .work_units import EvidenceRecord, WorkUnit, build_evidence_packet, plan_work_units
+from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
+from .work_units import EvidenceRecord, WorkUnit
 from .vrs import VerseRef
 
 
-RTC_PLANNER_VERSION = "SAGE_RTC_PACKAGE_PLANNER_V2"
+RTC_PLANNER_VERSION = "SAGE_RTC_SFM_ROUTE_PLANNER_V3"
 RTC_HANDOFF_CONTRACT_VERSION = "SAGE_GOVERNED_TASK_V1"
 RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "SAW_RTC_REFERENCE_TEXT_COMPARISON_V1"
 RTC_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_1"
@@ -51,21 +50,20 @@ def vrs_source_equivalence_spans(
 
 
 def rtc_slicing_policy(base: EvidencePolicy, sizing: RTCSizingPolicy) -> EvidencePolicy:
-    """Derive the WIP-only boundary policy from the validated RTC sizing contract."""
+    """Derive RTC soft WIP targets and hard routed-SFM review-item limits."""
     if sizing.estimator != RTC_ESTIMATOR:
         raise ConfigurationError(
             f"Unsupported SAW RTC estimator {sizing.estimator!r}; expected {RTC_ESTIMATOR}"
         )
+    route_hard = min(base.hard_estimated_tokens, sizing.route_hard_max_tokens)
+    target = min(sizing.wip_target_min_tokens, max(1, route_hard - 1))
+    preferred = min(sizing.wip_target_max_tokens, route_hard)
     return EvidencePolicy(
-        target_estimated_tokens=sizing.wip_target_min_tokens,
-        hard_estimated_tokens=sizing.wip_hard_exclusive_tokens - 1,
-        hard_serialized_bytes=min(
-            base.hard_serialized_bytes,
-            sizing.package_hard_serialized_bytes
-            - sizing.minimum_overhead_serialized_bytes,
-        ),
-        minimum_target_tokens=max(1, sizing.wip_target_min_tokens - 1000),
-        preferred_max_estimated_tokens=sizing.wip_target_max_tokens,
+        target_estimated_tokens=target,
+        hard_estimated_tokens=route_hard,
+        hard_serialized_bytes=min(base.hard_serialized_bytes, sizing.route_hard_serialized_bytes),
+        minimum_target_tokens=min(max(1, sizing.wip_target_min_tokens - 1000), target),
+        preferred_max_estimated_tokens=max(target, preferred),
         maximum_primary_verse_units=min(base.maximum_primary_verse_units, 80),
         context_before_verses=base.context_before_verses,
         context_after_verses=base.context_after_verses,
@@ -76,66 +74,37 @@ def rtc_slicing_policy(base: EvidencePolicy, sizing: RTCSizingPolicy) -> Evidenc
 
 
 def _records_for_refs(
-    records: Iterable[EvidenceRecord],
-    refs: frozenset[VerseRef],
+    records: Iterable[EvidenceRecord], refs: frozenset[VerseRef]
 ) -> tuple[EvidenceRecord, ...]:
-    """Return ordered records intersecting an exact WIP-derived coordinate inventory."""
+    """Select source records intersecting the requested canonical coordinate set."""
     return tuple(record for record in records if refs.intersection(record.refs))
 
 
-def _indivisible_source_spans(
-    records: Iterable[EvidenceRecord],
-) -> tuple[tuple[VerseRef, ...], ...]:
-    """Return every multi-coordinate source record that no RTC boundary may bisect."""
-    return tuple(record.refs for record in records if len(record.refs) > 1)
-
-
-def _component_packet(
-    records: tuple[EvidenceRecord, ...],
-    before: tuple[EvidenceRecord, ...],
-    after: tuple[EvidenceRecord, ...],
-    *,
-    evidence_id: str,
-) -> dict[str, Any]:
-    """Build the deterministic component projection used for pre-run package sizing."""
-    return {
-        "projection": RTC_PLANNER_VERSION,
-        "evidence_id": evidence_id,
-        "primary": [
-            {"reference": item.reference, "context_only": False, "evidence": item.payload}
-            for item in records
-        ],
-        "context_before": [
-            {"reference": item.reference, "context_only": True, "evidence": item.payload}
-            for item in before
-        ],
-        "context_after": [
-            {"reference": item.reference, "context_only": True, "evidence": item.payload}
-            for item in after
-        ],
-    }
-
-
 def _component(measurement: EvidenceMeasurement) -> dict[str, Any]:
-    """Serialize one RTC component measurement for plan persistence and display."""
+    """Render one routed-SFM measurement component for RTC audit and operator display."""
     return {
         "estimator": RTC_ESTIMATOR,
         "estimated_tokens": measurement.estimated_tokens,
         "serialized_bytes": measurement.serialized_bytes,
+        "basis": "ROUTED_SFM_ONLY",
     }
 
 
-def _measure_package(
+def _unit_component(unit: WorkUnit, records: tuple[EvidenceRecord, ...]) -> tuple[EvidenceRecord, ...]:
+    """Select all primary and routed-context records belonging to one RTC work unit."""
+    refs = frozenset((*unit.primary_refs, *unit.context_refs))
+    return _records_for_refs(records, refs)
+
+
+def _measure_review_item(
     unit: WorkUnit,
     reference_records: tuple[EvidenceRecord, ...],
-    sizing: RTCSizingPolicy,
 ) -> dict[str, Any]:
-    """Measure WIP and correlated REF, then add the release-governed overhead reserve."""
-    primary_refs = unit.primary_refs
-    reference_primary = _records_for_refs(reference_records, primary_refs)
-    covered_refs = frozenset(ref for record in reference_primary for ref in record.refs)
-    missing = sorted(primary_refs - covered_refs)
-    if missing:
+    """Persist WIP, Reference, and combined review-item SFM measurements for audit/UI."""
+    reference_primary = _records_for_refs(reference_records, unit.primary_refs)
+    covered = frozenset(ref for record in reference_primary for ref in record.refs)
+    if covered != unit.primary_refs:
+        missing = sorted(unit.primary_refs - covered)
         raise ValidationError(
             "SAW RTC REFERENCE does not cover the complete WIP slice: "
             + ", ".join(ref.label() for ref in missing),
@@ -143,118 +112,31 @@ def _measure_package(
             affected_scope=unit.primary[0].reference if unit.primary else None,
             next_action="Correct the bound REFERENCE/VRS resource before rebuilding the RTC plan.",
         )
-    before_refs = frozenset(ref for record in unit.context_before for ref in record.refs)
-    after_refs = frozenset(ref for record in unit.context_after for ref in record.refs)
-    reference_before = _records_for_refs(reference_records, before_refs)
-    reference_after = _records_for_refs(reference_records, after_refs)
-
-    # The WIP component deliberately excludes shared planning metadata. That metadata,
-    # prompt, schema, indexes, grammar and serialization are represented by OH.
-    wip_measurement = measure_evidence(build_evidence_packet(unit, {}))
-    reference_measurement = measure_evidence(
-        _component_packet(
-            reference_primary,
-            reference_before,
-            reference_after,
-            evidence_id="REFERENCE",
-        )
-    )
-    overhead = {
-        "estimator": RTC_ESTIMATOR,
-        "estimated_tokens": sizing.minimum_overhead_reserve_tokens,
-        "serialized_bytes": sizing.minimum_overhead_serialized_bytes,
-        "basis": "RELEASE_GOVERNED_MINIMUM_RESERVE",
-    }
-    pack_tokens = (
-        wip_measurement.estimated_tokens
-        + reference_measurement.estimated_tokens
-        + overhead["estimated_tokens"]
-    )
-    pack_bytes = (
-        wip_measurement.serialized_bytes
-        + reference_measurement.serialized_bytes
-        + overhead["serialized_bytes"]
-    )
+    wip_records = tuple(sorted(
+        (*unit.context_before, *unit.primary, *unit.context_after),
+        key=lambda item: (item.chapter, item.verse_start, item.verse_end),
+    ))
+    reference_slice = _unit_component(unit, reference_records)
+    wip_measurement = measure_sfm_slice(wip_records)
+    reference_measurement = measure_sfm_slice(reference_slice)
     return {
         "projection": RTC_PLANNER_VERSION,
-        "primary_coverage_atoms": [ref.label() for ref in sorted(primary_refs)],
+        "sizing_basis": "ROUTED_SFM_ONLY",
+        "analysis_route": "REFERENCE_TEXT_COMPARISON",
+        "primary_coverage_atoms": [ref.label() for ref in sorted(unit.primary_refs)],
         "source_spans": {
             "WIP": [record.reference for record in unit.primary],
             "REFERENCE": [record.reference for record in reference_primary],
         },
         "wip": _component(wip_measurement),
         "ref": _component(reference_measurement),
-        "oh": overhead,
-        "pack": {
-            "estimator": RTC_ESTIMATOR,
-            "estimated_tokens": pack_tokens,
-            "serialized_bytes": pack_bytes,
-        },
+        "route": _component(unit.measurement),
     }
 
 
-def _package_failures(package: dict[str, Any], sizing: RTCSizingPolicy) -> list[str]:
-    """Return every hard-limit violation in one completed planning projection."""
-    wip_tokens = int(package["wip"]["estimated_tokens"])
-    pack_tokens = int(package["pack"]["estimated_tokens"])
-    pack_bytes = int(package["pack"]["serialized_bytes"])
-    failures: list[str] = []
-    if wip_tokens >= sizing.wip_hard_exclusive_tokens:
-        failures.append(
-            f"WIP {wip_tokens} >= {sizing.wip_hard_exclusive_tokens}"
-        )
-    if pack_tokens > sizing.package_hard_max_tokens:
-        failures.append(f"PACK {pack_tokens} > {sizing.package_hard_max_tokens}")
-    if pack_tokens > sizing.provider_handoff_max_tokens:
-        failures.append(
-            f"provider PACK {pack_tokens} > {sizing.provider_handoff_max_tokens}"
-        )
-    if pack_bytes > sizing.package_hard_serialized_bytes:
-        failures.append(
-            f"PACK bytes {pack_bytes} > {sizing.package_hard_serialized_bytes}"
-        )
-    return failures
-
-
-def _smaller_policy(
-    policy: EvidencePolicy,
-    packages: tuple[dict[str, Any], ...],
-    sizing: RTCSizingPolicy,
-) -> EvidencePolicy:
-    """Reduce the WIP ceiling deterministically when a correlated package is oversized."""
-    ratios: list[float] = []
-    for package in packages:
-        pack = package["pack"]
-        tokens = int(pack["estimated_tokens"])
-        size = int(pack["serialized_bytes"])
-        if tokens > sizing.package_hard_max_tokens:
-            ratios.append(sizing.package_hard_max_tokens / tokens)
-        if tokens > sizing.provider_handoff_max_tokens:
-            ratios.append(sizing.provider_handoff_max_tokens / tokens)
-        if size > sizing.package_hard_serialized_bytes:
-            ratios.append(sizing.package_hard_serialized_bytes / size)
-        if int(package["wip"]["estimated_tokens"]) >= sizing.wip_hard_exclusive_tokens:
-            ratios.append(
-                (sizing.wip_hard_exclusive_tokens - 1)
-                / int(package["wip"]["estimated_tokens"])
-            )
-    ratio = min(ratios, default=0.8)
-    new_hard = min(policy.hard_estimated_tokens - 1, math.floor(policy.hard_estimated_tokens * ratio * 0.92))
-    if new_hard < 256:
-        raise EvidenceLimitError(
-            "SAW RTC cannot reslice the completed package within governed limits",
-            code="SAW_RTC_UNSPLITTABLE_PACKAGE",
-            next_action="Narrow the operator scope or correct an oversized single-verse WIP/REFERENCE record.",
-            details={"packages": list(packages), "rtc_sizing": sizing.to_dict()},
-        )
-    new_target = min(sizing.wip_target_min_tokens, max(1, new_hard * 3 // 4))
-    return replace(
-        policy,
-        target_estimated_tokens=new_target,
-        hard_estimated_tokens=new_hard,
-        minimum_target_tokens=min(policy.minimum_target_tokens, new_target),
-        preferred_max_estimated_tokens=min(sizing.wip_target_max_tokens, new_hard),
-    )
+def _required_spans(records: Iterable[EvidenceRecord]) -> tuple[tuple[VerseRef, ...], ...]:
+    """Return bridged source spans that RTC boundaries must preserve intact."""
+    return tuple(record.refs for record in records if len(record.refs) > 1)
 
 
 def plan_rtc_work_units(
@@ -269,76 +151,56 @@ def plan_rtc_work_units(
     wip_equivalence_spans: Iterable[Iterable[VerseRef]] = (),
     reference_equivalence_spans: Iterable[Iterable[VerseRef]] = (),
 ) -> tuple[tuple[WorkUnit, ...], tuple[dict[str, Any], ...], EvidencePolicy]:
-    """Plan WIP+REF-safe boundaries, validate complete packages, and reslice."""
+    """Plan RTC from actual WIP+Reference SFM while retaining WIP soft-target behavior."""
+    del shared  # Controller metadata is deliberately absent from review-item sizing.
     selected = tuple(wip_records)
     context = tuple(wip_context_pool)
     reference = tuple(reference_records)
+    policy = rtc_slicing_policy(base_policy, sizing)
     required_spans = (
-        _indivisible_source_spans(selected)
-        + _indivisible_source_spans(reference)
+        _required_spans(selected)
+        + _required_spans(reference)
         + tuple(tuple(span) for span in wip_equivalence_spans)
         + tuple(tuple(span) for span in reference_equivalence_spans)
     )
-    policy = rtc_slicing_policy(base_policy, sizing)
-    for _attempt in range(12):
-        try:
-            units = plan_work_units(
-                selected,
-                policy,
-                unit_prefix=unit_prefix,
-                shared=shared,
-                context_pool=context,
-                required_spans=required_spans,
-            )
-        except EvidenceLimitError as exc:
-            if exc.code == "WORK_UNIT_REQUIRED_SPAN_EXCEEDS_LIMIT":
-                raise EvidenceLimitError(
-                    "SAW RTC cannot preserve a WIP/REFERENCE bridge or VRS equivalence span within governed limits",
-                    code="SAW_RTC_UNSPLITTABLE_BRIDGE",
-                    affected_scope=exc.affected_scope,
-                    next_action="Narrow the operator scope or correct the oversized indivisible source span.",
-                    details=exc.details,
-                ) from exc
-            raise EvidenceLimitError(
-                f"SAW RTC WIP cannot be split below its exclusive hard maximum: {exc.message}",
-                code="SAW_RTC_UNSPLITTABLE_WIP",
-                next_action="Narrow the scope or resolve the oversized single-verse record.",
-            ) from exc
-        packages = tuple(_measure_package(unit, reference, sizing) for unit in units)
-        if not any(_package_failures(package, sizing) for package in packages):
-            return units, packages, policy
-        if all(len(unit.primary) == 1 for unit, package in zip(units, packages, strict=True) if _package_failures(package, sizing)):
-            raise EvidenceLimitError(
-                "A single-verse SAW RTC package exceeds governed WIP or complete-package limits",
-                code="SAW_RTC_UNSPLITTABLE_PACKAGE",
-                next_action="Narrow the scope or resolve the oversized WIP/REFERENCE verse record.",
-                details={"packages": list(packages), "rtc_sizing": sizing.to_dict()},
-            )
-        policy = _smaller_policy(policy, packages, sizing)
-    raise EvidenceLimitError(
-        "SAW RTC package reslicing did not converge within the governed iteration limit",
-        code="SAW_RTC_RESLICE_DID_NOT_CONVERGE",
-        next_action="Narrow the operator scope and rebuild the RTC plan.",
+    route = SfmAnalysisRoute(
+        route_id="REFERENCE_TEXT_COMPARISON",
+        streams=(
+            SfmStream("WIP", context),
+            SfmStream("REFERENCE", reference),
+        ),
+        target_stream_ids=("WIP",),
+        stream_hard_token_limits=(("WIP", sizing.wip_hard_exclusive_tokens - 1),),
     )
+    try:
+        units = plan_sfm_work_units(
+            selected,
+            policy,
+            unit_prefix=unit_prefix,
+            route=route,
+            context_pool=context,
+            required_spans=required_spans,
+        )
+    except EvidenceLimitError as exc:
+        code = "SAW_RTC_UNSPLITTABLE_BRIDGE" if exc.code == "WORK_UNIT_REQUIRED_SPAN_EXCEEDS_LIMIT" else "SAW_RTC_UNSPLITTABLE_WIP"
+        raise EvidenceLimitError(
+            "SAW RTC cannot preserve the routed WIP+REFERENCE SFM review item within governed limits",
+            code=code,
+            affected_scope=exc.affected_scope,
+            next_action="Narrow the scope or correct the oversized indivisible Scripture span.",
+            details=exc.details,
+        ) from exc
+    packages = tuple(_measure_review_item(unit, reference) for unit in units)
+    return units, packages, policy
 
 
 def package_summary(packages: Iterable[dict[str, Any]]) -> dict[str, Any]:
-    """Return component maxima for the operator plan and approval manifest."""
+    """Return review-item SFM maxima for operator plan display."""
     values = tuple(packages)
     return {
-        "largest_wip_estimated_tokens": max(
-            (int(item["wip"]["estimated_tokens"]) for item in values), default=0
-        ),
-        "largest_ref_estimated_tokens": max(
-            (int(item["ref"]["estimated_tokens"]) for item in values), default=0
-        ),
-        "largest_oh_estimated_tokens": max(
-            (int(item["oh"]["estimated_tokens"]) for item in values), default=0
-        ),
-        "largest_pack_estimated_tokens": max(
-            (int(item["pack"]["estimated_tokens"]) for item in values), default=0
-        ),
-        "largest_pack_serialized_bytes": max(
-            (int(item["pack"]["serialized_bytes"]) for item in values), default=0
-        ),
+        "largest_wip_estimated_tokens": max((int(item["wip"]["estimated_tokens"]) for item in values), default=0),
+        "largest_ref_estimated_tokens": max((int(item["ref"]["estimated_tokens"]) for item in values), default=0),
+        "largest_route_estimated_tokens": max((int(item["route"]["estimated_tokens"]) for item in values), default=0),
+        "largest_route_serialized_bytes": max((int(item["route"]["serialized_bytes"]) for item in values), default=0),
+        "sizing_basis": "ROUTED_SFM_ONLY",
     }

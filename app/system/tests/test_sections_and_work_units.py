@@ -14,11 +14,26 @@ from sage.scripture import compile_project
 from sage.sections import index_usfm_structure
 from sage.work_units import (
     EvidenceRecord,
-    plan_work_units,
     records_from_project_result,
     select_records_for_scope,
 )
 from sage.references import parse_scope
+from sage.sfm_slicer import SfmAnalysisRoute, SfmStream, plan_sfm_work_units
+
+
+def plan_work_units(records, policy, *, unit_prefix, shared=None, context_pool=None, required_spans=()):
+    """Exercise the production general SFM slicer with one routed Scripture stream."""
+    ordered = tuple(records)
+    pool = tuple(context_pool) if context_pool is not None else ordered
+    return plan_sfm_work_units(
+        ordered, policy, unit_prefix=unit_prefix,
+        route=SfmAnalysisRoute(
+            route_id="TEST",
+            streams=(SfmStream("SCRIPTURE", pool),),
+            target_stream_ids=("SCRIPTURE",),
+        ),
+        context_pool=pool, required_spans=required_spans,
+    )
 
 
 def record(
@@ -389,7 +404,7 @@ def test_project_records_include_section_and_paragraph_metadata(make_workspace) 
 def test_work_unit_manifest_uses_current_schema_version() -> None:
     """Verify that work unit manifest uses current schema version."""
     from sage.evidence import EvidencePolicy
-    from sage.work_units import EvidenceRecord, manifest, plan_work_units
+    from sage.work_units import EvidenceRecord, manifest
 
     record = EvidenceRecord(
         book="MAT",

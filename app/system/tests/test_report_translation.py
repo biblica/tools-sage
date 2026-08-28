@@ -3,13 +3,41 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
+
+import yaml
 
 from sage.storage import storage_layout
 from sage.act_outputs import render_action_report
 from sage.executors.base import ProviderResponse
 from sage.llm_settings import LOCAL_AI_EXTERNAL_RENDERING_REQUIRED, set_local_admin_enabled
 from sage.report_translation import ensure_secondary_saw_report_rendering
+
+
+def _workspace_with_uk_profile(package_root: Path, make_workspace) -> Path:
+    """Return a fixture with explicit canonical EN and UK reporting LANGUAGE_PROFILE namespaces."""
+    root = make_workspace(qualification_status="VALIDATED")
+    uk_target = root / "system/config/profiles/grammar/uk-UA/wip.yml"
+    uk_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(package_root / "system/config/profiles/grammar/uk-UA/wip.yml", uk_target)
+    settings_path = root / "ecosystem.yml"
+    settings = yaml.safe_load(settings_path.read_text(encoding="utf-8"))
+    settings["language_profiles"]["uk-UA"] = {
+        "script": "Cyrl",
+        "variants": {
+            "wip": {
+                "file": "system/config/profiles/grammar/uk-UA/wip.yml",
+                "role": "WIP",
+            }
+        },
+    }
+    settings["language_profiles"]["uk"] = {
+        "script": "Cyrl",
+        "profile_alias": "uk-UA",
+    }
+    settings_path.write_text(yaml.safe_dump(settings, sort_keys=False), encoding="utf-8")
+    return root
 
 
 def _document() -> dict:
@@ -51,7 +79,12 @@ def _document() -> dict:
     }
 
 
-def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(tmp_path: Path, monkeypatch) -> None:
+def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(
+    tmp_path: Path,
+    monkeypatch,
+    package_root: Path,
+    make_workspace,
+) -> None:
     """Verify one provider pass supplies UK prose and its receipt is reused."""
     calls = []
 
@@ -83,8 +116,7 @@ def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(tmp_path:
             )
 
     monkeypatch.setattr("sage.report_translation.make_executor", lambda provider, settings: FakeExecutor())
-    sage_root = tmp_path / "SAGE" / "app"
-    sage_root.mkdir(parents=True)
+    sage_root = _workspace_with_uk_profile(package_root, make_workspace)
     report_path = tmp_path / "RUT_ACTION-REPORT.md"
     rendered = ensure_secondary_saw_report_rendering(sage_root, report_path, _document())
     assert rendered["report_renderings"]["status"] == "AVAILABLE"
@@ -99,10 +131,16 @@ def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(tmp_path:
     assert "Приберіть додану ознаку тимчасовості." in report
     assert "usNIVv2" in calls[0].prompt
     assert "not expressed in the reference" not in calls[0].prompt
+    assert "BOL-TARGET-001" in calls[0].prompt
+    assert "UKUA-GR-001" in calls[0].prompt
     assert report.index("**Issue — English**") < report.index("**Proposed action — English**")
     assert report.index("**Proposed action — English**") < report.index("**Issue — Ukrainian**")
     assert report.index("**Issue — Ukrainian**") < report.index("**Proposed action — Ukrainian**")
     assert len(calls) == 1
+    assert set(rendered["report_renderings"]["linguistic_profile_bindings"]) == {
+        "REPORT:PRIMARY",
+        "REPORT:SECONDARY",
+    }
 
     cached = ensure_secondary_saw_report_rendering(sage_root, report_path, _document())
     assert cached["report_renderings"]["status"] == "AVAILABLE"
@@ -114,6 +152,8 @@ def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(tmp_path:
 def test_secondary_rendering_sends_exactly_one_report_item_per_provider_request(
     tmp_path: Path,
     monkeypatch,
+    package_root: Path,
+    make_workspace,
 ) -> None:
     """Findings and events are isolated, then assembled by the Python controller."""
     document = _document()
@@ -180,8 +220,7 @@ def test_secondary_rendering_sends_exactly_one_report_item_per_provider_request(
             )
 
     monkeypatch.setattr("sage.report_translation.make_executor", lambda provider, settings: FakeExecutor())
-    sage_root = tmp_path / "SAGE" / "app"
-    sage_root.mkdir(parents=True)
+    sage_root = _workspace_with_uk_profile(package_root, make_workspace)
     rendered = ensure_secondary_saw_report_rendering(
         sage_root,
         tmp_path / "RUT_ACTION-REPORT.md",
@@ -231,11 +270,10 @@ def test_secondary_rendering_failure_is_visible_without_invalidating_primary_rep
 
 
 def test_local_ai_rejects_only_job_external_rendering_and_preserves_primary_report(
-    tmp_path: Path, monkeypatch
+    tmp_path: Path, monkeypatch, package_root: Path, make_workspace
 ) -> None:
     """Local AI does not block basic work; only the Job's Hosted-AI rendering is rejected."""
-    sage_root = tmp_path / "SAGE" / "app"
-    sage_root.mkdir(parents=True)
+    sage_root = _workspace_with_uk_profile(package_root, make_workspace)
     set_local_admin_enabled(sage_root, True)
     monkeypatch.setattr(
         "sage.report_translation.make_executor",

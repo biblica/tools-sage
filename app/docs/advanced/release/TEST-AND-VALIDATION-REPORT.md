@@ -1,8 +1,8 @@
-# Test and Validation Report - SAGE v0.01beta
+# Test and Validation Report - SAGE v0.02alpha1
 
 ## Status
 
-`0.01beta` is a pre-release group-testing build. Qualification applies only to the exact governed source used by the production release builder. Any source or governed-test change invalidates previous hardening receipts.
+`0.02alpha1` is a pre-release group-testing build. Qualification applies only to the exact governed source used by the production release builder. Any source or governed-test change invalidates previous hardening receipts.
 
 ## Current qualification model
 
@@ -58,7 +58,7 @@ Automated source tests exercise Windows, macOS, Linux, POSIX permissions, path-w
 GitHub CI is configured for `ubuntu-latest`, `windows-latest`, and `macos-latest` with Python 3.10 and 3.12. CI installs pinned qualification dependencies, validates schemas/package boundaries, runs the complete test inventory, runs the source deep audit, and verifies the Git checkout remains unchanged.
 
 No current exact-source production artifact is claimed by this report. Native group acceptance on
-Windows, macOS Intel, and Linux release hosts remains a Beta deployment requirement before
+Windows, macOS Intel, and Linux release hosts remains an Alpha deployment requirement before
 production-release claims are made.
 
 ## Runtime/bootstrap boundary
@@ -80,7 +80,7 @@ Representative commands for the current qualification flow are:
 ./sage-python system/tools/hardening.py --shard-count 4 --shard-index 2 --output <receipt-2>
 ./sage-python system/tools/hardening.py --shard-count 4 --shard-index 3 --output <receipt-3>
 ./sage-python system/tools/hardening.py --combine <receipt-0> <receipt-1> <receipt-2> <receipt-3> --expected-source-sha256 <frozen-sha256> --output <combine-receipt>
-./sage-python system/tools/build_release.py --root . --hardening-receipt <combine-receipt> --output SAGE-v0.01beta-Full-Distribution.zip
+./sage-python system/tools/build_release.py --root . --hardening-receipt <combine-receipt> --output SAGE-v0.02alpha1-Full-Distribution.zip
 ```
 
 The hardening receipt, checksum, and extracted-artifact verification are release evidence; historical or differently hashed receipts do not qualify the current source.

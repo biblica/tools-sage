@@ -18,6 +18,8 @@ from .atomic import atomic_write_json
 from .errors import SageError, ValidationError
 from .executors import ProviderRequest, make_executor
 from .hashing import sha256_bytes
+from .linguistic_profiles import complete_language_profile_contract
+from .registry import load_ecosystem
 from .storage import storage_layout
 from .llm_settings import (
     LOCAL_AI_EXTERNAL_RENDERING_REQUIRED,
@@ -31,6 +33,19 @@ _JSON_FENCE = re.compile(r"^```(?:json)?\s*(.*?)\s*```$", re.IGNORECASE | re.DOT
 def _canonical_bytes(value: Any) -> bytes:
     """Serialize one report-rendering payload deterministically for hashing."""
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def _report_language_profile(root: Path, language_tag: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Resolve one complete canonical LANGUAGE_PROFILE for a model-facing report stream."""
+    config = load_ecosystem(root / "ecosystem.yml")
+    profile, contract = complete_language_profile_contract(config, language_tag)
+    binding = {
+        "profile_class": "LANGUAGE_PROFILE",
+        "profile_id": profile.profile_id,
+        "language": profile.language,
+        "sha256": sha256_bytes(_canonical_bytes(contract)),
+    }
+    return binding, contract
 
 
 def _rendering_path(root: Path, report_path: Path) -> Path:
@@ -191,7 +206,11 @@ def _translation_schema(
     }
 
 
-def _translation_prompt(source: Mapping[str, Any]) -> str:
+def _translation_prompt(
+    source: Mapping[str, Any],
+    primary_profile: Mapping[str, Any],
+    secondary_profile: Mapping[str, Any],
+) -> str:
     """Render one provider prompt containing exactly one report item."""
     return "\n".join(
         [
@@ -203,6 +222,13 @@ def _translation_prompt(source: Mapping[str, Any]) -> str:
             "Preserve explicit Project IDs and GRK OL/HEB OL labels; do not replace them with generic source or reference terms.",
             "For a finding, render issue and required_action faithfully. For an event, render message and next_action faithfully. Preserve an empty action as empty.",
             "Return only JSON matching the supplied schema.",
+            "Apply the complete canonical REPORT:PRIMARY and REPORT:SECONDARY LANGUAGE_PROFILE contracts below. Do not infer dialect/register from the report text.",
+            "",
+            "REPORT:PRIMARY LANGUAGE_PROFILE:",
+            json.dumps(primary_profile, ensure_ascii=False, sort_keys=True),
+            "",
+            "REPORT:SECONDARY LANGUAGE_PROFILE:",
+            json.dumps(secondary_profile, ensure_ascii=False, sort_keys=True),
             "",
             json.dumps(source, ensure_ascii=False, sort_keys=True),
         ]
@@ -231,6 +257,32 @@ def ensure_secondary_saw_report_rendering(
     expected_request_count = len(expected_ids) + len(expected_event_ids)
     source_sha256 = sha256_bytes(_canonical_bytes(source))
     cache_path = _rendering_path(root, report_path)
+    try:
+        primary_binding, primary_profile = _report_language_profile(root, primary)
+        secondary_binding, secondary_profile = _report_language_profile(root, secondary)
+    except SageError as exc:
+        degraded = {
+            "schema_version": "1.0",
+            "status": "DEGRADED",
+            "authority": "ASSISTIVE_TRANSLATION_ONLY",
+            "primary_language": primary,
+            "secondary_language": secondary,
+            "source_sha256": source_sha256,
+            "provider": None,
+            "model": None,
+            "reasoning_effort": None,
+            "findings": {},
+            "events": {},
+            "reason_code": getattr(exc, "code", "LINGUISTIC_PROFILE_INVALID"),
+            "diagnostic": str(exc),
+        }
+        atomic_write_json(cache_path, degraded)
+        result["report_renderings"] = degraded
+        return result
+    profile_bindings = {
+        "REPORT:PRIMARY": primary_binding,
+        "REPORT:SECONDARY": secondary_binding,
+    }
     if cache_path.is_file():
         try:
             cached = json.loads(cache_path.read_text(encoding="utf-8"))
@@ -245,6 +297,7 @@ def ensure_secondary_saw_report_rendering(
             and cached.get("status") == "AVAILABLE"
             and cached.get("rendering_unit") == "ONE_REPORT_ITEM_PER_PROVIDER_REQUEST"
             and cached.get("provider_request_count") == expected_request_count
+            and cached.get("linguistic_profile_bindings") == profile_bindings
             and isinstance(cached.get("findings"), dict)
             and set(cached["findings"]) == set(expected_ids)
             and isinstance(cached.get("events"), dict)
@@ -308,7 +361,7 @@ def ensure_secondary_saw_report_rendering(
             item_event_ids = [row["event_id"] for row in item_source["events"]]
             response = executor.execute(
                 ProviderRequest(
-                    prompt=_translation_prompt(item_source),
+                    prompt=_translation_prompt(item_source, primary_profile, secondary_profile),
                     schema=_translation_schema(
                         secondary,
                         expected_ids=item_ids,
@@ -346,6 +399,7 @@ def ensure_secondary_saw_report_rendering(
             "reasoning_effort": response.reasoning_effort or reasoning,
             "rendering_unit": "ONE_REPORT_ITEM_PER_PROVIDER_REQUEST",
             "provider_request_count": len(responses),
+            "linguistic_profile_bindings": profile_bindings,
             "findings": secondary_rows,
             "events": secondary_events,
         }

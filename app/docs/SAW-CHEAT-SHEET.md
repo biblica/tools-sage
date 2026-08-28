@@ -1,8 +1,8 @@
 # SAW Cheat Sheet — beta
 
-SAW binds exactly one `WIP` and one authorized `REFERENCE`. Scripture Projects remain read-only.
+SAW Jobs bind exactly one `WIP` and one authorized `REFERENCE`. Scripture Projects remain read-only. STC does not consume the bound REFERENCE; it routes WIP directly with the testament-appropriate PRIMARY OL authority.
 
-**Authority:** REFERENCE is the normal authorized LWC Reference Project comparison. For an explicitly OL-routed bounded question, configured GRK/HEB becomes the primary textual authority for the source-text question in that task only. WIP remains the subject under assessment.
+**Authority:** REFERENCE is the normal authorized LWC Reference Project comparison for RTC and Targeted Check. STC uses configured PRIMARY GRK for NT or PRIMARY HEB for OT and is independent of REFERENCE and RTC findings. For an explicit Original-Language Review, the applicable configured GRK/HEB authority is primary for the bounded source-text question. WIP remains the subject under assessment.
 
 ## Menus
 
@@ -12,8 +12,9 @@ The Job menu exposes:
 
 1. Continue active Run — only when a Run exists; context shows Job, check, task/stage, scope, and status.
 2. Reference Text Comparison (RTC)
-3. Targeted Check
-4. Original-Language Review
+3. Source Text Correspondence (STC)
+4. Targeted Check
+5. Original-Language Review
 
 ## Reference Text Comparison (RTC)
 
@@ -29,6 +30,10 @@ Marker context controls **finding elevation**, never finding severity:
 
 Defaults: `\add` and `\nd` = `MATERIAL_ONLY`; `\f` and `\x` = `STRUCTURE_ONLY`. Quotations are checked normally and are not an Operator policy toggle. The effective policy is snapshotted into the Run.
 
+## Source Text Correspondence (STC)
+
+Independent systematic WIP-to-primary-OL correspondence review. NT routes bounded WIP + PRIMARY GRK; OT routes bounded WIP + PRIMARY HEB. STC does not read, require, fingerprint, or use REFERENCE Scripture or RTC findings as analytical evidence. Findings are limited to `OMISSION`, `ADDITION`, `VARIATION`, and `CONSISTENCY`; zero-finding work units still require analytical-completion proof.
+
 ## Targeted Check
 
 One bounded WIP+REFERENCE question. No Greek/Hebrew Scripture is routed. If the question requires direct OL evidence, use Original-Language Review. The machine operation remains `focused` for compatibility.
@@ -40,7 +45,7 @@ One explicit focus and a verse or short verse range. Exactly the applicable conf
 
 ## Natural-language entry
 
-Natural-language entry may request Reference Text Comparison (RTC), a Targeted Check, or an Original-Language Review. Recoverable missing or ambiguous Operator input returns `INPUT_REQUIRED`; reserve `BLOCKED` for a confirmed in-scope technical or integrity failure.
+Natural-language entry may request Reference Text Comparison (RTC), Source Text Correspondence (STC), a Targeted Check, or an Original-Language Review. Recoverable missing or ambiguous Operator input returns `INPUT_REQUIRED`; reserve `BLOCKED` for a confirmed in-scope technical or integrity failure.
 
 ## Run state
 

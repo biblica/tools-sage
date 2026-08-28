@@ -35,7 +35,7 @@ def frontmatter(path: Path) -> dict[str, str]:
 def test_all_skills_have_consistent_frontmatter() -> None:
     """Verify that all skills have consistent frontmatter."""
     paths = sorted(SKILLS.glob("*/SKILL.md"))
-    assert len(paths) == 6
+    assert len(paths) == 7
     for path in paths:
         data = frontmatter(path)
         assert set(data) == {"name", "description"}
@@ -51,7 +51,7 @@ def test_all_skills_have_consistent_frontmatter() -> None:
 def test_registered_skill_hashes_match_current_and_original_files() -> None:
     """Verify that registered skill hashes match current and original files."""
     document = json.loads((ROOT / "system" / "config" / "skills.json").read_text(encoding="utf-8"))
-    assert len(document["skills"]) == 6
+    assert len(document["skills"]) == 7
     for skill_id, item in document["skills"].items():
         assert skill_id
         assert sha256(ROOT / item["file"]) == item["adapted_sha256"]
@@ -139,8 +139,8 @@ def test_project_management_ledgers_are_internal_version_linked_records() -> Non
         "IMP-20260826-004",
         "IMP-20260826-005",
         "IMP-20260826-006",
-        "MS-BETA-REQUALIFY",
-        "RCLEAN-0.01beta-001",
+        "MS-ALPHA-QUALIFY",
+        "RCLEAN-0.02alpha1-001",
     ):
         assert token in combined
     for name in ("DEVELOPMENT-STATUS.md", "NEXT-DEVELOPMENT-WORK.md"):
@@ -154,8 +154,10 @@ def test_project_management_ledgers_are_internal_version_linked_records() -> Non
     assert "system/config/project-management/" in project_tree
     versioning = (pm_root / "VERSIONING-POLICY.md").read_text(encoding="utf-8")
     for token in (
-        "0.01beta",
-        "0.01rc1",
+        "0.02alpha1",
+        "0.02beta",
+        "0.02rc1",
+        "ALPHA",
         "RELEASE_CANDIDATE",
         "SAGE-v<version>-Full-Distribution",
         "EXPERIMENTAL_UNSTABLE",
@@ -169,6 +171,29 @@ def test_project_management_ledgers_are_internal_version_linked_records() -> Non
         assert "test_menu_localization.py" in text
         assert "menu-localization.json" in text
     assert "Rebuild changed canonical menu text" in cleanup
+
+
+def test_current_release_identity_is_002alpha1() -> None:
+    """Active release surfaces identify the approved 0.02alpha1 development line."""
+    assert (ROOT / "VERSION").read_text(encoding="utf-8").strip() == "0.02alpha1"
+    standard = json.loads((ROOT / "system" / "config" / "sage-standard.json").read_text(encoding="utf-8"))
+    assert standard["release"]["version"] == "0.02alpha1"
+    assert standard["release"]["status"] == "ALPHA"
+    assert standard["release"]["public_release_ready"] is False
+    pyproject = (ROOT / "system" / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'version = "0.02alpha1"' in pyproject
+    assert '__version__ = "0.02alpha1"' in (ROOT / "system" / "src" / "sage" / "__init__.py").read_text(encoding="utf-8")
+    assert 'BUILD_POLICY_VERSION = "0.02alpha1"' in (ROOT / "system" / "src" / "sage" / "build_policy.py").read_text(encoding="utf-8")
+    for rel in (
+        "README.md",
+        "docs/INDEX.md",
+        "docs/advanced/release/HANDOVER.md",
+        "docs/advanced/release/IMPLEMENTATION-REPORT.md",
+        "docs/advanced/release/RELEASE-NOTES.md",
+        "docs/advanced/release/TEST-AND-VALIDATION-REPORT.md",
+        "system/config/DEVELOPMENT-STATUS.md",
+    ):
+        assert "0.02alpha1" in (ROOT / rel).read_text(encoding="utf-8"), rel
 
 
 def test_required_operator_help_set_exists_and_has_no_placeholders() -> None:
@@ -260,7 +285,8 @@ def test_vanilla_install_contains_governed_regional_starter_grammar() -> None:
     assert not (grammar_root / "fa").exists()
     assert not (grammar_root / "uk").exists()
     ecosystem = yaml.safe_load((ROOT / "ecosystem.yml").read_text(encoding="utf-8"))
-    assert set(ecosystem["language_profiles"]) == regional
+    assert set(ecosystem["language_profiles"]) == regional | {"en"}
+    assert ecosystem["language_profiles"]["en"] == {"script": "Latn", "profile_alias": "en-US"}
     for tag in regional:
         variant = ecosystem["language_profiles"][tag]["variants"]["wip"]
         assert variant == {
@@ -285,8 +311,8 @@ def test_bic_and_saw_documented_flows_match_enforced_scope() -> None:
     assert "SELECTIVE_OL_ADJUDICATION" in saw
 
 
-def test_beta_current_operator_grammar_is_consistent() -> None:
-    """Current Beta templates use qualified status, Targeted Check, project names, and governed OL toggling."""
+def test_alpha_current_operator_grammar_is_consistent() -> None:
+    """Current Alpha templates use qualified status, Targeted Check, project names, and governed OL toggling."""
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     handover = (ROOT / "docs" / "advanced" / "release" / "HANDOVER.md").read_text(encoding="utf-8")
     human = (ROOT / "docs" / "advanced" / "architecture" / "HUMAN-OUTPUT-AND-LOGGING.md").read_text(encoding="utf-8")
@@ -299,7 +325,7 @@ def test_beta_current_operator_grammar_is_consistent() -> None:
     assert "Fresh exact-source qualification is required before the first release candidate" in readme
     assert "Fresh exact-source qualification is required before the first real RC" in handover
     grammar = (ROOT / "docs" / "advanced" / "architecture" / "SAGE-SYSTEM-GRAMMAR.md").read_text(encoding="utf-8")
-    assert "`SAGE v0.01beta`" in grammar and "`v0.01rc1`" in grammar and "`v0.01`" in grammar
+    assert "`SAGE v0.02alpha1`" in grammar and "`v0.02rc1`" in grammar and "`v0.02`" in grammar
     assert "configured Project display names" in human
     assert "Project IDs rather than bare" not in human
     assert "Original-language: `NOT CONSULTED`" not in human
@@ -902,3 +928,39 @@ def test_provider_neutral_skills_keep_setup_and_task_surfaces_separate() -> None
         assert "FIRST-RUN SETUP" not in rules
         assert "Natural-language command mapping" not in rules
         assert "Cline" not in rules
+
+
+def test_release_gates_use_current_skill_count_and_routed_sfm_budget_authority() -> None:
+    """Keep release qualification aligned with seven Skills and routed-SFM-only sizing."""
+    release_gates = (ROOT / "docs" / "advanced" / "release" / "RELEASE-GATES.md").read_text(encoding="utf-8")
+    assert "all seven registered analytical Skill files" in release_gates
+    assert "all six registered analytical Skill files" not in release_gates
+    assert "exact prompt plus output schema" not in release_gates
+    assert "only the SFM Scripture streams routed to that review item" in release_gates
+
+
+def test_alpha_release_line_is_parallel_to_beta_mainline() -> None:
+    """0.02 Alpha is a development branch; 0.01beta remains the mainline baseline."""
+    versioning = (ROOT / "system" / "config" / "project-management" / "VERSIONING-POLICY.md").read_text(encoding="utf-8")
+    notes = (ROOT / "docs" / "advanced" / "release" / "RELEASE-NOTES.md").read_text(encoding="utf-8")
+    handover = (ROOT / "docs" / "advanced" / "release" / "HANDOVER.md").read_text(encoding="utf-8")
+    required = (
+        "0.01beta remains the mainline baseline",
+        "0.02alpha1 is developed on the parallel Alpha branch",
+    )
+    for text in (versioning, notes, handover):
+        for phrase in required:
+            assert phrase in text
+
+
+def test_alpha_release_docs_do_not_describe_branch_as_fork() -> None:
+    """Keep Alpha release-line terminology within the same repository."""
+    paths = (
+        ROOT / "system" / "config" / "project-management" / "VERSIONING-POLICY.md",
+        ROOT / "docs" / "advanced" / "release" / "RELEASE-NOTES.md",
+        ROOT / "docs" / "advanced" / "release" / "HANDOVER.md",
+    )
+    for path in paths:
+        text = path.read_text(encoding="utf-8").lower()
+        assert "alpha fork" not in text
+        assert "alpha-fork" not in text

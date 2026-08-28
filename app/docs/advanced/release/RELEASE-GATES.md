@@ -27,12 +27,12 @@ A package may include handover data only after all applicable gates pass.
 
 ## Analytical governance
 
-- all six registered analytical Skill files have valid frontmatter and internally consistent identifiers; deterministic controller functions such as consolidation are not registered as AI Skills;
+- all seven registered analytical Skill files have valid frontmatter and internally consistent identifiers; deterministic controller functions such as consolidation are not registered as AI Skills;
 - all seven registered Skill bindings and their original/adapted hashes verify;
 - routed Skill references contain only current paths, commands, filenames, and workflow claims;
 - ACT mutation, traversal, output grammar, bounded scope, scope-aware readiness, review evidence, and resubmission regressions pass;
 - BIC and SAW process-flow tests pass;
-- planned ACT context is within configured byte/token budgets or the task is partitioned; immediately before every provider call, the exact prompt plus output schema is remeasured and must remain within the operation hard limits;
+- only the SFM Scripture streams routed to that review item contribute to governed token/hard-byte sizing; prompt, schema, profile, controller, provenance, diagnostic, and transport material cannot alter slicing or hard-budget decisions;
 - command, help, cheat-sheet, and documentation consistency tests pass;
 - local documentation links resolve.
 

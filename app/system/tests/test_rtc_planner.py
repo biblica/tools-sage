@@ -48,13 +48,8 @@ def _sizing() -> RTCSizingPolicy:
         "wip_target_min_tokens": 6000,
         "wip_target_max_tokens": 7000,
         "wip_hard_exclusive_tokens": 8000,
-        "governed_wip_ceiling_tokens": 8000,
-        "package_hard_max_tokens": 32000,
-        "provider_handoff_max_tokens": 32000,
-        "package_hard_serialized_bytes": 224000,
-        "minimum_reference_reserve_tokens": 8000,
-        "minimum_overhead_reserve_tokens": 6000,
-        "minimum_overhead_serialized_bytes": 24000,
+        "route_hard_max_tokens": 32000,
+        "route_hard_serialized_bytes": 224000,
     })
 
 
@@ -114,10 +109,12 @@ def test_reference_heavy_rtc_package_is_resliced_after_wip_boundary_planning() -
     )
 
     assert len(units) > 1
-    assert effective.hard_estimated_tokens < 7999
+    assert effective.target_estimated_tokens == 6000
+    assert effective.hard_estimated_tokens == 32000
     assert all(item["wip"]["estimated_tokens"] < 8000 for item in packages)
-    assert all(item["pack"]["estimated_tokens"] <= 32000 for item in packages)
-    assert all(item["pack"]["serialized_bytes"] <= 224000 for item in packages)
+    assert all(item["route"]["estimated_tokens"] <= 32000 for item in packages)
+    assert all(item["route"]["serialized_bytes"] <= 224000 for item in packages)
+    assert all(item["route"]["basis"] == "ROUTED_SFM_ONLY" for item in packages)
 
 
 def test_reference_bridge_moves_internal_wip_boundary_to_its_far_edge() -> None:

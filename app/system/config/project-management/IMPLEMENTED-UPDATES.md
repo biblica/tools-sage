@@ -3,6 +3,21 @@
 This is an append-only implementation ledger. New entries go first. Historical version detail from
 before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/release/RELEASE-NOTES.md`.
 
+### IMP-20260828-ALPHA1 — 0.02alpha1 release line approved
+
+- **Version:** `0.02alpha1`
+- **Implemented:** Promoted the active development identity to Alpha 1 for the 0.02 line, retaining `public_release_ready=false`; synchronized STC, routed-SFM sizing, linguistic-profile governance, and BASIC/STANDARD/ADVANCED hardening policy as the release scope.
+- **Verification:** Exact-source hardening, deterministic dual-build, checksum, extraction, and final artifact audits are required before the release record can close.
+
+## 2026-08-28
+
+### IMP-20260828-001 — STC, routed-SFM sizing, and universal linguistic specificity
+
+- **Version:** `0.01beta`
+- **Milestone:** `MS-BETA-REQUALIFY`
+- **Implemented:** Added independent SAW Source Text Correspondence (STC) with WIP+PRIMARY-OL evidence only; unified BIC/RTC/STC work planning under the general deterministic SFM slicer; removed provider-handoff/controller material from Scripture sizing authority; routed complete canonical LANGUAGE_PROFILE and OL_AUTHORITY_PROFILE context through all bounded model-facing operations and secondary report translation; and retained future 0..n SECONDARY OL authority registrations as inert unless explicitly routed.
+- **Verification:** Dedicated STC registration/task/finalization, SFM-slicer, RTC, language-specificity, OL-authority, BIC microtransaction, report-translation, schema/package, and deep-audit regressions enforce the architecture. Final exact-source release qualification remains governed by `RCLEAN-0.01beta-001` and its external hardening/checksum receipts.
+
 ## 2026-08-27
 
 ### IMP-20260827-002 — RTC bridge-safe slicing and atomic finalization

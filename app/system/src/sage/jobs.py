@@ -378,6 +378,8 @@ class JobStore:
                 "CONTENT_SOURCE": {"CONTENT_SOURCE"},
                 "GENERATED_TARGET": {"GENERATED_TARGET", "TARGET"},
                 "WIP": {"WIP", "TARGET"},
+                "LEXICAL_DONOR": {"LEXICAL_DONOR", "GENERATED_TARGET", "WIP", "TARGET"},
+                "REFERENCE": {"REFERENCE", "GENERATED_TARGET", "WIP", "TARGET"},
             }.get(role, {role})
             values = tuple(
                 f"{project.language_code}/{variant.variant_id}"
@@ -454,6 +456,7 @@ class JobStore:
                 )
             expected_profiles = {
                 "source_grammar": resolve_profile(source, "CONTENT_SOURCE", "source_grammar"),
+                "donor_grammar": resolve_profile(donor, "LEXICAL_DONOR", "donor_grammar"),
                 "target_grammar": resolve_profile(target, "GENERATED_TARGET", "target_grammar"),
             }
         else:
@@ -468,7 +471,8 @@ class JobStore:
                         code="PROJECT_BINDING_MISMATCH",
                     )
             expected_profiles = {
-                "target_grammar": resolve_profile(wip, "WIP", "target_grammar")
+                "target_grammar": resolve_profile(wip, "WIP", "target_grammar"),
+                "reference_grammar": resolve_profile(reference, "REFERENCE", "reference_grammar"),
             }
         unknown_profiles = sorted(set(supplied) - set(expected_profiles))
         if unknown_profiles:

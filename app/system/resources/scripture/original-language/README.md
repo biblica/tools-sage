@@ -5,7 +5,7 @@ SAGE resolves two stable logical aliases:
 - `@GRK` (machine binding ID `GRK`) — Greek original-language Scripture.
 - `@HEB` (machine binding ID `HEB`) — Hebrew original-language Scripture.
 
-The default source is the corresponding bundled directory below this folder. The `0.01beta`
+The default source is the corresponding bundled directory below this folder. The `0.02alpha1`
 distribution includes the manually governed Greek NT and Hebrew Bible `.SFM` corpora in these two
 directories. SAGE does not fabricate, infer a replacement authority, or silently download
 original-language Scripture data. USFM remains the immutable distribution source; bounded USJ is

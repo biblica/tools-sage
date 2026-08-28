@@ -3122,6 +3122,22 @@
       "fr": "WIP / révision SAW",
       "ru": "WIP / проверка SAW",
       "pt-BR": "WIP / revisão SAW"
+    },
+    "menu.run.source.text.correspondence.stc": {
+      "en-US": "Run Source Text Correspondence (STC)",
+      "en-GB": "Run Source Text Correspondence (STC)",
+      "id": "Jalankan Korespondensi Teks Sumber (STC)",
+      "fr": "Exécuter la correspondance du texte source (STC)",
+      "ru": "Запустить проверку соответствия исходному тексту (STC)",
+      "pt-BR": "Executar correspondência do texto-fonte (STC)"
+    },
+    "menu.saw.source.text.correspondence.stc": {
+      "en-US": "SAW Source Text Correspondence (STC)",
+      "en-GB": "SAW Source Text Correspondence (STC)",
+      "id": "Korespondensi Teks Sumber SAW (STC)",
+      "fr": "Correspondance du texte source SAW (STC)",
+      "ru": "Соответствие исходному тексту SAW (STC)",
+      "pt-BR": "Correspondência do texto-fonte SAW (STC)"
     }
   }
 }

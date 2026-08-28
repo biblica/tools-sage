@@ -14,6 +14,7 @@ required:
 - scope
 - skill
 - project_grammar
+- linguistic_profile_bindings
 - evidence_policy
 - packets
 - resource_fingerprints
@@ -36,11 +37,16 @@ canonical_resource_bindings:
     TARGET: exactly_one
     ORIGINAL_LANGUAGE_GREEK: zero_or_one
     ORIGINAL_LANGUAGE_HEBREW: zero_or_one
-  saw:
+  saw_job:
     WIP: exactly_one
     REFERENCE: exactly_one
     ORIGINAL_LANGUAGE_GREEK: zero_or_one
     ORIGINAL_LANGUAGE_HEBREW: zero_or_one
+  saw_task_by_operation:
+    rtc: [WIP, REFERENCE]
+    stc: [WIP, exactly_one_testament_appropriate_PRIMARY_OL]
+    focused: [WIP, REFERENCE]
+    ol: [WIP, REFERENCE, exactly_one_testament_appropriate_PRIMARY_OL]
 resource_projection_fields:
   output_project: BIC_TARGET_or_SAW_WIP
   contemporary_source: BIC_SOURCE_or_SAW_REFERENCE
@@ -79,10 +85,10 @@ controls:
   act_prompt: immutable_and_hashed_outside_task_directory
   task_fingerprint: recomputed_at_submission
   context_budget:
-    planning_basis: PROJECTED_HANDOFF_ESTIMATED_TOKENS
-    provider_handoff: projected_prompt_and_schema_used_for_planning_and_rechecked_at_execution
-    governance_context: full_controller_routed_context_retained_for_audit_and_legacy_comparison
-    fallback_rule: projected_measurement_failure_must_not_weaken_legacy_or_execution_hard_limits
+    planning_basis: ROUTED_SFM_ONLY
+    sizing_inputs: only_SFM_physically_routed_for_the_review_item
+    excluded_from_sizing: [prompt, schema, controller_json, microtransactions, profiles, ids, hashes, diagnostics]
+    provider_transport: byte_telemetry_only
     discourse_quality_guard: protected_discourse_units_are_never_split_only_to_reduce_tokens
   settings_fingerprint: must_match_initialization_and_submission
   submit_command_required: true
@@ -113,3 +119,12 @@ rtc_composite_stages:
 - STRUCTURAL_ADJUDICATION
 - REFERENCE_TEXT_COMPARISON
 - SELECTIVE_OL_ADJUDICATION
+
+linguistic_profile_bindings_contract:
+  every_natural_language_stream: exactly_one_complete_canonical_profile
+  project_stream_profile_class: LANGUAGE_PROFILE
+  original_language_stream_profile_class: OL_AUTHORITY_PROFILE
+  provider_language_inference: prohibited
+  profiles_are_immutable: true
+  profiles_are_sliced: false
+  profiles_affect_sfm_sizing: false

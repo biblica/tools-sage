@@ -1,4 +1,4 @@
-# SAGE architecture — v0.01beta
+# SAGE architecture — v0.02alpha1
 
 ## 1. Controller boundary
 
@@ -10,7 +10,7 @@ Operator
   -> deterministic parsers + VRS + semantic indexes
   -> Run + immutable governed task + hashes
   -> provider registry + build policy
-  -> enabled executor (v0.01beta: Codex only)
+  -> enabled executor (v0.02alpha1: Codex only)
   -> structured response gate
   -> deterministic validation / transaction / reporting
 ```
@@ -71,7 +71,7 @@ BIC and SAW have no direct interface, automatic handoff, role conversion, or sha
 
 Adapters live under `system/src/sage/executors/`. `system/src/sage/build_policy.py` determines which implemented adapters may execute in the current release.
 
-v0.01beta enables Codex only for governed BIC/SAW execution. Ollama is also a
+v0.02alpha1 enables Codex only for governed BIC/SAW execution. Ollama is also a
 host-local runtime for the optional capability-restricted admin assistant; that
 path cannot acquire workflow execution authority. Future providers can be added
 behind the same abstraction. No OpenAI API-key path exists.
@@ -123,7 +123,7 @@ Conditional OL remains governed by the protected REWRITE policy. If REWRITE uses
 
 ## 8. SAW read-only analysis
 
-SAW WIP uses lifecycle `UNDER_REVIEW`, but lifecycle does not grant write permission. SAW compiles bounded WIP and REFERENCE evidence, local triage, findings, and reports without modifying external Scripture. Reference Text Comparison (RTC) is: deterministic preflight/structural triage -> conditional structural adjudication -> required Reference Text Comparison (RTC) -> conditional selective OL adjudication -> deterministic merge/coverage/finalization. OL is resolved from the configured SAW Job binding, never a global role scan. Targeted Check and standalone Original-Language Review remain separate bounded operations. SAW emits plain Operator note text and never Paratext Notes XML.
+SAW WIP uses lifecycle `UNDER_REVIEW`, but lifecycle does not grant write permission. SAW compiles bounded WIP and REFERENCE evidence, local triage, findings, and reports without modifying external Scripture. Reference Text Comparison (RTC) is: deterministic preflight/structural triage -> conditional structural adjudication -> required Reference Text Comparison (RTC) -> conditional selective OL adjudication -> deterministic merge/coverage/finalization. OL is resolved from the configured SAW Job binding, never a global role scan. STC is an independent WIP-to-primary-OL correspondence operation with no REFERENCE dependency; Targeted Check and standalone Original-Language Review remain separate bounded operations. SAW emits plain Operator note text and never Paratext Notes XML.
 
 ## 9. Provider-neutral task boundary
 

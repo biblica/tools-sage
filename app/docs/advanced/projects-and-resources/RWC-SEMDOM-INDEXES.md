@@ -1,6 +1,6 @@
 # RWC and Semantic Domain Indexes
 
-SAGE `0.01beta` uses one governed SAGE-local semantic-index layer shared by BIC and SAW. RWC means **Rapid Word Correction**.
+SAGE `0.02alpha1` uses one governed SAGE-local semantic-index layer shared by BIC and SAW. RWC means **Rapid Word Correction**.
 
 ## Non-negotiable boundaries
 

@@ -1,6 +1,6 @@
 # Vanilla Installation Manifest
 
-This is the complete governed `app/` directory/file inventory for a clean SAGE v0.01beta source installation.
+This is the complete governed `app/` directory/file inventory for a clean SAGE v0.02alpha1 source installation.
 
 ## Installation boundary
 
@@ -14,8 +14,19 @@ This inventory is a release contract: package tests require it to match the clea
 
 ## Complete shipped Core tree
 
+- `README.md`
+- `VERSION`
 - `docs`
+- `docs/BIC-CHEAT-SHEET.md`
+- `docs/GOOD-PRACTICE.md`
+- `docs/INDEX.md`
+- `docs/KNOWN-LIMITATIONS.md`
+- `docs/OPERATOR-GUIDE.md`
+- `docs/PROJECT-OPERATOR-CHEAT-SHEET.md`
+- `docs/SAW-CHEAT-SHEET.md`
+- `docs/TUI.md`
 - `docs/advanced`
+- `docs/advanced/README.md`
 - `docs/advanced/architecture`
 - `docs/advanced/architecture/ARCHITECTURE.md`
 - `docs/advanced/architecture/CARDINALITY-AND-BINDING-GRAMMAR.md`
@@ -56,7 +67,6 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/projects-and-resources/RESOURCE-RIGHTS-AND-PROVENANCE.md`
 - `docs/advanced/projects-and-resources/RWC-SEMDOM-INDEXES.md`
 - `docs/advanced/projects-and-resources/VERSIFICATION.md`
-- `docs/advanced/README.md`
 - `docs/advanced/release`
 - `docs/advanced/release/HANDOVER.md`
 - `docs/advanced/release/IMPLEMENTATION-REPORT.md`
@@ -77,24 +87,15 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/workflows/SAW-OPERATOR-MODES.md`
 - `docs/advanced/workflows/STRUCTURE-PLANNING.md`
 - `docs/advanced/workflows/TARGET-GENERATIONS.md`
-- `docs/BIC-CHEAT-SHEET.md`
-- `docs/GOOD-PRACTICE.md`
-- `docs/INDEX.md`
-- `docs/KNOWN-LIMITATIONS.md`
 - `docs/macos-linux`
 - `docs/macos-linux/CHEAT-SHEET.md`
 - `docs/macos-linux/ERRORS.md`
 - `docs/macos-linux/RECOVERY.md`
-- `docs/OPERATOR-GUIDE.md`
-- `docs/PROJECT-OPERATOR-CHEAT-SHEET.md`
-- `docs/SAW-CHEAT-SHEET.md`
-- `docs/TUI.md`
 - `docs/windows`
 - `docs/windows/CHEAT-SHEET.md`
 - `docs/windows/ERRORS.md`
 - `docs/windows/RECOVERY.md`
 - `ecosystem.yml`
-- `README.md`
 - `sage-python`
 - `sage-python.cmd`
 - `system`
@@ -106,24 +107,25 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/bin/saw`
 - `system/bin/saw.cmd`
 - `system/config`
+- `system/config/CHANGELOG.md`
+- `system/config/DEVELOPMENT-STATUS.md`
+- `system/config/NEXT-DEVELOPMENT-WORK.md`
 - `system/config/bic-protected-rewrite-pin.json`
 - `system/config/bic-protected-verb-selection-pin.json`
-- `system/config/CHANGELOG.md`
 - `system/config/contracts`
 - `system/config/contracts/bic-verb-selection-policy.yml`
-- `system/config/DEVELOPMENT-STATUS.md`
 - `system/config/languages`
 - `system/config/languages/competency.yml`
 - `system/config/languages/registry.yml`
 - `system/config/languages/relationships.yml`
 - `system/config/localization`
-- `system/config/localization/menu-localization.json`
 - `system/config/localization/README.md`
+- `system/config/localization/menu-localization.json`
 - `system/config/model-language-competency.yml`
 - `system/config/model-policy.yml`
-- `system/config/NEXT-DEVELOPMENT-WORK.md`
 - `system/config/profiles`
 - `system/config/profiles/grammar`
+- `system/config/profiles/grammar/README.md`
 - `system/config/profiles/grammar/am-ET`
 - `system/config/profiles/grammar/am-ET/wip.yml`
 - `system/config/profiles/grammar/ar-145`
@@ -158,7 +160,6 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/profiles/grammar/pt-419/wip.yml`
 - `system/config/profiles/grammar/pt-BR`
 - `system/config/profiles/grammar/pt-BR/wip.yml`
-- `system/config/profiles/grammar/README.md`
 - `system/config/profiles/grammar/ti-ER`
 - `system/config/profiles/grammar/ti-ER/wip.yml`
 - `system/config/profiles/grammar/ti-ET`
@@ -194,6 +195,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/schemas/llm-execution-receipt.schema.yml`
 - `system/config/schemas/model-language-competency.schema.yml`
 - `system/config/schemas/model-policy.schema.yml`
+- `system/config/schemas/ol-authority-profile.schema.yml`
 - `system/config/schemas/original-language-resources.schema.yml`
 - `system/config/schemas/paratext-project-catalog.schema.yml`
 - `system/config/schemas/project-code.schema.yml`
@@ -216,24 +218,26 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/structure-planning.yml`
 - `system/config/workflows`
 - `system/config/workflows/bic`
-- `system/config/workflows/bic/profile.yml`
 - `system/config/workflows/bic/README.md`
+- `system/config/workflows/bic/profile.yml`
 - `system/config/workflows/saw`
-- `system/config/workflows/saw/profile.yml`
 - `system/config/workflows/saw/README.md`
+- `system/config/workflows/saw/profile.yml`
 - `system/pyproject.toml`
 - `system/requirements-dev.txt`
 - `system/requirements-tui.txt`
 - `system/requirements.txt`
 - `system/resources`
 - `system/resources/rwc`
+- `system/resources/rwc/README.md`
 - `system/resources/rwc/authority`
 - `system/resources/rwc/authority/sources.json`
-- `system/resources/rwc/README.md`
 - `system/resources/scripture`
+- `system/resources/scripture/README.md`
 - `system/resources/scripture/eng.vrs`
 - `system/resources/scripture/org.vrs`
 - `system/resources/scripture/original-language`
+- `system/resources/scripture/original-language/README.md`
 - `system/resources/scripture/original-language/grk`
 - `system/resources/scripture/original-language/grk/41MATgrkRES.SFM`
 - `system/resources/scripture/original-language/grk/42MRKgrkRES.SFM`
@@ -265,6 +269,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/resources/scripture/original-language/grk/BookNames.xml`
 - `system/resources/scripture/original-language/grk/README.md`
 - `system/resources/scripture/original-language/grk/Settings.xml`
+- `system/resources/scripture/original-language/grk/authority-profile.yml`
 - `system/resources/scripture/original-language/heb`
 - `system/resources/scripture/original-language/heb/01GENhebRES.SFM`
 - `system/resources/scripture/original-language/heb/02EXOhebRES.SFM`
@@ -308,10 +313,10 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/resources/scripture/original-language/heb/BookNames.xml`
 - `system/resources/scripture/original-language/heb/README.md`
 - `system/resources/scripture/original-language/heb/Settings.xml`
-- `system/resources/scripture/original-language/README.md`
-- `system/resources/scripture/README.md`
+- `system/resources/scripture/original-language/heb/authority-profile.yml`
 - `system/skills`
 - `system/skills/bic-inspect`
+- `system/skills/bic-inspect/SKILL.md`
 - `system/skills/bic-inspect/agents`
 - `system/skills/bic-inspect/agents/openai.yaml`
 - `system/skills/bic-inspect/references`
@@ -323,8 +328,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/bic-inspect/references/PROJECT-GRAMMAR-AND-SAW.md`
 - `system/skills/bic-inspect/references/SEMANTIC-INDEX-AND-LOCAL-FIRST.md`
 - `system/skills/bic-inspect/references/SOURCE-AUTHORITY-AND-USFM.md`
-- `system/skills/bic-inspect/SKILL.md`
 - `system/skills/bic-rewrite`
+- `system/skills/bic-rewrite/SKILL.md`
 - `system/skills/bic-rewrite/agents`
 - `system/skills/bic-rewrite/agents/openai.yaml`
 - `system/skills/bic-rewrite/references`
@@ -338,8 +343,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/bic-rewrite/references/REWRITE-RISK-AND-OL.md`
 - `system/skills/bic-rewrite/references/SEMANTIC-INDEX-AND-LOCAL-FIRST.md`
 - `system/skills/bic-rewrite/references/SOURCE-AUTHORITY-AND-USFM.md`
-- `system/skills/bic-rewrite/SKILL.md`
 - `system/skills/bic-self-check`
+- `system/skills/bic-self-check/SKILL.md`
 - `system/skills/bic-self-check/agents`
 - `system/skills/bic-self-check/agents/openai.yaml`
 - `system/skills/bic-self-check/references`
@@ -353,8 +358,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/bic-self-check/references/SELF-CHECK-CONTRACT.md`
 - `system/skills/bic-self-check/references/SEMANTIC-INDEX-AND-LOCAL-FIRST.md`
 - `system/skills/bic-self-check/references/SOURCE-AUTHORITY-AND-USFM.md`
-- `system/skills/bic-self-check/SKILL.md`
 - `system/skills/saw-focused-check`
+- `system/skills/saw-focused-check/SKILL.md`
 - `system/skills/saw-focused-check/agents`
 - `system/skills/saw-focused-check/agents/openai.yaml`
 - `system/skills/saw-focused-check/references`
@@ -363,8 +368,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/saw-focused-check/references/RUN-CHECK.md`
 - `system/skills/saw-focused-check/references/SAW-EXECUTION-RULES.md`
 - `system/skills/saw-focused-check/references/SEMANTIC-INDEX-AND-LOCAL-FIRST.md`
-- `system/skills/saw-focused-check/SKILL.md`
 - `system/skills/saw-ol-review`
+- `system/skills/saw-ol-review/SKILL.md`
 - `system/skills/saw-ol-review/agents`
 - `system/skills/saw-ol-review/agents/openai.yaml`
 - `system/skills/saw-ol-review/references`
@@ -373,8 +378,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/saw-ol-review/references/RUN-OL.md`
 - `system/skills/saw-ol-review/references/SAW-EXECUTION-RULES.md`
 - `system/skills/saw-ol-review/references/SEMANTIC-INDEX-AND-LOCAL-FIRST.md`
-- `system/skills/saw-ol-review/SKILL.md`
 - `system/skills/saw-rtc`
+- `system/skills/saw-rtc/SKILL.md`
 - `system/skills/saw-rtc/agents`
 - `system/skills/saw-rtc/agents/openai.yaml`
 - `system/skills/saw-rtc/references`
@@ -383,7 +388,12 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/saw-rtc/references/ORIGINAL-WORKFLOW-PROMPT.md`
 - `system/skills/saw-rtc/references/SAW-EXECUTION-RULES.md`
 - `system/skills/saw-rtc/references/SEMANTIC-INDEX-AND-LOCAL-FIRST.md`
-- `system/skills/saw-rtc/SKILL.md`
+- `system/skills/saw-stc`
+- `system/skills/saw-stc/SKILL.md`
+- `system/skills/saw-stc/agents`
+- `system/skills/saw-stc/agents/openai.yaml`
+- `system/skills/saw-stc/references`
+- `system/skills/saw-stc/references/ORIGINAL-HANDOVER.md`
 - `system/src`
 - `system/src/sage`
 - `system/src/sage/__init__.py`
@@ -399,10 +409,10 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/config.py`
 - `system/src/sage/consolidation.py`
 - `system/src/sage/coverage.py`
-- `system/src/sage/display_paths.py`
 - `system/src/sage/data`
 - `system/src/sage/data/iso-3166-1.json`
 - `system/src/sage/data/iso-639-3.json`
+- `system/src/sage/display_paths.py`
 - `system/src/sage/errors.py`
 - `system/src/sage/evidence.py`
 - `system/src/sage/evidence_policy.py`
@@ -429,6 +439,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/language_codes.py`
 - `system/src/sage/language_identification.py`
 - `system/src/sage/language_profiles.py`
+- `system/src/sage/linguistic_profiles.py`
 - `system/src/sage/llm_settings.py`
 - `system/src/sage/llm_tasks.py`
 - `system/src/sage/local_assistive.py`
@@ -461,9 +472,9 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/resource_rights.py`
 - `system/src/sage/resource_validation.py`
 - `system/src/sage/rewrite_risk.py`
+- `system/src/sage/rtc_planner.py`
 - `system/src/sage/runtime_paths.py`
 - `system/src/sage/runtime_status.py`
-- `system/src/sage/rtc_planner.py`
 - `system/src/sage/saw_policy.py`
 - `system/src/sage/schema_validation.py`
 - `system/src/sage/scripture.py`
@@ -481,9 +492,11 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/semantic/semdom.py`
 - `system/src/sage/semantic/store.py`
 - `system/src/sage/semantic_cli.py`
+- `system/src/sage/sfm_slicer.py`
 - `system/src/sage/stage_reset.py`
 - `system/src/sage/standard.py`
 - `system/src/sage/state.py`
+- `system/src/sage/stc.py`
 - `system/src/sage/storage.py`
 - `system/src/sage/structure_policy.py`
 - `system/src/sage/task_retry.py`
@@ -521,6 +534,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_guided_remediation.py`
 - `system/tests/test_hardening_and_segmentation.py`
 - `system/tests/test_human_output.py`
+- `system/tests/test_language_specificity_policy.py`
 - `system/tests/test_llm_harness.py`
 - `system/tests/test_local_ai_assistive.py`
 - `system/tests/test_memory_governance.py`
@@ -528,6 +542,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_menu_projects.py`
 - `system/tests/test_model_language_competency.py`
 - `system/tests/test_natural_language_routing.py`
+- `system/tests/test_ol_authority_profiles.py`
 - `system/tests/test_ollama_admin.py`
 - `system/tests/test_operator_ux.py`
 - `system/tests/test_out_of_box_reset.py`
@@ -555,6 +570,10 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_scope_and_auto_resolution.py`
 - `system/tests/test_sections_and_work_units.py`
 - `system/tests/test_semantic_indexes.py`
+- `system/tests/test_sfm_slicer.py`
+- `system/tests/test_stc.py`
+- `system/tests/test_stc_registration.py`
+- `system/tests/test_stc_task.py`
 - `system/tests/test_storage_layout.py`
 - `system/tests/test_storage_rtc_boundaries.py`
 - `system/tests/test_transactions_and_memory.py`
@@ -564,11 +583,11 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_vrs.py`
 - `system/tests/test_windows_portability.py`
 - `system/tools`
+- `system/tools/CLONE-AND-INSTALL.md`
 - `system/tools/bootstrap_python.ps1`
 - `system/tools/bootstrap_python.sh`
 - `system/tools/bootstrap_runtime.py`
 - `system/tools/build_release.py`
-- `system/tools/CLONE-AND-INSTALL.md`
 - `system/tools/clone_and_install.cmd`
 - `system/tools/clone_and_install.py`
 - `system/tools/clone_and_install.sh`
@@ -577,4 +596,3 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/reset_project_state.py`
 - `system/tools/validate_package.py`
 - `system/tools/validate_schemas.py`
-- `VERSION`

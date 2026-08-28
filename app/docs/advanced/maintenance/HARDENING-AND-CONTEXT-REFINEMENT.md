@@ -1,8 +1,8 @@
-# SAGE v0.01beta hardening and context refinement
+# SAGE v0.02alpha1 hardening and context refinement
 
-Version: `0.01beta`
+Version: `0.02alpha1`
 
-`0.01beta` includes the current hardening/refinement baseline. It preserves the established project-cardinality grammar, BIC/SAW authority boundaries, provider architecture, and byte-pinned protected BIC linguistic contracts while tightening bounded TARGET safety, provider handoff budgeting, OL micro-scoping, SAW discourse segmentation, history ordering, and release validation.
+`0.02alpha1` includes the current hardening/refinement baseline. It preserves the established project-cardinality grammar, BIC/SAW authority boundaries, provider architecture, and byte-pinned protected BIC linguistic contracts while tightening bounded TARGET safety, routed-SFM review-item budgeting, canonical linguistic-profile handoff, OL micro-scoping, SAW discourse segmentation, history ordering, and release validation.
 
 ## Bounded TARGET safety
 
@@ -12,17 +12,18 @@ Version: `0.01beta`
 - Revert verifies the exact restored historical scope before transaction commit.
 - Commit ordering includes a nanosecond ordering value so same-second commits have a total order independent of transaction-ID text.
 
-## Provider handoff budget
+## Routed-SFM review-item budget
 
-SAGE now measures and enforces the exact provider request immediately before every provider execution:
+SAGE sizes one actual analytical review item at a time. The hard analytical budget is:
 
 ```text
-provider prompt
-+ output schema
-= governed LLM handoff
+exact SFM Scripture routed to the review item
+= governed slicing input
 ```
 
-The receipt records prompt bytes, schema bytes, total bytes, component token estimates, total estimated input tokens, estimator identity, and the applicable workflow hard limits. Conditional second/next passes are remeasured after Phase-1/previous outputs are embedded.
+Controller JSON, microtransactions, prompts, output schemas, linguistic profiles, IDs, hashes, diagnostics, and local USJ projections do not enter token estimation or Scripture hard-byte sizing. Their serialized size may be retained as transport telemetry. This prevents controller growth or prompt wording from changing Scripture work-unit boundaries.
+
+Every routed natural-language stream carries its complete canonical profile independently of sizing. The profile is mandatory governed context but has zero sizing contribution.
 
 ## BIC OL micro-scope
 
@@ -32,7 +33,7 @@ This transport refinement does not modify the protected rewrite-detail or protec
 
 ## SAW Reference Text Comparison (RTC) discourse units
 
-Reference Text Comparison (RTC) preserves deterministic discourse units while balancing the original WIP packet around 6,000 estimated tokens. Clean boundaries are preferred between 5,000 and 7,000; adjacent units are not greedily packed beyond the 7,000 preferred ceiling, and no WIP packet may be planned at 8,000 tokens or above. Focused review uses at most two intact units and standalone Original-Language Review one. OL clarification triggered by RTC is a separate finding-scoped package, not an expansion of the parent RTC slice.
+Reference Text Comparison (RTC) preserves deterministic discourse units while balancing the WIP stream around a 6,000-token soft target. Clean WIP boundaries are preferred between 5,000 and 7,000; adjacent units are not greedily packed beyond the 7,000 preferred ceiling, and no WIP slice may be planned at 8,000 tokens or above. The complete required WIP+REFERENCE review item has its own routed-SFM hard guard; prompt/schema/controller overhead is not part of that guard. Focused review uses at most two intact units and standalone Original-Language Review one. OL clarification triggered by RTC is a separate finding-scoped package, not an expansion of the parent RTC slice.
 
 - Prose: one body paragraph.
 - Lists: `\lh` breaks list flow; each `\li1` starts a major unit; following subordinate `\li2+` paragraphs stay with that major unit; `\lf` breaks list flow.
@@ -43,6 +44,6 @@ This is an operational segmentation rule for model context, not a claim that eve
 
 ## Release gate
 
-`system/tools/hardening.py` discovers every `system/tests/test_*.py` module and automatically schedules any module not present in the curated batches. Timed-out subprocess trees are explicitly terminated. The hardening report records the exact governed source-tree SHA-256.
+`system/tools/hardening.py` discovers every `system/tests/test_*.py` module and deterministically schedules each discovered module exactly once. Within that isolated module workspace it collects exact pytest node IDs and splits long modules into bounded groups of at most eight test nodes per pytest process; short modules remain single-process. Timed-out subprocess trees are explicitly terminated and never counted as passes. The hardening report records the exact governed source-tree SHA-256.
 
 A production `build_release.py` invocation requires a complete hardening PASS whose source hash matches the exact staged tree before packaging. Test/internal recursion controls cannot enable a provider or alter runtime authority.

@@ -1,4 +1,4 @@
-# SAW Reference Text Comparison (RTC) Check Policy — Beta
+# SAW Reference Text Comparison (RTC) Check Policy — Alpha
 
 Reference Text Comparison (RTC) can split work into four check groups: structure/completeness, translation/meaning, language/readability, and consistency. All are enabled by default and may be toggled before the Run starts.
 

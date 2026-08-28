@@ -16,7 +16,7 @@ from sage.menu import MenuIO, SageControlCenter, ScriptedInput
 from sage.progress import (
     DEFAULT_JOB_PROGRESS_POLICY,
     PROGRESS_BASIS_ACT_ESTIMATED_TOKENS,
-    PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS,
+    PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS,
     format_activity_label,
     format_progress_line,
     quantify_run,
@@ -83,8 +83,8 @@ def test_run_progress_is_token_weighted_and_advances_only_on_finalized_tasks(tmp
     assert format_activity_label(progress) == "OL / staw-original-language-review / RUNNING"
 
 
-def test_progress_prefers_projected_handoff_but_preserves_legacy_raw_basis(tmp_path) -> None:
-    """New Jobs track projected provider work while historical Jobs can retain raw ACT weighting."""
+def test_progress_prefers_routed_sfm_but_preserves_legacy_raw_basis(tmp_path) -> None:
+    """New Jobs track routed SFM work while historical Jobs can retain prior weighting."""
     first = tmp_path / "run" / "tasks" / "task-1" / "task.json"
     second = tmp_path / "run" / "tasks" / "task-2" / "task.json"
     for path, task_id, projected, raw in (
@@ -100,7 +100,7 @@ def test_progress_prefers_projected_handoff_but_preserves_legacy_raw_basis(tmp_p
                     "skill": {"id": "saw-rtc"},
                     "context_budget": {
                         "final_estimated_tokens": projected,
-                        "provider_handoff": {"total_estimated_tokens": projected},
+                        "routed_sfm": {"total_estimated_tokens": projected},
                         "governance_context": {"final_estimated_tokens": raw},
                     },
                     "allowed_writes": ["output/result.json"],
@@ -117,7 +117,7 @@ def test_progress_prefers_projected_handoff_but_preserves_legacy_raw_basis(tmp_p
         task_manifests=(str(first), str(second)),
         run_status="PARTITIONED_IN_PROGRESS",
         current_stage="REFERENCE_TEXT_COMPARISON",
-        basis=PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS,
+        basis=PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS,
     )
     legacy = quantify_run(
         root=tmp_path,
@@ -129,6 +129,35 @@ def test_progress_prefers_projected_handoff_but_preserves_legacy_raw_basis(tmp_p
 
     assert (projected.completed, projected.total, projected.percent) == (1000, 4000, 25)
     assert (legacy.completed, legacy.total, legacy.percent) == (9000, 12000, 75)
+
+
+def test_progress_never_uses_stale_provider_handoff_weight(tmp_path) -> None:
+    """Legacy provider-handoff telemetry is not a sizing/progress authority after routed-SFM migration."""
+    task = tmp_path / "run" / "tasks" / "task-1" / "task.json"
+    task.parent.mkdir(parents=True, exist_ok=True)
+    task.write_text(
+        json.dumps(
+            {
+                "task_id": "task-1",
+                "operation": "rtc",
+                "skill": {"id": "saw-rtc"},
+                "context_budget": {
+                    "final_estimated_tokens": 123,
+                    "provider_handoff": {"total_estimated_tokens": 999999},
+                },
+                "allowed_writes": ["output/result.json"],
+            }
+        ),
+        encoding="utf-8",
+    )
+    progress = quantify_run(
+        root=tmp_path,
+        task_manifests=(str(task),),
+        run_status="RUNNING",
+        current_stage="REFERENCE_TEXT_COMPARISON",
+        basis=PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS,
+    )
+    assert progress.total == 123
 
 
 def test_job_contract_records_canonical_progress_quantifier(make_workspace) -> None:
@@ -146,6 +175,7 @@ def test_job_contract_records_canonical_progress_quantifier(make_workspace) -> N
 
     raw = yaml.safe_load(job.manifest_path.read_text(encoding="utf-8"))
     assert raw["progress_quantifier"] == DEFAULT_JOB_PROGRESS_POLICY.to_dict()
+    assert raw["progress_quantifier"]["basis"] == PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS
     assert job.progress_quantifier == DEFAULT_JOB_PROGRESS_POLICY.to_dict()
 
 

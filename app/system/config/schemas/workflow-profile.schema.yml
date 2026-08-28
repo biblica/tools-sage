@@ -96,10 +96,11 @@ saw_rtc_composite:
     slicing_stream: WIP
     boundary_streams: [WIP, REFERENCE]
     reference_range: exact_primary_wip_range
-    components: [WIP, REF, OH, PACK]
+    components: [WIP_SFM, REFERENCE_SFM, ROUTE_SFM]
     wip_hard_limit: exclusive
-    package_hard_limit: inclusive_and_not_above_provider_handoff_limit
-    validation: pre_slice_and_post_pack_and_immediately_before_provider_execution
+    route_hard_limit: inclusive_combined_routed_sfm_only
+    validation: pre_slice_and_immediately_before_provider_execution
+    excluded_from_sizing: [controller_data, microtransactions, prompts, schemas, profiles, ids, hashes, diagnostics]
 optional_bindings:
   bic:
     ORIGINAL_LANGUAGE_GREEK: zero_or_one
@@ -113,3 +114,12 @@ cardinality_vocabulary:
 - one_or_more
 - zero_or_more
 - exactly_one_of
+
+linguistic_specificity_contract:
+  scope: every_model_facing_limited_request
+  project_streams: complete_job_bound_LANGUAGE_PROFILE_required
+  original_language_streams: complete_source_bound_OL_AUTHORITY_PROFILE_required
+  inference_from_text: prohibited
+  missing_or_ambiguous_profile: fail_closed_before_provider_handoff
+  profile_slicing: prohibited
+  profile_token_budget_contribution: zero

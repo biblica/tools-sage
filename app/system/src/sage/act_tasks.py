@@ -37,6 +37,7 @@ from .evidence import EvidencePolicy
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
     AUTHORIZED_LEXICAL_EVIDENCE,
+    AUTHORITY_INTERPRETATION_RULES,
     DERIVED_EVIDENCE,
     LINGUISTIC_COMPETENCE_RULES,
     PROCESS_CONTROL,
@@ -60,6 +61,7 @@ from .human_output import report_language_authority, render_report_language_auth
 from .locking import WorkspaceLock
 from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
+from .linguistic_profiles import complete_language_profile_contract
 from .references import (
     ScriptureScope,
     atomic_reference_labels,
@@ -79,10 +81,12 @@ from .runtime_paths import (
     workflow_memory_root,
     workflow_for_task,
 )
+from .stc import plan_stc_work_units, stc_authority_family, validate_stc_submission, finalize_stc_run
 from .rtc_planner import (
     RTC_HANDOFF_CONTRACT_VERSION,
     RTC_PLANNER_VERSION,
     RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+    rtc_slicing_policy,
 )
 from .scripture import compile_project_scope, discover_book_ids
 from .saw_policy import load_run_policy_snapshot
@@ -99,11 +103,12 @@ from .vocabulary import (
     require_canonical_operation_set,
     require_canonical_target_text_vocabulary,
 )
-from .work_units import plan_work_units, records_from_project_result, select_records_for_scope
+from .work_units import records_from_project_result, select_records_for_scope
+from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_text, plan_sfm_work_units
 
 ACT_OPERATIONS = {
     "bic": {"inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check"},
-    "saw": {"rtc", "focused", "ol"},
+    "saw": {"rtc", "stc", "focused", "ol"},
 }
 CONTEMPORARY_ROLES = {"REFERENCE"}
 READY_RESOURCE_STATES = {"READY", "READY_WITH_WARNINGS"}
@@ -1255,6 +1260,62 @@ def _project_grammar_profile(
     )
 
 
+def _grammar_profile_from_binding(config: EcosystemConfig, selector: str) -> GrammarProfile:
+    """Load one Job-bound canonical linguistic profile selector (language/variant)."""
+    value = str(selector or "").strip()
+    if "/" not in value:
+        raise ValidationError(
+            f"Canonical linguistic profile selector is invalid: {value or '<missing>'}",
+            code="LINGUISTIC_PROFILE_MISSING",
+        )
+    language, variant_id = value.split("/", 1)
+    namespace = config.language_profile(language)
+    spec = namespace.variants.get(variant_id)
+    if spec is None:
+        raise ValidationError(
+            f"Canonical linguistic profile is not configured: {value}",
+            code="LINGUISTIC_PROFILE_MISSING",
+        )
+    return load_grammar_profile(
+        spec.path,
+        expected_profile_id=variant_id,
+        expected_language=namespace.profile_language,
+        expected_role=spec.role,
+    )
+
+
+def _write_bound_grammar_contract(
+    config: EcosystemConfig,
+    selector: str,
+    packet_root: Path,
+    label: str,
+) -> tuple[Path, GrammarProfile]:
+    """Write the complete immutable Job-bound profile for one routed language stream."""
+    profile = _grammar_profile_from_binding(config, selector)
+    path = packet_root / f"{label}-grammar-contract.json"
+    review = active_grammar_review(config, profile)
+    contract = profile.contract()
+    contract["governance_review"] = review
+    contract["effective_status"] = (
+        "ACTIVE" if grammar_profile_is_approved(config, profile) else profile.status
+    )
+    atomic_write_json(path, contract)
+    return path, profile
+
+
+def _write_report_language_contract(
+    config: EcosystemConfig,
+    language_tag: str,
+    packet_root: Path,
+    label: str,
+) -> tuple[Path, GrammarProfile]:
+    """Materialize one complete canonical LANGUAGE_PROFILE for generated report prose."""
+    profile, contract = complete_language_profile_contract(config, language_tag)
+    path = packet_root / f"{label}-language-profile.json"
+    atomic_write_json(path, contract)
+    return path, profile
+
+
 def _write_grammar_contract(
     config: EcosystemConfig,
     project: ProjectSpec,
@@ -1542,11 +1603,12 @@ def _load_predecessor(
     ol_used = bool(submission.get("conditional_ol_evidence_used", False))
     inherited_ol: dict[str, Any] | None = None
     if ol_used:
-        ol_path = path.parent / "packet" / "original-language.usj.json"
+        ol_path = path.parent / "packet" / "original-language.sfm"
+        authority_profile_path = path.parent / "packet" / "ol-authority-profile.yml"
         vrs_path = path.parent / "packet" / "conditional-ol-vrs-evidence.json"
-        if not ol_path.is_file() or not vrs_path.is_file():
+        if not ol_path.is_file() or not authority_profile_path.is_file() or not vrs_path.is_file():
             raise ValidationError(
-                "REWRITE reports OL use but its exact conditional OL evidence is missing",
+                "REWRITE reports OL use but its exact conditional OL evidence/profile is missing",
                 code="BIC_PREDECESSOR_OL_EVIDENCE_MISSING",
             )
         conditional = {
@@ -1554,7 +1616,7 @@ def _load_predecessor(
             for item in predecessor_manifest.get("conditional_reads", [])
             if isinstance(item, dict)
         }
-        for evidence_path in (ol_path, vrs_path):
+        for evidence_path in (ol_path, authority_profile_path, vrs_path):
             relative = _relative(config.root, evidence_path)
             expected = conditional.get(relative)
             actual = sha256_file(evidence_path)
@@ -1564,8 +1626,10 @@ def _load_predecessor(
                     code="BIC_PREDECESSOR_OL_EVIDENCE_CHANGED",
                 )
         inherited_ol = {
-            "usj_path": ol_path,
-            "usj_sha256": sha256_file(ol_path),
+            "sfm_path": ol_path,
+            "sfm_sha256": sha256_file(ol_path),
+            "authority_profile_path": authority_profile_path,
+            "authority_profile_sha256": sha256_file(authority_profile_path),
             "vrs_path": vrs_path,
             "vrs_sha256": sha256_file(vrs_path),
             "sources": list(predecessor_manifest.get("original_language_sources", [])),
@@ -1623,7 +1687,7 @@ def _context_measurement(
         total_bytes += size
     contributors.sort(key=lambda item: item["bytes"], reverse=True)
     return {
-        "measurement_scope": "controller_inventory_not_provider_handoff",
+        "measurement_scope": "controller_inventory_only",
         "serialized_bytes": total_bytes,
         "top_contributors": contributors[:8],
     }
@@ -1637,7 +1701,7 @@ def _enforce_context_budget(
     scope: ScriptureScope,
     primary_verse_units: int,
 ) -> None:
-    """Reject a task whose planned provider handoff or primary scope exceeds configured hard limits."""
+    """Reject a task whose routed analysis SFM or primary scope exceeds configured hard limits."""
     failures: list[str] = []
     if telemetry["serialized_bytes"] > policy.hard_serialized_bytes:
         failures.append(
@@ -1653,7 +1717,7 @@ def _enforce_context_budget(
         )
     if failures:
         raise EvidenceLimitError(
-            f"{operation} planned provider handoff exceeds governed limits: " + "; ".join(failures),
+            f"{operation} routed analysis SFM exceeds governed limits: " + "; ".join(failures),
             affected_scope=scope.label(),
             next_action="Use the automatically generated bounded work-unit plan or narrow the scope.",
             details={"context_budget": telemetry, "policy": policy.to_dict()},
@@ -1680,7 +1744,7 @@ def _enforce_rtc_sizing(
     sizing.validate_active_provider(
         str(load_llm_settings(config.root).get("selected_provider") or "")
     )
-    sizing.enforce_handoff(measurement, scope=scope.label())
+    sizing.enforce_route(measurement, scope=scope.label())
 
 
 def _required_review_checks(
@@ -1940,8 +2004,8 @@ def _approved_saw_rtc_work_plan(
                 )
             try:
                 wip_tokens = int(dict(package.get("wip") or {})["estimated_tokens"])
-                pack_tokens = int(dict(package.get("pack") or {})["estimated_tokens"])
-                pack_bytes = int(dict(package.get("pack") or {})["serialized_bytes"])
+                route_tokens = int(dict(package.get("route") or {})["estimated_tokens"])
+                route_bytes = int(dict(package.get("route") or {})["serialized_bytes"])
             except (KeyError, TypeError, ValueError) as exc:
                 raise ValidationError(
                     f"Approved SAW work unit {unit_id} has an invalid RTC package projection",
@@ -1950,9 +2014,8 @@ def _approved_saw_rtc_work_plan(
                 ) from exc
             if (
                 wip_tokens >= rtc_sizing_contract.wip_hard_exclusive_tokens
-                or pack_tokens > rtc_sizing_contract.package_hard_max_tokens
-                or pack_tokens > rtc_sizing_contract.provider_handoff_max_tokens
-                or pack_bytes > rtc_sizing_contract.package_hard_serialized_bytes
+                or route_tokens > rtc_sizing_contract.route_hard_max_tokens
+                or route_bytes > rtc_sizing_contract.route_hard_serialized_bytes
             ):
                 raise ValidationError(
                     f"Approved SAW work unit {unit_id} no longer fits RTC sizing limits",
@@ -2155,29 +2218,14 @@ def _partition_evidence_policy(
     operation: str,
     policy: EvidencePolicy,
 ) -> EvidencePolicy:
-    """Derive the primary-stream policy used to choose partition boundaries."""
-    input_multiplier = 2 + (1 if workflow == "bic" or operation == "ol" else 0)
-    if workflow == "saw" and operation == "rtc":
-        # RTC is governed from the original WIP packet. The REFERENCE follows the
-        # selected Scripture range, while OL clarification is a separate exception task.
-        target_tokens = 6000
-        hard_tokens = 7999
-        minimum_tokens = 5000
-        preferred_max_tokens = 7000
-    else:
-        hard_tokens = max(2500, policy.hard_estimated_tokens // input_multiplier - 1800)
-        target_tokens = max(
-            1800,
-            min(policy.target_estimated_tokens // input_multiplier, hard_tokens * 3 // 4),
-        )
-        minimum_tokens = min(policy.minimum_target_tokens, target_tokens)
-        preferred_max_tokens = 0
+    """Preserve the configured routed-SFM targets and hard limits exactly."""
+    del workflow, operation
     return EvidencePolicy(
-        target_estimated_tokens=target_tokens,
-        hard_estimated_tokens=hard_tokens,
-        hard_serialized_bytes=max(18000, policy.hard_serialized_bytes // input_multiplier - 12000),
-        minimum_target_tokens=minimum_tokens,
-        preferred_max_estimated_tokens=preferred_max_tokens,
+        target_estimated_tokens=policy.target_estimated_tokens,
+        hard_estimated_tokens=policy.hard_estimated_tokens,
+        hard_serialized_bytes=policy.hard_serialized_bytes,
+        minimum_target_tokens=policy.minimum_target_tokens,
+        preferred_max_estimated_tokens=policy.preferred_max_estimated_tokens,
         maximum_primary_verse_units=min(policy.maximum_primary_verse_units, 80),
         maximum_primary_discourse_units=policy.maximum_primary_discourse_units,
         preferred_primary_discourse_units=policy.preferred_primary_discourse_units,
@@ -2430,17 +2478,37 @@ def _partition_act_request(
                 affected_scope=scope.label(),
             )
     derived = _partition_evidence_policy(workflow, operation, policy)
+    if workflow == "saw" and operation == "rtc" and rtc_stage == "REFERENCE_TEXT_COMPARISON":
+        derived = rtc_slicing_policy(policy, profile.require_rtc_sizing())
     plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
-    units = plan_work_units(
+    primary_stream_id = "WIP" if workflow == "saw" else "CONTENT_SOURCE"
+    route_streams = [SfmStream(primary_stream_id, tuple(records))]
+    if workflow == "saw" and operation in {"rtc", "focused", "ol"}:
+        reference_records = records_from_project_result(
+            source_project_id,
+            compiled[source_project_id],
+            resource_role="REFERENCE",
+        )
+        route_streams.append(SfmStream("REFERENCE", tuple(reference_records)))
+    if workflow == "saw" and operation == "ol":
+        bound = JobStore(config.root, config.settings_path).load_job(str(job_id), tool="saw")
+        family = "GREEK" if stc_authority_family(scope.book) == "GRK" else "HEBREW"
+        ol_project_id = str(bound.bindings.get(f"original_language_{family.lower()}") or "")
+        if not ol_project_id or ol_project_id not in compiled:
+            raise ValidationError("SAW OL review lacks the testament-appropriate governed OL authority")
+        ol_records = records_from_project_result(
+            ol_project_id, compiled[ol_project_id], resource_role=f"ORIGINAL_LANGUAGE_{family}"
+        )
+        route_streams.append(SfmStream(f"OL:{family}", tuple(ol_records)))
+    units = plan_sfm_work_units(
         selected,
         derived,
         unit_prefix=plan_id,
-        shared={
-            "workflow": workflow,
-            "operation": operation,
-            "requested_scope": scope.label(),
-            "complete_context_limits": policy.to_dict(),
-        },
+        route=SfmAnalysisRoute(
+            route_id=f"{workflow.upper()}_{operation.upper()}",
+            streams=tuple(route_streams),
+            target_stream_ids=(primary_stream_id,),
+        ),
         context_pool=records,
         required_spans=stage_spans,
     )
@@ -2671,6 +2739,409 @@ def _create_saw_rtc_composite(
     return response
 
 
+
+def _bounded_sfm_packet(
+    source: Path,
+    primary_scope: ScriptureScope,
+    destination: Path,
+    *,
+    context_references: Sequence[str] = (),
+) -> dict[str, Any]:
+    """Write only bounded Scripture SFM selected by primary scope plus explicit context."""
+    try:
+        raw = source.read_bytes()
+        text = raw.decode("utf-8-sig")
+        usj = compile_usfm_text(text, source.name)
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise ValidationError(f"Cannot compile STC Scripture input {source}: {exc}") from exc
+    parser_errors = list(usj.get("sage", {}).get("errors", []))
+    if parser_errors:
+        raise ValidationError(f"STC input {source.name} has parser errors: {', '.join(parser_errors[:8])}")
+    requested = (primary_scope, *(parse_scope(value) for value in context_references))
+    selected: list[dict[str, Any]] = []
+    refs: set[VerseRef] = set()
+    for unit in parse_usj_units(usj):
+        unit_refs = {
+            VerseRef(primary_scope.book, int(unit["chapter"]), verse)
+            for verse in range(int(unit["verse_start"]), int(unit["verse_end"]) + 1)
+        }
+        intersection = {ref for ref in unit_refs if any(scope.contains(ref) for scope in requested)}
+        if not intersection:
+            continue
+        if intersection != unit_refs:
+            raise ValidationError(
+                f"STC bounded evidence cuts through a protected verse bridge in {source.name}",
+                code="OL_CORRESPONDENCE_BOUNDARY_SPLIT",
+                affected_scope=primary_scope.label(),
+            )
+        selected.append(unit)
+        refs.update(unit_refs)
+    if not selected:
+        raise ValidationError(f"STC scope {primary_scope.label()} is absent from {source.name}")
+    lines = [f"\\id {primary_scope.book}"]
+    current_chapter: int | None = None
+    for unit in selected:
+        chapter = int(unit["chapter"])
+        if chapter != current_chapter:
+            current_chapter = chapter
+            lines.append(f"\\c {chapter}")
+        raw_lines = list(unit.get("lines", []))
+        if not raw_lines:
+            raise ValidationError(f"Compiled STC unit in {source.name} has no retained SFM lines")
+        lines.extend(str(line) for line in raw_lines)
+    bounded = "\n".join(lines).rstrip() + "\n"
+    atomic_write_text(destination, bounded)
+    primary_atoms = [ref.label() for ref in sorted(refs) if primary_scope.contains(ref)]
+    return {
+        "path": destination.name,
+        "source_file": source.name,
+        "source_sha256": sha256_bytes(raw),
+        "packet_sha256": sha256_file(destination),
+        "source_format": "SFM",
+        "comparison_format": "SFM",
+        "scope": primary_scope.label(),
+        "primary_references": primary_atoms,
+        "routed_references": [ref.label() for ref in sorted(refs)],
+        "serialized_bytes": measure_sfm_text(bounded).serialized_bytes,
+        "estimated_tokens": measure_sfm_text(bounded).estimated_tokens,
+    }
+
+
+def _copy_ol_authority_profile(
+    ol_project: ProjectSpec,
+    family: str,
+    destination: Path,
+) -> dict[str, Any]:
+    """Validate and copy the complete source-bound OL authority profile into one task."""
+    source = ol_project.path / "authority-profile.yml"
+    if ol_project.external and source.is_file():
+        source = validate_external_file(source, roots=(ol_project.path,), write=False)
+    if not source.is_file():
+        raise ValidationError(
+            f"Original-language authority {ol_project.project_id} has no authority-profile.yml",
+            code="OL_AUTHORITY_PROFILE_MISSING",
+            next_action="Bind a governed OL authority profile to the exact GRK/HEB resource before model handoff.",
+        )
+    raw = load_yaml(source)
+    profile = raw.get("profile") if isinstance(raw, dict) else None
+    language_identity = raw.get("language_identity") if isinstance(raw, dict) else None
+    if not isinstance(profile, dict) or str(profile.get("type", "")).upper() != "OL_AUTHORITY_PROFILE":
+        raise ValidationError("OL authority profile has invalid profile.type", code="OL_AUTHORITY_PROFILE_INVALID")
+    if str(profile.get("authority_family", "")).upper() != family:
+        raise ValidationError("OL authority profile family does not match routed Scripture", code="OL_AUTHORITY_PROFILE_INVALID")
+    if not isinstance(language_identity, dict) or not str(language_identity.get("historical_register", "")).strip():
+        raise ValidationError("OL authority profile lacks historical language/register specificity", code="OL_AUTHORITY_PROFILE_INVALID")
+    exclusion = language_identity.get("modern_language_exclusion")
+    if not isinstance(exclusion, dict) or not str(exclusion.get("instruction", "")).strip():
+        raise ValidationError("OL authority profile lacks the modern-language exclusion rule", code="OL_AUTHORITY_PROFILE_INVALID")
+    atomic_write_bytes(destination, source.read_bytes())
+    return {
+        "profile_class": "OL_AUTHORITY_PROFILE",
+        "authority_family": family,
+        "authority_id": str(profile.get("authority_id") or family),
+        "authority_role": str(profile.get("applies_to_role") or "PRIMARY"),
+        "language": str(language_identity.get("canonical_name") or ""),
+        "historical_register": str(language_identity.get("historical_register") or ""),
+        "path": _relative(destination.parents[3] if False else destination.parent, destination) if False else destination.name,
+        "sha256": sha256_file(destination),
+    }
+
+
+def _create_saw_stc_task(
+    config: EcosystemConfig,
+    *,
+    output_project_id: str,
+    scope: ScriptureScope,
+    contemporary_source_id: str,
+    grammar_override_id: str | None,
+    auto_partition: bool,
+    parent_plan_id: str | None,
+    work_unit_id: str | None,
+    job_id: str,
+    run_id: str,
+    context_before: Sequence[str],
+    context_after: Sequence[str],
+) -> dict[str, Any]:
+    """Create STC independently from Reference, routing only bounded WIP+primary-OL SFM."""
+    # STC maintenance boundary: controller identity and validation stay outside model evidence;
+    # only bounded WIP+OL SFM and their complete canonical profiles are routed to the provider.
+    if grammar_override_id:
+        raise ValidationError("STC does not accept ad-hoc grammar-profile overrides; recreate the Job profile binding instead")
+    output = config.project(output_project_id)
+    _assert_enabled(output, "SAW WIP")
+    _assert_project_scope(output, scope, "SAW WIP")
+    if "WIP" not in output.scope.roles or output.content_state != "UNDER_REVIEW":
+        raise ValidationError(f"SAW STC requires an UNDER_REVIEW WIP project: {output.project_id}")
+    ol_role, ol_project = _select_ol_project(config, scope, required=True, workflow="saw", job_id=job_id)
+    assert ol_project is not None
+    family = stc_authority_family(scope.book)
+    expected_role = "ORIGINAL_LANGUAGE_GREEK" if family == "GRK" else "ORIGINAL_LANGUAGE_HEBREW"
+    if ol_role != expected_role:
+        raise ValidationError("STC testament routing differs from the selected primary OL authority", code="STC_OL_AUTHORITY_MISMATCH")
+    compiled = _assert_initialized_and_ready(
+        config,
+        "saw",
+        [("SAW WIP", output), ("Original-language", ol_project)],
+        scope,
+    )
+    wip_records_all = records_from_project_result(output.project_id, compiled[output.project_id], resource_role="WIP")
+    ol_records_all = records_from_project_result(ol_project.project_id, compiled[ol_project.project_id], resource_role=family)
+    selected_wip = select_records_for_scope(wip_records_all, scope)
+    selected_ol = select_records_for_scope(ol_records_all, scope)
+    policy = load_workflow_profile(config, config.workflow("saw")).evidence_policy("stc")
+    units = plan_stc_work_units(
+        selected_wip,
+        selected_ol,
+        policy,
+        unit_prefix=parent_plan_id or f"SAW-STC-{scope.book}",
+        context_pool=wip_records_all,
+    )
+    if auto_partition and work_unit_id is None and len(units) > 1:
+        seed = sha256_bytes(json.dumps({
+            "job_id": job_id, "run_id": run_id, "scope": scope.label(),
+            "wip": output.project_id, "ol": ol_project.project_id, "family": family,
+        }, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+        plan_id = f"SAW-STC-{scope.book}-{seed[:10].upper()}"
+        children: list[dict[str, Any]] = []
+        for unit in units:
+            item = unit.to_dict()
+            child = create_act_task(
+                config,
+                workflow="saw",
+                operation="stc",
+                output_project_id=output.project_id,
+                contemporary_source_id=contemporary_source_id,
+                scope_value=item["primary_scope"],
+                auto_partition=False,
+                parent_plan_id=plan_id,
+                work_unit_id=unit.unit_id,
+                job_id=job_id,
+                run_id=run_id,
+                context_before_references=item["context_before"],
+                context_after_references=item["context_after"],
+            )
+            children.append({
+                "unit_id": unit.unit_id,
+                "scope": item["primary_scope"],
+                "task_id": child["task_id"],
+                "manifest_path": child["manifest_path"],
+                "task_fingerprint": child["task_fingerprint"],
+                "primary_coverage_atoms": item["primary_coverage_atoms"],
+            })
+        expected = [ref.label() for ref in sorted({ref for unit in units for ref in unit.primary_refs})]
+        plan = {
+            "schema_version": "1.0", "status": "PARTITIONED", "plan_id": plan_id,
+            "workflow": "saw", "operation": "stc", "job_id": job_id, "run_id": run_id,
+            "requested_scope": scope.label(), "output_project": output.project_id,
+            "contemporary_source": None, "primary_ol_authority": ol_project.project_id,
+            "authority_family": family, "authority_role": "PRIMARY",
+            "expected_references": expected, "work_units": children,
+        }
+        plan_path = plan_container(config.workflow("saw"), run_id) / f"{plan_id}.json"
+        atomic_write_json(plan_path, plan)
+        return {**plan, "plan_path": str(plan_path), "task_manifests": [row["manifest_path"] for row in children]}
+
+    output_file = _one_book_file(output, scope.book)
+    ol_file = _one_book_file(ol_project, scope.book)
+    assert output_file is not None and ol_file is not None
+    all_context = tuple(context_before) + tuple(context_after)
+    seed = sha256_bytes(json.dumps({
+        "job_id": job_id, "run_id": run_id, "scope": scope.label(),
+        "wip": output.project_id, "ol": ol_project.project_id, "family": family,
+        "work_unit_id": work_unit_id, "context": list(all_context),
+    }, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+    base_task_id = f"saw-stc-{scope.book.lower()}-{seed[:12]}"
+    task_id = base_task_id
+    active_root = task_container(config.workflow("saw"), run_id)
+    sequence = 1
+    while (active_root / task_id).exists():
+        sequence += 1
+        task_id = f"{base_task_id}-r{sequence}"
+    task_root = active_root / task_id
+    packet_root = task_root / "packet"
+    output_root = task_root / "output"
+    packet_root.mkdir(parents=True, exist_ok=False)
+    output_root.mkdir(parents=True, exist_ok=False)
+    try:
+        wip_path = packet_root / "wip.sfm"
+        ol_path = packet_root / "original-language.sfm"
+        wip_packet = _bounded_sfm_packet(output_file, scope, wip_path, context_references=all_context)
+        ol_packet = _bounded_sfm_packet(ol_file, scope, ol_path, context_references=all_context)
+        expected_references = list(wip_packet["primary_references"])
+        if expected_references != list(ol_packet["primary_references"]):
+            raise ValidationError("STC WIP/OL primary coverage differs", code="STC_OL_COVERAGE_MISMATCH")
+        target_grammar_path, target_profile = _write_grammar_contract(config, output, packet_root, "wip")
+        if target_grammar_path is None or target_profile is None:
+            raise ValidationError(
+                f"STC WIP {output.project_id} has no canonical LANGUAGE_PROFILE",
+                code="LINGUISTIC_PROFILE_MISSING",
+            )
+        bound_job = JobStore(config.root, config.settings_path).load_job(job_id, tool="saw")
+        report_grammar_path, report_profile = _write_report_language_contract(
+            config,
+            bound_job.primary_report_language,
+            packet_root,
+            "report-primary",
+        )
+        if sha256_file(report_grammar_path) == sha256_file(target_grammar_path):
+            report_grammar_path.unlink(missing_ok=True)
+            report_grammar_path = target_grammar_path
+        ol_profile_path = packet_root / "ol-authority-profile.yml"
+        ol_profile = _copy_ol_authority_profile(ol_project, family, ol_profile_path)
+        ol_profile["path"] = _relative(config.root, ol_profile_path)
+        skill = load_skill_registry(config.root)[("saw", "stc")]
+        skill_files = [{"path": _relative(config.root, item), "sha256": sha256_file(item)} for item in _skill_files(skill)]
+        allowed_reads = [
+            {"path": _relative(config.root, wip_path), "sha256": sha256_file(wip_path), "evidence_class": SUBJECT_TEXT},
+            {"path": _relative(config.root, ol_path), "sha256": sha256_file(ol_path), "evidence_class": AUTHORIZED_CONTENT_EVIDENCE},
+            {"path": _relative(config.root, target_grammar_path), "sha256": sha256_file(target_grammar_path), "evidence_class": LINGUISTIC_COMPETENCE_RULES},
+            {"path": _relative(config.root, ol_profile_path), "sha256": sha256_file(ol_profile_path), "evidence_class": AUTHORITY_INTERPRETATION_RULES},
+        ]
+        if report_grammar_path != target_grammar_path:
+            allowed_reads.append({
+                "path": _relative(config.root, report_grammar_path),
+                "sha256": sha256_file(report_grammar_path),
+                "evidence_class": LINGUISTIC_COMPETENCE_RULES,
+            })
+        governance_inputs = [
+            {"path": _relative(config.root, config.workflow("saw").profile_path), "sha256": sha256_file(config.workflow("saw").profile_path), "evidence_class": PROCESS_CONTROL},
+            *[{"path": item["path"], "sha256": item["sha256"], "evidence_class": PROCESS_CONTROL} for item in skill_files],
+        ]
+        narrative_language = _narrative_language_contract(config)
+        ol_binding_key = expected_role
+        resource_bindings = {"WIP": output.project_id, ol_binding_key: ol_project.project_id}
+        project_fingerprints = {
+            output.project_id: project_validation_fingerprint(compiled[output.project_id]),
+            ol_project.project_id: project_validation_fingerprint(compiled[ol_project.project_id]),
+        }
+        route_bytes = int(wip_packet["serialized_bytes"]) + int(ol_packet["serialized_bytes"])
+        route_tokens = int(wip_packet["estimated_tokens"]) + int(ol_packet["estimated_tokens"])
+        if route_bytes > policy.hard_serialized_bytes or route_tokens > policy.hard_estimated_tokens:
+            raise EvidenceLimitError(
+                "STC routed WIP+OL SFM exceeds the hard review-item limit",
+                affected_scope=scope.label(),
+                details={"serialized_bytes": route_bytes, "estimated_tokens": route_tokens},
+            )
+        linguistic_profile_bindings = [
+            {
+                "stream_id": "WIP", "profile_class": "LANGUAGE_PROFILE",
+                "profile_id": target_profile.profile_id, "language": target_profile.language,
+                "path": _relative(config.root, target_grammar_path), "sha256": sha256_file(target_grammar_path),
+            },
+            {
+                "stream_id": "REPORT:PRIMARY", "profile_class": "LANGUAGE_PROFILE",
+                "profile_id": report_profile.profile_id, "language": report_profile.language,
+                "path": _relative(config.root, report_grammar_path), "sha256": sha256_file(report_grammar_path),
+            },
+            {
+                "stream_id": f"{family}:PRIMARY", **ol_profile,
+            },
+        ]
+        identity = {
+            "schema_version": "2.4", "execution_mode": "SAGE_GOVERNED_TASK_V1",
+            "workflow": "saw", "operation": "stc", "rtc_stage": None,
+            "job_id": job_id, "run_id": run_id,
+            "resource_bindings": resource_bindings, "resource_display_names": resource_bindings,
+            "output_project": output.project_id, "output_content_state": output.content_state,
+            "contemporary_source": None, "primary_ol_authority": ol_project.project_id,
+            "original_language_sources": [{
+                "role": expected_role, "project": ol_project.project_id, "routing": "DIRECT",
+                "authority_family": family, "authority_role": "PRIMARY",
+            }],
+            "lexical_donor": None, "scope": scope.label(), "focus": None, "check_type": None,
+            "parent_plan_id": parent_plan_id, "work_unit_id": work_unit_id or task_id,
+            "context_references": {"mode": "CONTEXT_ONLY", "before": list(context_before), "after": list(context_after)},
+            "skill": {
+                "id": skill.skill_id, "entrypoint": _relative(config.root, skill.path), "files": skill_files,
+                "source_system": skill.source_system, "source_version": skill.source_version,
+                "original_file": _relative(config.root, skill.original_file), "original_sha256": skill.original_sha256,
+                "adapted_sha256": skill.adapted_sha256, "qualification_status": skill.qualification_status,
+            },
+            "project_grammar": {
+                "profile_id": target_profile.profile_id, "language": target_profile.language,
+                "status": target_profile.status, "profile_sha256": target_profile.sha256,
+                "rule_ids": [row["rule_id"] for row in target_profile.checks],
+                "contract": _relative(config.root, target_grammar_path),
+            },
+            "source_grammar": None,
+            "linguistic_profile_bindings": linguistic_profile_bindings,
+            "evidence_policy": task_evidence_policy("saw"),
+            "packets": {"wip": wip_packet, "original_language": {**ol_packet, "evidence_id": expected_role}},
+            "preflight": None,
+            "resource_fingerprints": {
+                "settings": sha256_file(config.settings_path), "workflow_profile": sha256_file(config.workflow("saw").profile_path),
+                "skill_entrypoint": sha256_file(skill.path),
+                f"project.{output.project_id}": project_fingerprints[output.project_id],
+                f"project.{ol_project.project_id}": project_fingerprints[ol_project.project_id],
+                "packet.wip": sha256_file(wip_path), "packet.original_language": sha256_file(ol_path),
+                "profile.wip": sha256_file(target_grammar_path),
+                "profile.report_primary": sha256_file(report_grammar_path),
+                "profile.ol": sha256_file(ol_profile_path),
+            },
+            "expected_references": expected_references, "primary_coverage": expected_references,
+            "structural_candidate_ids": [], "allowed_evidence_ids": ["WIP", expected_role],
+            "governance_inputs": governance_inputs, "allowed_reads": allowed_reads, "conditional_reads": [],
+            "allowed_writes": ["output/findings.json"],
+            "narrative_language": narrative_language,
+            "human_output": {
+                "logs_and_reports": {"primary_language": config.human_output.logs_and_reports.primary_language, "secondary_language": config.human_output.logs_and_reports.secondary_language, "bilingual": config.human_output.logs_and_reports.bilingual},
+            },
+            "output_grammar": "STC_FINDINGS_1.0",
+            "review_requirements": {"required_checks": ["STC_CORRESPONDENCE"], "controller_checks": [], "expected_work_unit_ids": [work_unit_id or task_id]},
+            "context_budget": {
+                "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1", "measurement_scope": "routed_analysis_sfm",
+                "planning_basis": "ROUTED_SFM_ONLY", "serialized_bytes": route_bytes, "estimated_tokens": route_tokens,
+                "final_serialized_bytes": route_bytes, "final_estimated_tokens": route_tokens, "policy": policy.to_dict(),
+            },
+            "forbidden_actions": ["broaden_scope", "read_unlisted_files", "use_external_content_evidence", "modify_locked_projects"],
+        }
+        fingerprint = sha256_bytes(json.dumps(identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+        submit_argv = ["--settings", config.settings_path.name, "task", "submit", "--task", _relative(config.root, task_root / "task-manifest.json")]
+        submit_commands = {"posix": render_sage_command(submit_argv, windows=False), "windows": render_sage_command(submit_argv, windows=True)}
+        manifest = {**identity, "task_id": task_id, "task_root": _relative(config.root, task_root), "submit_commands": submit_commands, "task_fingerprint": fingerprint, "created_utc": utc_now()}
+        manifest_path = task_root / "task-manifest.json"
+        act_path = task_root / "ACT.md"
+        act_text = "\n".join([
+            f"# SAGE ACT Task: {task_id}", "", "SAGE EXECUTION MODE: GOVERNED TASK V1", "",
+            "Execute only this bounded Source Text Correspondence (STC) review.",
+            f"- WIP: `{output.project_id}`", f"- Primary OL authority: `{ol_project.project_id}` (`{family}`, PRIMARY)",
+            f"- Scope: `{scope.label()}`", f"- Work unit: `{work_unit_id or task_id}`", "",
+            "## Evidence", "",
+            "Use only the supplied WIP + OL slice as evidence.",
+            "Do not use ANY information outside that slice to form or support a finding.",
+            "If a finding cannot be established from the supplied WIP + OL slice, do not report it.",
+            "The complete routed linguistic profiles govern language, dialect, and historical register but are not Scripture evidence.",
+            "Do not infer canonical language identity from the text; obey the bound profiles.", "",
+            "## Task", "",
+            "Compare OL element/phrase/construction with the WIP rendering. Do not assume one-to-one lexical alignment.",
+            "Report only governed OMISSION, ADDITION, VARIATION, or CONSISTENCY findings established by the bounded evidence.",
+            "Review every assigned primary coordinate even if there are zero findings.", "",
+            "## Allowed model reads", "",
+            *[f"- `{item['path']}` — `{item['evidence_class']}`" for item in allowed_reads], "",
+            "## Allowed writes", "", "- `output/findings.json`", "",
+            f"Canonical generated narrative language: `{narrative_language['tag']}`.",
+        ])
+        atomic_write_json(manifest_path, manifest)
+        atomic_write_text(act_path, act_text)
+        control_path = config.workflow("saw").state_root / "act-tasks" / f"{task_id}.json"
+        control = {
+            "schema_version": "2.0", "task_id": task_id, "workflow": "saw", "operation": "stc",
+            "job_id": job_id, "run_id": run_id, "task_root": _relative(config.root, task_root),
+            "manifest_path": _relative(config.root, manifest_path), "manifest_sha256": sha256_file(manifest_path),
+            "act_path": _relative(config.root, act_path), "act_sha256": sha256_file(act_path),
+            "task_fingerprint": fingerprint, "settings_sha256": sha256_file(config.settings_path),
+            "allowed_writes": ["output/findings.json"], "status": "CREATED", "created_utc": utc_now(),
+        }
+        atomic_write_json(control_path, control)
+        for immutable in (manifest_path, act_path, control_path):
+            try: os.chmod(immutable, 0o444)
+            except OSError: pass
+        return {**manifest, "manifest_path": str(manifest_path), "manifest_sha256": sha256_file(manifest_path), "control_path": str(control_path), "act_path": str(act_path), "act_sha256": sha256_file(act_path)}
+    except Exception:
+        import shutil
+        shutil.rmtree(task_root, ignore_errors=True)
+        raise
+
 def create_act_task(
     config: EcosystemConfig,
     *,
@@ -2780,6 +3251,21 @@ def create_act_task(
     job_store = JobStore(config.root, config.settings_path)
     owning_job = job_store.load_job(job_id, tool=workflow)
     config = load_ecosystem(job_store.ensure_runtime_files(owning_job))
+    if workflow == "saw" and operation == "stc":
+        return _create_saw_stc_task(
+            config,
+            output_project_id=output_project_id,
+            scope=scope,
+            contemporary_source_id=contemporary_source_id,
+            grammar_override_id=grammar_override_id,
+            auto_partition=auto_partition,
+            parent_plan_id=parent_plan_id,
+            work_unit_id=work_unit_id,
+            job_id=job_id,
+            run_id=run_id,
+            context_before=context_before,
+            context_after=context_after,
+        )
     rtc_policy: dict[str, Any] | None = None
     if workflow == "saw" and operation == "rtc":
         run = job_store.load_run(owning_job, run_id)
@@ -3122,15 +3608,24 @@ def create_act_task(
             else _write_scope_usj_packet(source_file, scope, contemporary_packet)
         )
         packet_records["contemporary_source"]["evidence_id"] = "SOURCE" if workflow == "bic" else "REFERENCE"
+        contemporary_model_packet = packet_root / ("source.sfm" if workflow == "bic" else "reference.sfm")
+        atomic_write_text(contemporary_model_packet, contemporary_semantic_usfm)
+        packet_records["contemporary_source"]["model_sfm_path"] = contemporary_model_packet.name
+        packet_records["contemporary_source"]["model_sfm_sha256"] = sha256_file(contemporary_model_packet)
         context_reference_packet: Path | None = None
+        context_reference_model_packet: Path | None = None
         if context_references:
             context_reference_packet = packet_root / "context-reference.usj.json"
-            packet_records["context_contemporary_source"], _ = _write_reference_inventory_usj_packet(
+            packet_records["context_contemporary_source"], context_reference_semantic_usfm = _write_reference_inventory_usj_packet(
                 source_file,
                 context_references,
                 context_reference_packet,
                 parent_scope=scope,
             )
+            context_reference_model_packet = packet_root / "context-reference.sfm"
+            atomic_write_text(context_reference_model_packet, context_reference_semantic_usfm)
+            packet_records["context_contemporary_source"]["model_sfm_path"] = context_reference_model_packet.name
+            packet_records["context_contemporary_source"]["model_sfm_sha256"] = sha256_file(context_reference_model_packet)
             packet_records["context_contemporary_source"].update({
                 "evidence_id": "REFERENCE_CONTEXT",
                 "context_mode": "CONTEXT_ONLY",
@@ -3146,6 +3641,8 @@ def create_act_task(
             )
         ol_packet: Path | None = None
         ol_semantic_usfm: str | None = None
+        ol_authority_profile_path: Path | None = None
+        ol_authority_profile: dict[str, Any] | None = None
         if route_ol or conditional_ol:
             assert ol_file is not None
             ol_packet = packet_root / "original-language.usj.json"
@@ -3162,30 +3659,79 @@ def create_act_task(
             packet_records["original_language"]["routing"] = (
                 "DIRECT" if route_ol else "CONDITIONAL_MATERIAL_RISK"
             )
+            ol_model_packet = packet_root / "original-language.sfm"
+            atomic_write_text(ol_model_packet, ol_semantic_usfm)
+            packet_records["original_language"]["model_sfm_path"] = ol_model_packet.name
+            packet_records["original_language"]["model_sfm_sha256"] = sha256_file(ol_model_packet)
+            family = "GRK" if str(ol_role).upper().endswith("GREEK") else "HEB"
+            ol_authority_profile_path = packet_root / "ol-authority-profile.yml"
+            ol_authority_profile = _copy_ol_authority_profile(
+                ol_project, family, ol_authority_profile_path
+            )
+            ol_authority_profile["path"] = _relative(config.root, ol_authority_profile_path)
+        else:
+            ol_model_packet = None
         inherited_ol_paths: list[Path] = []
+        inherited_ol_authority_profile_path: Path | None = None
         if predecessor and predecessor.get("inherited_ol"):
             inherited = dict(predecessor["inherited_ol"])
-            ol_packet = packet_root / "original-language.usj.json"
+            ol_model_packet = packet_root / "original-language.sfm"
+            inherited_ol_authority_profile_path = packet_root / "inherited-ol-authority-profile.yml"
             inherited_vrs_packet = packet_root / "inherited-ol-vrs-evidence.json"
-            atomic_write_bytes(ol_packet, Path(inherited["usj_path"]).read_bytes())
+            atomic_write_bytes(ol_model_packet, Path(inherited["sfm_path"]).read_bytes())
+            atomic_write_bytes(
+                inherited_ol_authority_profile_path,
+                Path(inherited["authority_profile_path"]).read_bytes(),
+            )
             atomic_write_bytes(inherited_vrs_packet, Path(inherited["vrs_path"]).read_bytes())
-            if sha256_file(ol_packet) != inherited["usj_sha256"] or sha256_file(inherited_vrs_packet) != inherited["vrs_sha256"]:
+            if (
+                sha256_file(ol_model_packet) != inherited["sfm_sha256"]
+                or sha256_file(inherited_ol_authority_profile_path) != inherited["authority_profile_sha256"]
+                or sha256_file(inherited_vrs_packet) != inherited["vrs_sha256"]
+            ):
                 raise ValidationError(
                     "Inherited REWRITE OL evidence changed while constructing SELF-CHECK",
                     code="BIC_PREDECESSOR_OL_EVIDENCE_CHANGED",
                 )
+            inherited_authority_raw = load_yaml(inherited_ol_authority_profile_path)
+            inherited_authority_profile = (
+                inherited_authority_raw.get("profile")
+                if isinstance(inherited_authority_raw, dict)
+                else None
+            )
+            inherited_language_identity = (
+                inherited_authority_raw.get("language_identity")
+                if isinstance(inherited_authority_raw, dict)
+                else None
+            )
+            if not isinstance(inherited_authority_profile, dict) or not isinstance(inherited_language_identity, dict):
+                raise ValidationError(
+                    "Inherited REWRITE OL authority profile is invalid",
+                    code="OL_AUTHORITY_PROFILE_INVALID",
+                )
+            ol_authority_profile = {
+                "profile_class": "OL_AUTHORITY_PROFILE",
+                "authority_family": str(inherited_authority_profile.get("authority_family") or "").upper(),
+                "authority_id": str(inherited_authority_profile.get("authority_id") or ""),
+                "authority_role": str(inherited_authority_profile.get("applies_to_role") or "PRIMARY"),
+                "language": str(inherited_language_identity.get("canonical_name") or ""),
+                "historical_register": str(inherited_language_identity.get("historical_register") or ""),
+                "path": _relative(config.root, inherited_ol_authority_profile_path),
+                "sha256": sha256_file(inherited_ol_authority_profile_path),
+            }
             packet_records["original_language"] = {
-                "path": ol_packet.name,
+                "path": ol_model_packet.name,
                 "source_format": "USFM",
-                "comparison_format": "USJ",
-                "packet_sha256": inherited["usj_sha256"],
+                "comparison_format": "SFM",
+                "packet_sha256": inherited["sfm_sha256"],
                 "scope": scope.label(),
                 "evidence_id": "ORIGINAL_LANGUAGE",
                 "routing": "INHERITED_FROM_REWRITE",
                 "source_task": predecessor["task_id"],
             }
-            inherited_ol_paths = [ol_packet, inherited_vrs_packet]
+            inherited_ol_paths = [ol_model_packet, inherited_vrs_packet]
         target_packet: Path | None = None
+        target_model_packet: Path | None = None
         target_semantic_usfm: str | None = None
         if predecessor:
             target_packet = packet_root / "staged-target.usj.json"
@@ -3210,18 +3756,28 @@ def create_act_task(
             packet_records["output_project"]["evidence_id"] = "WIP"
         elif workflow == "saw":
             raise ValidationError("SAW WIP has no bounded Scripture input")
+        if target_semantic_usfm is not None:
+            target_model_packet = packet_root / ("staged-target.sfm" if predecessor else "wip.sfm")
+            atomic_write_text(target_model_packet, target_semantic_usfm)
+            packet_records["output_project"]["model_sfm_path"] = target_model_packet.name
+            packet_records["output_project"]["model_sfm_sha256"] = sha256_file(target_model_packet)
 
         context_wip_packet: Path | None = None
+        context_wip_model_packet: Path | None = None
         if context_references:
             if output_file is None:
                 raise ValidationError("SAW context routing requires a WIP Scripture file")
             context_wip_packet = packet_root / "context-wip.usj.json"
-            packet_records["context_output_project"], _ = _write_reference_inventory_usj_packet(
+            packet_records["context_output_project"], context_wip_semantic_usfm = _write_reference_inventory_usj_packet(
                 output_file,
                 context_references,
                 context_wip_packet,
                 parent_scope=scope,
             )
+            context_wip_model_packet = packet_root / "context-wip.sfm"
+            atomic_write_text(context_wip_model_packet, context_wip_semantic_usfm)
+            packet_records["context_output_project"]["model_sfm_path"] = context_wip_model_packet.name
+            packet_records["context_output_project"]["model_sfm_sha256"] = sha256_file(context_wip_model_packet)
             packet_records["context_output_project"].update({
                 "evidence_id": "WIP_CONTEXT",
                 "context_mode": "CONTEXT_ONLY",
@@ -3274,24 +3830,63 @@ def create_act_task(
         target_profile = None
         source_grammar_path: Path | None = None
         source_profile = None
-        if workflow == "saw" or (workflow == "bic" and operation in {"rewrite", "self_check"}):
-            target_grammar_path, target_profile = _write_grammar_contract(
-                config, output, packet_root, "project"
+        donor_grammar_path: Path | None = None
+        donor_profile = None
+        report_grammar_path: Path | None = None
+        report_profile = None
+        if workflow == "saw":
+            target_grammar_path, target_profile = _write_bound_grammar_contract(
+                config, owning_job.profiles.get("target_grammar", ""), packet_root, "wip"
             )
-        if workflow == "bic":
-            source_grammar_path, source_profile = _write_grammar_contract(
-                config, source, packet_root, "source"
+            source_grammar_path, source_profile = _write_bound_grammar_contract(
+                config, owning_job.profiles.get("reference_grammar", ""), packet_root, "reference"
             )
-        if workflow == "saw" and target_profile is None:
-            raise ValidationError(f"SAW target {output.project_id} has no project grammar profile")
-        if workflow == "bic" and source_profile is None:
-            raise ValidationError(f"BIC source {source.project_id} has no source grammar profile")
-        if workflow == "bic" and operation in {"rewrite", "self_check"} and target_profile is None:
-            raise ValidationError(f"BIC target {output.project_id} has no target grammar profile")
+        else:
+            source_grammar_path, source_profile = _write_bound_grammar_contract(
+                config, owning_job.profiles.get("source_grammar", ""), packet_root, "source"
+            )
+            donor_grammar_path, donor_profile = _write_bound_grammar_contract(
+                config, owning_job.profiles.get("donor_grammar", ""), packet_root, "donor"
+            )
+            target_grammar_path, target_profile = _write_bound_grammar_contract(
+                config, owning_job.profiles.get("target_grammar", ""), packet_root, "target"
+            )
+        report_grammar_path, report_profile = _write_report_language_contract(
+            config,
+            owning_job.primary_report_language,
+            packet_root,
+            "report-primary",
+        )
+
+        # Preserve one physical provider read for exact profile content while retaining one
+        # explicit stream binding per natural-language stream.
+        canonical_profile_paths: dict[str, Path] = {}
+
+        def canonical_profile_path(path: Path | None) -> Path | None:
+            """Deduplicate exact linguistic-profile payloads without merging stream bindings."""
+            if path is None:
+                return None
+            digest = sha256_file(path)
+            existing = canonical_profile_paths.get(digest)
+            if existing is not None:
+                path.unlink(missing_ok=True)
+                return existing
+            canonical_profile_paths[digest] = path
+            return path
+
+        target_grammar_path = canonical_profile_path(target_grammar_path)
+        source_grammar_path = canonical_profile_path(source_grammar_path)
+        donor_grammar_path = canonical_profile_path(donor_grammar_path)
+        report_grammar_path = canonical_profile_path(report_grammar_path)
+        profile_values = tuple(
+            {
+                (profile.language, profile.profile_id, profile.sha256): profile
+                for profile in (target_profile, source_profile, donor_profile, report_profile)
+                if profile is not None
+            }.values()
+        )
         provisional_profiles: list[dict[str, Any]] = []
-        for profile in (target_profile, source_profile):
-            if profile is None:
-                continue
+        for profile in profile_values:
             if profile.status == "INACTIVE":
                 raise ValidationError(
                     f"Grammar profile {profile.language}/{profile.profile_id} is INACTIVE",
@@ -3313,8 +3908,7 @@ def create_act_task(
         if normalized_override:
             matching_receipts = [
                 receipt
-                for profile in (target_profile, source_profile)
-                if profile is not None
+                for profile in profile_values
                 for receipt in [grammar_review_by_decision_id(config, profile, normalized_override)]
                 if receipt is not None
             ]
@@ -3339,7 +3933,11 @@ def create_act_task(
 
         conditional_paths: list[Path] = []
         if conditional_ol and ol_packet is not None and ol_project is not None:
-            conditional_paths.append(ol_packet)
+            if ol_model_packet is None:
+                raise ValidationError("Conditional OL routing lacks bounded SFM evidence")
+            conditional_paths.append(ol_model_packet)
+            if ol_authority_profile_path is not None:
+                conditional_paths.append(ol_authority_profile_path)
             conditional_vrs_path = packet_root / "conditional-ol-vrs-evidence.json"
             atomic_write_json(
                 conditional_vrs_path,
@@ -3435,11 +4033,13 @@ def create_act_task(
             process_paths.append(config.root / protected_verb_selection_contract["canonical_file"])
 
         read_paths: list[Path] = [
-            contemporary_packet,
-            *([context_reference_packet] if context_reference_packet is not None else []),
-            *([context_wip_packet] if context_wip_packet is not None else []),
+            contemporary_model_packet,
+            *([context_reference_model_packet] if context_reference_model_packet is not None else []),
+            *([context_wip_model_packet] if context_wip_model_packet is not None else []),
             *([donor_vocabulary_path] if donor_vocabulary_path is not None else []),
-            *([ol_packet] if route_ol and ol_packet is not None else []),
+            *([ol_model_packet] if route_ol and ol_model_packet is not None else []),
+            *([ol_authority_profile_path] if route_ol and ol_authority_profile_path is not None else []),
+            *([inherited_ol_authority_profile_path] if inherited_ol_authority_profile_path is not None else []),
             *inherited_ol_paths,
             *governance_packets,
             *predecessor_governance_packets,
@@ -3447,12 +4047,16 @@ def create_act_task(
             *semantic_packets,
             *extra_inputs,
         ]
-        if target_packet is not None:
-            read_paths.append(target_packet)
+        if target_model_packet is not None:
+            read_paths.append(target_model_packet)
         if target_grammar_path is not None:
             read_paths.append(target_grammar_path)
         if source_grammar_path is not None:
             read_paths.append(source_grammar_path)
+        if donor_grammar_path is not None:
+            read_paths.append(donor_grammar_path)
+        if report_grammar_path is not None:
+            read_paths.append(report_grammar_path)
 
         read_class_by_path: dict[Path, str] = {}
 
@@ -3471,10 +4075,12 @@ def create_act_task(
                     )
                 read_class_by_path[resolved_candidate] = normalized_class
 
-        classify([contemporary_packet, context_reference_packet], AUTHORIZED_CONTENT_EVIDENCE)
+        classify([contemporary_model_packet, context_reference_model_packet], AUTHORIZED_CONTENT_EVIDENCE)
         classify([donor_vocabulary_path], AUTHORIZED_LEXICAL_EVIDENCE)
-        classify([target_packet, context_wip_packet], SUBJECT_TEXT)
-        classify([ol_packet] if route_ol and ol_packet is not None else [], AUTHORIZED_CONTENT_EVIDENCE)
+        classify([target_model_packet, context_wip_model_packet], SUBJECT_TEXT)
+        classify([ol_model_packet] if route_ol and ol_model_packet is not None else [], AUTHORIZED_CONTENT_EVIDENCE)
+        classify([ol_authority_profile_path] if route_ol and ol_authority_profile_path is not None else [], AUTHORITY_INTERPRETATION_RULES)
+        classify([inherited_ol_authority_profile_path], AUTHORITY_INTERPRETATION_RULES)
         classify(
             [path for path in inherited_ol_paths if "vrs" not in path.name.lower()],
             AUTHORIZED_CONTENT_EVIDENCE,
@@ -3488,7 +4094,10 @@ def create_act_task(
         classify(rtc_model_predecessor_packets, DERIVED_EVIDENCE)
         classify(semantic_packets, PROJECT_INDEX_EVIDENCE)
         classify(extra_inputs, STRUCTURAL_EVIDENCE)
-        classify([target_grammar_path, source_grammar_path], LINGUISTIC_COMPETENCE_RULES)
+        classify(
+            [target_grammar_path, source_grammar_path, donor_grammar_path, report_grammar_path],
+            LINGUISTIC_COMPETENCE_RULES,
+        )
 
         deduped: list[Path] = []
         seen: set[Path] = set()
@@ -3523,7 +4132,11 @@ def create_act_task(
         conditional_reads = []
         for read_path in conditional_paths:
             evidence_class = (
-                STRUCTURAL_EVIDENCE if "vrs" in read_path.name.lower() else AUTHORIZED_CONTENT_EVIDENCE
+                AUTHORITY_INTERPRETATION_RULES
+                if "authority-profile" in read_path.name.lower()
+                else STRUCTURAL_EVIDENCE
+                if "vrs" in read_path.name.lower()
+                else AUTHORIZED_CONTENT_EVIDENCE
             )
             conditional_reads.append(
                 {
@@ -3688,6 +4301,38 @@ def create_act_task(
             role: str(inventory.get(project_id, {}).get("display_name") or project_id)
             for role, project_id in canonical_resource_bindings.items()
         }
+        linguistic_profile_bindings: list[dict[str, Any]] = []
+
+        def bind_profile(stream_id: str, profile: GrammarProfile | None, path: Path | None) -> None:
+            """Bind one complete canonical linguistic profile to a routed natural-language stream."""
+            if profile is None or path is None:
+                raise ValidationError(
+                    f"Routed language stream {stream_id} has no canonical linguistic profile",
+                    code="LINGUISTIC_PROFILE_MISSING",
+                    affected_scope=scope.label(),
+                )
+            linguistic_profile_bindings.append({
+                "stream_id": stream_id,
+                "profile_class": "LANGUAGE_PROFILE",
+                "profile_id": profile.profile_id,
+                "language": profile.language,
+                "path": _relative(config.root, path),
+                "sha256": sha256_file(path),
+            })
+
+        if workflow == "saw":
+            bind_profile("WIP", target_profile, target_grammar_path)
+            bind_profile("REFERENCE", source_profile, source_grammar_path)
+        else:
+            bind_profile("SOURCE", source_profile, source_grammar_path)
+            bind_profile("DONOR", donor_profile, donor_grammar_path)
+            bind_profile("TARGET", target_profile, target_grammar_path)
+        bind_profile("REPORT:PRIMARY", report_profile, report_grammar_path)
+        if ol_authority_profile is not None and (route_ol or conditional_ol or inherited_ol_authority_profile_path is not None):
+            linguistic_profile_bindings.append({
+                "stream_id": f"{ol_authority_profile['authority_family']}:{ol_authority_profile['authority_role']}",
+                **ol_authority_profile,
+            })
         identity = {
             "schema_version": "2.4",
             "execution_mode": "SAGE_GOVERNED_TASK_V1",
@@ -3819,6 +4464,25 @@ def create_act_task(
                 if source_profile and source_grammar_path
                 else None
             ),
+            "donor_grammar": (
+                {
+                    "profile_id": donor_profile.profile_id,
+                    "language": donor_profile.language,
+                    "status": donor_profile.status,
+                    "effective_status": (
+                        "ACTIVE"
+                        if grammar_profile_is_approved(config, donor_profile)
+                        else donor_profile.status
+                    ),
+                    "governance_review": active_grammar_review(config, donor_profile),
+                    "profile_sha256": donor_profile.sha256,
+                    "rule_ids": [row["rule_id"] for row in donor_profile.checks],
+                    "contract": _relative(config.root, donor_grammar_path),
+                }
+                if donor_profile and donor_grammar_path
+                else None
+            ),
+            "linguistic_profile_bindings": linguistic_profile_bindings,
             "evidence_policy": task_evidence_policy(workflow),
             "packets": packet_records,
             "preflight": preflight,
@@ -4175,11 +4839,11 @@ def create_act_task(
                 )
             raise error
 
-        # Plan only against the exact provider handoff. Controller-only inputs retain
-        # a byte inventory for audit; they are neither token-estimated nor budgeted.
-        from .llm_tasks import estimate_initial_handoff
+        # Plan only against routed analysis SFM. Prompt, schema, profiles, IDs and
+        # controller inputs retain byte telemetry but never affect slicing or token budgets.
+        from .llm_tasks import _measure_task_route
 
-        planning_handoff = estimate_initial_handoff(
+        planning_handoff = _measure_task_route(
             config, manifest=base_manifest, act_text=act_text
         )
         planning_telemetry = {
@@ -4206,13 +4870,13 @@ def create_act_task(
             return partition_after_evidence_limit(exc)
         identity["context_budget"] = {
             "estimator": str(planning_handoff.get("estimator") or "SAGE_MULTILINGUAL_HEURISTIC_1"),
-            "measurement_scope": "projected_provider_handoff",
-            "planning_basis": "PROJECTED_HANDOFF_ESTIMATED_TOKENS",
+            "measurement_scope": "routed_analysis_sfm_only",
+            "planning_basis": "ROUTED_SFM_ONLY",
             "serialized_bytes": int(planning_handoff["total_bytes"]),
             "estimated_tokens": int(planning_handoff["total_estimated_tokens"]),
             "final_serialized_bytes": int(planning_handoff["total_bytes"]),
             "final_estimated_tokens": int(planning_handoff["total_estimated_tokens"]),
-            "provider_handoff": planning_handoff,
+            "routed_sfm": planning_handoff,
             "governance_context": governance_telemetry,
             "policy": policy.to_dict(),
         }
@@ -4231,10 +4895,10 @@ def create_act_task(
         # prompt construction intentionally ignores fingerprint/context-budget fields,
         # so a change here indicates contract drift and is retained visibly in telemetry.
         final_governance = _context_measurement(config.root, budget_reads, act_text, manifest)
-        final_handoff = estimate_initial_handoff(config, manifest=manifest, act_text=act_text)
+        final_handoff = _measure_task_route(config, manifest=manifest, act_text=act_text)
         identity["context_budget"]["final_serialized_bytes"] = int(final_handoff["total_bytes"])
         identity["context_budget"]["final_estimated_tokens"] = int(final_handoff["total_estimated_tokens"])
-        identity["context_budget"]["provider_handoff"] = final_handoff
+        identity["context_budget"]["routed_sfm"] = final_handoff
         identity["context_budget"]["governance_context"] = {
             **governance_telemetry,
             "final_serialized_bytes": int(final_governance["serialized_bytes"]),
@@ -4345,6 +5009,101 @@ def _coverage_reconciliation_details(
     return details
 
 
+def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any]) -> dict[str, Any]:
+    """Aggregate one partitioned STC plan against immutable WIP+PRIMARY-OL lineage."""
+    output_project = str(plan.get("output_project") or "").strip()
+    ol_authority = str(plan.get("primary_ol_authority") or "").strip()
+    family = str(plan.get("authority_family") or "").strip().upper()
+    if not output_project or not ol_authority or family not in {"GRK", "HEB"}:
+        raise ValidationError("STC aggregate plan lacks governed WIP/primary-OL identity", code="STC_WORK_UNIT_PLAN_INVALID")
+    expected_lineage_keys = {f"project.{output_project}", f"project.{ol_authority}"}
+    planned_units: list[dict[str, Any]] = []
+    accepted_results: list[dict[str, Any]] = []
+    lineage: dict[str, str] | None = None
+    seen_units: set[str] = set()
+    seen_tasks: set[str] = set()
+    for unit in plan.get("work_units", []):
+        if not isinstance(unit, dict):
+            raise ValidationError("STC aggregate plan contains an invalid work unit", code="STC_WORK_UNIT_PLAN_INVALID")
+        unit_id = str(unit.get("unit_id") or "").strip()
+        task_id = str(unit.get("task_id") or "").strip()
+        if not unit_id or unit_id in seen_units or (task_id and task_id in seen_tasks):
+            raise ValidationError("Duplicate or missing STC work-unit/result identity", code="DUPLICATE_WORK_UNIT_RESULT")
+        seen_units.add(unit_id)
+        if task_id:
+            seen_tasks.add(task_id)
+        manifest_path = resolve_persisted_path(config.root, str(unit.get("manifest_path") or ""), "STC work-unit manifest")
+        manifest = load_json(manifest_path)
+        planned_fingerprint = str(unit.get("task_fingerprint") or "")
+        if planned_fingerprint and str(manifest.get("task_fingerprint") or "") != planned_fingerprint:
+            raise ValidationError("STC work-unit task fingerprint differs from immutable plan", code="RESULT_COVERAGE_DRIFT")
+        validation_root = manifest_path.parent / "validation"
+        submission_path = validation_root / "submission.json"
+        normalized_path = validation_root / "normalized-findings.json"
+        if not submission_path.is_file() or not normalized_path.is_file():
+            raise ValidationError("Missing STC terminal work-unit result", code="MISSING_WORK_UNIT_RESULT")
+        submission = load_json(submission_path)
+        if str(submission.get("status") or "") != "FINALIZED":
+            raise ValidationError("STC work unit is not FINALIZED", code="MISSING_WORK_UNIT_RESULT")
+        normalized = load_json(normalized_path)
+        if str(normalized.get("operation") or "") != "stc":
+            raise ValidationError("STC aggregate received a non-STC terminal result", code="RESULT_COVERAGE_DRIFT")
+        if str(normalized.get("job_id") or "") != str(plan.get("job_id") or "") or str(normalized.get("run_id") or "") != str(plan.get("run_id") or ""):
+            raise ValidationError("STC work-unit Job/Run identity differs from its plan", code="RESULT_COVERAGE_DRIFT")
+        if str(normalized.get("output_project") or "") != output_project or str(normalized.get("primary_ol_authority") or "") != ol_authority:
+            raise ValidationError("STC work-unit WIP/OL authority differs from its plan", code="RESULT_COVERAGE_DRIFT")
+        fingerprints = normalized.get("resource_fingerprints")
+        if not isinstance(fingerprints, dict):
+            raise ValidationError("STC work unit lacks resource fingerprints", code="RESULT_COVERAGE_DRIFT")
+        current_lineage = {key: str(fingerprints[key]) for key in expected_lineage_keys if key in fingerprints}
+        if set(current_lineage) != expected_lineage_keys:
+            raise ValidationError("STC work unit lacks WIP/PRIMARY-OL lineage fingerprints", code="RESULT_COVERAGE_DRIFT")
+        if lineage is None:
+            lineage = current_lineage
+        elif current_lineage != lineage:
+            raise ValidationError("STC work-unit resource lineage is inconsistent", code="RESULT_COVERAGE_DRIFT")
+        planned_atoms = list(unit.get("primary_coverage_atoms") or manifest.get("expected_references") or [])
+        planned_units.append({
+            "work_unit_id": unit_id,
+            "primary_coverage": planned_atoms,
+            "scope": str(unit.get("scope") or normalized.get("scope") or ""),
+            "authority_family": family,
+            "authority_role": "PRIMARY",
+        })
+        accepted_results.append(normalized)
+    canonical_root = path.with_name(f"{plan['plan_id']}-stc")
+    artifacts = finalize_stc_run(
+        run_id=str(plan.get("run_id") or plan.get("plan_id") or "STC-RUN"),
+        planned_units=planned_units,
+        accepted_results=accepted_results,
+        output_root=canonical_root,
+    )
+    result = {
+        "schema_version": "1.0",
+        "status": "FINALIZED",
+        "operation": "stc",
+        "plan_id": plan["plan_id"],
+        "job_id": plan.get("job_id"),
+        "run_id": plan.get("run_id"),
+        "requested_scope": plan.get("requested_scope"),
+        "output_project": output_project,
+        "primary_ol_authority": ol_authority,
+        "authority_family": family,
+        "finding_count": sum(int(row.get("finding_count") or 0) for row in accepted_results),
+        "work_unit_count": len(accepted_results),
+        "resource_fingerprints": lineage or {},
+        "canonical_artifacts": {key: str(value) for key, value in artifacts.items()},
+        "finalized_utc": utc_now(),
+    }
+    aggregate_path = path.with_name(f"{plan['plan_id']}-aggregate.json")
+    atomic_write_json(aggregate_path, result)
+    plan["status"] = "FINALIZED"
+    plan["aggregate_path"] = str(aggregate_path)
+    plan["canonical_artifacts"] = result["canonical_artifacts"]
+    atomic_write_json(path, plan)
+    return {**result, "aggregate_path": str(aggregate_path)}
+
+
 def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any]:
     """Aggregate validated SAW work units with exact plan-level coverage."""
     # Maintenance invariant: aggregate only same-Job/same-Run work with stable WIP/REFERENCE fingerprints.
@@ -4357,6 +5116,8 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         raise ValidationError(f"Invalid ACT aggregate plan: {exc}") from exc
     if plan.get("workflow") != "saw" or plan.get("status") != "PARTITIONED":
         raise ValidationError("Only PARTITIONED SAW plans can be aggregated")
+    if str(plan.get("operation") or "").lower() == "stc":
+        return _aggregate_stc_plan(config, path, plan)
     raw_expected = [str(value) for value in plan.get("expected_references", [])]
     try:
         expected = list(atomic_reference_labels(raw_expected))
@@ -4868,7 +5629,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 source_language=source_project.language_code,
                 target_language=target_project.language_code,
                 ol_evidence_available=any(
-                    str(item.get("path", "")).endswith("original-language.usj.json")
+                    str(item.get("path", "")).endswith("original-language.sfm")
                     for item in raw.get("conditional_reads", [])
                 ),
             )
@@ -4987,6 +5748,70 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 final_status = "STAGED_VALIDATED_WITH_CHALLENGES"
             else:
                 final_status = "STAGED_VALIDATED"
+    elif workflow == "saw" and operation == "stc":
+        sources = [
+            dict(item)
+            for item in raw.get("original_language_sources", [])
+            if isinstance(item, dict)
+        ]
+        if len(sources) != 1:
+            raise ValidationError(
+                "STC task must bind exactly one primary original-language authority",
+                code="STC_OL_AUTHORITY_MISMATCH",
+            )
+        authority_family = str(sources[0].get("authority_family") or "").strip().upper()
+        if authority_family not in {"GRK", "HEB"} or str(sources[0].get("authority_role") or "").upper() != "PRIMARY":
+            raise ValidationError(
+                "STC task original-language authority identity is invalid",
+                code="STC_OL_AUTHORITY_MISMATCH",
+            )
+        normalized = validate_stc_submission(
+            output_paths["output/findings.json"],
+            task_id=task_id,
+            work_unit_id=str(raw.get("work_unit_id") or task_id),
+            scope_value=str(raw["scope"]),
+            expected_references=list(raw.get("expected_references", [])),
+            authority_family=authority_family,
+            task_fingerprint=str(raw.get("task_fingerprint", "")),
+            narrative_language=str(dict(raw.get("narrative_language") or {}).get("tag") or ""),
+        )
+        normalized.update(
+            {
+                "job_id": job_id,
+                "run_id": run_id,
+                "parent_plan_id": raw.get("parent_plan_id"),
+                "output_project": raw.get("output_project"),
+                "contemporary_source": None,
+                "primary_ol_authority": raw.get("primary_ol_authority"),
+                "resource_bindings": raw.get("resource_bindings", {}),
+                "resource_display_names": raw.get("resource_display_names", {}),
+                "resource_fingerprints": raw.get("resource_fingerprints", {}),
+            }
+        )
+        validation_root = task_root / "validation"
+        atomic_write_json(validation_root / "normalized-findings.json", normalized)
+        validation_details = {
+            "format": "STC_FINDINGS_1.0",
+            "finding_count": normalized["finding_count"],
+            "coverage_count": len(normalized["primary_coverage"]),
+            "analytical_completion": normalized["analytical_completion"]["status"],
+        }
+        if not raw.get("parent_plan_id"):
+            finalize_stc_run(
+                run_id=run_id,
+                planned_units=[
+                    {
+                        "work_unit_id": str(raw.get("work_unit_id") or task_id),
+                        "primary_coverage": list(raw.get("expected_references", [])),
+                        "scope": str(raw.get("scope") or ""),
+                        "authority_family": authority_family,
+                        "authority_role": "PRIMARY",
+                    }
+                ],
+                accepted_results=[normalized],
+                output_root=validation_root / "stc",
+            )
+        final_status = "FINALIZED"
     else:
         grammar = raw.get("project_grammar") or {}
         if operation == "rtc" and raw.get("rtc_stage") == "SELECTIVE_OL_ADJUDICATION":

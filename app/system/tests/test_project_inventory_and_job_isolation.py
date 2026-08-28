@@ -428,8 +428,8 @@ def test_pre_run_preview_supports_change_scope(make_workspace) -> None:
     assert "Change scope" in output.getvalue()
 
 
-def test_rtc_pre_run_preview_renders_aligned_package_component_columns(make_workspace) -> None:
-    """RTC preview reports WIP/REF/OH/PACK as columns without system limit lines."""
+def test_rtc_pre_run_preview_renders_aligned_routed_sfm_columns(make_workspace) -> None:
+    """RTC preview reports WIP/REF/ROUTE SFM columns without packet-overhead concepts."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
@@ -445,8 +445,7 @@ def test_rtc_pre_run_preview_renders_aligned_package_component_columns(make_work
             "work_units": 1,
             "largest_wip_estimated_tokens": 6100,
             "largest_ref_estimated_tokens": 5900,
-            "largest_oh_estimated_tokens": 6000,
-            "largest_pack_estimated_tokens": 18000,
+            "largest_route_estimated_tokens": 12000,
         },
         "policy": {"hard_estimated_tokens": 7999},
         "units": [{
@@ -454,8 +453,7 @@ def test_rtc_pre_run_preview_renders_aligned_package_component_columns(make_work
             "rtc_package": {
                 "wip": {"estimated_tokens": 6100},
                 "ref": {"estimated_tokens": 5900},
-                "oh": {"estimated_tokens": 6000},
-                "pack": {"estimated_tokens": 18000},
+                "route": {"estimated_tokens": 12000},
             },
         }],
     }
@@ -465,9 +463,9 @@ def test_rtc_pre_run_preview_renders_aligned_package_component_columns(make_work
     rendered = output.getvalue()
     assert action == "CANCEL"
     assert "Reference Text Comparison (RTC)" in rendered
-    assert "  #  SCOPE                      WIP       REF        OH       PACK" in rendered
-    assert "  1. MAT 1:1-10              ~6,100    ~5,900    ~6,000    ~18,000" in rendered
-    assert "     Largest work unit       ~6,100    ~5,900    ~6,000    ~18,000" in rendered
+    assert "  #  SCOPE                      WIP       REF      ROUTE" in rendered
+    assert "  1. MAT 1:1-10              ~6,100    ~5,900    ~12,000" in rendered
+    assert "     Largest work unit       ~6,100    ~5,900    ~12,000" in rendered
     assert "Token limit:" not in rendered
 
 

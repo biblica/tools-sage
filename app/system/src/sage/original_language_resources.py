@@ -7,11 +7,14 @@ import re
 from pathlib import Path
 from typing import Any, Mapping
 
+import yaml
+
 from .atomic import atomic_write_json
 from .canon import NT_27, OT_39
 from .errors import ConfigurationError, ValidationError
 from .project_inventory import detect_scripture_books
 from .resource_mounts import normalize_operator_path
+from .hashing import sha256_file
 from .storage import storage_layout
 
 SCHEMA_VERSION = "1.0"
@@ -24,6 +27,8 @@ OL_PARATEXT_PATTERNS = {
     "GRK": re.compile(r"^grcSRCv[0-9]$"),
     "HEB": re.compile(r"^hboSRCv[0-9]$"),
 }
+OL_AUTHORITY_PROFILE_FILE = "authority-profile.yml"
+OL_SOURCE_TYPES = {"BUNDLED", "PARATEXT", "LOCAL"}
 
 
 def ol_state_path(root: Path) -> Path:
@@ -46,15 +51,94 @@ def bundled_ol_path(root: Path, resource_id: str) -> Path:
     )
 
 
+def resolve_ol_authority_profile(root: Path, resource_id: str) -> dict[str, Any]:
+    """Resolve and validate the immutable linguistic profile bound to one OL authority."""
+    rid = resource_id.strip().upper()
+    if rid not in OL_RESOURCE_IDS:
+        raise ValidationError(f"Unsupported original-language resource: {resource_id}", code="OL_RESOURCE_ID_INVALID")
+    state = load_ol_state(root)
+    configured = dict(state["resources"].get(rid, {"source": "BUNDLED"}))
+    source = str(configured.get("source", "BUNDLED")).upper()
+    resource_root = bundled_ol_path(root, rid) if source == "BUNDLED" else Path(str(configured.get("path") or "")).expanduser().resolve()
+    path = resource_root / OL_AUTHORITY_PROFILE_FILE
+    if not path.is_file():
+        return {
+            "status": "MISSING",
+            "path": str(path),
+            "sha256": None,
+            "authority_family": rid,
+            "authority_id": rid,
+            "authority_role": "PRIMARY",
+        }
+    try:
+        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except (OSError, yaml.YAMLError) as exc:
+        raise ConfigurationError(f"Invalid original-language authority profile {path}: {exc}") from exc
+    profile = raw.get("profile") if isinstance(raw, dict) else None
+    language = raw.get("language_identity") if isinstance(raw, dict) else None
+    if not isinstance(profile, dict) or str(profile.get("type")) != "OL_AUTHORITY_PROFILE":
+        raise ConfigurationError(f"Original-language authority profile has invalid type: {path}")
+    if str(profile.get("authority_family") or "").upper() != rid:
+        raise ConfigurationError(f"Original-language authority profile family mismatch: {path}")
+    if not isinstance(language, dict) or not isinstance(language.get("modern_language_exclusion"), dict):
+        raise ConfigurationError(f"Original-language authority profile lacks historical-language exclusion rules: {path}")
+    return {
+        "status": "READY",
+        "path": str(path),
+        "sha256": sha256_file(path),
+        "authority_family": rid,
+        "authority_id": str(profile.get("authority_id") or rid),
+        "authority_role": str(profile.get("authority_role") or "PRIMARY").upper(),
+        "language_code": str(language.get("language_code") or OL_LANGUAGE_CODES[rid]),
+        "historical_register": str(language.get("historical_register") or ""),
+    }
+
+
 def _default_state() -> dict[str, Any]:
     """Return the immutable default selection of both bundled OL aliases."""
     return {
         "schema_version": SCHEMA_VERSION,
         "resources": {
-            "GRK": {"source": "BUNDLED"},
-            "HEB": {"source": "BUNDLED"},
+            "GRK": {"source": "BUNDLED", "secondary_authorities": []},
+            "HEB": {"source": "BUNDLED", "secondary_authorities": []},
         },
     }
+
+
+def _secondary_authority_rows(configured: Mapping[str, Any], resource_id: str) -> list[dict[str, Any]]:
+    """Normalize future secondary registrations while keeping them analytically inert."""
+    rid = resource_id.strip().upper()
+    raw = configured.get("secondary_authorities", [])
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        raise ConfigurationError(f"{rid} secondary_authorities must be a list")
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for value in raw:
+        if not isinstance(value, Mapping):
+            raise ConfigurationError(f"{rid} secondary authority entries must be mappings")
+        authority_id = str(value.get("authority_id") or "").strip()
+        if not authority_id or authority_id in seen:
+            raise ConfigurationError(f"{rid} secondary authority IDs must be non-empty and unique")
+        family = str(value.get("authority_family") or rid).strip().upper()
+        role = str(value.get("authority_role") or "SECONDARY").strip().upper()
+        source = str(value.get("source") or "").strip().upper()
+        if family != rid or role != "SECONDARY":
+            raise ConfigurationError(f"{rid} secondary authority has invalid family/role: {authority_id}")
+        if source not in OL_SOURCE_TYPES:
+            raise ConfigurationError(f"{rid} secondary authority has invalid source type: {authority_id}")
+        row = dict(value)
+        row.update({
+            "authority_id": authority_id,
+            "authority_family": rid,
+            "authority_role": "SECONDARY",
+            "source": source,
+            "analytical_effect": "INERT_UNLESS_EXPLICITLY_ROUTED",
+        })
+        rows.append(row)
+        seen.add(authority_id)
+    return rows
 
 
 def load_ol_state(root: Path) -> dict[str, Any]:
@@ -100,7 +184,7 @@ def configure_ol_resource(
     if rid not in OL_RESOURCE_IDS:
         raise ValidationError(f"Unsupported original-language resource: {resource_id}", code="OL_RESOURCE_ID_INVALID")
     source_kind = source.strip().upper()
-    if source_kind not in {"BUNDLED", "PARATEXT", "LOCAL"}:
+    if source_kind not in OL_SOURCE_TYPES:
         raise ValidationError(f"Unsupported original-language source type: {source}", code="OL_RESOURCE_SOURCE_INVALID")
     entry: dict[str, Any] = {"source": source_kind}
     if source_kind != "BUNDLED":
@@ -117,6 +201,7 @@ def configure_ol_resource(
             code = str(paratext_project or value.name).strip()
             entry["paratext_project"] = code
     state = load_ol_state(root)
+    entry["secondary_authorities"] = _secondary_authority_rows(state["resources"].get(rid, {}), rid)
     state["resources"][rid] = entry
     return _write_ol_state(root, state)
 
@@ -158,6 +243,8 @@ def resolved_ol_entry(root: Path, resource_id: str) -> dict[str, Any]:
     else:
         status = "READY"
         code = None
+    authority_profile = resolve_ol_authority_profile(root, rid)
+    secondary_authorities = _secondary_authority_rows(configured, rid)
     return {
         "resource_id": rid,
         "alias": OL_ALIASES[rid],
@@ -173,6 +260,12 @@ def resolved_ol_entry(root: Path, resource_id: str) -> dict[str, Any]:
         "comparison_format": "USJ",
         "status": status,
         "code": code,
+        "authority_family": rid,
+        "authority_id": rid,
+        "authority_role": "PRIMARY",
+        "secondary_authorities": secondary_authorities,
+        "language_profile_required": False,
+        "authority_profile": authority_profile,
     }
 
 

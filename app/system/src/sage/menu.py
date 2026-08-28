@@ -1852,7 +1852,7 @@ class SageControlCenter:
                 "3": "BIC > Add BIC Job. Assign a SAGE Project as SOURCE, DONOR and TARGET; only TARGET receives governed write access.",
                 "4": "SAW > Add SAW Job. Assign a SAGE Project as WIP and another as REFERENCE.",
                 "5": "Choose a Book, then leave range blank for the whole book or enter 1, 1-3, 1:1-10, or 1:1-2:20. Expert entry such as LUK 1:1-10 remains available.",
-                "6": "Before a Run, SAGE shows measured work units and conservative estimated packet tokens; sections are preferred split points only when the combined packet does not fit.",
+                "6": "Before a Run, SAGE shows measured work units and conservative estimated routed-SFM tokens; sections are preferred split points only when the combined packet does not fit.",
                 "7": "READY can be used directly; WARNING is usable with a disclosed issue; ERROR requires correction before affected work.",
                 "8": "The global Operator language is the default primary language for new Jobs. Each Job owns one required primary and may add one optional secondary reporting language.",
                 "9": "@GRK and @HEB are governed original-language resources and are not ordinary SAGE Projects.",
@@ -1923,13 +1923,14 @@ class SageControlCenter:
             operation = self.io.choose(
                 "SAW Task",
                 (
-                    ("1", "Run Reference Text Comparison"),
-                    ("2", "Run Targeted Check"),
-                    ("3", "Run Original-Language Review"),
+                    ("1", "Run Reference Text Comparison (RTC)"),
+                    ("2", "Run Source Text Correspondence (STC)"),
+                    ("3", "Run Targeted Check"),
+                    ("4", "Run Original-Language Review"),
                     ("B", "Back"),
                 ),
             )
-            operation_id = {"1": "rtc", "2": "focused", "3": "ol"}.get(operation)
+            operation_id = {"1": "rtc", "2": "stc", "3": "focused", "4": "ol"}.get(operation)
             if operation_id is not None:
                 self.store.record_cue(
                     "NEW_TASK_SELECTED",
@@ -2219,10 +2220,11 @@ class SageControlCenter:
                 self.io.write("Active Run                   NONE")
                 options = (
                     ("1", "Run Reference Text Comparison (RTC)"),
-                    ("2", "Run Targeted Check"),
-                    ("3", "Run Original-Language Review"),
-                    ("4", "Reports and exports"),
-                    ("5", "Recovery and diagnostics"),
+                    ("2", "Run Source Text Correspondence (STC)"),
+                    ("3", "Run Targeted Check"),
+                    ("4", "Run Original-Language Review"),
+                    ("5", "Reports and exports"),
+                    ("6", "Recovery and diagnostics"),
                     ("B", "Back"),
                 )
             else:
@@ -2235,46 +2237,50 @@ class SageControlCenter:
                 options = (
                     ("1", "Continue active Run"),
                     ("2", "Run Reference Text Comparison (RTC)"),
-                    ("3", "Run Targeted Check"),
-                    ("4", "Run Original-Language Review"),
-                    ("5", "Reports and exports"),
-                    ("6", "Recovery and diagnostics"),
+                    ("3", "Run Source Text Correspondence (STC)"),
+                    ("4", "Run Targeted Check"),
+                    ("5", "Run Original-Language Review"),
+                    ("6", "Reports and exports"),
+                    ("7", "Recovery and diagnostics"),
                     ("B", "Back"),
                 )
             choice = self.io.choose(
                 "SAW CHECKS",
                 options,
-                blank_before=("4",) if run is None else ("5",),
+                blank_before=("5",) if run is None else ("6",),
             )
             if choice == "B":
                 return
             if run is None:
-                if choice == "4":
+                if choice == "5":
                     self.reports_menu(project)
-                elif choice == "5":
+                elif choice == "6":
                     self.recovery_menu(project)
                 else:
                     {"1": lambda: self.start_saw_run(project, "rtc"),
-                     "2": lambda: self.start_saw_run(project, "focused"),
-                     "3": lambda: self.start_saw_run(project, "ol")}[choice]()
+                     "2": lambda: self.start_saw_run(project, "stc"),
+                     "3": lambda: self.start_saw_run(project, "focused"),
+                     "4": lambda: self.start_saw_run(project, "ol")}[choice]()
             else:
                 if choice == "1":
                     self.continue_run(project, run)
                 elif choice == "2":
                     self.start_saw_run(project, "rtc")
                 elif choice == "3":
-                    self.start_saw_run(project, "focused")
+                    self.start_saw_run(project, "stc")
                 elif choice == "4":
-                    self.start_saw_run(project, "ol")
+                    self.start_saw_run(project, "focused")
                 elif choice == "5":
-                    self.reports_menu(project)
+                    self.start_saw_run(project, "ol")
                 elif choice == "6":
+                    self.reports_menu(project)
+                elif choice == "7":
                     self.recovery_menu(project)
 
     @staticmethod
     def _saw_operation_label(operation: str) -> str:
-        """Return the Beta Operator label while preserving stable machine operation IDs."""
-        return {"rtc": "Reference Text Comparison (RTC)", "focused": "Targeted Check", "ol": "Original-Language Review"}.get(
+        """Return the Alpha Operator label while preserving stable machine operation IDs."""
+        return {"rtc": "Reference Text Comparison (RTC)", "stc": "Source Text Correspondence (STC)", "focused": "Targeted Check", "ol": "Original-Language Review"}.get(
             str(operation).lower(), str(operation).upper()
         )
 
@@ -2523,7 +2529,7 @@ class SageControlCenter:
         if rtc_preview and units and any(unit.get("rtc_package") for unit in units):
             self.io.write()
             self.io.write(
-                f"{'#':>3}  {'SCOPE':<20} {'WIP':>9} {'REF':>9} {'OH':>9} {'PACK':>10}"
+                f"{'#':>3}  {'SCOPE':<20} {'WIP':>9} {'REF':>9} {'ROUTE':>10}"
             )
         for index, unit in enumerate(units, 1):
             package = dict(unit.get("rtc_package") or {})
@@ -2532,23 +2538,21 @@ class SageControlCenter:
                     f"{index:>3}. {str(unit.get('primary_scope', '?')):<20} "
                     f"{'~' + format(int(dict(package.get('wip') or {}).get('estimated_tokens', 0)), ','):>9} "
                     f"{'~' + format(int(dict(package.get('ref') or {}).get('estimated_tokens', 0)), ','):>9} "
-                    f"{'~' + format(int(dict(package.get('oh') or {}).get('estimated_tokens', 0)), ','):>9} "
-                    f"{'~' + format(int(dict(package.get('pack') or {}).get('estimated_tokens', 0)), ','):>10}"
+                    f"{'~' + format(int(dict(package.get('route') or {}).get('estimated_tokens', 0)), ','):>10}"
                 )
             else:
                 measurement = dict(unit.get("measurement") or {})
                 tokens = measurement.get("estimated_tokens", "?")
-                self.io.write(menu_item(index, f"{unit.get('primary_scope', '?'):<20} ~{tokens} estimated packet tokens"))
+                self.io.write(menu_item(index, f"{unit.get('primary_scope', '?'):<20} ~{tokens} estimated routed-SFM tokens"))
         if rtc_preview and units and any(unit.get("rtc_package") for unit in units):
             self.io.write(
                 f"{'':>3}  {'Largest work unit':<20} "
                 f"{'~' + format(int(summary.get('largest_wip_estimated_tokens', 0)), ','):>9} "
                 f"{'~' + format(int(summary.get('largest_ref_estimated_tokens', 0)), ','):>9} "
-                f"{'~' + format(int(summary.get('largest_oh_estimated_tokens', 0)), ','):>9} "
-                f"{'~' + format(int(summary.get('largest_pack_estimated_tokens', 0)), ','):>10}"
+                f"{'~' + format(int(summary.get('largest_route_estimated_tokens', 0)), ','):>10}"
             )
         else:
-            self.io.write(f"Largest work unit: ~{summary.get('largest_estimated_tokens', 0)} estimated packet tokens")
+            self.io.write(f"Largest work unit: ~{summary.get('largest_estimated_tokens', 0)} estimated routed-SFM tokens")
         choice = self.io.choose(
             "Next",
             (("1", "Run"), ("2", "Change scope"), ("B", "Back")),
@@ -5428,8 +5432,9 @@ class SageControlCenter:
             ("2", "BIC REWRITE", "bic", "rewrite"),
             ("3", "BIC SELF-CHECK", "bic", "self_check"),
             ("4", "SAW Reference Text Comparison (RTC)", "saw", "rtc"),
-            ("5", "SAW Targeted Check", "saw", "focused"),
-            ("6", "SAW original-language review", "saw", "ol"),
+            ("5", "SAW Source Text Correspondence (STC)", "saw", "stc"),
+            ("6", "SAW Targeted Check", "saw", "focused"),
+            ("7", "SAW original-language review", "saw", "ol"),
         )
         selected = self.io.choose(
             "Task profile",

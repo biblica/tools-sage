@@ -68,7 +68,8 @@ def test_menu_is_a_canonical_cli_domain() -> None:
             and isinstance(item.elts[1], ast.Constant)
             and isinstance(item.elts[1].value, str)
         ]
-        assert all("(" not in label and ")" not in label for label in labels)
+        normalized_labels = [label.replace(" (RTC)", "").replace(" (STC)", "") for label in labels]
+        assert all("(" not in label and ")" not in label for label in normalized_labels)
         numbers = [int(key) for key in keys if key.isdecimal()]
         if numbers:
             assert numbers == list(range(1, max(numbers) + 1))
@@ -235,8 +236,8 @@ def test_scripted_control_center_can_open_and_exit(make_workspace) -> None:
     )
     assert center.run() == 0
     rendered = output.getvalue()
-    assert "SAGE v0.01beta" in rendered
-    assert "BETA - PRE-RELEASE" in rendered
+    assert "SAGE v0.02alpha1" in rendered
+    assert "ALPHA - PRE-RELEASE" in rendered
     assert "BIC" in rendered
     assert "SAW" in rendered
     assert "SAGE Maintenance" in rendered
@@ -343,8 +344,8 @@ def test_guided_first_run_setup_records_missing_project_root_with_ready_test_ai(
     assert "SAGE Maintenance" in rendered
     assert "B. Main Menu   C. Exit SAGE" in rendered
     assert "D. Language   E. Help   F. Status" in rendered
-    assert "SAGE v0.01beta" in rendered
-    assert "BETA - PRE-RELEASE" in rendered
+    assert "SAGE v0.02alpha1" in rendered
+    assert "ALPHA - PRE-RELEASE" in rendered
 
 
 def test_global_footer_is_rendered_for_main_bic_and_saw(make_workspace) -> None:
@@ -666,7 +667,7 @@ def test_saw_job_menu_visually_separates_work_from_administration(make_workspace
     center._saw_job_menu(saw)
 
     rendered = output.getvalue()
-    assert "  3. Run Original-Language Review\n\n  4. Reports and exports" in rendered
+    assert "  4. Run Original-Language Review\n\n  5. Reports and exports" in rendered
 
     store.create_run(saw, operation="rtc", scope="JHN 1")
     output.seek(0)
@@ -676,7 +677,7 @@ def test_saw_job_menu_visually_separates_work_from_administration(make_workspace
     center._saw_job_menu(saw)
 
     rendered = output.getvalue()
-    assert "  4. Run Original-Language Review\n\n  5. Reports and exports" in rendered
+    assert "  5. Run Original-Language Review\n\n  6. Reports and exports" in rendered
     assert "WORK\n" not in rendered
     assert "ADMINISTRATION\n" not in rendered
 

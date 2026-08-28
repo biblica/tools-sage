@@ -39,6 +39,7 @@ DYNAMIC_MENU_TEXT = {
     "BIC REWRITE",
     "BIC SELF-CHECK",
     "SAW Reference Text Comparison (RTC)",
+    "SAW Source Text Correspondence (STC)",
     "SAW Targeted Check",
     "SAW Original-Language Review",
     "CHOOSE BIC <SOURCE>",

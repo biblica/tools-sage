@@ -1,6 +1,6 @@
 """UI-independent presentation and session services shared by SAGE interfaces.
 
-This module is the first extraction boundary for the 0.01 Beta TUI migration. It keeps
+This module is the first extraction boundary for the 0.02alpha1 Alpha TUI migration. It keeps
 operator-facing state assembly out of terminal-specific rendering code so the
 classic menu, Textual TUI, and future interfaces can consume the same facts.
 """
@@ -522,7 +522,7 @@ class OperatorUIService:
             task_manifests=getattr(run, "task_manifests", ()),
             run_status=str(getattr(run, "status", "")),
             current_stage=str(getattr(run, "current_stage", "")),
-            basis=str(policy.get("basis") or "PROJECTED_HANDOFF_ESTIMATED_TOKENS"),
+            basis=str(policy.get("basis") or "ROUTED_SFM_ESTIMATED_TOKENS"),
             result=getattr(run, "result", None),
             reason_code=getattr(run, "result_reason", None),
         ).to_dict()

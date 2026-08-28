@@ -51,12 +51,14 @@ RUNTIME_IMPORT_MODULES = {
     "uc-micro-py": "uc_micro",
 }
 
-HOST_CAPABILITY_SCHEMA = 1
+HOST_CAPABILITY_SCHEMA = 2
 BASIC_RAM_THRESHOLD_BYTES = 4 * 1024**3
 BASIC_THREAD_THRESHOLD = 8
 BASIC_HARDENING_WORKERS = 2
 STANDARD_HARDENING_WORKERS = 4
-MAX_HARDENING_WORKERS = 8
+ADVANCED_RAM_THRESHOLD_BYTES = 16 * 1024**3
+ADVANCED_THREAD_THRESHOLD = 16
+ADVANCED_HARDENING_WORKERS = 6
 
 
 def _atomic_write_json(path: Path, payload: dict[str, object]) -> None:
@@ -151,7 +153,7 @@ def _available_ram_bytes() -> int | None:
 
 
 def detect_host_capability() -> dict[str, object]:
-    """Classify this machine into the fail-safe BASIC/STANDARD execution tier."""
+    """Classify this machine into the fail-safe BASIC/STANDARD/ADVANCED execution tier."""
     threads = _logical_cpu_threads()
     available_ram = _available_ram_bytes()
     reasons: list[str] = []
@@ -164,8 +166,17 @@ def detect_host_capability() -> dict[str, object]:
             reasons.append("AVAILABLE_RAM_BELOW_4_GIB")
         if threads < BASIC_THREAD_THRESHOLD:
             reasons.append("LOGICAL_CPU_THREADS_BELOW_8")
-        profile = "BASIC" if reasons else "STANDARD"
-    default_workers = BASIC_HARDENING_WORKERS if profile == "BASIC" else STANDARD_HARDENING_WORKERS
+        if reasons:
+            profile = "BASIC"
+        elif available_ram >= ADVANCED_RAM_THRESHOLD_BYTES and threads >= ADVANCED_THREAD_THRESHOLD:
+            profile = "ADVANCED"
+        else:
+            profile = "STANDARD"
+    default_workers = {
+        "BASIC": BASIC_HARDENING_WORKERS,
+        "STANDARD": STANDARD_HARDENING_WORKERS,
+        "ADVANCED": ADVANCED_HARDENING_WORKERS,
+    }[profile]
     return {
         "schema_version": HOST_CAPABILITY_SCHEMA,
         "profile": profile,
@@ -174,7 +185,10 @@ def detect_host_capability() -> dict[str, object]:
         "logical_cpu_threads": threads,
         "basic_ram_threshold_bytes": BASIC_RAM_THRESHOLD_BYTES,
         "basic_thread_threshold": BASIC_THREAD_THRESHOLD,
+        "advanced_ram_threshold_bytes": ADVANCED_RAM_THRESHOLD_BYTES,
+        "advanced_thread_threshold": ADVANCED_THREAD_THRESHOLD,
         "default_hardening_workers": default_workers,
+        "hardening_worker_limit": default_workers,
         "reasons": reasons,
     }
 
@@ -183,18 +197,31 @@ def hardening_worker_cap(
     capability: dict[str, object] | None = None,
     environ: dict[str, str] | None = None,
 ) -> tuple[int, str]:
-    """Return bounded hardening worker cap and whether it came from override/default."""
+    """Return a hardening worker count capped by the setup-selected host profile."""
     row = capability or detect_host_capability()
     env = os.environ if environ is None else environ
-    default = int(row.get("default_hardening_workers") or BASIC_HARDENING_WORKERS)
+    profile = str(row.get("profile") or "").strip().upper()
+    if profile == "ADVANCED":
+        profile_limit = ADVANCED_HARDENING_WORKERS
+    elif profile == "STANDARD":
+        profile_limit = STANDARD_HARDENING_WORKERS
+    elif profile == "BASIC":
+        profile_limit = BASIC_HARDENING_WORKERS
+    else:
+        profile_limit = int(row.get("hardening_worker_limit") or row.get("default_hardening_workers") or BASIC_HARDENING_WORKERS)
+    profile_limit = max(1, min(ADVANCED_HARDENING_WORKERS, profile_limit))
+    default = max(1, min(profile_limit, int(row.get("default_hardening_workers") or profile_limit)))
     raw = str(env.get("SAGE_HARDENING_WORKERS", "")).strip()
     if not raw:
-        return max(1, min(MAX_HARDENING_WORKERS, default)), "HOST_PROFILE_DEFAULT"
+        return default, "HOST_PROFILE_DEFAULT"
     try:
         requested = int(raw)
     except ValueError:
-        return max(1, min(MAX_HARDENING_WORKERS, default)), "INVALID_OVERRIDE_FALLBACK"
-    return max(1, min(MAX_HARDENING_WORKERS, requested)), "ENV_OVERRIDE"
+        return default, "INVALID_OVERRIDE_FALLBACK"
+    requested = max(1, requested)
+    if requested > profile_limit:
+        return profile_limit, "ENV_OVERRIDE_CAPPED_BY_HOST_PROFILE"
+    return requested, "ENV_OVERRIDE"
 
 
 def _write_host_capability(root: Path, capability: dict[str, object] | None = None) -> Path:
@@ -208,6 +235,51 @@ def _write_host_capability(root: Path, capability: dict[str, object] | None = No
     return target
 
 
+def _basic_fail_safe_capability(reason: str) -> dict[str, object]:
+    """Return the conservative BASIC ceiling when setup capability cannot be trusted."""
+    return {
+        "schema_version": HOST_CAPABILITY_SCHEMA,
+        "profile": "BASIC",
+        "detection_status": "FAILED_SAFE",
+        "available_ram_bytes": None,
+        "logical_cpu_threads": None,
+        "basic_ram_threshold_bytes": BASIC_RAM_THRESHOLD_BYTES,
+        "basic_thread_threshold": BASIC_THREAD_THRESHOLD,
+        "advanced_ram_threshold_bytes": ADVANCED_RAM_THRESHOLD_BYTES,
+        "advanced_thread_threshold": ADVANCED_THREAD_THRESHOLD,
+        "default_hardening_workers": BASIC_HARDENING_WORKERS,
+        "hardening_worker_limit": BASIC_HARDENING_WORKERS,
+        "reasons": [reason],
+    }
+
+
+def load_host_capability(root: Path) -> tuple[dict[str, object], str]:
+    """Load the setup-selected host ceiling; missing or invalid state fails safely to BASIC."""
+    target = storage_layout(root, create=True).state_root / "host-capability.json"
+    if not target.is_file():
+        return _basic_fail_safe_capability("SETUP_HOST_CAPABILITY_MISSING"), "MISSING_SETUP_RECEIPT_FAIL_SAFE_BASIC"
+    try:
+        row = json.loads(target.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return _basic_fail_safe_capability("SETUP_HOST_CAPABILITY_INVALID"), "INVALID_SETUP_RECEIPT_FAIL_SAFE_BASIC"
+    if not isinstance(row, dict):
+        return _basic_fail_safe_capability("SETUP_HOST_CAPABILITY_INVALID"), "INVALID_SETUP_RECEIPT_FAIL_SAFE_BASIC"
+    profile = str(row.get("profile") or "").upper()
+    expected_limit = {
+        "BASIC": BASIC_HARDENING_WORKERS,
+        "STANDARD": STANDARD_HARDENING_WORKERS,
+        "ADVANCED": ADVANCED_HARDENING_WORKERS,
+    }.get(profile)
+    try:
+        schema_ok = int(row.get("schema_version", -1)) == HOST_CAPABILITY_SCHEMA
+        default_workers = int(row.get("default_hardening_workers", -1))
+        worker_limit = int(row.get("hardening_worker_limit", -1))
+    except (TypeError, ValueError):
+        schema_ok = False
+        default_workers = worker_limit = -1
+    if not schema_ok or expected_limit is None or default_workers > expected_limit or worker_limit > expected_limit or default_workers < 1 or worker_limit < 1:
+        return _basic_fail_safe_capability("SETUP_HOST_CAPABILITY_INVALID"), "INVALID_SETUP_RECEIPT_FAIL_SAFE_BASIC"
+    return dict(row), "SETUP_HOST_CAPABILITY_RECEIPT"
 
 
 def _version(root: Path) -> str | None:
