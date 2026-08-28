@@ -590,6 +590,68 @@ def test_saw_provider_schema_requests_only_stage_semantics() -> None:
     assert "English (`en`)" in finding_properties["issue"]["description"]
 
 
+def test_stc_provider_schema_uses_only_stc_semantics() -> None:
+    """STC must not inherit RTC stages, categories, or conditional OL request fields."""
+    manifest = {
+        "task_id": "saw-stc-phm-example",
+        "workflow": "saw",
+        "operation": "stc",
+        "scope": "PHM",
+        "allowed_writes": ["output/findings.json"],
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        },
+    }
+
+    schema = _output_schema(manifest)
+    findings_schema = schema["properties"]["files"]["properties"]["output/findings.json"]
+
+    assert set(findings_schema["required"]) == {"review_summary", "findings"}
+    assert "ol_review_requests" not in findings_schema["properties"]
+    finding = findings_schema["properties"]["findings"]["items"]
+    assert set(finding["required"]) == {
+        "category", "target_reference", "summary", "wip_evidence", "ol_evidence"
+    }
+    assert set(finding["properties"]["category"]["enum"]) == {
+        "OMISSION", "ADDITION", "VARIATION", "CONSISTENCY"
+    }
+    assert "issue" not in finding["properties"]
+    assert "action_level" not in finding["properties"]
+
+
+def test_stc_semantics_materialize_as_stc_submission_not_rtc_findings() -> None:
+    """SAGE retains STC review_summary and injects only controller-owned report language."""
+    manifest = {
+        "task_id": "saw-stc-phm-example",
+        "operation": "stc",
+        "scope": "PHM",
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        },
+    }
+    semantic = {
+        "review_summary": "Reviewed all assigned coordinates against routed Greek.",
+        "findings": [{
+            "category": "VARIATION",
+            "target_reference": "PHM 1:9",
+            "summary": "The WIP changes the source relationship.",
+            "wip_evidence": "WIP phrase",
+            "ol_evidence": "Greek phrase",
+        }],
+    }
+
+    document = _materialize_saw_findings(manifest, semantic)
+
+    assert document == {
+        **semantic,
+        "report_language": "en",
+    }
+    assert "stage" not in document
+    assert "review_receipts" not in document
+
+
 def test_saw_semantic_result_materializes_identity_coverage_and_receipt_locally() -> None:
     """SAGE expands compact SAW semantics to the canonical findings document before submission."""
     manifest = {
