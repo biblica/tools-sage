@@ -469,12 +469,20 @@ def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict
     if plan.get("workflow") != "saw":
         raise ValidationError("Only SAW plans can use the sequential continuation helper")
     if plan.get("status") == "FINALIZED":
+        publication: dict[str, Any] = {}
+        if str(plan.get("operation") or "").lower() == "stc":
+            from .stc_reporting import publish_stc_plan_reports
+
+            publication = publish_stc_plan_reports(config, path, plan)
+            plan.update(publication)
+            atomic_write_json(path, plan)
         return {
             "schema_version": "1.0",
             "status": "COMPLETE",
             "plan_id": plan.get("plan_id"),
             "plan_path": str(path),
             "aggregate_path": plan.get("aggregate_path"),
+            **publication,
         }
     if plan.get("status") != "PARTITIONED":
         raise ValidationError("Only PARTITIONED or FINALIZED SAW plans can be continued")

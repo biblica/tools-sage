@@ -410,6 +410,42 @@ def test_continue_executes_and_submits_the_same_task_without_second_menu_round_t
     assert submissions == [manifest_path]
 
 
+def test_continue_repairs_missing_stc_report_before_closing_finalized_run(
+    make_workspace,
+    monkeypatch,
+) -> None:
+    """Continue must publish an already-finalized STC task whose earlier CLI path failed."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="stc", scope="MAT 1")
+    manifest_path = run.root / "tasks" / "stc-unit" / "task-manifest.json"
+    manifest_path.parent.mkdir(parents=True)
+    manifest_path.write_text(json.dumps({"operation": "stc"}) + "\n", encoding="utf-8")
+    validation = manifest_path.parent / "validation"
+    validation.mkdir()
+    (validation / "submission.json").write_text(
+        json.dumps({"status": "FINALIZED"}) + "\n",
+        encoding="utf-8",
+    )
+    run = store.update_run(run, task_manifests=[str(manifest_path)])
+    center = _center(root, [""])
+    calls: list[Path] = []
+
+    def publish(_job, path):
+        """Record deterministic repair publication without compiling a real report."""
+        calls.append(path)
+        return {"report_directory": str(storage_layout(root).reports_root / job.job_id / "MAT")}
+
+    monkeypatch.setattr(center, "_ensure_stc_task_publication", publish)
+
+    completed = center._continue_saw(job, run)
+
+    assert completed.status == "COMPLETE"
+    assert calls == [manifest_path]
+    assert "SAGE/localdata/reports" in center.io.output.getvalue()
+
+
 def test_menu_declares_external_task_paths_at_controller_boundary(make_workspace, monkeypatch) -> None:
     """Menu task commands must use portable governed paths for localdata artifacts."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")

@@ -2138,7 +2138,19 @@ def command_act_submit(args: argparse.Namespace) -> int:
     config, _ = _load(args)
     task_path = resolve_declared_path(config.root, str(args.task), "task manifest")
     result = submit_act_task(config, task_path)
-    source_project = config.project(str(result.get("contemporary_source")))
+    source_project_id = str(result.get("contemporary_source") or "").strip()
+    if result.get("operation") == "stc":
+        ol_sources = [
+            item for item in result.get("original_language_sources", [])
+            if isinstance(item, dict) and str(item.get("project") or "").strip()
+        ]
+        if len(ol_sources) != 1:
+            raise ValidationError(
+                "Finalized STC task lacks its single primary original-language Project",
+                code="STC_OL_AUTHORITY_MISMATCH",
+            )
+        source_project_id = str(ol_sources[0]["project"])
+    source_project = config.project(source_project_id)
     target_project = config.project(str(result.get("output_project")))
     event_logger = OperationalLogger(
         root=config.root,

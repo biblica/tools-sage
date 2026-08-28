@@ -497,6 +497,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/standard.py`
 - `system/src/sage/state.py`
 - `system/src/sage/stc.py`
+- `system/src/sage/stc_reporting.py`
 - `system/src/sage/storage.py`
 - `system/src/sage/structure_policy.py`
 - `system/src/sage/task_retry.py`

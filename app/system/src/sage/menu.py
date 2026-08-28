@@ -92,6 +92,7 @@ from .semantic.store import (
 )
 from .state import ecosystem_state_path, read_state
 from .storage import declare_governed_path, resolve_declared_path, storage_layout
+from .stc_reporting import publish_stc_task_reports
 from .operator_overrides import load_effective_settings, write_local_settings
 from .job_layout import audit_job_layout, migrate_job_layout, render_job_layout_audit, verify_job_layout, write_job_layout_audit
 from .out_of_box_reset import reset_to_out_of_box
@@ -3319,6 +3320,11 @@ class SageControlCenter:
         self.io.write()
         self.io.write("-" * 72)
 
+    def _ensure_stc_task_publication(self, project: Job, manifest_path: Path) -> dict[str, Any]:
+        """Regenerate a standalone STC report before closing or repairing its Run."""
+        config = load_ecosystem(self.store.ensure_runtime_files(project))
+        return publish_stc_task_reports(config, manifest_path)
+
     def _continue_saw(self, project: Job, run: Run) -> Run:
         """Implement ` continue saw` in the deterministic terminal control flow."""
         if not run.task_manifests and not run.plan_path:
@@ -3339,8 +3345,15 @@ class SageControlCenter:
             path = self._manifest_path(run.task_manifests[-1])
             run, submitted = self._task_action(project, run, path)
             if submitted and self._task_state(path)[0] == "FINALIZED":
+                publication = (
+                    self._ensure_stc_task_publication(project, path)
+                    if run.operation == "stc"
+                    else {}
+                )
                 run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
                 self.io.write("SAW Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
+                if publication.get("report_directory"):
+                    self.io.write(f"Reports: {operator_path(self.root, str(publication['report_directory']))}")
                 self.io.pause()
             return run
         if run.plan_path:
@@ -3351,8 +3364,15 @@ class SageControlCenter:
             run, _ = self._task_action(project, run, path)
             if self._task_state(path)[0] != "FINALIZED":
                 return self.store.update_run(run, current_stage=run.operation.upper())
+        publication = (
+            self._ensure_stc_task_publication(project, path)
+            if run.operation == "stc"
+            else {}
+        )
         run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
         self.io.write("SAW Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
+        if publication.get("report_directory"):
+            self.io.write(f"Reports: {operator_path(self.root, str(publication['report_directory']))}")
         self.io.pause()
         return run
 
@@ -3405,6 +3425,11 @@ class SageControlCenter:
                     continue
                 run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
                 self.io.write("SAW aggregate complete.")
+                report_directory = str(aggregate.get("report_directory") or "").strip()
+                if report_directory:
+                    self.io.write(
+                        f"Reports: {operator_path(self.root, report_directory)}"
+                    )
                 self.io.pause()
                 return run
             if status == "COMPLETE":
