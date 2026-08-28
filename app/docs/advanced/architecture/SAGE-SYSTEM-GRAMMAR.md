@@ -178,7 +178,7 @@ Projects must have a confirmed regional Language Profile before SAGE registratio
 
 ### Alpha report/storage grammar
 
-Processing and evidence granularity may be smaller than a chapter; Operator report granularity is one chapter. Use `<BOOK>_<CCC>_ACTION-REPORT.md` and `<BOOK>_<CCC>_OPERATOR-NOTE.txt`, with a three-digit chapter even for single-chapter books. The Markdown report is canonical; TXT is a deterministic non-AI rendering of that finalized Markdown. Root `reports/` contains Operator deliverables only. Technical execution data belongs to `diagnostics/`, machine aggregation to `report_data/`, and block evidence to `tasks/`.
+Processing and evidence granularity may be smaller than a chapter; Operator report granularity is one chapter. Use `<BOOK>_<CCC>_<REPORT-ID>_ACTION-REPORT.md` and `<BOOK>_<CCC>_<REPORT-ID>_OPERATOR-NOTE.txt`, with a three-digit chapter even for single-chapter books. `<REPORT-ID>` is the uppercase stabilized SAW report identity: `RTC` or `STC`. The Markdown report is canonical; TXT is a deterministic non-AI rendering of that finalized Markdown. Root `reports/` contains Operator deliverables only. Technical execution data belongs to `diagnostics/`, machine aggregation to `report_data/`, and block evidence to `tasks/`.
 
 Operator-facing report prose resolves internal `WIP` and `REFERENCE` roles to configured Project display names. Original-language drift adjudication likewise reports `<project-name> CLOSER TO SOURCE`, `BOTH DEFENSIBLE`, or `INCONCLUSIVE`; it must not expose bare role labels as the decision.
 

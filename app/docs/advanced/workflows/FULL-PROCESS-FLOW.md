@@ -52,8 +52,8 @@ deterministic merge / coverage / finalization
         v
 batch finalized Run results into Job report catalog
         |
-        +--> reports/<BOOK>/<SCOPE>_<DATE>_<SERIAL>_ACTION-REPORT.md
-        `--> reports/<BOOK>/<SCOPE>_<DATE>_<SERIAL>_OPERATOR-NOTE.txt
+        +--> reports/<BOOK>/<BOOK>_<CCC>_RTC_ACTION-REPORT.md
+        `--> reports/<BOOK>/<BOOK>_<CCC>_RTC_OPERATOR-NOTE.txt
 ```
 
 Each AI stage is an isolated governed task inside the same Run. The structural stage is covered only for routed structural-candidate coordinates; the required meaning stage covers the complete parent RTC Run scope. Structural and meaning stages receive no OL Scripture. The meaning stage may defer exact issues to OL using request IDs plus reserved deferred finding IDs. Only the selective OL stage receives the exact requested coordinates and configured Job-bound GRK/HEB evidence. It must return one structured OL resolution per request; finalization preserves that request/resolution ledger.

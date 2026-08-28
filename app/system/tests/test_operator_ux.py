@@ -366,6 +366,86 @@ def test_saw_plan_continuation_advances_all_submitted_units_without_menu_round_t
     rendered = center.io.output.getvalue()
     assert "SAW work unit 1/2: MAT 1:1-12" in rendered
     assert "SAW work unit 2/2: MAT 1:13-25" in rendered
+    assert "SAW RUN COMPLETE" in rendered
+    assert "Reference Text Comparison (RTC)" in rendered
+
+
+def test_stc_run_template_uses_primary_source_and_shared_completion_layout(
+    make_workspace,
+) -> None:
+    """STC mirrors RTC Run chrome while naming the testament-routed primary source."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="stc", scope="MAT 1")
+    center = _center(root, [])
+
+    center._write_saw_run_header(job, run)
+    center._write_saw_run_complete(
+        job,
+        run,
+        report_directory=str(storage_layout(root).reports_root / job.job_id / "MAT"),
+    )
+
+    rendered = center.io.output.getvalue()
+    assert f"{job.output_project} checked against GRK OL" in rendered
+    assert f"checked against {job.contemporary_source}" not in rendered
+    assert "Checking Source Text Correspondence (STC) for MAT 1" in rendered
+    assert "SAW RUN COMPLETE" in rendered
+    assert f"{'Check':<20}Source Text Correspondence (STC)" in rendered
+    assert "SAGE/localdata/reports" in rendered
+
+
+def test_stc_normal_run_hides_controller_chatter_behind_rtc_progress_template(
+    make_workspace,
+    monkeypatch,
+) -> None:
+    """Normal STC execution exposes only the shared SAW Run/progress/completion surface."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="stc", scope="MAT 1")
+    center = _center(root, [""])
+    manifest = run.root / "tasks" / "stc-unit" / "task-manifest.json"
+
+    def create(_job, current, _operation):
+        """Return a sealed standalone task without invoking the real controller."""
+        updated = store.update_run(
+            current,
+            task_manifests=[str(manifest)],
+            status="TASK_CREATED",
+            current_stage="STC",
+        )
+        return updated, {
+            "status": "TASK_CREATED",
+            "manifest_path": str(manifest),
+            "act_path": str(manifest.parent / "ACT.md"),
+        }
+
+    monkeypatch.setattr(center, "_create_task", create)
+    monkeypatch.setattr(center, "_task_action", lambda _job, current, _path: (current, True))
+    monkeypatch.setattr(center, "_task_state", lambda _path: ("FINALIZED", {"operation": "stc"}))
+    monkeypatch.setattr(
+        center,
+        "_ensure_stc_task_publication",
+        lambda _job, _path: {
+            "report_directory": str(storage_layout(root).reports_root / job.job_id / "MAT")
+        },
+    )
+
+    completed = center._continue_saw(job, run)
+
+    rendered = center.io.output.getvalue()
+    assert completed.status == "COMPLETE"
+    assert "Working on SAW work unit 1/1: MAT 1" in rendered
+    assert "SAW RUN COMPLETE" in rendered
+    for internal in (
+        "Checking SAW resources for each planned section",
+        "Preparing governed SAW task plan",
+        "Created SAW ACT",
+        "Checking Codex execution readiness",
+    ):
+        assert internal not in rendered
 
 
 def test_continue_executes_and_submits_the_same_task_without_second_menu_round_trip(

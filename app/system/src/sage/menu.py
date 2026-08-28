@@ -984,8 +984,16 @@ class SageControlCenter:
         self.io.write(f"{'Last quick scan':<25}{summary.get('last_quick_scan') or 'NEVER'}")
         self.io.write(f"{'Last full scan':<25}{summary.get('last_full_scan') or 'NEVER'}")
 
-    def _run_with_status(self, message: str, action: Callable[[], Any]) -> Any:
-        """Run one blocking local action while rotating a bounded terminal heartbeat."""
+    def _run_with_status(
+        self,
+        message: str,
+        action: Callable[[], Any],
+        *,
+        visible: bool = True,
+    ) -> Any:
+        """Run one blocking action with an optional Operator-facing heartbeat."""
+        if not visible:
+            return action()
         if getattr(self, "_compact_saw_progress", False):
             return action()
         if not bool(getattr(self.io.output, "isatty", lambda: False)()):
@@ -2415,6 +2423,7 @@ class SageControlCenter:
             preflight = self._preflight_saw_preview(
                 project,
                 preview,
+                operation=operation,
                 require_original_language=(operation == "stc" or ol_variance_enabled),
             )
             if preflight == "CHANGE":
@@ -2507,6 +2516,10 @@ class SageControlCenter:
                 project,
                 ["workflow", "plan", "--workflow", project.tool, "--operation", operation, "--scope", scope, "--output", output],
             ),
+            visible=not (
+                project.tool == "saw"
+                and operation.strip().lower() in {"rtc", "stc"}
+            ),
         )
         if not isinstance(result, dict):
             raise ValidationError("Work preview did not return a plan", code="WORK_PREVIEW_FAILED")
@@ -2521,6 +2534,8 @@ class SageControlCenter:
         operation_label = (
             "Reference Text Comparison (RTC)"
             if rtc_preview
+            else "Source Text Correspondence (STC)"
+            if stc_preview
             else f"{project.tool.upper()} {operation.upper()}"
         )
         self.io.write(f"Operation:     {operation_label}")
@@ -2528,12 +2543,26 @@ class SageControlCenter:
         self.io.write(f"Planned work:  {summary.get('work_units', len(units))} work unit(s)")
         if not rtc_preview and not stc_preview and policy.get("hard_estimated_tokens") is not None:
             self.io.write(f"Token limit:   {policy['hard_estimated_tokens']:,}")
-        if rtc_preview and units and any(unit.get("rtc_package") for unit in units):
+        if rtc_preview and (
+            not units or any(not isinstance(unit.get("rtc_package"), dict) for unit in units)
+        ):
+            raise ValidationError(
+                "RTC preview is missing governed WIP/REF/ROUTE package measurements",
+                code="SAW_RTC_PREVIEW_INVALID",
+            )
+        if stc_preview and (
+            not units or any(not isinstance(unit.get("stc_package"), dict) for unit in units)
+        ):
+            raise ValidationError(
+                "STC preview is missing governed WIP/SRC/ROUTE package measurements",
+                code="SAW_STC_PREVIEW_INVALID",
+            )
+        if rtc_preview:
             self.io.write()
             self.io.write(
                 f"{'#':>3}  {'SCOPE':<20} {'WIP':>9} {'REF':>9} {'ROUTE':>10}"
             )
-        elif stc_preview and units and any(unit.get("stc_package") for unit in units):
+        elif stc_preview:
             self.io.write()
             self.io.write(
                 f"{'#':>3}  {'SCOPE':<20} {'WIP':>9} {'SRC':>9} {'ROUTE':>10}"
@@ -2559,14 +2588,14 @@ class SageControlCenter:
                 measurement = dict(unit.get("measurement") or {})
                 tokens = measurement.get("estimated_tokens", "?")
                 self.io.write(menu_item(index, f"{unit.get('primary_scope', '?'):<20} ~{tokens} estimated routed-SFM tokens"))
-        if rtc_preview and units and any(unit.get("rtc_package") for unit in units):
+        if rtc_preview:
             self.io.write(
                 f"{'':>3}  {'Largest work unit':<20} "
                 f"{'~' + format(int(summary.get('largest_wip_estimated_tokens', 0)), ','):>9} "
                 f"{'~' + format(int(summary.get('largest_ref_estimated_tokens', 0)), ','):>9} "
                 f"{'~' + format(int(summary.get('largest_route_estimated_tokens', 0)), ','):>10}"
             )
-        elif stc_preview and units and any(unit.get("stc_package") for unit in units):
+        elif stc_preview:
             self.io.write(
                 f"{'':>3}  {'Largest work unit':<20} "
                 f"{'~' + format(int(summary.get('largest_wip_estimated_tokens', 0)), ','):>9} "
@@ -2712,6 +2741,7 @@ class SageControlCenter:
         project: Job,
         preview: dict[str, Any],
         *,
+        operation: str | None = None,
         require_original_language: bool = False,
     ) -> str:
         """Block real resource defects while reporting default-VRS-compatible differences."""
@@ -2723,6 +2753,8 @@ class SageControlCenter:
                     preview,
                     require_original_language=require_original_language,
                 ),
+                visible=str(operation or preview.get("operation") or "").strip().lower()
+                not in {"rtc", "stc"},
             )
             blockers = list(findings.get("blockers") or [])
             advisories = list(findings.get("advisories") or [])
@@ -3291,7 +3323,7 @@ class SageControlCenter:
         return run
 
     def _write_saw_run_header(self, project: Job, run: Run) -> None:
-        """Render stable SAW Job/Run parameters once before live work-unit progress."""
+        """Render the shared STC/RTC Run header before live work-unit progress."""
         model = "AUTO"
         reasoning = "provider default"
         try:
@@ -3314,11 +3346,60 @@ class SageControlCenter:
         self.io.write(project.job_id)
         self.io.write("=" * 72)
         self.io.write()
-        self.io.write(f"{project.output_project} checked against {project.contemporary_source}")
+        comparison_project = project.contemporary_source
+        if run.operation == "stc":
+            book = parse_scope(run.scope).book
+            comparison_project = str(
+                project.bindings.get(
+                    "original_language_greek" if book in NT_27 else "original_language_hebrew"
+                )
+                or ("GRK" if book in NT_27 else "HEB")
+            ) + " OL"
+        self.io.write(f"{project.output_project} checked against {comparison_project}")
         self.io.write(f"Checking {self._saw_operation_label(run.operation)} for {run.scope}")
         self.io.write(f"Using {model} {reasoning.title()}")
         self.io.write()
         self.io.write("-" * 72)
+
+    @contextmanager
+    def _saw_work_unit_status(
+        self,
+        *,
+        index: int,
+        total: int,
+        scope: str,
+    ) -> Iterator[None]:
+        """Render the one shared STC/RTC work-unit line and suppress nested admin chatter."""
+        previous = getattr(self, "_compact_saw_progress", False)
+        self._compact_saw_progress = True
+        try:
+            with self.io.working(
+                f"Working on SAW work unit {index}/{total}: {scope}",
+                ellipsis=False,
+            ):
+                yield
+        finally:
+            self._compact_saw_progress = previous
+
+    def _write_saw_run_complete(
+        self,
+        project: Job,
+        run: Run,
+        *,
+        report_directory: str | None = None,
+    ) -> None:
+        """Render one completion template for standalone and planned STC/RTC Runs."""
+        self.io.write()
+        self.io.write("SAW RUN COMPLETE")
+        self.io.write("=" * 72)
+        self.io.write(f"{'Job':<20}{project.job_id}")
+        self.io.write(f"{'Check':<20}{self._saw_operation_label(run.operation)}")
+        self.io.write(f"{'Scope':<20}{run.scope}")
+        self.io.write(f"{'Status':<20}COMPLETE")
+        if str(report_directory or "").strip():
+            self.io.write(
+                f"{'Reports':<20}{operator_path(self.root, str(report_directory))}"
+            )
 
     def _ensure_stc_task_publication(self, project: Job, manifest_path: Path) -> dict[str, Any]:
         """Regenerate a standalone STC report before closing or repairing its Run."""
@@ -3327,8 +3408,16 @@ class SageControlCenter:
 
     def _continue_saw(self, project: Job, run: Run) -> Run:
         """Implement ` continue saw` in the deterministic terminal control flow."""
+        standard_run_ui = run.operation in {"rtc", "stc"}
         if not run.task_manifests and not run.plan_path:
-            run, result = self._create_task(project, run, run.operation)
+            if standard_run_ui:
+                self._compact_saw_progress = True
+                try:
+                    run, result = self._create_task(project, run, run.operation)
+                finally:
+                    self._compact_saw_progress = False
+            else:
+                run, result = self._create_task(project, run, run.operation)
             result_status = str(result.get("status") or "")
             if result_status in {"PARTITIONED", "COMPOSITE"}:
                 pass
@@ -3339,11 +3428,17 @@ class SageControlCenter:
                         "SAW task creation returned neither a governed task nor a recognized plan",
                         code="SAW_TASK_RESULT_INVALID",
                     )
-                self.io.write(f"Created SAW ACT: {act_path}")
+                if not standard_run_ui:
+                    self.io.write(f"Created SAW ACT: {act_path}")
             if run.plan_path:
                 return self._continue_saw_plan(project, run)
             path = self._manifest_path(run.task_manifests[-1])
-            run, submitted = self._task_action(project, run, path)
+            if standard_run_ui:
+                self._write_saw_run_header(project, run)
+                with self._saw_work_unit_status(index=1, total=1, scope=run.scope):
+                    run, submitted = self._task_action(project, run, path)
+            else:
+                run, submitted = self._task_action(project, run, path)
             if submitted and self._task_state(path)[0] == "FINALIZED":
                 publication = (
                     self._ensure_stc_task_publication(project, path)
@@ -3351,9 +3446,14 @@ class SageControlCenter:
                     else {}
                 )
                 run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
-                self.io.write("SAW Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
-                if publication.get("report_directory"):
-                    self.io.write(f"Reports: {operator_path(self.root, str(publication['report_directory']))}")
+                if standard_run_ui:
+                    self._write_saw_run_complete(
+                        project,
+                        run,
+                        report_directory=str(publication.get("report_directory") or ""),
+                    )
+                else:
+                    self.io.write("SAW Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
                 self.io.pause()
             return run
         if run.plan_path:
@@ -3361,7 +3461,12 @@ class SageControlCenter:
         path = self._manifest_path(run.task_manifests[-1])
         state, _ = self._task_state(path)
         if state != "FINALIZED":
-            run, _ = self._task_action(project, run, path)
+            if standard_run_ui:
+                self._write_saw_run_header(project, run)
+                with self._saw_work_unit_status(index=1, total=1, scope=run.scope):
+                    run, _ = self._task_action(project, run, path)
+            else:
+                run, _ = self._task_action(project, run, path)
             if self._task_state(path)[0] != "FINALIZED":
                 return self.store.update_run(run, current_stage=run.operation.upper())
         publication = (
@@ -3370,9 +3475,14 @@ class SageControlCenter:
             else {}
         )
         run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
-        self.io.write("SAW Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
-        if publication.get("report_directory"):
-            self.io.write(f"Reports: {operator_path(self.root, str(publication['report_directory']))}")
+        if standard_run_ui:
+            self._write_saw_run_complete(
+                project,
+                run,
+                report_directory=str(publication.get("report_directory") or ""),
+            )
+        else:
+            self.io.write("SAW Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
         self.io.pause()
         return run
 
@@ -3392,12 +3502,12 @@ class SageControlCenter:
                 completed = int(result.get("completed_units", 0) or 0)
                 total = int(result.get("total_units", 0) or 0) or 1
                 unit_scope = str(next_unit.get("scope") or run.scope)
-                self._compact_saw_progress = True
-                try:
-                    with self.io.working(f"Working on SAW work unit {completed + 1}/{total}: {unit_scope}", ellipsis=False):
-                        run, submitted = self._task_action(project, run, path)
-                finally:
-                    self._compact_saw_progress = False
+                with self._saw_work_unit_status(
+                    index=completed + 1,
+                    total=total,
+                    scope=unit_scope,
+                ):
+                    run, submitted = self._task_action(project, run, path)
                 progress = f"{completed + (1 if submitted else 0)}/{total}"
                 stage = str(result.get("composite_stage") or f"WORK_UNIT {progress}")
                 run = self.store.update_run(
@@ -3424,28 +3534,22 @@ class SageControlCenter:
                     )
                     continue
                 run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
-                self.io.write("SAW aggregate complete.")
                 report_directory = str(aggregate.get("report_directory") or "").strip()
-                if report_directory:
-                    self.io.write(
-                        f"Reports: {operator_path(self.root, report_directory)}"
-                    )
+                self._write_saw_run_complete(
+                    project,
+                    run,
+                    report_directory=report_directory,
+                )
                 self.io.pause()
                 return run
             if status == "COMPLETE":
                 run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
-                self.io.write()
-                self.io.write("SAW RUN COMPLETE")
-                self.io.write("=" * 72)
-                self.io.write(f"{'Job':<20}{project.job_id}")
-                self.io.write(f"{'Check':<20}{self._saw_operation_label(run.operation)}")
-                self.io.write(f"{'Scope':<20}{run.scope}")
-                self.io.write(f"{'Status':<20}COMPLETE")
                 report_directory = str(result.get("report_directory") or "").strip()
-                if report_directory:
-                    self.io.write(
-                        f"{'Reports':<20}{operator_path(self.root, report_directory)}"
-                    )
+                self._write_saw_run_complete(
+                    project,
+                    run,
+                    report_directory=report_directory,
+                )
                 self.io.pause()
                 return run
             raise ValidationError(f"Unsupported SAW continuation status: {status}")

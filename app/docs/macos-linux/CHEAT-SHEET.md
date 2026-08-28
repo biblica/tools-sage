@@ -71,8 +71,8 @@ Choose **Add BIC Job** or **Add SAW Job**. Role selectors list only SAGE Project
 SAGE validates and batches finalized Run findings into the owning Job's main report catalog. Final SAW reports do not remain in the Run `plans/` folder:
 
 ```text
-localdata/reports/<job-id>/GEN/GEN_001_ACTION-REPORT.md
-localdata/reports/<job-id>/GEN/GEN_001_OPERATOR-NOTE.txt
+localdata/reports/<job-id>/GEN/GEN_001_RTC_ACTION-REPORT.md
+localdata/reports/<job-id>/GEN/GEN_001_RTC_OPERATOR-NOTE.txt
 ```
 
 The `<job-id>` segment is the owning Job ID, not a Project ID. The completion screen prints the exact paths. SAGE does not write reports into the mapped Paratext Project folder.

@@ -66,7 +66,7 @@ def _portable_job(root: Path) -> Path:
         storage_layout(root).reports_root
         / "SAW_faTMNv4-usNIVv2"
         / "GEN"
-        / "GEN_001_ACTION-REPORT.md"
+        / "GEN_001_RTC_ACTION-REPORT.md"
     )
     report.parent.mkdir(parents=True)
     report.write_text("portable report\n", encoding="utf-8")
@@ -95,7 +95,7 @@ def test_new_host_rebinds_same_project_subfolders_and_preserves_report(tmp_path:
         storage_layout(sage).reports_root
         / "SAW_faTMNv4-usNIVv2"
         / "GEN"
-        / "GEN_001_ACTION-REPORT.md"
+        / "GEN_001_RTC_ACTION-REPORT.md"
     ).is_file()
 
 

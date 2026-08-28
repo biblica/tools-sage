@@ -77,11 +77,11 @@ localdata/reports/<job-id>/<BOOK>/
 Each chapter uses exactly two Operator files:
 
 ```text
-<BOOK>_<CCC>_ACTION-REPORT.md
-<BOOK>_<CCC>_OPERATOR-NOTE.txt
+<BOOK>_<CCC>_<REPORT-ID>_ACTION-REPORT.md
+<BOOK>_<CCC>_<REPORT-ID>_OPERATOR-NOTE.txt
 ```
 
-`<CCC>` is always a three-digit chapter number, including `001` for single-chapter books. The Markdown Action Report is canonical. The TXT Operator Note is a deterministic Python plain-text rendering of that exact finalized Markdown and never invokes AI independently. Machine JSON/JSONL, secondary-language rendering receipts, validation artifacts, and work-unit evidence remain under governed Job/Run storage.
+`<CCC>` is always a three-digit chapter number, including `001` for single-chapter books. `<REPORT-ID>` is currently `RTC` or `STC`, so the operation is visible without opening the file. The Markdown Action Report is canonical. The TXT Operator Note is a deterministic Python plain-text rendering of that exact finalized Markdown and never invokes AI independently. Machine JSON/JSONL, secondary-language rendering receipts, validation artifacts, and work-unit evidence remain under governed Job/Run storage.
 
 Findings are ordered by canonical Scripture reference as far as possible: book/chapter/starting verse/ending verse, then stable finding identity. Work-unit completion order does not govern the Operator report order.
 
