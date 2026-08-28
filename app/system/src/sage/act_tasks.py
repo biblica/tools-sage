@@ -47,7 +47,7 @@ from .evidence_policy import (
     task_evidence_policy,
     validate_read_class,
 )
-from .external_access import validate_external_file
+from .external_access import validate_external_companion_file, validate_external_file
 from .generations import project_validation_fingerprint
 from .findings import globalize_result_finding_ids, validate_global_finding_ids
 from .grammar import GrammarProfile, load_grammar_profile
@@ -62,6 +62,7 @@ from .locking import WorkspaceLock
 from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
 from .linguistic_profiles import complete_language_profile_contract
+from .original_language_resources import OL_AUTHORITY_PROFILE_FILE
 from .references import (
     ScriptureScope,
     atomic_reference_labels,
@@ -2813,9 +2814,13 @@ def _copy_ol_authority_profile(
     destination: Path,
 ) -> dict[str, Any]:
     """Validate and copy the complete source-bound OL authority profile into one task."""
-    source = ol_project.path / "authority-profile.yml"
+    source = ol_project.path / OL_AUTHORITY_PROFILE_FILE
     if ol_project.external and source.is_file():
-        source = validate_external_file(source, roots=(ol_project.path,), write=False)
+        source = validate_external_companion_file(
+            source,
+            roots=(ol_project.path,),
+            allowed_filenames=(OL_AUTHORITY_PROFILE_FILE,),
+        )
     if not source.is_file():
         raise ValidationError(
             f"Original-language authority {ol_project.project_id} has no authority-profile.yml",

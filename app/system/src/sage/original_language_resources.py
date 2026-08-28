@@ -12,6 +12,7 @@ import yaml
 from .atomic import atomic_write_json
 from .canon import NT_27, OT_39
 from .errors import ConfigurationError, ValidationError
+from .external_access import validate_external_companion_file
 from .project_inventory import detect_scripture_books
 from .resource_mounts import normalize_operator_path
 from .hashing import sha256_file
@@ -70,6 +71,12 @@ def resolve_ol_authority_profile(root: Path, resource_id: str) -> dict[str, Any]
             "authority_id": rid,
             "authority_role": "PRIMARY",
         }
+    if source != "BUNDLED":
+        path = validate_external_companion_file(
+            path,
+            roots=(resource_root,),
+            allowed_filenames=(OL_AUTHORITY_PROFILE_FILE,),
+        )
     try:
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     except (OSError, yaml.YAMLError) as exc:

@@ -21,7 +21,12 @@ from sage.evidence import EvidencePolicy, RTCSizingPolicy
 from sage.executors.base import ProviderRequest
 from sage.executors.ollama import OllamaExecutor
 from sage.executors import PROVIDER_IDS, make_executor
-from sage.external_access import READ_ONLY_SCRIPTURE, READ_WRITE_TARGET, validate_external_file
+from sage.external_access import (
+    READ_ONLY_SCRIPTURE,
+    READ_WRITE_TARGET,
+    validate_external_companion_file,
+    validate_external_file,
+)
 from sage.llm_settings import (
     DEFAULT_LLM_SETTINGS,
     SAGE_LOCAL_ADMIN_CONTEXT_WINDOW,
@@ -241,6 +246,30 @@ def test_external_scripture_extensions_are_case_insensitive_and_narrow(tmp_path:
     with pytest.raises(ValidationError, match="not allowed"):
         validate_external_file(usfm, roots=(root,))
     assert discover_usfm_files(root) == [sfm]
+
+
+def test_external_companion_access_allows_only_an_explicit_governed_filename(
+    tmp_path: Path,
+) -> None:
+    """Authority metadata may be read without broadly permitting external YAML files."""
+    root = tmp_path / "OL"
+    root.mkdir()
+    authority = root / "authority-profile.yml"
+    unrelated = root / "settings.yml"
+    authority.write_text("profile: {}\n", encoding="utf-8")
+    unrelated.write_text("settings: {}\n", encoding="utf-8")
+
+    assert validate_external_companion_file(
+        authority,
+        roots=(root,),
+        allowed_filenames=("authority-profile.yml",),
+    ) == authority.resolve()
+    with pytest.raises(ValidationError, match="companion read is not allowed"):
+        validate_external_companion_file(
+            unrelated,
+            roots=(root,),
+            allowed_filenames=("authority-profile.yml",),
+        )
 
 
 def test_external_path_escape_is_rejected(tmp_path: Path) -> None:

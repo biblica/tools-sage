@@ -10,7 +10,9 @@ import sys
 from pathlib import Path
 
 from sage.act_tasks import create_act_task
+from sage.external_access import READ_ONLY_SCRIPTURE
 from sage.registry import load_ecosystem
+from sage.resource_mounts import set_resource_mount
 
 
 def _initialize(package_root: Path, root: Path) -> None:
@@ -74,6 +76,41 @@ def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, mak
     assert "Authorized REFERENCE" not in act
     assert "Reference Project" not in act
     assert "- REFERENCE:" not in act
+
+
+def test_stc_task_accepts_governed_authority_profile_from_external_ol_root(
+    package_root,
+    make_workspace,
+) -> None:
+    """External OL staging treats the authority profile as governed metadata, not Scripture."""
+    root = make_workspace(qualification_status="VALIDATED")
+    _install_fixture_ol_profile(root, package_root, "GRK")
+    local_greek = root.parent / "localdata/work/projects/GRK"
+    external_greek = root.parent / "external-GRK"
+    shutil.copytree(local_greek, external_greek)
+    set_resource_mount(
+        root,
+        project_id="GRK",
+        external_path=external_greek,
+        access_mode=READ_ONLY_SCRIPTURE,
+    )
+    _initialize(package_root, root)
+
+    task = create_act_task(
+        load_ecosystem(root / "ecosystem.yml"),
+        workflow="saw",
+        operation="stc",
+        output_project_id="usWIP",
+        contemporary_source_id="usNIVv2",
+        scope_value="MAT 1:1",
+    )
+
+    manifest = json.loads(Path(task["manifest_path"]).read_text(encoding="utf-8"))
+    profile = next(
+        item for item in manifest["allowed_reads"]
+        if Path(item["path"]).name == "ol-authority-profile.yml"
+    )
+    assert profile["evidence_class"] == "AUTHORITY_INTERPRETATION_RULES"
 
 
 def test_stc_submission_uses_stc_grammar_and_writes_standalone_canonical_artifacts(package_root, make_workspace) -> None:
