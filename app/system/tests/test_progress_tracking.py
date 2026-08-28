@@ -16,6 +16,7 @@ from sage.menu import MenuIO, SageControlCenter, ScriptedInput
 from sage.progress import (
     DEFAULT_JOB_PROGRESS_POLICY,
     PROGRESS_BASIS_ACT_ESTIMATED_TOKENS,
+    PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS,
     PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS,
     format_activity_label,
     format_progress_line,
@@ -177,6 +178,38 @@ def test_job_contract_records_canonical_progress_quantifier(make_workspace) -> N
     assert raw["progress_quantifier"] == DEFAULT_JOB_PROGRESS_POLICY.to_dict()
     assert raw["progress_quantifier"]["basis"] == PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS
     assert job.progress_quantifier == DEFAULT_JOB_PROGRESS_POLICY.to_dict()
+
+
+def test_preserved_pre_alpha_job_contract_normalizes_without_rewriting(
+    make_workspace,
+) -> None:
+    """Load beta progress/profile state under the expanded alpha Job contract."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="saw",
+        job_id="SAW_usWIP-usNIVv2",
+        display_name="Preserved progress contract",
+        bindings={"wip": "usWIP", "reference": "usNIVv2"},
+        profiles={},
+        defaults={},
+    )
+    raw = yaml.safe_load(job.manifest_path.read_text(encoding="utf-8"))
+    raw["progress_quantifier"]["basis"] = (
+        PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS
+    )
+    raw["profiles"].pop("reference_grammar")
+    job.manifest_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+
+    loaded = store.load_job(job.job_id, tool="saw")
+
+    assert loaded.progress_quantifier["basis"] == PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS
+    assert loaded.profiles["reference_grammar"]
+    persisted = yaml.safe_load(job.manifest_path.read_text(encoding="utf-8"))
+    assert persisted["progress_quantifier"]["basis"] == (
+        PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS
+    )
+    assert "reference_grammar" not in persisted["profiles"]
 
 
 def test_run_terminal_result_is_separate_and_blocked_requires_reason(make_workspace) -> None:

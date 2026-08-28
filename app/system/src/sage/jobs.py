@@ -331,12 +331,10 @@ class JobStore:
             )
         except ValidationError as exc:
             raise ConfigurationError(f"Job {manifest_job_id} has invalid semantic bindings: {exc}") from exc
-        if canonical_profiles != profiles:
-            raise ConfigurationError(f"Job {manifest_job_id} profile bindings do not match its bound resources")
         return Job(
             job_id=manifest_job_id, tool=job_tool,
             display_name=require_string(raw.get("display_name", manifest_job_id), "job display_name"),
-            status=status, bindings=bindings, profiles=profiles, defaults=defaults,
+            status=status, bindings=bindings, profiles=canonical_profiles, defaults=defaults,
             progress_quantifier=progress_quantifier,
             primary_report_language=primary_report_language,
             secondary_report_language=secondary_report_language,

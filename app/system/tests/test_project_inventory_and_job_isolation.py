@@ -96,6 +96,35 @@ def test_saw_job_runtime_ignores_unbound_inactive_bic_template(make_workspace) -
     assert bic.bindings == {}
 
 
+def test_preserved_bic_job_derives_new_donor_profile_without_rewriting(
+    make_workspace,
+) -> None:
+    """Load a beta BIC Job that predates the alpha donor-grammar binding."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="bic",
+        job_id="BIC_idKKHv0-usNIVv2-usBOLx1",
+        display_name="Preserved BIC profile contract",
+        bindings={
+            "content_source": "idKKHv0",
+            "lexical_donor": "usNIVv2",
+            "generated_target": "usBOLx1",
+        },
+        profiles={},
+        defaults={},
+    )
+    raw = yaml.safe_load(job.manifest_path.read_text(encoding="utf-8"))
+    raw["profiles"].pop("donor_grammar")
+    job.manifest_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+
+    loaded = store.load_job(job.job_id, tool="bic")
+
+    assert loaded.profiles["donor_grammar"]
+    persisted = yaml.safe_load(job.manifest_path.read_text(encoding="utf-8"))
+    assert "donor_grammar" not in persisted["profiles"]
+
+
 def test_job_primary_and_optional_secondary_are_runtime_owned(make_workspace) -> None:
     """Each Job snapshots one primary and may independently add or clear a secondary."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
