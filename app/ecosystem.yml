@@ -77,6 +77,9 @@ language_profiles:
       wip:
         file: system/config/profiles/grammar/en-GB/wip.yml
         role: WIP
+  en:
+    script: Latn
+    profile_alias: en-US
   id-ID:
     script: Latn
     variants:

@@ -1,4 +1,4 @@
-# BIC and SAW authority boundaries — v0.01beta
+# BIC and SAW authority boundaries — v0.02alpha1
 
 This is the current authority boundary for the two executable workflows. BIC and SAW are independent; neither creates, converts or hands work directly to the other.
 
@@ -35,7 +35,7 @@ Invariants:
 ## SAW
 
 ```text
-WIP + REFERENCE (+ configured applicable GRK/HEB when routed) -> findings
+RTC/Targeted: WIP + REFERENCE -> findings\nSTC: WIP + PRIMARY GRK/HEB -> findings\nOL Review: bounded WIP + REFERENCE + applicable GRK/HEB -> findings
 ```
 
 | Role | Identifier | Authority |
@@ -47,8 +47,8 @@ WIP + REFERENCE (+ configured applicable GRK/HEB when routed) -> findings
 Invariants:
 
 - WIP lifecycle state is `UNDER_REVIEW`.
-- SAW Scripture inputs are WIP, REFERENCE, and only the configured applicable OL resource when OL is routed.
-- Reference Text Comparison (RTC) is composite: deterministic preflight/structural triage -> conditional structural adjudication -> required Reference Text Comparison (RTC) -> conditional selective OL adjudication -> deterministic finalization. Targeted Check and Original-Language Review remain separate bounded operations.
+- SAW Scripture inputs are route-specific: RTC/Targeted use WIP+REFERENCE; STC uses WIP+testament-correct PRIMARY OL without REFERENCE; Original-Language Review uses its explicitly declared bounded WIP/REFERENCE/OL evidence.
+- Reference Text Comparison (RTC) is composite: deterministic preflight/structural triage -> conditional structural adjudication -> required Reference Text Comparison (RTC) -> conditional selective OL adjudication -> deterministic finalization. STC is an independent WIP-to-primary-OL operation; Targeted Check and Original-Language Review remain separate bounded operations.
 - SAW has no external Scripture write capability and never creates/modifies Paratext Notes XML; final note material is plain text for Operator copy/paste.
 - Local indexes/semantic signals are `PROJECT_INDEX_EVIDENCE`: governed retrieval/triage evidence only, not autonomous findings, Scripture authority, or translation authority. RTC predecessor evidence must retain same-Job, same-Run, WIP, and REFERENCE lineage.
 
@@ -57,6 +57,6 @@ Invariants:
 There is no BIC TARGET -> SAW WIP handoff, automatic generation handoff, automatic role conversion, shared lifecycle, or dependency. An Operator may later configure any suitable Paratext/PTLite project independently for SAW; SAGE treats that as a separate SAW project configuration.
 
 
-## Beta bounded SAW OL authority
+## Alpha bounded SAW OL authority
 
 When original-language Scripture is explicitly routed to a bounded SAW task, the configured GRK/HEB resource is the primary textual authority for questions of source-text meaning within that task and scope. REFERENCE remains the authorized LWC Reference Project comparison, but it does not override contrary original-language evidence. Outside an OL-routed task, OL Scripture has no implicit authority and must not be read.

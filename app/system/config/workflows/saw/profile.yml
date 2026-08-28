@@ -13,13 +13,8 @@ rtc_sizing:
   wip_target_min_tokens: 6000
   wip_target_max_tokens: 7000
   wip_hard_exclusive_tokens: 8000
-  governed_wip_ceiling_tokens: 8000
-  package_hard_max_tokens: 32000
-  provider_handoff_max_tokens: 32000
-  package_hard_serialized_bytes: 224000
-  minimum_reference_reserve_tokens: 8000
-  minimum_overhead_reserve_tokens: 6000
-  minimum_overhead_serialized_bytes: 24000
+  route_hard_max_tokens: 32000
+  route_hard_serialized_bytes: 224000
 evidence_policies:
   default:
     target_estimated_tokens: 18000
@@ -38,6 +33,16 @@ evidence_policies:
     maximum_primary_verse_units: 220
     maximum_primary_discourse_units: 0
     preferred_primary_discourse_units: 4
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+  stc:
+    target_estimated_tokens: 12000
+    hard_estimated_tokens: 18000
+    hard_serialized_bytes: 126000
+    minimum_target_tokens: 3500
+    maximum_primary_verse_units: 120
+    maximum_primary_discourse_units: 2
     context_before_verses: 1
     context_after_verses: 1
     allow_cross_chapter_units: true
@@ -129,12 +134,12 @@ process:
   - Scripture projects remain read-only; findings and reports are generated deterministically.
   - Reference Text Comparison (RTC) structural and meaning stages do not route OL Scripture.
   - >-
-    Reference Text Comparison (RTC) governs the original WIP slice independently from the
-    complete provider handoff: target about 6000 estimated WIP tokens, prefer natural discourse
+    Reference Text Comparison (RTC) governs the original WIP slice within the routed
+    WIP+REFERENCE SFM review item: target about 6000 estimated WIP tokens, prefer natural discourse
     boundaries in the 5000-7000 range, and never plan a WIP slice at 8000 tokens or above.
-    The REFERENCE follows the exact same Scripture range. Complete RTC handoff is soft-targeted
-    below 28000 estimated tokens and hard-stopped at 32000; crossing the hard guard requires
-    reslicing, not a larger handoff. Prose prefers section/pericope then paragraph boundaries.
+    The REFERENCE follows the exact same Scripture range. The complete routed RTC SFM review item is
+    soft-targeted below 28000 estimated tokens and hard-stopped at 32000; crossing the hard guard
+    requires reslicing, not a larger review item. Prose prefers section/pericope then paragraph boundaries.
     Poetry preserves whole Psalm/song units and operational stanzas formed by consecutive q/qN
     lines; q-level indentation changes do not create stanza boundaries. Colon/clause splitting is
     emergency-only when a protected stanza itself cannot fit. Targeted Check limits each primary

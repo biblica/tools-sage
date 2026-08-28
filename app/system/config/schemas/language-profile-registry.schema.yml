@@ -1,9 +1,12 @@
 schema_id: sage-language-profile-registry-v2
 purpose: Route project-bound language guidance by canonical language tag and optional role variant.
 namespace_key: canonical_bcp47_language_tag
-required_per_namespace:
+required_per_concrete_namespace:
   - script
   - variants
+required_per_alias_namespace:
+  - script
+  - profile_alias
 variant_required_fields:
   - file
   - role

@@ -13,6 +13,7 @@ import yaml
 
 from sage.storage import storage_layout
 from sage.act_tasks import _partition_evidence_policy, create_act_task, submit_act_task
+from sage.rtc_planner import rtc_slicing_policy
 from sage.bounded_target import extract_scope_usfm
 from sage.build_policy import ENABLED_AUTOMATED_PROVIDER_IDS, FUTURE_PROVIDER_IDS
 from sage.errors import ConfigurationError, ValidationError
@@ -39,8 +40,8 @@ from sage.vrs import resolve_project_vrs_paths
 
 
 
-def test_rtc_partition_policy_governs_wip_below_eight_thousand() -> None:
-    """RTC derives a 6k WIP target with 7k preferred and strict sub-8k hard packet limits."""
+def test_rtc_partition_policy_keeps_wip_soft_target_but_uses_complete_route_hard_limit() -> None:
+    """RTC keeps its WIP target while the complete WIP+Reference SFM route owns the hard guard."""
     complete = EvidencePolicy(
         target_estimated_tokens=28000,
         hard_estimated_tokens=32000,
@@ -48,34 +49,38 @@ def test_rtc_partition_policy_governs_wip_below_eight_thousand() -> None:
         minimum_target_tokens=6000,
         maximum_primary_verse_units=220,
     )
+    sizing = RTCSizingPolicy.from_mapping({
+        "provider": "codex",
+        "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
+        "wip_target_min_tokens": 6000,
+        "wip_target_max_tokens": 7000,
+        "wip_hard_exclusive_tokens": 8000,
+        "route_hard_max_tokens": 32000,
+        "route_hard_serialized_bytes": 224000,
+    })
 
-    derived = _partition_evidence_policy("saw", "rtc", complete)
+    derived = rtc_slicing_policy(complete, sizing)
 
     assert derived.target_estimated_tokens == 6000
     assert derived.minimum_target_tokens == 5000
     assert derived.preferred_max_estimated_tokens == 7000
-    assert derived.hard_estimated_tokens == 7999
-    assert derived.maximum_primary_verse_units == 80
+    assert derived.hard_estimated_tokens == 32000
+    assert derived.hard_serialized_bytes == 224000
 
 
-def test_rtc_sizing_rejects_package_cap_above_provider_cap() -> None:
-    """RTC configuration must fail before slicing when provider capacity contradicts it."""
+def test_rtc_sizing_rejects_route_cap_below_wip_hard_limit() -> None:
+    """RTC configuration must fail when the routed-SFM hard guard cannot contain WIP."""
     value = {
         "provider": "codex",
         "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
         "wip_target_min_tokens": 6000,
         "wip_target_max_tokens": 7000,
         "wip_hard_exclusive_tokens": 8000,
-        "governed_wip_ceiling_tokens": 8000,
-        "package_hard_max_tokens": 32000,
-        "provider_handoff_max_tokens": 30000,
-        "package_hard_serialized_bytes": 224000,
-        "minimum_reference_reserve_tokens": 8000,
-        "minimum_overhead_reserve_tokens": 6000,
-        "minimum_overhead_serialized_bytes": 24000,
+        "route_hard_max_tokens": 7000,
+        "route_hard_serialized_bytes": 224000,
     }
 
-    with pytest.raises(ConfigurationError, match="provider handoff maximum"):
+    with pytest.raises(ConfigurationError, match="WIP hard maximum exceeds"):
         RTCSizingPolicy.from_mapping(value)
 
 def _initialize(package_root: Path, root: Path) -> None:
@@ -165,7 +170,7 @@ def test_provider_build_policy_enables_only_codex_and_preserves_ollama_admin(tmp
     assert PROVIDER_IDS == ("codex", "ollama")
     assert ENABLED_AUTOMATED_PROVIDER_IDS == ("codex",)
     assert set(FUTURE_PROVIDER_IDS) >= {"grok", "gemini"}
-    with pytest.raises(ConfigurationError, match="disabled by the 0.01beta build policy"):
+    with pytest.raises(ConfigurationError, match="disabled by the 0.02alpha1 build policy"):
         make_executor("ollama", DEFAULT_LLM_SETTINGS)
 
     sage_root = tmp_path / "SAGE" / "app"

@@ -337,8 +337,8 @@ def test_scripture_usj_model_projection_removes_duplicate_internal_records() -> 
     assert len(projected.encode("utf-8")) < len(raw.encode("utf-8"))
 
 
-def test_projection_telemetry_quantifies_scripture_token_savings() -> None:
-    """Verify receipts can quantify raw Scripture packets versus deterministic model projections."""
+def test_projection_telemetry_never_counts_non_sfm_reads_as_sizing_tokens() -> None:
+    """Non-SFM model projections remain transport telemetry and contribute zero sizing tokens."""
     document = {
         "type": "USJ",
         "version": "3.1",
@@ -355,9 +355,9 @@ def test_projection_telemetry_quantifies_scripture_token_savings() -> None:
         [("packet/source.usj.json", raw, AUTHORIZED_CONTENT_EVIDENCE)]
     )
     assert measured["projected_read_count"] == 1
-    assert measured["saved_estimated_tokens"] > 0
-    assert measured["model_estimated_tokens"] < measured["raw_estimated_tokens"]
-    assert measured["estimated_token_reduction_percent"] > 50
+    assert measured["routed_sfm_estimated_tokens"] == 0
+    assert measured["routed_sfm_bytes"] == 0
+    assert measured["model_bytes"] < measured["raw_bytes"]
 
 
 def test_task_dry_run_rehashes_and_seals_authorised_reads(make_workspace) -> None:
@@ -370,8 +370,9 @@ def test_task_dry_run_rehashes_and_seals_authorised_reads(make_workspace) -> Non
     assert result["normal_reads"] == 1
     assert result["conditional_reads"] == 0
     assert result["allowed_writes"] == ["output/result.txt"]
-    assert result["handoff_measurement"]["measurement_scope"] == "provider_prompt_plus_output_schema"
-    assert result["handoff_measurement"]["total_estimated_tokens"] > 0
+    assert result["handoff_measurement"]["measurement_scope"] == "routed_analysis_sfm_only"
+    assert result["handoff_measurement"]["total_estimated_tokens"] == 0
+    assert result["handoff_measurement"]["transport_bytes"] > 0
     assert result["handoff_measurement"]["evidence_projection"]["read_count"] == 1
     (root / "evidence.txt").write_text("changed\n", encoding="utf-8")
     with pytest.raises(ValidationError, match="changed after task creation"):
@@ -942,3 +943,33 @@ def test_codex_environment_preserves_proxy_and_custom_ca_paths(monkeypatch) -> N
     assert env["CURL_CA_BUNDLE"] == "C:/corp/ca.pem"
     assert env["REQUESTS_CA_BUNDLE"] == "C:/corp/ca.pem"
     assert "OPENAI_API_KEY" not in env
+
+
+def test_routed_sfm_sizing_tokenizes_only_routed_sfm(monkeypatch) -> None:
+    """Prompt, schema, profiles, and controller JSON must never reach the sizing tokenizer."""
+    import sage.llm_tasks as llm_tasks
+    import sage.sfm_slicer as sfm_slicer
+
+    calls: list[str] = []
+
+    def fake_estimator(text: str) -> int:
+        """Record estimator inputs so the test can detect any non-SFM tokenization."""
+        calls.append(text)
+        return 7
+
+    monkeypatch.setattr(sfm_slicer, "estimate_tokens", fake_estimator)
+    sfm = "\\id MAT\n\\c 1\n\\v 1 Scripture text\n"
+    measurement = llm_tasks._route_measurement(
+        "PROMPT CONTROLLER TEXT",
+        {"type": "object", "properties": {"x": {"type": "string"}}},
+        [
+            ("packet/wip.sfm", sfm, "SUBJECT_TEXT"),
+            ("packet/wip-grammar-contract.json", '{"dialect":"governed"}', "LINGUISTIC_COMPETENCE_RULES"),
+        ],
+    )
+
+    assert calls == [sfm]
+    assert measurement["measurement_scope"] == "routed_analysis_sfm_only"
+    assert measurement["total_estimated_tokens"] == 7
+    assert measurement["total_bytes"] == len(sfm.encode("utf-8"))
+    assert measurement["transport_bytes"] > measurement["total_bytes"]

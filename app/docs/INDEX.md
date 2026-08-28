@@ -1,4 +1,4 @@
-# SAGE Documentation Index — v0.01beta
+# SAGE Documentation Index — v0.02alpha1
 
 Normal Operators should begin with [SAGE Help](OPERATOR-GUIDE.md). Short daily-use instructions stay
 in the `docs/` root. Technical and governance material is grouped under
@@ -7,10 +7,10 @@ in the `docs/` root. Technical and governance material is grouped under
 ## Operator guides
 
 - [SAGE Help](OPERATOR-GUIDE.md) — compact main-menu map, first-launch contract, reports, and fallback entry points.
-- [TUI](TUI.md) — experimental/unstable v0.01beta Textual shell, migration boundary, keyboard/mouse controls, and parity plan.
+- [TUI](TUI.md) — experimental/unstable v0.02alpha1 Textual shell, migration boundary, keyboard/mouse controls, and parity plan.
 - [Scripture Project Operator Cheat Sheet](PROJECT-OPERATOR-CHEAT-SHEET.md) — discovery, Add-to-SAGE, Project maintenance, Job-owned reports, reporting languages, and original-language resources.
 - [BIC Cheat Sheet](BIC-CHEAT-SHEET.md) — BIC Job, Run, task, state, and recovery quick reference.
-- [SAW Cheat Sheet](SAW-CHEAT-SHEET.md) — SAW Reference Text Comparison (RTC), Targeted Check, Original-Language Review, finalization, and read-only boundaries.
+- [SAW Cheat Sheet](SAW-CHEAT-SHEET.md) — SAW RTC, STC, Targeted Check, Original-Language Review, finalization, and read-only boundaries.
 - [Good Practice](GOOD-PRACTICE.md) — safe operating and source-maintenance habits.
 - [Known Limitations](KNOWN-LIMITATIONS.md) — explicit functional and platform limits.
 - [Windows Cheat Sheet](windows/CHEAT-SHEET.md), [Recovery](windows/RECOVERY.md), and [Errors](windows/ERRORS.md).

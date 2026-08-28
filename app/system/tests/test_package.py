@@ -63,7 +63,7 @@ def test_standard_version_matches_version_file(package_root: Path) -> None:
     """Verify that standard version matches version file."""
     standard = load_standard(package_root)
     assert standard.version == (package_root / "VERSION").read_text(encoding="utf-8").strip()
-    assert standard.release_status == "BETA"
+    assert standard.release_status == "ALPHA"
     assert standard.feature_classifications["tui"] == "EXPERIMENTAL_UNSTABLE"
     assert "EXPERIMENTAL_UNSTABLE" in standard.feature_maturity_states
     assert standard.public_release_ready is False
@@ -195,6 +195,61 @@ def test_source_audit_rejects_job_runtime_payloads(package_root: Path, tmp_path:
     )
     assert result.returncode != 0
     assert "Clean source contains local/runtime roots: jobs" in result.stdout
+
+
+def test_source_audit_rejects_stale_compact_prerelease_labels(package_root: Path, tmp_path: Path) -> None:
+    """Current nonhistorical material cannot retain another compact prerelease identity."""
+    import shutil
+    import subprocess
+    import sys
+
+    copy = tmp_path / "SAGE"
+    shutil.copytree(package_root, copy)
+    for cache in list(copy.rglob("__pycache__")) + list(copy.rglob(".pytest_cache")):
+        shutil.rmtree(cache, ignore_errors=True)
+    stale = copy / "docs" / "OPERATOR-GUIDE.md"
+    stale.write_text(stale.read_text(encoding="utf-8") + "\nCurrent build: 0.01beta\n", encoding="utf-8")
+    result = subprocess.run(
+        [sys.executable, str(copy / "system" / "tools" / "deep_audit.py"), str(copy), "--mode", "source"],
+        text=True,
+        capture_output=True,
+        check=False,
+        env={**__import__("os").environ, "SAGE_DATA_HOME": str(tmp_path / "localdata")},
+    )
+    import json
+    payload = json.loads(result.stdout)
+    assert result.returncode != 0
+    assert any("Previous pre-release reference" in error for error in payload.get("errors", [])), payload.get("errors", [])
+
+
+def test_source_audit_allows_explicit_beta_mainline_lineage_in_alpha_handover(
+    package_root: Path, tmp_path: Path
+) -> None:
+    """Alpha handover may name the prior Beta only in the explicit mainline-baseline lineage statement."""
+    import json
+    import shutil
+    import subprocess
+    import sys
+
+    copy = tmp_path / "SAGE"
+    shutil.copytree(package_root, copy)
+    for cache in list(copy.rglob("__pycache__")) + list(copy.rglob(".pytest_cache")):
+        shutil.rmtree(cache, ignore_errors=True)
+    handover = copy / "docs" / "advanced" / "release" / "HANDOVER.md"
+    handover.write_text(
+        handover.read_text(encoding="utf-8")
+        + "\n0.01beta remains the mainline baseline. 0.02alpha1 is developed on the parallel Alpha branch.\n",
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, str(copy / "system" / "tools" / "deep_audit.py"), str(copy), "--mode", "source"],
+        text=True,
+        capture_output=True,
+        check=False,
+        env={**__import__("os").environ, "SAGE_DATA_HOME": str(tmp_path / "localdata")},
+    )
+    payload = json.loads(result.stdout)
+    assert result.returncode == 0, payload.get("errors", [])
 
 
 def test_current_menu_does_not_contain_legacy_resource_mapping_surface(package_root: Path) -> None:

@@ -1,6 +1,6 @@
-# SAGE v0.01beta - Implementation Report
+# SAGE v0.02alpha1 - Implementation Report
 
-**Development status:** Beta; pre-release group-testing baseline. Qualification is bound to the exact source hash used by the release builder.
+**Development status:** Alpha; pre-release group-testing baseline. Qualification is bound to the exact source hash used by the release builder.
 
 ## Implemented
 
@@ -20,6 +20,10 @@
 14. **Governed OL separation.** `@GRK` / `@HEB` remain governed resources outside the ordinary SAGE Project Inventory, with bundled/recognized-Paratext/local configuration and runtime provenance.
 15. **Clean application and persistent-data policy.** The source distribution ships with no operator Project/Job/Run state or managed runtime. `app/` is replaceable; `localdata/` is persistent local/operator state inside the portable bundle. Release gates reject runtime contents, caches, nested archives, symlinks, and preconfigured Project state. Application/version updates preserve recognized localdata.
 16. **File naming and serialization convergence.** SAGE-owned registries, pins, manifests, and machine records use JSON; editable configuration/policy/profile material remains YAML. Canonical internal config filenames are lowercase kebab-case, Run manifests are `run.json`, and platform/vendor-governed filenames are preserved.
+17. **Independent Source Text Correspondence (STC).** SAW exposes RTC -> STC -> Targeted Check -> Original-Language Review. STC compares bounded WIP directly with the testament-correct PRIMARY OL authority (NT -> GRK, OT -> HEB), never consumes REFERENCE evidence or RTC findings, and finalizes only after exact primary coverage and analytical-completion reconciliation.
+18. **One routed-SFM sizing authority.** BIC, RTC, STC, Targeted Check, and OL Review use the general deterministic SFM slicer. Only Scripture SFM actually routed to a model review item contributes tokens/hard bytes; controller JSON, prompts, schemas, profiles, IDs, hashes, provenance, diagnostics, and transport overhead do not.
+19. **Universal language specificity.** Every bounded model-facing natural-language stream carries its complete canonical profile. Project/reporting streams use `LANGUAGE_PROFILE`; GRK/HEB use source-bound `OL_AUTHORITY_PROFILE`. Missing or ambiguous specificity fails closed, including BIC microtransactions, retries, RTC/STC, Targeted Check, OL Review, and secondary report rendering.
+20. **Extensible OL authority families.** GRK/HEB retain exactly one configured PRIMARY authority for current workflows and may register zero or more SECONDARY authorities. Secondary authorities remain analytically inert until an explicit future review item routes them.
 
 ## External-resource rule
 
@@ -27,8 +31,8 @@ SAGE reads Paratext Project metadata for discovery and validation but does not m
 
 ## Workflow rule
 
-BIC and SAW remain independent. BIC binds exactly one SOURCE, DONOR, and TARGET. SAW binds exactly one WIP and one authorized REFERENCE. SAGE Projects are role-neutral; effective workflow purpose and access authority are assigned only by Jobs. Governed `@GRK`/`@HEB` resources are read-only evidence resources, not ordinary translation Projects.
+BIC and SAW remain independent. BIC binds exactly one SOURCE, DONOR, and TARGET. SAW Jobs bind exactly one WIP and one authorized REFERENCE for operations that require comparison evidence. STC is explicitly independent of REFERENCE and routes WIP only with the testament-correct PRIMARY OL authority. SAGE Projects are role-neutral; effective workflow purpose and access authority are assigned only by Jobs. Governed `@GRK`/`@HEB` resources are read-only evidence resources, not ordinary translation Projects.
 
 ## Compatibility rule
 
-A narrow set of internal Python function names and machine keys retain legacy names where changing them would add unnecessary migration risk. They are compatibility implementation details only. Current operator-visible Project grammar uses the canonical v0.01beta terms.
+A narrow set of internal Python function names and machine keys retain legacy names where changing them would add unnecessary migration risk. They are compatibility implementation details only. Current operator-visible Project grammar uses the canonical v0.02alpha1 terms.

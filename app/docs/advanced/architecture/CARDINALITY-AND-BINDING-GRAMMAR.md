@@ -1,6 +1,6 @@
 # Cardinality and binding grammar
 
-Version: `0.01beta`
+Version: `0.02alpha1`
 
 SAGE separates machine cardinality from Operator-facing binding language. It does not change BIC authority, protected linguistic policy, SAW independence, or bounded TARGET storage semantics.
 

@@ -4,7 +4,7 @@ SAGE stores canonical machine records once. Every Job owns one required primary 
 
 ## Interface localization
 
-Terminal interface localization is separate from report-language authority. The workstation selection is stored under `interface.language` in `ecosystem.yml`; menu text is loaded from `system/config/localization/menu-localization.json`. v0.01beta ships complete localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`. The source is formatted UTF-8 JSON so Operators can inspect and edit it without changing Python source. Functional choices remain numeric and footer navigation uses invariant `A`/`B`/`C`/`D` semantic controls.
+Terminal interface localization is separate from report-language authority. The workstation selection is stored under `interface.language` in `ecosystem.yml`; menu text is loaded from `system/config/localization/menu-localization.json`. v0.02alpha1 ships complete localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`. The source is formatted UTF-8 JSON so Operators can inspect and edit it without changing Python source. Functional choices remain numeric and footer navigation uses invariant `A`/`B`/`C`/`D` semantic controls.
 
 Changing interface language does not change report language, Job bindings, Scripture language, grammar profiles, commands, identifiers, paths, status codes, or machine records.
 
@@ -58,7 +58,7 @@ Effective report configuration is:
 global new-Job default -> Job required primary -> optional downstream secondary
 ```
 
-When a Job secondary language is present and differs from its primary, downstream human reports may be bilingual. Without it, the Job reports only in its own primary language. Secondary language is omitted from canonical provider handoffs. Projects do not own report-language configuration.
+When a Job secondary language is present and differs from its primary, downstream human reports may be bilingual. Without it, the Job reports only in its own primary language. When secondary rendering is requested, its bounded translation request carries the complete governed primary and secondary LANGUAGE_PROFILE objects; those profiles are immutable context and never enter SFM sizing. Projects do not own report-language configuration.
 
 Every bilingual human report must carry a language-authority notice. The primary Job-language rendering governs interpretation of the human report, but that status is not a guarantee that every finding is correct. The secondary rendering is an assistive translation with lower, unverified translation confidence and may contain ambiguity; the Operator must verify it against the primary rendering before acting. Producing a secondary rendering adds model usage and report compilation time and requires more human review than a single-language report. Canonical machine records, reason codes, evidence IDs, and Scripture coordinates remain authoritative in every language.
 
@@ -173,6 +173,6 @@ When a SAW Action Report has a secondary rendering, keep each language's actiona
 ```
 
 Do not render all Issue blocks first and all Required-action blocks afterward. Evidence IDs, grammar-rule IDs, and OL evidence remain shared canonical fields after the language-grouped prose.
-## Beta path normalization
+## Alpha path normalization
 
 Generated report paths must not repeat an identical adjacent scope segment. A whole-book report uses `localdata/reports/<job-id>/<BOOK>/`; chapter or narrower scope directories may appear beneath `<BOOK>` only when they add coordinate information. Canonical `report_data/` follows the same rule.

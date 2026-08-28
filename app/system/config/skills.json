@@ -72,6 +72,18 @@
       "adapted_sha256": "bfde5a553f8fe0bb5222f57b340f2307fa1e18421be28c3af3d5f588b198de06",
       "qualification_status": "VALIDATED",
       "transformation_summary": "Beta Original-Language Review authority: routed GRK/HEB is primary textual authority for the bounded source-text question; configured Reference Project remains the comparison context."
+    },
+    "saw-stc": {
+      "workflow": "saw",
+      "operation": "stc",
+      "file": "system/skills/saw-stc/SKILL.md",
+      "source_system": "SAGE STC Planning Handover",
+      "source_version": "2026-08-28",
+      "original_file": "system/skills/saw-stc/references/ORIGINAL-HANDOVER.md",
+      "original_sha256": "01d2b68198e98d43932516379e35431c322a4b5907d2791cce7cad655e8a745e",
+      "adapted_sha256": "5bbedb6fe6329b2d25fb88d9584f4b240e951351a94ca8afe2b01c5d8b7701f8",
+      "qualification_status": "VALIDATED",
+      "transformation_summary": "Bounded WIP-to-primary-OL correspondence review with Python-owned source/scope/coverage, general routed-SFM slicing, canonical language-profile context, exact fail-closed completion, and no Reference dependency."
     }
   }
 }

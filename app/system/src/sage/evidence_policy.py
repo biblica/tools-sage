@@ -15,6 +15,7 @@ DERIVED_EVIDENCE = "DERIVED_EVIDENCE"
 STRUCTURAL_EVIDENCE = "STRUCTURAL_EVIDENCE"
 SUBJECT_TEXT = "SUBJECT_TEXT"
 LINGUISTIC_COMPETENCE_RULES = "LINGUISTIC_COMPETENCE_RULES"
+AUTHORITY_INTERPRETATION_RULES = "AUTHORITY_INTERPRETATION_RULES"
 PROCESS_CONTROL = "PROCESS_CONTROL"
 
 READ_CLASSES = {
@@ -25,6 +26,7 @@ READ_CLASSES = {
     STRUCTURAL_EVIDENCE,
     SUBJECT_TEXT,
     LINGUISTIC_COMPETENCE_RULES,
+    AUTHORITY_INTERPRETATION_RULES,
     PROCESS_CONTROL,
 }
 
@@ -49,6 +51,9 @@ READ_CLASS_RULES = {
     ),
     LINGUISTIC_COMPETENCE_RULES: (
         "May constrain orthography, morphology, grammar, and syntax; it may not introduce Scripture content, lexical meaning, or interpretation."
+    ),
+    AUTHORITY_INTERPRETATION_RULES: (
+        "May establish the routed OL authority historical language, register, representation, and source constraints; it may not supply Scripture content, lexical meanings, translation equivalents, variant readings, or interpretations absent from routed evidence."
     ),
     PROCESS_CONTROL: (
         "May govern execution, validation, schema, or Skill behavior only; it is not content evidence."
@@ -117,6 +122,13 @@ def task_evidence_policy(workflow: str) -> dict[str, Any]:
         "linguistic_competence_limit": (
             "General linguistic competence may parse, validate, transform, or express supported content. It may not introduce new propositions, lexical meanings, translation equivalents, Scripture content, interpretations, historical/cultural claims, or other content-bearing evidence."
         ),
+        "language_specificity": {
+            "canonical_profiles_required": True,
+            "infer_language_from_text": False,
+            "profiles_are_sliced": False,
+            "sfm_budget_contribution": "NONE",
+            "missing_or_ambiguous_profile": "FAIL_CLOSED",
+        },
         "forbidden_external_content": list(FORBIDDEN_EXTERNAL_CONTENT),
         "read_class_rules": dict(READ_CLASS_RULES),
         "fail_closed": True,

@@ -1,6 +1,6 @@
 # SAW Operator modes
 
-This document defines the Operator-facing distinction between the three SAW check modes for Beta. It governs menu wording, help text, Operator documentation, and examples. Machine operation names remain compatible with the current runtime unless an beta migration explicitly changes them.
+This document defines the Operator-facing distinction between the four SAW check modes for Alpha. It governs menu wording, help text, Operator documentation, and examples. Machine operation names remain compatible with the current runtime unless an Alpha migration explicitly changes them.
 
 ## Operator decision rule
 
@@ -8,16 +8,18 @@ Use the smallest SAW mode that matches the Operator's intent:
 
 | Operator intent | Use | OL Scripture | Typical scope |
 |---|---|---|---|
-| Review a passage systematically for translation/meaning quality | **Reference Text Comparison (RTC)** | Not supplied to ordinary stages; when option 11 is enabled, SAGE may route only a bounded unresolved source-rendering conflict to selective OL adjudication | Chapter, section, book, or other planned RTC scope |
+| Review a passage systematically for translation/meaning quality against REFERENCE | **Reference Text Comparison (RTC)** | Not supplied to ordinary stages; when option 11 is enabled, SAGE may route only a bounded unresolved source-rendering conflict to selective OL adjudication | Chapter, section, book, or other planned RTC scope |
+| Review WIP systematically for direct correspondence with the primary source text | **Source Text Correspondence (STC)** | **Yes**, PRIMARY GRK for NT or PRIMARY HEB for OT; REFERENCE is not evidence | Chapter, section, book, or other planned STC scope |
 | Answer one specific question about the WIP using the WIP and authorized REFERENCE | **Targeted Check** | **No** | One issue, passage, feature, or tightly bounded question |
 | Answer one specific question that requires direct Greek/Hebrew evidence | **Original-Language Review** | **Yes**, exactly the applicable configured OL resource | Verse or short verse range with one explicit OL question |
 
 In shorthand:
 
 ```text
-Reference Text Comparison (RTC)             = broad systematic reference-text comparison
-Targeted Check          = one bounded question, no OL Scripture
-Original-Language Review = one bounded question requiring OL Scripture
+Reference Text Comparison (RTC) = broad systematic WIP+REFERENCE comparison
+Source Text Correspondence (STC)   = systematic WIP+PRIMARY-OL correspondence
+Targeted Check                    = one bounded question, no OL Scripture
+Original-Language Review          = one bounded question requiring OL Scripture
 ```
 
 ## 1. Reference Text Comparison (RTC)
@@ -34,7 +36,13 @@ Reference Text Comparison (RTC) is a composite governed operation. Its structura
 
 Use Reference Text Comparison (RTC) when the Operator does not already know the specific issue that needs investigation.
 
-## 2. Targeted Check
+## 2. Source Text Correspondence (STC)
+
+Choose **Source Text Correspondence (STC)** when the Operator wants a systematic, independent review of how the bounded WIP corresponds to the testament-appropriate primary original-language authority. NT routes WIP + PRIMARY GRK; OT routes WIP + PRIMARY HEB. STC does not consume REFERENCE Scripture or RTC findings.
+
+STC findings are limited to `OMISSION`, `ADDITION`, `VARIATION`, and `CONSISTENCY`. Surface variation is only a candidate; every primary coordinate must be analytically completed even when no finding is emitted.
+
+## 3. Targeted Check
 
 Choose **Targeted Check** when the Operator already has one specific concern or question and the question can be answered from the governed WIP, REFERENCE, and other explicitly routed non-OL local evidence.
 
@@ -51,7 +59,7 @@ A Targeted Check must remain bounded to the declared question. It must not broad
 
 The beta Operator term is **Targeted Check**. The current machine operation remains `focused` for compatibility until a deliberate schema/CLI migration changes it.
 
-## 3. Original-Language Review
+## 4. Original-Language Review
 
 Choose **Original-Language Review** when the Operator has one bounded question whose answer requires direct examination of the applicable configured Greek or Hebrew resource.
 
@@ -115,7 +123,7 @@ Do not infer OL merely from the word "focus". Determine the evidence requirement
 
 ## Menu wording
 
-The selected SAW Job menu should expose the three modes directly:
+The selected SAW Job menu should expose the four modes directly:
 
 ```text
 ╔══════════════════════════════════════════════════════════════════════╗
@@ -126,15 +134,16 @@ WIP                          <project>
 REFERENCE                    <project>
 
 Active Run
-  Check                      <Reference Text Comparison (RTC) / Targeted Check / Original-Language Review>
+  Check                      <Reference Text Comparison (RTC) / Source Text Correspondence (STC) / Targeted Check / Original-Language Review>
   Task                       <current task / NONE>
   Scope                      <scope>
   Progress                   <status>
 
   1. Continue active Run
   2. Reference Text Comparison (RTC)
-  3. Targeted Check
-  4. Original-Language Review
+  3. Source Text Correspondence (STC)
+  4. Targeted Check
+  5. Original-Language Review
 
 ┌──────────────────────────────────────────────────────────────────────┐
 │  A. Back   B. Main Menu   C. Exit SAGE                               │
@@ -151,6 +160,7 @@ When an active Run exists, **Continue active Run** must show enough context abov
 | beta Operator wording | Current machine/runtime wording | Rule |
 |---|---|---|
 | **Reference Text Comparison (RTC)** | `rtc` | Canonical public name and machine operation. |
+| **Source Text Correspondence (STC)** | `stc` | Canonical independent WIP-to-primary-OL correspondence operation. |
 | **Targeted Check** | `focused`; historically "Focused Check" | Change Operator-facing prose to Targeted Check. Preserve `focused` machine identifier until deliberate migration. |
 | **Original-Language Review** | `ol` | Keep machine identifier `ol`; use full Operator term on first reference. |
 

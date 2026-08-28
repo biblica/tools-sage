@@ -1,4 +1,4 @@
-"""Deterministic Paratext language/country evidence collection for Beta."""
+"""Deterministic Paratext language/country evidence collection for Alpha."""
 from __future__ import annotations
 
 import json

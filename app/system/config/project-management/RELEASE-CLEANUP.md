@@ -7,15 +7,15 @@ Operator-owned data in an active installation merely to make a release gate pass
 
 ## Current release record
 
-Promotion sequence: `v0.01beta` → `v0.01rc1` → later numbered RCs as required → `v0.01` only after final approval.
+Promotion sequence: `v0.02alpha1` → later `v0.02alphaN` as required → `v0.02beta` → `v0.02rc1` → later numbered RCs as required → `v0.02` only after final approval.
 
 | Field | Value |
 |---|---|
-| Record | `RCLEAN-0.01beta-001` |
-| Version | `0.01beta` |
-| Milestone | `MS-BETA-REQUALIFY` |
-| State | BLOCKED |
-| Blocking issue | `BI-20260826-001` |
+| Record | `RCLEAN-0.02alpha1-001` |
+| Version | `0.02alpha1` |
+| Milestone | `MS-ALPHA-QUALIFY` |
+| State | IN_PROGRESS |
+| Blocking issue | Exact-source hardening and deterministic artifact qualification pending |
 | Source hash | NOT RECORDED |
 | Hardening receipt | NOT RECORDED |
 | Release artifact | NOT BUILT |
@@ -93,7 +93,7 @@ Promotion sequence: `v0.01beta` → `v0.01rc1` → later numbered RCs as require
 - [ ] Run package validation and source deep audit against the extracted distribution.
 - [ ] Confirm no local runtime data, `localdata`, caches, `.venv`, receipts, or release artifacts entered the ZIP.
 - [ ] Run clean-start/bootstrap smoke checks on the extracted distribution.
-- [ ] Verify BASIC, STANDARD, and hardware-detection-fallback startup behavior where applicable.
+- [ ] Verify BASIC, STANDARD, ADVANCED, and hardware-detection-fallback startup behavior where applicable.
 
 ## 6. Acceptance and handover
 

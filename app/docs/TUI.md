@@ -1,8 +1,8 @@
-# SAGE TUI — EXPERIMENTAL / UNSTABLE in v0.01beta
+# SAGE TUI — EXPERIMENTAL / UNSTABLE in v0.02alpha1
 
 ## Status
 
-The Textual TUI is **EXPERIMENTAL / UNSTABLE** in `v0.01beta`. It may change incompatibly, includes incomplete and read-only workflows, and is not qualified as an authoritative Operator surface. The classic menu and scriptable CLI remain authoritative.
+The Textual TUI is **EXPERIMENTAL / UNSTABLE** in `v0.02alpha1`. It may change incompatibly, includes incomplete and read-only workflows, and is not qualified as an authoritative Operator surface. The classic menu and scriptable CLI remain authoritative.
 
 Launch it explicitly:
 
@@ -12,7 +12,7 @@ sage tui
 
 The root `./sage` / `sage.cmd` launchers still enter the classic menu by default while TUI parity is incomplete.
 
-## Implemented through 0.01beta
+## Implemented through 0.02alpha1
 
 - full-screen Textual application shell targeting `100 x 30` during the current layout iteration;
 - keyboard and mouse navigation with numeric `1`-`4` functional shortcuts;
@@ -59,7 +59,7 @@ A Back | B Main | C Exit | D Language | E Help | F Status
 
 ## Progress contract
 
-SAGE remains sequential in this development slice: exactly one execution is presented as the active Job/Run. New Jobs record the quantification policy (`PROJECTED_HANDOFF_ESTIMATED_TOKENS`, finalized-task advancement, 10 visual cells); historical Jobs that explicitly record `ACT_ESTIMATED_TOKENS` retain that legacy basis. The Run percentage is derived rather than persisted, so the displayed percent cannot drift from sealed task evidence. Detailed token totals remain internal; normal TUI surfaces show only the compact progress line and ACT/Skill activity.
+SAGE remains sequential in this development slice: exactly one execution is presented as the active Job/Run. New Jobs record the quantification policy (`ROUTED_SFM_ESTIMATED_TOKENS`, finalized-task advancement, 10 visual cells); historical Jobs that explicitly record `ACT_ESTIMATED_TOKENS` retain that legacy basis. The Run percentage is derived rather than persisted, so the displayed percent cannot drift from sealed task evidence. Detailed token totals remain internal; normal TUI surfaces show only the compact progress line and ACT/Skill activity.
 
 The dashboard treats `DONE` and `CANCELLED` as idle. `FAILED` and `BLOCKED` remain visible because they require Operator attention. A blocked Run is terminated for that execution attempt but remains resumable from governed state after its reason is remediated.
 
@@ -91,6 +91,6 @@ Textual is selected because the framework supports terminal keyboard/mouse inter
 6. Keep `sage menu` as fallback until action parity and recovery behavior pass release gates.
 7. Only then consider making the TUI the default no-argument interface.
 
-## Experimental Beta parity rule
+## Experimental Alpha parity rule
 
-The Textual TUI uses the same information architecture and labels as the authoritative text UI: SAW two-level Job/check flow, Reference Text Comparison (RTC)/Targeted Check/Original-Language Review, Configure AI, Configure Languages, diagnostics/report ownership, and configured Project names in Operator-facing context. TUI controls may replace numeric choices with buttons/switches/links, but they must map to the same governed operations. Mouse and keyboard activation must invoke the same action. Until a write surface reaches parity, the TUI shows the state read-only and directs writes to the text UI rather than inventing an alternate workflow.
+The Textual TUI uses the same information architecture and labels as the authoritative text UI: SAW two-level Job/check flow, Reference Text Comparison (RTC)/Source Text Correspondence (STC)/Targeted Check/Original-Language Review, Configure AI, Configure Languages, diagnostics/report ownership, and configured Project names in Operator-facing context. TUI controls may replace numeric choices with buttons/switches/links, but they must map to the same governed operations. Mouse and keyboard activation must invoke the same action. Until a write surface reaches parity, the TUI shows the state read-only and directs writes to the text UI rather than inventing an alternate workflow.

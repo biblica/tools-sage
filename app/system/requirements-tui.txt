@@ -1,4 +1,4 @@
-# SAGE 0.01beta deterministic supplemental Textual runtime.
+# SAGE 0.02alpha1 deterministic supplemental Textual runtime.
 # Pins include Textual's transitive dependency set; Python 3.10 requires the
 # markdown-it-py 3.x line while Python 3.11+ uses 4.2.0.
 textual==8.2.8

@@ -1,0 +1,46 @@
+profile:
+  schema_version: "1.0"
+  type: OL_AUTHORITY_PROFILE
+  authority_family: HEB
+  authority_id: HEB
+  authority_role: PRIMARY
+language_identity:
+  language_code: hbo
+  canonical_name: Ancient Hebrew
+  historical_register: BIBLICAL_HEBREW
+  script: Hebr
+  direction: RTL
+  modern_language_exclusion:
+    prohibited_identity: MODERN_ISRAELI_HEBREW
+    instruction: >-
+      This authority is Biblical/Ancient Hebrew, not Modern Israeli Hebrew. Interpret
+      its vocabulary, morphology, syntax, idiom, orthography, and semantics according
+      to its historical register; do not apply Modern Hebrew assumptions.
+source_identity:
+  status: EDITION_UNRESOLVED
+  edition_claim_permitted: false
+  imported_labels:
+    settings: Hebrew Source (MT)
+  instruction: >-
+    Treat the supplied text as the governed Hebrew authority. Do not infer a specific
+    Masoretic edition or external reading when the packaged metadata does not identify one.
+representation:
+  format: USFM
+  normalization: NFC
+  markers_present: [id, c, v]
+  annotation_layers:
+    lemma: false
+    morphology: false
+    lexical_gloss: false
+    structured_apparatus: false
+  notation:
+    vocalization: PRESENT
+    cantillation: PRESENT
+    maqaf: PRESENT
+    sof_pasuq: PRESENT
+interpretation:
+  permitted: [orthographic_analysis, morphology_from_supplied_forms, syntactic_analysis, grammatical_analysis]
+  prohibited: [modern_language_assumptions, external_lexicons, external_scripture, external_textual_criticism, inferred_edition_readings, invented_morphology_metadata]
+evidence:
+  classification: AUTHORITY_INTERPRETATION_RULES
+  content_authority: false

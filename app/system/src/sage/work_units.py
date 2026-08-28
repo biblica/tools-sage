@@ -14,193 +14,9 @@ from .evidence import (
     EvidenceMeasurement,
     EvidencePolicy,
     evidence_within_limits,
-    measure_evidence,
 )
 from .references import BOOK_ORDER, ScriptureScope
 from .vrs import VerseRef
-
-
-_WORD_RE = re.compile(r"\w+", re.UNICODE)
-
-
-@dataclass(frozen=True)
-class _SerializedStats:
-    """Additive statistics for already serialized JSON text."""
-
-    serialized_bytes: int = 0
-    unicode_characters: int = 0
-    ascii_characters: int = 0
-    non_ascii_characters: int = 0
-    words: int = 0
-
-    def __add__(self, other: "_SerializedStats") -> "_SerializedStats":
-        """Combine two measurements without losing any component totals."""
-        return _SerializedStats(
-            serialized_bytes=self.serialized_bytes + other.serialized_bytes,
-            unicode_characters=self.unicode_characters + other.unicode_characters,
-            ascii_characters=self.ascii_characters + other.ascii_characters,
-            non_ascii_characters=self.non_ascii_characters + other.non_ascii_characters,
-            words=self.words + other.words,
-        )
-
-    def __sub__(self, other: "_SerializedStats") -> "_SerializedStats":
-        """Subtract one measurement while preserving component alignment."""
-        return _SerializedStats(
-            serialized_bytes=self.serialized_bytes - other.serialized_bytes,
-            unicode_characters=self.unicode_characters - other.unicode_characters,
-            ascii_characters=self.ascii_characters - other.ascii_characters,
-            non_ascii_characters=self.non_ascii_characters - other.non_ascii_characters,
-            words=self.words - other.words,
-        )
-
-    def measurement(self) -> EvidenceMeasurement:
-        """Return the aggregate size measurement for this work-unit record."""
-        character_estimate = (
-            self.ascii_characters / 4.0 + self.non_ascii_characters / 2.0
-        )
-        word_estimate = self.words * 1.35
-        return EvidenceMeasurement(
-            serialized_bytes=self.serialized_bytes,
-            unicode_characters=self.unicode_characters,
-            words=self.words,
-            estimated_tokens=max(1, math.ceil(max(character_estimate, word_estimate))),
-        )
-
-
-def _serialized_stats_text(text: str) -> _SerializedStats:
-    """Measure a text payload using the same UTF-8 and token estimator as ACT generation."""
-    ascii_count = sum(1 for char in text if ord(char) < 128)
-    return _SerializedStats(
-        serialized_bytes=len(text.encode("utf-8")),
-        unicode_characters=len(text),
-        ascii_characters=ascii_count,
-        non_ascii_characters=len(text) - ascii_count,
-        words=len(_WORD_RE.findall(text)),
-    )
-
-
-def _serialized_stats_json(value: Any) -> _SerializedStats:
-    """Serialize JSON deterministically before measuring its context cost."""
-    return _serialized_stats_text(
-        json.dumps(
-            value,
-            ensure_ascii=False,
-            sort_keys=True,
-            separators=(",", ":"),
-        )
-    )
-
-
-def _sum_stats(values: Iterable[_SerializedStats]) -> _SerializedStats:
-    """Add byte, character, line, and token measurements component by component."""
-    total = _SerializedStats()
-    for value in values:
-        total = total + value
-    return total
-
-
-class _PacketSizer:
-    """Measure candidate packets in O(1) after one serialization pass.
-
-    Candidate selection previously serialized every growing verse span. That was
-    quadratic in payload size for large books. This sizer pre-serializes each
-    evidence item once, keeps additive prefix statistics, and still verifies each
-    final packet through the normal exact serializer before it can be emitted.
-    """
-
-    _PREFIX = _serialized_stats_text('{"context_after":[')
-    _BETWEEN_AFTER_BEFORE = _serialized_stats_text('],"context_before":[')
-    _BETWEEN_BEFORE_PRIMARY = _serialized_stats_text('],"primary":[')
-    _BETWEEN_PRIMARY_SHARED = _serialized_stats_text('],"shared":')
-    _BETWEEN_SHARED_UNIT = _serialized_stats_text(',"unit_id":')
-    _SUFFIX = _serialized_stats_text('}')
-    _COMMA = _serialized_stats_text(',')
-
-    def __init__(
-        self,
-        primary_records: tuple["EvidenceRecord", ...],
-        context_pool: tuple["EvidenceRecord", ...],
-        shared: dict[str, Any] | None,
-    ) -> None:
-        """Initialize the instance with the supplied governed state."""
-        self._shared = _serialized_stats_json(shared or {})
-        self._primary_by_key: dict[tuple[str, int, int, int], _SerializedStats] = {}
-        self._context_by_key: dict[tuple[str, int, int, int], _SerializedStats] = {}
-        for record in context_pool:
-            key = _record_key(record)
-            self._context_by_key[key] = _serialized_stats_json(
-                {
-                    "reference": record.reference,
-                    "context_only": True,
-                    "evidence": record.payload,
-                }
-            )
-        prefix = [_SerializedStats()]
-        atomic_prefix = [0]
-        for record in primary_records:
-            key = _record_key(record)
-            stats = _serialized_stats_json(
-                {
-                    "reference": record.reference,
-                    "context_only": False,
-                    "evidence": record.payload,
-                }
-            )
-            self._primary_by_key[key] = stats
-            prefix.append(prefix[-1] + stats)
-            atomic_prefix.append(atomic_prefix[-1] + record.atomic_count)
-        self._primary_prefix = tuple(prefix)
-        self._atomic_prefix = tuple(atomic_prefix)
-
-    @staticmethod
-    def _list_stats(values: Iterable[_SerializedStats], count: int) -> _SerializedStats:
-        """Measure and sum a sequence of serialized evidence items."""
-        stats = _sum_stats(values)
-        if count > 1:
-            stats = stats + _SerializedStats(
-                serialized_bytes=count - 1,
-                unicode_characters=count - 1,
-                ascii_characters=count - 1,
-            )
-        return stats
-
-    def measure(
-        self,
-        start: int,
-        end: int,
-        before: tuple["EvidenceRecord", ...],
-        after: tuple["EvidenceRecord", ...],
-        *,
-        unit_id: str = "PLANNING",
-    ) -> tuple[EvidenceMeasurement, int]:
-        """Measure serialized packet content against configured context limits."""
-        primary_count = end - start + 1
-        primary_stats = self._primary_prefix[end + 1] - self._primary_prefix[start]
-        if primary_count > 1:
-            primary_stats = primary_stats + _SerializedStats(
-                serialized_bytes=primary_count - 1,
-                unicode_characters=primary_count - 1,
-                ascii_characters=primary_count - 1,
-            )
-        before_values = [self._context_by_key[_record_key(item)] for item in before]
-        after_values = [self._context_by_key[_record_key(item)] for item in after]
-        before_stats = self._list_stats(before_values, len(before_values))
-        after_stats = self._list_stats(after_values, len(after_values))
-        total = (
-            self._PREFIX
-            + after_stats
-            + self._BETWEEN_AFTER_BEFORE
-            + before_stats
-            + self._BETWEEN_BEFORE_PRIMARY
-            + primary_stats
-            + self._BETWEEN_PRIMARY_SHARED
-            + self._shared
-            + self._BETWEEN_SHARED_UNIT
-            + _serialized_stats_json(unit_id)
-            + self._SUFFIX
-        )
-        atomic_count = self._atomic_prefix[end + 1] - self._atomic_prefix[start]
-        return total.measurement(), atomic_count
 
 
 @dataclass(frozen=True)
@@ -212,6 +28,7 @@ class EvidenceRecord:
     verse_start: int
     verse_end: int
     payload: dict[str, Any]
+    sfm: str = ""
     boundaries_before: tuple[dict[str, Any], ...] = ()
     section_id: str = ""
     poetry_block_id: str = ""
@@ -422,9 +239,9 @@ def _measure_candidate(
     policy: EvidencePolicy,
     context_pool: tuple[EvidenceRecord, ...],
     context_positions: dict[tuple[str, int, int, int], int],
-    packet_sizer: _PacketSizer,
+    packet_sizer: Any,
 ) -> tuple[EvidenceMeasurement, int, tuple[EvidenceRecord, ...], tuple[EvidenceRecord, ...]]:
-    """Measure one proposed work unit, including manifest and routed context overhead."""
+    """Measure one proposed work unit through the injected routed-SFM sizing authority."""
     primary = records[start : end + 1]
     before, after = _context_records(
         records,
@@ -438,6 +255,21 @@ def _measure_candidate(
     return measurement, atomic_count, before, after
 
 
+def _target_tokens(
+    packet_sizer: Any,
+    start: int,
+    end: int,
+    before: tuple[EvidenceRecord, ...],
+    after: tuple[EvidenceRecord, ...],
+    measurement: EvidenceMeasurement,
+) -> int:
+    """Return the profile's soft-target metric without weakening the hard route measurement."""
+    selector = getattr(packet_sizer, "target_tokens", None)
+    if selector is None:
+        return measurement.estimated_tokens
+    return int(selector(start, end, before, after))
+
+
 def _fits(
     records: tuple[EvidenceRecord, ...],
     start: int,
@@ -445,10 +277,10 @@ def _fits(
     policy: EvidencePolicy,
     context_pool: tuple[EvidenceRecord, ...],
     context_positions: dict[tuple[str, int, int, int], int],
-    packet_sizer: _PacketSizer,
+    packet_sizer: Any,
 ) -> bool:
     """Return whether a measured candidate satisfies every configured hard limit."""
-    measurement, atomic_count, _, _ = _measure_candidate(
+    measurement, atomic_count, before, after = _measure_candidate(
         records,
         start,
         end,
@@ -458,6 +290,9 @@ def _fits(
         packet_sizer,
     )
     if not evidence_within_limits(measurement, policy, primary_verse_units=atomic_count):
+        return False
+    route_guard = getattr(packet_sizer, "within_hard_limits", None)
+    if route_guard is not None and not route_guard(start, end, before, after):
         return False
     if not policy.allow_cross_chapter_units:
         chapters = {(item.book, item.chapter) for item in records[start : end + 1]}
@@ -522,7 +357,7 @@ def _furthest_fitting_end(
     policy: EvidencePolicy,
     context_pool: tuple[EvidenceRecord, ...],
     context_positions: dict[tuple[str, int, int, int], int],
-    packet_sizer: _PacketSizer,
+    packet_sizer: Any,
 ) -> int:
     """Return the last monotonically growing candidate that still fits hard limits."""
     furthest = start - 1
@@ -550,7 +385,7 @@ def _balanced_section_end(
     policy: EvidencePolicy,
     context_pool: tuple[EvidenceRecord, ...],
     context_positions: dict[tuple[str, int, int, int], int],
-    packet_sizer: _PacketSizer,
+    packet_sizer: Any,
 ) -> int:
     """Choose a balanced structural split after looking through the remaining section.
 
@@ -560,7 +395,7 @@ def _balanced_section_end(
     needs, then selects a natural boundary near that balanced target. Structural
     boundaries break ties; they do not justify a severely unbalanced orphan tail.
     """
-    remaining_measurement, remaining_atomic, _, _ = _measure_candidate(
+    remaining_measurement, remaining_atomic, remaining_before, remaining_after = _measure_candidate(
         records,
         start,
         section_end,
@@ -569,7 +404,14 @@ def _balanced_section_end(
         context_positions,
         packet_sizer,
     )
-    total_tokens = remaining_measurement.estimated_tokens
+    total_tokens = _target_tokens(
+        packet_sizer,
+        start,
+        section_end,
+        remaining_before,
+        remaining_after,
+        remaining_measurement,
+    )
     target = max(1, policy.target_estimated_tokens)
     hard = max(target, policy.hard_estimated_tokens)
     pieces_by_target = max(2, int(math.floor((total_tokens / target) + 0.5)))
@@ -593,7 +435,7 @@ def _balanced_section_end(
     for end in range(start, furthest + 1):
         if end >= section_end:
             break
-        measurement, _, _, _ = _measure_candidate(
+        measurement, _, candidate_before, candidate_after = _measure_candidate(
             records,
             start,
             end,
@@ -607,7 +449,15 @@ def _balanced_section_end(
         next_discourse = next_record.discourse_unit_id or next_record.reference
         natural = current_discourse != next_discourse
         natural_candidates = natural_candidates or natural
-        distance = abs(measurement.estimated_tokens - ideal_tokens)
+        candidate_tokens = _target_tokens(
+            packet_sizer,
+            start,
+            end,
+            candidate_before,
+            candidate_after,
+            measurement,
+        )
+        distance = abs(candidate_tokens - ideal_tokens)
         preferred_delta = 0
         if policy.preferred_primary_discourse_units:
             preferred_delta = abs(
@@ -640,7 +490,7 @@ def _plan_section_ranges(
     policy: EvidencePolicy,
     context_pool: tuple[EvidenceRecord, ...],
     context_positions: dict[tuple[str, int, int, int], int],
-    packet_sizer: _PacketSizer,
+    packet_sizer: Any,
 ) -> list[tuple[int, int]]:
     """Plan one semantic section intact or as balanced bounded subdivisions."""
     ranges: list[tuple[int, int]] = []
@@ -716,7 +566,7 @@ def _coalesce_adjacent_ranges(
     policy: EvidencePolicy,
     context_pool: tuple[EvidenceRecord, ...],
     context_positions: dict[tuple[str, int, int, int], int],
-    packet_sizer: _PacketSizer,
+    packet_sizer: Any,
 ) -> list[tuple[int, int]]:
     """Pack adjacent section-derived ranges without crossing a configured hard limit."""
     if len(ranges) < 2:
@@ -837,13 +687,13 @@ def _rebalance_short_tail(
     policy: EvidencePolicy,
     context_pool: tuple[EvidenceRecord, ...],
     context_positions: dict[tuple[str, int, int, int], int],
-    packet_sizer: _PacketSizer,
+    packet_sizer: Any,
 ) -> None:
     """Merge or rebalance the final pair so a tiny avoidable tail is not emitted."""
     if len(ranges) < 2:
         return
     last_start, last_end = ranges[-1]
-    last_measurement, _, _, _ = _measure_candidate(
+    last_measurement, _, last_before, last_after = _measure_candidate(
         records,
         last_start,
         last_end,
@@ -852,7 +702,15 @@ def _rebalance_short_tail(
         context_positions,
         packet_sizer,
     )
-    if last_measurement.estimated_tokens >= policy.minimum_target_tokens:
+    last_target_tokens = _target_tokens(
+        packet_sizer,
+        last_start,
+        last_end,
+        last_before,
+        last_after,
+        last_measurement,
+    )
+    if last_target_tokens >= policy.minimum_target_tokens:
         return
     prior_start, _ = ranges[-2]
     # RTC-style soft packing must not erase a clean tail boundary merely because
@@ -866,7 +724,7 @@ def _rebalance_short_tail(
         context_positions,
         packet_sizer,
     ):
-        combined, _, _, _ = _measure_candidate(
+        combined, _, combined_before, combined_after = _measure_candidate(
             records,
             prior_start,
             last_end,
@@ -875,7 +733,15 @@ def _rebalance_short_tail(
             context_positions,
             packet_sizer,
         )
-        if not policy.preferred_max_estimated_tokens or combined.estimated_tokens <= policy.preferred_max_estimated_tokens:
+        combined_target_tokens = _target_tokens(
+            packet_sizer,
+            prior_start,
+            last_end,
+            combined_before,
+            combined_after,
+            combined,
+        )
+        if not policy.preferred_max_estimated_tokens or combined_target_tokens <= policy.preferred_max_estimated_tokens:
             ranges[-2] = (prior_start, last_end)
             ranges.pop()
             return
@@ -904,7 +770,7 @@ def _rebalance_short_tail(
             packet_sizer,
         ):
             continue
-        left_measurement, _, _, _ = _measure_candidate(
+        left_measurement, _, left_before, left_after = _measure_candidate(
             records,
             prior_start,
             split_end,
@@ -913,7 +779,7 @@ def _rebalance_short_tail(
             context_positions,
             packet_sizer,
         )
-        right_measurement, _, _, _ = _measure_candidate(
+        right_measurement, _, right_before, right_after = _measure_candidate(
             records,
             split_end + 1,
             last_end,
@@ -922,8 +788,22 @@ def _rebalance_short_tail(
             context_positions,
             packet_sizer,
         )
-        left_tokens = left_measurement.estimated_tokens
-        right_tokens = right_measurement.estimated_tokens
+        left_tokens = _target_tokens(
+            packet_sizer,
+            prior_start,
+            split_end,
+            left_before,
+            left_after,
+            left_measurement,
+        )
+        right_tokens = _target_tokens(
+            packet_sizer,
+            split_end + 1,
+            last_end,
+            right_before,
+            right_after,
+            right_measurement,
+        )
         candidates.append(
             (
                 split_end,
@@ -957,33 +837,31 @@ def _rebalance_short_tail(
                 item[0],
             ),
         )
-    if min(selected[1], selected[2]) <= last_measurement.estimated_tokens:
+    if min(selected[1], selected[2]) <= last_target_tokens:
         return
     ranges[-2] = (prior_start, selected[0])
     ranges[-1] = (selected[0] + 1, last_end)
 
 
-def plan_work_units(
-    records: Iterable[EvidenceRecord],
+def _plan_work_units_with_sizer(
+    ordered: tuple[EvidenceRecord, ...],
     policy: EvidencePolicy,
     *,
     unit_prefix: str,
-    shared: dict[str, Any] | None = None,
-    context_pool: Iterable[EvidenceRecord] | None = None,
-    required_spans: Iterable[Iterable[VerseRef]] = (),
+    context_pool: tuple[EvidenceRecord, ...],
+    required_spans: Iterable[Iterable[VerseRef]],
+    sizer: Any,
 ) -> tuple[WorkUnit, ...]:
-    """Plan stable contiguous units with exact coverage and source-span-safe boundaries."""
+    """Plan exact structural work units using one injected analysis-size authority."""
     # Partition contiguously and verify exact coverage after budgeting; no coordinate may be lost or duplicated.
-    ordered = tuple(records)
     _validate_records(ordered)
-    full_context = tuple(context_pool) if context_pool is not None else ordered
+    full_context = context_pool
     _validate_records(full_context)
     context_positions = {
         _record_key(record): index for index, record in enumerate(full_context)
     }
     if len(context_positions) != len(full_context):
         raise ValidationError("Context pool contains duplicate verse records")
-    packet_sizer = _PacketSizer(ordered, full_context, shared)
 
     ranges: list[tuple[int, int]] = []
     for section_start, section_end in _section_ranges(ordered):
@@ -995,7 +873,7 @@ def plan_work_units(
                 policy,
                 full_context,
                 context_positions,
-                packet_sizer,
+                sizer,
             )
         )
     ranges = _coalesce_adjacent_ranges(
@@ -1004,7 +882,7 @@ def plan_work_units(
         policy,
         full_context,
         context_positions,
-        packet_sizer,
+        sizer,
     )
     ranges, active_required_spans = _close_required_span_boundaries(
         ranges,
@@ -1020,7 +898,7 @@ def plan_work_units(
             policy,
             full_context,
             context_positions,
-            packet_sizer,
+            sizer,
         ):
             raise EvidenceLimitError(
                 "Preserving an indivisible source bridge/equivalence span exceeds a governed work-unit limit",
@@ -1041,15 +919,25 @@ def plan_work_units(
             full_context,
             context_positions,
         )
-        measurement = measure_evidence(_packet(unit_id, primary, before, after, shared))
-        atomic_count = sum(item.atomic_count for item in primary)
+        measurement, atomic_count = sizer.measure(
+            unit_start,
+            unit_end,
+            before,
+            after,
+            unit_id=unit_id,
+        )
         if not evidence_within_limits(
             measurement,
             policy,
             primary_verse_units=atomic_count,
         ):
             raise EvidenceLimitError(
-                f"Final packet {unit_id} exceeds a hard limit after context routing"
+                f"Final SFM review item {unit_id} exceeds a hard limit after context routing"
+            )
+        route_guard = getattr(sizer, "within_hard_limits", None)
+        if route_guard is not None and not route_guard(unit_start, unit_end, before, after):
+            raise EvidenceLimitError(
+                f"Final SFM review item {unit_id} exceeds a profile-specific stream hard limit"
             )
         split_boundary = (
             ordered[unit_end + 1].boundary_kind
@@ -1232,6 +1120,7 @@ def records_from_project_result(
                     verse_start=int(item["verse_start"]),
                     verse_end=int(item["verse_end"]),
                     payload=payload,
+                    sfm=str(item.get("raw_usfm", "")),
                     boundaries_before=tuple(item.get("boundaries_before", [])),
                     section_id=section_id,
                     poetry_block_id=poetry_id,

@@ -1,4 +1,4 @@
-"""Command-line interface for the SAGE v0.01beta build."""
+"""Command-line interface for the SAGE v0.02alpha1 build."""
 
 from __future__ import annotations
 
@@ -136,10 +136,10 @@ from .validation import validate_package, validate_static_ecosystem
 from .work_units import (
     build_evidence_packet,
     manifest,
-    plan_work_units,
     records_from_project_result,
     select_records_for_scope,
 )
+from .sfm_slicer import SfmAnalysisRoute, SfmStream, plan_sfm_work_units
 from .evidence import serialize_evidence
 from .ui_format import menu_item
 from .usj import USJ_COMPILER
@@ -150,7 +150,7 @@ SAFE_ID_RE = re.compile(r"[^A-Za-z0-9._-]+")
 PRIMARY_ROLE = {"bic": "CONTENT_SOURCE", "saw": "WIP"}
 ALLOWED_OPERATIONS = {
     "bic": {"inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check"},
-    "saw": {"rtc", "focused", "ol"},
+    "saw": {"rtc", "stc", "focused", "ol"},
 }
 SHORTCUT_COMMANDS: dict[str, dict[str, tuple[str, ...]]] = {
     "bic": {
@@ -169,6 +169,7 @@ SHORTCUT_COMMANDS: dict[str, dict[str, tuple[str, ...]]] = {
     "saw": {
         "status": ("workflow", "status", "--workflow", "saw"),
         "rtc": ("task", "create", "--workflow", "saw", "--operation", "rtc"),
+        "stc": ("task", "create", "--workflow", "saw", "--operation", "stc"),
         "focused": ("task", "create", "--workflow", "saw", "--operation", "focused"),
         "ol": ("task", "create", "--workflow", "saw", "--operation", "ol"),
         "submit": ("task", "submit"),
@@ -3423,11 +3424,15 @@ def command_plan(args: argparse.Namespace) -> int:
             ),
         )
     else:
-        units = plan_work_units(
+        units = plan_sfm_work_units(
             selected,
             policy,
             unit_prefix=plan_id,
-            shared=shared,
+            route=SfmAnalysisRoute(
+                route_id=f"{profile.workflow_id.upper()}_{operation.upper()}",
+                streams=(SfmStream(selected_role, tuple(all_records)),),
+                target_stream_ids=(selected_role,),
+            ),
             context_pool=all_records,
         )
     document = manifest(
@@ -3525,19 +3530,17 @@ def command_plan(args: argparse.Namespace) -> int:
                     f"{unit['primary_scope']}   "
                     f"WIP ~{package['wip']['estimated_tokens']:,} | "
                     f"REF ~{package['ref']['estimated_tokens']:,} | "
-                    f"OH ~{package['oh']['estimated_tokens']:,} | "
-                    f"PACK ~{package['pack']['estimated_tokens']:,}"
+                    f"ROUTE ~{package['route']['estimated_tokens']:,}"
                 ))
             print(
                 "Largest work unit: "
                 f"WIP ~{summary['largest_wip_estimated_tokens']:,} | "
                 f"REF ~{summary['largest_ref_estimated_tokens']:,} | "
-                f"OH ~{summary['largest_oh_estimated_tokens']:,} | "
-                f"PACK ~{summary['largest_pack_estimated_tokens']:,}"
+                f"ROUTE ~{summary['largest_route_estimated_tokens']:,}"
             )
         else:
-            print(f"Largest estimated packet tokens: {summary['largest_estimated_tokens']}")
-            print(f"Largest serialized packet bytes: {summary['largest_serialized_bytes']}")
+            print(f"Largest estimated routed-SFM tokens: {summary['largest_estimated_tokens']}")
+            print(f"Largest routed-SFM bytes: {summary['largest_serialized_bytes']}")
         print(f"Manifest: {operator_path(config.root, output)}")
     return 0
 
@@ -4143,7 +4146,7 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--workflow", dest="workflow_id", choices=("bic", "saw"), required=True)
     parser.add_argument(
         "--operation",
-        choices=("inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check", "rtc", "focused", "ol"),
+        choices=("inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check", "rtc", "stc", "focused", "ol"),
         required=True,
         help="Operation permitted by the selected workflow",
     )
@@ -4273,7 +4276,7 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
 
     tui = subparsers.add_parser(
         "tui",
-        help="Open the EXPERIMENTAL / UNSTABLE 0.01 Beta full-screen interface",
+        help="Open the EXPERIMENTAL / UNSTABLE 0.02alpha1 full-screen interface",
     )
     tui.add_argument(
         "--dry-run-provider",
@@ -4543,7 +4546,7 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     evaluation_plan = evaluation_actions.add_parser("plan", help="Validate and write a sequential multi-project queue")
     evaluation_plan.add_argument("--set", dest="set_id", required=True)
     evaluation_plan.add_argument("--scope", required=True)
-    evaluation_plan.add_argument("--operation", choices=("rtc", "focused", "ol"), default="rtc")
+    evaluation_plan.add_argument("--operation", choices=("rtc", "stc", "focused", "ol"), default="rtc")
     evaluation_plan.add_argument("--focus", help="One bounded question; required for focused and ol queues")
     evaluation_plan.add_argument("--type", dest="check_type", choices=tuple(sorted(SAW_CHECK_TYPES)))
     evaluation_plan.set_defaults(handler=command_evaluation_plan)
@@ -4616,7 +4619,7 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     workflow_reset.add_argument("--workflow", dest="workflow_id", choices=tuple(sorted(STAGES)), required=True)
     workflow_reset.add_argument(
         "--stage",
-        choices=("inspect", "rewrite", "self-check", "rtc", "focused", "ol"),
+        choices=("inspect", "rewrite", "self-check", "rtc", "stc", "focused", "ol"),
         required=True,
     )
     workflow_reset.add_argument("--decision-id", required=True)

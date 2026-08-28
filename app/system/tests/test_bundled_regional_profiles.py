@@ -20,7 +20,8 @@ EXPECTED = {
 def test_regional_starter_profiles_are_registered_and_valid() -> None:
     """Every bundled regional WIP starter must load and match its registered namespace."""
     config = load_ecosystem(ROOT / "ecosystem.yml")
-    assert set(config.language_profiles) == set(EXPECTED)
+    assert set(config.language_profiles) == set(EXPECTED) | {"en"}
+    assert config.language_profiles["en"].profile_alias == "en-US"
     for tag, script in EXPECTED.items():
         namespace = config.language_profiles[tag]
         assert namespace.script == script

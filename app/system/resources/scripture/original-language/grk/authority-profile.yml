@@ -1,0 +1,47 @@
+profile:
+  schema_version: "1.0"
+  type: OL_AUTHORITY_PROFILE
+  authority_family: GRK
+  authority_id: GRK
+  authority_role: PRIMARY
+language_identity:
+  language_code: grc
+  canonical_name: Ancient Greek
+  historical_register: NEW_TESTAMENT_GREEK
+  script: Grek
+  direction: LTR
+  modern_language_exclusion:
+    prohibited_identity: MODERN_GREEK
+    instruction: >-
+      This authority is Ancient/New Testament Greek, not Modern Greek. Interpret its
+      vocabulary, morphology, syntax, idiom, and semantics according to its historical
+      register; do not apply Modern Greek assumptions.
+source_identity:
+  status: AMBIGUOUS_EDITION_LABELS
+  edition_claim_permitted: false
+  imported_labels:
+    settings: Greek Nestle-Aland (NA)
+    sfm_id: Greek Text (according to AGNT)
+  instruction: >-
+    Do not infer or resolve a textual edition from model knowledge. Analyze only the
+    supplied authority text and preserve unresolved source-label ambiguity.
+representation:
+  format: USFM
+  normalization: NFC
+  markers_present: [id, c, v]
+  annotation_layers:
+    lemma: false
+    morphology: false
+    lexical_gloss: false
+    structured_apparatus: false
+  notation:
+    square_brackets:
+      present: true
+      semantics: SOURCE_NOTATION_UNRESOLVED
+      instruction: Preserve bracketed source material exactly; do not invent an apparatus meaning.
+interpretation:
+  permitted: [orthographic_analysis, morphology_from_supplied_forms, syntactic_analysis, grammatical_analysis]
+  prohibited: [modern_language_assumptions, external_lexicons, external_scripture, external_textual_criticism, inferred_edition_readings, invented_morphology_metadata]
+evidence:
+  classification: AUTHORITY_INTERPRETATION_RULES
+  content_authority: false

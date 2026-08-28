@@ -1,0 +1,3 @@
+interface:
+  display_name: "SAW STC"
+  short_description: "Compare bounded WIP directly with primary GRK/HEB evidence."

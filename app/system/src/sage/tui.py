@@ -1,4 +1,4 @@
-"""Experimental, unstable Textual full-screen shell for the SAGE 0.01 Beta line.
+"""Experimental, unstable Textual full-screen shell for the SAGE 0.02alpha1 Alpha line.
 
 The first TUI slice is intentionally read-mostly. It establishes cross-platform
 keyboard/mouse navigation, view history, Help/Status overlays, language switching,
@@ -188,7 +188,7 @@ class SageTUIApp(App[None]):
     # Keep workflow-changing operations outside this shell until their service boundaries are shared.
 
     TITLE = "SAGE"
-    SUB_TITLE = "0.01 Beta TUI — EXPERIMENTAL / UNSTABLE"
+    SUB_TITLE = "0.02alpha1 Alpha TUI — EXPERIMENTAL / UNSTABLE"
     ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [

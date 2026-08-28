@@ -1,17 +1,17 @@
 # SAGE model selection and provider build policy
 
-## v0.01beta execution policy
+## v0.02alpha1 execution policy
 
 Provider architecture and release execution permission are separate controls.
 
-| Provider | Adapter/configuration | v0.01beta automated execution |
+| Provider | Adapter/configuration | v0.02alpha1 automated execution |
 |---|---|---|
 | Codex | Implemented | **Enabled** |
 | Ollama | Optional local admin assistant | **Disabled for BIC/SAW** |
 | Grok | Future adapter slot | Not implemented |
 | Gemini | Future adapter slot | Not implemented |
 
-`build_policy.allowed_automated_providers` is effectively `[CODEX]` in v0.01beta. A configured or provisioned provider is not automatically executable.
+`build_policy.allowed_automated_providers` is effectively `[CODEX]` in v0.02alpha1. A configured or provisioned provider is not automatically executable.
 
 No OpenAI API-key, access-token, service-account, direct API, or API-fallback route is supported. Codex uses the locally installed official CLI with ChatGPT-managed authentication.
 The normal Operator connection path is `SAGE Maintenance > Configure AI > Connect OpenAI and ChatGPT`; direct CLI equivalents are `./system/bin/sage model connect` on macOS/Linux and `.\system\bin\sage.cmd model connect` on Windows. SAGE runs Codex CLI sign-in directly; the Codex desktop app is not required.
@@ -76,15 +76,15 @@ Codex remains the only enabled automated workflow provider.
 
 ## Future providers
 
-Grok, Gemini, and other providers should enter through the same provider request/response/status abstractions. v0.01beta contains no credentials, implementation, or execution path for them.
+Grok, Gemini, and other providers should enter through the same provider request/response/status abstractions. v0.02alpha1 contains no credentials, implementation, or execution path for them.
 
 ## Task execution boundary
 
 The resolved provider/model/reasoning choice is recorded in execution receipts. Provider choice never changes task scope, authorized reads/writes, authority roles, evidence hashes, or workflow state ownership.
 
-## Exact provider-handoff budget
+## Routed-SFM execution budget
 
-Model selection does not bypass context limits. Immediately before every provider execution SAGE serializes the exact prompt and output schema, records the byte count and `SAGE_MULTILINGUAL_HEURISTIC_1` token estimate, and compares the combined handoff with the workflow operation's hard limits. Conditional OL phases are remeasured after previous-phase outputs are embedded. An oversized final handoff fails closed with `LLM_HANDOFF_CONTEXT_LIMIT_EXCEEDED`; earlier ACT/work-unit budgeting remains the partitioning layer.
+Model selection does not bypass review-item limits. Immediately before provider execution SAGE measures only the exact SFM Scripture streams routed to that review item and enforces the operation's routed-SFM hard limits. Prompt, output schema, linguistic profiles, controller manifests, prior microtransaction records, IDs, hashes, and diagnostics are transport/governance material rather than Scripture slicing inputs; their byte size may be recorded as telemetry. Conditional OL phases are separate review items and size only the SFM actually routed to those phases. Oversized routed Scripture fails closed before provider execution.
 
 
 ## Model-release language competency

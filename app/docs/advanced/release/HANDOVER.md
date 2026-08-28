@@ -1,21 +1,24 @@
-# SAGE v0.01beta Handover
+# SAGE v0.02alpha1 Handover
 
 ## Current continuation state
 
-- Version: `0.01beta`
-- Status: **Beta; pre-release; not an RC and not FINAL.**
+- Version: `0.02alpha1`
+- Status: **Alpha; pre-release; not an RC and not FINAL.**
 - Prior-release promotion-baseline qualification is historical reference evidence only.
 - The version reset and subsequent governed edits invalidate earlier qualification receipts. Fresh exact-source qualification is required before the first real RC.
 - Current implementation carries section-preferred SAW slicing that coalesces adjacent fitting sections, with bounded lookahead and balanced oversized-section partitioning; scope-projected predecessor/selective-OL evidence; chapter-first report compilation; actual WIP/Reference Project names in reports; three-column numeric menu alignment; non-generative Configure AI readiness, and explicit connection testing.
-- Release feature classification: the Textual TUI is `EXPERIMENTAL_UNSTABLE`, displayed exactly as `EXPERIMENTAL / UNSTABLE`; it remains non-authoritative independently of the product's Beta/RC phase.
+- Release feature classification: the Textual TUI is `EXPERIMENTAL_UNSTABLE`, displayed exactly as `EXPERIMENTAL / UNSTABLE`; it remains non-authoritative independently of the product's Alpha/Beta/RC phase.
 - Current UI presentation contract: `docs/advanced/maintenance/UI-PRESENTATION.md`.
 - Machine-local runtime state, caches, `localdata/.system/runtime/python`, `runtime/venv`, and `host-capability.json` must not ship in the vanilla Core distribution.
+
+
+0.01beta remains the mainline baseline. 0.02alpha1 is developed on the parallel Alpha branch; all qualification and release artifacts described below are Alpha-branch evidence only.
 
 ## Qualification rule
 
 Freeze one exact governed source hash and run all deterministic hardening shards from zero. Require every shard PASS and formal combine PASS with every discovered test module scheduled exactly once, identical source hashes, no governed-source mutation, schema validation PASS, package validation PASS, deep source audit PASS, and zero release-gate warnings/errors.
 
-After formal hardening, build the full distribution, verify ZIP integrity/hash, extract cleanly, run startup smoke, verify BASIC/STANDARD/failure-fallback host capability behavior, confirm runtime-local files are absent from the vanilla ZIP, and perform final version/name/content audits.
+After formal hardening, build the full distribution, verify ZIP integrity/hash, extract cleanly, run startup smoke, verify BASIC/STANDARD/ADVANCED/failure-fallback host capability behavior, confirm runtime-local files are absent from the vanilla ZIP, and perform final version/name/content audits.
 
 Any governed source or test change after qualification begins invalidates all receipts and requires a new exact source hash.
 
@@ -30,4 +33,4 @@ Any governed source or test change after qualification begins invalidates all re
 
 ## Release status
 
-The clean `0.01beta` source/package gates are qualified for group testing when accompanied by the matching exact-source hardening and checksum receipts. Native Windows/macOS acceptance remains required before any production-release promotion.
+The clean `0.02alpha1` source/package gates are qualified for group testing when accompanied by the matching exact-source hardening and checksum receipts. Native Windows/macOS acceptance remains required before any production-release promotion.

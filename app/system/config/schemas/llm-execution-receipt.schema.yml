@@ -36,18 +36,17 @@ constraints:
   maximum_supported_reasoning_effort: xhigh
   unsupported_reasoning_efforts_are_filtered_and_cannot_be_overridden: true
 
-provider_handoff_budget:
+routed_sfm_budget:
   estimator: SAGE_MULTILINGUAL_HEURISTIC_1
-  measurement_scope: provider_prompt_plus_output_schema
+  measurement_scope: routed_analysis_sfm_only
   enforcement: immediately_before_each_provider_execute
+  excluded_from_sizing: [prompt, output_schema, controller_json, profiles, microtransactions, ids, hashes, diagnostics]
+  provider_transport: byte_telemetry_only
   evidence_projection_telemetry:
     raw_bytes: required
     model_bytes: required
-    saved_bytes: required
-    raw_estimated_tokens: required
-    model_estimated_tokens: required
-    saved_estimated_tokens: required
-    estimated_token_reduction_percent: required
+    routed_sfm_bytes: required
+    routed_sfm_estimated_tokens: required
     by_evidence_class: required
 conditional_ol_transport:
   bic_rewrite: one_material_challenge_per_phase

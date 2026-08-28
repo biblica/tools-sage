@@ -21,14 +21,35 @@ from sage.bounded_target import (
     revert_target_scope,
 )
 from sage.evidence import EvidencePolicy
-from sage.evidence_policy import AUTHORIZED_CONTENT_EVIDENCE, PROCESS_CONTROL
+from sage.evidence_policy import (
+    AUTHORIZED_CONTENT_EVIDENCE,
+    AUTHORITY_INTERPRETATION_RULES,
+    LINGUISTIC_COMPETENCE_RULES,
+    PROCESS_CONTROL,
+)
 from sage.errors import ValidationError
 from sage.llm_tasks import _conditional_requests, _micro_scope_reads
 from sage.registry import load_ecosystem
 from sage.sections import index_usfm_structure
 from sage.usj import compile_usfm_text
-from sage.work_units import EvidenceRecord, plan_work_units
+from sage.work_units import EvidenceRecord
+from sage.sfm_slicer import SfmAnalysisRoute, SfmStream, plan_sfm_work_units
 
+
+
+def plan_work_units(records, policy, *, unit_prefix, shared=None, context_pool=None, required_spans=()):
+    """Exercise the production general SFM slicer with one routed Scripture stream."""
+    ordered = tuple(records)
+    pool = tuple(context_pool) if context_pool is not None else ordered
+    return plan_sfm_work_units(
+        ordered, policy, unit_prefix=unit_prefix,
+        route=SfmAnalysisRoute(
+            route_id="TEST",
+            streams=(SfmStream("SCRIPTURE", pool),),
+            target_stream_ids=("SCRIPTURE",),
+        ),
+        context_pool=pool, required_spans=required_spans,
+    )
 
 
 def _initialize_fixture(package_root: Path, root: Path) -> None:
@@ -329,37 +350,43 @@ def test_bic_conditional_ol_is_one_question_and_one_raw_scripture_verse() -> Non
     assert requests[0]["scripture_reference"] == "MAT 1:2"
     assert "verbal sense/function" in requests[0]["question"]
 
-    source = json.dumps(
-        compile_usfm_text("\\id MAT Source\n\\c 1\n\\v 1 FIRST\n\\v 2 SECOND\n\\v 3 THIRD\n"),
-        ensure_ascii=False,
-    )
-    ol = json.dumps(
-        compile_usfm_text("\\id MAT Greek\n\\c 1\n\\v 1 G1\n\\v 2 G2\n\\v 3 G3\n"),
-        ensure_ascii=False,
-    )
+    source = "\\id MAT Source\n\\c 1\n\\v 1 FIRST\n\\v 2 SECOND\n\\v 3 THIRD\n"
+    ol = "\\id MAT Greek\n\\c 1\n\\v 1 G1\n\\v 2 G2\n\\v 3 G3\n"
     focused = {
         path: content
         for path, content, _ in _micro_scope_reads(
             [
-                ("workspace_data/task/packet/source.usj.json", source, AUTHORIZED_CONTENT_EVIDENCE),
+                ("workspace_data/task/packet/source.sfm", source, AUTHORIZED_CONTENT_EVIDENCE),
+                (
+                    "workspace_data/task/packet/target-language-profile.json",
+                    "complete target language profile",
+                    LINGUISTIC_COMPETENCE_RULES,
+                ),
                 ("system/config/rules.yml", "rules", PROCESS_CONTROL),
             ],
             [
                 (
-                    "workspace_data/task/packet/original-language.usj.json",
+                    "workspace_data/task/packet/original-language.sfm",
                     ol,
                     AUTHORIZED_CONTENT_EVIDENCE,
-                )
+                ),
+                (
+                    "workspace_data/task/packet/ol-authority-profile.yml",
+                    "complete Ancient Greek authority profile",
+                    AUTHORITY_INTERPRETATION_RULES,
+                ),
             ],
             "MAT 1:2",
         )
     }
-    assert "SECOND" in focused["workspace_data/task/packet/source.usj.json"]
-    assert "FIRST" not in focused["workspace_data/task/packet/source.usj.json"]
-    assert "THIRD" not in focused["workspace_data/task/packet/source.usj.json"]
-    assert "G2" in focused["workspace_data/task/packet/original-language.usj.json"]
-    assert "G1" not in focused["workspace_data/task/packet/original-language.usj.json"]
-    assert "G3" not in focused["workspace_data/task/packet/original-language.usj.json"]
+    assert "SECOND" in focused["workspace_data/task/packet/source.sfm"]
+    assert "FIRST" not in focused["workspace_data/task/packet/source.sfm"]
+    assert "THIRD" not in focused["workspace_data/task/packet/source.sfm"]
+    assert "G2" in focused["workspace_data/task/packet/original-language.sfm"]
+    assert "G1" not in focused["workspace_data/task/packet/original-language.sfm"]
+    assert "G3" not in focused["workspace_data/task/packet/original-language.sfm"]
+    assert focused["workspace_data/task/packet/target-language-profile.json"] == "complete target language profile"
+    assert focused["workspace_data/task/packet/ol-authority-profile.yml"] == "complete Ancient Greek authority profile"
     assert "system/config/rules.yml" not in focused
 
 
@@ -428,6 +455,25 @@ def test_hardening_shards_cover_every_module_exactly_once(package_root: Path) ->
         sys.modules.pop("hardening", None)
 
 
+def test_hardening_stages_bundle_root_but_hashes_and_tests_app_root(package_root: Path, tmp_path: Path) -> None:
+    """Keep release-tree copying separate from the exact app source hash bound into receipts."""
+    scripts = str(package_root / "system" / "tools")
+    sys.path.insert(0, scripts)
+    try:
+        hardening = importlib.import_module("hardening")
+        assert hardening.APP_ROOT == package_root
+        assert hardening.BUNDLE_ROOT == package_root.parent
+        stage = tmp_path / "bundle"
+        stage.mkdir()
+        assert hardening._copy_source_tree(hardening.BUNDLE_ROOT, stage) == []
+        staged_app = stage / "app"
+        assert (staged_app / "system" / "tests").is_dir()
+        assert hardening._source_tree_sha256(staged_app) == hardening._source_tree_sha256(package_root)
+    finally:
+        sys.path.remove(scripts)
+        sys.modules.pop("hardening", None)
+
+
 def test_formal_hardening_combine_requires_complete_exact_hash_shards(package_root: Path, tmp_path: Path) -> None:
     """The combine gate accepts only complete PASS shards bound to the current governed source hash."""
     scripts = str(package_root / "system" / "tools")
@@ -477,6 +523,168 @@ def test_formal_hardening_combine_requires_complete_exact_hash_shards(package_ro
         assert combined["deep_audit"] == "PASS"
         assert combined["errors"] == []
         assert combined["warnings"] == []
+    finally:
+        sys.path.remove(scripts)
+        sys.modules.pop("hardening", None)
+
+
+def test_rtc_auto_partition_sizes_complete_wip_reference_route(package_root: Path, make_workspace) -> None:
+    """RTC auto-partition must use WIP+Reference SFM, not WIP alone, as its hard route guard."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=2)
+    phrase = "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu " * 8
+    wip = f"\\id MAT Fixture\n\\c 1\n\\p\n\\v 1 {phrase}\n\\v 2 {phrase}\n"
+    ref = f"\\id MAT Fixture\n\\c 1\n\\p\n\\v 1 {phrase}\n\\v 2 {phrase}\n"
+    (storage_layout(root).projects_root / "usWIP" / "41MAT.SFM").write_text(wip, encoding="utf-8")
+    (storage_layout(root).projects_root / "usNIVv2" / "41MAT.SFM").write_text(ref, encoding="utf-8")
+    profile_path = root / "system" / "config" / "workflows" / "saw" / "profile.yml"
+    profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
+    profile["evidence_policies"]["rtc"] = dict(profile["evidence_policies"]["default"])
+    profile["evidence_policies"]["rtc"]["target_estimated_tokens"] = 350
+    profile["evidence_policies"]["rtc"]["minimum_target_tokens"] = 1
+    profile["evidence_policies"]["rtc"]["hard_estimated_tokens"] = 400
+    profile["evidence_policies"]["rtc"]["hard_serialized_bytes"] = 100000
+    profile["evidence_policies"]["rtc"]["context_before_verses"] = 0
+    profile["evidence_policies"]["rtc"]["context_after_verses"] = 0
+    profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
+    _initialize_fixture(package_root, root)
+    config = load_ecosystem(root / "ecosystem.yml")
+
+    result = create_act_task(
+        config,
+        workflow="saw",
+        operation="rtc",
+        output_project_id="usWIP",
+        contemporary_source_id="usNIVv2",
+        scope_value="MAT 1:1-2",
+        rtc_stage="REFERENCE_TEXT_COMPARISON",
+    )
+
+    assert result["status"] == "PARTITIONED"
+    assert [row["scope"] for row in result["work_units"]] == ["MAT 1:1", "MAT 1:2"]
+
+
+def test_hardening_uses_setup_selected_host_capability_receipt(package_root: Path) -> None:
+    """Formal hardening must derive its worker ceiling from setup state, never live redetection."""
+    text = (package_root / "system" / "tools" / "hardening.py").read_text(encoding="utf-8")
+    assert "load_host_capability(APP_ROOT)" in text
+    assert "capability = detect_host_capability()" not in text
+
+
+def test_hardening_splits_large_modules_into_bounded_node_groups(package_root: Path) -> None:
+    """Formal hardening must split long files into bounded pytest node groups instead of timing out whole modules."""
+    scripts = str(package_root / "system" / "tools")
+    sys.path.insert(0, scripts)
+    try:
+        hardening = importlib.import_module("hardening")
+        nodes = tuple(f"system/tests/test_long.py::test_case_{index:02d}" for index in range(23))
+        groups = hardening._bounded_pytest_targets("system/tests/test_long.py", nodes)
+        assert hardening.MAX_PYTEST_NODES_PER_PROCESS == 8
+        assert [len(group) for group in groups] == [8, 8, 7]
+        assert [node for group in groups for node in group] == list(nodes)
+        short = nodes[:5]
+        assert hardening._bounded_pytest_targets("system/tests/test_short.py", short) == (
+            ("system/tests/test_short.py",),
+        )
+    finally:
+        sys.path.remove(scripts)
+        sys.modules.pop("hardening", None)
+
+
+def test_hardening_node_collector_accepts_pytest_root_relative_paths(
+    package_root: Path, monkeypatch
+) -> None:
+    """Collected node IDs may be rooted at ``system/`` even when scheduling uses bundle-relative paths."""
+    scripts = str(package_root / "system" / "tools")
+    sys.path.insert(0, scripts)
+    try:
+        hardening = importlib.import_module("hardening")
+        collect_step = {
+            "name": "pytest_collect_long",
+            "command": [],
+            "returncode": 0,
+            "stdout": (
+                "tests/test_long.py::test_one\n"
+                "tests/test_long.py::test_two[param]\n"
+                "2 tests collected in 0.01s\n"
+            ),
+            "stderr": "",
+            "timed_out": False,
+            "summary_cleanup": False,
+        }
+        monkeypatch.setattr(hardening, "run", lambda *_args, **_kwargs: collect_step)
+        nodes, step = hardening._collect_module_node_ids(
+            package_root, "system/tests/test_long.py", name="long"
+        )
+        assert step is collect_step
+        assert nodes == (
+            "system/tests/test_long.py::test_one",
+            "system/tests/test_long.py::test_two[param]",
+        )
+    finally:
+        sys.path.remove(scripts)
+        sys.modules.pop("hardening", None)
+
+
+def test_hardening_module_runner_uses_bounded_node_groups(
+    package_root: Path, tmp_path: Path, monkeypatch
+) -> None:
+    """A long scheduled module is one receipt step but executes through bounded node-group subprocesses."""
+    scripts = str(package_root / "system" / "tools")
+    sys.path.insert(0, scripts)
+    try:
+        hardening = importlib.import_module("hardening")
+        expected_hash = "a" * 64
+        fake_bundle = tmp_path / "bundle-source"
+        fake_bundle.mkdir()
+        monkeypatch.setattr(hardening, "BUNDLE_ROOT", fake_bundle)
+        monkeypatch.setattr(hardening, "APP_ROOT", fake_bundle / "app")
+
+        def fake_copy(_source: Path, destination: Path) -> list[str]:
+            """Create the minimal staged app directory required by the isolated-runner contract test."""
+            (destination / "app").mkdir(parents=True, exist_ok=True)
+            return []
+
+        monkeypatch.setattr(hardening, "_copy_source_tree", fake_copy)
+        monkeypatch.setattr(hardening, "_source_tree_sha256", lambda _path: expected_hash)
+        nodes = tuple(f"system/tests/test_long.py::test_case_{index:02d}" for index in range(17))
+        collect_step = {
+            "name": "pytest_collect_long",
+            "command": [],
+            "returncode": 0,
+            "stdout": "",
+            "stderr": "",
+            "timed_out": False,
+            "summary_cleanup": False,
+        }
+        monkeypatch.setattr(
+            hardening,
+            "_collect_module_node_ids",
+            lambda _target, _test_path, *, name: (nodes, collect_step),
+        )
+        commands: list[list[str]] = []
+
+        def fake_run(command: list[str], _cwd: Path, *, name: str, timeout: int = 300) -> dict:
+            """Capture bounded pytest commands and return deterministic passing subprocess results."""
+            commands.append(command)
+            passed = len([arg for arg in command if "::" in arg]) or 1
+            return {
+                "name": name,
+                "command": command,
+                "returncode": 0,
+                "stdout": f"{passed} passed in 0.01s\n",
+                "stderr": "",
+                "timed_out": False,
+                "summary_cleanup": False,
+            }
+
+        monkeypatch.setattr(hardening, "run", fake_run)
+        step = hardening._run_test_module_isolated(
+            "system/tests/test_long.py", name="long", expected_hash=expected_hash
+        )
+        assert step["returncode"] == 0
+        assert step["bounded_node_groups"] == 3
+        assert [len([arg for arg in command if "::" in arg]) for command in commands] == [8, 8, 1]
+        assert step["workspace_governed_source_unchanged"] is True
     finally:
         sys.path.remove(scripts)
         sys.modules.pop("hardening", None)

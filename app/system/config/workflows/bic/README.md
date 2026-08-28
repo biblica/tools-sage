@@ -12,6 +12,10 @@ SOURCE (`CONTENT_SOURCE`) is the sole content/translation authority. DONOR (`LEX
 
 An optional human memory-review receipt may be recorded as provenance after INSPECT; no human receipt is required for REWRITE. Urgency 3 is logged and carried into SELF-CHECK automatically under the protected policy. `--grammar-override-id` remains optional provenance. Guided Input returns `INPUT_REQUIRED` for recoverable missing/ambiguous values rather than allowing the provider to guess.
 
+## Canonical linguistic profiles
+
+Every BIC model-facing stage receives the complete canonical `LANGUAGE_PROFILE` for each routed project-language stream. Any authorized bounded OL micro-review additionally receives the source-bound GRK/HEB `OL_AUTHORITY_PROFILE`. Profiles are immutable governed context, are not sliced, and do not contribute to Scripture SFM sizing. Missing or ambiguous required linguistic specificity blocks provider handoff rather than allowing model inference.
+
 ## Required controls
 
 - SOURCE, DONOR, and TARGET must be distinct projects.

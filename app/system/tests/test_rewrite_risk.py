@@ -307,19 +307,28 @@ def test_unresolved_critical_choice_completes_without_operator_input(
     paths = {item["path"] for item in self_check["allowed_reads"]}
     assert not any(path.endswith("operator-decisions.json") for path in paths)
     assert any(path.endswith("predecessor-translation-challenges.json") for path in paths)
-    assert any(path.endswith("original-language.usj.json") for path in paths)
+    assert any(path.endswith("original-language.sfm") for path in paths)
     assert any(path.endswith("inherited-ol-vrs-evidence.json") for path in paths)
+    assert any(path.endswith("inherited-ol-authority-profile.yml") for path in paths)
+    assert any(
+        item["profile_class"] == "OL_AUTHORITY_PROFILE"
+        for item in self_check["linguistic_profile_bindings"]
+    )
 
     predecessor = json.loads(manifest.read_text(encoding="utf-8"))
     conditional = {item["path"]: item["sha256"] for item in predecessor["conditional_reads"]}
     self_root = Path(self_check["manifest_path"]).parent
-    inherited_usj = self_root / "packet" / "original-language.usj.json"
+    inherited_sfm = self_root / "packet" / "original-language.sfm"
     inherited_vrs = self_root / "packet" / "inherited-ol-vrs-evidence.json"
-    assert sha256_file(inherited_usj) == next(
-        digest for path, digest in conditional.items() if path.endswith("original-language.usj.json")
+    inherited_profile = self_root / "packet" / "inherited-ol-authority-profile.yml"
+    assert sha256_file(inherited_sfm) == next(
+        digest for path, digest in conditional.items() if path.endswith("original-language.sfm")
     )
     assert sha256_file(inherited_vrs) == next(
         digest for path, digest in conditional.items() if path.endswith("conditional-ol-vrs-evidence.json")
+    )
+    assert sha256_file(inherited_profile) == next(
+        digest for path, digest in conditional.items() if path.endswith("ol-authority-profile.yml")
     )
 
 
@@ -430,7 +439,9 @@ def test_bic_ol_evidence_is_conditional_not_an_ordinary_read(
     allowed = {item["path"] for item in rewrite["allowed_reads"]}
     conditional = {item["path"] for item in rewrite["conditional_reads"]}
     assert not any("original-language" in path for path in allowed)
-    assert any(path.endswith("original-language.usj.json") for path in conditional)
+    assert any(path.endswith("original-language.sfm") for path in conditional)
+    assert any(path.endswith("ol-authority-profile.yml") for path in conditional)
+    assert not any(path.endswith("original-language.usj.json") for path in conditional)
     assert any(path.endswith("conditional-ol-vrs-evidence.json") for path in conditional)
     assert {
         item["routing"] for item in rewrite["original_language_sources"]

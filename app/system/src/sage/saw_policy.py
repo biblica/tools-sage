@@ -1,4 +1,4 @@
-"""Beta SAW RTC check selection and USFM-context policy."""
+"""Alpha SAW RTC check selection and USFM-context policy."""
 from __future__ import annotations
 
 import json
@@ -28,7 +28,7 @@ DEFAULT_ORIGINAL_LANGUAGE = {"source_text_drift_adjudication": "PROHIBITED"}
 
 
 def default_rtc_policy(profile_path: Path | None = None) -> dict[str, Any]:
-    """Load governed RTC defaults, falling back to compiled Beta defaults."""
+    """Load governed RTC defaults, falling back to compiled Alpha defaults."""
     checks = dict(DEFAULT_CHECKS)
     contexts = dict(DEFAULT_CONTEXTS)
     version = "1.0"

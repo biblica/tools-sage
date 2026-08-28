@@ -17,11 +17,13 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "system" / "src"))
+APP_ROOT = Path(__file__).resolve().parents[2]
+BUNDLE_ROOT = APP_ROOT.parent
+ROOT = APP_ROOT
+sys.path.insert(0, str(APP_ROOT / "system" / "src"))
 
 from sage.storage import storage_layout
-from bootstrap_runtime import detect_host_capability, hardening_worker_cap
+from bootstrap_runtime import hardening_worker_cap, load_host_capability
 from build_release import _copy_source_tree, _source_tree_sha256
 
 _PYTEST_TERMINAL_RE = re.compile(
@@ -29,7 +31,8 @@ _PYTEST_TERMINAL_RE = re.compile(
 )
 _COLLECTED_RE = re.compile(r"(\d+) tests? collected")
 _OUTCOME_RE = re.compile(r"(\d+) (passed|failed|skipped|deselected|xfailed|xpassed|warnings?|errors?)")
-RECEIPT_SCHEMA_VERSION = "1.3"
+RECEIPT_SCHEMA_VERSION = "1.4"
+MAX_PYTEST_NODES_PER_PROCESS = 8
 
 
 def _scheduled_test_batches(
@@ -52,6 +55,16 @@ def _scheduled_test_batches(
     if len(scheduled) != len(set(scheduled)):
         errors.append("scheduled test inventory contains duplicates")
     return batches, discovered, errors
+
+
+def _bounded_pytest_targets(test_path: str, node_ids: tuple[str, ...]) -> tuple[tuple[str, ...], ...]:
+    """Return deterministic pytest argv target groups bounded by node count for long modules."""
+    if len(node_ids) <= MAX_PYTEST_NODES_PER_PROCESS:
+        return ((test_path,),)
+    return tuple(
+        tuple(node_ids[offset : offset + MAX_PYTEST_NODES_PER_PROCESS])
+        for offset in range(0, len(node_ids), MAX_PYTEST_NODES_PER_PROCESS)
+    )
 
 
 def _descendant_pids(parent_pid: int) -> list[int]:
@@ -211,6 +224,60 @@ def run(command: list[str], cwd: Path, *, name: str, timeout: int = 300) -> dict
     return result
 
 
+def _collect_module_node_ids(target: Path, test_path: str, *, name: str) -> tuple[tuple[str, ...], dict]:
+    """Collect exact pytest node IDs for one scheduled module without executing tests."""
+    step = run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "--collect-only",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            test_path,
+        ],
+        target,
+        name=f"pytest_collect_{name}",
+        timeout=180,
+    )
+    scheduled = Path(test_path).as_posix()
+    parts = Path(scheduled).parts
+    accepted_paths = {scheduled}
+    if len(parts) > 1:
+        accepted_paths.add(Path(*parts[1:]).as_posix())
+    collected: list[str] = []
+    for line in str(step.get("stdout", "")).splitlines():
+        node = line.strip()
+        if "::" not in node:
+            continue
+        reported_path, selector = node.split("::", 1)
+        if reported_path not in accepted_paths:
+            continue
+        collected.append(f"{scheduled}::{selector}")
+    nodes = tuple(collected)
+    return nodes, step
+
+
+def _aggregate_pytest_substeps(name: str, test_path: str, collect_step: dict, substeps: list[dict]) -> dict:
+    """Aggregate bounded pytest subprocesses into one scheduled-module receipt step."""
+    all_steps = [collect_step, *substeps]
+    returncode = next((int(step.get("returncode", 1)) for step in all_steps if step.get("returncode") != 0), 0)
+    stderr_parts = [str(step.get("stderr", "")) for step in all_steps if step.get("stderr")]
+    return {
+        "name": f"pytest_{name}",
+        "command": [sys.executable, "-m", "pytest", "-q", test_path],
+        "returncode": returncode,
+        "stdout": "\n".join(str(step.get("stdout", "")).rstrip() for step in substeps if step.get("stdout")) + ("\n" if substeps else ""),
+        "stderr": "\n".join(stderr_parts),
+        "timed_out": any(bool(step.get("timed_out")) for step in all_steps),
+        "summary_cleanup": any(bool(step.get("summary_cleanup")) for step in all_steps),
+        "bounded_node_groups": len(substeps),
+        "collected_node_ids": sum(1 for step in substeps for arg in step.get("command", []) if isinstance(arg, str) and "::" in arg),
+        "substeps": all_steps,
+    }
+
+
 def _outcome_count(step: dict, outcome: str) -> int:
     """Extract a pytest outcome count from one module process terminal summary."""
     counts: dict[str, int] = {}
@@ -262,11 +329,12 @@ def _validation_steps(target: Path, *, prefix: str) -> list[dict]:
 
 
 def _run_test_module_isolated(test_path: str, *, name: str, expected_hash: str) -> dict:
-    """Run one test module in its own clean source copy and prove that copy remains governed-source clean."""
+    """Run one test module in a clean source copy, splitting long files into bounded node groups."""
     with tempfile.TemporaryDirectory(prefix=f"sage-hardening-{name}-") as td:
-        target = Path(td) / ROOT.name
-        target.mkdir(parents=True)
-        unknown = _copy_source_tree(ROOT, target)
+        bundle_target = Path(td) / BUNDLE_ROOT.name
+        bundle_target.mkdir(parents=True)
+        unknown = _copy_source_tree(BUNDLE_ROOT, bundle_target)
+        target = bundle_target / APP_ROOT.name
         if unknown:
             return {
                 "name": f"pytest_{name}",
@@ -294,12 +362,28 @@ def _run_test_module_isolated(test_path: str, *, name: str, expected_hash: str) 
                 "workspace_source_sha256_after": before_hash,
                 "workspace_governed_source_unchanged": False,
             }
-        step = run(
-            [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", test_path],
-            target,
-            name=f"pytest_{name}",
-            timeout=300,
-        )
+        node_ids, collect_step = _collect_module_node_ids(target, test_path, name=name)
+        if collect_step["returncode"] != 0 or not node_ids:
+            step = _aggregate_pytest_substeps(name, test_path, collect_step, [])
+            if collect_step["returncode"] == 0 and not node_ids:
+                step["returncode"] = 125
+                step["stderr"] = (str(step.get("stderr") or "") + "\nNo pytest node IDs collected for scheduled module.\n").strip()
+        else:
+            targets = _bounded_pytest_targets(test_path, node_ids)
+            substeps: list[dict] = []
+            for index, target_args in enumerate(targets, start=1):
+                suffix = "" if len(targets) == 1 else f"_part_{index:02d}_of_{len(targets):02d}"
+                substeps.append(
+                    run(
+                        [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", *target_args],
+                        target,
+                        name=f"pytest_{name}{suffix}",
+                        timeout=300,
+                    )
+                )
+                if substeps[-1]["returncode"] != 0:
+                    break
+            step = _aggregate_pytest_substeps(name, test_path, collect_step, substeps)
         after_hash = _source_tree_sha256(target)
         unchanged = before_hash == after_hash == expected_hash
         step["workspace_source_sha256"] = before_hash
@@ -316,13 +400,14 @@ def _run_test_module_isolated(test_path: str, *, name: str, expected_hash: str) 
 
 def run_shard(*, shard_count: int, shard_index: int) -> dict:
     """Run one isolated deterministic hardening shard and return its bound receipt."""
-    original_hash_before = _source_tree_sha256(ROOT)
-    capability = detect_host_capability()
+    original_hash_before = _source_tree_sha256(APP_ROOT)
+    capability, capability_source = load_host_capability(APP_ROOT)
     worker_cap, worker_source = hardening_worker_cap(capability)
     with tempfile.TemporaryDirectory(prefix=f"sage-hardening-shard-{shard_index:02d}-") as td:
-        target = Path(td) / ROOT.name
-        target.mkdir(parents=True)
-        unknown = _copy_source_tree(ROOT, target)
+        bundle_target = Path(td) / BUNDLE_ROOT.name
+        bundle_target.mkdir(parents=True)
+        unknown = _copy_source_tree(BUNDLE_ROOT, bundle_target)
+        target = bundle_target / APP_ROOT.name
         if unknown:
             return {
                 "schema_version": RECEIPT_SCHEMA_VERSION,
@@ -376,7 +461,7 @@ def run_shard(*, shard_count: int, shard_index: int) -> dict:
         steps.extend(_validation_steps(target, prefix="post"))
         target_hash_after = _source_tree_sha256(target)
 
-    original_hash_after = _source_tree_sha256(ROOT)
+    original_hash_after = _source_tree_sha256(APP_ROOT)
     pytest_steps = [step for step in steps if step["name"].startswith("pytest_") and step["name"] != "pytest_collect"]
     module_workspaces_unchanged = all(
         step.get("workspace_governed_source_unchanged") is True for step in pytest_steps
@@ -413,6 +498,7 @@ def run_shard(*, shard_count: int, shard_index: int) -> dict:
         "pytest_batches": len(test_batches),
         "parallel_workers": worker_limit,
         "worker_policy_source": worker_source,
+        "host_capability_source": capability_source,
         "host_capability": capability,
         "test_files_discovered": len(discovered_tests),
         "test_files_scheduled": len(scheduled_tests),
@@ -479,7 +565,7 @@ def combine_reports(paths: list[Path], *, expected_source_sha256: str | None = N
         source_hash = ""
     else:
         source_hash = next(iter(source_hashes))
-    current_hash = _source_tree_sha256(ROOT)
+    current_hash = _source_tree_sha256(APP_ROOT)
     required_hash = expected_source_sha256 or current_hash
     if source_hash and source_hash != required_hash:
         errors.append(f"Receipt source hash {source_hash} does not match required source hash {required_hash}")
@@ -587,11 +673,11 @@ def combine_reports(paths: list[Path], *, expected_source_sha256: str | None = N
 def _output_path(raw: str | None) -> Path:
     """Resolve qualification output outside the Git-controlled Core tree by default."""
     if raw in (None, ""):
-        output = storage_layout(ROOT, create=True).diagnostics_root / "qualification" / "hardening-report.json"
+        output = storage_layout(APP_ROOT, create=True).diagnostics_root / "qualification" / "hardening-report.json"
     else:
         output = Path(raw).expanduser()
         if not output.is_absolute():
-            output = storage_layout(ROOT, create=True).diagnostics_root / "qualification" / output
+            output = storage_layout(APP_ROOT, create=True).diagnostics_root / "qualification" / output
         output = output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     return output

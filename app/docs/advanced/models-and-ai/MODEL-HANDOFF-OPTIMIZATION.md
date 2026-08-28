@@ -1,8 +1,8 @@
-# Model Handoff Optimization — v0.01beta
+# Model Handoff Optimization — v0.02alpha1
 
 ## Purpose
 
-`0.01beta` retains the proven provider projections established during earlier development and adds conservative planning/focus optimizations without reducing the governed evidence available to SAGE. The controller remains authoritative for evidence admission, hashing, task identity, coverage, receipts, validation, and file materialization. Optimization occurs only after those local controls are established.
+`0.02alpha1` retains the proven provider projections established during earlier development and adds conservative planning/focus optimizations without reducing the governed evidence available to SAGE. The controller remains authoritative for evidence admission, hashing, task identity, coverage, receipts, validation, and file materialization. Optimization occurs only after those local controls are established.
 
 ## 1. Governance inputs versus model reads
 
@@ -13,17 +13,11 @@ Immutable task inputs are split into two transport roles:
 
 The immutable `ACT.md` also remains a controller artifact. The provider receives only its deterministic `Process brief` capsule instead of the full ACT and repeated control sections.
 
-## 2. Scripture projection
+## 2. Scripture transport and controller projections
 
-Model-facing USJ uses `SAGE_SCRIPTURE_SLICE_V1`. SAGE retains the full USJ packet and its hash locally, but the provider projection contains only:
+Model-facing Scripture is routed as bounded SFM. SAGE may compile USJ/structural projections locally for deterministic validation, coordinate mapping, coverage reconciliation, and audit, but those controller projections are not Scripture sizing inputs and do not replace the exact SFM evidence sent to the provider. No Scripture wording is summarized or paraphrased.
 
-- projection identifier;
-- evidence class;
-- book code and bounded scope;
-- original source SHA-256;
-- exact USJ `content` required for the bounded task.
-
-Duplicated `sage.verse_records`, parser line offsets, internal paragraph identifiers, parser diagnostics, and other local implementation metadata are not repeated to the model. No Scripture wording is summarized or paraphrased by this projection.
+Every routed natural-language stream also receives its complete canonical linguistic profile as a separate immutable model read. Project streams use `LANGUAGE_PROFILE`; GRK/HEB authorities use source-bound `OL_AUTHORITY_PROFILE`. Profiles are not Scripture evidence, are not sliced, and do not contribute to the SFM sizing budget.
 
 ## 3. SAW semantic-only output
 
@@ -54,40 +48,24 @@ The micro-response may select only an existing first-pass candidate, state after
 
 The former conditional prompt path that re-sent the complete phase-one output set has been removed.
 
-## 5. Handoff telemetry
+## 5. Routed-SFM sizing and transport telemetry
 
-Every execution phase records exact prompt/schema handoff measurements and deterministic projection telemetry. Receipts include:
+Every model review item records two deliberately separate measurement classes:
 
-- prompt, schema, and total serialized bytes;
-- estimated prompt, schema, and total tokens;
-- raw routed evidence bytes/tokens;
-- model-facing evidence bytes/tokens;
-- saved bytes/tokens and estimated reduction percentage;
-- projected-read count;
-- evidence-class breakdown.
+- `routed_sfm`: the exact SFM Scripture text routed to that review item. This is the only input to the Scripture token estimator and hard analysis-byte guard.
+- transport/audit telemetry: serialized prompt, output schema, profiles, controller manifests, and other governed material. These bytes may be recorded for observability but contribute zero to Scripture slicing and cannot change a work-unit boundary.
 
-Hard handoff limits continue to apply to the actual serialized provider prompt plus schema. Projection statistics are diagnostic and cannot override a context-limit failure.
+A token estimator must never be called on controller JSON, microtransactions, prompts, schemas, profiles, IDs, hashes, diagnostics, or USJ projections.
 
-## 6. Quality-first planning and focus batching
+## 6. Review-item planning and focus batching
 
-Task creation now records two independent measurements:
+Task creation records `context_budget.routed_sfm` with `planning_basis: ROUTED_SFM_ONLY`. New Jobs weight analytical progress by `ROUTED_SFM_ESTIMATED_TOKENS`; historical progress records may retain the legacy basis for read compatibility only.
 
-- `context_budget.governance_context`: the complete controller-routed local context, including controller-only governance inputs, conditional reads, full ACT text, and task manifest. This is retained for audit and legacy comparison.
-- `context_budget.provider_handoff`: the exact projected first provider prompt plus output schema built with the same projection path used at execution time. This is the planning/progress workload basis.
+The general SFM slicer owns deterministic Scripture planning for BIC, RTC, STC, Targeted Check, and Original-Language Review. Each operation/profile declares the streams for its actual review item. Current RTC geometry keeps a WIP target around 6,000 tokens, prefers WIP boundaries around 5,000–7,000, and rejects an individual WIP slice at 8,000 tokens or above; the complete required WIP+REFERENCE route is independently guarded by the configured routed-SFM hard limit. OL Scripture is not pre-reserved into the normal RTC route. A qualifying selective OL adjudication becomes a new bounded review item and sizes only the SFM routed to that item.
 
-The exact handoff is reconstructed and hard-gated again immediately before provider execution. A planning estimate therefore cannot authorize an oversized provider request. Historical Jobs that explicitly record the legacy `ACT_ESTIMATED_TOKENS` progress basis remain readable; new Jobs use `PROJECTED_HANDOFF_ESTIMATED_TOKENS`.
+STC uses the same general slicer with a different route profile: WIP plus the testament-appropriate PRIMARY OL authority (GRK for NT, HEB for OT). BIC INSPECT partitions using its routed Scripture SFM; REWRITE and SELF-CHECK inherit approved scope.
 
-RTC batching is discourse-first and governed from the original WIP contribution rather than by filling the complete model context. The shipped RTC geometry is:
-
-- WIP target: about 6,000 estimated tokens;
-- preferred discourse packing range: 5,000–7,000 estimated WIP tokens;
-- hard WIP packet limit: strictly below 8,000 estimated tokens;
-- complete WIP+REFERENCE provider handoff target: below 28,000 estimated tokens;
-- complete RTC provider handoff hard guard: 32,000 estimated tokens.
-
-The WIP establishes the canonical Scripture range and the configured Reference Project follows exactly that range. OL Scripture is not budgeted into the normal RTC package. If RTC identifies a qualifying material WIP–Reference source-text discrepancy, SAGE creates a new finding-scoped OL clarification task containing only the affected WIP/REFERENCE coordinate(s), the applicable Job-bound GRK/HEB evidence, provenance, and the exact question. The parent RTC package is not enlarged or rerun.
-
-A prose paragraph, major list unit, or operational poetry stanza remains indivisible merely to meet the 6k target when it still fits below the hard WIP slice limit. Targeted Check remains capped at two intact primary discourse units, standalone SAW OL review at one, and BIC INSPECT at four. BIC REWRITE and SELF_CHECK continue to follow approved bounded INSPECT lineage.
+Protected bridges, OL correspondence spans, discourse units, and exact primary coverage remain controller-owned constraints. Context SFM counts only when that context is actually sent to the model.
 
 ## 7. Task-scoped provider readiness
 

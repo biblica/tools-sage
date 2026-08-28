@@ -1,0 +1,25 @@
+schema_id: sage-ol-authority-profile-1.0
+schema:
+  name: ol_authority_profile
+  version: "1.0"
+  purpose: Govern historical-language identity and representation rules for one original-language authority.
+required:
+  - profile
+  - language_identity
+  - source_identity
+  - representation
+  - interpretation
+  - evidence
+profile:
+  type: OL_AUTHORITY_PROFILE
+  authority_family: [GRK, HEB]
+  authority_role: [PRIMARY, SECONDARY]
+language_identity:
+  language_code: canonical_language_tag
+  historical_register: nonempty_string
+  modern_language_exclusion: required
+rules:
+  - profile_is_complete_immutable_context_not_scripture_evidence
+  - profile_is_never_sliced
+  - profile_is_excluded_from_sfm_sizing
+  - historical_language_identity_must_not_be_inferred_from_slice

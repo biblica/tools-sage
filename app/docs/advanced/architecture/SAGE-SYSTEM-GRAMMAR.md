@@ -58,9 +58,9 @@ completed schema, menu, runtime, catalog, and validation adjustment.
   exact lowercase spelling of command names, schema fields, identifiers, and path components. For
   example: `SAGE creates and manages Projects, Jobs, Runs, tasks, and reports.`
 - Product: `SAGE` — Scripture Analysis and Generation Engine.
-- Release: use `SAGE v0.01beta` for the exact product version and `current Beta development` in general prose. State `pre-release; fresh exact-source qualification required before the first RC; public-production readiness not claimed` in current entry-point, release, status, packaging, and testing material. Historical documents may retain their original release label when clearly identified as historical.
-- Version progression: promote the qualified Beta to `v0.01rc1`; use `v0.01rc2`, `v0.01rc3`, and so on for later qualified candidates. Reserve `v0.01` for the approved release. Do not describe Beta builds as release candidates.
-- Feature maturity: use machine state `EXPERIMENTAL_UNSTABLE` and exact display label `EXPERIMENTAL / UNSTABLE` for incomplete, non-authoritative features that may change incompatibly. Feature maturity is independent of the product phase and does not advance automatically with Beta, RC, or release promotion. The v0.01beta Textual TUI has this classification; the classic menu and scriptable CLI remain authoritative.
+- Release: use `SAGE v0.02alpha1` for the exact product version and `current Alpha development` in general prose. State `pre-release; fresh exact-source qualification required before the first RC; public-production readiness not claimed` in current entry-point, release, status, packaging, and testing material. Historical documents may retain their original release label when clearly identified as historical.
+- Version progression: progress from `v0.02alpha1` through later `v0.02alphaN` builds as required, then `v0.02beta`, then qualified candidates beginning at `v0.02rc1`. Reserve `v0.02` for the approved release. Do not describe Alpha or Beta builds as release candidates.
+- Feature maturity: use machine state `EXPERIMENTAL_UNSTABLE` and exact display label `EXPERIMENTAL / UNSTABLE` for incomplete, non-authoritative features that may change incompatibly. Feature maturity is independent of the product phase and does not advance automatically with Alpha, Beta, RC, or release promotion. The v0.02alpha1 Textual TUI has this classification; the classic menu and scriptable CLI remain authoritative.
 - Workflow: `BIC` — Bible Index & Context.
 - Workflow: `SAW` — Scripture Analysis Workbench.
 - Execution mode: `SAGE_GOVERNED_TASK_V1`.
@@ -92,16 +92,17 @@ completed schema, menu, runtime, catalog, and validation adjustment.
 - BIC operator wording: one bound `SOURCE` resource, one bound `DONOR` resource, and one bound `TARGET` resource per BIC Job. TARGET storage location is not a second TARGET.
 - Machine cardinality vocabulary: use only `exactly_one`, `zero_or_one`, `one_or_more`, `zero_or_more`, and `exactly_one_of` for schema cardinality. Do not use `exact`, `single`, `required`, or prose `one` as machine cardinality substitutes.
 - BIC machine cardinality: `SOURCE=exactly_one`, `DONOR=exactly_one`, `TARGET=exactly_one`; TARGET storage is `exactly_one_of(SAGE_INTERNAL, PARATEXT_PROJECT)`.
-- Original-language bindings: Operator prose says `configured Greek resource` / `configured Hebrew resource`; machine cardinality is `zero_or_one` for each. When an OL task is routed, exactly one applicable bound OL resource is required for that task.
-- Grammar-profile wording: Operator prose says `selected SOURCE grammar profile`, `selected TARGET grammar profile`, or `selected WIP grammar profile`; machine selection is `exactly_one_active`.
+- Original-language authority bindings: Operator prose says `configured Greek resource` / `configured Hebrew resource`; machine governance treats each as an OL authority family. Each authority family has `exactly_one` PRIMARY authority when that family is configured and may support `zero_or_more` SECONDARY authorities in future workflows. Current analytical operations route only the applicable PRIMARY authority unless their operation contract explicitly enables a secondary authority. GRK/HEB authority roles are not Project `LANGUAGE_PROFILE`s.
+- Grammar-profile wording: Operator prose says `selected SOURCE grammar profile`, `selected TARGET grammar profile`, or `selected WIP grammar profile`; machine selection is `exactly_one_active`. Original-language authorities instead carry a governed, source-bound `OL_AUTHORITY_PROFILE`.
 - Qualification-language wording: the current Scripture test languages are Indonesian (`id`), Ukrainian (`uk`), and Persian (`fa`). A test-language designation records qualification scope; it does not mean that a Project, grammar profile, or localization catalog is bundled, configured, approved, or active. The vanilla package contains a regional review-required WIP starter library keyed by canonical BCP 47 regional tags; imported Projects must confirm a regional identity before operational profile binding. Keep Scripture test-language scope separate from Operator/report-language policy; `id` participates in both for different reasons, while `uk` and `fa` are not thereby Operator-language candidates.
 - Interface-language wording: use `interface localization source` for the Setup-owned terminal labels and prompts governed by `system/config/localization/menu-localization.json`. The current interface set is `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`; every governed entry contains all six renderings. `ecosystem.yml > interface.language` selects the workstation interface locale. Menu behavior is keyed by invariant semantic controls, never by localized labels. Do not call this source a Scripture grammar profile or a Job reporting profile.
 - Versification wording: Operator prose says `resolved effective VRS`; machine cardinality is `exactly_one` effective VRS per governed resource/Run context after resolution.
-- SAW Operator check vocabulary: use **Reference Text Comparison (RTC)**, **Targeted Check**, and **Original-Language Review** as the three public check-mode names.
-  - **Reference Text Comparison (RTC)** is the broad systematic SAW Reference Text Comparison (RTC) operation. The machine operation is `rtc`. Reference Text Comparison (RTC) contains conditional `STRUCTURAL_ADJUDICATION`, required `REFERENCE_TEXT_COMPARISON`, and conditional `SELECTIVE_OL_ADJUDICATION` model stages around deterministic preflight/finalization. Ordinary Reference Text Comparison (RTC) stages do not receive OL Scripture. Only when `source_text_drift_adjudication` is `ENABLED` may the meaning stage defer a material Working-Project-versus-Reference-Project rendering conflict whose source provenance cannot be established from routed non-OL evidence; SAGE then routes only that bounded source-text question to selective OL adjudication.
+- SAW Operator check vocabulary: use **Reference Text Comparison (RTC)**, **Source Text Correspondence (STC)**, **Targeted Check**, and **Original-Language Review** as the four public operation names, in that order.
+  - **Reference Text Comparison (RTC)** is the broad systematic WIP+REFERENCE operation. The machine operation is `rtc`. RTC contains conditional `STRUCTURAL_ADJUDICATION`, required `REFERENCE_TEXT_COMPARISON`, and conditional `SELECTIVE_OL_ADJUDICATION` model stages around deterministic preflight/finalization. Ordinary RTC stages do not receive OL Scripture. Only when `source_text_drift_adjudication` is `ENABLED` may a material WIP-versus-REFERENCE source-provenance conflict be repackaged as a separate bounded OL adjudication.
+  - **Source Text Correspondence (STC)** is the independent WIP-to-original-language correspondence operation. The machine operation is `stc`. NT routes WIP plus the configured PRIMARY GRK authority; OT routes WIP plus the configured PRIMARY HEB authority. STC does not consume REFERENCE Scripture or RTC findings and completes independently.
   - **Targeted Check** is one explicitly bounded WIP+REFERENCE question that does not receive OL Scripture. The current machine operation remains `focused` for compatibility; do not use `Focused Check` as the canonical beta Operator label. If the bounded question requires direct Greek/Hebrew adjudication, route it as Original-Language Review instead.
   - **Original-Language Review** is one tightly bounded question requiring direct configured Greek/Hebrew evidence, normally one verse or short verse range. It is not a general commentary or unrestricted OL study. The current machine operation remains `ol`.
-  - Selection rule: broad/systematic review -> Reference Text Comparison (RTC); one bounded non-OL question -> Targeted Check; one bounded question requiring direct OL evidence -> Original-Language Review.
+  - Selection rule: broad WIP+REFERENCE review -> RTC; systematic WIP-to-OL correspondence -> STC; one bounded non-OL question -> Targeted Check; one bounded question requiring direct OL evidence -> Original-Language Review.
 - SAW note output: use `Operator note text` or `plain-text issue blocks`; never describe SAGE as creating Paratext Notes XML.
 
 - Classic interactive-screen grammar: enclose every major menu title with the complete double-line set `╔═╗ / ║ / ╚═╝`. Render minor section headings with a `> ` prefix followed by an unindented, full-width `─` underline. Enclose the global A-F footer with the complete single-line set `┌─┐ / │ / └─┘`. Leave one blank line before and after each block. Indent footer keys with two spaces (`  A.`, `  D.`), matching the numeric-choice field. Put primary/commit actions before configurable options. Use fixed-width label columns instead of literal tab characters. Optional free-text/path prompts that accept cancellation must say `[Enter to cancel]` and must treat empty input as Back/cancel, not as an error.
@@ -111,6 +112,22 @@ completed schema, menu, runtime, catalog, and validation adjustment.
 - Scripture format: `USFM`.
 - Versification: define `VRS` at first use for a general audience.
 - Natural-language interface: `natural-language request`, `interpretation`, `canonical command`, and `advisory-only`.
+
+## Universal language-specificity rule
+
+Every model-facing SAGE analytical transaction, including any limited request, microtransaction, retry, validation pass, targeted question, rewrite, consistency check, or OL adjudication, SHALL explicitly bind the canonical linguistic identity for every natural-language stream it uses. The model must not be required to infer canonical language, dialect, regional variety, or historical register from the supplied text.
+
+- Project, WIP, SOURCE, DONOR, TARGET, REFERENCE, and reporting-language streams use their complete governed `LANGUAGE_PROFILE` when that stream participates in the transaction.
+- Original-language authorities use a complete source-bound `OL_AUTHORITY_PROFILE`. The bundled GRK profile identifies Ancient/New Testament Greek and explicitly excludes Modern Greek assumptions. The bundled HEB profile identifies Biblical/Ancient Hebrew and explicitly excludes Modern Israeli Hebrew assumptions.
+- Canonical profiles are immutable controller-selected context. They are handed to every applicable bounded task in full, are never sliced with Scripture, and never participate in Scripture SFM token or hard-byte sizing.
+- Missing, invalid, or ambiguous required linguistic specificity blocks provider handoff. Provider/model language detection is never an acceptable fallback.
+- If two routed streams share the same exact canonical profile fingerprint, SAGE may materialize one physical profile read while retaining explicit bindings for both streams.
+
+## Universal review-item SFM sizing rule
+
+The deterministic general SFM slicer is the single Scripture sizing authority for BIC and SAW operations. The sizing unit is one actual model review item or analysis route. Only the SFM content actually routed to that item contributes to its token and hard-byte limits. Controller objects, transaction metadata, prompts, output schemas, profiles, IDs, hashes, diagnostics, USJ projections, and other orchestration material contribute zero to Scripture slicing. Their serialized transport size may be retained as telemetry but cannot alter work-unit boundaries.
+
+RTC retains its WIP soft-target behavior, but its required comparison route hard guard is measured from routed WIP+REFERENCE SFM. STC measures routed WIP+PRIMARY-OL SFM. BIC measures the SFM routed to each stage; REWRITE and SELF-CHECK inherit approved INSPECT scope instead of independently widening it. Conditional OL stages are separate review items with separate routed-SFM budgets.
 
 ## Review versus flow
 
@@ -153,19 +170,19 @@ A bilingual rendering is one canonical record displayed in two languages; never 
 
 Every bilingual report must state that the Job-primary rendering governs interpretation but does not guarantee that every finding is correct. It must identify the secondary rendering as assistive, lower-confidence, unverified translation that may contain ambiguity and must be checked against the primary before action. Canonical machine records, reason codes, evidence IDs, and Scripture coordinates remain authoritative.
 
-### Final Beta Language/Profile hierarchy
+### Alpha Language/Profile hierarchy
 
 Use `Language identity` for the broad ISO language/macrolanguage identity, `member language` where ISO defines one, and `regional Language Profile` for the working SAGE namespace bound to Projects and Grammar Profiles. Examples: `English [en/eng] -> en-US/en-GB`; `Persian [fa/fas] -> Iranian Persian [pes] -> pes-IR`; `Persian [fa/fas] -> Dari [prs] -> prs-AF`. Do not model these relationships with `profile_alias`. Legacy aliases are migration-only compatibility data.
 
 Projects must have a confirmed regional Language Profile before SAGE registration completes. Grammar Profiles are subordinate role-specific dependants and may remain unconfigured until Job setup requires them.
 
-### Final Beta report/storage grammar
+### Alpha report/storage grammar
 
 Processing and evidence granularity may be smaller than a chapter; Operator report granularity is one chapter. Use `<BOOK>_<CCC>_ACTION-REPORT.md` and `<BOOK>_<CCC>_OPERATOR-NOTE.txt`, with a three-digit chapter even for single-chapter books. The Markdown report is canonical; TXT is a deterministic non-AI rendering of that finalized Markdown. Root `reports/` contains Operator deliverables only. Technical execution data belongs to `diagnostics/`, machine aggregation to `report_data/`, and block evidence to `tasks/`.
 
 Operator-facing report prose resolves internal `WIP` and `REFERENCE` roles to configured Project display names. Original-language drift adjudication likewise reports `<project-name> CLOSER TO SOURCE`, `BOTH DEFENSIBLE`, or `INCONCLUSIVE`; it must not expose bare role labels as the decision.
 
-### Final Beta RTC policy
+### Alpha RTC policy
 
 Reference Text Comparison (RTC) has four independently toggled checks: structure/completeness, translation/meaning, language/readability, and consistency. USFM context policies are `NORMAL`, `MATERIAL_ONLY`, and `STRUCTURE_ONLY`; selecting a context cycles directly through these values. `MATERIAL_ONLY` controls finding elevation and never downgrades severity. `STRUCTURE_ONLY` validates marker structure without treating enclosed content as translation prose. The current contexts are `\add`, `\nd`, `\f`, and `\x`; quotation `\qt` is not an Operator policy toggle. `Check source-text drift adjudication` toggles `PROHIBITED`/`ENABLED`. When enabled, it permits a bounded OL request only when the Working Project and Reference Project materially conflict in their rendering of the same source meaning and routed non-OL evidence cannot establish source provenance. The OL stage answers only that source-text question and records the source basis; grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency defects never trigger OL routing. OL becomes primary source-text authority only for that bounded adjudication.
 
@@ -266,6 +283,6 @@ Files named `ORIGINAL-*`, promotion reports, historical conversion inputs, and d
 - **DECLARED PROJECT VRS**: a configured base/custom VRS explicitly supplied by Project metadata or approved by the operator; it overrides the default.
 - **SAW VRS ADVISORY**: a coordinate discrepancy that is invalid under the effective Project VRS but specifically valid/explained under the default Project VRS. It is reported and retained but does not block SAW execution.
 - A genuine coordinate omission under the default Project VRS is not an advisory and may still block.
-## Beta path normalization
+## Alpha path normalization
 
 - Generated path grammar: never emit identical adjacent directory segments. For polished SAW output, use `localdata/reports/<job-id>/<BOOK>/` for a whole-book scope; add a distinct scope directory only when it contributes additional coordinates. The same non-duplication rule applies to Job `report_data/`.

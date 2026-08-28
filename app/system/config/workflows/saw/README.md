@@ -1,6 +1,6 @@
 # SAW workflow
 
-SAW analyzes one bounded LWC work-in-progress translation (WIP) against one authorized LWC REFERENCE. Its Job may bind one configured Greek resource and/or one configured Hebrew resource for operations or stages that require original-language evidence.
+SAW hosts four independent analysis operations over one bounded WIP. RTC/Targeted Check use the authorized REFERENCE; STC uses the testament-appropriate PRIMARY original-language authority and does not consume REFERENCE evidence; Original-Language Review uses the bounded evidence declared by its operation contract. The Job may bind one configured Greek resource and/or one configured Hebrew resource; machine governance treats those bindings as OL authority families.
 
 ```text
 WIP + REFERENCE (+ configured applicable GRK/HEB only when routed) -> findings

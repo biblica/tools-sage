@@ -1,4 +1,4 @@
-"""Headless Textual interaction tests for the Beta TUI when Textual is installed."""
+"""Headless Textual interaction tests for the Alpha TUI when Textual is installed."""
 
 from __future__ import annotations
 

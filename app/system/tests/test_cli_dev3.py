@@ -108,11 +108,12 @@ def test_saw_plan_uses_independent_wip_without_bic_generation_pin(package_root: 
     assert payload["reference_project_id"] == "usNIVv2"
     assert payload["shared_hashes"]["reference_resource_sha256"]
     package = payload["units"][0]["rtc_package"]
-    assert package["pack"]["estimated_tokens"] == sum(
-        package[name]["estimated_tokens"] for name in ("wip", "ref", "oh")
+    assert package["route"]["estimated_tokens"] == (
+        package["wip"]["estimated_tokens"] + package["ref"]["estimated_tokens"]
     )
+    assert package["sizing_basis"] == "ROUTED_SFM_ONLY"
     assert package["wip"]["estimated_tokens"] < 8000
-    assert package["pack"]["estimated_tokens"] <= 32000
+    assert package["route"]["estimated_tokens"] <= 32000
 
 
 def test_chapter_plan_ignores_defects_in_other_chapters(package_root: Path, make_workspace) -> None:

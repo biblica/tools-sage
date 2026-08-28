@@ -432,6 +432,7 @@ def test_host_capability_selects_basic_when_available_ram_is_below_4_gib(monkeyp
     assert row["profile"] == "BASIC"
     assert row["detection_status"] == "READY"
     assert row["default_hardening_workers"] == 2
+    assert row["hardening_worker_limit"] == 2
     assert "AVAILABLE_RAM_BELOW_4_GIB" in row["reasons"]
 
 
@@ -442,6 +443,7 @@ def test_host_capability_selects_basic_when_logical_threads_are_below_8(monkeypa
     row = bootstrap.detect_host_capability()
     assert row["profile"] == "BASIC"
     assert row["default_hardening_workers"] == 2
+    assert row["hardening_worker_limit"] == 2
     assert "LOGICAL_CPU_THREADS_BELOW_8" in row["reasons"]
 
 
@@ -453,6 +455,31 @@ def test_host_capability_selects_standard_at_thresholds(monkeypatch: pytest.Monk
     assert row["profile"] == "STANDARD"
     assert row["detection_status"] == "READY"
     assert row["default_hardening_workers"] == 4
+    assert row["hardening_worker_limit"] == 4
+    assert row["reasons"] == []
+
+
+def test_host_capability_selects_standard_below_advanced_thresholds(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep capable hosts STANDARD unless both ADVANCED thresholds are met."""
+    monkeypatch.setattr(bootstrap, "_available_ram_bytes", lambda: 16 * 1024**3)
+    monkeypatch.setattr(bootstrap, "_logical_cpu_threads", lambda: 15)
+    row = bootstrap.detect_host_capability()
+    assert row["profile"] == "STANDARD"
+    assert row["default_hardening_workers"] == 4
+    assert row["hardening_worker_limit"] == 4
+
+
+def test_host_capability_selects_advanced_at_16_gib_and_16_threads(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Select ADVANCED only when both governed high-capability thresholds are met."""
+    monkeypatch.setattr(bootstrap, "_available_ram_bytes", lambda: 16 * 1024**3)
+    monkeypatch.setattr(bootstrap, "_logical_cpu_threads", lambda: 16)
+    row = bootstrap.detect_host_capability()
+    assert row["profile"] == "ADVANCED"
+    assert row["detection_status"] == "READY"
+    assert row["advanced_ram_threshold_bytes"] == 16 * 1024**3
+    assert row["advanced_thread_threshold"] == 16
+    assert row["default_hardening_workers"] == 6
+    assert row["hardening_worker_limit"] == 6
     assert row["reasons"] == []
 
 
@@ -464,16 +491,24 @@ def test_host_capability_detection_failure_falls_safely_to_basic(monkeypatch: py
     assert row["profile"] == "BASIC"
     assert row["detection_status"] == "FAILED_SAFE"
     assert row["default_hardening_workers"] == 2
+    assert row["hardening_worker_limit"] == 2
     assert row["reasons"] == ["HARDWARE_DETECTION_FAILED"]
 
 
-def test_hardening_worker_override_remains_bounded() -> None:
-    """Keep explicit hardening-worker overrides within the supported one-to-eight range."""
-    basic = {"default_hardening_workers": 2}
-    standard = {"default_hardening_workers": 4}
+def test_hardening_worker_override_cannot_exceed_host_profile_limit() -> None:
+    """Keep overrides at or below the BASIC/STANDARD/ADVANCED setup-selected worker ceiling."""
+    basic = {"profile": "BASIC", "default_hardening_workers": 2, "hardening_worker_limit": 2}
+    standard = {"profile": "STANDARD", "default_hardening_workers": 4, "hardening_worker_limit": 4}
+    advanced = {"profile": "ADVANCED", "default_hardening_workers": 6, "hardening_worker_limit": 6}
     assert bootstrap.hardening_worker_cap(basic, {}) == (2, "HOST_PROFILE_DEFAULT")
     assert bootstrap.hardening_worker_cap(standard, {}) == (4, "HOST_PROFILE_DEFAULT")
-    assert bootstrap.hardening_worker_cap(basic, {"SAGE_HARDENING_WORKERS": "99"}) == (8, "ENV_OVERRIDE")
+    assert bootstrap.hardening_worker_cap(advanced, {}) == (6, "HOST_PROFILE_DEFAULT")
+    assert bootstrap.hardening_worker_cap(basic, {"SAGE_HARDENING_WORKERS": "99"}) == (2, "ENV_OVERRIDE_CAPPED_BY_HOST_PROFILE")
+    assert bootstrap.hardening_worker_cap(standard, {"SAGE_HARDENING_WORKERS": "99"}) == (4, "ENV_OVERRIDE_CAPPED_BY_HOST_PROFILE")
+    assert bootstrap.hardening_worker_cap(advanced, {"SAGE_HARDENING_WORKERS": "99"}) == (6, "ENV_OVERRIDE_CAPPED_BY_HOST_PROFILE")
+    assert bootstrap.hardening_worker_cap(advanced, {"SAGE_HARDENING_WORKERS": "5"}) == (5, "ENV_OVERRIDE")
+    assert bootstrap.hardening_worker_cap(basic, {"SAGE_HARDENING_WORKERS": "1"}) == (1, "ENV_OVERRIDE")
+    assert bootstrap.hardening_worker_cap(standard, {"SAGE_HARDENING_WORKERS": "3"}) == (3, "ENV_OVERRIDE")
     assert bootstrap.hardening_worker_cap(standard, {"SAGE_HARDENING_WORKERS": "0"}) == (1, "ENV_OVERRIDE")
     assert bootstrap.hardening_worker_cap(standard, {"SAGE_HARDENING_WORKERS": "bad"}) == (4, "INVALID_OVERRIDE_FALLBACK")
 
@@ -489,3 +524,73 @@ def test_host_capability_receipt_is_machine_local(tmp_path: Path, monkeypatch: p
     assert row["profile"] == "STANDARD"
     assert row["default_hardening_workers"] == 4
     assert row["detected_utc"]
+
+
+def test_setup_selected_host_capability_is_loaded_for_later_hardening(tmp_path: Path) -> None:
+    """Formal hardening must reuse the setup-selected host-tier ceiling, not redetect upward."""
+    root = _root(tmp_path)
+    basic = {
+        "schema_version": bootstrap.HOST_CAPABILITY_SCHEMA,
+        "profile": "BASIC",
+        "detection_status": "READY",
+        "available_ram_bytes": 8 * 1024**3,
+        "logical_cpu_threads": 8,
+        "basic_ram_threshold_bytes": bootstrap.BASIC_RAM_THRESHOLD_BYTES,
+        "basic_thread_threshold": bootstrap.BASIC_THREAD_THRESHOLD,
+        "default_hardening_workers": 2,
+        "hardening_worker_limit": 2,
+        "reasons": [],
+    }
+    bootstrap._write_host_capability(root, basic)
+
+    loaded, source = bootstrap.load_host_capability(root)
+
+    assert loaded["profile"] == "BASIC"
+    assert loaded["hardening_worker_limit"] == 2
+    assert source == "SETUP_HOST_CAPABILITY_RECEIPT"
+
+
+def test_setup_selected_advanced_capability_is_loaded_for_later_hardening(tmp_path: Path) -> None:
+    """Formal hardening must retain a setup-selected ADVANCED ceiling of six workers."""
+    root = _root(tmp_path)
+    advanced = {
+        "schema_version": bootstrap.HOST_CAPABILITY_SCHEMA,
+        "profile": "ADVANCED",
+        "detection_status": "READY",
+        "available_ram_bytes": 16 * 1024**3,
+        "logical_cpu_threads": 16,
+        "basic_ram_threshold_bytes": bootstrap.BASIC_RAM_THRESHOLD_BYTES,
+        "basic_thread_threshold": bootstrap.BASIC_THREAD_THRESHOLD,
+        "advanced_ram_threshold_bytes": bootstrap.ADVANCED_RAM_THRESHOLD_BYTES,
+        "advanced_thread_threshold": bootstrap.ADVANCED_THREAD_THRESHOLD,
+        "default_hardening_workers": 6,
+        "hardening_worker_limit": 6,
+        "reasons": [],
+    }
+    bootstrap._write_host_capability(root, advanced)
+
+    loaded, source = bootstrap.load_host_capability(root)
+
+    assert loaded["profile"] == "ADVANCED"
+    assert loaded["hardening_worker_limit"] == 6
+    assert bootstrap.hardening_worker_cap(loaded, {"SAGE_HARDENING_WORKERS": "99"}) == (
+        6,
+        "ENV_OVERRIDE_CAPPED_BY_HOST_PROFILE",
+    )
+    assert source == "SETUP_HOST_CAPABILITY_RECEIPT"
+
+
+def test_missing_or_invalid_setup_host_capability_fails_safe_to_basic(tmp_path: Path) -> None:
+    """Absent/corrupt setup capability may never permit more than the BASIC worker ceiling."""
+    root = _root(tmp_path)
+    loaded, source = bootstrap.load_host_capability(root)
+    assert loaded["profile"] == "BASIC"
+    assert loaded["hardening_worker_limit"] == 2
+    assert source == "MISSING_SETUP_RECEIPT_FAIL_SAFE_BASIC"
+
+    target = bootstrap.storage_layout(root, create=True).state_root / "host-capability.json"
+    target.write_text('{"profile":"STANDARD","hardening_worker_limit":99}\n', encoding="utf-8")
+    loaded, source = bootstrap.load_host_capability(root)
+    assert loaded["profile"] == "BASIC"
+    assert loaded["hardening_worker_limit"] == 2
+    assert source == "INVALID_SETUP_RECEIPT_FAIL_SAFE_BASIC"
