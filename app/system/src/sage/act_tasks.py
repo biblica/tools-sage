@@ -83,6 +83,7 @@ from .runtime_paths import (
     workflow_for_task,
 )
 from .stc import plan_stc_work_units, stc_authority_family, validate_stc_submission, finalize_stc_run
+from .stc_reporting import publish_stc_reports
 from .rtc_planner import (
     RTC_HANDOFF_CONTRACT_VERSION,
     RTC_PLANNER_VERSION,
@@ -5053,6 +5054,11 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         normalized = load_json(normalized_path)
         if str(normalized.get("operation") or "") != "stc":
             raise ValidationError("STC aggregate received a non-STC terminal result", code="RESULT_COVERAGE_DRIFT")
+        normalized_family = str(normalized.get("authority_family") or family).strip().upper()
+        if normalized_family != family:
+            raise ValidationError("STC work-unit authority family differs from its plan", code="RESULT_COVERAGE_DRIFT")
+        normalized["authority_family"] = family
+        normalized.setdefault("primary_ol_authority", ol_authority)
         if str(normalized.get("job_id") or "") != str(plan.get("job_id") or "") or str(normalized.get("run_id") or "") != str(plan.get("run_id") or ""):
             raise ValidationError("STC work-unit Job/Run identity differs from its plan", code="RESULT_COVERAGE_DRIFT")
         if str(normalized.get("output_project") or "") != output_project or str(normalized.get("primary_ol_authority") or "") != ol_authority:
@@ -5083,6 +5089,13 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         accepted_results=accepted_results,
         output_root=canonical_root,
     )
+    publication = publish_stc_reports(
+        config,
+        job_id=str(plan.get("job_id") or ""),
+        run_id=str(plan.get("run_id") or ""),
+        requested_scope=str(plan.get("requested_scope") or ""),
+        results=accepted_results,
+    )
     result = {
         "schema_version": "1.0",
         "status": "FINALIZED",
@@ -5098,6 +5111,7 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         "work_unit_count": len(accepted_results),
         "resource_fingerprints": lineage or {},
         "canonical_artifacts": {key: str(value) for key, value in artifacts.items()},
+        **publication,
         "finalized_utc": utc_now(),
     }
     aggregate_path = path.with_name(f"{plan['plan_id']}-aggregate.json")
@@ -5105,6 +5119,7 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
     plan["status"] = "FINALIZED"
     plan["aggregate_path"] = str(aggregate_path)
     plan["canonical_artifacts"] = result["canonical_artifacts"]
+    plan.update(publication)
     atomic_write_json(path, plan)
     return {**result, "aggregate_path": str(aggregate_path)}
 
@@ -5570,6 +5585,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
 
     validation_details: dict[str, Any]
     commit: dict[str, Any] | None = None
+    stc_publication: dict[str, Any] | None = None
     final_status: str
     conditional_ol_evidence_used = False
     if workflow == "bic" and operation == "inspect":
@@ -5802,7 +5818,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             "analytical_completion": normalized["analytical_completion"]["status"],
         }
         if not raw.get("parent_plan_id"):
-            finalize_stc_run(
+            canonical_artifacts = finalize_stc_run(
                 run_id=run_id,
                 planned_units=[
                     {
@@ -5816,6 +5832,16 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 accepted_results=[normalized],
                 output_root=validation_root / "stc",
             )
+            stc_publication = publish_stc_reports(
+                config,
+                job_id=job_id,
+                run_id=run_id,
+                requested_scope=str(raw.get("scope") or ""),
+                results=[normalized],
+            )
+            validation_details["canonical_artifacts"] = {
+                key: str(value) for key, value in canonical_artifacts.items()
+            }
         final_status = "FINALIZED"
     else:
         grammar = raw.get("project_grammar") or {}
@@ -5942,6 +5968,8 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         ],
         "validated_utc": utc_now(),
     }
+    if stc_publication is not None:
+        result.update(stc_publication)
     validation_root = task_root / "validation"
     atomic_write_json(validation_root / "submission.json", result)
     _update_control(

@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+from argparse import Namespace
 from pathlib import Path
 
 
@@ -139,6 +140,48 @@ def test_stc_plan_measures_wip_and_primary_source_as_one_route(
     assert package["route"]["estimated_tokens"] == (
         package["wip"]["estimated_tokens"] + package["ol"]["estimated_tokens"]
     )
+
+
+def test_stc_submit_uses_primary_ol_project_for_operational_logging(
+    make_workspace,
+    monkeypatch,
+    capsys,
+) -> None:
+    """STC has no contemporary source, so submission logging must bind its primary OL Project."""
+    import sage.cli as cli
+    from sage.registry import load_ecosystem
+
+    root = make_workspace(configured=True)
+    config = load_ecosystem(root / "ecosystem.yml")
+    manifest = root / "stc-task-manifest.json"
+    manifest.write_text("{}\n", encoding="utf-8")
+    monkeypatch.setattr(cli, "_load", lambda _args: (config, None))
+    monkeypatch.setattr(
+        cli,
+        "submit_act_task",
+        lambda _config, _path: {
+            "task_id": "STC-TASK",
+            "status": "FINALIZED",
+            "operation": "stc",
+            "output_project": "usWIP",
+            "contemporary_source": None,
+            "original_language_sources": [{"project": "GRK", "authority_role": "PRIMARY"}],
+        },
+    )
+
+    code = cli.command_act_submit(
+        Namespace(
+            settings=str(root / "ecosystem.yml"),
+            task=str(manifest),
+            json=True,
+            debug=False,
+            verbose=False,
+            quiet=False,
+        )
+    )
+
+    assert code == 0
+    assert json.loads(capsys.readouterr().out)["status"] == "FINALIZED"
 
 
 def test_chapter_plan_ignores_defects_in_other_chapters(package_root: Path, make_workspace) -> None:
