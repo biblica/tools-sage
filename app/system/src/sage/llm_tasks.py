@@ -32,6 +32,7 @@ from .sfm_slicer import measure_sfm_text
 from .references import parse_scope
 from .registry import EcosystemConfig
 from .storage import StorageError, declare_governed_path, resolve_declared_path
+from .stc import STC_FINDING_CATEGORIES
 from .vrs import VerseRef
 
 EXECUTION_MODE = "SAGE_GOVERNED_TASK_V1"
@@ -107,6 +108,64 @@ def _load_json(path: Path, *, label: str) -> dict[str, Any]:
     return value
 
 
+def _stc_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
+    """Build the compact STC-only semantic response schema."""
+    narrative_tag = _narrative_language_tag(manifest)
+    finding = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "category",
+            "target_reference",
+            "summary",
+            "wip_evidence",
+            "ol_evidence",
+        ],
+        "properties": {
+            "category": {
+                "type": "string",
+                "enum": sorted(STC_FINDING_CATEGORIES),
+            },
+            "target_reference": {
+                "type": "string",
+                "description": (
+                    "One canonical Scripture scope inside the assigned STC work unit."
+                ),
+            },
+            "summary": _narrative_field_schema(
+                narrative_tag, "Summarize the governed correspondence finding."
+            ),
+            "wip_evidence": {
+                "type": "string",
+                "minLength": 1,
+                "description": (
+                    "Cite the exact routed WIP evidence supporting this finding. "
+                    "Preserve source wording verbatim."
+                ),
+            },
+            "ol_evidence": {
+                "type": "string",
+                "minLength": 1,
+                "description": (
+                    "Cite the exact routed primary original-language evidence supporting "
+                    "this finding. Preserve source wording verbatim."
+                ),
+            },
+        },
+    }
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["review_summary", "findings"],
+        "properties": {
+            "review_summary": _narrative_field_schema(
+                narrative_tag, "Summarize the bounded STC review."
+            ),
+            "findings": {"type": "array", "items": finding},
+        },
+    }
+
+
 def _task_manifest_path(config: EcosystemConfig, value: Path) -> Path:
     """Resolve a task manifest inside governed Core/localdata storage."""
     raw = value.expanduser()
@@ -125,6 +184,8 @@ def _task_manifest_path(config: EcosystemConfig, value: Path) -> Path:
 
 def _saw_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
     """Build a stage-specific semantic SAW provider schema with deterministic boilerplate omitted."""
+    if str(manifest.get("operation") or "").lower() == "stc":
+        return _stc_findings_file_schema(manifest)
     narrative_tag = _narrative_language_tag(manifest)
     string_array = {"type": "array", "items": {"type": "string"}}
     allowed_evidence_ids = [
@@ -328,6 +389,18 @@ def _materialize_saw_findings(
             code="LLM_PROVIDER_RESPONSE_INVALID",
         )
     operation = str(manifest.get("operation", ""))
+    if operation == "stc":
+        findings = semantic.get("findings", [])
+        if not isinstance(findings, list):
+            raise ValidationError(
+                "STC semantic result findings must be a list",
+                code="LLM_PROVIDER_RESPONSE_INVALID",
+            )
+        return {
+            "review_summary": summary,
+            "report_language": _narrative_language_tag(manifest),
+            "findings": findings,
+        }
     stage = str(manifest.get("rtc_stage") or {
         "focused": "FOCUSED_CHECK",
         "ol": "FOCUSED_OL",
@@ -468,6 +541,7 @@ def _materialize_provider_files(
 
 _NARRATIVE_KEYS = {
     "review_summary",
+    "summary",
     "answer",
     "issue",
     "required_action",
