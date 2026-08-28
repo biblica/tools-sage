@@ -538,6 +538,39 @@ def test_stc_pre_run_preview_renders_aligned_routed_sfm_columns(make_workspace) 
     assert "Token limit:" not in rendered
 
 
+def test_stc_preview_rejects_generic_measurements_instead_of_downgrading_ui(
+    make_workspace,
+) -> None:
+    """STC must never fall back to the unrelated one-stream token preview."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        io=MenuIO(input_func=ScriptedInput([]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+    center.controller = lambda _job, _args: {
+        "summary": {"work_units": 1, "largest_estimated_tokens": 10917},
+        "policy": {"hard_estimated_tokens": 18000},
+        "units": [{
+            "primary_scope": "1JN 1:1-5:21",
+            "measurement": {"estimated_tokens": 10917},
+        }],
+    }
+
+    with pytest.raises(ValidationError) as caught:
+        center._review_work_before_run(job, operation="stc", scope="1JN 1:1-5:21")
+
+    assert caught.value.code == "SAW_STC_PREVIEW_INVALID"
+    rendered = output.getvalue()
+    assert "Token limit:" not in rendered
+    assert "estimated routed-SFM tokens" not in rendered
+    assert "Planning bounded SAW work" not in rendered
+
+
 def test_existing_ecosystem_can_register_packaged_ukrainian_wip_and_retry_job(make_workspace) -> None:
     """An existing pre-Beta ecosystem can recover Ukrainian SAW Job creation in-menu."""
     import copy
@@ -971,6 +1004,7 @@ def test_routine_saw_preflight_keeps_vrs_advisory_details_out_of_ui(make_workspa
     status = center._preflight_saw_preview(
         job,
         {"units": [{"primary_scope": "JHN 4:43-5:30"}]},
+        operation="stc",
         require_original_language=True,
     )
 
@@ -980,6 +1014,7 @@ def test_routine_saw_preflight_keeps_vrs_advisory_details_out_of_ui(make_workspa
     assert "SAW VERSIFICATION ADVISORY" not in rendered
     assert "EXPECTED_COORDINATE_MISSING" not in rendered
     assert "JHN 5:4" not in rendered
+    assert "Checking SAW resources for each planned section" not in rendered
 
 
 def test_vrs_only_project_differences_do_not_block_saw_initialization(make_workspace) -> None:

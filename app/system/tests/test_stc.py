@@ -293,5 +293,5 @@ def test_controller_aggregate_routes_partitioned_stc_to_canonical_finalizer(make
     assert Path(result["canonical_artifacts"]["run_result"]).name == "STC_RUN_RESULT.json"
     assert Path(result["canonical_artifacts"]["findings"]).name == "STC_FINDINGS.json"
     assert Path(result["canonical_artifacts"]["report"]).name == "STC_REPORT.md"
-    assert Path(result["report_path"]).name == "MAT_001_STC-REPORT.md"
-    assert Path(result["operator_note_text_path"]).name == "MAT_001_STC-OPERATOR-NOTE.txt"
+    assert Path(result["report_path"]).name == "MAT_001_STC_ACTION-REPORT.md"
+    assert Path(result["operator_note_text_path"]).name == "MAT_001_STC_OPERATOR-NOTE.txt"

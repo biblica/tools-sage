@@ -79,8 +79,9 @@ Reporting language is a separate authority. Every Job owns one required primary 
 Finalized Run findings remain as governed Job data. SAGE consolidates compatible results for the
 same chapter/scope and publishes polished output at `localdata/reports/<job-id>/<BOOK>/`. For example,
 SAW Reference Text Comparison (RTC) on `GEN 1` publishes
-`localdata/reports/<job-id>/GEN/GEN-001_YYYY-MM-DD_001_ACTION-REPORT.md` and its matching
-`_OPERATOR-NOTE.txt`. The canonical consolidation record remains under the Job's `report_data/`
+`localdata/reports/<job-id>/GEN/GEN_001_RTC_ACTION-REPORT.md` and its matching
+`GEN_001_RTC_OPERATOR-NOTE.txt`. The report ID (`RTC` or `STC`) is always
+visible in the filename. The canonical consolidation record remains under the Job's `report_data/`
 folder. Findings sharing a verse/category are not guessed to conflict. When an upstream validator
 supplies explicit conflict lineage, competing conclusions are retained and marked
 `HUMAN_REVIEW_REQUIRED`; SAGE never chooses one silently. Reports are never written into a

@@ -246,9 +246,9 @@ def publish_stc_reports(
         if authority:
             document["language_authority"] = authority
         base = f"{book}_{chapter:03d}_STC"
-        report_path = report_root / f"{base}-REPORT.md"
-        note_path = report_root / f"{base}-OPERATOR-NOTE.txt"
-        data_path = data_root / f"{base}-CONSOLIDATED.json"
+        report_path = report_root / f"{base}_ACTION-REPORT.md"
+        note_path = report_root / f"{base}_OPERATOR-NOTE.txt"
+        data_path = data_root / f"{base}_CONSOLIDATED.json"
         document = ensure_secondary_saw_report_rendering(config.root, report_path, document)
         markdown = _stc_report_markdown(document)
         atomic_write_text(report_path, markdown)

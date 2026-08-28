@@ -252,14 +252,23 @@ def _chapter_document(document: dict[str, Any], *, book: str, chapter: int) -> d
     return result
 
 
-def _chapter_bundle_paths(plan_path: Path, *, book: str, chapter: int) -> tuple[Path, Path, Path]:
-    """Return canonical chapter report, note, and machine-data paths."""
+def _chapter_bundle_paths(
+    plan_path: Path,
+    *,
+    book: str,
+    chapter: int,
+    report_id: str,
+) -> tuple[Path, Path, Path]:
+    """Return chapter paths that expose the SAW report/operation identity."""
     job_root = _job_root_from_plan(plan_path)
     reports_root = _append_parts(_job_reports_root(plan_path), (book,))
     report_data_root = _append_parts(job_root / "report_data", (book,))
     reports_root.mkdir(parents=True, exist_ok=True)
     report_data_root.mkdir(parents=True, exist_ok=True)
-    base = f"{book}_{chapter:03d}"
+    operation = str(report_id or "").strip().upper()
+    if operation not in {"RTC", "STC"}:
+        raise ValidationError(f"Unsupported SAW report ID: {report_id!r}")
+    base = f"{book}_{chapter:03d}_{operation}"
     return (
         reports_root / f"{base}_ACTION-REPORT.md",
         reports_root / f"{base}_OPERATOR-NOTE.txt",
@@ -308,7 +317,12 @@ def _write_chapter_report_bundles(
         )
         if authority:
             chapter_doc["language_authority"] = authority
-        report_path, note_path, data_path = _chapter_bundle_paths(plan_path, book=book, chapter=chapter)
+        report_path, note_path, data_path = _chapter_bundle_paths(
+            plan_path,
+            book=book,
+            chapter=chapter,
+            report_id=str(chapter_doc.get("operation") or ""),
+        )
         chapter_doc = ensure_secondary_saw_report_rendering(config.root, report_path, chapter_doc)
         markdown = render_action_report(chapter_doc)
         atomic_write_text(report_path, markdown)

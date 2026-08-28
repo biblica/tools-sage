@@ -380,11 +380,11 @@ def test_composite_rtc_meaning_to_selective_ol_to_final_text(package_root: Path,
     assert Path(final["aggregate_path"]).is_file()
     report_path = Path(final["report_path"])
     assert report_path.parent == reports_root
-    assert report_path.name == "MAT_001_ACTION-REPORT.md"
+    assert report_path.name == "MAT_001_RTC_ACTION-REPORT.md"
     note_path = Path(final["operator_note_text_path"])
     assert note_path.is_file()
     assert note_path.parent == reports_root
-    assert note_path.name == "MAT_001_OPERATOR-NOTE.txt"
+    assert note_path.name == "MAT_001_RTC_OPERATOR-NOTE.txt"
     note_text = note_path.read_text(encoding="utf-8")
     assert "<?xml" not in note_text and "<Note" not in note_text
 
@@ -414,6 +414,25 @@ def test_composite_rtc_meaning_to_selective_ol_to_final_text(package_root: Path,
     assert note_path.parent == reports_root
     assert not nested_reports.exists()
     assert not nested_data.exists()
+
+    # Operation-less filenames from older builds migrate to an explicit RTC identity.
+    ambiguous_report = reports_root / "MAT_001_ACTION-REPORT.md"
+    ambiguous_note = reports_root / "MAT_001_OPERATOR-NOTE.txt"
+    report_path.replace(ambiguous_report)
+    note_path.replace(ambiguous_note)
+    ambiguous_plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    ambiguous_plan["report_path"] = str(ambiguous_report)
+    ambiguous_plan["operator_note_text_path"] = str(ambiguous_note)
+    plan_path.write_text(json.dumps(ambiguous_plan), encoding="utf-8")
+
+    identified = continue_saw_plan(config, plan_path)
+
+    report_path = Path(identified["report_path"])
+    note_path = Path(identified["operator_note_text_path"])
+    assert report_path.name == "MAT_001_RTC_ACTION-REPORT.md"
+    assert note_path.name == "MAT_001_RTC_OPERATOR-NOTE.txt"
+    assert not ambiguous_report.exists()
+    assert not ambiguous_note.exists()
 
     # Finalized plans from older builds migrate their plan-adjacent reports on resume.
     legacy_report = plan_path.with_name("legacy-ACTION-REPORT.md")
