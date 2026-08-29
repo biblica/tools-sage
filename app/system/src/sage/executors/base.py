@@ -52,6 +52,8 @@ class ModelCapability:
     model_specialty: str | None = None
     service_tiers: tuple[str, ...] = ()
     default_service_tier: str | None = None
+    identity_strength: str = "ALIASED"
+    cost_class: str = "UNKNOWN"
 
     def to_dict(self) -> dict[str, Any]:
         """Render one model capability entry for policy/diagnostic output."""

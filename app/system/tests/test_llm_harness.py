@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 from sage.storage import storage_layout
 from sage.atomic import atomic_write_json
@@ -24,7 +25,8 @@ from sage.llm_tasks import (
     execute_task,
 )
 from sage.llm_settings import update_llm_selection
-from sage.model_policy import recommend_model, validate_explicit_selection
+from sage.model_policy import recommend_model
+from sage.skill_routing import capability_fingerprint
 from sage.registry import load_ecosystem
 from sage.resource_mounts import mounts_path, set_resource_mount
 
@@ -43,6 +45,7 @@ def _synthetic_task(root: Path, *, conditional: bool = False) -> Path:
         writes = ["output/rewrite.usfm", "output/translation-challenges.json"]
     manifest = {
         "task_id": "synthetic-task-1",
+        "skill_id": "bic-rewrite" if conditional else "bic-inspect",
         "execution_mode": "SAGE_GOVERNED_TASK_V1",
         "workflow": "bic",
         "operation": "rewrite" if conditional else "inspect",
@@ -82,6 +85,12 @@ def _synthetic_task(root: Path, *, conditional: bool = False) -> Path:
     }
     path = task / "task-manifest.json"
     atomic_write_json(path, manifest)
+    _qualify_test_route(
+        root,
+        skill_id=str(manifest["skill_id"]),
+        model="gpt-5.6-sol" if conditional else "gpt-5.6-terra",
+        reasoning_id="high" if conditional else "medium",
+    )
     return path
 
 
@@ -117,6 +126,45 @@ def _fake_codex_status() -> ProviderStatus:
         account_plan_type="business",
         diagnostic="verified",
     )
+
+
+def _qualify_test_route(root: Path, *, skill_id: str, model: str, reasoning_id: str) -> None:
+    """Install one exact synthetic qualification seed in a disposable test workspace."""
+    status = _fake_codex_status()
+    capability = next(item for item in status.model_capabilities if item.model == model)
+    policy_path = root / "system/config/model-policy.yml"
+    policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+    suite_sha256 = (skill_id.encode("utf-8").hex() + "0" * 64)[:64]
+    policy["skill_routes"][skill_id]["suite_sha256"] = suite_sha256
+    policy_path.write_text(yaml.safe_dump(policy, sort_keys=False), encoding="utf-8")
+    skills = json.loads((root / "system/config/skills.json").read_text(encoding="utf-8"))
+    seed_path = root / "system/config/model-qualification-seeds.json"
+    seeds = json.loads(seed_path.read_text(encoding="utf-8")) if seed_path.is_file() else {
+        "schema_version": "1.0",
+        "routes": [],
+    }
+    seeds["routes"] = [
+        row for row in seeds["routes"] if str(row.get("skill_id") or "") != skill_id
+    ]
+    seeds["routes"].append(
+        {
+            "provider": "codex",
+            "model_id": model,
+            "capability_fingerprint": capability_fingerprint(capability),
+            "reasoning_id": reasoning_id,
+            "skill_id": skill_id,
+            "skill_sha256": skills["skills"][skill_id]["adapted_sha256"],
+            "suite_id": f"alpha1-{skill_id}",
+            "suite_sha256": suite_sha256,
+            "policy_version": "alpha1-1",
+            "qualification_status": "QUALIFIED",
+            "evidence_sha256": "d" * 64,
+            "cost_class": capability.cost_class,
+            "semantic_score": 1.0,
+            "semantic_score_material": False,
+        }
+    )
+    seed_path.write_text(json.dumps(seeds, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def test_codex_catalog_uses_chatgpt_account_and_applies_xhigh_ceiling(monkeypatch) -> None:
@@ -437,6 +485,7 @@ def test_clear_spanish_saw_narrative_gets_one_english_correction_retry(
     (task / "ACT.md").write_text("# Governed task\nReturn bounded findings.\n", encoding="utf-8")
     manifest = {
         "task_id": "synthetic-saw-language-1",
+        "skill_id": "saw-focused-check",
         "task_fingerprint": "language-fingerprint",
         "execution_mode": "SAGE_GOVERNED_TASK_V1",
         "workflow": "saw",
@@ -473,6 +522,12 @@ def test_clear_spanish_saw_narrative_gets_one_english_correction_retry(
     }
     manifest_path = task / "task-manifest.json"
     atomic_write_json(manifest_path, manifest)
+    _qualify_test_route(
+        root,
+        skill_id="saw-focused-check",
+        model="gpt-5.6-sol",
+        reasoning_id="high",
+    )
     prompts: list[str] = []
 
     # The fake provider intentionally leaks the Spanish evidence language once so
@@ -856,8 +911,8 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
     assert "SAGE BIC CONDITIONAL OL MICRO-ADJUDICATION" in prompts[1]
     assert "LOCAL EVIDENCE BOUNDARY: CONTENT EVIDENCE IS SAGE-LOCAL ONLY." in prompts[0]
     assert "READ CLASS: AUTHORIZED_CONTENT_EVIDENCE" in prompts[0]
-    assert efforts == ["high", "xhigh"]
-    assert result["phase_reasoning_efforts"] == ["high", "xhigh"]
+    assert efforts == ["high", "high"]
+    assert result["phase_reasoning_efforts"] == ["high", "high"]
     assert result["selection_mode"] == "AUTO_RECOMMENDED"
     assert len(status_calls) == 1
     assert len(prevalidated_calls) == 2
@@ -873,45 +928,16 @@ def test_model_policy_recommends_task_specific_model_and_reasoning(make_workspac
     """Verify live availability is filtered through SAGE qualification and task policy."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     status = _fake_codex_status()
+    _qualify_test_route(root, skill_id="bic-inspect", model="gpt-5.6-terra", reasoning_id="medium")
+    _qualify_test_route(root, skill_id="bic-rewrite", model="gpt-5.6-sol", reasoning_id="high")
+    _qualify_test_route(root, skill_id="bic-self-check", model="gpt-5.6-sol", reasoning_id="xhigh")
     inspect = recommend_model(root=root, status=status, workflow="bic", operation="inspect")
     rewrite = recommend_model(root=root, status=status, workflow="bic", operation="rewrite")
     self_check = recommend_model(root=root, status=status, workflow="bic", operation="self_check")
     assert (inspect.model, inspect.reasoning_effort) == ("gpt-5.6-terra", "medium")
     assert (rewrite.model, rewrite.reasoning_effort) == ("gpt-5.6-sol", "high")
-    assert rewrite.conditional_second_pass_reasoning_effort == "xhigh"
+    assert rewrite.conditional_second_pass_reasoning_effort == "high"
     assert (self_check.model, self_check.reasoning_effort) == ("gpt-5.6-sol", "xhigh")
-
-
-@pytest.mark.parametrize("effort", ["max", "ultra", "future-super-effort"])
-def test_explicit_effort_above_xhigh_is_rejected_even_with_operator_override(make_workspace, effort: str) -> None:
-    """Verify the hard reasoning ceiling cannot be bypassed by Operator policy override."""
-    root = make_workspace(configured=True, qualification_status="VALIDATED")
-    status = _fake_codex_status()
-    sol = status.model_capabilities[0]
-    status = ProviderStatus(
-        **{
-            **status.__dict__,
-            "model_capabilities": (
-                ModelCapability(
-                    **{
-                        **sol.__dict__,
-                        "supported_reasoning_efforts": sol.supported_reasoning_efforts + (ReasoningEffortOption(effort),),
-                    }
-                ),
-                status.model_capabilities[1],
-            ),
-        }
-    )
-    with pytest.raises(ValidationError, match="highest supported reasoning level is xhigh"):
-        validate_explicit_selection(
-            root=root,
-            status=status,
-            workflow="bic",
-            operation="rewrite",
-            model="gpt-5.6-sol",
-            reasoning_effort=effort,
-            allow_unqualified=True,
-        )
 
 
 @pytest.mark.parametrize("effort", ["max", "ultra", "future-super-effort"])

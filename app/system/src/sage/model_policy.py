@@ -161,6 +161,28 @@ def task_profile_key(workflow: str, operation: str) -> str:
     return f"{workflow.strip().lower()}.{operation.strip().lower()}"
 
 
+def skill_id_for_operation(root: Path, workflow: str, operation: str) -> str:
+    """Resolve a legacy workflow/operation caller to one exact registered Skill ID."""
+    registry_path = root.resolve() / "system" / "config" / "skills.json"
+    try:
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ConfigurationError(f"Invalid SAGE Skill registry: {registry_path}: {exc}") from exc
+    matches = [
+        str(skill_id)
+        for skill_id, record in (registry.get("skills") or {}).items()
+        if isinstance(record, dict)
+        and str(record.get("workflow") or "").strip().lower() == workflow.strip().lower()
+        and str(record.get("operation") or "").strip().lower() == operation.strip().lower()
+    ]
+    if len(matches) != 1:
+        raise ValidationError(
+            f"No unique registered Skill exists for {workflow}/{operation}",
+            code="NO_QUALIFIED_SKILL_ROUTE",
+        )
+    return matches[0]
+
+
 def qualification_for(policy: dict[str, Any], model: str, profile: str) -> dict[str, Any]:
     """Return model qualification metadata for one workflow profile."""
     row = policy.get("qualification", {}).get(model)
@@ -299,70 +321,37 @@ def recommend_model(
     operation: str,
     manifest: dict[str, Any] | None = None,
 ) -> ModelRecommendation:
-    """Select the preferred currently available, SAGE-qualified model and effort."""
-    if status.provider != "codex" or status.auth_mode != "CHATGPT" or not status.model_capabilities:
-        raise ValidationError("Live ChatGPT/Codex model catalog is required for SAGE recommendation", code="MODEL_CATALOG_REQUIRED")
-    policy = load_model_policy(root)
-    key = task_profile_key(workflow, operation)
-    profile = policy.get("task_profiles", {}).get(key)
-    if not isinstance(profile, dict):
-        raise ValidationError(f"No SAGE model policy exists for {key}", code="MODEL_POLICY_PROFILE_MISSING")
-    task_manifest = manifest or {"expected_references": [], "structural_candidate_ids": []}
-    complexity = classify_task_complexity(task_manifest, profile)
-    target = _effective_target(profile, complexity)
-    minimum = str(profile.get("minimum_reasoning_effort") or "").strip() or None
-    maximum = str(profile.get("maximum_reasoning_effort") or "").strip() or None
-    lookup = _model_lookup(status.model_capabilities)
-    preferred = profile.get("preferred_models", [])
-    candidates: list[ModelCapability] = []
-    if isinstance(preferred, list):
-        for model_name in preferred:
-            item = lookup.get(str(model_name))
-            if item is not None and item not in candidates:
-                candidates.append(item)
-    for item in status.model_capabilities:
-        if item not in candidates:
-            candidates.append(item)
-    for item in candidates:
-        qualification = qualification_for(policy, item.model, key)
-        if not qualification["qualified"]:
-            continue
-        effort = choose_reasoning_effort(
-            item,
-            target=target,
-            minimum=minimum,
-            maximum=maximum,
-            policy=policy,
-        )
-        if item.reasoning_efforts and effort is None:
-            continue
-        second_target = str(profile.get("conditional_second_pass_reasoning_effort") or "").strip() or None
-        second_effort = None
-        if second_target:
-            second_effort = choose_reasoning_effort(
-                item,
-                target=second_target,
-                minimum=minimum,
-                maximum=maximum,
-                policy=policy,
-            )
-        return ModelRecommendation(
-            workflow=workflow,
-            operation=operation,
-            task_profile=key,
-            complexity=complexity,
-            model=item.model,
-            display_name=item.display_name,
-            reasoning_effort=effort,
-            conditional_second_pass_reasoning_effort=second_effort,
-            qualification_status=str(qualification["status"]),
-            qualification_basis=str(qualification["basis"]),
-            account_plan_type=status.account_plan_type,
-            selection_basis="live_available + release_qualified + task_profile + deterministic_complexity",
-        )
-    raise ValidationError(
-        f"No currently available Codex model is SAGE-qualified for {key}; refresh the catalog or qualify a model before automatic execution",
-        code="NO_QUALIFIED_MODEL_AVAILABLE",
+    """Adapt a legacy workflow caller to exact registered-Skill route resolution."""
+    del manifest  # Complexity cannot replace exact per-Skill qualification.
+    from .skill_routing import resolve_skill_route
+
+    skill_id = skill_id_for_operation(root, workflow, operation)
+    route = resolve_skill_route(root, skill_id, [status])
+    capability = next(
+        (
+            item
+            for item in status.model_capabilities
+            if item.model == route.identity.model_id or item.id == route.identity.model_id
+        ),
+        None,
+    )
+    display_name = capability.display_name if capability is not None else route.identity.model_id
+    reasoning = (
+        None if route.identity.reasoning_id == "provider-default" else route.identity.reasoning_id
+    )
+    return ModelRecommendation(
+        workflow=workflow,
+        operation=operation,
+        task_profile=skill_id,
+        complexity="EVIDENCE_QUALIFIED",
+        model=route.identity.model_id,
+        display_name=display_name,
+        reasoning_effort=reasoning,
+        conditional_second_pass_reasoning_effort=reasoning,
+        qualification_status=route.qualification,
+        qualification_basis=f"qualification evidence {route.evidence_sha256}",
+        account_plan_type=status.account_plan_type,
+        selection_basis="exact_skill_qualification",
     )
 
 
