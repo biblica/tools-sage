@@ -125,6 +125,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/localization/menu-localization.json`
 - `system/config/model-language-competency.yml`
 - `system/config/model-policy.yml`
+- `system/config/execution-ownership.yml`
 - `system/config/profiles`
 - `system/config/profiles/grammar`
 - `system/config/profiles/grammar/README.md`
@@ -197,6 +198,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/schemas/llm-execution-receipt.schema.yml`
 - `system/config/schemas/model-language-competency.schema.yml`
 - `system/config/schemas/model-policy.schema.yml`
+- `system/config/schemas/execution-ownership.schema.yml`
 - `system/config/schemas/ol-authority-profile.schema.yml`
 - `system/config/schemas/original-language-resources.schema.yml`
 - `system/config/schemas/paratext-project-catalog.schema.yml`
@@ -570,6 +572,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_rtc_planner.py`
 - `system/tests/test_runtime.py`
 - `system/tests/test_schema_validation.py`
+- `system/tests/test_skill_routing_policy.py`
 - `system/tests/test_scope_and_auto_resolution.py`
 - `system/tests/test_sections_and_work_units.py`
 - `system/tests/test_semantic_indexes.py`
