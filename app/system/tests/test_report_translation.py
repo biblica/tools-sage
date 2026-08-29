@@ -10,9 +10,15 @@ import yaml
 
 from sage.storage import storage_layout
 from sage.act_outputs import render_action_report
-from sage.executors.base import ProviderResponse
+from sage.executors.base import (
+    ModelCapability,
+    ProviderResponse,
+    ProviderStatus,
+    ReasoningEffortOption,
+)
 from sage.llm_settings import LOCAL_AI_EXTERNAL_RENDERING_REQUIRED, set_local_admin_enabled
 from sage.report_translation import ensure_secondary_saw_report_rendering
+from sage.skill_routing import capability_fingerprint, resolve_skill_route
 
 
 def _workspace_with_uk_profile(package_root: Path, make_workspace) -> Path:
@@ -79,6 +85,62 @@ def _document() -> dict:
     }
 
 
+def _translation_status() -> ProviderStatus:
+    """Return one deterministic live route for secondary-rendering tests."""
+    capability = ModelCapability(
+        id="gpt-test",
+        model="gpt-test",
+        display_name="GPT Test",
+        supported_reasoning_efforts=(ReasoningEffortOption("medium"),),
+        default_reasoning_effort="medium",
+    )
+    return ProviderStatus(
+        provider="codex",
+        available=True,
+        ready=True,
+        model_capabilities=(capability,),
+        models=(capability.model,),
+    )
+
+
+def _bind_execution_route(root: Path, document: dict) -> dict:
+    """Qualify and attach the originating exact SAW RTC route to a report fixture."""
+    status = _translation_status()
+    capability = status.model_capabilities[0]
+    policy = yaml.safe_load((root / "system/config/model-policy.yml").read_text(encoding="utf-8"))
+    skills = json.loads((root / "system/config/skills.json").read_text(encoding="utf-8"))
+    route_policy = policy["skill_routes"]["saw-rtc"]
+    seeds = {
+        "schema_version": "1.0",
+        "routes": [
+            {
+                "provider": "codex",
+                "model_id": capability.model,
+                "capability_fingerprint": capability_fingerprint(capability),
+                "reasoning_id": "medium",
+                "skill_id": "saw-rtc",
+                "skill_sha256": skills["skills"]["saw-rtc"]["adapted_sha256"],
+                "suite_id": route_policy["suite_id"],
+                "suite_sha256": route_policy["suite_sha256"],
+                "policy_version": policy["qualification_policy_version"],
+                "qualification_status": "QUALIFIED",
+                "evidence_sha256": "a" * 64,
+                "cost_class": capability.cost_class,
+                "semantic_score": 1.0,
+                "semantic_score_material": False,
+            }
+        ],
+    }
+    (root / "system/config/model-qualification-seeds.json").write_text(
+        json.dumps(seeds, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    document["execution_route"] = resolve_skill_route(
+        root, "saw-rtc", [status]
+    ).to_dict()
+    return document
+
+
 def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(
     tmp_path: Path,
     monkeypatch,
@@ -90,6 +152,10 @@ def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(
 
     class FakeExecutor:
         """Return one deterministic secondary rendering without external execution."""
+
+        def status(self):
+            """Return the live identity inherited from the report's source task."""
+            return _translation_status()
 
         def execute(self, request):
             """Return the fixed provider payload used by this regression."""
@@ -118,7 +184,8 @@ def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(
     monkeypatch.setattr("sage.report_translation.make_executor", lambda provider, settings: FakeExecutor())
     sage_root = _workspace_with_uk_profile(package_root, make_workspace)
     report_path = tmp_path / "RUT_ACTION-REPORT.md"
-    rendered = ensure_secondary_saw_report_rendering(sage_root, report_path, _document())
+    document = _bind_execution_route(sage_root, _document())
+    rendered = ensure_secondary_saw_report_rendering(sage_root, report_path, document)
     assert rendered["report_renderings"]["status"] == "AVAILABLE"
     report = render_action_report(rendered)
     assert "SAW Action Report / Звіт SAW про необхідні дії" in report
@@ -137,12 +204,15 @@ def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(
     assert report.index("**Proposed action — English**") < report.index("**Issue — Ukrainian**")
     assert report.index("**Issue — Ukrainian**") < report.index("**Proposed action — Ukrainian**")
     assert len(calls) == 1
+    assert calls[0].model == "gpt-test"
+    assert calls[0].reasoning_effort == "medium"
+    assert rendered["report_renderings"]["execution_routes"]["report"] == document["execution_route"]
     assert set(rendered["report_renderings"]["linguistic_profile_bindings"]) == {
         "REPORT:PRIMARY",
         "REPORT:SECONDARY",
     }
 
-    cached = ensure_secondary_saw_report_rendering(sage_root, report_path, _document())
+    cached = ensure_secondary_saw_report_rendering(sage_root, report_path, document)
     assert cached["report_renderings"]["status"] == "AVAILABLE"
     assert len(calls) == 1
     receipt = storage_layout(sage_root).diagnostics_root / "report-renderings" / "RUT_ACTION-REPORT-SECONDARY-RENDERING.json"
@@ -183,6 +253,10 @@ def test_secondary_rendering_sends_exactly_one_report_item_per_provider_request(
     class FakeExecutor:
         """Render the exact schema-enumerated item for each isolated request."""
 
+        def status(self):
+            """Return the live identity inherited from every report item."""
+            return _translation_status()
+
         def execute(self, request):
             """Return one translation for the single schema-enumerated report item."""
             calls.append(request)
@@ -221,6 +295,7 @@ def test_secondary_rendering_sends_exactly_one_report_item_per_provider_request(
 
     monkeypatch.setattr("sage.report_translation.make_executor", lambda provider, settings: FakeExecutor())
     sage_root = _workspace_with_uk_profile(package_root, make_workspace)
+    document = _bind_execution_route(sage_root, document)
     rendered = ensure_secondary_saw_report_rendering(
         sage_root,
         tmp_path / "RUT_ACTION-REPORT.md",
@@ -244,6 +319,55 @@ def test_secondary_rendering_sends_exactly_one_report_item_per_provider_request(
     assert receipt["provider_request_count"] == 3
     assert set(receipt["findings"]) == {"SAW-RUT-001-0001", "SAW-RUT-001-0002"}
     assert set(receipt["events"]) == {"EVT-001"}
+
+
+def test_secondary_rendering_without_originating_route_degrades_before_provider(
+    tmp_path: Path, monkeypatch, package_root: Path, make_workspace
+) -> None:
+    """A report item without execution provenance cannot silently select another route."""
+    sage_root = _workspace_with_uk_profile(package_root, make_workspace)
+    monkeypatch.setattr(
+        "sage.report_translation.make_executor",
+        lambda provider, settings: (_ for _ in ()).throw(
+            AssertionError("missing route must degrade before provider discovery")
+        ),
+    )
+    rendered = ensure_secondary_saw_report_rendering(
+        sage_root,
+        tmp_path / "RUT_ACTION-REPORT.md",
+        _document(),
+    )
+    assert rendered["report_renderings"]["status"] == "DEGRADED"
+    assert rendered["report_renderings"]["reason_code"] == "SECONDARY_REPORT_ROUTE_MISSING"
+
+
+def test_secondary_rendering_stale_originating_route_degrades_without_execution(
+    tmp_path: Path, monkeypatch, package_root: Path, make_workspace
+) -> None:
+    """A changed route identity cannot be replaced during assistive rendering."""
+    sage_root = _workspace_with_uk_profile(package_root, make_workspace)
+    document = _bind_execution_route(sage_root, _document())
+    document["execution_route"]["capability_fingerprint"] = "f" * 64
+
+    class FakeExecutor:
+        """Permit capability probing but reject secondary task execution."""
+
+        def status(self):
+            """Return the current capability identity."""
+            return _translation_status()
+
+        def execute(self, _request):
+            """Fail if a stale originating route is substituted."""
+            raise AssertionError("stale report route must not execute")
+
+    monkeypatch.setattr("sage.report_translation.make_executor", lambda provider, settings: FakeExecutor())
+    rendered = ensure_secondary_saw_report_rendering(
+        sage_root,
+        tmp_path / "RUT_ACTION-REPORT.md",
+        document,
+    )
+    assert rendered["report_renderings"]["status"] == "DEGRADED"
+    assert rendered["report_renderings"]["reason_code"] == "SECONDARY_REPORT_ROUTE_UNAVAILABLE"
 
 
 def test_secondary_rendering_failure_is_visible_without_invalidating_primary_report(tmp_path: Path, monkeypatch) -> None:

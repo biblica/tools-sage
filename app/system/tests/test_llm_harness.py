@@ -25,7 +25,9 @@ from sage.llm_tasks import (
     execute_task,
 )
 from sage.model_policy import recommend_model
+from sage.routing_override import set_global_override
 from sage.skill_routing import capability_fingerprint
+from sage.skill_routing import resolve_skill_route
 from sage.registry import load_ecosystem
 from sage.resource_mounts import mounts_path, set_resource_mount
 
@@ -407,13 +409,35 @@ def test_projection_telemetry_never_counts_non_sfm_reads_as_sizing_tokens() -> N
     assert measured["model_bytes"] < measured["raw_bytes"]
 
 
-def test_task_dry_run_rehashes_and_seals_authorised_reads(make_workspace) -> None:
+def test_task_dry_run_resolves_exact_route_without_provider_execution(
+    make_workspace, monkeypatch
+) -> None:
     """Verify dry-run execution re-hashes immutable reads before assembling a sealed request."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     manifest = _synthetic_task(root)
     config = load_ecosystem(root / "ecosystem.yml")
+
+    class FakeExecutor:
+        """Expose capability metadata while prohibiting task evidence execution."""
+
+        def status(self):
+            """Return the exact live capability snapshot used by route resolution."""
+            return _fake_codex_status()
+
+        def execute(self, _request):
+            """Fail if dry-run transmits the assembled task prompt."""
+            raise AssertionError("dry-run must not execute provider evidence")
+
+    monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
     result = execute_task(config, task_manifest=manifest, dry_run=True)
     assert result["status"] == "READY_TO_EXECUTE"
+    assert result["skill_id"] == "bic-inspect"
+    assert result["routing_mode"] == "AUTOMATIC"
+    assert result["qualification_status"] == "RECOMMENDED"
+    assert len(result["route_id"]) == 64
+    assert result["provider"] == "codex"
+    assert result["model"] == "gpt-5.6-terra"
+    assert result["reasoning_effort"] == "medium"
     assert result["normal_reads"] == 1
     assert result["conditional_reads"] == 0
     assert result["allowed_writes"] == ["output/result.txt"]
@@ -454,8 +478,17 @@ def test_task_executor_materializes_only_exact_allowlist(make_workspace, monkeyp
             )
 
     monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
-    result = execute_task(config, task_manifest=manifest, provider="codex")
+    result = execute_task(config, task_manifest=manifest)
     assert result["status"] == "EXECUTED"
+    assert result["schema_version"] == "2.0"
+    assert result["skill_id"] == "bic-inspect"
+    assert result["routing_mode"] == "AUTOMATIC"
+    assert result["qualification_status"] == "RECOMMENDED"
+    assert result["routing_policy_version"] == "alpha1-1"
+    assert result["qualification_evidence_sha256"] == "d" * 64
+    assert result["model_identity_strength"] == "ALIASED"
+    assert len(result["capability_fingerprint"]) == 64
+    assert len(result["route_id"]) == 64
     assert (manifest.parent / "output" / "result.txt").read_text(encoding="utf-8") == "accepted\n"
     assert (manifest.parent / "validation" / "llm-execution-receipt.json").is_file()
     files = [p.relative_to(manifest.parent).as_posix() for p in manifest.parent.rglob("*") if p.is_file()]
@@ -585,7 +618,7 @@ def test_clear_spanish_saw_narrative_gets_one_english_correction_retry(
             )
 
     monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
-    result = execute_task(load_ecosystem(root / "ecosystem.yml"), task_manifest=manifest_path, provider="codex")
+    result = execute_task(load_ecosystem(root / "ecosystem.yml"), task_manifest=manifest_path)
 
     assert len(prompts) == 2
     assert "\u00bfQui\u00e9n puede aceptar esta ense\u00f1anza?" in prompts[0]
@@ -901,7 +934,7 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
             )
 
     monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
-    result = execute_task(config, task_manifest=manifest, provider="codex")
+    result = execute_task(config, task_manifest=manifest)
     assert result["phase_count"] == 2
     assert result["conditional_evidence_used"] is True
     assert "conditional OL evidence" not in prompts[0]
@@ -912,7 +945,8 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
     assert "READ CLASS: AUTHORIZED_CONTENT_EVIDENCE" in prompts[0]
     assert efforts == ["high", "high"]
     assert result["phase_reasoning_efforts"] == ["high", "high"]
-    assert result["selection_mode"] == "AUTO_RECOMMENDED"
+    assert result["routing_mode"] == "AUTOMATIC"
+    assert result["qualification_status"] == "RECOMMENDED"
     assert len(status_calls) == 1
     assert len(prevalidated_calls) == 2
     rewrite = (manifest.parent / "output" / "rewrite.usfm").read_text(encoding="utf-8")
@@ -920,6 +954,99 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
     ledger = json.loads((manifest.parent / "output" / "translation-challenges.json").read_text(encoding="utf-8"))
     assert ledger["challenges"][0]["recommended_candidate_id"] == "C2"
     assert ledger["challenges"][0]["ol_referral"]["performed"] is True
+
+
+def test_task_execution_rejects_direct_route_bypass(make_workspace) -> None:
+    """Operational execution cannot accept provider, model, reasoning, or policy bypasses."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest = _synthetic_task(root)
+    config = load_ecosystem(root / "ecosystem.yml")
+    attempts = (
+        {"provider": "codex"},
+        {"model": "gpt-5.6-terra"},
+        {"reasoning_effort": "medium"},
+        {"policy_override": True},
+    )
+    for values in attempts:
+        with pytest.raises(ValidationError) as caught:
+            execute_task(config, task_manifest=manifest, dry_run=True, **values)
+        assert caught.value.code == "TASK_ROUTE_BYPASS_PROHIBITED"
+
+
+def test_task_execution_rejects_manifest_skill_workflow_mismatch(
+    make_workspace, monkeypatch
+) -> None:
+    """The manifest Skill ID must own its declared workflow and operation exactly."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest_path = _synthetic_task(root)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["operation"] = "rewrite"
+    atomic_write_json(manifest_path, manifest)
+    monkeypatch.setattr(
+        "sage.llm_tasks.make_executor",
+        lambda provider, settings: pytest.fail("provider probing must follow Skill validation"),
+    )
+    with pytest.raises(ValidationError) as caught:
+        execute_task(load_ecosystem(root / "ecosystem.yml"), task_manifest=manifest_path)
+    assert caught.value.code == "LLM_TASK_SKILL_IDENTITY_INVALID"
+
+
+def test_task_execution_rejects_unqualified_route_before_prompt(
+    make_workspace, monkeypatch
+) -> None:
+    """An unqualified exact route fails after status probing and before task execution."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest = _synthetic_task(root)
+    seed_path = root / "system/config/model-qualification-seeds.json"
+    seed_path.write_text('{"routes": [], "schema_version": "1.0"}\n', encoding="utf-8")
+
+    class FakeExecutor:
+        """Expose live capabilities and reject any attempt to send task evidence."""
+
+        def status(self):
+            """Return available but deliberately unqualified model capabilities."""
+            return _fake_codex_status()
+
+        def execute(self, _request):
+            """Fail if route rejection occurs after prompt execution."""
+            raise AssertionError("unqualified route must not execute")
+
+    monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
+    with pytest.raises(ValidationError) as caught:
+        execute_task(load_ecosystem(root / "ecosystem.yml"), task_manifest=manifest)
+    assert caught.value.code == "NO_QUALIFIED_SKILL_ROUTE"
+
+
+def test_task_execution_uses_exact_audited_global_override(make_workspace, monkeypatch) -> None:
+    """A qualified advanced override becomes the immutable route on the task receipt."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest = _synthetic_task(root)
+    status = _fake_codex_status()
+    route = resolve_skill_route(root, "bic-inspect", [status])
+    set_global_override(root, selection=route.identity.to_dict(), statuses=[status])
+
+    class FakeExecutor:
+        """Return a deterministic output through the overridden exact route."""
+
+        def status(self):
+            """Return the same capability identity used to enable the override."""
+            return status
+
+        def execute(self, request):
+            """Return one valid sealed response."""
+            payload = {
+                "schema_version": "1.0",
+                "task_id": "synthetic-task-1",
+                "files": {"output/result.txt": "accepted\n"},
+            }
+            return ProviderResponse(
+                "codex", request.model, json.dumps(payload), {}, request.reasoning_effort
+            )
+
+    monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
+    result = execute_task(load_ecosystem(root / "ecosystem.yml"), task_manifest=manifest)
+    assert result["routing_mode"] == "GLOBAL_OVERRIDE"
+    assert result["route_id"] == route.identity.route_id
 
 
 
