@@ -27,6 +27,8 @@ SCHEMA_OWNERS: dict[str, str] = {
     "llm-execution-receipt.schema.yml": "system/src/sage/llm_tasks.py",
     "model-language-competency.schema.yml": "system/src/sage/model_language_competency.py",
     "model-policy.schema.yml": "system/src/sage/model_policy.py",
+    "model-routing-override.schema.yml": "system/src/sage/routing_override.py",
+    "model-routing-override-receipt.schema.yml": "system/src/sage/routing_override.py",
     "ol-authority-profile.schema.yml": "system/src/sage/original_language_resources.py",
     "original-language-resources.schema.yml": "system/src/sage/original_language_resources.py",
     "paratext-project-catalog.schema.yml": "system/src/sage/paratext_catalog.py",

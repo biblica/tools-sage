@@ -8,10 +8,9 @@ from typing import Any
 
 from .atomic import atomic_write_json
 from .storage import storage_layout
-from .errors import ConfigurationError, ValidationError
+from .errors import ConfigurationError
 from .build_policy import ENABLED_AUTOMATED_PROVIDER_IDS
 from .executors import PROVIDER_IDS
-from .executors.base import sage_supports_reasoning_effort
 from .executors.http import validate_local_endpoint
 from .ollama_policy import (
     SAGE_LOCAL_ADMIN_CONCURRENCY,
@@ -22,10 +21,10 @@ from .ollama_policy import (
 
 
 DEFAULT_LLM_SETTINGS: dict[str, Any] = {
-    "schema_version": "1.2",
+    "schema_version": "2.0",
     "selected_provider": "codex",
     "providers": {
-        "codex": {"model": None, "reasoning_effort": None, "selection_mode": "AUTO"},
+        "codex": {"enabled": True},
         "ollama": {
             "model": SAGE_LOCAL_ADMIN_MODEL,
             "endpoint": "http://127.0.0.1:11434",
@@ -101,23 +100,21 @@ def load_llm_settings(root: Path) -> dict[str, Any]:
         for provider in PROVIDER_IDS:
             item = providers.get(provider)
             if isinstance(item, dict):
-                merged["providers"][provider].update(
-                    {
-                        key: value
-                        for key, value in item.items()
-                        if key
-                        in {
-                            "model",
-                            "endpoint",
-                            "reasoning_effort",
-                            "selection_mode",
-                            "context_window",
-                            "keep_alive",
-                            "concurrency",
-                            "admin_assistant_enabled",
-                        }
+                allowed = (
+                    {"enabled"}
+                    if provider == "codex"
+                    else {
+                        "endpoint",
+                        "context_window",
+                        "keep_alive",
+                        "concurrency",
+                        "admin_assistant_enabled",
                     }
                 )
+                merged["providers"][provider].update(
+                    {key: value for key, value in item.items() if key in allowed}
+                )
+    merged["providers"]["codex"]["enabled"] = True
     merged["providers"]["ollama"]["endpoint"] = validate_local_endpoint(
         str(merged["providers"]["ollama"]["endpoint"]),
         provider="ollama",
@@ -141,7 +138,7 @@ def load_llm_settings(root: Path) -> dict[str, Any]:
 
 
 def save_llm_settings(root: Path, value: dict[str, Any]) -> Path:
-    """Persist validated non-secret provider/model settings atomically."""
+    """Persist validated non-secret provider connection settings atomically."""
     # Re-load through the same validation path by writing a temporary logical structure in memory.
     selected = str(value.get("selected_provider", "")).strip().lower()
     if selected not in PROVIDER_IDS:
@@ -151,13 +148,12 @@ def save_llm_settings(root: Path, value: dict[str, Any]) -> Path:
             f"Selected provider {selected} is disabled by this build policy; CODEX is the only enabled automated provider"
         )
     codex = value.get("providers", {}).get("codex", {})
-    if str(codex.get("selection_mode", "AUTO")).upper() not in {"AUTO", "EXPLICIT"}:
-        raise ConfigurationError("Codex selection_mode must be AUTO or EXPLICIT")
-    effort = codex.get("reasoning_effort")
-    if effort is not None and not isinstance(effort, str):
-        raise ConfigurationError("Codex reasoning_effort must be a string or null")
-    if isinstance(effort, str) and effort.strip() and not sage_supports_reasoning_effort(effort):
-        raise ConfigurationError("Codex reasoning_effort exceeds the SAGE ceiling; highest supported level is xhigh")
+    forbidden_selection = {"model", "reasoning_effort", "selection_mode"}.intersection(codex)
+    if forbidden_selection:
+        raise ConfigurationError(
+            "Normal provider settings cannot persist model or reasoning; use the advanced routing override"
+        )
+    codex["enabled"] = True
     ollama = value.get("providers", {}).get("ollama", {})
     validate_local_endpoint(str(ollama.get("endpoint", "")), provider="ollama")
     ollama.update(
@@ -192,33 +188,20 @@ def update_llm_selection(
     reasoning_effort: str | None = None,
     auto: bool = False,
 ) -> dict[str, Any]:
-    """Update the selected provider/model without accepting credential material."""
+    """Update provider enablement without accepting model or reasoning selection."""
     value = load_llm_settings(root)
     provider_id = provider.strip().lower()
     if provider_id not in PROVIDER_IDS:
         raise ConfigurationError(f"Unsupported LLM provider: {provider}")
     if provider_id not in ENABLED_AUTOMATED_PROVIDER_IDS:
         raise ConfigurationError(f"Provider {provider_id} is provisionable but disabled for automated execution in this build")
+    del auto
+    if model is not None or reasoning_effort is not None:
+        raise ConfigurationError(
+            "Normal provider setup no longer selects a model or reasoning level; use the advanced routing override"
+        )
     value["selected_provider"] = provider_id
     item = value["providers"][provider_id]
-    if provider_id == "codex" and auto:
-        item["model"] = None
-        item["reasoning_effort"] = None
-        item["selection_mode"] = "AUTO"
-    elif model is not None:
-        item["model"] = model.strip() or None
-        if provider_id == "codex":
-            item["selection_mode"] = "EXPLICIT"
-            if reasoning_effort is None:
-                item["reasoning_effort"] = None
-    if reasoning_effort is not None:
-        if provider_id != "codex":
-            raise ConfigurationError("Reasoning-effort selection is currently supported only for Codex")
-        if reasoning_effort.strip() and not sage_supports_reasoning_effort(reasoning_effort):
-            raise ConfigurationError("Codex reasoning_effort exceeds the SAGE ceiling; highest supported level is xhigh")
-        item["reasoning_effort"] = reasoning_effort.strip().lower() or None
-        if item.get("model"):
-            item["selection_mode"] = "EXPLICIT"
     if endpoint is not None:
         if provider_id == "codex":
             raise ConfigurationError("Codex provider does not accept an endpoint")

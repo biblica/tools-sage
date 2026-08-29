@@ -10,7 +10,7 @@ import yaml
 
 from sage.storage import storage_layout
 from sage.atomic import atomic_write_json
-from sage.errors import ConfigurationError, ValidationError
+from sage.errors import ValidationError
 from sage.evidence_policy import AUTHORIZED_CONTENT_EVIDENCE, task_evidence_policy
 from sage.executors.base import ModelCapability, ProviderRequest, ProviderResponse, ProviderStatus, ReasoningEffortOption
 from sage.executors.codex_cli import CodexCLIExecutor
@@ -24,7 +24,6 @@ from sage.llm_tasks import (
     _read_projection_measurement,
     execute_task,
 )
-from sage.llm_settings import update_llm_selection
 from sage.model_policy import recommend_model
 from sage.skill_routing import capability_fingerprint
 from sage.registry import load_ecosystem
@@ -939,18 +938,6 @@ def test_model_policy_recommends_task_specific_model_and_reasoning(make_workspac
     assert rewrite.conditional_second_pass_reasoning_effort == "high"
     assert (self_check.model, self_check.reasoning_effort) == ("gpt-5.6-sol", "xhigh")
 
-
-@pytest.mark.parametrize("effort", ["max", "ultra", "future-super-effort"])
-def test_settings_cannot_persist_reasoning_above_xhigh(make_workspace, effort: str) -> None:
-    """Verify unsupported reasoning cannot survive as a persisted Codex selection."""
-    root = make_workspace(configured=True, qualification_status="VALIDATED")
-    with pytest.raises(ConfigurationError, match="highest supported level is xhigh"):
-        update_llm_selection(
-            root,
-            provider="codex",
-            model="gpt-5.6-sol",
-            reasoning_effort=effort,
-        )
 
 def test_external_resource_mount_supports_role_specific_scripture_access(make_workspace, tmp_path: Path) -> None:
     """Verify locked and under-review Scripture resources may use explicit external read-only mappings."""

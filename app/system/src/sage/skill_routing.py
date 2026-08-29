@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 from pathlib import Path
@@ -205,12 +205,12 @@ def _record_identity_matches(
     return all(str(row.get(key) or "") == str(value) for key, value in expected.items())
 
 
-def resolve_skill_route(
+def _candidate_skill_routes(
     root: Path,
     skill_id: str,
     statuses: Sequence[ProviderStatus],
-) -> SkillRoute:
-    """Resolve one available exact route from independently qualified evidence."""
+) -> tuple[list[SkillRoute], bool, bool]:
+    """Return sorted exact candidates plus unavailable and stale evidence state."""
     root = root.expanduser().resolve()
     skill_sha256, policy, route_policy = _skill_identity(root, skill_id)
     suite_id = str(route_policy.get("suite_id") or "")
@@ -281,7 +281,7 @@ def resolve_skill_route(
                 route = SkillRoute(
                     identity=identity,
                     availability="AVAILABLE",
-                    qualification="RECOMMENDED",
+                    qualification="QUALIFIED",
                     routing_mode="AUTOMATIC",
                     evidence_sha256=str(row.get("evidence_sha256") or ""),
                     provider_runtime_version=status.version,
@@ -316,9 +316,17 @@ def resolve_skill_route(
                     )
                 )
 
-    if candidates:
-        candidates.sort(key=lambda item: item[0])
-        return candidates[0][1]
+    candidates.sort(key=lambda item: item[0])
+    return [route for _rank, route in candidates], exact_but_unavailable, stale_observed
+
+
+def _raise_unresolved_skill_route(
+    skill_id: str,
+    *,
+    exact_but_unavailable: bool,
+    stale_observed: bool,
+) -> None:
+    """Raise the most specific fail-closed route resolution error."""
     if exact_but_unavailable:
         raise ValidationError(
             f"Qualified route for {skill_id} is not currently available",
@@ -331,5 +339,62 @@ def resolve_skill_route(
         )
     raise ValidationError(
         f"No enabled, available route is qualified for {skill_id}",
+        code="NO_QUALIFIED_SKILL_ROUTE",
+    )
+
+
+def qualified_skill_routes(
+    root: Path,
+    skill_id: str,
+    statuses: Sequence[ProviderStatus],
+) -> tuple[SkillRoute, ...]:
+    """Return every available qualified route in deterministic recommendation order."""
+    routes, exact_but_unavailable, stale_observed = _candidate_skill_routes(
+        root, skill_id, statuses
+    )
+    if not routes:
+        _raise_unresolved_skill_route(
+            skill_id,
+            exact_but_unavailable=exact_but_unavailable,
+            stale_observed=stale_observed,
+        )
+    return tuple(
+        replace(route, qualification="RECOMMENDED" if index == 0 else "QUALIFIED")
+        for index, route in enumerate(routes)
+    )
+
+
+def resolve_skill_route(
+    root: Path,
+    skill_id: str,
+    statuses: Sequence[ProviderStatus],
+) -> SkillRoute:
+    """Resolve the recommended available exact route for one registered Skill."""
+    return qualified_skill_routes(root, skill_id, statuses)[0]
+
+
+def resolve_specific_skill_route(
+    root: Path,
+    skill_id: str,
+    statuses: Sequence[ProviderStatus],
+    *,
+    provider: str,
+    model_id: str,
+    capability_fingerprint_value: str,
+    reasoning_id: str,
+) -> SkillRoute:
+    """Resolve one exact qualified route selection without substituting another candidate."""
+    routes = qualified_skill_routes(root, skill_id, statuses)
+    for route in routes:
+        identity = route.identity
+        if (
+            identity.provider == provider
+            and identity.model_id == model_id
+            and identity.capability_fingerprint == capability_fingerprint_value
+            and identity.reasoning_id == reasoning_id
+        ):
+            return route
+    raise ValidationError(
+        f"Selected route is not qualified for {skill_id}",
         code="NO_QUALIFIED_SKILL_ROUTE",
     )
