@@ -87,39 +87,35 @@ def load_model_policy(root: Path) -> dict[str, Any]:
         value = yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         raise ConfigurationError(f"Invalid SAGE model policy: {path}: {exc}") from exc
-    if not isinstance(value, dict) or str(value.get("schema_version")) != "1.0":
-        raise ConfigurationError("SAGE model policy must be schema_version 1.0")
-    if value.get("provider") != "codex":
-        raise ConfigurationError("SAGE model policy currently governs the codex provider")
-    for key in ("global", "qualification", "task_profiles"):
-        if not isinstance(value.get(key), dict):
-            raise ConfigurationError(f"SAGE model policy {key} must be an object")
-    global_policy = value["global"]
-    allowed = global_policy.get("allowed_reasoning_efforts", [])
-    if not isinstance(allowed, list) or not allowed:
-        raise ConfigurationError("SAGE model policy must declare allowed_reasoning_efforts")
-    normalized_allowed = [str(item).strip().lower() for item in allowed]
-    unsupported = [item for item in normalized_allowed if not sage_supports_reasoning_effort(item)]
-    if unsupported:
+    if not isinstance(value, dict) or str(value.get("schema_version")) != "2.0":
+        raise ConfigurationError("SAGE model policy must be schema_version 2.0")
+    required = (
+        "qualification_policy_version",
+        "unknown_route_status",
+        "accepted_operational_statuses",
+        "recommendation_order",
+        "skill_routes",
+    )
+    missing = [field for field in required if field not in value]
+    if missing:
+        raise ConfigurationError("SAGE model policy is missing: " + ", ".join(missing))
+    if value.get("unknown_route_status") != "UNASSESSED":
+        raise ConfigurationError("SAGE model policy unknown_route_status must be UNASSESSED")
+    if value.get("accepted_operational_statuses") != ["RECOMMENDED", "QUALIFIED"]:
         raise ConfigurationError(
-            f"SAGE model policy contains unsupported reasoning efforts above the XHigh ceiling: {unsupported}"
+            "SAGE model policy accepted_operational_statuses must be RECOMMENDED, QUALIFIED"
         )
-    if str(global_policy.get("maximum_supported_reasoning_effort", "")).strip().lower() != "xhigh":
-        raise ConfigurationError("SAGE model policy maximum_supported_reasoning_effort must be xhigh")
-    for profile_name, profile in value["task_profiles"].items():
-        if not isinstance(profile, dict):
-            raise ConfigurationError(f"SAGE model policy task profile {profile_name} must be an object")
-        for field in (
-            "target_reasoning_effort",
-            "minimum_reasoning_effort",
-            "maximum_reasoning_effort",
-            "conditional_second_pass_reasoning_effort",
-        ):
-            effort = str(profile.get(field) or "").strip().lower()
-            if effort and effort not in normalized_allowed:
-                raise ConfigurationError(
-                    f"SAGE model policy {profile_name}.{field}={effort} exceeds the XHigh reasoning ceiling"
-                )
+    routes = value.get("skill_routes")
+    if not isinstance(routes, dict) or not routes:
+        raise ConfigurationError("SAGE model policy skill_routes must be a non-empty object")
+    registry_path = root.resolve() / "system" / "config" / "skills.json"
+    try:
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ConfigurationError(f"Invalid SAGE Skill registry: {registry_path}: {exc}") from exc
+    registered = set((registry.get("skills") or {}).keys()) if isinstance(registry, dict) else set()
+    if set(routes) != registered:
+        raise ConfigurationError("SAGE model policy routes must exactly match the registered Skill IDs")
     return value
 
 

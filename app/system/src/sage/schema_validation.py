@@ -18,6 +18,7 @@ SCHEMA_OWNERS: dict[str, str] = {
     "bic-translation-challenges.schema.yml": "system/src/sage/rewrite_risk.py",
     "ecosystem.schema.yml": "system/src/sage/registry.py",
     "execution-event.schema.yml": "system/src/sage/execution_events.py",
+    "execution-ownership.schema.yml": "system/src/sage/model_policy.py",
     "evaluation-set.schema.yml": "system/src/sage/registry.py",
     "generated-target-manifest.schema.yml": "system/src/sage/generations.py",
     "grammar-profile.schema.yml": "system/src/sage/grammar.py",
@@ -143,6 +144,65 @@ def _validate_structure_instance(schema: dict[str, Any], instance: Any, label: s
     return errors
 
 
+def _validate_routing_instances(
+    *,
+    model_policy: dict[str, Any],
+    ownership: dict[str, Any],
+    skill_registry: dict[str, Any],
+) -> list[str]:
+    """Reconcile execution ownership and route keys with the registered Skill inventory."""
+    errors: list[str] = []
+    registered_skills = set((skill_registry.get("skills") or {}).keys())
+    governed_skills = ownership.get("governed_skills")
+    governed_skill_ids = set(governed_skills) if isinstance(governed_skills, dict) else set()
+    missing_owners = sorted(registered_skills - governed_skill_ids)
+    extra_owners = sorted(governed_skill_ids - registered_skills)
+    if missing_owners:
+        errors.append(
+            "execution-ownership.yml missing registered Skill ownership: "
+            + ", ".join(missing_owners)
+        )
+    if extra_owners:
+        errors.append(
+            "execution-ownership.yml contains unknown Skill ownership: "
+            + ", ".join(extra_owners)
+        )
+    if isinstance(governed_skills, dict):
+        for skill_id, record in governed_skills.items():
+            if not isinstance(record, dict) or record.get("execution_class") != "GOVERNED_SKILL":
+                errors.append(
+                    f"execution-ownership.yml governed_skills.{skill_id} must use GOVERNED_SKILL"
+                )
+
+    deterministic = ownership.get("deterministic_python")
+    if isinstance(deterministic, dict):
+        prohibited = {"model_route", "route_profile", "token_policy", "token_budget"}
+        for operation_id, record in deterministic.items():
+            if not isinstance(record, dict):
+                errors.append(
+                    f"execution-ownership.yml deterministic_python.{operation_id} must be a mapping"
+                )
+                continue
+            for field in sorted(prohibited.intersection(record)):
+                errors.append(
+                    f"execution-ownership.yml deterministic_python.{operation_id} contains prohibited {field}"
+                )
+
+    policy_routes = model_policy.get("skill_routes")
+    policy_skill_ids = set(policy_routes) if isinstance(policy_routes, dict) else set()
+    missing_routes = sorted(registered_skills - policy_skill_ids)
+    extra_routes = sorted(policy_skill_ids - registered_skills)
+    if missing_routes:
+        errors.append("model-policy.yml missing registered Skill routes: " + ", ".join(missing_routes))
+    if extra_routes:
+        errors.append("model-policy.yml contains unknown Skill routes: " + ", ".join(extra_routes))
+    if isinstance(policy_routes, dict):
+        for skill_id, record in policy_routes.items():
+            if not isinstance(record, dict) or record.get("execution_class") != "GOVERNED_SKILL":
+                errors.append(f"model-policy.yml skill_routes.{skill_id} must use GOVERNED_SKILL")
+    return errors
+
+
 def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> list[str]:
     """Validate shipped configuration instances against their owning contracts."""
     errors: list[str] = []
@@ -152,6 +212,24 @@ def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> l
 
     model_policy = _load_data(root / "system/config/model-policy.yml")
     errors.extend(_validate_required_shape(schemas["model-policy.schema.yml"], model_policy, "model-policy.yml"))
+
+    ownership = _load_data(root / "system/config/execution-ownership.yml")
+    errors.extend(
+        _validate_required_shape(
+            schemas["execution-ownership.schema.yml"],
+            ownership,
+            "execution-ownership.yml",
+        )
+    )
+
+    skill_registry = _load_data(root / "system/config/skills.json")
+    errors.extend(
+        _validate_routing_instances(
+            model_policy=model_policy,
+            ownership=ownership,
+            skill_registry=skill_registry,
+        )
+    )
 
     model_language = _load_data(root / "system/config/model-language-competency.yml")
     errors.extend(_validate_required_shape(schemas["model-language-competency.schema.yml"], model_language, "model-language-competency.yml"))
@@ -281,7 +359,7 @@ def validate_schema_contracts(root: Path) -> dict[str, Any]:
         "schema_count": len(paths),
         "schema_ids": len(ids),
         "owner_count": len(SCHEMA_OWNERS),
-        "source_instance_groups": 8,
+        "source_instance_groups": 9,
         "errors": errors,
         "warnings": warnings,
     }

@@ -1,0 +1,57 @@
+schema_version: '1.0'
+policy_version: alpha1-1
+deterministic_python:
+  planning:
+    justification: Scope, work units, and task order are computed from governed local state.
+  scripture-parsing:
+    justification: Scripture syntax and coordinates are parsed locally.
+  sfm-slicing:
+    justification: Exact routed evidence is projected locally.
+  coverage:
+    justification: Planned and returned coordinates are reconciled locally.
+  identity:
+    justification: Project, Job, Run, task, and evidence identities are verified locally.
+  aggregation:
+    justification: Accepted results are combined without semantic generation.
+  report-composition:
+    justification: Human and machine reports are deterministic projections of accepted results.
+  report-naming:
+    justification: Report IDs and paths are derived from governed identities.
+  validation:
+    justification: Schemas, authority, scope, coverage, and writes are checked locally.
+  finalization:
+    justification: Run completion is a deterministic state transition.
+  token-measurement:
+    justification: Only actual provider handoffs are measured locally.
+  task-state-transition:
+    justification: Attempt and retry state is controlled by Python.
+local_assistive:
+  status-explanation:
+    authority: NON_AUTHORITATIVE_ASSISTIVE
+  diagnostic-explanation:
+    authority: NON_AUTHORITATIVE_ASSISTIVE
+  approved-action-explanation:
+    authority: NON_AUTHORITATIVE_ASSISTIVE
+  report-executive-summary:
+    authority: NON_AUTHORITATIVE_ASSISTIVE
+governed_skills:
+  bic-inspect:
+    execution_class: GOVERNED_SKILL
+  bic-rewrite:
+    execution_class: GOVERNED_SKILL
+  bic-self-check:
+    execution_class: GOVERNED_SKILL
+  saw-rtc:
+    execution_class: GOVERNED_SKILL
+  saw-stc:
+    execution_class: GOVERNED_SKILL
+  saw-focused-check:
+    execution_class: GOVERNED_SKILL
+  saw-original-language-review:
+    execution_class: GOVERNED_SKILL
+governed_subtasks:
+  secondary-language-rendering:
+    execution_class: GOVERNED_SKILL
+    route_source: ORIGINATING_SKILL
+    isolation: ONE_REPORTED_ITEM_PER_REQUEST
+    authority: ASSISTIVE_TRANSLATION_ONLY

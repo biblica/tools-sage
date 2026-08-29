@@ -1,25 +1,29 @@
-schema_id: sage-model-policy-1.0
+schema_id: sage-model-policy-2.0
 required:
   - schema_version
-  - provider
-  - global
-  - qualification
-  - task_profiles
+  - qualification_policy_version
+  - unknown_route_status
+  - accepted_operational_statuses
+  - recommendation_order
+  - skill_routes
 controls:
-  schema_version: '1.0'
-  provider: codex
-  live_availability_source: codex_app_server_model_list
-  auth_source: codex_app_server_account_read
-  reasoning_order: provider_advertised_order_with_sage_ceiling
-  sage_supported_reasoning_efforts:
-    - none
-    - minimal
-    - low
-    - medium
-    - high
-    - xhigh
-  maximum_supported_reasoning_effort: xhigh
-  unknown_models: unqualified_by_default
-  unsupported_reasoning_efforts: filtered_and_rejected
-  operator_override: recorded_and_cannot_bypass_reasoning_ceiling
-  openai_api_keys: prohibited
+  schema_version: '2.0'
+  route_key: exact_registered_skill_id
+  qualification_evidence: external_hash_bound_receipt
+  unknown_route_status: UNASSESSED
+  accepted_operational_statuses:
+    - RECOMMENDED
+    - QUALIFIED
+  availability_states:
+    - AVAILABLE
+    - UNAVAILABLE
+  qualification_states:
+    - RECOMMENDED
+    - QUALIFIED
+    - UNRELIABLE
+    - FAILED
+    - UNASSESSED
+    - STALE
+  reasoning_order: provider_native
+  universal_reasoning_scale: prohibited
+  model_self_qualification: prohibited

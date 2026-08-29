@@ -1,0 +1,21 @@
+schema_id: sage-execution-ownership-1.0
+required:
+  - schema_version
+  - policy_version
+  - deterministic_python
+  - local_assistive
+  - governed_skills
+  - governed_subtasks
+controls:
+  schema_version: '1.0'
+  execution_classes:
+    - DETERMINISTIC_PYTHON
+    - LOCAL_ASSISTIVE
+    - GOVERNED_SKILL
+  deterministic_model_route: prohibited
+  deterministic_token_policy: prohibited
+  governed_skill_inventory: exact_registered_skill_ids
+  secondary_language_rendering:
+    route_source: ORIGINATING_SKILL
+    isolation: ONE_REPORTED_ITEM_PER_REQUEST
+    authority: ASSISTIVE_TRANSLATION_ONLY

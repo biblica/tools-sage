@@ -1,112 +1,34 @@
-schema_version: '1.0'
-provider: codex
-policy_name: SAGE baseline model and reasoning policy
-global:
-  allowed_reasoning_efforts:
-    - none
-    - minimal
-    - low
-    - medium
-    - high
-    - xhigh
-  maximum_supported_reasoning_effort: xhigh
-  unknown_models: UNQUALIFIED
-  unknown_reasoning_efforts: UNSUPPORTED
-  operator_override_may_use_unqualified_model: true
-  operator_override_may_use_unsupported_reasoning_effort: false
-qualification:
-  gpt-5.6-sol:
-    status: BASELINE_APPROVED
-    basis: quality-first analytical baseline
-    workflows:
-      - bic.inspect
-      - bic.rewrite
-      - bic.self_check
-      - saw.rtc
-      - saw.stc
-      - saw.focused
-      - saw.ol
-  gpt-5.6-terra:
-    status: BASELINE_APPROVED
-    basis: balanced analytical baseline
-    workflows:
-      - bic.inspect
-      - saw.rtc
-      - saw.stc
-      - saw.focused
-  gpt-5.6-luna:
-    status: UTILITY_ONLY
-    basis: cost/latency utility baseline; not approved for governed BIC/SAW analysis
-    workflows: []
-  gpt-5.5:
-    status: LEGACY_BASELINE_APPROVED
-    basis: retained frontier analytical baseline
-    workflows:
-      - bic.inspect
-      - bic.rewrite
-      - bic.self_check
-      - saw.rtc
-      - saw.stc
-      - saw.focused
-      - saw.ol
-task_profiles:
-  bic.inspect:
-    base_complexity: R2
-    preferred_models:
-      - gpt-5.6-terra
-      - gpt-5.6-sol
-      - gpt-5.5
-    target_reasoning_effort: medium
-    minimum_reasoning_effort: medium
-    maximum_reasoning_effort: high
-  bic.rewrite:
-    base_complexity: R3
-    preferred_models:
-      - gpt-5.6-sol
-      - gpt-5.5
-    target_reasoning_effort: high
-    minimum_reasoning_effort: high
-    maximum_reasoning_effort: xhigh
-    conditional_second_pass_reasoning_effort: xhigh
-  bic.self_check:
-    base_complexity: R4
-    preferred_models:
-      - gpt-5.6-sol
-      - gpt-5.5
-    target_reasoning_effort: xhigh
-    minimum_reasoning_effort: high
-    maximum_reasoning_effort: xhigh
-  saw.rtc:
-    base_complexity: R2
-    preferred_models:
-      - gpt-5.6-terra
-      - gpt-5.6-sol
-      - gpt-5.5
-    target_reasoning_effort: medium
-    minimum_reasoning_effort: medium
-    maximum_reasoning_effort: high
-  saw.stc:
-    base_complexity: R4
-    preferred_models:
-      - gpt-5.6-sol
-      - gpt-5.5
-    target_reasoning_effort: xhigh
-    minimum_reasoning_effort: high
-    maximum_reasoning_effort: xhigh
-  saw.focused:
-    base_complexity: R3
-    preferred_models:
-      - gpt-5.6-sol
-      - gpt-5.6-terra
-      - gpt-5.5
-    target_reasoning_effort: high
-    minimum_reasoning_effort: high
-    maximum_reasoning_effort: xhigh
-  saw.ol:
-    base_complexity: R4
-    preferred_models:
-      - gpt-5.6-sol
-      - gpt-5.5
-    target_reasoning_effort: xhigh
-    minimum_reasoning_effort: high
-    maximum_reasoning_effort: xhigh
+schema_version: '2.0'
+qualification_policy_version: alpha1-1
+unknown_route_status: UNASSESSED
+accepted_operational_statuses:
+  - RECOMMENDED
+  - QUALIFIED
+recommendation_order:
+  - hard_contracts
+  - cost_class
+  - provider_native_reasoning_order
+  - material_semantic_score
+  - release_preference
+skill_routes:
+  bic-inspect:
+    suite_id: alpha1-bic-inspect
+    execution_class: GOVERNED_SKILL
+  bic-rewrite:
+    suite_id: alpha1-bic-rewrite
+    execution_class: GOVERNED_SKILL
+  bic-self-check:
+    suite_id: alpha1-bic-self-check
+    execution_class: GOVERNED_SKILL
+  saw-rtc:
+    suite_id: alpha1-saw-rtc
+    execution_class: GOVERNED_SKILL
+  saw-stc:
+    suite_id: alpha1-saw-stc
+    execution_class: GOVERNED_SKILL
+  saw-focused-check:
+    suite_id: alpha1-saw-focused-check
+    execution_class: GOVERNED_SKILL
+  saw-original-language-review:
+    suite_id: alpha1-saw-original-language-review
+    execution_class: GOVERNED_SKILL
