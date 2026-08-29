@@ -26,8 +26,9 @@ from .executors import ProviderRequest, make_executor
 from .hashing import sha256_bytes, sha256_file
 from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
-from .model_policy import cache_provider_catalog, recommend_model, validate_explicit_selection
+from .model_policy import cache_provider_catalog
 from .profiles import load_workflow_profile
+from .routing_override import resolve_routing_mode
 from .sfm_slicer import measure_sfm_text
 from .references import parse_scope
 from .registry import EcosystemConfig
@@ -1652,6 +1653,79 @@ def _execute_provider_request(
     return executor.execute(request)
 
 
+def _validated_manifest_skill(config: EcosystemConfig, manifest: dict[str, Any]) -> str:
+    """Bind the manifest to the exact registered Skill before provider discovery."""
+    from .act_tasks import load_skill_registry
+
+    skill_id = str(manifest.get("skill_id") or "").strip()
+    workflow = str(manifest.get("workflow") or "").strip().lower()
+    operation = str(manifest.get("operation") or "").strip().lower()
+    if not skill_id or not workflow or not operation:
+        raise ValidationError(
+            "Task must declare exact Skill, workflow, and operation identity",
+            code="LLM_TASK_SKILL_IDENTITY_INVALID",
+        )
+    binding = load_skill_registry(config.root).get((workflow, operation))
+    if binding is None or binding.skill_id != skill_id:
+        raise ValidationError(
+            f"Task Skill {skill_id or '<missing>'} does not own {workflow}/{operation}",
+            code="LLM_TASK_SKILL_IDENTITY_INVALID",
+        )
+    return skill_id
+
+
+def _resolve_task_route(
+    config: EcosystemConfig,
+    settings: dict[str, Any],
+    skill_id: str,
+) -> tuple[Any, Any, Any]:
+    """Probe connection metadata only and resolve one exact qualified Skill route."""
+    provider = str(settings.get("selected_provider") or "").strip().lower()
+    provider_settings = settings.get("providers") or {}
+    selected = provider_settings.get(provider) if isinstance(provider_settings, dict) else None
+    if not isinstance(selected, dict) or not bool(selected.get("enabled", False)):
+        raise ValidationError(
+            f"Configured provider {provider or '<missing>'} is not enabled",
+            code="LLM_PROVIDER_NOT_READY",
+        )
+    executor = make_executor(provider, settings)
+    status = executor.status()
+    if status.provider != provider:
+        raise ValidationError(
+            "Provider status identity differs from the configured provider",
+            code="PROVIDER_ROUTE_UNAVAILABLE",
+        )
+    if provider == "codex":
+        cache_provider_catalog(config.root, status)
+    route = resolve_routing_mode(config.root, skill_id, [status])
+    if route.identity.provider != provider:
+        raise ValidationError(
+            "Resolved route provider differs from the configured provider",
+            code="PROVIDER_ROUTE_UNAVAILABLE",
+        )
+    return executor, status, route
+
+
+def _validate_provider_response_route(response: Any, route: Any) -> None:
+    """Reject provider response metadata that contradicts the sealed execution route."""
+    identity = route.identity
+    if response.provider != identity.provider:
+        raise ValidationError(
+            "Provider response identity differs from the sealed Skill route",
+            code="LLM_RESPONSE_ROUTE_MISMATCH",
+        )
+    if response.model not in (None, "", identity.model_id):
+        raise ValidationError(
+            "Provider response model differs from the sealed Skill route",
+            code="LLM_RESPONSE_ROUTE_MISMATCH",
+        )
+    if response.reasoning_effort not in (None, "", identity.reasoning_id):
+        raise ValidationError(
+            "Provider response reasoning differs from the sealed Skill route",
+            code="LLM_RESPONSE_ROUTE_MISMATCH",
+        )
+
+
 def execute_task(
     config: EcosystemConfig,
     *,
@@ -1664,6 +1738,11 @@ def execute_task(
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """Execute one immutable task through the selected provider and materialize allowlisted outputs."""
+    if provider is not None or model is not None or reasoning_effort is not None or policy_override:
+        raise ValidationError(
+            "Operational tasks use Skill-qualified routing; direct provider, model, reasoning, and policy overrides are prohibited",
+            code="TASK_ROUTE_BYPASS_PROHIBITED",
+        )
     manifest_path = _task_manifest_path(config, task_manifest)
     manifest = _load_json(manifest_path, label="task manifest")
     mode = str(manifest.get("execution_mode", ""))
@@ -1675,11 +1754,18 @@ def execute_task(
             "Task evidence policy is missing or differs from the canonical local-evidence boundary",
             code="LLM_TASK_EVIDENCE_POLICY_INVALID",
         )
+    skill_id = _validated_manifest_skill(config, manifest)
     task_root = manifest_path.parent.resolve()
     act_path = task_root / "ACT.md"
     if not act_path.is_file():
         raise ValidationError("Immutable ACT.md is missing", code="LLM_TASK_INVALID")
     act_text = act_path.read_text(encoding="utf-8")
+
+    settings = load_llm_settings(config.root)
+    executor, provider_status_snapshot, route = _resolve_task_route(
+        config, settings, skill_id
+    )
+    route_identity = route.identity
 
     governance_inputs = [
         _verified_governance_input(config, dict(item))
@@ -1688,14 +1774,6 @@ def execute_task(
     normal_reads = [_verified_read(config, dict(item)) for item in manifest.get("allowed_reads", [])]
     conditional_reads = [_verified_read(config, dict(item)) for item in manifest.get("conditional_reads", [])]
     schema = _output_schema(manifest)
-    settings = load_llm_settings(config.root)
-    selected_provider = (provider or settings["selected_provider"]).strip().lower()
-    selected_item = settings["providers"].get(selected_provider, {})
-    persisted_model = selected_item.get("model")
-    persisted_reasoning = selected_item.get("reasoning_effort")
-    selection_mode = str(selected_item.get("selection_mode", "EXPLICIT" if persisted_model else "AUTO")).upper()
-    requested_model = model if model is not None else persisted_model
-    requested_reasoning = reasoning_effort if reasoning_effort is not None else persisted_reasoning
     prompt = _prompt(manifest=manifest, act_text=act_text, reads=normal_reads)
     prompt_sha = sha256_bytes(prompt.encode("utf-8"))
     first_handoff = _enforce_routed_sfm_budget(config, manifest, _route_measurement(prompt, schema, normal_reads))
@@ -1704,13 +1782,15 @@ def execute_task(
         return {
             "status": "READY_TO_EXECUTE",
             "task_id": manifest.get("task_id"),
-            "provider": selected_provider,
-            "model": requested_model,
-            "reasoning_effort": requested_reasoning,
-            "selection_mode": selection_mode if selected_provider == "codex" else "EXPLICIT",
-            "live_selection_pending": bool(
-                selected_provider == "codex" and selection_mode == "AUTO" and model is None
-            ),
+            "skill_id": skill_id,
+            "route_id": route_identity.route_id,
+            "routing_mode": route.routing_mode,
+            "qualification_status": route.qualification,
+            "provider": route_identity.provider,
+            "model": route_identity.model_id,
+            "reasoning_effort": route_identity.reasoning_id,
+            "selection_mode": route.routing_mode,
+            "live_selection_pending": False,
             "prompt_sha256": prompt_sha,
             "prompt_bytes": len(prompt.encode("utf-8")),
             "handoff_measurement": first_handoff,
@@ -1730,87 +1810,14 @@ def execute_task(
             code="LLM_TASK_OUTPUT_NOT_EMPTY",
         )
 
-    executor = make_executor(selected_provider, settings)
-    resolved_model = requested_model
-    resolved_reasoning = requested_reasoning
+    resolved_model = route_identity.model_id
+    resolved_reasoning = route_identity.reasoning_id
+    if resolved_reasoning == "provider-default":
+        resolved_reasoning = None
     second_pass_reasoning = resolved_reasoning
-    model_policy_record: dict[str, Any] = {
-        "task_profile": None,
-        "complexity": None,
-        "qualification_status": "NOT_APPLICABLE",
-        "qualification_basis": "Provider is not governed by the Codex model qualification policy.",
-        "selection_basis": "provider_setting",
-        "account_plan_type": None,
-    }
-    operator_policy_override = False
-    effective_selection_mode = "EXPLICIT"
-    provider_status_snapshot = None
-
-    if selected_provider == "codex":
-        live_status = executor.status()
-        provider_status_snapshot = live_status
-        if not live_status.ready:
-            raise ValidationError(live_status.diagnostic or "Codex provider is not ready", code="LLM_PROVIDER_NOT_READY")
-        cache_provider_catalog(config.root, live_status)
-        workflow = str(manifest.get("workflow", ""))
-        operation = str(manifest.get("operation", ""))
-        auto_requested = selection_mode == "AUTO" and model is None
-        if auto_requested:
-            recommendation = recommend_model(
-                root=config.root,
-                status=live_status,
-                workflow=workflow,
-                operation=operation,
-                manifest=manifest,
-            )
-            resolved_model = recommendation.model
-            resolved_reasoning = recommendation.reasoning_effort
-            second_pass_reasoning = recommendation.conditional_second_pass_reasoning_effort or resolved_reasoning
-            model_policy_record = recommendation.to_dict()
-            effective_selection_mode = "AUTO_RECOMMENDED"
-            if requested_reasoning is not None:
-                validated = validate_explicit_selection(
-                    root=config.root,
-                    status=live_status,
-                    workflow=workflow,
-                    operation=operation,
-                    model=resolved_model,
-                    reasoning_effort=requested_reasoning,
-                    allow_unqualified=policy_override,
-                    manifest=manifest,
-                )
-                resolved_reasoning = validated["reasoning_effort"]
-                second_pass_reasoning = validated["conditional_second_pass_reasoning_effort"]
-                operator_policy_override = bool(validated["operator_policy_override"])
-                model_policy_record = {**model_policy_record, **validated}
-                effective_selection_mode = "AUTO_MODEL_OPERATOR_REASONING"
-        else:
-            if not requested_model:
-                raise ValidationError(
-                    "Explicit Codex selection requires a model; use `sage model use --provider codex --auto` for policy routing",
-                    code="MODEL_SELECTION_REQUIRED",
-                )
-            validated = validate_explicit_selection(
-                root=config.root,
-                status=live_status,
-                workflow=workflow,
-                operation=operation,
-                model=str(requested_model),
-                reasoning_effort=str(requested_reasoning).lower() if requested_reasoning else None,
-                allow_unqualified=policy_override,
-                manifest=manifest,
-            )
-            resolved_model = validated["model"]
-            resolved_reasoning = validated["reasoning_effort"]
-            second_pass_reasoning = validated["conditional_second_pass_reasoning_effort"]
-            operator_policy_override = bool(validated["operator_policy_override"])
-            model_policy_record = {**validated, "account_plan_type": live_status.account_plan_type}
-            effective_selection_mode = "OPERATOR_EXPLICIT"
-    elif requested_reasoning:
-        raise ValidationError(
-            f"Provider {selected_provider} does not expose SAGE-governed reasoning-effort selection",
-            code="LLM_REASONING_EFFORT_UNSUPPORTED",
-        )
+    model_policy_record = route.to_dict()
+    operator_policy_override = route.routing_mode == "GLOBAL_OVERRIDE"
+    effective_selection_mode = route.routing_mode
 
     started = _utc_now()
     phase_reasoning_efforts: list[str | None] = [resolved_reasoning]
@@ -1828,6 +1835,7 @@ def execute_task(
         prevalidated_status=provider_status_snapshot,
     )
     provider_responses = [first]
+    _validate_provider_response_route(first, route)
     parsed_files = _parse_response(first.content, manifest)
     phase_count = 1
     used_conditional = False
@@ -1871,6 +1879,7 @@ def execute_task(
             prevalidated_status=provider_status_snapshot,
         )
         provider_responses.append(final)
+        _validate_provider_response_route(final, route)
         parsed_files = _parse_response(final.content, manifest)
         try:
             _validate_provider_narrative_language(manifest, parsed_files)
@@ -1930,6 +1939,7 @@ def execute_task(
             prevalidated_status=provider_status_snapshot,
         )
         provider_responses.append(final)
+        _validate_provider_response_route(final, route)
         micro_result = _parse_bic_ol_micro_response(final.content, conditional_request, challenge)
         final_files = _apply_bic_ol_micro_result(final_files, manifest, conditional_request, micro_result)
         final_prompt_sha = sha256_bytes(conditional_prompt.encode("utf-8"))
@@ -1943,12 +1953,21 @@ def execute_task(
         output_hashes[relative] = sha256_file(path)
 
     receipt = {
-        "schema_version": "1.4",
+        "schema_version": "2.0",
         "task_id": manifest.get("task_id"),
+        "skill_id": skill_id,
         "execution_mode": EXECUTION_MODE,
-        "provider": final.provider,
-        "model": final.model or resolved_model,
-        "reasoning_effort": final.reasoning_effort or phase_reasoning_efforts[-1],
+        "route_id": route_identity.route_id,
+        "routing_mode": route.routing_mode,
+        "qualification_status": route.qualification,
+        "qualification_evidence_sha256": route.evidence_sha256,
+        "routing_policy_version": route_identity.policy_version,
+        "provider_runtime_version": route.provider_runtime_version,
+        "model_identity_strength": route.model_identity_strength,
+        "capability_fingerprint": route_identity.capability_fingerprint,
+        "provider": route_identity.provider,
+        "model": route_identity.model_id,
+        "reasoning_effort": route_identity.reasoning_id,
         "selection_mode": effective_selection_mode,
         "operator_policy_override": operator_policy_override,
         "model_policy": model_policy_record,
@@ -1976,7 +1995,7 @@ def execute_task(
             "sealed_transport": True,
             "sage_workspace_exposed_as_provider_cwd": False,
             "filesystem_writes_by_provider": False,
-            "live_codex_catalog_required": selected_provider == "codex",
+            "live_provider_catalog_required": True,
         },
     }
     validation_root = task_root / "validation"

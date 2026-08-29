@@ -26,6 +26,7 @@ from .llm_settings import (
     load_llm_settings,
     local_ai_enabled,
 )
+from .skill_routing import resolve_specific_skill_route
 
 _JSON_FENCE = re.compile(r"^```(?:json)?\s*(.*?)\s*```$", re.IGNORECASE | re.DOTALL)
 
@@ -235,6 +236,89 @@ def _translation_prompt(
     )
 
 
+def _originating_routes(
+    document: Mapping[str, Any],
+    source: Mapping[str, Any],
+) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+    """Return receipt and per-item route bindings without inventing a fallback route."""
+    report_route = document.get("execution_route")
+    item_keys = [f"finding:{row['finding_id']}" for row in source["findings"]]
+    item_keys.extend(f"event:{row['event_id']}" for row in source.get("events", []))
+    if isinstance(report_route, Mapping):
+        normalized = dict(report_route)
+        return {"report": normalized}, {key: normalized for key in item_keys}
+
+    bindings: dict[str, dict[str, Any]] = {}
+    for collection, prefix, identity_field in (
+        (document.get("findings", []), "finding", "finding_id"),
+        (document.get("execution_events", []), "event", "event_id"),
+    ):
+        for raw in collection if isinstance(collection, list) else []:
+            if not isinstance(raw, Mapping):
+                continue
+            identity = str(raw.get(identity_field) or "").strip()
+            route = raw.get("execution_route")
+            if identity and isinstance(route, Mapping):
+                bindings[f"{prefix}:{identity}"] = dict(route)
+    if set(bindings) != set(item_keys):
+        raise ValidationError(
+            "Secondary rendering requires the originating execution route for every report item",
+            code="SECONDARY_REPORT_ROUTE_MISSING",
+        )
+    return dict(bindings), bindings
+
+
+def _resolved_rendering_route(
+    root: Path,
+    settings: Mapping[str, Any],
+    projection: Mapping[str, Any],
+) -> tuple[Any, Any]:
+    """Revalidate one originating exact route without selecting a substitute."""
+    provider = str(projection.get("provider") or "").strip().lower()
+    model_id = str(projection.get("model_id") or projection.get("model") or "").strip()
+    fingerprint = str(projection.get("capability_fingerprint") or "").strip()
+    reasoning_id = str(
+        projection.get("reasoning_id") or projection.get("reasoning_effort") or ""
+    ).strip()
+    skill_id = str(projection.get("skill_id") or "").strip()
+    route_id = str(projection.get("route_id") or "").strip()
+    if not all((provider, model_id, fingerprint, reasoning_id, skill_id, route_id)):
+        raise ValidationError(
+            "Secondary rendering route identity is incomplete",
+            code="SECONDARY_REPORT_ROUTE_MISSING",
+        )
+    providers = settings.get("providers")
+    provider_settings = providers.get(provider) if isinstance(providers, Mapping) else None
+    if not isinstance(provider_settings, Mapping) or not bool(provider_settings.get("enabled", False)):
+        raise ValidationError(
+            "Originating secondary-rendering provider is not enabled",
+            code="SECONDARY_REPORT_ROUTE_UNAVAILABLE",
+        )
+    executor = make_executor(provider, dict(settings))
+    status = executor.status()
+    try:
+        route = resolve_specific_skill_route(
+            root,
+            skill_id,
+            [status],
+            provider=provider,
+            model_id=model_id,
+            capability_fingerprint_value=fingerprint,
+            reasoning_id=reasoning_id,
+        )
+    except SageError as exc:
+        raise ValidationError(
+            "Originating secondary-rendering route is stale, unavailable, or unqualified",
+            code="SECONDARY_REPORT_ROUTE_UNAVAILABLE",
+        ) from exc
+    if route.identity.route_id != route_id:
+        raise ValidationError(
+            "Originating secondary-rendering route identity has changed",
+            code="SECONDARY_REPORT_ROUTE_UNAVAILABLE",
+        )
+    return executor, route
+
+
 def ensure_secondary_saw_report_rendering(
     root: Path,
     report_path: Path,
@@ -283,29 +367,6 @@ def ensure_secondary_saw_report_rendering(
         "REPORT:PRIMARY": primary_binding,
         "REPORT:SECONDARY": secondary_binding,
     }
-    if cache_path.is_file():
-        try:
-            cached = json.loads(cache_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            cached = None
-        if (
-            isinstance(cached, dict)
-            and cached.get("schema_version") == "1.0"
-            and cached.get("source_sha256") == source_sha256
-            and cached.get("primary_language") == primary
-            and cached.get("secondary_language") == secondary
-            and cached.get("status") == "AVAILABLE"
-            and cached.get("rendering_unit") == "ONE_REPORT_ITEM_PER_PROVIDER_REQUEST"
-            and cached.get("provider_request_count") == expected_request_count
-            and cached.get("linguistic_profile_bindings") == profile_bindings
-            and isinstance(cached.get("findings"), dict)
-            and set(cached["findings"]) == set(expected_ids)
-            and isinstance(cached.get("events"), dict)
-            and set(cached["events"]) == set(expected_event_ids)
-        ):
-            result["report_renderings"] = cached
-            return result
-
     if local_ai_enabled(root):
         rejected = {
             "schema_version": "1.0",
@@ -328,35 +389,88 @@ def ensure_secondary_saw_report_rendering(
         atomic_write_json(cache_path, rejected)
         result["report_renderings"] = rejected
         return result
+    try:
+        receipt_routes, item_routes = _originating_routes(document, source)
+    except SageError as exc:
+        degraded = {
+            "schema_version": "1.0",
+            "status": "DEGRADED",
+            "authority": "ASSISTIVE_TRANSLATION_ONLY",
+            "primary_language": primary,
+            "secondary_language": secondary,
+            "source_sha256": source_sha256,
+            "provider": None,
+            "model": None,
+            "reasoning_effort": None,
+            "findings": {},
+            "events": {},
+            "reason_code": getattr(exc, "code", "SECONDARY_REPORT_ROUTE_MISSING"),
+            "diagnostic": str(exc),
+        }
+        atomic_write_json(cache_path, degraded)
+        result["report_renderings"] = degraded
+        return result
+    if cache_path.is_file():
+        try:
+            cached = json.loads(cache_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            cached = None
+        if (
+            isinstance(cached, dict)
+            and cached.get("schema_version") == "1.0"
+            and cached.get("source_sha256") == source_sha256
+            and cached.get("primary_language") == primary
+            and cached.get("secondary_language") == secondary
+            and cached.get("status") == "AVAILABLE"
+            and cached.get("rendering_unit") == "ONE_REPORT_ITEM_PER_PROVIDER_REQUEST"
+            and cached.get("provider_request_count") == expected_request_count
+            and cached.get("linguistic_profile_bindings") == profile_bindings
+            and cached.get("execution_routes") == receipt_routes
+            and isinstance(cached.get("findings"), dict)
+            and set(cached["findings"]) == set(expected_ids)
+            and isinstance(cached.get("events"), dict)
+            and set(cached["events"]) == set(expected_event_ids)
+        ):
+            result["report_renderings"] = cached
+            return result
 
     settings = load_llm_settings(root)
-    provider = str(settings.get("selected_provider") or "codex").strip().lower()
-    item = dict((settings.get("providers") or {}).get(provider) or {})
-    model = str(item.get("model") or "").strip() or None
-    reasoning = str(item.get("reasoning_effort") or "").strip().lower() or None
+    provider: str | None = None
+    model: str | None = None
+    reasoning: str | None = None
     try:
-        executor = make_executor(provider, settings)
         secondary_rows: dict[str, dict[str, str]] = {}
         secondary_events: dict[str, dict[str, str]] = {}
         responses = []
         item_sources = [
-            {
+            (f"finding:{row['finding_id']}", {
                 "primary_language": primary,
                 "secondary_language": secondary,
                 "findings": [row],
                 "events": [],
-            }
+            })
             for row in source["findings"]
         ] + [
-            {
+            (f"event:{row['event_id']}", {
                 "primary_language": primary,
                 "secondary_language": secondary,
                 "findings": [],
                 "events": [row],
-            }
+            })
             for row in source.get("events", [])
         ]
-        for item_source in item_sources:
+        resolved_routes: dict[str, tuple[Any, Any]] = {}
+        for item_key, item_source in item_sources:
+            projection = item_routes[item_key]
+            projected_route_id = str(projection.get("route_id") or "")
+            if projected_route_id not in resolved_routes:
+                resolved_routes[projected_route_id] = _resolved_rendering_route(
+                    root, settings, projection
+                )
+            executor, route = resolved_routes[projected_route_id]
+            provider = route.identity.provider
+            model = route.identity.model_id
+            reasoning = route.identity.reasoning_id
             item_ids = [row["finding_id"] for row in item_source["findings"]]
             item_event_ids = [row["event_id"] for row in item_source["events"]]
             response = executor.execute(
@@ -368,7 +482,7 @@ def ensure_secondary_saw_report_rendering(
                         expected_event_ids=item_event_ids,
                     ),
                     model=model,
-                    reasoning_effort=reasoning,
+                    reasoning_effort=None if reasoning == "provider-default" else reasoning,
                     timeout_seconds=300,
                 )
             )
@@ -400,6 +514,7 @@ def ensure_secondary_saw_report_rendering(
             "rendering_unit": "ONE_REPORT_ITEM_PER_PROVIDER_REQUEST",
             "provider_request_count": len(responses),
             "linguistic_profile_bindings": profile_bindings,
+            "execution_routes": receipt_routes,
             "findings": secondary_rows,
             "events": secondary_events,
         }
@@ -419,6 +534,7 @@ def ensure_secondary_saw_report_rendering(
             "reasoning_effort": reasoning,
             "findings": {},
             "events": {},
+            "reason_code": getattr(exc, "code", "SECONDARY_REPORT_RENDERING_FAILED"),
             "diagnostic": str(exc),
         }
         atomic_write_json(cache_path, degraded)
