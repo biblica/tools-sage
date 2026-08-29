@@ -7,7 +7,11 @@ from pathlib import Path
 from typing import Any
 
 from .atomic import atomic_write_json, atomic_write_text
-from .act_outputs import render_action_report, render_plain_text_from_markdown
+from .act_outputs import (
+    aggregate_execution_routes,
+    render_action_report,
+    render_plain_text_from_markdown,
+)
 from .storage import resolve_persisted_path, storage_layout
 from .errors import ValidationError
 from .findings import (
@@ -634,6 +638,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
     receipts: list[dict[str, Any]] = []
     coverage_refs: list[str] = []
     stage_results: list[dict[str, Any]] = []
+    execution_sources: list[dict[str, Any]] = []
     ol_review_requests: list[dict[str, Any]] = []
     ol_resolutions: list[dict[str, Any]] = []
     resource_bindings: dict[str, Any] = {}
@@ -643,6 +648,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         if state != "FINALIZED" or not result_path:
             raise ValidationError("Cannot finalize composite RTC before every created stage is FINALIZED")
         result = _load_object(Path(result_path), f"composite result for {stage.get('stage')}")
+        execution_sources.append(result)
         stage_results.append({"stage": stage.get("stage"), "result_path": result_path})
         if not resource_bindings and isinstance(result.get("resource_bindings"), dict):
             resource_bindings = dict(result["resource_bindings"])
@@ -689,6 +695,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         "finding_count": len(findings),
         "versification_advisories": _run_versification_advisories(path),
         "execution_events": events_for_run(path.parent.parent),
+        "execution_routes": aggregate_execution_routes(execution_sources),
     }
     authority = report_language_authority(
         config.human_output.logs_and_reports,
