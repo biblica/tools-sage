@@ -9,6 +9,7 @@
 - Current implementation carries section-preferred SAW slicing that coalesces adjacent fitting sections, with bounded lookahead and balanced oversized-section partitioning; scope-projected predecessor/selective-OL evidence; chapter-first report compilation; actual WIP/Reference Project names in reports; three-column numeric menu alignment; non-generative Configure AI readiness, and explicit connection testing.
 - Release feature classification: the Textual TUI is `EXPERIMENTAL_UNSTABLE`, displayed exactly as `EXPERIMENTAL / UNSTABLE`; it remains non-authoritative independently of the product's Alpha/Beta/RC phase.
 - Current UI presentation contract: `docs/advanced/maintenance/UI-PRESENTATION.md`.
+- ALPHA1 finalization now includes the proposed provider-neutral, per-Skill routing design in `docs/advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md`; implementation and fresh route qualification remain outstanding.
 - Machine-local runtime state, caches, `localdata/.system/runtime/python`, `runtime/venv`, and `host-capability.json` must not ship in the vanilla Core distribution.
 
 
@@ -28,6 +29,8 @@ Any governed source or test change after qualification begins invalidates all re
 - Validate later RTC stages remain bounded to each child scope and do not inherit unrelated whole-book evidence.
 - Validate chapter-scoped final reports contain only that chapter's findings/evidence and use actual configured Project names.
 - Validate Configure AI entry readiness, toggle behavior without implicit rechecks, and explicit connection testing.
+- After Skill routing implementation, validate provider-only normal Setup, the guarded global override, fail-closed per-Skill qualification, and exact route metadata in Job menus and Run reports.
+- Validate that deterministic task phases remain Python-owned, local-model work remains non-authoritative and evidence-restricted, and deterministic handoff reduction never combines isolated OL or secondary-rendering items.
 - Validate numeric menu alignment at one-, two-, and three-digit option numbers.
 - Continue macOS/Windows first-run and clean-install testing.
 
