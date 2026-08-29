@@ -33,6 +33,12 @@ from .model_policy import (
     recommend_model,
 )
 from .skill_routing import resolve_skill_route
+from .routing_override import (
+    clear_global_override as clear_routing_override,
+    load_global_override,
+    resolve_routing_mode,
+    set_global_override as persist_routing_override,
+)
 
 
 class ModelService:
@@ -239,18 +245,19 @@ class ModelService:
 
     def recommendation_for_skill(self, skill_id: str) -> dict[str, Any]:
         """Return the current exact evidence-qualified route for one registered Skill."""
-        route = resolve_skill_route(self.root, skill_id, self._routing_statuses())
+        route = resolve_routing_mode(self.root, skill_id, self._routing_statuses())
         return {"status": "RECOMMENDED", **route.to_dict()}
 
     def skill_routes(self) -> dict[str, Any]:
         """Return independent readiness for every registered Skill under one catalog snapshot."""
         statuses = self._routing_statuses()
         policy = load_model_policy(self.root)
+        routing_mode = "GLOBAL_OVERRIDE" if load_global_override(self.root) else "AUTOMATIC"
         rows: list[dict[str, Any]] = []
         ready_count = 0
         for skill_id in policy["skill_routes"]:
             try:
-                route = resolve_skill_route(self.root, skill_id, statuses)
+                route = resolve_routing_mode(self.root, skill_id, statuses)
             except ValidationError as exc:
                 qualification = {
                     "SKILL_ROUTE_EVIDENCE_STALE": "STALE",
@@ -265,7 +272,7 @@ class ModelService:
                             else "AVAILABLE"
                         ),
                         "qualification": qualification,
-                        "routing_mode": "AUTOMATIC",
+                        "routing_mode": routing_mode,
                         "reason_code": exc.code,
                         "diagnostic": exc.message,
                     }
@@ -276,11 +283,23 @@ class ModelService:
         overall = "READY" if ready_count == len(rows) else ("PARTIALLY_ROUTABLE" if ready_count else "BLOCKED")
         return {
             "status": overall,
-            "routing_mode": "AUTOMATIC",
+            "routing_mode": routing_mode,
             "ready_skills": ready_count,
             "total_skills": len(rows),
             "skills": rows,
         }
+
+    def set_global_override(self, selection: dict[str, Any]) -> dict[str, Any]:
+        """Persist one advanced exact route override using current provider status."""
+        return persist_routing_override(
+            self.root,
+            selection=selection,
+            statuses=self._routing_statuses(),
+        )
+
+    def clear_global_override(self) -> dict[str, Any]:
+        """Restore automatic routing and return the local audit receipt."""
+        return clear_routing_override(self.root)
 
     def policy(self) -> dict[str, Any]:
         """Return the release-governed Codex qualification and reasoning policy."""

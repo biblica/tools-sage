@@ -1,0 +1,20 @@
+schema_id: sage-model-routing-override-1.0
+required:
+  - schema_version
+  - routing_mode
+  - selection
+  - qualification_policy_version
+  - qualified_skills
+  - qualified_skill_count
+  - registered_skill_count
+  - created_utc
+selection_required:
+  - provider
+  - model_id
+  - capability_fingerprint
+  - reasoning_id
+controls:
+  schema_version: '1.0'
+  routing_mode: GLOBAL_OVERRIDE
+  unqualified_operational_route: prohibited
+  silent_fallback: prohibited

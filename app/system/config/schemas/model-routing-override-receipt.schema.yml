@@ -1,0 +1,16 @@
+schema_id: sage-model-routing-override-receipt-1.0
+required:
+  - schema_version
+  - action
+  - previous_mode
+  - routing_mode
+  - selection
+  - qualified_skills
+  - created_utc
+controls:
+  schema_version: '1.0'
+  actions:
+    - ENABLE
+    - CHANGE
+    - CLEAR
+  immutable_history: required

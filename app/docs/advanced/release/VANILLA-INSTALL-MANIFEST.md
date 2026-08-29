@@ -198,6 +198,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/schemas/llm-execution-receipt.schema.yml`
 - `system/config/schemas/model-language-competency.schema.yml`
 - `system/config/schemas/model-policy.schema.yml`
+- `system/config/schemas/model-routing-override.schema.yml`
+- `system/config/schemas/model-routing-override-receipt.schema.yml`
 - `system/config/schemas/execution-ownership.schema.yml`
 - `system/config/schemas/ol-authority-profile.schema.yml`
 - `system/config/schemas/original-language-resources.schema.yml`
@@ -448,6 +450,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/llm_tasks.py`
 - `system/src/sage/local_assistive.py`
 - `system/src/sage/skill_routing.py`
+- `system/src/sage/routing_override.py`
 - `system/src/sage/locking.py`
 - `system/src/sage/menu.py`
 - `system/src/sage/model_language_competency.py`
@@ -573,6 +576,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_rtc_planner.py`
 - `system/tests/test_runtime.py`
 - `system/tests/test_schema_validation.py`
+- `system/tests/test_routing_override.py`
 - `system/tests/test_skill_routing_policy.py`
 - `system/tests/test_scope_and_auto_resolution.py`
 - `system/tests/test_sections_and_work_units.py`
