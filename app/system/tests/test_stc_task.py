@@ -49,6 +49,7 @@ def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, mak
     )
 
     manifest = json.loads(Path(task["manifest_path"]).read_text(encoding="utf-8"))
+    assert manifest["skill_id"] == "saw-stc"
     reads = {Path(item["path"]).name: item["evidence_class"] for item in manifest["allowed_reads"]}
     assert reads == {
         "wip.sfm": "SUBJECT_TEXT",

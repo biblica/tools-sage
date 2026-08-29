@@ -7,6 +7,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import yaml
@@ -344,6 +345,7 @@ def test_rtc_context_excludes_ol_and_raw_profile(
 def test_task_budget_uses_routed_sfm_only_and_keeps_controller_byte_inventory(
     package_root: Path,
     make_workspace,
+    monkeypatch,
 ) -> None:
     """Budget only routed analysis SFM; inventory all other provider/controller material as bytes."""
     root = make_workspace(qualification_status="VALIDATED")
@@ -357,6 +359,7 @@ def test_task_budget_uses_routed_sfm_only_and_keeps_controller_byte_inventory(
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
     )
+    assert task["skill_id"] == "saw-rtc"
 
     budget = task["context_budget"]
     governance = budget["governance_context"]
@@ -368,6 +371,22 @@ def test_task_budget_uses_routed_sfm_only_and_keeps_controller_byte_inventory(
     assert "estimated_tokens" not in governance
     assert "final_estimated_tokens" not in governance
     assert all("estimated_tokens" not in row for row in governance["top_contributors"])
+
+    route_identity = SimpleNamespace(
+        route_id="a" * 64,
+        provider="codex",
+        model_id="gpt-test",
+        reasoning_id="medium",
+    )
+    route = SimpleNamespace(
+        identity=route_identity,
+        routing_mode="AUTOMATIC",
+        qualification="QUALIFIED",
+    )
+    monkeypatch.setattr(
+        "sage.llm_tasks._resolve_task_route",
+        lambda *_args, **_kwargs: (None, None, route),
+    )
 
     dry = execute_task(config, task_manifest=Path(task["manifest_path"]), dry_run=True)
     assert dry["handoff_measurement"]["total_estimated_tokens"] == budget["final_estimated_tokens"]

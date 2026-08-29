@@ -3049,6 +3049,7 @@ def _create_saw_stc_task(
         identity = {
             "schema_version": "2.4", "execution_mode": "SAGE_GOVERNED_TASK_V1",
             "workflow": "saw", "operation": "stc", "rtc_stage": None,
+            "skill_id": skill.skill_id,
             "job_id": job_id, "run_id": run_id,
             "resource_bindings": resource_bindings, "resource_display_names": resource_bindings,
             "output_project": output.project_id, "output_content_state": output.content_state,
@@ -4347,6 +4348,7 @@ def create_act_task(
             "execution_mode": "SAGE_GOVERNED_TASK_V1",
             "workflow": workflow,
             "operation": operation,
+            "skill_id": skill.skill_id,
             "rtc_stage": rtc_stage,
             "job_id": job_id,
             "run_id": run_id,
