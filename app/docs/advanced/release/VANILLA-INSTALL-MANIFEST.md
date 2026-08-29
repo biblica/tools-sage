@@ -447,6 +447,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/llm_settings.py`
 - `system/src/sage/llm_tasks.py`
 - `system/src/sage/local_assistive.py`
+- `system/src/sage/skill_routing.py`
 - `system/src/sage/locking.py`
 - `system/src/sage/menu.py`
 - `system/src/sage/model_language_competency.py`

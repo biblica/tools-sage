@@ -10,6 +10,15 @@ recommendation_order:
   - provider_native_reasoning_order
   - material_semantic_score
   - release_preference
+release_preference:
+  providers:
+    - codex
+  models:
+    codex:
+      - gpt-5.6-sol
+      - gpt-5.6-terra
+      - gpt-5.5
+      - gpt-5.6-luna
 skill_routes:
   bic-inspect:
     suite_id: alpha1-bic-inspect

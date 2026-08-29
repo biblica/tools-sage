@@ -30,9 +30,9 @@ from .model_policy import (
     cache_provider_catalog,
     ensure_reasoning_effort_supported,
     load_model_policy,
-    qualification_for,
     recommend_model,
 )
+from .skill_routing import resolve_skill_route
 
 
 class ModelService:
@@ -170,19 +170,30 @@ class ModelService:
         selected_item = settings["providers"].get(provider_id, {})
         selected_model = selected_item.get("model")
         rows: list[dict[str, Any]] = []
-        if provider_id == "codex" and status.model_capabilities:
+        if status.model_capabilities:
             policy = load_model_policy(self.root)
             for capability in status.model_capabilities:
-                qualifications = [
-                    profile
-                    for profile in policy.get("task_profiles", {})
-                    if qualification_for(policy, capability.model, profile)["qualified"]
-                ]
+                qualifications: list[dict[str, Any]] = []
+                for skill_id in policy["skill_routes"]:
+                    try:
+                        route = resolve_skill_route(self.root, skill_id, [status])
+                    except ValidationError:
+                        continue
+                    if route.identity.model_id != capability.model:
+                        continue
+                    qualifications.append(
+                        {
+                            "skill_id": skill_id,
+                            "reasoning_id": route.identity.reasoning_id,
+                            "qualification": route.qualification,
+                            "evidence_sha256": route.evidence_sha256,
+                        }
+                    )
                 rows.append(
                     {
                         **capability.to_dict(),
                         "reasoning_efforts": list(capability.reasoning_efforts),
-                        "qualified_profiles": qualifications,
+                        "qualified_skill_routes": qualifications,
                         "selected": capability.model == selected_model or capability.id == selected_model,
                     }
                 )
@@ -217,6 +228,58 @@ class ModelService:
             "status": "RECOMMENDED",
             **recommendation.to_dict(),
             "catalog_cache": str(cache_path) if cache_path else None,
+        }
+
+    def _routing_statuses(self) -> list[ProviderStatus]:
+        """Probe every build-enabled automated provider once for route resolution."""
+        return [
+            self.probe(provider_id, use_selection=False, cache_catalog=False)[0]
+            for provider_id in ENABLED_AUTOMATED_PROVIDER_IDS
+        ]
+
+    def recommendation_for_skill(self, skill_id: str) -> dict[str, Any]:
+        """Return the current exact evidence-qualified route for one registered Skill."""
+        route = resolve_skill_route(self.root, skill_id, self._routing_statuses())
+        return {"status": "RECOMMENDED", **route.to_dict()}
+
+    def skill_routes(self) -> dict[str, Any]:
+        """Return independent readiness for every registered Skill under one catalog snapshot."""
+        statuses = self._routing_statuses()
+        policy = load_model_policy(self.root)
+        rows: list[dict[str, Any]] = []
+        ready_count = 0
+        for skill_id in policy["skill_routes"]:
+            try:
+                route = resolve_skill_route(self.root, skill_id, statuses)
+            except ValidationError as exc:
+                qualification = {
+                    "SKILL_ROUTE_EVIDENCE_STALE": "STALE",
+                    "PROVIDER_ROUTE_UNAVAILABLE": "QUALIFIED",
+                }.get(exc.code, "UNASSESSED")
+                rows.append(
+                    {
+                        "skill_id": skill_id,
+                        "availability": (
+                            "UNAVAILABLE"
+                            if exc.code == "PROVIDER_ROUTE_UNAVAILABLE"
+                            else "AVAILABLE"
+                        ),
+                        "qualification": qualification,
+                        "routing_mode": "AUTOMATIC",
+                        "reason_code": exc.code,
+                        "diagnostic": exc.message,
+                    }
+                )
+            else:
+                ready_count += 1
+                rows.append({**route.to_dict(), "reason_code": None, "diagnostic": ""})
+        overall = "READY" if ready_count == len(rows) else ("PARTIALLY_ROUTABLE" if ready_count else "BLOCKED")
+        return {
+            "status": overall,
+            "routing_mode": "AUTOMATIC",
+            "ready_skills": ready_count,
+            "total_skills": len(rows),
+            "skills": rows,
         }
 
     def policy(self) -> dict[str, Any]:

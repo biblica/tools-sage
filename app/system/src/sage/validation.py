@@ -112,6 +112,7 @@ REQUIRED_PACKAGE_PATHS = {
     "system/skills/saw-ol-review/SKILL.md",
     "system/src/sage/consolidation.py",
     "system/src/sage/local_assistive.py",
+    "system/src/sage/skill_routing.py",
     "system/config/structure-planning.yml",
     "system/config/sage-standard.json",
     "system/config/workflows/bic/profile.yml",
