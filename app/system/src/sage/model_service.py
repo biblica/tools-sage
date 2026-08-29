@@ -17,7 +17,7 @@ from .llm_settings import (
     save_llm_settings,
     update_llm_selection,
 )
-from .model_evaluation import evaluate_candidate
+from .model_evaluation import evaluate_candidate, evaluate_catalog, promote_receipts
 from .model_language_competency import (
     exact_language_assessed,
     known_language_rows,
@@ -29,7 +29,6 @@ from .model_language_competency import (
 from .storage import storage_layout
 from .model_policy import (
     cache_provider_catalog,
-    ensure_reasoning_effort_supported,
     load_model_policy,
     recommend_model,
 )
@@ -328,6 +327,36 @@ class ModelService:
             reasoning_id=reasoning_id,
         )
 
+    def evaluate_catalog_routes(
+        self,
+        *,
+        provider: str,
+        skill_ids: list[str] | None = None,
+        model_ids: list[str] | None = None,
+        comparison: bool = False,
+    ) -> dict[str, Any]:
+        """Evaluate selected models per Skill using provider-native reasoning progression."""
+        return evaluate_catalog(
+            self.root,
+            provider=provider,
+            skill_ids=skill_ids,
+            model_ids=model_ids,
+            comparison=comparison,
+        )
+
+    def promote_qualification_receipts(
+        self,
+        *,
+        receipt_paths: list[Path],
+        destination: Path,
+    ) -> dict[str, Any]:
+        """Build one explicitly located review candidate from qualified local receipts."""
+        return promote_receipts(
+            self.root,
+            receipt_paths=receipt_paths,
+            destination=destination,
+        )
+
     def policy(self) -> dict[str, Any]:
         """Return the provider-neutral Skill qualification and routing policy."""
         return load_model_policy(self.root)
@@ -353,8 +382,6 @@ class ModelService:
             raise ConfigurationError("--auto is currently supported only for the codex provider")
         if auto and (model or reasoning_effort):
             raise ConfigurationError("--auto cannot be combined with --model or --reasoning")
-        if provider_id == "codex" and reasoning_effort:
-            ensure_reasoning_effort_supported(self.policy(), reasoning_effort)
         if provider_id == "codex" and not auto and (model or reasoning_effort):
             current = self.settings()
             live = make_executor("codex", current).status(
@@ -552,8 +579,6 @@ class ModelService:
         status, _ = self.probe(provider_id, settings=settings, cache_catalog=False)
         if not status.ready:
             raise ValidationError(status.diagnostic, code="LLM_PROVIDER_NOT_READY")
-        if provider_id == "codex" and resolved_reasoning:
-            ensure_reasoning_effort_supported(self.policy(), resolved_reasoning)
         return {
             "status": "READY",
             "provider": provider_id,
@@ -625,8 +650,6 @@ class ModelService:
         status = executor.status(model=resolved_model, reasoning_effort=resolved_reasoning)
         if not status.ready:
             raise ValidationError(status.diagnostic, code="LLM_PROVIDER_NOT_READY")
-        if provider_id == "codex" and resolved_reasoning:
-            ensure_reasoning_effort_supported(self.policy(), resolved_reasoning)
         selected_model = status.selected_model or resolved_model
         selected_reasoning = status.selected_reasoning_effort or resolved_reasoning
         schema = {

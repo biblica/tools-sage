@@ -72,14 +72,34 @@ validators passing is `QUALIFIED`.
 ./system/bin/sage model list --provider codex
 ./system/bin/sage model routes
 ./system/bin/sage model recommend --skill saw-rtc
-./system/bin/sage model evaluate --skill saw-rtc --provider codex --model MODEL_ID --reasoning PROVIDER_REASONING_ID
+./system/bin/sage model evaluate --skill saw-rtc --provider codex --model MODEL_ID
+./system/bin/sage model evaluate --all-skills --provider codex --all-models
+./system/bin/sage model evaluate --skill saw-rtc --provider codex --model MODEL_ID --comparison
 ./system/bin/sage model test --provider codex
 ```
 
-Evaluation uses only packaged synthetic cases and performs nine isolated attempts for the chosen
-Skill/route. It must not use Operator Jobs, Projects, reports, or Scripture. Live evaluation is an
-explicit Alpha qualification activity and is never run by pytest, package validation, startup, or a
-normal Job.
+Evaluation uses only packaged synthetic cases. For every selected model/Skill, SAGE tests the
+provider's advertised reasoning settings in provider order and stops at the first `QUALIFIED`
+setting. Each tested setting performs nine isolated attempts: three repetitions of three sealed
+cases. `--comparison` explicitly continues through every advertised setting. A provider without a
+reasoning control is evaluated once as `provider-default`.
+
+The interactive **Evaluate model for Skill** action applies the same progression after the Operator
+chooses one model or all available models. It shows the maximum provider-attempt count before
+confirmation and does not ask the Operator to map a universal reasoning level.
+
+Evaluation must not use Operator Jobs, Projects, reports, or Scripture. It is an explicit Alpha
+qualification activity and is never run by pytest, package validation, startup, or a normal Job.
+Local receipts become immediately eligible for deterministic routing only while every bound identity
+still reconciles. Building a possible Core seed is a separate, explicit review action:
+
+```sh
+./system/bin/sage model promote --receipt RECEIPT.json --destination CANDIDATE-SEEDS.json
+```
+
+The destination must not already exist. This command accepts only reconciled `QUALIFIED` receipts
+and never overwrites `system/config/model-qualification-seeds.json`; human review and a later governed
+source change are required for Core promotion.
 
 ## Advanced global override
 

@@ -30,6 +30,7 @@
 24. **Audited advanced override.** One optional exact provider/model/capability/reasoning route may be pinned outside normal Setup. Set/change/clear actions create local receipts, and execution still fails closed when the route is not qualified for the current Skill.
 25. **Truthful route provenance.** Schema 2.0 execution receipts bind exact route and qualification evidence. BIC/SAW submissions, aggregation, Job/Run status, and final report Execution sections preserve the actual attempt route rather than recomputing history.
 26. **Per-item isolation.** Original-language adjudication and secondary-language report rendering execute one item per provider request with no conversation reuse. Secondary rendering inherits the originating route and degrades without changing canonical results.
+27. **Provider-native qualification orchestration.** The sealed evaluator can assess one/all Skills against one/all live provider models, advances through each model's advertised reasoning order, stops at the first qualified setting unless comparison is explicit, validates returned route metadata, and exposes only an explicit review-candidate promotion path. The interactive flow selects evaluation scope rather than a universal reasoning level.
 
 ## External-resource rule
 

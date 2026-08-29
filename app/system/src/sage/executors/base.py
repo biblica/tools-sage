@@ -6,23 +6,6 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Protocol
 
 
-SAGE_SUPPORTED_REASONING_EFFORTS = (
-    "none",
-    "minimal",
-    "low",
-    "medium",
-    "high",
-    "xhigh",
-)
-
-
-def sage_supports_reasoning_effort(value: str | None) -> bool:
-    """Return whether one provider effort is inside SAGE's hard reasoning ceiling."""
-    if value is None:
-        return True
-    return value.strip().lower() in SAGE_SUPPORTED_REASONING_EFFORTS
-
-
 @dataclass(frozen=True)
 class ReasoningEffortOption:
     """One provider-advertised reasoning level in provider-defined progression order."""

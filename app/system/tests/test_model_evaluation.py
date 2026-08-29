@@ -110,6 +110,248 @@ class PassingTransport:
         )
 
 
+class NativeReasoningTransport:
+    """Exercise one provider-native reasoning candidate with deterministic fixture output."""
+
+    def __init__(
+        self,
+        status: ProviderStatus,
+        *,
+        model_id: str,
+        reasoning_id: str,
+        qualifies: bool,
+    ) -> None:
+        """Bind one candidate and whether its semantic responses satisfy the sealed cases."""
+        self._status = status
+        self.model_id = model_id
+        self.reasoning_id = reasoning_id
+        self.qualifies = qualifies
+
+    def status(self) -> ProviderStatus:
+        """Return the shared provider-native catalog snapshot."""
+        return self._status
+
+    def execute(self, case: dict[str, object], repetition: int) -> ProviderResponse:
+        """Return an exact response or a bounded semantic miss for this candidate."""
+        del repetition
+        response = dict(case["expected"]["passing_response"])  # type: ignore[index]
+        if not self.qualifies:
+            response["decision"] = "SEMANTIC_MISS"
+        return ProviderResponse(
+            provider=self._status.provider,
+            model=self.model_id,
+            reasoning_effort=(
+                None if self.reasoning_id == "provider-default" else self.reasoning_id
+            ),
+            content=json.dumps(response),
+            metadata={"fixture": True},
+        )
+
+
+def _native_status(*, provider: str = "fixture-native") -> ProviderStatus:
+    """Return two future-provider models with provider-owned reasoning identifiers."""
+    return ProviderStatus(
+        provider=provider,
+        available=True,
+        ready=True,
+        version="native-1.0",
+        model_capabilities=(
+            ModelCapability(
+                id="model-a",
+                model="model-a",
+                display_name="Model A",
+                supported_reasoning_efforts=tuple(
+                    ReasoningEffortOption(value) for value in ("swift", "careful", "deep-native")
+                ),
+                default_reasoning_effort="careful",
+                identity_strength="IMMUTABLE",
+                cost_class="STANDARD",
+            ),
+            ModelCapability(
+                id="model-b",
+                model="model-b",
+                display_name="Model B",
+                supported_reasoning_efforts=(),
+                default_reasoning_effort=None,
+                identity_strength="IMMUTABLE",
+                cost_class="STANDARD",
+            ),
+        ),
+        diagnostic="ready",
+    )
+
+
+def test_model_evaluation_progresses_native_reasoning_and_stops_at_first_qualified(
+    package_root: Path,
+) -> None:
+    """One model/Skill evaluation must preserve native order and stop at least sufficient effort."""
+    evaluation = _evaluation_module()
+    status = _native_status()
+    created: list[str] = []
+
+    def factory(model_id: str, reasoning_id: str):
+        """Make the lower candidate miss and the next native candidate qualify."""
+        created.append(reasoning_id)
+        return NativeReasoningTransport(
+            status,
+            model_id=model_id,
+            reasoning_id=reasoning_id,
+            qualifies=reasoning_id == "careful",
+        )
+
+    result = evaluation.evaluate_model_for_skill(
+        package_root,
+        skill_id="saw-rtc",
+        provider=status.provider,
+        model_id="model-a",
+        status=status,
+        transport_factory=factory,
+    )
+
+    assert created == ["swift", "careful"]
+    assert result["status"] == "QUALIFIED"
+    assert result["evaluated_reasoning_ids"] == ["swift", "careful"]
+    assert result["selected_route"]["reasoning_id"] == "careful"
+    assert result["stopped_after_first_qualified"] is True
+
+
+def test_model_evaluation_comparison_runs_every_native_reasoning_setting(
+    package_root: Path,
+) -> None:
+    """Explicit comparison mode may continue after the first passing native setting."""
+    evaluation = _evaluation_module()
+    status = _native_status(provider="fixture-comparison")
+    created: list[str] = []
+
+    def factory(model_id: str, reasoning_id: str):
+        """Qualify every candidate while recording provider order."""
+        created.append(reasoning_id)
+        return NativeReasoningTransport(
+            status,
+            model_id=model_id,
+            reasoning_id=reasoning_id,
+            qualifies=True,
+        )
+
+    result = evaluation.evaluate_model_for_skill(
+        package_root,
+        skill_id="bic-inspect",
+        provider=status.provider,
+        model_id="model-a",
+        comparison=True,
+        status=status,
+        transport_factory=factory,
+    )
+
+    assert created == ["swift", "careful", "deep-native"]
+    assert result["selected_route"]["reasoning_id"] == "swift"
+    assert result["stopped_after_first_qualified"] is False
+
+
+def test_catalog_evaluation_handles_provider_default_and_recommends_per_skill(
+    package_root: Path,
+) -> None:
+    """Catalog orchestration evaluates chosen models and returns one deterministic Skill route."""
+    evaluation = _evaluation_module()
+    status = _native_status(provider="fixture-catalog")
+
+    def factory(model_id: str, reasoning_id: str):
+        """Qualify only the model that exposes provider-default reasoning."""
+        return NativeReasoningTransport(
+            status,
+            model_id=model_id,
+            reasoning_id=reasoning_id,
+            qualifies=model_id == "model-b",
+        )
+
+    result = evaluation.evaluate_catalog(
+        package_root,
+        provider=status.provider,
+        skill_ids=["saw-focused-check"],
+        model_ids=["model-a", "model-b"],
+        status=status,
+        transport_factory=factory,
+    )
+
+    assert result["status"] == "COMPLETE"
+    assert result["candidate_count"] == 2
+    skill = result["skills"][0]
+    assert skill["qualification_status"] == "QUALIFIED"
+    assert skill["recommended_route"]["model_id"] == "model-b"
+    assert skill["recommended_route"]["reasoning_id"] == "provider-default"
+
+
+def test_evaluation_rejects_response_route_metadata_mismatch(package_root: Path) -> None:
+    """A response from another provider/model/reasoning route cannot qualify the candidate."""
+    evaluation = _evaluation_module()
+
+    class WrongRouteTransport(PassingTransport):
+        """Return passing content with contradictory provider metadata."""
+
+        def execute(self, case: dict[str, object], repetition: int) -> ProviderResponse:
+            """Preserve content but forge the provider identity."""
+            response = super().execute(case, repetition)
+            return ProviderResponse(
+                provider="another-provider",
+                model=response.model,
+                reasoning_effort=response.reasoning_effort,
+                content=response.content,
+                metadata=response.metadata,
+            )
+
+    receipt = evaluation.evaluate_candidate(
+        package_root,
+        skill_id="saw-rtc",
+        provider="fixture",
+        model_id="gpt-evaluation-fixture",
+        reasoning_id="careful",
+        transport=WrongRouteTransport(),
+    )
+
+    assert receipt["qualification_status"] == "FAILED"
+    assert receipt["hard_failure_count"] == 9
+    assert all(
+        "provider identity" in row["hard_errors"][0].lower()
+        for row in receipt["attempts"]
+    )
+
+
+def test_evaluation_rejects_missing_exact_route_metadata(package_root: Path) -> None:
+    """Qualification evidence cannot omit the evaluated model or native reasoning identity."""
+    evaluation = _evaluation_module()
+
+    class MissingRouteTransport(PassingTransport):
+        """Return passing content without model/reasoning response metadata."""
+
+        def execute(self, case: dict[str, object], repetition: int) -> ProviderResponse:
+            """Preserve content while omitting two required route identities."""
+            response = super().execute(case, repetition)
+            return ProviderResponse(
+                provider=response.provider,
+                model=None,
+                reasoning_effort=None,
+                content=response.content,
+                metadata=response.metadata,
+            )
+
+    receipt = evaluation.evaluate_candidate(
+        package_root,
+        skill_id="saw-rtc",
+        provider="fixture",
+        model_id="gpt-evaluation-fixture",
+        reasoning_id="careful",
+        transport=MissingRouteTransport(),
+    )
+
+    assert receipt["qualification_status"] == "FAILED"
+    assert receipt["hard_failure_count"] == 9
+    assert all(
+        {"Model identity differs from the evaluated route", "Reasoning identity differs from the evaluated route"}
+        <= set(row["hard_errors"])
+        for row in receipt["attempts"]
+    )
+
+
 def test_all_three_repetitions_of_all_cases_are_required_for_qualification(
     package_root: Path,
 ) -> None:

@@ -6,31 +6,14 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import yaml
 
 from .atomic import atomic_write_json
 from .errors import ConfigurationError, ValidationError
 from .storage import storage_layout
-from .executors.base import (
-    SAGE_SUPPORTED_REASONING_EFFORTS,
-    ModelCapability,
-    ProviderStatus,
-    sage_supports_reasoning_effort,
-)
-
-
-_KNOWN_EFFORT_RANK = {
-    "none": 0,
-    "minimal": 1,
-    "low": 2,
-    "medium": 3,
-    "high": 4,
-    "xhigh": 5,
-}
-_COMPLEXITY_RANK = {"R1": 1, "R2": 2, "R3": 3, "R4": 4}
-_COMPLEXITY_EFFORT = {"R1": "low", "R2": "medium", "R3": "high", "R4": "xhigh"}
+from .executors.base import ProviderStatus
 
 
 @dataclass(frozen=True)
@@ -156,11 +139,6 @@ def load_cached_catalog(root: Path, provider: str = "codex") -> dict[str, Any] |
     return value if isinstance(value, dict) else None
 
 
-def task_profile_key(workflow: str, operation: str) -> str:
-    """Return the canonical policy key for one governed SAGE operation."""
-    return f"{workflow.strip().lower()}.{operation.strip().lower()}"
-
-
 def skill_id_for_operation(root: Path, workflow: str, operation: str) -> str:
     """Resolve a legacy workflow/operation caller to one exact registered Skill ID."""
     registry_path = root.resolve() / "system" / "config" / "skills.json"
@@ -181,136 +159,6 @@ def skill_id_for_operation(root: Path, workflow: str, operation: str) -> str:
             code="NO_QUALIFIED_SKILL_ROUTE",
         )
     return matches[0]
-
-
-def qualification_for(policy: dict[str, Any], model: str, profile: str) -> dict[str, Any]:
-    """Return model qualification metadata for one workflow profile."""
-    row = policy.get("qualification", {}).get(model)
-    if not isinstance(row, dict):
-        return {
-            "qualified": False,
-            "status": str(policy.get("global", {}).get("unknown_models", "UNQUALIFIED")),
-            "basis": "Model is not listed in the release-governed SAGE qualification table.",
-        }
-    workflows = row.get("workflows", [])
-    qualified = isinstance(workflows, list) and profile in workflows
-    return {
-        "qualified": qualified,
-        "status": str(row.get("status", "UNQUALIFIED")),
-        "basis": str(row.get("basis", "")),
-    }
-
-
-def _effort_allowed(policy: dict[str, Any], effort: str | None) -> bool:
-    """Return whether an effort is inside the hard SAGE ceiling and release allowlist."""
-    if effort is None:
-        return True
-    effort = effort.strip().lower()
-    if not sage_supports_reasoning_effort(effort):
-        return False
-    allowed = policy.get("global", {}).get("allowed_reasoning_efforts", [])
-    if isinstance(allowed, list) and allowed:
-        return effort in {str(value).strip().lower() for value in allowed}
-    return effort in SAGE_SUPPORTED_REASONING_EFFORTS
-
-
-def ensure_reasoning_effort_supported(policy: dict[str, Any], effort: str | None) -> str | None:
-    """Normalize one explicit effort and reject anything above SAGE's XHigh ceiling."""
-    if effort is None:
-        return None
-    normalized = effort.strip().lower()
-    if not _effort_allowed(policy, normalized):
-        raise ValidationError(
-            f"Reasoning effort {effort} is unsupported by SAGE; highest supported reasoning level is xhigh",
-            code="MODEL_REASONING_UNSUPPORTED",
-        )
-    return normalized
-
-
-def _rank(value: str | None) -> int | None:
-    """Return the canonical rank for known reasoning effort names."""
-    return _KNOWN_EFFORT_RANK.get(value or "")
-
-
-def _within_effort_bounds(effort: str, minimum: str | None, maximum: str | None) -> bool:
-    """Check known effort bounds while failing closed on unknown ranked values."""
-    effort_rank = _rank(effort)
-    minimum_rank = _rank(minimum)
-    maximum_rank = _rank(maximum)
-    if effort_rank is None:
-        return effort == minimum == maximum
-    if minimum_rank is not None and effort_rank < minimum_rank:
-        return False
-    if maximum_rank is not None and effort_rank > maximum_rank:
-        return False
-    return True
-
-
-def choose_reasoning_effort(
-    model: ModelCapability,
-    *,
-    target: str | None,
-    minimum: str | None,
-    maximum: str | None,
-    policy: dict[str, Any],
-) -> str | None:
-    """Choose target or the nearest higher provider-advertised effort within SAGE bounds."""
-    efforts = [value for value in model.reasoning_efforts if _effort_allowed(policy, value)]
-    if not efforts:
-        return None
-    if target in efforts and target is not None and _within_effort_bounds(target, minimum, maximum):
-        return target
-    target_rank = _rank(target)
-    if target_rank is not None:
-        higher = [
-            value for value in efforts
-            if (_rank(value) is not None and _rank(value) >= target_rank and _within_effort_bounds(value, minimum, maximum))
-        ]
-        if higher:
-            return higher[0]
-        lower = [value for value in efforts if _within_effort_bounds(value, minimum, maximum)]
-        if lower:
-            return lower[-1]
-    default = model.default_reasoning_effort
-    if default in efforts and default is not None and _within_effort_bounds(default, minimum, maximum):
-        return default
-    bounded = [value for value in efforts if _within_effort_bounds(value, minimum, maximum)]
-    return bounded[0] if bounded else None
-
-
-def classify_task_complexity(manifest: dict[str, Any], profile: dict[str, Any]) -> str:
-    """Classify a governed task using task type plus bounded scope/candidate size signals."""
-    base = str(profile.get("base_complexity", "R2"))
-    rank = _COMPLEXITY_RANK.get(base, 2)
-    expected = manifest.get("expected_references", [])
-    candidates = manifest.get("structural_candidate_ids", [])
-    expected_count = len(expected) if isinstance(expected, list) else 0
-    candidate_count = len(candidates) if isinstance(candidates, list) else 0
-    if expected_count > 100 or candidate_count > 25:
-        rank = min(4, rank + 1)
-    return f"R{rank}"
-
-
-def _effective_target(profile: dict[str, Any], complexity: str) -> str | None:
-    """Escalate the profile target when deterministic task complexity requires it."""
-    configured = str(profile.get("target_reasoning_effort") or "").strip() or None
-    complexity_effort = _COMPLEXITY_EFFORT.get(complexity)
-    if configured is None:
-        return complexity_effort
-    configured_rank = _rank(configured)
-    complexity_rank = _rank(complexity_effort)
-    if configured_rank is not None and complexity_rank is not None and complexity_rank > configured_rank:
-        return complexity_effort
-    return configured
-
-
-def _model_lookup(models: Iterable[ModelCapability]) -> dict[str, ModelCapability]:
-    """Index live models by executable model slug and catalog id."""
-    result: dict[str, ModelCapability] = {}
-    for item in models:
-        result.setdefault(item.model, item)
-        result.setdefault(item.id, item)
-    return result
 
 
 def recommend_model(
@@ -353,90 +201,3 @@ def recommend_model(
         account_plan_type=status.account_plan_type,
         selection_basis="exact_skill_qualification",
     )
-
-
-def validate_explicit_selection(
-    *,
-    root: Path,
-    status: ProviderStatus,
-    workflow: str,
-    operation: str,
-    model: str,
-    reasoning_effort: str | None,
-    allow_unqualified: bool = False,
-    manifest: dict[str, Any] | None = None,
-) -> dict[str, Any]:
-    """Validate an Operator-selected live model/effort against SAGE policy and record override state."""
-    policy = load_model_policy(root)
-    key = task_profile_key(workflow, operation)
-    profile = policy.get("task_profiles", {}).get(key)
-    if not isinstance(profile, dict):
-        raise ValidationError(f"No SAGE model policy exists for {key}", code="MODEL_POLICY_PROFILE_MISSING")
-    lookup = _model_lookup(status.model_capabilities)
-    item = lookup.get(model)
-    if item is None:
-        raise ValidationError(f"Codex model is not available to the current ChatGPT workspace: {model}", code="MODEL_NOT_AVAILABLE")
-    qualification = qualification_for(policy, item.model, key)
-    override = False
-    if not qualification["qualified"]:
-        if not allow_unqualified:
-            raise ValidationError(
-                f"Model {item.model} is available but not SAGE-qualified for {key}; use --policy-override only after Operator review",
-                code="MODEL_NOT_QUALIFIED",
-            )
-        override = True
-    complexity = classify_task_complexity(manifest or {}, profile)
-    minimum = str(profile.get("minimum_reasoning_effort") or "").strip() or None
-    maximum = str(profile.get("maximum_reasoning_effort") or "").strip() or None
-    if reasoning_effort is None:
-        selected_effort = choose_reasoning_effort(
-            item,
-            target=_effective_target(profile, complexity),
-            minimum=minimum,
-            maximum=maximum,
-            policy=policy,
-        )
-        if item.reasoning_efforts and selected_effort is None:
-            raise ValidationError(
-                f"No advertised reasoning effort for {item.model} satisfies SAGE policy for {key}",
-                code="MODEL_REASONING_NOT_AVAILABLE",
-            )
-    else:
-        selected_effort = ensure_reasoning_effort_supported(policy, reasoning_effort)
-    conditional_second_effort = selected_effort
-    if reasoning_effort is None:
-        second_target = str(profile.get("conditional_second_pass_reasoning_effort") or "").strip() or None
-        if second_target:
-            conditional_second_effort = choose_reasoning_effort(
-                item,
-                target=second_target,
-                minimum=minimum,
-                maximum=maximum,
-                policy=policy,
-            ) or selected_effort
-    if selected_effort:
-        if selected_effort not in item.reasoning_efforts:
-            raise ValidationError(
-                f"Reasoning effort {selected_effort} is not advertised for {item.model}; supported={list(item.reasoning_efforts)}",
-                code="MODEL_REASONING_NOT_AVAILABLE",
-            )
-        ensure_reasoning_effort_supported(policy, selected_effort)
-        if not _within_effort_bounds(selected_effort, minimum, maximum):
-            if not allow_unqualified:
-                raise ValidationError(
-                    f"Reasoning effort {selected_effort} is outside SAGE bounds for {key}: {minimum}..{maximum}",
-                    code="MODEL_REASONING_OUTSIDE_POLICY",
-                )
-            override = True
-    return {
-        "model": item.model,
-        "display_name": item.display_name,
-        "reasoning_effort": selected_effort,
-        "conditional_second_pass_reasoning_effort": conditional_second_effort,
-        "qualification_status": qualification["status"],
-        "qualification_basis": qualification["basis"],
-        "operator_policy_override": override,
-        "task_profile": key,
-        "complexity": complexity,
-        "selection_basis": "operator_selected + live_available + policy_validated",
-    }

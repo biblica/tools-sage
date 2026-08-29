@@ -5649,7 +5649,7 @@ class SageControlCenter:
         )
 
     def _model_evaluate_skill_route(self, service: ModelService) -> None:
-        """Run one sealed synthetic per-Skill qualification without Job evidence."""
+        """Qualify one Skill through automatic provider-native route progression."""
         skills = list(service.policy().get("skill_routes", {}))
         selected_skill = self.io.choose(
             "Skill evaluation",
@@ -5659,32 +5659,47 @@ class SageControlCenter:
         models = list(catalog.get("models") or [])
         if not models:
             raise ValidationError("No live provider models are available", code="LLM_PROVIDER_NOT_READY")
-        selected_model = self.io.choose(
-            "Available provider models",
-            tuple(
-                (str(index), str(row.get("model") or row.get("id")))
-                for index, row in enumerate(models, 1)
-            ),
+        model_options = [("1", "All available provider models")]
+        model_options.extend(
+            (str(index), str(row.get("model") or row.get("id")))
+            for index, row in enumerate(models, 2)
         )
-        model_row = models[int(selected_model) - 1]
-        reasoning = list(model_row.get("reasoning_efforts") or ["provider-default"])
-        selected_reasoning = self.io.choose(
-            "Provider reasoning",
-            tuple((str(index), value) for index, value in enumerate(reasoning, 1)),
+        selected_model = self.io.choose("Model evaluation scope", tuple(model_options))
+        selected_models = models if selected_model == "1" else [models[int(selected_model) - 2]]
+        model_ids = (
+            None
+            if selected_model == "1"
+            else [str(selected_models[0].get("model") or selected_models[0].get("id"))]
+        )
+        maximum_attempts = sum(
+            max(1, len(list(row.get("reasoning_efforts") or []))) * 9
+            for row in selected_models
         )
         if not self.io.confirm(
-            "Run 9 isolated synthetic provider attempts; no Job data will be used?",
+            f"Run up to {maximum_attempts} isolated synthetic provider attempts; "
+            "reasoning advances in provider order and no Job data will be used?",
             default=False,
         ):
             return
-        result = service.evaluate_skill_route(
-            skill_id=skills[int(selected_skill) - 1],
-            provider="codex",
-            model_id=str(model_row.get("model") or model_row.get("id")),
-            reasoning_id=reasoning[int(selected_reasoning) - 1],
+        result = self._run_with_status(
+            "Evaluating sealed synthetic Skill cases...",
+            lambda: service.evaluate_catalog_routes(
+                provider="codex",
+                skill_ids=[skills[int(selected_skill) - 1]],
+                model_ids=model_ids,
+                comparison=False,
+            ),
         )
-        self.io.write(f"Qualification: {result['qualification_status']}")
-        self.io.write(f"Receipt: {result['receipt_path']}")
+        self.io.write(f"Evaluation: {result['status']}")
+        self.io.write(f"Skill readiness: {result['ready_skills']}/{result['total_skills']}")
+        for row in result["skills"]:
+            route = row.get("recommended_route") or {}
+            detail = (
+                f"{route.get('model_id')} / {route.get('reasoning_id')}"
+                if route
+                else str(row.get("reason_code") or "NOT QUALIFIED")
+            )
+            self.io.write(f"{row['skill_id']}: {row['qualification_status']} - {detail}")
 
     def _model_test_selected(self, service: ModelService) -> dict[str, Any]:
         """Run and return the explicit structured connectivity test for the selected provider."""

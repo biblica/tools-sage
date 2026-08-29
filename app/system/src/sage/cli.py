@@ -73,7 +73,6 @@ from .human_output import (
 from .locking import WorkspaceLock
 from .llm_tasks import execute_task
 from .llm_settings import load_llm_settings
-from .model_policy import task_profile_key
 from .model_service import ModelService
 from .executors import PROVIDER_IDS
 from .natural_language import append_request_log, interpret_request
@@ -2041,21 +2040,65 @@ def command_model_override(args: argparse.Namespace) -> int:
 
 
 def command_model_evaluate(args: argparse.Namespace) -> int:
-    """Evaluate one exact provider route against one sealed synthetic Skill suite."""
+    """Evaluate exact or catalog routes against sealed synthetic Skill suites."""
     config, _ = _load(args)
-    result = _model_service(config).evaluate_skill_route(
-        skill_id=args.skill,
-        provider=args.provider,
-        model_id=args.model,
-        reasoning_id=args.reasoning,
-    )
+    service = _model_service(config)
+    skill_ids = None if args.all_skills else list(args.skill or [])
+    model_ids = None if args.all_models else list(args.model or [])
+    if args.reasoning:
+        if args.all_skills or args.all_models or len(skill_ids or []) != 1 or len(model_ids or []) != 1:
+            raise ValidationError(
+                "An exact --reasoning evaluation requires one --skill and one --model",
+                code="MODEL_EVALUATION_SELECTION_INVALID",
+            )
+        result = service.evaluate_skill_route(
+            skill_id=skill_ids[0],
+            provider=args.provider,
+            model_id=model_ids[0],
+            reasoning_id=args.reasoning,
+        )
+    else:
+        result = service.evaluate_catalog_routes(
+            provider=args.provider,
+            skill_ids=skill_ids,
+            model_ids=model_ids,
+            comparison=bool(args.comparison),
+        )
     if args.json:
         _print_json(result)
-    else:
+    elif "qualification_status" in result:
         print(f"Skill: {result['skill_id']}")
         print(f"Qualification: {result['qualification_status']}")
         print(f"Attempts: {result['attempt_count']}")
         print(f"Receipt: {result['receipt_path']}")
+    else:
+        print(f"Evaluation: {result['status']}")
+        print(f"Provider: {result['provider']}")
+        print(f"Skill readiness: {result['ready_skills']}/{result['total_skills']}")
+        for row in result["skills"]:
+            route = row.get("recommended_route") or {}
+            detail = (
+                f"{route.get('model_id')} / {route.get('reasoning_id')}"
+                if route
+                else str(row.get("reason_code") or "NOT_QUALIFIED")
+            )
+            print(f"- {row['skill_id']}: {row['qualification_status']} — {detail}")
+    return 0
+
+
+def command_model_promote(args: argparse.Namespace) -> int:
+    """Build a review-only Core seed candidate from explicit qualified receipts."""
+    config, _ = _load(args)
+    result = _model_service(config).promote_qualification_receipts(
+        receipt_paths=[Path(value).expanduser() for value in args.receipt],
+        destination=Path(args.destination).expanduser(),
+    )
+    if args.json:
+        _print_json(result)
+    else:
+        print(f"Status: {result['status']}")
+        print(f"Routes: {result['route_count']}")
+        print(f"Candidate: {result['destination']}")
     return 0
 
 
@@ -4574,12 +4617,21 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     model_override_set.add_argument("--capability-fingerprint", required=True)
     model_override_set.add_argument("--reasoning", required=True)
     model_override_set.set_defaults(handler=command_model_override)
-    model_evaluate = model_actions.add_parser("evaluate", help="Run a sealed synthetic Skill qualification suite")
-    model_evaluate.add_argument("--skill", required=True)
-    model_evaluate.add_argument("--provider", required=True)
-    model_evaluate.add_argument("--model", required=True)
-    model_evaluate.add_argument("--reasoning", required=True)
+    model_evaluate = model_actions.add_parser("evaluate", help="Evaluate provider models with sealed synthetic Skill suites")
+    evaluation_skills = model_evaluate.add_mutually_exclusive_group(required=True)
+    evaluation_skills.add_argument("--skill", action="append", help="Registered Skill ID; repeat to evaluate several")
+    evaluation_skills.add_argument("--all-skills", action="store_true", help="Evaluate every registered Skill")
+    model_evaluate.add_argument("--provider", default="codex")
+    evaluation_models = model_evaluate.add_mutually_exclusive_group(required=True)
+    evaluation_models.add_argument("--model", action="append", help="Provider model ID; repeat to compare several")
+    evaluation_models.add_argument("--all-models", action="store_true", help="Evaluate every available provider model")
+    model_evaluate.add_argument("--reasoning", help="Evaluate one exact native reasoning ID instead of automatic progression")
+    model_evaluate.add_argument("--comparison", action="store_true", help="Continue through all native reasoning settings after one qualifies")
     model_evaluate.set_defaults(handler=command_model_evaluate)
+    model_promote = model_actions.add_parser("promote", help="Build a review candidate from qualified local receipts")
+    model_promote.add_argument("--receipt", action="append", required=True)
+    model_promote.add_argument("--destination", required=True)
+    model_promote.set_defaults(handler=command_model_promote)
     model_provision = model_actions.add_parser("provision", help="Configure governed Ollama settings without enabling workflow execution")
     model_provision.add_argument("--provider", choices=("ollama",), required=True)
     model_provision.add_argument("--model", help="Local model identifier to retain for future activation")

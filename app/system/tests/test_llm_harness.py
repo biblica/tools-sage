@@ -168,8 +168,8 @@ def _qualify_test_route(root: Path, *, skill_id: str, model: str, reasoning_id: 
     seed_path.write_text(json.dumps(seeds, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def test_codex_catalog_uses_chatgpt_account_and_applies_xhigh_ceiling(monkeypatch) -> None:
-    """Verify live discovery preserves supported order while removing efforts above XHigh."""
+def test_codex_catalog_preserves_every_provider_native_reasoning_identifier(monkeypatch) -> None:
+    """Live discovery must preserve provider order without applying a universal reasoning scale."""
     executor = CodexCLIExecutor(command="codex")
 
     def fake_roundtrip(requests, *, timeout=20):
@@ -211,12 +211,14 @@ def test_codex_catalog_uses_chatgpt_account_and_applies_xhigh_ceiling(monkeypatc
     auth, plan, models = executor.query_catalog()
     assert auth == "CHATGPT"
     assert plan == "business"
-    assert models[0].reasoning_efforts == ("medium", "high", "xhigh")
+    assert models[0].reasoning_efforts == (
+        "medium", "high", "xhigh", "max", "ultra", "future-super-effort"
+    )
     assert models[0].default_reasoning_effort == "high"
 
 
-def test_codex_catalog_drops_provider_default_above_xhigh(monkeypatch) -> None:
-    """Verify a provider default above SAGE's hard ceiling is not surfaced as a SAGE default."""
+def test_codex_catalog_preserves_provider_native_default(monkeypatch) -> None:
+    """A provider-native default remains visible even when its identifier is new to SAGE."""
     executor = CodexCLIExecutor(command="codex")
 
     def fake_roundtrip(requests, *, timeout=20):
@@ -249,8 +251,8 @@ def test_codex_catalog_drops_provider_default_above_xhigh(monkeypatch) -> None:
 
     monkeypatch.setattr(executor, "_app_server_roundtrip", fake_roundtrip)
     _auth, _plan, models = executor.query_catalog()
-    assert models[0].reasoning_efforts == ("high", "xhigh")
-    assert models[0].default_reasoning_effort is None
+    assert models[0].reasoning_efforts == ("high", "xhigh", "max")
+    assert models[0].default_reasoning_effort == "max"
 
 
 def test_codex_prevalidated_execution_reuses_verified_catalog_without_status_probe(monkeypatch) -> None:
