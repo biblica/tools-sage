@@ -66,6 +66,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Implementation Report](advanced/release/IMPLEMENTATION-REPORT.md) — implemented baseline and compatibility rules.
 - [Test and Validation Report](advanced/release/TEST-AND-VALIDATION-REPORT.md) — regression inventory and release commands.
 - [Release Gates](advanced/release/RELEASE-GATES.md), [Release Notes](advanced/release/RELEASE-NOTES.md), and [Handover](advanced/release/HANDOVER.md).
+- [Skill-qualified Model Routing Implementation Plan](advanced/release/SKILL-ROUTING-IMPLEMENTATION-PLAN.md) — test-first Alpha1 implementation, qualification, hardening, and Operator-acceptance sequence.
 - [Vanilla Installation Manifest](advanced/release/VANILLA-INSTALL-MANIFEST.md) — complete clean package inventory.
 
 ## Advanced: future, non-current designs

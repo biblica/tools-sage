@@ -9,7 +9,7 @@
 - Current implementation carries section-preferred SAW slicing that coalesces adjacent fitting sections, with bounded lookahead and balanced oversized-section partitioning; scope-projected predecessor/selective-OL evidence; chapter-first report compilation; actual WIP/Reference Project names in reports; three-column numeric menu alignment; non-generative Configure AI readiness, and explicit connection testing.
 - Release feature classification: the Textual TUI is `EXPERIMENTAL_UNSTABLE`, displayed exactly as `EXPERIMENTAL / UNSTABLE`; it remains non-authoritative independently of the product's Alpha/Beta/RC phase.
 - Current UI presentation contract: `docs/advanced/maintenance/UI-PRESENTATION.md`.
-- ALPHA1 finalization now includes the proposed provider-neutral, per-Skill routing design in `docs/advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md`; implementation and fresh route qualification remain outstanding.
+- ALPHA1 finalization includes the approved provider-neutral, per-Skill routing design in `docs/advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md` and its test-first execution sequence in `docs/advanced/release/SKILL-ROUTING-IMPLEMENTATION-PLAN.md`; implementation, fresh route qualification, and Operator acceptance remain outstanding.
 - Machine-local runtime state, caches, `localdata/.system/runtime/python`, `runtime/venv`, and `host-capability.json` must not ship in the vanilla Core distribution.
 
 
