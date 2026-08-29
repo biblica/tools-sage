@@ -30,10 +30,9 @@ one global model or reasoning level. **Configure AI** exposes:
 2. Available provider models
 3. Skill routing recommendations
 4. Advanced routing override
-5. Evaluate model for Skill
-6. Connect OpenAI and ChatGPT
-7. Configure Local AI
-8. Check LLM connection
+5. Connect OpenAI and ChatGPT
+6. Configure Local AI
+7. Check LLM connection
 
 Available models are informational. Skill recommendations show availability and qualification
 independently for every registered Skill. **Check LLM connection** is the explicit minimal generation
@@ -84,12 +83,12 @@ setting. Each tested setting performs nine isolated attempts: three repetitions 
 cases. `--comparison` explicitly continues through every advertised setting. A provider without a
 reasoning control is evaluated once as `provider-default`.
 
-The interactive **Evaluate model for Skill** action applies the same progression after the Operator
-chooses one model or all available models. It shows the maximum provider-attempt count before
-confirmation and does not ask the Operator to map a universal reasoning level.
-
 Evaluation must not use Operator Jobs, Projects, reports, or Scripture. It is an explicit Alpha
 qualification activity and is never run by pytest, package validation, startup, or a normal Job.
+Because a full catalog benchmark can take hours, `model evaluate` is maintainer/release CLI tooling
+and is not offered in normal Configure AI. Operators should receive reviewed qualification seeds or,
+in a future release, a locally verified signed-registry cache; normal setup must not require a local
+benchmark.
 Local receipts become immediately eligible for deterministic routing only while every bound identity
 still reconciles. Building a possible Core seed is a separate, explicit review action:
 

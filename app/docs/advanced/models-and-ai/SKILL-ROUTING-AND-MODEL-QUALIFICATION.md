@@ -120,6 +120,12 @@ Local state cannot weaken Core success criteria. A local evaluation receipt is a
 its Skill hash, suite hash, policy version, route identity, case inventory, and deterministic
 validator results all reconcile.
 
+The resolver obtains these records through a bounded qualification-evidence repository API. Its
+Alpha1 implementation reads Core seeds and machine-local receipts. Storage and transport are not
+part of route-selection logic, so a later signed hosted registry can feed a verified local cache/API
+adapter without changing the resolver, execution receipts, or Job code. Remote availability alone
+never authorizes a route; signature and exact-identity reconciliation remain local and fail closed.
+
 ## Skill success contracts
 
 Each registered Skill owns a versioned evaluation contract. The contract names its curated sealed
@@ -294,7 +300,9 @@ remain valid and continue to display their recorded legacy selection mode.
 
 The CLI follows the same boundary:
 
-- provider connect, status, refresh, catalog, recommendations, and evaluation remain available;
+- provider connect, status, refresh, catalog, and recommendations remain normal Operator surfaces;
+- sealed route evaluation remains explicit maintainer/release CLI tooling because full catalog
+  benchmarking can take hours;
 - ordinary model/reasoning selection becomes automatic Skill routing;
 - an explicit global override moves to an advanced command and creates the same audit receipt as the
   menu;

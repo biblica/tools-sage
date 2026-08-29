@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Mapping, Protocol, Sequence
 
 from .errors import ConfigurationError, ValidationError
 from .executors.base import ModelCapability, ProviderStatus
@@ -111,28 +111,48 @@ def _load_object(path: Path) -> dict[str, Any] | None:
     return value
 
 
-def _evidence_rows(root: Path) -> list[dict[str, Any]]:
-    """Load Core seeds and immutable machine-local receipts in stable path order."""
-    rows: list[dict[str, Any]] = []
-    seed = _load_object(root / "system/config/model-qualification-seeds.json")
-    if seed is not None:
-        raw_routes = seed.get("routes")
-        if not isinstance(raw_routes, list):
-            raise ConfigurationError("model-qualification-seeds.json routes must be a list")
-        rows.extend(dict(item) for item in raw_routes if isinstance(item, dict))
+class QualificationEvidenceRepository(Protocol):
+    """Replaceable local API for already verified qualification evidence."""
 
-    receipt_root = storage_layout(root).state_root / "model-qualification"
-    if receipt_root.is_dir():
-        for path in sorted(receipt_root.rglob("*.json")):
-            receipt = _load_object(path)
-            if receipt is None:
-                continue
-            raw_routes = receipt.get("routes")
-            if isinstance(raw_routes, list):
-                rows.extend(dict(item) for item in raw_routes if isinstance(item, dict))
-            elif receipt.get("skill_id"):
-                rows.append(dict(receipt))
-    return rows
+    def records_for_skill(self, skill_id: str) -> Sequence[Mapping[str, Any]]:
+        """Return qualification records bounded to one exact registered Skill."""
+        ...
+
+
+@dataclass(frozen=True)
+class LocalQualificationEvidenceRepository:
+    """Read bundled seeds and machine-local receipts through the repository contract."""
+
+    root: Path
+
+    def records_for_skill(self, skill_id: str) -> list[dict[str, Any]]:
+        """Load one Skill's Core seeds and immutable local receipts in stable path order."""
+        root = self.root.expanduser().resolve()
+        rows: list[dict[str, Any]] = []
+        seed = _load_object(root / "system/config/model-qualification-seeds.json")
+        if seed is not None:
+            raw_routes = seed.get("routes")
+            if not isinstance(raw_routes, list):
+                raise ConfigurationError("model-qualification-seeds.json routes must be a list")
+            rows.extend(dict(item) for item in raw_routes if isinstance(item, dict))
+
+        receipt_root = storage_layout(root).state_root / "model-qualification"
+        if receipt_root.is_dir():
+            for path in sorted(receipt_root.rglob("*.json")):
+                receipt = _load_object(path)
+                if receipt is None:
+                    continue
+                raw_routes = receipt.get("routes")
+                if isinstance(raw_routes, list):
+                    rows.extend(dict(item) for item in raw_routes if isinstance(item, dict))
+                elif receipt.get("skill_id"):
+                    rows.append(dict(receipt))
+        return [row for row in rows if str(row.get("skill_id") or "") == skill_id]
+
+
+def qualification_evidence_repository(root: Path) -> QualificationEvidenceRepository:
+    """Return the default repository behind the resolver's replaceable local API seam."""
+    return LocalQualificationEvidenceRepository(root)
 
 
 def _skill_identity(root: Path, skill_id: str) -> tuple[str, dict[str, Any], dict[str, Any]]:
@@ -209,6 +229,8 @@ def _candidate_skill_routes(
     root: Path,
     skill_id: str,
     statuses: Sequence[ProviderStatus],
+    *,
+    evidence_repository: QualificationEvidenceRepository | None = None,
 ) -> tuple[list[SkillRoute], bool, bool]:
     """Return sorted exact candidates plus unavailable and stale evidence state."""
     root = root.expanduser().resolve()
@@ -222,7 +244,12 @@ def _candidate_skill_routes(
     preferred_providers = [str(value) for value in release_preference.get("providers", [])]
     preferred_models = release_preference.get("models")
     preferred_models = preferred_models if isinstance(preferred_models, dict) else {}
-    evidence = [row for row in _evidence_rows(root) if str(row.get("skill_id") or "") == skill_id]
+    repository = evidence_repository or qualification_evidence_repository(root)
+    evidence = [
+        dict(row)
+        for row in repository.records_for_skill(skill_id)
+        if str(row.get("skill_id") or "") == skill_id
+    ]
     candidates: list[tuple[tuple[Any, ...], SkillRoute]] = []
     exact_but_unavailable = False
     stale_observed = False
@@ -347,10 +374,15 @@ def qualified_skill_routes(
     root: Path,
     skill_id: str,
     statuses: Sequence[ProviderStatus],
+    *,
+    evidence_repository: QualificationEvidenceRepository | None = None,
 ) -> tuple[SkillRoute, ...]:
     """Return every available qualified route in deterministic recommendation order."""
     routes, exact_but_unavailable, stale_observed = _candidate_skill_routes(
-        root, skill_id, statuses
+        root,
+        skill_id,
+        statuses,
+        evidence_repository=evidence_repository,
     )
     if not routes:
         _raise_unresolved_skill_route(
@@ -368,9 +400,16 @@ def resolve_skill_route(
     root: Path,
     skill_id: str,
     statuses: Sequence[ProviderStatus],
+    *,
+    evidence_repository: QualificationEvidenceRepository | None = None,
 ) -> SkillRoute:
     """Resolve the recommended available exact route for one registered Skill."""
-    return qualified_skill_routes(root, skill_id, statuses)[0]
+    return qualified_skill_routes(
+        root,
+        skill_id,
+        statuses,
+        evidence_repository=evidence_repository,
+    )[0]
 
 
 def resolve_specific_skill_route(
@@ -382,9 +421,15 @@ def resolve_specific_skill_route(
     model_id: str,
     capability_fingerprint_value: str,
     reasoning_id: str,
+    evidence_repository: QualificationEvidenceRepository | None = None,
 ) -> SkillRoute:
     """Resolve one exact qualified route selection without substituting another candidate."""
-    routes = qualified_skill_routes(root, skill_id, statuses)
+    routes = qualified_skill_routes(
+        root,
+        skill_id,
+        statuses,
+        evidence_repository=evidence_repository,
+    )
     for route in routes:
         identity = route.identity
         if (

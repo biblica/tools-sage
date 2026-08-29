@@ -1018,15 +1018,15 @@ def test_ai_menu_probes_on_open_and_exposes_skill_routing_actions(make_workspace
     assert "2. Available provider models" in rendered
     assert "3. Skill routing recommendations" in rendered
     assert "4. Advanced routing override" in rendered
-    assert "5. Evaluate model for Skill" in rendered
+    assert "Evaluate model for Skill" not in rendered
     assert "Change model" not in rendered
     assert "Change reasoning" not in rendered
     assert "Change provider         Codex" not in rendered
     assert "Change model            gpt-" not in rendered
     assert "Provider management" in rendered
-    assert "6. Connect OpenAI and ChatGPT" in rendered
-    assert "7. Configure Local AI" in rendered
-    assert "8. Check LLM connection" in rendered
+    assert "5. Connect OpenAI and ChatGPT" in rendered
+    assert "6. Configure Local AI" in rendered
+    assert "7. Check LLM connection" in rendered
     assert "Check competency for configured languages" not in rendered
 
 
@@ -1099,7 +1099,7 @@ def test_ai_menu_checks_connection_only_on_entry_and_explicit_check(make_workspa
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["8", "", "a"]), output=output),
+        io=MenuIO(input_func=ScriptedInput(["7", "", "a"]), output=output),
         skip_setup=True,
     )
     readiness_calls: list[bool] = []

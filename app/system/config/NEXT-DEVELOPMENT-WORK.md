@@ -11,6 +11,7 @@
 9. Define a future localdata schema-migration policy before any release introduces an incompatible persisted-data schema. The first published `0.02alpha1` baseline requires no migration from unpublished legacy layouts.
 10. Evaluate later provider enablement only after the development interaction grammar stabilizes. Ollama remains explicit administration tooling only; Grok/Gemini remain future adapters.
 11. Continue regression testing of protected BIC rewrite-detail and verb-selection rules. Keep WDA and existing-target revision parked as separate future work.
+12. Build a hosted qualification-registry service so normal Operators can begin work within minutes without running local catalog benchmarks. Publish signed, immutable route records keyed by provider, exact model/capability fingerprint, provider-native reasoning ID, Skill/adapted-Skill hash, suite hash, policy version, verdict, evidence hash, and review/expiry state. SAGE must query through the replaceable local qualification-evidence repository API, verify signatures and exact identities locally, cache an approved last-known registry for offline use, fail closed on mismatch, and never accept provider/model self-qualification. Full benchmarking remains release/maintainer tooling; local evaluation is only a fallback for new, unavailable, or disputed routes.
 
 
 ## 0.02alpha1 TUI work — IN PROGRESS

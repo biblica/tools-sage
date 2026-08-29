@@ -3147,14 +3147,6 @@
       "ru": "Очистить переопределение",
       "pt-BR": "Limpar substituição"
     },
-    "menu.model.evaluation.scope": {
-      "en-US": "Model evaluation scope",
-      "en-GB": "Model evaluation scope",
-      "id": "Cakupan evaluasi model",
-      "fr": "Portée de l’évaluation du modèle",
-      "ru": "Область оценки модели",
-      "pt-BR": "Escopo da avaliação do modelo"
-    },
     "menu.provider.reasoning": {
       "en-US": "Provider reasoning",
       "en-GB": "Provider reasoning",
