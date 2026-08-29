@@ -1,0 +1,39 @@
+{
+  "case_id": "greek-single-item",
+  "case_kind": "POSITIVE",
+  "expected_decision": "OL_DECISION_MADE",
+  "expected_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "expected_finding_ids": [
+    "F-001"
+  ],
+  "expected_reviewed_item_ids": [
+    "ITEM-GREEK-SINGLE-ITEM"
+  ],
+  "passing_response": {
+    "case_id": "greek-single-item",
+    "decision": "OL_DECISION_MADE",
+    "evidence_ids": [
+      "SYNTHETIC_PRIMARY"
+    ],
+    "finding_ids": [
+      "F-001"
+    ],
+    "prohibited_actions": [],
+    "reviewed_item_ids": [
+      "ITEM-GREEK-SINGLE-ITEM"
+    ],
+    "schema_version": "1.0",
+    "scope": "MAT 1:1",
+    "skill_id": "saw-original-language-review",
+    "task_id": "EVAL-SAW-ORIGINAL-LANGUAGE-REVIEW-GREEK-SINGLE-ITEM"
+  },
+  "prohibited_actions": [
+    "EXPANDED_SCOPE",
+    "UNDECLARED_EVIDENCE",
+    "SCRIPTURE_WRITE",
+    "COMBINED_REVIEW_ITEMS"
+  ],
+  "schema_version": "1.0"
+}

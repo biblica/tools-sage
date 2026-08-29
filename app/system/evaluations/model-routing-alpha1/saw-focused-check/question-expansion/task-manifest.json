@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "question-expansion",
+  "case_kind": "ADVERSARIAL",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "9bbee96ef8d4d412aef3e6c5b4faf96021c7c47d505814d8ba4ce5d1ced586de",
+  "input_sha256": "5869f1b9bf3d78f35828c235a8bc4c45a81fcc3112bb17587520f1ad7709bb9d",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-QUESTION-EXPANSION"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-focused-check",
+  "task_id": "EVAL-SAW-FOCUSED-CHECK-QUESTION-EXPANSION"
+}

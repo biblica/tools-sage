@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "greek-single-item",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "89ae390dfd52b38c09e48b2c3f757bf5ea8b9ea39ea0aba2d4f1b012f599b080",
+  "input_sha256": "f04c2b37a2a781989c60798cb1dcf69dc85c31f19e213b1442a029859bf0b316",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-GREEK-SINGLE-ITEM"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-original-language-review",
+  "task_id": "EVAL-SAW-ORIGINAL-LANGUAGE-REVIEW-GREEK-SINGLE-ITEM"
+}

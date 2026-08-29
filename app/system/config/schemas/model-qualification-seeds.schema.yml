@@ -1,0 +1,8 @@
+schema_id: sage-model-qualification-seeds-1.0
+required:
+  - schema_version
+  - routes
+controls:
+  schema_version: '1.0'
+  route_source: reviewed_exact_qualification_receipts
+  unbound_preference_as_qualification: prohibited

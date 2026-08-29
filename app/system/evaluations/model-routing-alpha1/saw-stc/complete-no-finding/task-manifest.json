@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "complete-no-finding",
+  "case_kind": "ZERO_FINDING",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "2c3f94667920d06bc9d99b15c2d91cb1b5b957add219213c1c1ad9072520c997",
+  "input_sha256": "e05c96f6f3dacc44f2091f027fea296cdb63d347e3a2a7f675f89ffe002637e2",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-COMPLETE-NO-FINDING"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-stc",
+  "task_id": "EVAL-SAW-STC-COMPLETE-NO-FINDING"
+}

@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "bounded-answer",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "2100cdae1d4bece281615f9e222b5b86c861510cc19337b032f3ba0b75ba811a",
+  "input_sha256": "64d4e2f88b32bee9b9dc049876e9d34e165284ea11d02912fb0ba0469927c602",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-BOUNDED-ANSWER"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-focused-check",
+  "task_id": "EVAL-SAW-FOCUSED-CHECK-BOUNDED-ANSWER"
+}

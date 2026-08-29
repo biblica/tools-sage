@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "blocking-regression",
+  "case_kind": "ADVERSARIAL",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "22a625dafaaed39d09c1ec0fa6b873ba5ad8b811476d9ae8cae99a309b46eb79",
+  "input_sha256": "c12c55d803f742a73d9a2259295eb5edf7dccc575b2f007bfe1efc0315594423",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-BLOCKING-REGRESSION"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "bic-self-check",
+  "task_id": "EVAL-BIC-SELF-CHECK-BLOCKING-REGRESSION"
+}

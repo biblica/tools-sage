@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "seeded-correspondence",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "72dbb34d5c210a7603de061d16de59ec7ebb62dcaf7537973a2af092a02d5536",
+  "input_sha256": "4de6b966df621f5b61fc6b7dec3e093339e3867e1c4dedade790433b2fe5b61a",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-SEEDED-CORRESPONDENCE"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-stc",
+  "task_id": "EVAL-SAW-STC-SEEDED-CORRESPONDENCE"
+}

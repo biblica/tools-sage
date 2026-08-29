@@ -1,0 +1,4 @@
+\id MAT SAGE synthetic evaluation data
+\c 1
+\v 1 Synthetic tokens for saw-stc case seeded-correspondence.
+\rem SEEDED material contrast requires the declared positive decision.

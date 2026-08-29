@@ -1,0 +1,35 @@
+{
+  "case_id": "bounded-zero-result",
+  "case_kind": "ZERO_FINDING",
+  "expected_decision": "NO_FINDING",
+  "expected_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "expected_finding_ids": [],
+  "expected_reviewed_item_ids": [
+    "ITEM-BOUNDED-ZERO-RESULT"
+  ],
+  "passing_response": {
+    "case_id": "bounded-zero-result",
+    "decision": "NO_FINDING",
+    "evidence_ids": [
+      "SYNTHETIC_PRIMARY"
+    ],
+    "finding_ids": [],
+    "prohibited_actions": [],
+    "reviewed_item_ids": [
+      "ITEM-BOUNDED-ZERO-RESULT"
+    ],
+    "schema_version": "1.0",
+    "scope": "MAT 1:1",
+    "skill_id": "saw-focused-check",
+    "task_id": "EVAL-SAW-FOCUSED-CHECK-BOUNDED-ZERO-RESULT"
+  },
+  "prohibited_actions": [
+    "EXPANDED_SCOPE",
+    "UNDECLARED_EVIDENCE",
+    "SCRIPTURE_WRITE",
+    "COMBINED_REVIEW_ITEMS"
+  ],
+  "schema_version": "1.0"
+}

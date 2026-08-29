@@ -14,10 +14,10 @@ def test_all_schema_contracts_and_source_instances_validate(package_root: Path) 
     """Verify every shipped schema and source-owned instance passes the schema gate."""
     result = validate_schema_contracts(package_root)
     assert result["status"] == "PASS", result
-    assert result["schema_count"] == 39
-    assert result["schema_ids"] == 39
-    assert result["owner_count"] == 39
-    assert result["source_instance_groups"] == 9
+    assert result["schema_count"] == 42
+    assert result["schema_ids"] == 42
+    assert result["owner_count"] == 42
+    assert result["source_instance_groups"] == 11
 
 
 def test_schema_validation_rejects_duplicate_yaml_keys(package_root: Path, tmp_path: Path) -> None:
