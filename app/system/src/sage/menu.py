@@ -1887,6 +1887,84 @@ class SageControlCenter:
         """Return the selected provider and optional model for the Control Center header."""
         return self.ui_service.model_summary()
 
+    def _active_run_route_row(self, run: Run | None) -> dict[str, Any] | None:
+        """Return the latest actual attempt route without substituting a recommendation."""
+        if run is None:
+            return None
+        for raw_path in reversed(tuple(run.task_manifests)):
+            manifest_path = Path(str(raw_path)).expanduser()
+            receipt_path = manifest_path.parent / "validation" / "llm-execution-receipt.json"
+            if not receipt_path.is_file():
+                continue
+            try:
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            task_id = manifest.get("task_id") if isinstance(manifest, dict) else None
+            if (
+                isinstance(receipt, dict)
+                and receipt.get("schema_version") == "2.0"
+                and task_id
+                and receipt.get("task_id") == task_id
+            ):
+                return {
+                    "skill_id": receipt.get("skill_id"),
+                    "provider": receipt.get("provider"),
+                    "model_id": receipt.get("model"),
+                    "reasoning_id": receipt.get("reasoning_effort"),
+                    "qualification": receipt.get("qualification_status"),
+                    "availability": "EXECUTED",
+                }
+        return None
+
+    def _write_job_ai_routing(self, tool: str, run: Run | None) -> None:
+        """Render actual-attempt or current-recommendation routing in one compact table."""
+        service = ModelService(self.root)
+        try:
+            mode = service.routing_override_status()["routing_mode"]
+        except Exception:
+            mode = "UNKNOWN"
+        self.io.write(f"{'AI Routing':<29}{mode}")
+        actual = self._active_run_route_row(run)
+        rows: list[dict[str, Any]] = []
+        label = "Current attempt receipt" if actual else "Current recommendation"
+        if actual is not None:
+            rows = [actual]
+        elif not self.dry_run_provider:
+            try:
+                routes = service.skill_routes()
+                rows = [
+                    dict(row)
+                    for row in routes.get("skills", [])
+                    if str(row.get("skill_id") or "").startswith(tool + "-")
+                ]
+            except Exception:
+                rows = []
+        self.io.write(label)
+        self.io.write(f"{'SKILL':<12}{'PROVIDER':<12}{'MODEL':<22}{'REASONING':<14}STATUS")
+        self.io.write("-" * 72)
+        labels = {
+            "saw-rtc": "RTC",
+            "saw-stc": "STC",
+            "saw-focused-check": "TARGETED",
+            "saw-original-language-review": "SRC REVIEW",
+            "bic-inspect": "INSPECT",
+            "bic-rewrite": "REWRITE",
+            "bic-self-check": "SELF-CHECK",
+        }
+        if not rows:
+            self.io.write(f"{'—':<12}{'—':<12}{'—':<22}{'—':<14}NOT CHECKED")
+        for row in rows:
+            self.io.write(
+                f"{labels.get(str(row.get('skill_id')), str(row.get('skill_id') or '—')):<12}"
+                f"{str(row.get('provider') or '—'):<12}"
+                f"{str(row.get('model_id') or '—'):<22}"
+                f"{str(row.get('reasoning_id') or '—'):<14}"
+                f"{str(row.get('qualification') or 'UNASSESSED')}"
+            )
+        self.io.write()
+
     def main_menu(self) -> str:
         """Render the task-oriented current Main Menu."""
         self.io.write()
@@ -2095,6 +2173,8 @@ class SageControlCenter:
             self.io.write(f"SOURCE: {project.bindings.get('content_source')}")
             self.io.write(f"DONOR:  {project.bindings.get('lexical_donor')}")
             self.io.write(f"TARGET: {project.bindings.get('generated_target')}")
+            self.io.write()
+            self._write_job_ai_routing("bic", self.store.active_run(project))
             choice = self.io.choose(
                 "BIC Job",
                 (
@@ -2225,6 +2305,7 @@ class SageControlCenter:
             self.io.write(f"WIP                          {project.bindings.get('wip')}")
             self.io.write(f"REFERENCE                    {project.bindings.get('reference')}")
             self.io.write()
+            self._write_job_ai_routing("saw", run)
             if run is None:
                 self.io.write("Active Run                   NONE")
                 options = (
@@ -3324,22 +3405,23 @@ class SageControlCenter:
 
     def _write_saw_run_header(self, project: Job, run: Run) -> None:
         """Render the shared STC/RTC Run header before live work-unit progress."""
-        model = "AUTO"
-        reasoning = "provider default"
+        route_text = "AUTOMATIC Skill routing (resolved per task)"
+        skill_ids = {
+            "rtc": "saw-rtc",
+            "stc": "saw-stc",
+            "focused": "saw-focused-check",
+            "ol": "saw-original-language-review",
+        }
+        actual = self._active_run_route_row(run)
         try:
-            service = ModelService(self.root)
-            settings = service.settings()
-            provider_id = str(settings.get("selected_provider") or "codex")
-            item = dict((settings.get("providers") or {}).get(provider_id) or {})
-            if str(item.get("selection_mode") or "").upper() == "EXPLICIT" and item.get("model"):
-                model = str(item.get("model"))
-                reasoning = str(item.get("reasoning_effort") or reasoning)
-            else:
-                profile = dict((service.policy().get("task_profiles") or {}).get(f"saw.{run.operation}") or {})
-                preferred = list(profile.get("preferred_models") or [])
-                if preferred:
-                    model = str(preferred[0])
-                reasoning = str(profile.get("target_reasoning_effort") or reasoning)
+            route = actual
+            if route is None and not self.dry_run_provider:
+                route = ModelService(self.root).recommendation_for_skill(skill_ids[run.operation])
+            if route is not None:
+                route_text = (
+                    f"{route.get('provider')} / {route.get('model_id')} / "
+                    f"{route.get('reasoning_id')} [{route.get('qualification')}]"
+                )
         except Exception:
             pass
         self.io.write()
@@ -3357,7 +3439,7 @@ class SageControlCenter:
             ) + " OL"
         self.io.write(f"{project.output_project} checked against {comparison_project}")
         self.io.write(f"Checking {self._saw_operation_label(run.operation)} for {run.scope}")
-        self.io.write(f"Using {model} {reasoning.title()}")
+        self.io.write(f"Using {route_text}")
         self.io.write()
         self.io.write("-" * 72)
 
@@ -5464,7 +5546,7 @@ class SageControlCenter:
                 self.show_error(exc)
 
     def _model_show_codex_catalog(self, service: ModelService) -> None:
-        """Render the live Codex model catalog with SAGE-approved task profiles."""
+        """Render the live provider catalog as read-only capability information."""
         result = service.list_models("codex")
         if not result["models"]:
             self.io.write(result.get("diagnostic", "No live Codex catalog is available."))
@@ -5473,135 +5555,136 @@ class SageControlCenter:
             self.io.write(f"{row.get('display_name') or row['model']} [{row['model']}]{selected}")
             efforts = row.get("reasoning_efforts") or []
             self.io.write(f"  reasoning: {', '.join(efforts) if efforts else 'provider default only'}")
-            approved = row.get("qualified_profiles") or []
-            self.io.write(f"  SAGE approved: {', '.join(approved) if approved else 'none'}")
+            approved = row.get("qualified_skill_routes") or []
+            labels = [
+                f"{item['skill_id']}:{item['reasoning_id']}"
+                for item in approved
+                if isinstance(item, dict)
+            ]
+            self.io.write(f"  Qualified Skills: {', '.join(labels) if labels else 'none'}")
 
-    def _model_select_codex_explicit(self, service: ModelService) -> None:
-        """Choose and persist one live Codex model; reasoning is configured separately."""
-        result = service.list_models("codex")
-        models = result["models"]
-        if not result.get("ready") or not models:
+    def _model_show_recommendation_status(self, service: ModelService) -> None:
+        """Render exact per-Skill availability and qualification independently."""
+        result = service.skill_routes()
+        self.io.write(f"Routing mode: {result.get('routing_mode') or 'AUTOMATIC'}")
+        self.io.write(f"{'SKILL':<32}{'PROVIDER':<12}{'MODEL':<20}{'REASONING':<14}STATUS")
+        self.io.write("-" * 96)
+        for row in result.get("skills", []):
+            status = str(row.get("qualification") or "UNASSESSED")
+            availability = str(row.get("availability") or "UNKNOWN")
+            self.io.write(
+                f"{str(row.get('skill_id') or ''):<32}"
+                f"{str(row.get('provider') or '—'):<12}"
+                f"{str(row.get('model_id') or '—'):<20}"
+                f"{str(row.get('reasoning_id') or '—'):<14}"
+                f"{status} / {availability}"
+            )
+
+    def _model_routing_override_menu(self, service: ModelService) -> None:
+        """Inspect, clear, or set the explicitly advanced exact-route override."""
+        state = service.routing_override_status()
+        self.io.write(f"Routing mode: {state['routing_mode']}")
+        override = state.get("override")
+        if isinstance(override, dict):
+            selection = dict(override.get("selection") or {})
+            self.io.write(
+                "Override: "
+                f"{selection.get('provider')} / {selection.get('model_id')} / "
+                f"{selection.get('reasoning_id')}"
+            )
+            self.io.write(
+                f"Qualified Skill coverage: {override.get('qualified_skill_count', 0)}/"
+                f"{override.get('registered_skill_count', 0)}"
+            )
+        choice = self.io.choose(
+            "Advanced routing override",
+            (("1", "Set qualified exact route"), ("2", "Clear override"), ("B", "Back")),
+        )
+        if choice == "B":
+            return
+        if choice == "2":
+            cleared = service.clear_global_override()
+            self.io.write(f"Routing mode: {cleared['routing_mode']}")
+            return
+        catalog = service.list_models("codex")
+        candidates: list[dict[str, Any]] = []
+        for model_row in catalog.get("models", []):
+            for route_row in model_row.get("qualified_skill_routes", []):
+                candidates.append(
+                    {
+                        "provider": "codex",
+                        "model_id": model_row.get("model"),
+                        "capability_fingerprint": model_row.get("capability_fingerprint"),
+                        "reasoning_id": route_row.get("reasoning_id"),
+                    }
+                )
+        unique = {
+            (
+                row["provider"], row["model_id"], row["capability_fingerprint"], row["reasoning_id"]
+            ): row
+            for row in candidates
+        }
+        rows = list(unique.values())
+        if not rows:
             raise ValidationError(
-                result.get("diagnostic") or "No live Codex models are available",
-                code="LLM_PROVIDER_NOT_READY",
+                "No currently qualified exact route is available for override",
+                code="GLOBAL_OVERRIDE_NO_QUALIFIED_SKILLS",
             )
         selected = self.io.choose(
-            "Available Codex models",
+            "Qualified routes",
             tuple(
-                (str(index), f"{row.get('display_name') or row['model']} [{row['model']}]")
+                (
+                    str(index),
+                    f"{row['provider']} / {row['model_id']} / {row['reasoning_id']}",
+                )
+                for index, row in enumerate(rows, 1)
+            ),
+        )
+        if not self.io.confirm("Apply this global route override?", default=False):
+            return
+        result = service.set_global_override(rows[int(selected) - 1])
+        self.io.write(
+            f"Override enabled for {result['qualified_skill_count']}/"
+            f"{result['registered_skill_count']} registered Skills."
+        )
+
+    def _model_evaluate_skill_route(self, service: ModelService) -> None:
+        """Run one sealed synthetic per-Skill qualification without Job evidence."""
+        skills = list(service.policy().get("skill_routes", {}))
+        selected_skill = self.io.choose(
+            "Skill evaluation",
+            tuple((str(index), skill_id) for index, skill_id in enumerate(skills, 1)),
+        )
+        catalog = service.list_models("codex")
+        models = list(catalog.get("models") or [])
+        if not models:
+            raise ValidationError("No live provider models are available", code="LLM_PROVIDER_NOT_READY")
+        selected_model = self.io.choose(
+            "Available provider models",
+            tuple(
+                (str(index), str(row.get("model") or row.get("id")))
                 for index, row in enumerate(models, 1)
             ),
         )
-        row = models[int(selected) - 1]
-        selected_result = service.select(provider="codex", model=row["model"])
-        self.io.write(f"Selected Codex model: {row['model']}")
-        self.io.write("Reasoning override: SAGE/provider default")
-        self.io.write("Next: choose Set reasoning level if an explicit reasoning override is required.")
-        self.io.write(selected_result["provider_status"].get("diagnostic", ""))
-
-    def _model_select_codex_reasoning(self, service: ModelService) -> None:
-        """Persist one reasoning level for the explicitly selected Codex model."""
-        result = service.list_models("codex")
-        selected_model = str(result.get("selected_model") or "").strip()
-        if result.get("selection_mode") == "AUTO" or not selected_model:
-            raise ValidationError(
-                "Choose a Codex model before setting an explicit reasoning level.",
-                code="MODEL_SELECTION_REQUIRED",
-            )
-        row = next(
-            (
-                item
-                for item in result.get("models", [])
-                if str(item.get("model") or "") == selected_model
-                or str(item.get("id") or "") == selected_model
-            ),
-            None,
+        model_row = models[int(selected_model) - 1]
+        reasoning = list(model_row.get("reasoning_efforts") or ["provider-default"])
+        selected_reasoning = self.io.choose(
+            "Provider reasoning",
+            tuple((str(index), value) for index, value in enumerate(reasoning, 1)),
         )
-        if row is None:
-            raise ValidationError(
-                f"Selected Codex model is not present in the live catalog: {selected_model}",
-                code="MODEL_SELECTION_NOT_AVAILABLE",
-            )
-        efforts = tuple(str(value).lower() for value in (row.get("reasoning_efforts") or ()))
-        if not efforts:
-            raise ValidationError(
-                f"{selected_model} does not advertise configurable reasoning levels.",
-                code="REASONING_SELECTION_NOT_AVAILABLE",
-            )
-        current = str(result.get("selected_reasoning_effort") or "SAGE/provider default")
-        self.io.write(f"Model: {selected_model}")
-        self.io.write(f"Current reasoning: {current}")
-        default_key = str(len(efforts) + 1)
-        choice = self.io.choose(
-            "Reasoning level",
-            tuple((str(index), effort) for index, effort in enumerate(efforts, 1))
-            + ((default_key, "SAGE/provider default [clear override]"),),
-        )
-        reasoning = "" if choice == default_key else efforts[int(choice) - 1]
-        selected_result = service.select(
+        if not self.io.confirm(
+            "Run 9 isolated synthetic provider attempts; no Job data will be used?",
+            default=False,
+        ):
+            return
+        result = service.evaluate_skill_route(
+            skill_id=skills[int(selected_skill) - 1],
             provider="codex",
-            model=selected_model,
-            reasoning_effort=reasoning,
+            model_id=str(model_row.get("model") or model_row.get("id")),
+            reasoning_id=reasoning[int(selected_reasoning) - 1],
         )
-        self.io.write(
-            "Reasoning level: "
-            + (str(selected_result.get("selected_reasoning_effort")) if reasoning else "SAGE/provider default")
-        )
-
-    def _model_show_recommendation_status(self, service: ModelService) -> None:
-        """Render current selection plus release-governed task recommendations as status."""
-        settings = service.settings()
-        item = settings.get("providers", {}).get("codex", {})
-        mode = str(item.get("selection_mode") or "AUTO").upper()
-        self.io.write(f"Selection mode: {mode}")
-        self.io.write(f"Selected model: {item.get('model') or 'SAGE automatic task routing'}")
-        self.io.write(f"Reasoning override: {item.get('reasoning_effort') or 'SAGE/provider default'}")
-        self.io.write("Recommended task settings:")
-        policy = service.policy()
-        labels = {
-            "bic.inspect": "BIC INSPECT",
-            "bic.rewrite": "BIC REWRITE",
-            "bic.self_check": "BIC SELF-CHECK",
-            "saw.rtc": "SAW RTC",
-            "saw.focused": "SAW focused",
-            "saw.ol": "SAW original-language",
-        }
-        for key, row in policy.get("task_profiles", {}).items():
-            preferred = row.get("preferred_models") or []
-            model = preferred[0] if preferred else "qualified model"
-            target = row.get("target_reasoning_effort") or "provider default"
-            minimum = row.get("minimum_reasoning_effort") or target
-            maximum = row.get("maximum_reasoning_effort") or target
-            self.io.write(
-                f"  {labels.get(key, key)}: {model}, reasoning {target} "
-                f"[allowed {minimum}..{maximum}]"
-            )
-
-    def _model_show_recommendation(self, service: ModelService) -> None:
-        """Prompt for one SAGE task profile and render the current live recommendation."""
-        profiles = (
-            ("1", "BIC INSPECT", "bic", "inspect"),
-            ("2", "BIC REWRITE", "bic", "rewrite"),
-            ("3", "BIC SELF-CHECK", "bic", "self_check"),
-            ("4", "SAW Reference Text Comparison (RTC)", "saw", "rtc"),
-            ("5", "SAW Source Text Correspondence (STC)", "saw", "stc"),
-            ("6", "SAW Targeted Check", "saw", "focused"),
-            ("7", "SAW original-language review", "saw", "ol"),
-        )
-        selected = self.io.choose(
-            "Task profile",
-            tuple((key, label) for key, label, _, _ in profiles),
-        )
-        _, label, workflow, operation = next(item for item in profiles if item[0] == selected)
-        recommendation = service.recommendation(workflow, operation)
-        self.io.write(f"{label}: {recommendation['display_name']} [{recommendation['model']}]")
-        self.io.write(f"Reasoning: {recommendation.get('reasoning_effort') or 'provider default'}")
-        if recommendation.get("conditional_second_pass_reasoning_effort"):
-            self.io.write(
-                "Conditional second pass: "
-                f"{recommendation['conditional_second_pass_reasoning_effort']}"
-            )
-        self.io.write(f"Qualification: {recommendation['qualification_status']}")
+        self.io.write(f"Qualification: {result['qualification_status']}")
+        self.io.write(f"Receipt: {result['receipt_path']}")
 
     def _model_test_selected(self, service: ModelService) -> dict[str, Any]:
         """Run and return the explicit structured connectivity test for the selected provider."""
@@ -5629,19 +5712,12 @@ class SageControlCenter:
         return result
 
     def _model_show_policy(self, service: ModelService) -> None:
-        """Render the release-governed reasoning ceiling and task-profile bounds."""
+        """Render provider-neutral qualification and recommendation policy."""
         policy = service.policy()
-        global_policy = policy["global"]
-        self.io.write("Supported reasoning: " + ", ".join(global_policy["allowed_reasoning_efforts"]))
-        self.io.write(
-            "Hard ceiling: "
-            f"{global_policy['maximum_supported_reasoning_effort']} (higher levels are unsupported)"
-        )
-        for profile, row in policy["task_profiles"].items():
-            self.io.write(
-                f"{profile}: target={row['target_reasoning_effort']} "
-                f"bounds={row['minimum_reasoning_effort']}..{row['maximum_reasoning_effort']}"
-            )
+        self.io.write(f"Qualification policy: {policy['qualification_policy_version']}")
+        self.io.write("Accepted: " + ", ".join(policy["accepted_operational_statuses"]))
+        self.io.write("Recommendation: " + " → ".join(policy["recommendation_order"]))
+        self.io.write("Skills: " + ", ".join(policy["skill_routes"]))
 
     def _write_language_competency_evidence(self, result: dict[str, Any]) -> None:
         """Render one concise versioned competency-evidence lookup."""
@@ -5735,46 +5811,6 @@ class SageControlCenter:
         update_llm_selection(self.root, provider=selected, auto=(selected == "codex"))
         return True
 
-    def _cycle_ai_model(self, service: ModelService, catalog: dict[str, Any]) -> bool:
-        """Cycle the entry-loaded Codex catalog without rechecking the connection."""
-        models = [str(row.get("model") or row.get("id") or "") for row in catalog.get("models", []) if str(row.get("model") or row.get("id") or "")]
-        if not models:
-            raise ValidationError(catalog.get("diagnostic") or "No loaded Codex models are available; choose Check LLM connection.", code="LLM_PROVIDER_NOT_READY")
-        settings = service.settings()
-        current = str(dict(settings.get("providers", {}).get("codex", {}) or {}).get("model") or "")
-        index = models.index(current) if current in models else -1
-        selected = models[(index + 1) % len(models)]
-        update_llm_selection(self.root, provider="codex", model=selected)
-        return True
-
-    def _cycle_ai_reasoning(
-        self,
-        service: ModelService,
-        catalog: dict[str, Any],
-        *,
-        effective_model: str | None = None,
-    ) -> bool:
-        """Cycle reasoning for the saved or entry-resolved model without rechecking."""
-        settings = service.settings()
-        selected = dict(settings.get("providers", {}).get("codex", {}) or {})
-        selected_model = str(selected.get("model") or effective_model or "").strip()
-        if selected_model.upper() in {"", "AUTO", "PROVIDER DEFAULT", "UNKNOWN"}:
-            raise ValidationError("Choose a concrete Codex model before cycling reasoning.", code="MODEL_SELECTION_REQUIRED")
-        row = next((item for item in catalog.get("models", []) if str(item.get("model") or item.get("id") or "") == selected_model), None)
-        efforts = [str(value).lower() for value in (row or {}).get("reasoning_efforts", [])]
-        if not efforts:
-            raise ValidationError(f"{selected_model} does not advertise configurable reasoning levels.", code="REASONING_SELECTION_NOT_AVAILABLE")
-        current = str(selected.get("reasoning_effort") or "").lower()
-        index = efforts.index(current) if current in efforts else -1
-        selected_effort = efforts[(index + 1) % len(efforts)]
-        update_llm_selection(
-            self.root,
-            provider="codex",
-            model=selected_model,
-            reasoning_effort=selected_effort,
-        )
-        return True
-
     def _show_configured_language_competency_table(self, service: ModelService) -> None:
         """Show competency only for Language Profiles currently configured in SAGE."""
         configured = load_ecosystem(self.store.settings_path).language_profiles
@@ -5821,8 +5857,7 @@ class SageControlCenter:
             settings = service.settings()
             provider = str(settings.get("selected_provider") or "codex")
             item = dict(settings.get("providers", {}).get(provider, {}) or {})
-            model = str(item.get("model") or ai.get("model") or "AUTO")
-            reasoning = str(item.get("reasoning_effort") or "Provider Default").replace("_", " ").title()
+            override_state = service.routing_override_status()
             connection = (
                 ("READY" if ai.get("ready") else "NOT READY")
                 if selection_checked
@@ -5833,22 +5868,23 @@ class SageControlCenter:
             self.io.write_menu_header("CONFIGURE HOSTED AI")
             self.io.write(f"{'Connection':<28}{connection}")
             self.io.write(f"{'Provider':<28}{provider.title()}")
-            self.io.write(f"{'Model':<28}{model}")
-            self.io.write(f"{'Reasoning':<28}{reasoning}")
+            self.io.write(f"{'AI Routing':<28}{override_state['routing_mode']}")
             self.io.write(f"{'Provider runtime':<28}{provider}-cli {runtime_version}" if provider == "codex" else f"{'Provider runtime':<28}{runtime_version}")
             if selection_checked and not ai.get("ready") and ai.get("diagnostic"):
                 self.io.write(f"{'Status detail':<28}{ai.get('diagnostic')}")
             elif not selection_checked:
-                self.io.write(f"{'Status detail':<28}Choose 6 to check the current configuration")
+                self.io.write(f"{'Status detail':<28}Choose 8 to check the current configuration")
 
-            self.io.write_menu_header("AI settings [Choose number to cycle]", major=False)
+            self.io.write_menu_header("AI settings", major=False)
             self.io.write(menu_item(1, "Change provider"))
-            self.io.write(menu_item(2, "Change model"))
-            self.io.write(menu_item(3, "Change reasoning"))
+            self.io.write(menu_item(2, "Available provider models"))
+            self.io.write(menu_item(3, "Skill routing recommendations"))
+            self.io.write(menu_item(4, "Advanced routing override"))
+            self.io.write(menu_item(5, "Evaluate model for Skill"))
             self.io.write_menu_header("Provider management", major=False)
-            self.io.write(menu_item(4, "Connect OpenAI and ChatGPT"))
-            self.io.write(menu_item(5, "Configure Local AI"))
-            self.io.write(menu_item(6, "Check LLM connection"))
+            self.io.write(menu_item(6, "Connect OpenAI and ChatGPT"))
+            self.io.write(menu_item(7, "Configure Local AI"))
+            self.io.write(menu_item(8, "Check LLM connection"))
             self.io.write_menu_footer(include_back=True)
             value = self.io.read("Choose: ").strip().casefold()
             if value == "a":
@@ -5871,23 +5907,26 @@ class SageControlCenter:
                     if self._cycle_ai_provider(service):
                         selection_checked = False
                 elif value == "2":
-                    self._cycle_ai_model(service, catalog)
-                    selection_checked = False
+                    self._model_show_codex_catalog(service)
                 elif value == "3":
-                    self._cycle_ai_reasoning(service, catalog, effective_model=model)
-                    selection_checked = False
+                    self._model_show_recommendation_status(service)
                 elif value == "4":
-                    self._model_connect_chatgpt(service)
+                    self._model_routing_override_menu(service)
                     selection_checked = False
                 elif value == "5":
-                    self.local_admin_assistant_menu()
+                    self._model_evaluate_skill_route(service)
                 elif value == "6":
+                    self._model_connect_chatgpt(service)
+                    selection_checked = False
+                elif value == "7":
+                    self.local_admin_assistant_menu()
+                elif value == "8":
                     with self.io.working("Checking LLM connection"):
                         ai = self._model_test_selected(service)
                         catalog = self._load_ai_model_catalog(service, ai)
                     selection_checked = True
                 else:
-                    self.io.write("Invalid choice. Choose 1-6 or a footer action.")
+                    self.io.write("Invalid choice. Choose 1-8 or a footer action.")
                     continue
             except SageError as exc:
                 self.show_error(exc)

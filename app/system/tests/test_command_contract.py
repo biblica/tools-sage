@@ -93,6 +93,23 @@ def test_domain_help_is_available(package_root: Path) -> None:
         assert "usage:" in domain_parser.format_help()
 
 
+def test_model_and_task_commands_expose_skill_routing_without_direct_bypass() -> None:
+    """Public commands govern exact routes and omit operational model/reasoning selectors."""
+    model_parser = parser_at("model")
+    subparsers = next(
+        action for action in model_parser._actions if isinstance(action, argparse._SubParsersAction)
+    )
+    assert {"routes", "override", "evaluate"}.issubset(subparsers.choices)
+    assert "use" not in subparsers.choices
+    recommend_help = parser_at("model", "recommend").format_help()
+    assert "--skill" in recommend_help
+    assert "--workflow" not in recommend_help
+    assert "--operation" not in recommend_help
+    task_help = parser_at("task", "execute").format_help()
+    for prohibited in ("--provider", "--model", "--reasoning", "--policy-override"):
+        assert prohibited not in task_help
+
+
 def test_workflow_launchers_use_canonical_task_commands(package_root: Path) -> None:
     """Verify that workflow launchers use canonical task commands."""
     bic = run(package_root / "system" / "bin" / "bic", "--help")

@@ -682,6 +682,154 @@ def test_saw_job_menu_visually_separates_work_from_administration(make_workspace
     assert "ADMINISTRATION\n" not in rendered
 
 
+def test_saw_job_menu_displays_current_skill_model_and_reasoning_route(
+    make_workspace, monkeypatch
+) -> None:
+    """The Job view identifies routing mode and the exact recommended Skill route."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store, projects = _bootstrap(root)
+    saw = next(project for project in projects if project.tool == "saw")
+
+    class Service:
+        """Return deterministic route status without a live provider dependency."""
+
+        def __init__(self, _root):
+            """Accept the normal workspace root."""
+
+        def routing_override_status(self):
+            """Report normal automatic routing."""
+            return {"routing_mode": "AUTOMATIC", "override": None}
+
+        def skill_routes(self):
+            """Return one recommended SAW route."""
+            return {
+                "routing_mode": "AUTOMATIC",
+                "skills": [{
+                    "skill_id": "saw-rtc",
+                    "provider": "codex",
+                    "model_id": "gpt-5.6-sol",
+                    "reasoning_id": "medium",
+                    "qualification": "RECOMMENDED",
+                    "availability": "AVAILABLE",
+                }],
+            }
+
+    monkeypatch.setattr("sage.menu.ModelService", Service)
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["a"]), output=output),
+        skip_setup=True,
+        dry_run_provider=False,
+    )
+    center._saw_job_menu(saw)
+    rendered = output.getvalue()
+    assert "AI Routing                   AUTOMATIC" in rendered
+    assert "Current recommendation" in rendered
+    assert "SKILL" in rendered and "MODEL" in rendered and "REASONING" in rendered
+    assert "RTC" in rendered and "gpt-5.6-sol" in rendered and "medium" in rendered
+
+
+def test_active_job_route_comes_from_current_attempt_receipt(
+    make_workspace, monkeypatch
+) -> None:
+    """An active attempt displays its receipt route without resolving a new recommendation."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store, projects = _bootstrap(root)
+    saw = next(project for project in projects if project.tool == "saw")
+    run = store.create_run(saw, operation="rtc", scope="JUD 1")
+    task = run.root / "tasks" / "saw-rtc-jud-001"
+    task.mkdir(parents=True)
+    manifest = task / "task-manifest.json"
+    manifest.write_text(json.dumps({"task_id": "saw-rtc-jud-001"}), encoding="utf-8")
+    validation = task / "validation"
+    validation.mkdir()
+    (validation / "llm-execution-receipt.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "2.0",
+                "task_id": "saw-rtc-jud-001",
+                "skill_id": "saw-rtc",
+                "provider": "codex",
+                "model": "gpt-actual",
+                "reasoning_effort": "high",
+                "qualification_status": "QUALIFIED",
+            }
+        ),
+        encoding="utf-8",
+    )
+    run = store.update_run(run, task_manifests=[str(manifest)])
+
+    class Service:
+        """Permit local mode lookup but prohibit recommendation substitution."""
+
+        def __init__(self, _root):
+            """Accept the workspace root."""
+
+        def routing_override_status(self):
+            """Report normal automatic routing."""
+            return {"routing_mode": "AUTOMATIC", "override": None}
+
+        def skill_routes(self):
+            """Fail if the receipt path is incorrectly replaced by a live route lookup."""
+            raise AssertionError("current attempt must use its execution receipt")
+
+    monkeypatch.setattr("sage.menu.ModelService", Service)
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput([]), output=output),
+        skip_setup=True,
+    )
+
+    center._write_job_ai_routing("saw", run)
+
+    rendered = output.getvalue()
+    assert "Current attempt receipt" in rendered
+    assert "gpt-actual" in rendered
+    assert "high" in rendered
+    assert "QUALIFIED" in rendered
+
+
+def test_active_job_route_rejects_receipt_for_another_task(make_workspace) -> None:
+    """Job status must not attribute another task's route to the current attempt."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store, projects = _bootstrap(root)
+    saw = next(project for project in projects if project.tool == "saw")
+    run = store.create_run(saw, operation="rtc", scope="JUD 1")
+    task = run.root / "tasks" / "saw-rtc-jud-001"
+    task.mkdir(parents=True)
+    manifest = task / "task-manifest.json"
+    manifest.write_text(json.dumps({"task_id": "saw-rtc-jud-001"}), encoding="utf-8")
+    validation = task / "validation"
+    validation.mkdir()
+    (validation / "llm-execution-receipt.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "2.0",
+                "task_id": "another-task",
+                "skill_id": "saw-rtc",
+                "provider": "codex",
+                "model": "gpt-wrong",
+                "reasoning_effort": "high",
+                "qualification_status": "QUALIFIED",
+            }
+        ),
+        encoding="utf-8",
+    )
+    run = store.update_run(run, task_manifests=[str(manifest)])
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput([]), output=io.StringIO()),
+        skip_setup=True,
+    )
+
+    assert center._active_run_route_row(run) is None
+
+
 
 def test_main_menu_separates_scripture_project_management_from_workflows(make_workspace) -> None:
     """The Project administration entry is explicit and visually separated from BIC/SAW."""
@@ -846,8 +994,8 @@ def test_project_registration_does_not_display_or_lookup_global_competency(
     assert "competency evidence" not in rendered.casefold()
 
 
-def test_ai_menu_probes_on_open_and_groups_cycle_and_management_actions(make_workspace) -> None:
-    """Opening Configure AI reports live status before the grouped cycling controls."""
+def test_ai_menu_probes_on_open_and_exposes_skill_routing_actions(make_workspace) -> None:
+    """Configure AI exposes provider setup and route governance without normal model selection."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
     center = SageControlCenter(
@@ -865,16 +1013,20 @@ def test_ai_menu_probes_on_open_and_groups_cycle_and_management_actions(make_wor
     assert "LLM status" not in rendered
     assert "Connection                  READY" in rendered
     assert rendered.index("CONFIGURE HOSTED AI") < rendered.index("Connection                  READY")
-    assert "AI settings [Choose number to cycle]" in rendered
+    assert "AI settings" in rendered
     assert "1. Change provider" in rendered
-    assert "2. Change model" in rendered
-    assert "3. Change reasoning" in rendered
+    assert "2. Available provider models" in rendered
+    assert "3. Skill routing recommendations" in rendered
+    assert "4. Advanced routing override" in rendered
+    assert "5. Evaluate model for Skill" in rendered
+    assert "Change model" not in rendered
+    assert "Change reasoning" not in rendered
     assert "Change provider         Codex" not in rendered
     assert "Change model            gpt-" not in rendered
     assert "Provider management" in rendered
-    assert "4. Connect OpenAI and ChatGPT" in rendered
-    assert "5. Configure Local AI" in rendered
-    assert "6. Check LLM connection" in rendered
+    assert "6. Connect OpenAI and ChatGPT" in rendered
+    assert "7. Configure Local AI" in rendered
+    assert "8. Check LLM connection" in rendered
     assert "Check competency for configured languages" not in rendered
 
 
@@ -940,14 +1092,14 @@ def test_sage_maintenance_submenus_put_relevant_state_before_actions(
     assert "6. Complete system check" in checks
 
 
-def test_ai_menu_uses_effective_model_for_reasoning_without_implicit_rechecks(make_workspace, monkeypatch) -> None:
-    """Reasoning may pin the resolved model; entry and explicit option 5 are the only checks."""
+def test_ai_menu_checks_connection_only_on_entry_and_explicit_check(make_workspace, monkeypatch) -> None:
+    """Read-only routing UI does not add hidden provider connection tests."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["3", "", "6", "", "a"]), output=output),
+        io=MenuIO(input_func=ScriptedInput(["8", "", "a"]), output=output),
         skip_setup=True,
     )
     readiness_calls: list[bool] = []
@@ -964,6 +1116,10 @@ def test_ai_menu_uses_effective_model_for_reasoning_without_implicit_rechecks(ma
         def settings(self):
             """Read the current persisted selection without a provider probe."""
             return load_llm_settings(self.root)
+
+        def routing_override_status(self):
+            """Return local automatic routing without a provider probe."""
+            return {"routing_mode": "AUTOMATIC", "override": None}
 
         def quick_codex_status(self):
             """Report a ready authenticated runtime for each requested connection refresh."""
@@ -1016,13 +1172,13 @@ def test_ai_menu_uses_effective_model_for_reasoning_without_implicit_rechecks(ma
     assert readiness_calls == [True]
     assert connection_calls == [120]
     assert catalog_calls == ["codex", "codex"]
-    assert settings["providers"]["codex"]["model"] == "gpt-a"
-    assert settings["providers"]["codex"]["reasoning_effort"] == "low"
+    assert "model" not in settings["providers"]["codex"]
+    assert "reasoning_effort" not in settings["providers"]["codex"]
     rendered = output.getvalue()
     assert rendered.count("Loading LLM state...") == 1
     assert rendered.count("Checking LLM connection...") == 1
-    assert "NOT CHECKED FOR CURRENT SELECTION" in rendered
-    assert "Choose 6 to check the current configuration" in rendered
+    assert "Connection                  READY" in rendered
+    assert "NOT CHECKED FOR CURRENT SELECTION" not in rendered
     assert "MODEL_SELECTION_REQUIRED" not in rendered
     assert "\nModel: gpt-a\n" not in rendered
     assert "\nReasoning: Low\n" not in rendered

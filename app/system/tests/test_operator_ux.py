@@ -632,118 +632,39 @@ def test_restart_menu_action_explains_preservation_and_activates_replacement(
     assert "Created replacement Run" in rendered
 
 
-def test_ai_model_selection_precedes_reasoning_selection(make_workspace) -> None:
-    """Selecting a Codex model persists the model first and leaves reasoning as a separate action."""
-    root = make_workspace(configured=True, qualification_status="VALIDATED")
-    center = _center(root, ["2"])
-
-    class Service:
-        """Minimal model-service fixture for model selection."""
-
-        def __init__(self):
-            """Record selection calls."""
-            self.calls = []
-
-        def list_models(self, provider):
-            """Return two deterministic Codex model rows."""
-            assert provider == "codex"
-            return {
-                "ready": True,
-                "models": [
-                    {"model": "gpt-5.6-sol", "display_name": "Sol", "reasoning_efforts": ["medium", "high"]},
-                    {"model": "gpt-5.6-terra", "display_name": "Terra", "reasoning_efforts": ["low", "medium"]},
-                ],
-            }
-
-        def select(self, **kwargs):
-            """Record one persisted model selection."""
-            self.calls.append(kwargs)
-            return {"provider_status": {"diagnostic": "READY"}}
-
-    service = Service()
-    center._model_select_codex_explicit(service)
-    assert service.calls == [{"provider": "codex", "model": "gpt-5.6-terra"}]
-    rendered = center.io.output.getvalue()
-    assert "Selected Codex model: gpt-5.6-terra" in rendered
-    assert "Next: choose Set reasoning level" in rendered
-
-
-def test_ai_reasoning_selection_persists_for_selected_model(make_workspace) -> None:
-    """Reasoning is a distinct persisted choice constrained to the selected model's advertised levels."""
-    root = make_workspace(configured=True, qualification_status="VALIDATED")
-    center = _center(root, ["2"])
-
-    class Service:
-        """Minimal model-service fixture for reasoning selection."""
-
-        def __init__(self):
-            """Record reasoning-selection calls."""
-            self.calls = []
-
-        def list_models(self, provider):
-            """Return the explicitly selected model and its reasoning levels."""
-            assert provider == "codex"
-            return {
-                "ready": True,
-                "selection_mode": "EXPLICIT",
-                "selected_model": "gpt-5.6-sol",
-                "selected_reasoning_effort": "medium",
-                "models": [{
-                    "model": "gpt-5.6-sol",
-                    "display_name": "Sol",
-                    "reasoning_efforts": ["medium", "high", "xhigh"],
-                }],
-            }
-
-        def select(self, **kwargs):
-            """Record and echo one persisted reasoning selection."""
-            self.calls.append(kwargs)
-            return {"selected_reasoning_effort": kwargs["reasoning_effort"], "provider_status": {"diagnostic": "READY"}}
-
-    service = Service()
-    center._model_select_codex_reasoning(service)
-    assert service.calls == [{"provider": "codex", "model": "gpt-5.6-sol", "reasoning_effort": "high"}]
-    assert "Reasoning level: high" in center.io.output.getvalue()
-
-
 def test_ai_recommended_settings_are_reported_as_status(make_workspace) -> None:
-    """Recommended model/reasoning values are informational status, not a hidden selection action."""
+    """Exact per-Skill routes are rendered as provider-neutral informational status."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     center = _center(root, [])
 
     class Service:
         """Minimal model-service fixture for recommendation status."""
 
-        def settings(self):
-            """Return one explicit current model/reasoning selection."""
+        def skill_routes(self):
+            """Return one exact current Skill route."""
             return {
-                "providers": {
-                    "codex": {
-                        "selection_mode": "EXPLICIT",
-                        "model": "gpt-5.6-sol",
-                        "reasoning_effort": "high",
-                    }
-                }
-            }
-
-        def policy(self):
-            """Return one release-governed recommendation profile."""
-            return {
-                "task_profiles": {
-                    "saw.rtc": {
-                        "preferred_models": ["gpt-5.6-terra"],
-                        "target_reasoning_effort": "medium",
-                        "minimum_reasoning_effort": "medium",
-                        "maximum_reasoning_effort": "high",
-                    }
-                }
+                "status": "READY",
+                "routing_mode": "AUTOMATIC",
+                "ready_skills": 1,
+                "total_skills": 1,
+                "skills": [{
+                    "skill_id": "saw-rtc",
+                    "provider": "codex",
+                    "model_id": "gpt-5.6-terra",
+                    "reasoning_id": "medium",
+                    "availability": "AVAILABLE",
+                    "qualification": "RECOMMENDED",
+                }],
             }
 
     center._model_show_recommendation_status(Service())
     rendered = center.io.output.getvalue()
-    assert "Selected model: gpt-5.6-sol" in rendered
-    assert "Reasoning override: high" in rendered
-    assert "SAW RTC: gpt-5.6-terra, reasoning medium [allowed medium..high]" in rendered
+    assert "Routing mode: AUTOMATIC" in rendered
+    assert "SKILL" in rendered and "PROVIDER" in rendered and "REASONING" in rendered
+    assert "saw-rtc" in rendered
+    assert "gpt-5.6-terra" in rendered
+    assert "medium" in rendered
+    assert "RECOMMENDED" in rendered
 
 
 def test_codex_transport_preflight_fails_fast_with_network_diagnostic(make_workspace, monkeypatch) -> None:
