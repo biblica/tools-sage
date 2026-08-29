@@ -46,6 +46,7 @@ in the `docs/` root. Technical and governance material is grouped under
 ## Advanced: models and AI
 
 - [Model Selection and Provider Build Policy](advanced/models-and-ai/MODEL-SELECTION-AND-REASONING.md) — Codex execution, local admin assistant, and model qualification.
+- [Skill Routing and Model Qualification](advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md) — ALPHA1 provider-only Setup, per-Skill route evidence, global override, and operator reporting design.
 - [Model Handoff Optimization](advanced/models-and-ai/MODEL-HANDOFF-OPTIMIZATION.md) — governed projections, response contracts, and token telemetry.
 - [Model Language Competency](advanced/models-and-ai/MODEL-LANGUAGE-COMPETENCY.md) — per-model-release estimated capability.
 - [Local AI Assistive Mode](advanced/models-and-ai/LOCAL-AI-ASSISTIVE-MODE.md) — restricted local administration support.

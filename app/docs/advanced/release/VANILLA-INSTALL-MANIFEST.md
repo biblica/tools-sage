@@ -56,6 +56,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/models-and-ai/MODEL-HANDOFF-OPTIMIZATION.md`
 - `docs/advanced/models-and-ai/MODEL-LANGUAGE-COMPETENCY.md`
 - `docs/advanced/models-and-ai/MODEL-SELECTION-AND-REASONING.md`
+- `docs/advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md`
 - `docs/advanced/projects-and-resources`
 - `docs/advanced/projects-and-resources/FLEX-COMBINE-INTERCHANGE.md`
 - `docs/advanced/projects-and-resources/GRAMMAR-PROFILES.md`
