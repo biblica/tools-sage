@@ -11,8 +11,11 @@ from typing import Any, Iterable, Mapping, Sequence
 
 from .storage import StorageError, declare_governed_path, resolve_declared_path, resolve_persisted_path
 from .act_outputs import (
+    aggregate_execution_routes,
+    execution_route_from_receipt,
     marker_sequence,
     render_action_report,
+    render_execution_section,
     render_operator_note_text,
     validate_bic_inspect_output,
     validate_bic_usfm_output,
@@ -5110,6 +5113,7 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         "finding_count": sum(int(row.get("finding_count") or 0) for row in accepted_results),
         "work_unit_count": len(accepted_results),
         "resource_fingerprints": lineage or {},
+        "execution_routes": aggregate_execution_routes(accepted_results),
         "canonical_artifacts": {key: str(value) for key, value in artifacts.items()},
         **publication,
         "finalized_utc": utc_now(),
@@ -5258,7 +5262,22 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         elif lineage_fingerprints != required_lineage:
             raise ValidationError("Aggregated work-unit resource lineage is inconsistent")
         globalized = globalize_result_finding_ids(
-            normalized,
+            {
+                **normalized,
+                "findings": [
+                    {
+                        **dict(row),
+                        **(
+                            {"execution_route": dict(normalized["execution_route"])}
+                            if isinstance(normalized.get("execution_route"), Mapping)
+                            and not isinstance(row.get("execution_route"), Mapping)
+                            else {}
+                        ),
+                    }
+                    for row in normalized.get("findings", [])
+                    if isinstance(row, Mapping)
+                ],
+            },
             unit_id=unit_id or str(submission.get("task_id") or "UNIT"),
             run_id=str(plan.get("run_id") or plan.get("plan_id") or "RUN"),
             prefix="SAW",
@@ -5306,6 +5325,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             "primary_coverage_atoms": unit_atoms,
             "source_spans": dict(unit.get("source_spans") or {}),
             "submission_sha256": sha256_file(submission_path),
+            "execution_route": normalized.get("execution_route"),
         })
     validate_global_finding_ids(findings)
     if len(expected) != len(set(expected)):
@@ -5391,6 +5411,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         "findings": findings,
         "finding_count": len(findings),
         "work_units": child_results,
+        "execution_routes": aggregate_execution_routes(child_results),
         "finalized_utc": utc_now(),
         "narrative_language": _narrative_language_contract(config),
     }
@@ -5417,6 +5438,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
     authority_notice = render_report_language_authority(authority, markdown=True)
     if authority_notice:
         aggregate_lines.extend([authority_notice, ""])
+    aggregate_lines.extend(render_execution_section(aggregate["execution_routes"]))
     atomic_write_text(report_path, "\\n".join(aggregate_lines))
     plan["status"] = "FINALIZED"
     plan["aggregate_path"] = str(aggregate_path)
@@ -5582,6 +5604,34 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
     unexpected = sorted(actual - set(allowed_writes))
     if unexpected:
         raise ValidationError("ACT task created unlisted outputs: " + ", ".join(unexpected))
+    output_hashes = {
+        relative: sha256_file(output_path)
+        for relative, output_path in output_paths.items()
+    }
+    try:
+        execution_route = execution_route_from_receipt(
+            task_root,
+            task_id=task_id,
+            output_hashes=output_hashes,
+        )
+    except ValidationError as exc:
+        if exc.code != "EXECUTION_RECEIPT_MISSING":
+            raise
+        # Pre-release preserved tasks and manually supplied Alpha fixtures may lack
+        # a runtime receipt; record the absence without claiming a current route.
+        execution_route = {
+            "status": "UNRECORDED",
+            "task_id": task_id,
+            "skill_id": raw.get("skill_id"),
+            "route_id": None,
+            "provider": None,
+            "model": None,
+            "reasoning_effort": None,
+            "routing_mode": None,
+            "qualification_status": "UNVERIFIED",
+            "receipt_path": None,
+            "receipt_sha256": None,
+        }
 
     validation_details: dict[str, Any]
     commit: dict[str, Any] | None = None
@@ -5654,6 +5704,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                     for item in raw.get("conditional_reads", [])
                 ),
             )
+            challenge_document["execution_route"] = execution_route
             conditional_ol_evidence_used = any(
                 bool((item.get("ol_referral") or {}).get("performed", False))
                 for item in challenge_document.get("challenges", [])
@@ -5798,6 +5849,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         )
         normalized.update(
             {
+                "execution_route": execution_route,
                 "job_id": job_id,
                 "run_id": run_id,
                 "parent_plan_id": raw.get("parent_plan_id"),
@@ -5917,6 +5969,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         }
         normalized.update(
             {
+                "execution_route": execution_route,
                 "job_id": job_id,
                 "run_id": run_id,
                 "parent_plan_id": raw.get("parent_plan_id"),
@@ -5956,6 +6009,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         "lexical_donor": raw.get("lexical_donor"),
         "original_language_sources": raw.get("original_language_sources", []),
         "conditional_ol_evidence_used": conditional_ol_evidence_used,
+        "execution_route": execution_route,
         "scope": raw.get("scope"),
         "focus": raw.get("focus"),
         "check_type": raw.get("check_type"),

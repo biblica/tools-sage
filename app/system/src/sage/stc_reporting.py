@@ -6,7 +6,11 @@ import json
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from .act_outputs import render_plain_text_from_markdown
+from .act_outputs import (
+    aggregate_execution_routes,
+    render_execution_section,
+    render_plain_text_from_markdown,
+)
 from .atomic import atomic_write_json, atomic_write_text
 from .errors import ValidationError
 from .human_output import (
@@ -108,6 +112,13 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
         f"- Coverage: `COMPLETE` ({len(coverage)} coordinates)",
         f"- Report languages: `{primary}`" + (f"; `{secondary}`" if secondary else ""),
     ]
+    raw_routes = document.get("execution_routes")
+    routes = (
+        [dict(row) for row in raw_routes if isinstance(row, Mapping)]
+        if isinstance(raw_routes, list)
+        else aggregate_execution_routes([document])
+    )
+    lines.extend(["", *render_execution_section(routes)])
     notice = render_report_language_authority(authority if isinstance(authority, Mapping) else None, markdown=True)
     if notice:
         lines.extend(["", notice])
@@ -164,6 +175,8 @@ def publish_stc_reports(
     results: Iterable[Mapping[str, Any]],
 ) -> dict[str, Any]:
     """Publish one separate STC report bundle per represented Scripture chapter."""
+    # Chapter partitioning preserves each finding's originating execution route
+    # so deterministic aggregation never substitutes the current recommendation.
     documents = [dict(row) for row in results]
     if not documents or any(str(row.get("operation") or "").lower() != "stc" for row in documents):
         raise ValidationError("STC report publication requires finalized STC result documents")
@@ -189,7 +202,19 @@ def publish_stc_reports(
     chapters = sorted({chapter for value in coverage if (chapter := _chapter(value)) is not None})
     if not chapters:
         raise ValidationError("STC report publication has no canonical chapter coverage")
-    all_findings = [dict(value) for row in documents for value in row.get("findings", []) if isinstance(value, Mapping)]
+    all_findings = [
+        {
+            **dict(value),
+            **(
+                {"execution_route": dict(row["execution_route"])}
+                if isinstance(row.get("execution_route"), Mapping)
+                else {}
+            ),
+        }
+        for row in documents
+        for value in row.get("findings", [])
+        if isinstance(value, Mapping)
+    ]
     finding_ids = [str(row.get("finding_id") or "") for row in all_findings]
     if not all(finding_ids) or len(finding_ids) != len(set(finding_ids)):
         raise ValidationError("STC report publication received duplicate or missing finding identity")
@@ -242,6 +267,16 @@ def publish_stc_reports(
             "primary_coverage": chapter_coverage,
             "finding_count": len(projected_findings),
             "findings": projected_findings,
+            "execution_routes": aggregate_execution_routes(
+                [
+                    row
+                    for row in documents
+                    if any(
+                        _chapter(str(value)) == chapter
+                        for value in row.get("primary_coverage", [])
+                    )
+                ]
+            ),
         }
         if authority:
             document["language_authority"] = authority

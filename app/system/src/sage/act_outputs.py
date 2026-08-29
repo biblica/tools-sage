@@ -108,6 +108,175 @@ def load_json_object(path: Path, label: str) -> dict[str, Any]:
     return _require_mapping(value, label)
 
 
+def execution_route_from_receipt(
+    task_root: Path,
+    *,
+    task_id: str,
+    output_hashes: Mapping[str, str],
+) -> dict[str, Any]:
+    """Verify and project the sibling execution receipt without recomputing routing."""
+    receipt_path = task_root.resolve() / "validation" / "llm-execution-receipt.json"
+    if not receipt_path.is_file():
+        raise ValidationError(
+            "Task execution receipt is missing",
+            code="EXECUTION_RECEIPT_MISSING",
+        )
+    receipt = load_json_object(receipt_path, "LLM execution receipt")
+    if str(receipt.get("task_id") or "") != task_id:
+        raise ValidationError(
+            "Execution receipt belongs to another task",
+            code="EXECUTION_RECEIPT_IDENTITY_MISMATCH",
+        )
+    recorded_outputs = receipt.get("output_sha256")
+    expected_outputs = {str(key): str(value) for key, value in output_hashes.items()}
+    if not isinstance(recorded_outputs, Mapping) or {
+        str(key): str(value) for key, value in recorded_outputs.items()
+    } != expected_outputs:
+        raise ValidationError(
+            "Execution receipt output hashes differ from the submitted task outputs",
+            code="EXECUTION_RECEIPT_OUTPUT_MISMATCH",
+        )
+    if str(receipt.get("schema_version") or "") != "2.0":
+        return {
+            "status": "LEGACY_UNQUALIFIED",
+            "task_id": task_id,
+            "skill_id": receipt.get("skill_id"),
+            "route_id": None,
+            "provider": receipt.get("provider"),
+            "model": receipt.get("model"),
+            "reasoning_effort": receipt.get("reasoning_effort"),
+            "routing_mode": None,
+            "qualification_status": "UNVERIFIED",
+            "phase_reasoning_efforts": list(receipt.get("phase_reasoning_efforts") or []),
+            "receipt_path": str(receipt_path),
+            "receipt_sha256": sha256_file(receipt_path),
+        }
+    required = (
+        "skill_id",
+        "route_id",
+        "routing_mode",
+        "qualification_status",
+        "qualification_evidence_sha256",
+        "routing_policy_version",
+        "model_identity_strength",
+        "capability_fingerprint",
+        "provider",
+        "model",
+        "reasoning_effort",
+    )
+    missing = [field for field in required if receipt.get(field) in (None, "")]
+    if missing:
+        raise ValidationError(
+            "Execution receipt route projection is incomplete: " + ", ".join(missing),
+            code="EXECUTION_RECEIPT_IDENTITY_MISMATCH",
+        )
+    return {
+        "status": "PROVED",
+        "task_id": task_id,
+        "skill_id": receipt["skill_id"],
+        "route_id": receipt["route_id"],
+        "provider": receipt["provider"],
+        "model": receipt["model"],
+        "reasoning_effort": receipt["reasoning_effort"],
+        "routing_mode": receipt["routing_mode"],
+        "qualification_status": receipt["qualification_status"],
+        "qualification_evidence_sha256": receipt["qualification_evidence_sha256"],
+        "routing_policy_version": receipt["routing_policy_version"],
+        "provider_runtime_version": receipt.get("provider_runtime_version"),
+        "model_identity_strength": receipt["model_identity_strength"],
+        "capability_fingerprint": receipt["capability_fingerprint"],
+        "selection_mode": receipt.get("selection_mode"),
+        "operator_policy_override": bool(receipt.get("operator_policy_override", False)),
+        "phase_reasoning_efforts": list(receipt.get("phase_reasoning_efforts") or []),
+        "started_utc": receipt.get("started_utc"),
+        "completed_utc": receipt.get("completed_utc"),
+        "receipt_path": str(receipt_path),
+        "receipt_sha256": sha256_file(receipt_path),
+    }
+
+
+def aggregate_execution_routes(
+    results: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Group immutable execution projections by exact route while retaining task identity."""
+    grouped: dict[str, dict[str, Any]] = {}
+    task_ids: dict[str, set[str]] = {}
+    for result in results:
+        raw_routes = result.get("execution_routes")
+        candidates = (
+            [item for item in raw_routes if isinstance(item, Mapping)]
+            if isinstance(raw_routes, list)
+            else [result.get("execution_route")]
+        )
+        for raw in candidates:
+            if not isinstance(raw, Mapping):
+                continue
+            route = dict(raw)
+            route_id = str(route.get("route_id") or "")
+            key = route_id or "legacy:" + json.dumps(
+                {
+                    "status": route.get("status"),
+                    "provider": route.get("provider"),
+                    "model": route.get("model"),
+                    "reasoning_effort": route.get("reasoning_effort"),
+                },
+                sort_keys=True,
+            )
+            grouped.setdefault(key, route)
+            inherited_tasks = route.get("task_ids")
+            if isinstance(inherited_tasks, list):
+                task_ids.setdefault(key, set()).update(
+                    str(value) for value in inherited_tasks if str(value).strip()
+                )
+            task_id = str(route.get("task_id") or result.get("task_id") or "").strip()
+            if task_id:
+                task_ids.setdefault(key, set()).add(task_id)
+    rows: list[dict[str, Any]] = []
+    for key in sorted(grouped):
+        tasks = sorted(task_ids.get(key, set()))
+        rows.append({**grouped[key], "task_count": len(tasks), "task_ids": tasks})
+    return rows
+
+
+def render_execution_section(routes: Sequence[Mapping[str, Any]]) -> list[str]:
+    """Render actual receipt-backed execution routes for deterministic reports."""
+    if not routes:
+        return []
+    if len(routes) == 1:
+        route = routes[0]
+        return [
+            "## Execution route",
+            "",
+            f"- Skill: `{route.get('skill_id') or 'UNRECORDED'}`",
+            f"- Provider: `{route.get('provider') or 'UNRECORDED'}`",
+            f"- Model: `{route.get('model') or 'UNRECORDED'}`",
+            f"- Reasoning: `{route.get('reasoning_effort') or 'UNRECORDED'}`",
+            f"- Routing: `{route.get('routing_mode') or route.get('status') or 'UNRECORDED'}`",
+            f"- Qualification: `{route.get('qualification_status') or 'UNVERIFIED'}`",
+            "",
+        ]
+    lines = [
+        "## Execution routes",
+        "",
+        "SKILL | PROVIDER | MODEL | REASONING | MODE | TASKS",
+        "--- | --- | --- | --- | --- | ---:",
+    ]
+    for route in routes:
+        lines.append(
+            " | ".join(
+                [
+                    str(route.get("skill_id") or "UNRECORDED"),
+                    str(route.get("provider") or "UNRECORDED"),
+                    str(route.get("model") or "UNRECORDED"),
+                    str(route.get("reasoning_effort") or "UNRECORDED"),
+                    str(route.get("routing_mode") or route.get("status") or "UNRECORDED"),
+                    str(route.get("task_count") or 0),
+                ]
+            )
+        )
+    return [*lines, ""]
+
+
 def marker_sequence(text: str) -> tuple[str, ...]:
     """Return the exact normalized USFM marker sequence, including closers."""
     return tuple(
@@ -935,6 +1104,8 @@ def render_plain_text_from_markdown(markdown: str) -> str:
 
 def render_action_report(document: Mapping[str, Any]) -> str:
     """Render deterministic Operator-facing SAW Markdown with per-language issue/action grouping."""
+    # Receipt-backed route metadata and assistive translations are projections;
+    # neither may alter the canonical finding inventory rendered below.
     primary, secondary = _report_languages(document)
     primary_name = _language_display_name(primary)
     secondary_name = _language_display_name(secondary) if secondary else None
@@ -962,6 +1133,13 @@ def render_action_report(document: Mapping[str, Any]) -> str:
         f"- {_report_label(document, 'label.coverage')}: `{document['coverage']['status']}` ({len(document['coverage']['reviewed_references'])} coordinates)",
         f"- Report languages: `{primary}`" + (f"; `{secondary}`" if secondary else ""),
     ]
+    raw_routes = document.get("execution_routes")
+    routes = (
+        [dict(row) for row in raw_routes if isinstance(row, Mapping)]
+        if isinstance(raw_routes, list)
+        else aggregate_execution_routes([document])
+    )
+    lines.extend(["", *render_execution_section(routes)])
     authority_notice = render_report_language_authority(document.get("language_authority"), markdown=True)
     if authority_notice:
         lines.extend(["", authority_notice])

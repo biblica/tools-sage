@@ -7,6 +7,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from .act_outputs import aggregate_execution_routes
 from .errors import ValidationError
 from .hashing import sha256_file
 
@@ -109,6 +110,10 @@ def consolidate_result_documents(
             raise ValidationError("Consolidation input findings must be a list of objects")
         for finding in findings:
             row = dict(finding)
+            if not isinstance(row.get("execution_route"), Mapping) and isinstance(
+                document.get("execution_route"), Mapping
+            ):
+                row["execution_route"] = dict(document["execution_route"])
             signature = _finding_signature(row)
             contribution = {
                 "task_id": str(document.get("task_id", "")),
@@ -180,6 +185,7 @@ def consolidate_result_documents(
             "versification_advisories": _unique_rows(normalised, "versification_advisories"),
             "findings": retained,
             "finding_count": len(retained),
+            "execution_routes": aggregate_execution_routes(normalised),
             "consolidation": {
                 "status": "HUMAN_REVIEW_REQUIRED" if conflicts else "COMPLETE",
                 "input_count": len(normalised),

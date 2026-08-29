@@ -7,6 +7,7 @@ import math
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from .act_outputs import aggregate_execution_routes, render_execution_section
 from .errors import ValidationError
 from .hashing import sha256_file
 from .human_output import (
@@ -701,6 +702,7 @@ def render_rewrite_challenge_report(
         f"- {label('label.report_languages')}: `{', '.join(languages)}`",
         "",
     ]
+    lines.extend(render_execution_section(aggregate_execution_routes([document])))
     authority_notice = render_report_language_authority(
         report_language_authority(
             channel,
