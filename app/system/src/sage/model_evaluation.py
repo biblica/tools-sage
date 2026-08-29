@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
-from typing import Any, Mapping, Protocol
+from typing import Any, Callable, Mapping, Protocol, Sequence
 
 from .atomic import atomic_write_json
 from .errors import ConfigurationError, ValidationError
@@ -39,6 +39,7 @@ class ProviderEvaluationTransport:
         provider: str,
         model_id: str,
         reasoning_id: str,
+        status_snapshot: ProviderStatus | None = None,
     ) -> None:
         """Bind provider settings while leaving all qualification decisions to Python."""
         self.root = root
@@ -46,10 +47,13 @@ class ProviderEvaluationTransport:
         self.model_id = model_id
         self.reasoning_id = reasoning_id
         self.executor = make_executor(provider, load_llm_settings(root))
+        self._status_snapshot = status_snapshot
 
     def status(self) -> ProviderStatus:
         """Probe the provider without sending a sealed case or Job evidence."""
-        return self.executor.status()
+        if self._status_snapshot is None:
+            self._status_snapshot = self.executor.status()
+        return self._status_snapshot
 
     def execute(self, case: dict[str, object], repetition: int) -> ProviderResponse:
         """Send exactly one case in one stateless provider request."""
@@ -64,6 +68,19 @@ class ProviderEvaluationTransport:
         )
         schema = {
             "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "schema_version": {"type": "string"},
+                "task_id": {"type": "string"},
+                "skill_id": {"type": "string"},
+                "case_id": {"type": "string"},
+                "scope": {"type": "string"},
+                "decision": {"type": "string"},
+                "finding_ids": {"type": "array", "items": {"type": "string"}},
+                "reviewed_item_ids": {"type": "array", "items": {"type": "string"}},
+                "evidence_ids": {"type": "array", "items": {"type": "string"}},
+                "prohibited_actions": {"type": "array", "items": {"type": "string"}},
+            },
             "required": [
                 "schema_version",
                 "task_id",
@@ -77,16 +94,18 @@ class ProviderEvaluationTransport:
                 "prohibited_actions",
             ],
         }
-        return self.executor.execute(
-            ProviderRequest(
-                prompt=prompt,
-                schema=schema,
-                model=self.model_id,
-                reasoning_effort=(
-                    None if self.reasoning_id == "provider-default" else self.reasoning_id
-                ),
-            )
+        request = ProviderRequest(
+            prompt=prompt,
+            schema=schema,
+            model=self.model_id,
+            reasoning_effort=(
+                None if self.reasoning_id == "provider-default" else self.reasoning_id
+            ),
         )
+        execute_prevalidated = getattr(self.executor, "execute_prevalidated", None)
+        if callable(execute_prevalidated):
+            return execute_prevalidated(request, self.status())
+        return self.executor.execute(request)
 
 
 def _load_object(path: Path, label: str) -> dict[str, Any]:
@@ -231,6 +250,25 @@ def _validate_attempt(
     return hard_errors, semantic_errors
 
 
+def _response_route_errors(
+    response: ProviderResponse,
+    *,
+    provider: str,
+    model_id: str,
+    reasoning_id: str,
+) -> list[str]:
+    """Reject response metadata that cannot prove the evaluated exact route."""
+    errors: list[str] = []
+    if response.provider != provider:
+        errors.append("Provider identity differs from the evaluated route")
+    if response.model != model_id:
+        errors.append("Model identity differs from the evaluated route")
+    expected_reasoning = None if reasoning_id == "provider-default" else reasoning_id
+    if response.reasoning_effort != expected_reasoning:
+        errors.append("Reasoning identity differs from the evaluated route")
+    return errors
+
+
 def _skill_sha256(root: Path, skill_id: str) -> str:
     """Return the exact adapted Skill hash from the registered Skill inventory."""
     registry = _load_object(root / "system/config/skills.json", "Skill registry")
@@ -315,6 +353,15 @@ def evaluate_candidate(
             case = _load_case(root, case_row)
             response = effective_transport.execute(case, repetition)
             hard_errors, semantic_errors = _validate_attempt(case, response)
+            hard_errors = [
+                *_response_route_errors(
+                    response,
+                    provider=provider,
+                    model_id=capability.model,
+                    reasoning_id=reasoning_id,
+                ),
+                *hard_errors,
+            ]
             attempts.append(
                 {
                     "case_id": case["case_id"],
@@ -366,6 +413,181 @@ def evaluate_candidate(
     path.parent.mkdir(parents=True, exist_ok=True)
     atomic_write_json(path, receipt)
     return {**receipt, "receipt_path": str(path)}
+
+
+EvaluationTransportFactory = Callable[[str, str], EvaluationTransport]
+
+
+def _provider_status(root: Path, provider: str) -> ProviderStatus:
+    """Return one live provider catalog snapshot for an explicit evaluation action."""
+    executor = make_executor(provider, load_llm_settings(root))
+    status = executor.status()
+    if status.provider != provider or not status.available or not status.ready:
+        raise ValidationError(
+            f"Evaluation provider {provider} is not ready: {status.diagnostic}",
+            code="PROVIDER_ROUTE_UNAVAILABLE",
+        )
+    return status
+
+
+def _model_capability(status: ProviderStatus, model_id: str):
+    """Return one exact available model capability from a provider snapshot."""
+    capability = next(
+        (item for item in status.model_capabilities if item.model == model_id or item.id == model_id),
+        None,
+    )
+    if capability is None:
+        raise ValidationError(
+            f"Evaluation model is unavailable: {model_id}",
+            code="MODEL_NOT_AVAILABLE",
+        )
+    return capability
+
+
+def evaluate_model_for_skill(
+    root: Path,
+    *,
+    skill_id: str,
+    provider: str,
+    model_id: str,
+    comparison: bool = False,
+    status: ProviderStatus | None = None,
+    transport_factory: EvaluationTransportFactory | None = None,
+) -> dict[str, Any]:
+    """Evaluate provider-native reasoning from lowest upward for one model and Skill."""
+    root = root.expanduser().resolve()
+    effective_status = status or _provider_status(root, provider)
+    if effective_status.provider != provider or not effective_status.ready:
+        raise ValidationError(
+            f"Evaluation provider {provider} is not ready",
+            code="PROVIDER_ROUTE_UNAVAILABLE",
+        )
+    capability = _model_capability(effective_status, model_id)
+    reasoning_ids = list(capability.reasoning_efforts) or ["provider-default"]
+    factory = transport_factory or (
+        lambda candidate_model, candidate_reasoning: ProviderEvaluationTransport(
+            root,
+            provider=provider,
+            model_id=candidate_model,
+            reasoning_id=candidate_reasoning,
+            status_snapshot=effective_status,
+        )
+    )
+    candidates: list[dict[str, Any]] = []
+    selected: dict[str, Any] | None = None
+    for reasoning_id in reasoning_ids:
+        receipt = evaluate_candidate(
+            root,
+            skill_id=skill_id,
+            provider=provider,
+            model_id=capability.model,
+            reasoning_id=reasoning_id,
+            transport=factory(capability.model, reasoning_id),
+        )
+        row = {
+            "reasoning_id": reasoning_id,
+            "qualification_status": receipt["qualification_status"],
+            "hard_failure_count": receipt["hard_failure_count"],
+            "semantic_failure_count": receipt["semantic_failure_count"],
+            "semantic_score": receipt["semantic_score"],
+            "receipt_path": receipt["receipt_path"],
+            "evidence_sha256": receipt["evidence_sha256"],
+        }
+        candidates.append(row)
+        if receipt["qualification_status"] == "QUALIFIED" and selected is None:
+            selected = {
+                "provider": provider,
+                "model_id": capability.model,
+                "reasoning_id": reasoning_id,
+                "capability_fingerprint": receipt["capability_fingerprint"],
+                "evidence_sha256": receipt["evidence_sha256"],
+                "receipt_path": receipt["receipt_path"],
+            }
+            if not comparison:
+                break
+    return {
+        "status": "QUALIFIED" if selected is not None else "NOT_QUALIFIED",
+        "skill_id": skill_id,
+        "provider": provider,
+        "model_id": capability.model,
+        "comparison": comparison,
+        "evaluated_reasoning_ids": [row["reasoning_id"] for row in candidates],
+        "stopped_after_first_qualified": bool(selected is not None and not comparison),
+        "selected_route": selected,
+        "candidates": candidates,
+    }
+
+
+def evaluate_catalog(
+    root: Path,
+    *,
+    provider: str,
+    skill_ids: Sequence[str] | None = None,
+    model_ids: Sequence[str] | None = None,
+    comparison: bool = False,
+    status: ProviderStatus | None = None,
+    transport_factory: EvaluationTransportFactory | None = None,
+) -> dict[str, Any]:
+    """Evaluate chosen catalog models per Skill and return deterministic recommendations."""
+    from .skill_routing import resolve_skill_route
+
+    root = root.expanduser().resolve()
+    effective_status = status or _provider_status(root, provider)
+    contracts = load_evaluation_contracts(root)
+    chosen_skills = list(skill_ids) if skill_ids is not None else list(contracts["skills"])
+    unknown_skills = [value for value in chosen_skills if value not in contracts["skills"]]
+    if unknown_skills:
+        raise ConfigurationError("Unknown evaluation Skills: " + ", ".join(unknown_skills))
+    available_models = [item.model for item in effective_status.model_capabilities]
+    chosen_models = list(model_ids) if model_ids is not None else available_models
+    for model_id in chosen_models:
+        _model_capability(effective_status, model_id)
+    rows: list[dict[str, Any]] = []
+    ready_count = 0
+    for skill_id in chosen_skills:
+        model_results = [
+            evaluate_model_for_skill(
+                root,
+                skill_id=skill_id,
+                provider=provider,
+                model_id=model_id,
+                comparison=comparison,
+                status=effective_status,
+                transport_factory=transport_factory,
+            )
+            for model_id in chosen_models
+        ]
+        try:
+            route = resolve_skill_route(root, skill_id, [effective_status])
+        except ValidationError as exc:
+            recommended = None
+            qualification = "NOT_QUALIFIED"
+            reason_code = exc.code
+        else:
+            recommended = route.to_dict()
+            # Route resolution marks the selected candidate as RECOMMENDED;
+            # catalog readiness separately records whether qualified evidence exists.
+            qualification = "QUALIFIED"
+            reason_code = None
+            ready_count += 1
+        rows.append(
+            {
+                "skill_id": skill_id,
+                "qualification_status": qualification,
+                "reason_code": reason_code,
+                "recommended_route": recommended,
+                "models": model_results,
+            }
+        )
+    return {
+        "status": "COMPLETE",
+        "provider": provider,
+        "comparison": comparison,
+        "candidate_count": len(chosen_skills) * len(chosen_models),
+        "ready_skills": ready_count,
+        "total_skills": len(chosen_skills),
+        "skills": rows,
+    }
 
 
 def reconcile_qualification_receipt(root: Path, path: Path) -> dict[str, Any]:

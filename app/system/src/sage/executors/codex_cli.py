@@ -21,7 +21,6 @@ from .base import (
     ProviderResponse,
     ProviderStatus,
     ReasoningEffortOption,
-    sage_supports_reasoning_effort,
 )
 
 
@@ -674,14 +673,14 @@ class CodexCLIExecutor:
 
     @staticmethod
     def _normalize_effort(item: Any) -> ReasoningEffortOption | None:
-        """Normalize one App Server reasoning option inside SAGE's hard XHigh ceiling."""
+        """Normalize one provider-native reasoning option without renaming or filtering it."""
         if isinstance(item, str):
             value = item.strip().lower()
-            return ReasoningEffortOption(value) if value and sage_supports_reasoning_effort(value) else None
+            return ReasoningEffortOption(value) if value else None
         if not isinstance(item, dict):
             return None
         value = str(item.get("reasoningEffort") or item.get("reasoning_effort") or "").strip().lower()
-        if not value or not sage_supports_reasoning_effort(value):
+        if not value:
             return None
         return ReasoningEffortOption(value, str(item.get("description") or "").strip())
 
@@ -720,8 +719,6 @@ class CodexCLIExecutor:
             str(item.get("defaultReasoningEffort") or item.get("default_reasoning_effort") or "").strip().lower()
             or None
         )
-        if not sage_supports_reasoning_effort(default_reasoning):
-            default_reasoning = None
         return ModelCapability(
             id=model_id,
             model=model,
@@ -865,12 +862,6 @@ class CodexCLIExecutor:
         if selected is None:
             diagnostic = f"Requested Codex model is not available to the current ChatGPT workspace: {model}"
             ready = False
-        elif reasoning_effort and not sage_supports_reasoning_effort(reasoning_effort):
-            diagnostic = (
-                f"Reasoning effort {reasoning_effort!r} exceeds SAGE's supported ceiling; "
-                "highest supported reasoning level is xhigh"
-            )
-            ready = False
         elif reasoning_effort and reasoning_effort not in selected.reasoning_efforts:
             diagnostic = (
                 f"Reasoning effort {reasoning_effort!r} is not available within SAGE for {selected.model}; "
@@ -920,11 +911,6 @@ class CodexCLIExecutor:
             )
         selected_model = selected.model if selected is not None else (status.selected_model or request.model)
         if request.reasoning_effort:
-            if not sage_supports_reasoning_effort(request.reasoning_effort):
-                raise ValidationError(
-                    f"Reasoning effort {request.reasoning_effort!r} exceeds SAGE's supported ceiling",
-                    code="CODEX_MODEL_OR_AUTH_NOT_READY",
-                )
             if selected is not None and request.reasoning_effort not in selected.reasoning_efforts:
                 raise ValidationError(
                     f"Reasoning effort {request.reasoning_effort!r} is not available within SAGE for {selected.model}",

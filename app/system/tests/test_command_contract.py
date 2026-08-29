@@ -105,6 +105,10 @@ def test_model_and_task_commands_expose_skill_routing_without_direct_bypass() ->
     assert "--skill" in recommend_help
     assert "--workflow" not in recommend_help
     assert "--operation" not in recommend_help
+    evaluate_help = parser_at("model", "evaluate").format_help()
+    for option in ("--skill", "--all-skills", "--model", "--all-models", "--comparison"):
+        assert option in evaluate_help
+    assert "promote" in subparsers.choices
     task_help = parser_at("task", "execute").format_help()
     for prohibited in ("--provider", "--model", "--reasoning", "--policy-override"):
         assert prohibited not in task_help

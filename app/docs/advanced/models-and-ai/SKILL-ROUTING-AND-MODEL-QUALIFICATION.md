@@ -167,6 +167,13 @@ Testing for that model/Skill stops at the first setting that fully qualifies unl
 comparison evaluation is requested. This finds the least reasoning that satisfies the Skill rather
 than assuming that greater reasoning is automatically better.
 
+The catalog evaluator can apply that process to one or all registered Skills and one or all models
+advertised by the selected provider. It obtains one capability snapshot before the cases run,
+preserves the provider's native setting identifiers and order, and records every attempted result.
+Selection of the current route is then performed by the deterministic resolver from reconciled local
+receipts. Promotion creates only an explicit review-candidate file; it never silently changes Core
+seed policy.
+
 ## Qualification and availability state
 
 Availability and qualification are independent dimensions:

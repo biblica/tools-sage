@@ -23,24 +23,27 @@ The release process uses one frozen governed source hash and requires all of the
 
 ## Current automated evidence
 
-Working-source validation on 2026-08-26 collected **699 tests across 62 test modules**. The direct
-managed-runtime suite recorded **697 passed**, **2 skipped**, and **0 failed/error outcomes** under
+Working-source validation on 2026-08-29 collected **846 outcomes**. The direct managed-runtime suite
+recorded **844 passed**, **2 skipped**, and **0 failed/error outcomes** under
 SAGE-managed CPython 3.12.14. The two skips are guarded optional Textual interaction cases;
 non-Textual TUI service/state coverage remains active.
 
-Schema validation covers **35 schemas / 35 IDs / 35 owner mappings** and reports PASS with no
+Schema validation covers **42 schemas / 42 IDs / 42 owner mappings** and reports PASS with no
 warnings/errors. Package validation reports READY with no warnings/errors. Source deep audit covers
-483 governed files and reports PASS with no warnings/errors.
+605 governed files and **2,991 / 2,991 documented Python procedures** and reports PASS with no
+warnings/errors. Sealed model-evaluation regeneration verifies **7 Skills / 21 cases / 85 files**.
 
-This is development evidence, not the formal exact-source release qualification. The source changed
-after the earlier qualification receipt; new deterministic hardening shards, a formal combine, and
-two byte-identical release builds remain required before the first RC.
+This is development evidence, not a production-release claim. Formal exact-source hardening receipts
+remain machine-local evidence and must be regenerated after any governed-source change. Deterministic
+release construction, two byte-identical builds, clean extraction, and native host acceptance remain
+separate gates before the first RC.
 
 ## Skill-routing implementation evidence
 
 The Alpha1 source now includes provider-neutral exact-Skill resolution, provider-only settings
 migration, an audited exact-route override, sealed synthetic qualification cases, schema 2.0 execution
-receipts, receipt-bound report provenance, and provider-only UI/CLI controls. Focused deterministic
+receipts, receipt-bound report provenance, provider-native automatic qualification progression, and
+provider-only UI/CLI controls. Focused deterministic
 tests have exercised resolver and policy contracts, settings/override state, evaluation reconciliation,
 runtime pre-handoff rejection, per-item secondary rendering, BIC/SAW report propagation, localization,
 and menu/command surfaces using fake provider responses only.
