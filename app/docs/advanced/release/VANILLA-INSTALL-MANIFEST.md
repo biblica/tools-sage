@@ -73,6 +73,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/release/IMPLEMENTATION-REPORT.md`
 - `docs/advanced/release/RELEASE-GATES.md`
 - `docs/advanced/release/RELEASE-NOTES.md`
+- `docs/advanced/release/SKILL-ROUTING-IMPLEMENTATION-PLAN.md`
 - `docs/advanced/release/TEST-AND-VALIDATION-REPORT.md`
 - `docs/advanced/release/VANILLA-INSTALL-MANIFEST.md`
 - `docs/advanced/workflows`
