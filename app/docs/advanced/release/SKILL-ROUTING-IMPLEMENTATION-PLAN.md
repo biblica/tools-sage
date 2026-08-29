@@ -380,7 +380,7 @@ git commit -m "feat: report exact skill execution routes"
 
 **Step 1: Write failing menu/CLI contract tests.**
 
-Assert that normal Configure AI offers provider connections, available provider models, Skill routing recommendations, Advanced routing override, evaluation, Local AI, and connection check. It must not offer ordinary `Change model` or `Change reasoning` actions.
+Assert that normal Configure AI offers provider connections, available provider models, Skill routing recommendations, Advanced routing override, Local AI, and connection check. Costly route evaluation remains maintainer CLI tooling. The menu must not offer ordinary `Change model` or `Change reasoning` actions.
 
 Assert compact Job displays:
 

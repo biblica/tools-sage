@@ -667,62 +667,6 @@ def test_ai_recommended_settings_are_reported_as_status(make_workspace) -> None:
     assert "RECOMMENDED" in rendered
 
 
-def test_skill_evaluation_uses_automatic_provider_native_progression(make_workspace) -> None:
-    """Interactive qualification selects scope, not a universal reasoning level."""
-    root = make_workspace(configured=True, qualification_status="VALIDATED")
-    center = _center(root, ["1", "1", "y"])
-    calls: list[dict[str, object]] = []
-
-    class Service:
-        """Expose two provider models and record the catalog evaluation request."""
-
-        def policy(self):
-            """Return one registered Skill route."""
-            return {"skill_routes": {"saw-rtc": {}}}
-
-        def list_models(self, provider):
-            """Return provider-native settings, including a provider-default model."""
-            assert provider == "codex"
-            return {
-                "models": [
-                    {"model": "model-a", "reasoning_efforts": ["swift", "deep-native"]},
-                    {"model": "model-b", "reasoning_efforts": []},
-                ]
-            }
-
-        def evaluate_catalog_routes(self, **kwargs):
-            """Record automatic orchestration and return a ready Skill route."""
-            calls.append(kwargs)
-            return {
-                "status": "COMPLETE",
-                "provider": "codex",
-                "ready_skills": 1,
-                "total_skills": 1,
-                "skills": [{
-                    "skill_id": "saw-rtc",
-                    "qualification_status": "QUALIFIED",
-                    "recommended_route": {
-                        "model_id": "model-a",
-                        "reasoning_id": "swift",
-                    },
-                }],
-            }
-
-    center._model_evaluate_skill_route(Service())
-
-    assert calls == [{
-        "provider": "codex",
-        "skill_ids": ["saw-rtc"],
-        "model_ids": None,
-        "comparison": False,
-    }]
-    rendered = center.io.output.getvalue()
-    assert "All available provider models" in rendered
-    assert "Provider reasoning" not in rendered
-    assert "Skill readiness: 1/1" in rendered
-    assert "model-a / swift" in rendered
-
-
 def test_codex_transport_preflight_fails_fast_with_network_diagnostic(make_workspace, monkeypatch) -> None:
     """A stalled sampling connection must fail before a governed task waits for the full provider timeout."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")

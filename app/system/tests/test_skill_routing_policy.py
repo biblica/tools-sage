@@ -273,6 +273,52 @@ def test_resolver_returns_an_exact_qualified_skill_route(package_root: Path, tmp
     assert route.evidence_sha256 == "b" * 64
 
 
+def test_resolver_accepts_a_replaceable_qualification_evidence_repository(
+    package_root: Path,
+    tmp_path: Path,
+) -> None:
+    """Routing depends on a repository API, allowing a verified service cache to replace files."""
+    routing = _routing_module()
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    capability = _capability()
+    requested_skills: list[str] = []
+
+    class ServiceCacheRepository:
+        """Return one already verified route as a future local service/cache adapter would."""
+
+        def records_for_skill(self, skill_id: str):
+            """Record the bounded lookup and return exact qualification evidence."""
+            requested_skills.append(skill_id)
+            return [{
+                "provider": "codex",
+                "model_id": capability.model,
+                "capability_fingerprint": routing.capability_fingerprint(capability),
+                "reasoning_id": "medium",
+                "skill_id": "saw-rtc",
+                "skill_sha256": skill_sha256,
+                "suite_id": "alpha1-saw-rtc",
+                "suite_sha256": suite_sha256,
+                "policy_version": "alpha1-1",
+                "qualification_status": "QUALIFIED",
+                "evidence_sha256": "d" * 64,
+                "cost_class": capability.cost_class,
+                "semantic_score": 1.0,
+                "semantic_score_material": False,
+            }]
+
+    route = routing.resolve_skill_route(
+        root,
+        "saw-rtc",
+        [_status("codex", capability)],
+        evidence_repository=ServiceCacheRepository(),
+    )
+
+    assert requested_skills == ["saw-rtc"]
+    assert route.identity.model_id == capability.model
+    assert route.identity.reasoning_id == "medium"
+    assert route.evidence_sha256 == "d" * 64
+
+
 def test_resolver_marks_changed_skill_evidence_stale(package_root: Path, tmp_path: Path) -> None:
     """A seed bound to another Skill hash must not become an executable route."""
     routing = _routing_module()
