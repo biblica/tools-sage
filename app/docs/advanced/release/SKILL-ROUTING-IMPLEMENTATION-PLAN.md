@@ -437,7 +437,7 @@ Mark Codex as the only enabled governed provider in Alpha1 while retaining the p
 cd app
 PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider system/tests/test_documentation_contracts.py system/tests/test_package.py system/tests/test_schema_validation.py
 PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../localdata/.test-runtime/bin/python system/tools/validate_package.py .
-PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../localdata/.test-runtime/bin/python system/tools/deep_audit.py .
+PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../localdata/.test-runtime/bin/python system/tools/deep_audit.py . --mode source
 git add app/docs app/system/tests
 git commit -m "docs: document automatic skill-qualified routing"
 ```
@@ -459,7 +459,7 @@ Expected: every discovered module scheduled normally; zero failures. Provider qu
 cd app
 PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../localdata/.test-runtime/bin/python system/tools/validate_schemas.py .
 PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../localdata/.test-runtime/bin/python system/tools/validate_package.py .
-PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../localdata/.test-runtime/bin/python system/tools/deep_audit.py .
+PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../localdata/.test-runtime/bin/python system/tools/deep_audit.py . --mode source
 git status --short
 ```
 

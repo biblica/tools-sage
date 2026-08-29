@@ -16,6 +16,12 @@ The Job menu exposes:
 4. Targeted Check
 5. Original-Language Review
 
+The Job view also shows `AI Routing` and a compact `SKILL | PROVIDER | MODEL | REASONING | STATUS`
+table. Idle rows are current recommendations. An active attempt uses its immutable execution receipt.
+Normal Setup chooses a provider only; automatic routing selects an available qualified exact route for
+`saw-rtc`, `saw-stc`, `saw-focused-check`, or `saw-original-language-review`. The optional advanced
+override cannot bypass per-Skill qualification.
+
 ## Reference Text Comparison (RTC)
 
 Broad systematic RTC over a selected scope. The Operator can enable/disable four standard check groups: structure/completeness, translation/meaning, language/readability, and consistency. Ordinary stages do not receive OL Scripture; a justified bounded issue may be routed internally to selective OL adjudication.
@@ -40,7 +46,7 @@ One bounded WIP+REFERENCE question. No Greek/Hebrew Scripture is routed. If the 
 
 ## Original-Language Review
 
-One explicit focus and a verse or short verse range. Exactly the applicable configured Greek or Hebrew resource is routed. Within that bounded source-text question, GRK/HEB is primary textual authority and REFERENCE is comparative translation evidence.
+One explicit focus and a verse or short verse range. Exactly the applicable configured Greek or Hebrew resource is routed. Within that bounded source-text question, GRK/HEB is primary textual authority and REFERENCE is comparative translation evidence. Each adjudication item is sent as its own model request; unrelated items and conversation state are never combined.
 
 
 ## Natural-language entry
@@ -49,4 +55,4 @@ Natural-language entry may request Reference Text Comparison (RTC), Source Text 
 
 ## Run state
 
-A successful SAW Run progresses through governed tasks and becomes `FINALIZED` only after required findings, coverage, and report outputs pass their contracts. SAW never edits Scripture projects.
+A successful SAW Run progresses through governed tasks and becomes `FINALIZED` only after required findings, coverage, and report outputs pass their contracts. SAW never edits Scripture projects. Aggregation, coverage reconciliation, report composition, report naming, and publication are deterministic Python work with no LLM tokenization. Optional secondary-language rendering is one reported item per request and cannot change the canonical result.

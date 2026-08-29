@@ -67,9 +67,19 @@ STC uses the same general slicer with a different route profile: WIP plus the te
 
 Protected bridges, OL correspondence spans, discourse units, and exact primary coverage remain controller-owned constraints. Context SFM counts only when that context is actually sent to the model.
 
-## 7. Task-scoped provider readiness
+## 7. Task-scoped provider readiness and exact routing
 
-Codex authentication/catalog/model readiness is verified once for a governed task. The resulting immutable readiness snapshot is reused for that task's first pass and any authorized BIC OL micro-adjudications. Each micro-request is still checked against the verified model/reasoning capabilities, and any execution failure remains fail-closed. SAGE does not reuse model conversation state.
+Provider authentication and the live capability catalog are checked before task evidence is assembled.
+SAGE then resolves an available route qualified for the manifest's exact registered `skill_id`. The
+immutable execution receipt binds provider, model/capability identity, provider-native reasoning,
+Skill/suite/policy hashes, qualification evidence, and automatic/override mode. An unavailable,
+unassessed, stale, failed, or Skill-mismatched route is rejected before task evidence is sent.
+
+The resulting task-scoped readiness snapshot may be reused for that task's first pass and authorized
+BIC OL micro-adjudications, but every request remains independently bounded. SAGE does not reuse model
+conversation state. Original-language adjudication sends exactly one item per evaluation. Secondary-
+language report rendering sends exactly one reported item per evaluation, uses the originating item's
+recorded route, and degrades to the canonical report if that route is not safely reusable.
 
 ## 8. Local semantic lookup efficiency
 
@@ -84,6 +94,8 @@ Optimization must not:
 - substitute model recall for omitted evidence;
 - drop material evidence because a local heuristic predicts irrelevance;
 - let the provider generate controller-owned task identity, coverage, hashes, or receipts;
-- permit an OL micro-task to broaden beyond its authorized single-verse challenge.
+- permit an OL micro-task to broaden beyond its authorized single-verse challenge;
+- count deterministic aggregation or report composition as an LLM handoff; or
+- combine independent adjudication/rendering items merely to reduce provider calls.
 
 Local slicing is deterministic, auditable, and derived from the same hashed governed inputs.

@@ -10,6 +10,15 @@
 - Enforces complete LANGUAGE_PROFILE / OL_AUTHORITY_PROFILE context on bounded model-facing natural-language requests.
 - Adds BASIC / STANDARD / ADVANCED setup-selected hardening ceilings of 2 / 4 / 6 workers; ADVANCED requires at least 16 GiB available RAM and 16 logical CPUs.
 - Preserves PRIMARY plus inert future SECONDARY original-language authority registration without analytical effect unless explicitly routed.
+- Replaces normal global model/reasoning selection with provider-only Setup and deterministic exact
+  per-Skill route resolution using provider-native reasoning labels.
+- Adds sealed three-case, three-repetition route qualification for all seven analytical Skills, an
+  audited exact-route override, fail-closed stale/unavailable handling, and route evidence in task
+  receipts, Job/Run status, and final reports.
+- Makes deterministic Python ownership explicit for planning, slicing, validation, aggregation,
+  report composition/naming, and finalization; these operations have no LLM tokenization.
+- Enforces one request per source-text adjudication item and one request per secondary-language report
+  item, without provider conversation reuse.
 - Keeps the classic menu/CLI authoritative; Textual remains `EXPERIMENTAL / UNSTABLE`.
 
 

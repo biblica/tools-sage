@@ -1,92 +1,147 @@
-# SAGE model selection and provider build policy
+# SAGE provider and Skill routing policy
 
 ## v0.02alpha1 execution policy
 
-Provider architecture and release execution permission are separate controls.
+Provider architecture, provider connection, and permission to execute a governed Skill are separate
+controls.
 
-| Provider | Adapter/configuration | v0.02alpha1 automated execution |
+| Provider | Adapter/configuration | v0.02alpha1 governed execution |
 |---|---|---|
-| Codex | Implemented | **Enabled** |
-| Ollama | Optional local admin assistant | **Disabled for BIC/SAW** |
+| Codex | Implemented | Enabled only for exact qualified Skill routes |
+| Ollama | Optional local admin assistant | Disabled for BIC/SAW |
 | Grok | Future adapter slot | Not implemented |
 | Gemini | Future adapter slot | Not implemented |
 
-`build_policy.allowed_automated_providers` is effectively `[CODEX]` in v0.02alpha1. A configured or provisioned provider is not automatically executable.
+`build_policy.allowed_automated_providers` is effectively `[CODEX]` in v0.02alpha1. A connected,
+available, or provisioned provider is not automatically qualified for a Skill.
 
-No OpenAI API-key, access-token, service-account, direct API, or API-fallback route is supported. Codex uses the locally installed official CLI with ChatGPT-managed authentication.
-The normal Operator connection path is `SAGE Maintenance > Configure AI > Connect OpenAI and ChatGPT`; direct CLI equivalents are `./system/bin/sage model connect` on macOS/Linux and `.\system\bin\sage.cmd model connect` on Windows. SAGE runs Codex CLI sign-in directly; the Codex desktop app is not required.
+No OpenAI API-key, access-token, service-account, direct API, or API-fallback route is supported.
+Codex uses the locally installed official CLI with ChatGPT-managed authentication. The normal
+connection path is **SAGE Maintenance > Configure AI > Connect OpenAI and ChatGPT**. Direct CLI
+equivalents are `./system/bin/sage model connect` on macOS/Linux and
+`.\system\bin\sage.cmd model connect` on Windows. The Codex desktop application is not required.
 
-## Startup prerequisite and canonical AI status
+## Provider-only setup
 
-Normal interactive startup performs one non-generative workflow-AI readiness check before SAGE is considered ready. The resulting canonical status records **Connection**, **Provider**, selected **Model**, effective **Reasoning level**, prerequisite state, last-check timestamp, and bounded diagnostic/reason code. A failed installation/authentication/model readiness check leaves setup `INCOMPLETE` and blocks normal Main Menu entry.
+Normal Setup records provider connection and enablement only. It does not ask the Operator to choose
+one global model or reasoning level. **Configure AI** exposes:
 
-`SAGE Maintenance > Configure AI` loads that canonical state once on entry. Model and reasoning toggles update the loaded selection without implicit connection checks. **Check LLM connection** is the explicit minimal generation test and refreshes the status; if a provider cannot report a reasoning level, SAGE reports it as unavailable/provider-default rather than inventing one.
+1. Change provider
+2. Available provider models
+3. Skill routing recommendations
+4. Advanced routing override
+5. Evaluate model for Skill
+6. Connect OpenAI and ChatGPT
+7. Configure Local AI
+8. Check LLM connection
 
-## Codex availability, qualification, recommendation
+Available models are informational. Skill recommendations show availability and qualification
+independently for every registered Skill. **Check LLM connection** is the explicit minimal generation
+test. Merely opening a Job, reading a recommendation, or changing an override does not submit Job
+evidence to a model.
 
-SAGE separates:
+Startup verifies provider installation and authentication without generating analytical output. A
+ready provider does not imply that every Skill is ready: an unqualified Skill fails closed before
+Scripture evidence is sent.
 
-1. **Available** — currently exposed to the Operator's signed-in Codex/ChatGPT workspace.
-2. **SAGE-qualified** — allowed by `system/config/model-policy.yml` for the task profile.
-3. **Recommended** — selected from currently available qualified models for the exact workflow/operation.
+## Exact per-Skill routing
 
-SAGE queries the locally installed `codex app-server` over stdio. `account/read` must establish ChatGPT-managed authentication; `model/list` supplies the current workspace catalog and advertised reasoning levels.
+Every governed task manifest carries one registered `skill_id`. SAGE deterministically resolves an
+available route qualified for that exact Skill. A route binds:
 
-The supported SAGE reasoning ceiling is **XHigh**. Higher or unrecognised provider effort levels are not routable.
+- provider ID;
+- provider-reported model ID and capability fingerprint;
+- provider-native reasoning ID, or `provider-default` where no control exists;
+- Skill ID and adapted Skill SHA-256;
+- sealed evaluation-suite ID and SHA-256;
+- qualification-policy version.
+
+SAGE does not invent a universal LOW/MEDIUM/HIGH reasoning scale or a cross-provider XHigh ceiling.
+Provider-native labels and order are retained. A model, model alias, capability fingerprint,
+reasoning option, Skill, suite, or policy change produces `UNASSESSED` or `STALE` evidence until that
+exact route is evaluated again.
+
+Operational routing accepts only `RECOMMENDED` or `QUALIFIED`. The model cannot qualify or recommend
+itself: sealed synthetic responses pass through deterministic production validators. Every Skill has
+three cases—positive, zero-finding, and adversarial—and each case is repeated three times. Any hard
+contract failure is `FAILED`; inconsistent repetitions are `UNRELIABLE`; all required assertions and
+validators passing is `QUALIFIED`.
 
 ```sh
 ./system/bin/sage model refresh --provider codex
 ./system/bin/sage model list --provider codex
-./system/bin/sage model recommend --workflow bic --operation rewrite
-./system/bin/sage model use --provider codex --auto
-./system/bin/sage model use --provider codex --model MODEL_ID --reasoning high
+./system/bin/sage model routes
+./system/bin/sage model recommend --skill saw-rtc
+./system/bin/sage model evaluate --skill saw-rtc --provider codex --model MODEL_ID --reasoning PROVIDER_REASONING_ID
 ./system/bin/sage model test --provider codex
 ```
 
+Evaluation uses only packaged synthetic cases and performs nine isolated attempts for the chosen
+Skill/route. It must not use Operator Jobs, Projects, reports, or Scripture. Live evaluation is an
+explicit Alpha qualification activity and is never run by pytest, package validation, startup, or a
+normal Job.
+
+## Advanced global override
+
+The optional global override is a diagnostic/Alpha control, not a normal Setup default. It pins one
+exact provider/model/capability/reasoning combination. SAGE records an audit receipt when the override
+is set, changed, or cleared and displays how many registered Skills currently qualify for that route.
+
+The override never weakens per-Skill qualification. If it is not currently available and qualified
+for the task's exact Skill, execution fails with `GLOBAL_OVERRIDE_NOT_QUALIFIED_FOR_SKILL`; SAGE does
+not silently fall back.
+
+```sh
+./system/bin/sage model override status
+./system/bin/sage model override set --provider codex --model MODEL_ID \
+  --capability-fingerprint SHA256 --reasoning PROVIDER_REASONING_ID
+./system/bin/sage model override clear
+```
+
+Legacy normal model/reasoning selection is not an execution surface. Direct `task execute` model,
+provider, reasoning, and policy-bypass flags are prohibited.
+
+## Deterministic ownership and token boundary
+
+Python owns planning, parsing, SFM slicing, scope/coverage projection, token measurement, validation,
+aggregation, report composition, report naming, and state transition. These operations are not sent
+to an LLM and have no LLM token budget. Only the exact evidence routed to one governed semantic item
+is measured against that request's handoff limits.
+
+Original-language adjudication is one item per request. Secondary-language report rendering sends
+exactly one reported item per request and inherits the originating item's exact route. SAGE does not combine
+items or reuse provider conversation state to reduce calls.
+
+Every new execution receipt records the exact route and qualification evidence. Job/Run displays and
+final reports use actual receipt data when available; they never rewrite history using a later
+recommendation.
+
 ## Local admin assistant
 
-**Configure Hosted AI** manages externally hosted Codex/OpenAI/ChatGPT execution. **Configure
-Local AI** manages the optional Ollama assistant on this workstation. `F. Status` reports both
-states without duplicating Local AI status inside the Hosted AI panel.
+**Configure Local AI** manages the optional Ollama assistant on this workstation. It is
+`ASSISTIVE_ONLY`, non-authoritative, safely omittable, evidence-restricted, and cannot execute BIC/SAW
+analytical Skills or mutate canonical Job/Run/Project state.
 
-The optional local admin assistant uses Ollama but has no authority to execute
-governed BIC/SAW tasks. Open it through **SAGE Maintenance > Configure AI >
-Configure Local AI**.
+The supported local model and runtime controls remain defined by the governed Ollama policy. A future
+local or hosted provider becomes a governed route only after an adapter is enabled and the exact
+model/reasoning route qualifies independently for each Skill.
 
-SAGE detects an existing host installation before offering an installer. The
-same menu installs Ollama through the official macOS, Linux, or Windows route;
-starts and stops a SAGE-owned `ollama serve` process; and reports an externally
-owned Ollama service without terminating it.
+## State and evidence
 
-The only supported local model is the instruction-tuned Gemma 4 E2B
-importance-matrix `Q5_K_M` GGUF, imported under the stable local alias
-`sage-gemma4-e2b:q5_k_m`. The source is
-`bartowski/google_gemma-4-E2B-it-GGUF`; setup verifies SHA-256
-`53c8e1a5bf3f9c83074f6ed8a737e8d17ac70e90904078dc3e010739d1152c6a`
-before import and records the resulting Ollama digest. The raw download is about
-3.66 GB and setup requires 10 GiB temporary free space.
+| Data | Location |
+|---|---|
+| Provider connection/enablement | `localdata/.system/state/llm-settings.json` |
+| Audited advanced override | `localdata/.system/config/model-routing-override.json` |
+| Override receipts | `localdata/.system/state/model-routing-overrides/` |
+| Local qualification receipts | `localdata/.system/state/model-qualification/` |
+| Actual task route | task `validation/llm-execution-receipt.json` |
+| Core Skill criteria and seeds | `system/config/skill-evaluation-contracts.json`, `model-qualification-seeds.json` |
 
-SAGE caps context at 16K, disables thinking for the bounded admin response,
-permits one request at a time, and sends `keep_alive: 0` so the model unloads
-after every response. Hosts below 16 GiB total RAM may install the model but
-cannot enable it.
-
-The local assistant remains separate from governed BIC and SAW task execution.
-Codex remains the only enabled automated workflow provider.
-
-## Future providers
-
-Grok, Gemini, and other providers should enter through the same provider request/response/status abstractions. v0.02alpha1 contains no credentials, implementation, or execution path for them.
-
-## Task execution boundary
-
-The resolved provider/model/reasoning choice is recorded in execution receipts. Provider choice never changes task scope, authorized reads/writes, authority roles, evidence hashes, or workflow state ownership.
-
-## Routed-SFM execution budget
-
-Model selection does not bypass review-item limits. Immediately before provider execution SAGE measures only the exact SFM Scripture streams routed to that review item and enforces the operation's routed-SFM hard limits. Prompt, output schema, linguistic profiles, controller manifests, prior microtransaction records, IDs, hashes, and diagnostics are transport/governance material rather than Scripture slicing inputs; their byte size may be recorded as telemetry. Conditional OL phases are separate review items and size only the SFM actually routed to those phases. Oversized routed Scripture fails closed before provider execution.
-
+Historical receipts remain readable. Legacy provider settings preserve connection/provisioning state
+but do not silently become an advanced route override.
 
 ## Model-release language competency
 
-SAGE maintains language-competency estimates separately for each concrete provider/model release. Selecting or encountering a model ID without an existing competency record triggers a governed re-evaluation of known languages. The provider CLI/runtime version is recorded separately from the model release key. See `MODEL-LANGUAGE-COMPETENCY.md`.
+Language-competency evidence remains separate from Skill qualification. A concrete model release or
+language without trusted versioned evidence remains `UNASSESSED`; SAGE never asks a model to rate
+itself. See `MODEL-LANGUAGE-COMPETENCY.md`.

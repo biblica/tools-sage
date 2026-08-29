@@ -13,6 +13,8 @@ traceability and must link to an entry in `IMPLEMENTED-UPDATES.md`.
 | `TODO-20260826-004` | 2026-08-26 | `0.02alpha1` | `MS-ALPHA-NATIVE` | HIGH | OPEN | Complete Linux release-host acceptance for fresh dependency installation and a real workflow. | Clean Alpha staging tree |
 | `TODO-20260826-005` | 2026-08-26 | `0.02alpha1` | `MS-ALPHA-TUI` | MEDIUM | IN_PROGRESS | Finish action-capable TUI parity while retaining the classic menu and scriptable CLI. | UI-independent action services |
 | `TODO-20260828-001` | 2026-08-28 | `0.02alpha1` | `MS-ALPHA-QUALIFY` | HIGH | OPEN | Test and harden the complete SAW Focused Check and Original-Language Review process logic, including planning, task contracts, validation, continuation, aggregation, and report publication. | Complete current STC/RTC stabilization |
+| `TODO-20260829-001` | 2026-08-29 | `0.02alpha1` | `MS-ALPHA-QUALIFY` | HIGH | IN_PROGRESS | Complete exact-source automated hardening for provider-neutral per-Skill routing, then run controlled live synthetic qualification and review/promote accepted route seeds. | Routing implementation and documentation complete |
+| `TODO-20260829-002` | 2026-08-29 | `0.02alpha1` | `MS-ALPHA-NATIVE` | HIGH | OPEN | Operator-test provider-only Setup, automatic/override routes, continue/retry receipts, Job/Run/report route display, and one-item isolation on macOS and Windows before any merge to main. | Live qualified route seeds and exact-source hardening |
 
 ## Completion rule
 

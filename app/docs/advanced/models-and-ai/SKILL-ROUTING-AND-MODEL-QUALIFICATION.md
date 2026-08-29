@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the `v0.02alpha1` finalization design for selecting an AI execution route.
+This document defines the implemented `v0.02alpha1` contract for selecting an AI execution route.
 It replaces the normal Operator-owned global model/reasoning choice with deterministic SAGE
 routing by registered analytical Skill. It also retains one guarded global override for controlled
 diagnostics and Alpha testing.
@@ -316,7 +316,9 @@ diagnostic-report semantics remain authoritative after task creation.
 
 ## ALPHA1 finalization boundary
 
-Alpha1 implementation is complete only when:
+The deterministic source implementation covers the contracts below. Alpha1 finalization is complete
+only when live exact-route qualification, fresh exact-source hardening, and Operator acceptance also
+confirm them:
 
 - every workflow task/subtask has one deterministic execution-owner classification and an explicit
   justification for any model handoff;

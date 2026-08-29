@@ -25,7 +25,7 @@ The Active Job block reports a compact governed progress quantifier without expo
 
 ```text
 SAW_UK-ENG  [████░░░░░░]  43%
-ACT 3 / OL REVIEW / RUNNING
+ACT 3 / SRC REVIEW / RUNNING
 ```
 
 The bar has 10 visual cells (10% each); the aligned numeric percentage remains integer-granular and is derived from finalized governed ACT work. A task advances the Job quantifier only after finalization, so retries do not falsely advance progress. Terminal results are `DONE`, `FAILED`, `BLOCKED`, or `CANCELLED`. A `BLOCKED` result includes a machine-readable reason and preserves progress for remediation/resume.
@@ -68,7 +68,18 @@ Project administration is under **Scripture Projects**. Configure the Paratext P
 
 Language Profiles are maintained under **Scripture Projects > Language Profiles**. Role-specific Grammar Profiles are maintained beneath the selected Language Profile and are required only when a Job role needs them. Use **Choose from existing profile list** to register a compatible profile already in SAGE, or **Add grammar profile from YAML file** to import and validate a profile. When Job setup reports `LANGUAGE_PROFILE_NOT_CONFIGURED`, SAGE opens this same menu already filtered to the required language and Job role; after a compatible profile is registered, Job creation retries. Project addition establishes or selects the regional Language Profile namespace before registration; it does not force Grammar Profile setup.
 
-Startup also treats workflow AI as a prerequisite: it checks installation, authentication, configured provider, selected **Model**, and effective **Reasoning level** without generating model output. The **AI Setup and Status** menu loads that same canonical state once on entry; model/reasoning toggles do not recheck it. Only **Check LLM connection** performs an explicit end-to-end test prompt. A failed readiness check leaves setup `INCOMPLETE` and blocks normal Main Menu entry.
+Startup also treats the workflow AI provider as a prerequisite: it checks installation,
+authentication, and the configured provider without generating analytical model output. Normal Setup
+does not select one global model or reasoning level. **Configure AI** exposes the provider connection,
+the read-only model catalog, exact per-Skill recommendations, a separately audited advanced override,
+sealed model evaluation, Local AI, and the explicit **Check LLM connection** action.
+
+Provider readiness and Skill readiness are distinct. SAGE resolves an available, qualified provider /
+model / provider-native reasoning route for the exact Skill when a governed task starts. A connected
+provider may therefore be ready while a particular Skill remains `UNASSESSED`, `STALE`, or blocked.
+That Skill fails closed before Scripture evidence is sent. Job menus show current recommendations when
+idle and actual execution-receipt routes for active attempts. Direct task provider/model/reasoning
+flags cannot bypass this routing boundary.
 
 Startup displays an empty valid inventory as **No SAGE Projects added yet**. The corresponding machine-record state is `READY_EMPTY`; it does not mean workstation configuration is complete. Until the Paratext Projects root is configured and available, startup and the complete system check report `INCOMPLETE` with `PROJECTS_ROOT_NOT_CONFIGURED` or `PROJECTS_ROOT_NOT_FOUND`.
 
@@ -86,6 +97,13 @@ folder. Findings sharing a verse/category are not guessed to conflict. When an u
 supplies explicit conflict lineage, competing conclusions are retained and marked
 `HUMAN_REVIEW_REQUIRED`; SAGE never chooses one silently. Reports are never written into a
 Paratext Project.
+
+Every new final BIC/SAW report includes an Execution section derived from immutable task execution
+receipts. It records the actual Skill, provider, model, provider-native reasoning, routing mode, and
+task count; a later recommendation never replaces historical execution evidence. Report composition,
+coverage aggregation, filenames, and publication are deterministic Python operations and are not sent
+to an LLM or charged an LLM token budget. Optional secondary-language rendering sends one reported
+item per isolated request and cannot alter the canonical report.
 
 Fallback docs:
 

@@ -7,6 +7,14 @@
 - Added universal governed linguistic-profile routing for bounded model-facing requests, including historical GRK/HEB authority profiles.
 - Added setup-selected ADVANCED host capability at >=16 GiB available RAM and >=16 logical CPUs with a hardening ceiling of 6 workers; BASIC/STANDARD remain capped at 2/4.
 - Updated SAW operator order to RTC -> STC -> Targeted Check -> Original-Language Review.
+- Replaced normal global model/reasoning selection with provider-only Setup and exact per-Skill
+  provider/model/native-reasoning routing.
+- Added deterministic execution-owner policy, sealed 3-case × 3-repetition qualification suites for
+  all seven Skills, audited global route override receipts, and fail-closed route reconciliation.
+- Added exact execution-route provenance to task receipts, BIC/SAW aggregation, Job/Run displays, and
+  final reports while keeping deterministic report composition outside LLM token accounting.
+- Enforced one provider request per original-language adjudication item and per secondary-language
+  report item.
 
 ## 0.01beta
 
