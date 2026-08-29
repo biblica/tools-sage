@@ -17,6 +17,7 @@ from .llm_settings import (
     save_llm_settings,
     update_llm_selection,
 )
+from .model_evaluation import evaluate_candidate
 from .model_language_competency import (
     exact_language_assessed,
     known_language_rows,
@@ -33,6 +34,7 @@ from .model_policy import (
     recommend_model,
 )
 from .skill_routing import resolve_skill_route
+from .skill_routing import capability_fingerprint
 from .routing_override import (
     clear_global_override as clear_routing_override,
     load_global_override,
@@ -198,6 +200,7 @@ class ModelService:
                 rows.append(
                     {
                         **capability.to_dict(),
+                        "capability_fingerprint": capability_fingerprint(capability),
                         "reasoning_efforts": list(capability.reasoning_efforts),
                         "qualified_skill_routes": qualifications,
                         "selected": capability.model == selected_model or capability.id == selected_model,
@@ -301,8 +304,32 @@ class ModelService:
         """Restore automatic routing and return the local audit receipt."""
         return clear_routing_override(self.root)
 
+    def routing_override_status(self) -> dict[str, Any]:
+        """Return local advanced-override state without probing a provider."""
+        override = load_global_override(self.root)
+        if override is None:
+            return {"routing_mode": "AUTOMATIC", "override": None}
+        return {"routing_mode": "GLOBAL_OVERRIDE", "override": override}
+
+    def evaluate_skill_route(
+        self,
+        *,
+        skill_id: str,
+        provider: str,
+        model_id: str,
+        reasoning_id: str,
+    ) -> dict[str, Any]:
+        """Run the sealed synthetic qualification suite for one exact candidate route."""
+        return evaluate_candidate(
+            self.root,
+            skill_id=skill_id,
+            provider=provider,
+            model_id=model_id,
+            reasoning_id=reasoning_id,
+        )
+
     def policy(self) -> dict[str, Any]:
-        """Return the release-governed Codex qualification and reasoning policy."""
+        """Return the provider-neutral Skill qualification and routing policy."""
         return load_model_policy(self.root)
 
     def select(
@@ -550,7 +577,10 @@ class ModelService:
         if provider_id not in PROVIDER_IDS:
             raise ConfigurationError(f"Unsupported LLM provider: {provider}")
         if provider_id == "codex":
-            raise ConfigurationError("CODEX uses `sage model use`; provisioning is for disabled local providers")
+            raise ConfigurationError(
+                "Codex connection is configured through provider setup; model routes use automatic "
+                "Skill routing or the advanced routing override"
+            )
         value = self.settings()
         item = value["providers"][provider_id]
         if provider_id == "ollama":

@@ -17,6 +17,7 @@ from .interface_localization import InterfaceLocalizer
 from .jobs import TOOL_IDS, JobStore
 from .llm_settings import load_llm_settings, local_ai_policy_status
 from .model_service import ModelService
+from .routing_override import load_global_override
 from .paratext_catalog import catalog_summary, load_paratext_catalog, scan_paratext_projects
 from .project_inventory import registered_project_records
 from .progress import format_activity_label, format_progress_line, quantify_run
@@ -501,18 +502,17 @@ class OperatorUIService:
         return run.status not in {"COMPLETE", "ARCHIVED", "ABANDONED"}
 
     def model_summary(self) -> str:
-        """Return selected workflow-AI policy/model summary without a network probe."""
+        """Return provider and routing mode without inventing a current recommendation."""
         settings = load_llm_settings(self.root)
         provider = str(settings["selected_provider"])
-        item = settings["providers"].get(provider, {})
-        model = item.get("model")
-        reasoning = item.get("reasoning_effort")
-        if provider == "codex" and item.get("selection_mode") == "AUTO":
-            return "codex, automatic task policy"
-        suffix = f", {model}" if model else ", provider default"
-        if reasoning:
-            suffix += f", {reasoning}"
-        return f"{provider}{suffix}"
+        override = load_global_override(self.root)
+        if override is None:
+            return f"{provider}, automatic Skill routing"
+        selection = dict(override.get("selection") or {})
+        return (
+            f"{provider}, global override: {selection.get('model_id') or 'UNKNOWN'}, "
+            f"{selection.get('reasoning_id') or 'provider-default'}"
+        )
 
     def run_progress_snapshot(self, job: Any, run: Any) -> dict[str, Any]:
         """Return one canonical sequential Run progress snapshot derived from governed ACT manifests."""

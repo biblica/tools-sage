@@ -1933,34 +1933,40 @@ def command_model_list(args: argparse.Namespace) -> int:
             default = row.get("default_reasoning_effort")
             detail = ", ".join(row["reasoning_efforts"])
             print("  Reasoning: " + detail + (f" (default {default})" if default else ""))
-        if row.get("qualified_profiles"):
-            print("  SAGE approved: " + ", ".join(row["qualified_profiles"]))
+        if row.get("qualified_skill_routes"):
+            print(
+                "  Qualified Skills: "
+                + ", ".join(
+                    f"{item['skill_id']}:{item['reasoning_id']}"
+                    for item in row["qualified_skill_routes"]
+                )
+            )
         elif result["provider"] == "codex":
-            print("  SAGE approved: none (available but unqualified)")
+            print("  Qualified Skills: none")
     print(result.get("diagnostic", ""))
     return 0
 
 
 def command_model_recommend(args: argparse.Namespace) -> int:
-    """Recommend a currently available Codex model/reasoning pair for one task profile."""
+    """Recommend one currently available exact route for a registered Skill."""
     config, _ = _load(args)
-    result = _model_service(config).recommendation(args.workflow, args.operation)
+    result = _model_service(config).recommendation_for_skill(args.skill)
     if args.json:
         _print_json(result)
         return 0
     print("SAGE MODEL RECOMMENDATION")
-    print(f"Task profile: {result['task_profile']}")
-    print(f"Complexity: {result['complexity']}")
-    print(f"Model: {result['display_name']} [{result['model']}]")
-    print(f"Reasoning: {result.get('reasoning_effort') or 'provider default'}")
-    if result.get("conditional_second_pass_reasoning_effort"):
-        print(f"Conditional second pass: {result['conditional_second_pass_reasoning_effort']}")
-    print(f"Qualification: {result['qualification_status']}")
+    print(f"Skill: {result['skill_id']}")
+    print(f"Provider: {result['provider']}")
+    print(f"Model: {result['model_id']}")
+    print(f"Reasoning: {result['reasoning_id']}")
+    print(f"Qualification: {result['qualification']}")
+    print(f"Availability: {result['availability']}")
+    print(f"Routing mode: {result['routing_mode']}")
     return 0
 
 
 def command_model_policy(args: argparse.Namespace) -> int:
-    """Show the release-governed model qualification and reasoning policy."""
+    """Show the provider-neutral Skill qualification and recommendation policy."""
     config, _ = _load(args)
     policy = _model_service(config).policy()
     if args.json:
@@ -1968,43 +1974,88 @@ def command_model_policy(args: argparse.Namespace) -> int:
         return 0
     print("SAGE MODEL POLICY")
     print(f"Schema: {policy['schema_version']}")
-    allowed = policy.get("global", {}).get("allowed_reasoning_efforts", [])
-    ceiling = policy.get("global", {}).get("maximum_supported_reasoning_effort", "xhigh")
-    print("Supported reasoning: " + (", ".join(allowed) if allowed else "none"))
-    print(f"Reasoning ceiling: {ceiling}")
-    print("Task profiles:")
-    for key, row in policy.get("task_profiles", {}).items():
+    print(f"Qualification policy: {policy['qualification_policy_version']}")
+    print("Accepted operational status: " + ", ".join(policy["accepted_operational_statuses"]))
+    print("Recommendation order: " + " -> ".join(policy["recommendation_order"]))
+    print("Registered Skill routes:")
+    for skill_id in policy.get("skill_routes", {}):
+        print(f"- {skill_id}")
+    return 0
+
+
+def command_model_routes(args: argparse.Namespace) -> int:
+    """Show current exact per-Skill availability and qualification routes."""
+    config, _ = _load(args)
+    result = _model_service(config).skill_routes()
+    if args.json:
+        _print_json(result)
+        return 0
+    print(f"Routing mode: {result['routing_mode']}")
+    print("SKILL | PROVIDER | MODEL | REASONING | QUALIFICATION | AVAILABILITY")
+    for row in result["skills"]:
         print(
-            f"- {key}: preferred={','.join(row.get('preferred_models', []))} "
-            f"target={row.get('target_reasoning_effort')} "
-            f"bounds={row.get('minimum_reasoning_effort')}..{row.get('maximum_reasoning_effort')}"
+            " | ".join(
+                [
+                    str(row.get("skill_id") or ""),
+                    str(row.get("provider") or "—"),
+                    str(row.get("model_id") or "—"),
+                    str(row.get("reasoning_id") or "—"),
+                    str(row.get("qualification") or "UNASSESSED"),
+                    str(row.get("availability") or "UNKNOWN"),
+                ]
+            )
         )
     return 0
 
 
-def command_model_use(args: argparse.Namespace) -> int:
-    """Persist automatic routing or an explicit provider/model/reasoning selection."""
+def command_model_override(args: argparse.Namespace) -> int:
+    """Inspect or mutate the separately audited advanced global route override."""
     config, _ = _load(args)
-    result = _model_service(config).select(
+    service = _model_service(config)
+    action = str(args.override_action)
+    if action == "status":
+        result = service.routing_override_status()
+    elif action == "clear":
+        result = service.clear_global_override()
+    else:
+        result = service.set_global_override(
+            {
+                "provider": args.provider,
+                "model_id": args.model,
+                "capability_fingerprint": args.capability_fingerprint,
+                "reasoning_id": args.reasoning,
+            }
+        )
+    if args.json:
+        _print_json(result)
+    else:
+        print(f"Routing mode: {result['routing_mode']}")
+        if result.get("qualified_skill_count") is not None:
+            print(
+                f"Qualified Skill coverage: {result['qualified_skill_count']}/"
+                f"{result['registered_skill_count']}"
+            )
+        if result.get("receipt_path"):
+            print(f"Receipt: {result['receipt_path']}")
+    return 0
+
+
+def command_model_evaluate(args: argparse.Namespace) -> int:
+    """Evaluate one exact provider route against one sealed synthetic Skill suite."""
+    config, _ = _load(args)
+    result = _model_service(config).evaluate_skill_route(
+        skill_id=args.skill,
         provider=args.provider,
-        model=args.model,
-        endpoint=getattr(args, "endpoint", None),
-        reasoning_effort=getattr(args, "reasoning", None),
-        auto=bool(args.auto),
+        model_id=args.model,
+        reasoning_id=args.reasoning,
     )
     if args.json:
         _print_json(result)
-        return 0
-    print(f"Selected provider: {result['selected_provider']}")
-    if result['selected_provider'] == "codex" and result.get("selection_mode") == "AUTO":
-        print("Selection: SAGE automatic task routing")
     else:
-        print(f"Selected model: {result.get('selected_model') or 'provider default'}")
-        if result.get("selected_reasoning_effort"):
-            print(f"Selected reasoning: {result['selected_reasoning_effort']}")
-    provider_status = result["provider_status"]
-    print(f"Readiness: {'READY' if provider_status['ready'] else 'NOT READY'}")
-    print(provider_status.get("diagnostic", ""))
+        print(f"Skill: {result['skill_id']}")
+        print(f"Qualification: {result['qualification_status']}")
+        print(f"Attempts: {result['attempt_count']}")
+        print(f"Receipt: {result['receipt_path']}")
     return 0
 
 
@@ -2051,10 +2102,6 @@ def command_task_execute(args: argparse.Namespace) -> int:
     result = execute_task(
         config,
         task_manifest=Path(args.task),
-        provider=getattr(args, "provider", None),
-        model=getattr(args, "model", None),
-        reasoning_effort=getattr(args, "reasoning", None),
-        policy_override=bool(getattr(args, "policy_override", False)),
         timeout_seconds=args.timeout,
         dry_run=bool(args.dry_run),
     )
@@ -4508,18 +4555,31 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     model_list = model_actions.add_parser("list", help="List live models, reasoning levels, and SAGE qualification")
     model_list.add_argument("--provider", choices=PROVIDER_IDS, required=True)
     model_list.set_defaults(handler=command_model_list)
-    model_recommend = model_actions.add_parser("recommend", help="Recommend a live Codex model/reasoning pair for one SAGE task profile")
-    model_recommend.add_argument("--workflow", choices=("bic", "saw"), required=True)
-    model_recommend.add_argument("--operation", required=True)
+    model_recommend = model_actions.add_parser("recommend", help="Recommend one exact qualified route for a registered Skill")
+    model_recommend.add_argument("--skill", required=True)
     model_recommend.set_defaults(handler=command_model_recommend)
     model_policy = model_actions.add_parser("policy", help="Show release-governed model qualification and reasoning policy")
     model_policy.set_defaults(handler=command_model_policy)
-    model_use = model_actions.add_parser("use", help="Select automatic Codex routing or an explicit provider/model/reasoning level")
-    model_use.add_argument("--provider", choices=("codex",), required=True)
-    model_use.add_argument("--model", help="Exact provider model ID")
-    model_use.add_argument("--reasoning", help="Exact provider-advertised reasoning effort, for example high or xhigh")
-    model_use.add_argument("--auto", action="store_true", help="Use SAGE task-aware automatic Codex model/reasoning routing")
-    model_use.set_defaults(handler=command_model_use)
+    model_routes = model_actions.add_parser("routes", help="Show exact per-Skill routing readiness")
+    model_routes.set_defaults(handler=command_model_routes)
+    model_override = model_actions.add_parser("override", help="Manage the audited advanced global route override")
+    model_override_actions = model_override.add_subparsers(dest="override_action", required=True)
+    model_override_status = model_override_actions.add_parser("status", help="Show current override state")
+    model_override_status.set_defaults(handler=command_model_override)
+    model_override_clear = model_override_actions.add_parser("clear", help="Restore automatic routing")
+    model_override_clear.set_defaults(handler=command_model_override)
+    model_override_set = model_override_actions.add_parser("set", help="Pin one exact qualified route")
+    model_override_set.add_argument("--provider", required=True)
+    model_override_set.add_argument("--model", required=True)
+    model_override_set.add_argument("--capability-fingerprint", required=True)
+    model_override_set.add_argument("--reasoning", required=True)
+    model_override_set.set_defaults(handler=command_model_override)
+    model_evaluate = model_actions.add_parser("evaluate", help="Run a sealed synthetic Skill qualification suite")
+    model_evaluate.add_argument("--skill", required=True)
+    model_evaluate.add_argument("--provider", required=True)
+    model_evaluate.add_argument("--model", required=True)
+    model_evaluate.add_argument("--reasoning", required=True)
+    model_evaluate.set_defaults(handler=command_model_evaluate)
     model_provision = model_actions.add_parser("provision", help="Configure governed Ollama settings without enabling workflow execution")
     model_provision.add_argument("--provider", choices=("ollama",), required=True)
     model_provision.add_argument("--model", help="Local model identifier to retain for future activation")
@@ -4539,10 +4599,6 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     task_create.set_defaults(handler=command_act_create)
     task_execute = task_actions.add_parser("execute", help="Run one immutable task through the selected SAGE LLM provider")
     task_execute.add_argument("--task", required=True, help="task-manifest.json path")
-    task_execute.add_argument("--provider", choices=PROVIDER_IDS)
-    task_execute.add_argument("--model")
-    task_execute.add_argument("--reasoning", help="Operator-selected reasoning effort; validated against the live Codex catalog and SAGE policy")
-    task_execute.add_argument("--policy-override", action="store_true", help="Permit an available but unqualified model or supported out-of-profile effort; the XHigh ceiling cannot be bypassed")
     task_execute.add_argument("--timeout", type=int, default=600)
     task_execute.add_argument("--dry-run", action="store_true", help="Validate and assemble the sealed request without calling a model")
     task_execute.set_defaults(handler=command_task_execute)

@@ -3123,6 +3123,62 @@
       "ru": "WIP / проверка SAW",
       "pt-BR": "WIP / revisão SAW"
     },
+    "menu.advanced.routing.override": {
+      "en-US": "Advanced routing override",
+      "en-GB": "Advanced routing override",
+      "id": "Penggantian perutean lanjutan",
+      "fr": "Remplacement avancé du routage",
+      "ru": "Расширенное переопределение маршрутизации",
+      "pt-BR": "Substituição avançada de roteamento"
+    },
+    "menu.available.provider.models": {
+      "en-US": "Available provider models",
+      "en-GB": "Available provider models",
+      "id": "Model penyedia yang tersedia",
+      "fr": "Modèles de fournisseur disponibles",
+      "ru": "Доступные модели провайдера",
+      "pt-BR": "Modelos de provedor disponíveis"
+    },
+    "menu.clear.override": {
+      "en-US": "Clear override",
+      "en-GB": "Clear override",
+      "id": "Hapus penggantian",
+      "fr": "Effacer le remplacement",
+      "ru": "Очистить переопределение",
+      "pt-BR": "Limpar substituição"
+    },
+    "menu.provider.reasoning": {
+      "en-US": "Provider reasoning",
+      "en-GB": "Provider reasoning",
+      "id": "Penalaran penyedia",
+      "fr": "Raisonnement du fournisseur",
+      "ru": "Уровень рассуждения провайдера",
+      "pt-BR": "Raciocínio do provedor"
+    },
+    "menu.qualified.routes": {
+      "en-US": "Qualified routes",
+      "en-GB": "Qualified routes",
+      "id": "Rute yang memenuhi syarat",
+      "fr": "Routes qualifiées",
+      "ru": "Квалифицированные маршруты",
+      "pt-BR": "Rotas qualificadas"
+    },
+    "menu.set.qualified.exact.route": {
+      "en-US": "Set qualified exact route",
+      "en-GB": "Set qualified exact route",
+      "id": "Tetapkan rute tepat yang memenuhi syarat",
+      "fr": "Définir la route exacte qualifiée",
+      "ru": "Задать точный квалифицированный маршрут",
+      "pt-BR": "Definir rota exata qualificada"
+    },
+    "menu.skill.evaluation": {
+      "en-US": "Skill evaluation",
+      "en-GB": "Skill evaluation",
+      "id": "Evaluasi Skill",
+      "fr": "Évaluation de Skill",
+      "ru": "Оценка Skill",
+      "pt-BR": "Avaliação de Skill"
+    },
     "menu.run.source.text.correspondence.stc": {
       "en-US": "Run Source Text Correspondence (STC)",
       "en-GB": "Run Source Text Correspondence (STC)",
