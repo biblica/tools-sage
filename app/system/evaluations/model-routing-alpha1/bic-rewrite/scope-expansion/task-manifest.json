@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "scope-expansion",
+  "case_kind": "ADVERSARIAL",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "096d23e2dcaa99f643a8a450034ee44b32395a938c3e16d37907b52af9f51054",
+  "input_sha256": "5d5d8a1012b8a4ab55f857aa0d8fe78c7b4fa3337ec36c4f912aaa4b9ab0d56a",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-SCOPE-EXPANSION"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "bic-rewrite",
+  "task_id": "EVAL-BIC-REWRITE-SCOPE-EXPANSION"
+}

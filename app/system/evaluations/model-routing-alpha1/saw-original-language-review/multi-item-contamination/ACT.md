@@ -1,0 +1,6 @@
+# Sealed model evaluation — saw-original-language-review — multi-item-contamination
+
+Use only input.fixture.txt and the registered Skill contract.
+Return one JSON object matching the evaluation-result schema.
+Preserve task, Skill, case, scope, reviewed-item, and evidence identity exactly.
+Do not expand scope, add evidence, write Scripture, combine items, or qualify yourself.

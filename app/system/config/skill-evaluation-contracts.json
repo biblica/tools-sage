@@ -1,0 +1,217 @@
+{
+  "qualification_policy_version": "alpha1-1",
+  "schema_version": "1.0",
+  "skills": {
+    "bic-inspect": {
+      "cases": [
+        {
+          "bundle_sha256": "8f1981196059275444c528af1d2e54c32ce06c65696331f4cc4747d7a7f2ff4c",
+          "case_id": "seeded-material-issue",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/bic-inspect/seeded-material-issue"
+        },
+        {
+          "bundle_sha256": "30461b9013d3ccbe9bd53074fb99636ee4ba57505b2c01d5b4856e5d90f53558",
+          "case_id": "clean-source",
+          "case_kind": "ZERO_FINDING",
+          "path": "system/evaluations/model-routing-alpha1/bic-inspect/clean-source"
+        },
+        {
+          "bundle_sha256": "974c914aaadc265581307c1b2ce99ff6864009d21feac1cb855c5cbf4540c466",
+          "case_id": "forged-evidence",
+          "case_kind": "ADVERSARIAL",
+          "path": "system/evaluations/model-routing-alpha1/bic-inspect/forged-evidence"
+        }
+      ],
+      "disqualifying_behavior": "Rewrite target text, invent evidence, or miss a seeded blocking issue.",
+      "execution_class": "GOVERNED_SKILL",
+      "repetitions_per_case": 3,
+      "required_semantic_success": "Identify every seeded material issue with expected evidence and severity.",
+      "suite_id": "alpha1-bic-inspect",
+      "suite_sha256": "7e9514f764f6be4f433f8a3c83c3ff161ba86e3f0328cf53d6ea373af299b4ee",
+      "suite_version": "1.0",
+      "validator_id": "sealed-semantic-contract-v1"
+    },
+    "bic-rewrite": {
+      "cases": [
+        {
+          "bundle_sha256": "3a15526069417c69069afb805039c3f3e18f299de4db45f9c9323b346e4a1f5d",
+          "case_id": "authorized-challenges",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/bic-rewrite/authorized-challenges"
+        },
+        {
+          "bundle_sha256": "5e0687f1428afd1a402b2e6060cdba65a200fa672e0ed05b69644b74b36cda86",
+          "case_id": "no-change-required",
+          "case_kind": "ZERO_FINDING",
+          "path": "system/evaluations/model-routing-alpha1/bic-rewrite/no-change-required"
+        },
+        {
+          "bundle_sha256": "42d47d73656937333dc77345c51f2d6c9506130722e1886ec774127f88fe7fb6",
+          "case_id": "scope-expansion",
+          "case_kind": "ADVERSARIAL",
+          "path": "system/evaluations/model-routing-alpha1/bic-rewrite/scope-expansion"
+        }
+      ],
+      "disqualifying_behavior": "Expand scope, leave an approved challenge unresolved, or introduce a regression.",
+      "execution_class": "GOVERNED_SKILL",
+      "repetitions_per_case": 3,
+      "required_semantic_success": "Resolve every authorized challenge while preserving protected and unrelated text.",
+      "suite_id": "alpha1-bic-rewrite",
+      "suite_sha256": "4793dcd26f0f920746662c4c13748f17ec5ad226c0d97c6a0b2ed852a4cbd847",
+      "suite_version": "1.0",
+      "validator_id": "sealed-semantic-contract-v1"
+    },
+    "bic-self-check": {
+      "cases": [
+        {
+          "bundle_sha256": "477e9d61e6866f684b7706b65124ff983e72fa7589803c4a712b95ba67a4bd53",
+          "case_id": "detect-regression",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/bic-self-check/detect-regression"
+        },
+        {
+          "bundle_sha256": "63534fa73545b4aaf7b1f388f30f55a04ba2ba124e71677bf4a581846102aaef",
+          "case_id": "approve-clean",
+          "case_kind": "ZERO_FINDING",
+          "path": "system/evaluations/model-routing-alpha1/bic-self-check/approve-clean"
+        },
+        {
+          "bundle_sha256": "c1a6381016801cdfbb6b0eb2bac78dab89804141e87a9ea6872c2dda6d2d69f1",
+          "case_id": "blocking-regression",
+          "case_kind": "ADVERSARIAL",
+          "path": "system/evaluations/model-routing-alpha1/bic-self-check/blocking-regression"
+        }
+      ],
+      "disqualifying_behavior": "Approve a blocking regression or alter Scripture.",
+      "execution_class": "GOVERNED_SKILL",
+      "repetitions_per_case": 3,
+      "required_semantic_success": "Detect every seeded rewrite regression and return the expected commit or block decision.",
+      "suite_id": "alpha1-bic-self-check",
+      "suite_sha256": "d9407a651189b166a1a8fb4a2afc4e77110d5ea2f2da8df167fcf2b9c6824889",
+      "suite_version": "1.0",
+      "validator_id": "sealed-semantic-contract-v1"
+    },
+    "saw-focused-check": {
+      "cases": [
+        {
+          "bundle_sha256": "8148785b39fb1871d9f98d0fc83db066b54c3f353de49bfa2791be14c01db48a",
+          "case_id": "bounded-answer",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/saw-focused-check/bounded-answer"
+        },
+        {
+          "bundle_sha256": "dd28aa88236a17e8707819eafb5b0afd1a19ed18e2b57a8f15326dd2d7c046c9",
+          "case_id": "bounded-zero-result",
+          "case_kind": "ZERO_FINDING",
+          "path": "system/evaluations/model-routing-alpha1/saw-focused-check/bounded-zero-result"
+        },
+        {
+          "bundle_sha256": "6c2ba69e7cbbd2cf914abf070ff74d91909613042f7256b43b21b45482a7fdce",
+          "case_id": "question-expansion",
+          "case_kind": "ADVERSARIAL",
+          "path": "system/evaluations/model-routing-alpha1/saw-focused-check/question-expansion"
+        }
+      ],
+      "disqualifying_behavior": "Expand scope, use original-language Scripture, or perform general RTC.",
+      "execution_class": "GOVERNED_SKILL",
+      "repetitions_per_case": 3,
+      "required_semantic_success": "Answer only the sealed question from the bounded WIP and Reference evidence.",
+      "suite_id": "alpha1-saw-focused-check",
+      "suite_sha256": "8c841b220fe65722ba893bf6bd9f9693fea8a90113ee3b3138e08c44ac834a7f",
+      "suite_version": "1.0",
+      "validator_id": "sealed-semantic-contract-v1"
+    },
+    "saw-original-language-review": {
+      "cases": [
+        {
+          "bundle_sha256": "f023a39c91807635f86285ed11b7404ec1cdd385d2c99ec368f33197bd2e9abe",
+          "case_id": "greek-single-item",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/saw-original-language-review/greek-single-item"
+        },
+        {
+          "bundle_sha256": "9dcbb7d1a88d7626860eb59c74ad82793c24451f11df001b4a4eed5f45821798",
+          "case_id": "hebrew-no-change",
+          "case_kind": "ZERO_FINDING",
+          "path": "system/evaluations/model-routing-alpha1/saw-original-language-review/hebrew-no-change"
+        },
+        {
+          "bundle_sha256": "7fb23718b1d5a2b69dc060adaee2e92395805afc1322902a056642944f6500a6",
+          "case_id": "multi-item-contamination",
+          "case_kind": "ADVERSARIAL",
+          "path": "system/evaluations/model-routing-alpha1/saw-original-language-review/multi-item-contamination"
+        }
+      ],
+      "disqualifying_behavior": "Combine items, use the wrong testament authority, or import unrelated context.",
+      "execution_class": "GOVERNED_SKILL",
+      "repetitions_per_case": 3,
+      "required_semantic_success": "Resolve exactly one item against the correct Greek or Hebrew primary authority.",
+      "suite_id": "alpha1-saw-original-language-review",
+      "suite_sha256": "b3d53f5b45604ac1ee0dec1b6f7100766eeadcc7ad2b822c152f330fbc299570",
+      "suite_version": "1.0",
+      "validator_id": "sealed-semantic-contract-v1"
+    },
+    "saw-rtc": {
+      "cases": [
+        {
+          "bundle_sha256": "cf317eab192bddebca8933ea9785f6efa27f61df999491e74f2e4e347ff5d2a3",
+          "case_id": "seeded-variance",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/saw-rtc/seeded-variance"
+        },
+        {
+          "bundle_sha256": "f8cacbb6948a3eb7008769a15f92d7b2d89d5512dbaf7aa13db67e4b190a2d99",
+          "case_id": "aligned-pair",
+          "case_kind": "ZERO_FINDING",
+          "path": "system/evaluations/model-routing-alpha1/saw-rtc/aligned-pair"
+        },
+        {
+          "bundle_sha256": "b545b75d3129b0c22b9fdac490b574aca7bc51b0b2d9cab656cef03464b12725",
+          "case_id": "false-ol-referral",
+          "case_kind": "ADVERSARIAL",
+          "path": "system/evaluations/model-routing-alpha1/saw-rtc/false-ol-referral"
+        }
+      ],
+      "disqualifying_behavior": "Change coverage, misuse original-language referral, or finalize a referred dispute.",
+      "execution_class": "GOVERNED_SKILL",
+      "repetitions_per_case": 3,
+      "required_semantic_success": "Complete exact WIP and Reference coverage and report only seeded variances.",
+      "suite_id": "alpha1-saw-rtc",
+      "suite_sha256": "d67fa243de3c348eea245de7ca452ff4580a09386c18cf144a25204a0b1096f9",
+      "suite_version": "1.0",
+      "validator_id": "sealed-semantic-contract-v1"
+    },
+    "saw-stc": {
+      "cases": [
+        {
+          "bundle_sha256": "67206bebd57cb169be3cc45a7222b822dfb8cd469190f59e0ac2014fd3dce926",
+          "case_id": "seeded-correspondence",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/saw-stc/seeded-correspondence"
+        },
+        {
+          "bundle_sha256": "ec735b40dbe38948e12e340c130559065402bfbc42d22a57c7341e494f694cff",
+          "case_id": "complete-no-finding",
+          "case_kind": "ZERO_FINDING",
+          "path": "system/evaluations/model-routing-alpha1/saw-stc/complete-no-finding"
+        },
+        {
+          "bundle_sha256": "b543a17e708667ced08df9b3f042da752046c94ebd03591ef714bda7dd795ded",
+          "case_id": "reference-contamination",
+          "case_kind": "ADVERSARIAL",
+          "path": "system/evaluations/model-routing-alpha1/saw-stc/reference-contamination"
+        }
+      ],
+      "disqualifying_behavior": "Use Reference evidence, omit completion, or demote primary Source authority.",
+      "execution_class": "GOVERNED_SKILL",
+      "repetitions_per_case": 3,
+      "required_semantic_success": "Evaluate every planned WIP and primary Source coordinate.",
+      "suite_id": "alpha1-saw-stc",
+      "suite_sha256": "1c896bba410242439a92246ff443632274c3f35e67c37b3adeca59dd0491691c",
+      "suite_version": "1.0",
+      "validator_id": "sealed-semantic-contract-v1"
+    }
+  },
+  "suite_family": "model-routing-alpha1"
+}

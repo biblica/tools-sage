@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "authorized-challenges",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "6524e442933489911078b44702a88cf71e230e171e3c683e3e0cefb4a4e858bc",
+  "input_sha256": "467add87add7555750dbdf84258a4b309f54b45d2d532c507842cdf8af2b0316",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-AUTHORIZED-CHALLENGES"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "bic-rewrite",
+  "task_id": "EVAL-BIC-REWRITE-AUTHORIZED-CHALLENGES"
+}

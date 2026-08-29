@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "reference-contamination",
+  "case_kind": "ADVERSARIAL",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "ecde1fac733092cd78003a08ea61a147e745c46620a144cb85f491cf75e6667a",
+  "input_sha256": "1bd21dde03bcdf593b8dc93224b06f3421d6f2a681cd5dd72a5226fbc657bed6",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-REFERENCE-CONTAMINATION"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-stc",
+  "task_id": "EVAL-SAW-STC-REFERENCE-CONTAMINATION"
+}

@@ -1,0 +1,4 @@
+\id MAT SAGE synthetic evaluation data
+\c 1
+\v 1 Synthetic tokens for bic-rewrite case no-change-required.
+\rem CONTROL evidence is internally aligned and requires no finding.

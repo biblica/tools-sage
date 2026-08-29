@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "multi-item-contamination",
+  "case_kind": "ADVERSARIAL",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "83ea889c3c72a65df7188be93d861c9b785b67f9b13bc164e87cbbe1d60a0974",
+  "input_sha256": "8176e7dfee87674f0b999cf7292100bc3b2b124d97f5174fcb0b91bfe722d09e",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-MULTI-ITEM-CONTAMINATION"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-original-language-review",
+  "task_id": "EVAL-SAW-ORIGINAL-LANGUAGE-REVIEW-MULTI-ITEM-CONTAMINATION"
+}

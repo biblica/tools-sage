@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "approve-clean",
+  "case_kind": "ZERO_FINDING",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "6f2268ef1ef3daae50677917564d9ea222c26c6d14d6e10c9cf4f1c57da29c1d",
+  "input_sha256": "5a97064e4f00d976bf5bdf95e3ced69e08e834efbc12ed54bb4d1b9808e52a49",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-APPROVE-CLEAN"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "bic-self-check",
+  "task_id": "EVAL-BIC-SELF-CHECK-APPROVE-CLEAN"
+}

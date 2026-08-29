@@ -22,22 +22,29 @@ release_preference:
 skill_routes:
   bic-inspect:
     suite_id: alpha1-bic-inspect
+    suite_sha256: 7e9514f764f6be4f433f8a3c83c3ff161ba86e3f0328cf53d6ea373af299b4ee
     execution_class: GOVERNED_SKILL
   bic-rewrite:
     suite_id: alpha1-bic-rewrite
+    suite_sha256: 4793dcd26f0f920746662c4c13748f17ec5ad226c0d97c6a0b2ed852a4cbd847
     execution_class: GOVERNED_SKILL
   bic-self-check:
     suite_id: alpha1-bic-self-check
+    suite_sha256: d9407a651189b166a1a8fb4a2afc4e77110d5ea2f2da8df167fcf2b9c6824889
     execution_class: GOVERNED_SKILL
   saw-rtc:
     suite_id: alpha1-saw-rtc
+    suite_sha256: d67fa243de3c348eea245de7ca452ff4580a09386c18cf144a25204a0b1096f9
     execution_class: GOVERNED_SKILL
   saw-stc:
     suite_id: alpha1-saw-stc
+    suite_sha256: 1c896bba410242439a92246ff443632274c3f35e67c37b3adeca59dd0491691c
     execution_class: GOVERNED_SKILL
   saw-focused-check:
     suite_id: alpha1-saw-focused-check
+    suite_sha256: 8c841b220fe65722ba893bf6bd9f9693fea8a90113ee3b3138e08c44ac834a7f
     execution_class: GOVERNED_SKILL
   saw-original-language-review:
     suite_id: alpha1-saw-original-language-review
+    suite_sha256: b3d53f5b45604ac1ee0dec1b6f7100766eeadcc7ad2b822c152f330fbc299570
     execution_class: GOVERNED_SKILL

@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "seeded-material-issue",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "4a2e21f99c8cb023bd281f0041a62f71448b60755f380e08c2d29494e138522a",
+  "input_sha256": "82b617320e5ed2ad7b05ae7f3d630037596ad6482f379e06a77b05785734663d",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-SEEDED-MATERIAL-ISSUE"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "bic-inspect",
+  "task_id": "EVAL-BIC-INSPECT-SEEDED-MATERIAL-ISSUE"
+}

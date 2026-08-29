@@ -27,6 +27,8 @@ SCHEMA_OWNERS: dict[str, str] = {
     "llm-execution-receipt.schema.yml": "system/src/sage/llm_tasks.py",
     "model-language-competency.schema.yml": "system/src/sage/model_language_competency.py",
     "model-policy.schema.yml": "system/src/sage/model_policy.py",
+    "model-qualification-receipt.schema.yml": "system/src/sage/model_evaluation.py",
+    "model-qualification-seeds.schema.yml": "system/src/sage/model_evaluation.py",
     "model-routing-override.schema.yml": "system/src/sage/routing_override.py",
     "model-routing-override-receipt.schema.yml": "system/src/sage/routing_override.py",
     "ol-authority-profile.schema.yml": "system/src/sage/original_language_resources.py",
@@ -44,6 +46,7 @@ SCHEMA_OWNERS: dict[str, str] = {
     "semantic-import-manifest.schema.yml": "system/src/sage/semantic/importers.py",
     "semantic-index-contract.schema.yml": "system/src/sage/semantic/indexes.py",
     "skill-registry.schema.yml": "system/src/sage/act_tasks.py",
+    "skill-evaluation-contracts.schema.yml": "system/src/sage/model_evaluation.py",
     "structure-planning.schema.yml": "system/src/sage/structure_policy.py",
     "transaction-journal.schema.yml": "system/src/sage/transactions.py",
     "work-unit-manifest.schema.yml": "system/src/sage/work_units.py",
@@ -209,11 +212,33 @@ def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> l
     """Validate shipped configuration instances against their owning contracts."""
     errors: list[str] = []
 
+    # Evaluation policy, sealed bundle identity, and route policy must move
+    # together; keep these coupled checks ahead of unrelated profile instances.
+
     ecosystem = _load_data(root / "ecosystem.yml")
     errors.extend(_validate_required_shape(schemas["ecosystem.schema.yml"], ecosystem, "ecosystem.yml"))
 
     model_policy = _load_data(root / "system/config/model-policy.yml")
     errors.extend(_validate_required_shape(schemas["model-policy.schema.yml"], model_policy, "model-policy.yml"))
+
+    evaluation_contracts = _load_data(root / "system/config/skill-evaluation-contracts.json")
+    errors.extend(
+        _validate_required_shape(
+            schemas["skill-evaluation-contracts.schema.yml"],
+            evaluation_contracts,
+            "skill-evaluation-contracts.json",
+        )
+    )
+    qualification_seeds = _load_data(root / "system/config/model-qualification-seeds.json")
+    errors.extend(
+        _validate_required_shape(
+            schemas["model-qualification-seeds.schema.yml"],
+            qualification_seeds,
+            "model-qualification-seeds.json",
+        )
+    )
+    if not isinstance(qualification_seeds.get("routes"), list):
+        errors.append("model-qualification-seeds.json routes must be a list")
 
     ownership = _load_data(root / "system/config/execution-ownership.yml")
     errors.extend(
@@ -232,6 +257,53 @@ def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> l
             skill_registry=skill_registry,
         )
     )
+    registered_skills = set((skill_registry.get("skills") or {}).keys())
+    contract_skills = evaluation_contracts.get("skills")
+    contract_skill_ids = set(contract_skills) if isinstance(contract_skills, dict) else set()
+    if contract_skill_ids != registered_skills:
+        errors.append("skill-evaluation-contracts.json must exactly match registered Skill IDs")
+    if isinstance(contract_skills, dict):
+        skill_required = [
+            str(item)
+            for item in schemas["skill-evaluation-contracts.schema.yml"].get("skill_required", [])
+        ]
+        case_required = [
+            str(item)
+            for item in schemas["skill-evaluation-contracts.schema.yml"].get("case_required", [])
+        ]
+        for skill_id, contract in contract_skills.items():
+            missing = _missing(contract, skill_required)
+            if missing:
+                errors.append(
+                    f"skill-evaluation-contracts.json skills.{skill_id} missing: {', '.join(missing)}"
+                )
+                continue
+            cases = contract.get("cases")
+            if not isinstance(cases, list) or len(cases) != 3:
+                errors.append(f"skill-evaluation-contracts.json skills.{skill_id} must contain three cases")
+            else:
+                kinds = {str(case.get("case_kind") or "") for case in cases if isinstance(case, dict)}
+                if kinds != {"POSITIVE", "ZERO_FINDING", "ADVERSARIAL"}:
+                    errors.append(
+                        f"skill-evaluation-contracts.json skills.{skill_id} must cover positive, zero, and adversarial cases"
+                    )
+                for index, case in enumerate(cases):
+                    missing_case = _missing(case, case_required)
+                    if missing_case:
+                        errors.append(
+                            f"skill-evaluation-contracts.json skills.{skill_id}.cases[{index}] missing: {', '.join(missing_case)}"
+                        )
+            if contract.get("repetitions_per_case") != 3:
+                errors.append(
+                    f"skill-evaluation-contracts.json skills.{skill_id} repetitions_per_case must be 3"
+                )
+            policy_route = (model_policy.get("skill_routes") or {}).get(skill_id, {})
+            if contract.get("suite_id") != policy_route.get("suite_id") or contract.get(
+                "suite_sha256"
+            ) != policy_route.get("suite_sha256"):
+                errors.append(
+                    f"model-policy.yml suite identity differs from evaluation contract for {skill_id}"
+                )
 
     model_language = _load_data(root / "system/config/model-language-competency.yml")
     errors.extend(_validate_required_shape(schemas["model-language-competency.schema.yml"], model_language, "model-language-competency.yml"))
@@ -361,7 +433,7 @@ def validate_schema_contracts(root: Path) -> dict[str, Any]:
         "schema_count": len(paths),
         "schema_ids": len(ids),
         "owner_count": len(SCHEMA_OWNERS),
-        "source_instance_groups": 9,
+        "source_instance_groups": 11,
         "errors": errors,
         "warnings": warnings,
     }

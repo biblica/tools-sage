@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "hebrew-no-change",
+  "case_kind": "ZERO_FINDING",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "0e9701c2f4c689c876eb2d7ab643c246c4dbce22b9158b457cc09cbcde9f2bef",
+  "input_sha256": "f847d8bd335334856a64dff18a7023eb23167f1fa868ec52393cc89972723252",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-HEBREW-NO-CHANGE"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-original-language-review",
+  "task_id": "EVAL-SAW-ORIGINAL-LANGUAGE-REVIEW-HEBREW-NO-CHANGE"
+}

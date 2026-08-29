@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "bounded-zero-result",
+  "case_kind": "ZERO_FINDING",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "e05e2c9622759d7ab43acb3ebc5d79179b5c3b0dfdedca7b15667602afa9a84a",
+  "input_sha256": "9aed25764dcf3d1d592119422b90138a73887a0c0e63c208f751b5e3aab40732",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-BOUNDED-ZERO-RESULT"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-focused-check",
+  "task_id": "EVAL-SAW-FOCUSED-CHECK-BOUNDED-ZERO-RESULT"
+}
