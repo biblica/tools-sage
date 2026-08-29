@@ -14,6 +14,7 @@ SAGE uses file names to communicate ownership and data semantics. The format is 
 | SAGE-owned registries/manifests | lowercase kebab-case + JSON | `skills.json`, `sage-standard.json`, `sources.json`, `run.json` |
 | SAGE schema specifications | lowercase kebab-case + `.schema.yml` | `job.schema.yml`, `skill-registry.schema.yml` |
 | Runtime/generated machine state | lowercase kebab-case + JSON unless an external contract requires otherwise | `active-jobs.json`, `status.json`, `run.json` |
+| Route qualification/override receipts | lowercase kebab-case + JSON in governed state roots | `llm-execution-receipt.json`, `model-routing-override.json` |
 | Dynamic Project rights/config files | preserve governed Project ID + YAML | `idKKHv0.yml` |
 | Skill reference Markdown | uppercase kebab-case | `REWRITE-CONTRACT.md` |
 
@@ -92,3 +93,16 @@ Example:
 Do not generate `SAW-SAW-...-SAW-RTC...`. Run and unit identifiers may already contain the
 workflow token for their own namespace; the ITEM assembler removes that redundant top-level
 prefix before composing the final global code.
+
+## SAW report identity
+
+Operator-facing SAW filenames include the operation ID before the artifact type so RTC and STC
+outputs are immediately distinguishable:
+
+| Operation | Example |
+|---|---|
+| RTC | `JUD_001_RTC_ACTION-REPORT.md` |
+| STC | `JUD_001_STC_ACTION-REPORT.md` |
+
+The matching Operator Note uses the same operation segment. Report composition and naming are
+deterministic Python operations; the model does not choose a report folder or filename.

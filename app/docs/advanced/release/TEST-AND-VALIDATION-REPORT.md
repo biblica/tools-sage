@@ -36,6 +36,21 @@ This is development evidence, not the formal exact-source release qualification.
 after the earlier qualification receipt; new deterministic hardening shards, a formal combine, and
 two byte-identical release builds remain required before the first RC.
 
+## Skill-routing implementation evidence
+
+The Alpha1 source now includes provider-neutral exact-Skill resolution, provider-only settings
+migration, an audited exact-route override, sealed synthetic qualification cases, schema 2.0 execution
+receipts, receipt-bound report provenance, and provider-only UI/CLI controls. Focused deterministic
+tests have exercised resolver and policy contracts, settings/override state, evaluation reconciliation,
+runtime pre-handoff rejection, per-item secondary rendering, BIC/SAW report propagation, localization,
+and menu/command surfaces using fake provider responses only.
+
+No unit, schema, package, or hardening command is permitted to run a live provider qualification.
+Controlled live qualification for current Codex catalog routes remains a separate Alpha handoff gate.
+Accepted receipts must be reviewed and promoted to the Core seed registry before an executable route
+is claimed for every Skill. Any later model/capability/Skill/suite/policy change invalidates that exact
+evidence.
+
 ## Deterministic distribution evidence
 
 The production release builder stages only governed Core material, validates the supplied formal hardening receipt against the staged source hash, reruns source deep audit, emits deterministic ZIP member ordering/timestamps/permissions, and tests archive integrity before publication.

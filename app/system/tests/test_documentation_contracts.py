@@ -602,6 +602,24 @@ def test_cheat_sheets_name_state_transitions_and_natural_language_boundary() -> 
     assert "--job BIC_JOB_ID" in bic
 
 
+def test_operator_docs_describe_exact_skill_routing_without_legacy_selection() -> None:
+    """Keep operator guidance aligned with provider-only Setup and exact route provenance."""
+    model = (
+        ROOT / "docs/advanced/models-and-ai/MODEL-SELECTION-AND-REASONING.md"
+    ).read_text(encoding="utf-8")
+    operator = (ROOT / "docs/OPERATOR-GUIDE.md").read_text(encoding="utf-8")
+    saw = (ROOT / "docs/SAW-CHEAT-SHEET.md").read_text(encoding="utf-8")
+    combined = "\n".join((model, operator, saw))
+    assert "provider-native reasoning" in combined
+    assert "model routes" in model
+    assert "model recommend --skill saw-rtc" in model
+    assert "model override set" in model
+    assert "one reported item per request" in model
+    assert "report composition" in combined.casefold()
+    assert "model use" not in combined
+    assert "universal LOW/MEDIUM/HIGH" in model
+
+
 def test_representative_documented_commands_parse() -> None:
     """Verify that representative documented commands parse."""
     from sage.cli import build_parser
@@ -636,6 +654,12 @@ def test_representative_documented_commands_parse() -> None:
         ["project", "restart-scope", "--job", "BIC_idKKHv0-usNIVv2-usBOLx1", "--scope", "3JN 1:1-15"],
         ["project", "target-history", "--job", "BIC_idKKHv0-usNIVv2-usBOLx1", "--scope", "3JN 1:1-15"],
         ["project", "revert-target-scope", "--job", "BIC_idKKHv0-usNIVv2-usBOLx1", "--scope", "3JN 1:1-15"],
+        ["model", "routes"],
+        ["model", "recommend", "--skill", "saw-rtc"],
+        [
+            "model", "override", "set", "--provider", "codex", "--model", "MODEL_ID",
+            "--capability-fingerprint", "a" * 64, "--reasoning", "medium",
+        ],
     ]
     for argv in commands:
         parsed = parser.parse_args(argv)

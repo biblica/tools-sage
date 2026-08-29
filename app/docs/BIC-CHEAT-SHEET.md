@@ -27,6 +27,11 @@ Confirm SOURCE, DONOR, TARGET, scope, and canonical command before execution.
 
 If RWC/SEMDOM evidence is bound to a Scripture resource, confirm its index is `CURRENT`. Recovery/reset commands are not routine preparation.
 
+Normal Setup connects a provider but does not pin one model/reasoning level. Before each governed BIC
+task, SAGE resolves an exact qualified route for `bic-inspect`, `bic-rewrite`, or `bic-self-check` and
+records the actual provider/model/provider-native reasoning in the execution receipt and report. The
+advanced global override remains subject to qualification for the exact Skill.
+
 ## Required operation order
 
 ```text
@@ -136,5 +141,7 @@ A technical generation is not linguistic approval.
 - Treat lexical burden as a tie-breaker after semantic hard gates.
 - Local semantic/index evidence is retrieval/triage evidence, not translation authority.
 - Recreate an invalid task instead of editing `ACT.md` or `task-manifest.json`.
+- Keep every conditional source-text adjudication isolated to its single material challenge; never
+  combine challenges to reduce model calls.
 
 Recoverable missing or ambiguous Operator input is `INPUT_REQUIRED`. Reserve `BLOCKED` for confirmed in-scope technical or integrity failure.

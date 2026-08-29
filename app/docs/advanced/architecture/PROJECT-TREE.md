@@ -21,11 +21,16 @@ SAGE/
 │       ├── bin/                 workflow/application launchers
 │       ├── src/sage/            application package
 │       ├── config/
+│       │   ├── execution-ownership.yml  Python/local/model ownership policy
+│       │   ├── model-policy.yml         provider-neutral Skill route policy
+│       │   ├── model-qualification-seeds.json  reviewed exact-route seeds
+│       │   ├── skill-evaluation-contracts.json sealed Skill criteria
 │       │   ├── profiles/grammar/ reviewed Core grammar profiles
 │       │   ├── project-management/ governed internal PM records
 │       │   ├── schemas/          governed configuration/data schemas
 │       │   └── workflows/        Core workflow policy/profiles
 │       ├── resources/           tested and approved Core resources only
+│       ├── evaluations/         sealed synthetic model-route cases
 │       ├── skills/              governed Core analytical/controller skills
 │       ├── tools/               bootstrap, audit, release and maintenance tools
 │       ├── tests/               portable regression/contract tests
@@ -50,7 +55,10 @@ SAGE/
     ├── plugins/                 reserved local plugin installation surface
     └── .system/                 hidden SAGE-managed local internals
         ├── config/              mutable local settings/overrides
+        │   └── model-routing-override.json  optional audited exact route
         ├── state/               setup, inventory, mounts, pointers, receipts
+        │   ├── model-qualification/         exact local evaluation evidence
+        │   └── model-routing-overrides/     set/change/clear audit receipts
         ├── jobs/                controller-only Job runtime/config/state
         ├── workflows/           workflow runtime state/output
         ├── indexes/
@@ -116,6 +124,11 @@ locks, transactions, indexes, cache, runtime profiles, and derived settings live
 
 Polished Operator-facing deliverables are published under `localdata/reports/<job-id>/...`; they are
 never written into Core or external Scripture Projects.
+
+Each governed task stores its actual route under
+`validation/llm-execution-receipt.json`. The receipt is task/output-bound evidence used by Job/Run
+status and final reports; current recommendations do not rewrite it. Provider connection state,
+qualification evidence, and the optional global override remain separate machine-local records.
 
 ## Release and handover hygiene
 
