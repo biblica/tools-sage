@@ -1789,7 +1789,9 @@ def execute_task(
             "provider": route_identity.provider,
             "model": route_identity.model_id,
             "reasoning_effort": route_identity.reasoning_id,
-            "selection_mode": route.routing_mode,
+            "selection_mode": route.selection_mode,
+            "qualification_evidence_sha256": route.evidence_sha256,
+            "routing_basis_sha256": route.routing_basis_sha256,
             "live_selection_pending": False,
             "prompt_sha256": prompt_sha,
             "prompt_bytes": len(prompt.encode("utf-8")),
@@ -1817,7 +1819,7 @@ def execute_task(
     second_pass_reasoning = resolved_reasoning
     model_policy_record = route.to_dict()
     operator_policy_override = route.routing_mode == "GLOBAL_OVERRIDE"
-    effective_selection_mode = route.routing_mode
+    effective_selection_mode = route.selection_mode
 
     started = _utc_now()
     phase_reasoning_efforts: list[str | None] = [resolved_reasoning]
@@ -1961,6 +1963,7 @@ def execute_task(
         "routing_mode": route.routing_mode,
         "qualification_status": route.qualification,
         "qualification_evidence_sha256": route.evidence_sha256,
+        "routing_basis_sha256": route.routing_basis_sha256,
         "routing_policy_version": route_identity.policy_version,
         "provider_runtime_version": route.provider_runtime_version,
         "model_identity_strength": route.model_identity_strength,

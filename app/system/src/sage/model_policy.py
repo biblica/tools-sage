@@ -76,6 +76,7 @@ def load_model_policy(root: Path) -> dict[str, Any]:
         "qualification_policy_version",
         "unknown_route_status",
         "accepted_operational_statuses",
+        "provisional_routing",
         "recommendation_order",
         "skill_routes",
     )
@@ -88,6 +89,31 @@ def load_model_policy(root: Path) -> dict[str, Any]:
         raise ConfigurationError(
             "SAGE model policy accepted_operational_statuses must be RECOMMENDED, QUALIFIED"
         )
+    provisional = value.get("provisional_routing")
+    if not isinstance(provisional, dict):
+        raise ConfigurationError("SAGE model policy provisional_routing must be an object")
+    if provisional.get("enabled_release_states") != ["ALPHA"]:
+        raise ConfigurationError(
+            "SAGE model policy provisional routing must be enabled only for ALPHA"
+        )
+    if provisional.get("no_data_qualification_status") != "PROVISIONAL_UNQUALIFIED":
+        raise ConfigurationError(
+            "SAGE model policy provisional no-data status must be PROVISIONAL_UNQUALIFIED"
+        )
+    defaults = provisional.get("default_reasoning_by_provider")
+    prohibited = provisional.get("prohibited_reasoning_by_provider")
+    if not isinstance(defaults, dict) or not defaults:
+        raise ConfigurationError(
+            "SAGE model policy provisional provider defaults must be a non-empty object"
+        )
+    if not isinstance(prohibited, dict):
+        raise ConfigurationError(
+            "SAGE model policy provisional prohibited reasoning must be an object"
+        )
+    if provisional.get("known_negative_effect") != "BLOCK":
+        raise ConfigurationError("SAGE model policy known negative routes must BLOCK")
+    if provisional.get("stale_evidence_effect") != "BLOCK":
+        raise ConfigurationError("SAGE model policy stale route evidence must BLOCK")
     routes = value.get("skill_routes")
     if not isinstance(routes, dict) or not routes:
         raise ConfigurationError("SAGE model policy skill_routes must be a non-empty object")
@@ -187,17 +213,24 @@ def recommend_model(
     reasoning = (
         None if route.identity.reasoning_id == "provider-default" else route.identity.reasoning_id
     )
+    provisional = route.qualification == "PROVISIONAL_UNQUALIFIED"
     return ModelRecommendation(
         workflow=workflow,
         operation=operation,
         task_profile=skill_id,
-        complexity="EVIDENCE_QUALIFIED",
+        complexity="PROVISIONAL_NO_DATA" if provisional else "EVIDENCE_QUALIFIED",
         model=route.identity.model_id,
         display_name=display_name,
         reasoning_effort=reasoning,
         conditional_second_pass_reasoning_effort=reasoning,
         qualification_status=route.qualification,
-        qualification_basis=f"qualification evidence {route.evidence_sha256}",
+        qualification_basis=(
+            f"provisional routing policy {route.routing_basis_sha256}"
+            if provisional
+            else f"qualification evidence {route.evidence_sha256}"
+        ),
         account_plan_type=status.account_plan_type,
-        selection_basis="exact_skill_qualification",
+        selection_basis=(
+            "automatic_no_data_default" if provisional else "exact_skill_qualification"
+        ),
     )

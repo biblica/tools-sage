@@ -7,7 +7,6 @@ required:
   - route_id
   - routing_mode
   - qualification_status
-  - qualification_evidence_sha256
   - routing_policy_version
   - provider_runtime_version
   - model_identity_strength
@@ -33,7 +32,17 @@ required:
 constraints:
   execution_mode: SAGE_GOVERNED_TASK_V1
   routing_mode: [AUTOMATIC, GLOBAL_OVERRIDE]
-  operational_qualification_status: [RECOMMENDED, QUALIFIED]
+  operational_qualification_status: [RECOMMENDED, QUALIFIED, PROVISIONAL_UNQUALIFIED]
+  conditional_route_provenance:
+    RECOMMENDED: qualification_evidence_sha256
+    QUALIFIED: qualification_evidence_sha256
+    PROVISIONAL_UNQUALIFIED: routing_basis_sha256
+  qualified_selection_modes:
+    - EXACT_SKILL_QUALIFICATION
+    - USER_OVERRIDE
+  provisional_qualification_evidence: prohibited
+  provisional_selection_modes:
+    - PROVISIONAL_PROVIDER_DEFAULT
   provider_identity: provider_advertised
   openai_api_keys: PROHIBITED
   sage_workspace_exposed_as_provider_cwd: false

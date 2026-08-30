@@ -15,6 +15,10 @@
 - Adds sealed three-case, three-repetition route qualification for all seven analytical Skills, an
   audited exact-route override, fail-closed stale/unavailable handling, and route evidence in task
   receipts, Job/Run status, and final reports.
+- Adds the Alpha automatic/no-data fallback: Codex native Medium is executable only in a true absence
+  of qualification evidence and is labelled `PROVISIONAL_UNQUALIFIED`; current data selects the
+  qualified route, while the existing audited exact override remains the sole manual state.
+- Resolves RTC/STC routing before visible work and preserves the same sealed task for `CONTINUE RUN`.
 - Makes deterministic Python ownership explicit for planning, slicing, validation, aggregation,
   report composition/naming, and finalization; these operations have no LLM tokenization.
 - Enforces one request per source-text adjudication item and one request per secondary-language report

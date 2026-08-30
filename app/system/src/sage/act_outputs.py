@@ -156,18 +156,49 @@ def execution_route_from_receipt(
         "route_id",
         "routing_mode",
         "qualification_status",
-        "qualification_evidence_sha256",
         "routing_policy_version",
         "model_identity_strength",
         "capability_fingerprint",
         "provider",
         "model",
         "reasoning_effort",
+        "selection_mode",
     )
     missing = [field for field in required if receipt.get(field) in (None, "")]
     if missing:
         raise ValidationError(
             "Execution receipt route projection is incomplete: " + ", ".join(missing),
+            code="EXECUTION_RECEIPT_IDENTITY_MISMATCH",
+        )
+    qualification = str(receipt["qualification_status"])
+    if qualification == "PROVISIONAL_UNQUALIFIED":
+        if receipt.get("qualification_evidence_sha256") not in (None, ""):
+            raise ValidationError(
+                "Provisional execution receipt must not claim qualification evidence",
+                code="EXECUTION_RECEIPT_IDENTITY_MISMATCH",
+            )
+        if receipt.get("routing_basis_sha256") in (None, ""):
+            raise ValidationError(
+                "Provisional execution receipt is missing its policy routing basis",
+                code="EXECUTION_RECEIPT_IDENTITY_MISMATCH",
+            )
+        if receipt.get("selection_mode") not in {
+            "PROVISIONAL_PROVIDER_DEFAULT",
+            "PROVISIONAL_OPERATOR_PREFERENCE",
+        }:
+            raise ValidationError(
+                "Provisional execution receipt selection mode is invalid",
+                code="EXECUTION_RECEIPT_IDENTITY_MISMATCH",
+            )
+    elif qualification in {"RECOMMENDED", "QUALIFIED"}:
+        if receipt.get("qualification_evidence_sha256") in (None, ""):
+            raise ValidationError(
+                "Qualified execution receipt is missing qualification evidence",
+                code="EXECUTION_RECEIPT_IDENTITY_MISMATCH",
+            )
+    else:
+        raise ValidationError(
+            f"Execution receipt qualification status is not operational: {qualification}",
             code="EXECUTION_RECEIPT_IDENTITY_MISMATCH",
         )
     return {
@@ -181,6 +212,7 @@ def execution_route_from_receipt(
         "routing_mode": receipt["routing_mode"],
         "qualification_status": receipt["qualification_status"],
         "qualification_evidence_sha256": receipt["qualification_evidence_sha256"],
+        "routing_basis_sha256": receipt.get("routing_basis_sha256"),
         "routing_policy_version": receipt["routing_policy_version"],
         "provider_runtime_version": receipt.get("provider_runtime_version"),
         "model_identity_strength": receipt["model_identity_strength"],

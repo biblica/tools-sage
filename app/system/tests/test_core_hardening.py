@@ -382,6 +382,9 @@ def test_task_budget_uses_routed_sfm_only_and_keeps_controller_byte_inventory(
         identity=route_identity,
         routing_mode="AUTOMATIC",
         qualification="QUALIFIED",
+        selection_mode="EXACT_SKILL_QUALIFICATION",
+        evidence_sha256="b" * 64,
+        routing_basis_sha256=None,
     )
     monkeypatch.setattr(
         "sage.llm_tasks._resolve_task_route",

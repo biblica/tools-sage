@@ -29,7 +29,7 @@ is deterministic policy; no model decides whether work should be sent to a model
 |---|---|---|
 | `DETERMINISTIC_PYTHON` | Parsing, validation, slicing, coverage, identity, aggregation, report composition, file naming, token measurement, and state transition | Required whenever Python can produce the reliable result without linguistic or semantic judgment |
 | `LOCAL_ASSISTIVE` | Bounded disposable phrasing or administrative assistance | Non-authoritative, safe to omit, no canonical state mutation, and no raw Scripture/OL evidence |
-| `GOVERNED_SKILL` | A semantic or linguistic decision that affects a finding, rewrite, adjudication, or other governed result | Requires an available route qualified for the exact registered `skill_id` |
+| `GOVERNED_SKILL` | A semantic or linguistic decision that affects a finding, rewrite, adjudication, or other governed result | Requires an available exact route; Alpha may use the truthful no-data Medium fallback |
 
 The decision order is:
 
@@ -60,8 +60,9 @@ Scripture handoff merely because their inputs originated in model output.
 
 Normal Setup owns provider connection and enablement only. It does not ask the Operator to choose a
 model or reasoning level. SAGE discovers the enabled provider's current model catalog and resolves
-an available, qualified provider/model/native-reasoning route for the exact `skill_id` when a
-governed task is executed.
+the exact provider/model/native-reasoning route for the `skill_id` when a governed task is executed.
+The audited global override is the one manual state. Automatic mode uses current qualification data,
+or Codex native `medium` with `PROVISIONAL_UNQUALIFIED` in a true no-data Alpha state.
 
 The normal mode is `AUTOMATIC`. `Configure AI` exposes five distinct concerns:
 
@@ -77,7 +78,7 @@ selection menu.
 
 Provider readiness and Skill readiness are separate. A connected provider can be ready while one
 or more Skills have no executable route. Startup may continue when the provider connection is
-ready; execution of an unroutable Skill fails closed with `NO_QUALIFIED_SKILL_ROUTE`.
+ready. Stale, failed, unreliable, unsupported, unavailable, and non-Alpha no-data Skills fail closed.
 
 ## Route identity
 
@@ -187,13 +188,20 @@ Availability and qualification are independent dimensions:
 | Dimension | Values |
 |---|---|
 | Availability | `AVAILABLE`, `UNAVAILABLE` |
-| Qualification | `RECOMMENDED`, `QUALIFIED`, `UNRELIABLE`, `FAILED`, `UNASSESSED`, `STALE` |
+| Qualification | `RECOMMENDED`, `QUALIFIED`, `PROVISIONAL_UNQUALIFIED`, `UNRELIABLE`, `FAILED`, `UNASSESSED`, `STALE` |
 | Routing mode | `AUTOMATIC`, `GLOBAL_OVERRIDE` |
 
 `UNASSESSED` is mandatory for a new model identity, reasoning setting, Skill hash, or evaluation
 suite. Older evidence is never inherited. Evidence becomes `STALE` when any bound identity or hash
 changes. Exactly one available qualified route is `RECOMMENDED` for each Skill. Other passing routes
-remain `QUALIFIED`.
+remain `QUALIFIED`. In a true no-data state only, the Alpha fallback is
+`PROVISIONAL_UNQUALIFIED`; it is never promoted by its reasoning label.
+
+Routing is one manual state plus two automatic substates:
+
+1. `USER_OVERRIDE` uses the audited exact Operator route when it remains qualified for the Skill.
+2. `AUTOMATIC / DATA` uses the current deterministic qualification recommendation.
+3. `AUTOMATIC / NO DATA` uses the Alpha policy's provider-native Medium default.
 
 The deterministic recommendation order is:
 
@@ -217,7 +225,7 @@ Each immutable task manifest already carries `skill_id`. Before a provider call,
 2. reads the enabled provider set and any active global override;
 3. obtains the current provider capability snapshot without asking a model to choose;
 4. resolves the route deterministically for that `skill_id`;
-5. rejects an unavailable, unqualified, stale, or unsupported route before sending task evidence;
+5. blocks adverse/stale/unavailable states, or selects the Alpha Medium fallback only for true no-data;
 6. executes the sealed task with the resolved model and provider-native reasoning setting;
 7. records the exact route, policy/evidence basis, and routing mode in the execution receipt;
 8. projects the actual receipt data into Job/Run status and finalized reports.
@@ -311,7 +319,8 @@ The CLI follows the same boundary:
 
 Future Claude, Grok, Gemini, or other providers implement the same provider-neutral catalog,
 capability, execution, and receipt interfaces. Adding an adapter does not enable governed execution.
-A provider is routable only after build-policy enablement and exact route qualification for a Skill.
+A provider is routable after build-policy enablement and exact route qualification for a Skill, or
+through an explicitly permitted Alpha no-data fallback. Other release states remain fail-closed.
 
 ## Failure behavior
 
@@ -319,7 +328,7 @@ Routing failures are explicit and recoverable:
 
 | Reason code | Meaning | Operator action |
 |---|---|---|
-| `NO_QUALIFIED_SKILL_ROUTE` | No enabled, available route qualifies for the Skill | Connect/evaluate a provider or wait for an available qualified route |
+| `NO_PROVISIONAL_SKILL_ROUTE` | A true no-data Skill has no eligible Alpha fallback | Connect/refresh the provider or qualify a route |
 | `SKILL_ROUTE_EVIDENCE_STALE` | Skill, suite, model capability, or policy identity changed | Re-evaluate the route |
 | `GLOBAL_OVERRIDE_NOT_QUALIFIED_FOR_SKILL` | The pinned route cannot execute this Skill | Clear/change the override or qualify the route |
 | `PROVIDER_ROUTE_UNAVAILABLE` | The previously recommended or pinned route is no longer in the live catalog | Refresh the catalog and resolve again |

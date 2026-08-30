@@ -9,7 +9,7 @@
 - Current implementation carries section-preferred SAW slicing that coalesces adjacent fitting sections, with bounded lookahead and balanced oversized-section partitioning; scope-projected predecessor/selective-OL evidence; chapter-first report compilation; actual WIP/Reference Project names in reports; three-column numeric menu alignment; provider-only Configure AI; exact per-Skill route qualification/resolution; and explicit connection testing.
 - Release feature classification: the Textual TUI is `EXPERIMENTAL_UNSTABLE`, displayed exactly as `EXPERIMENTAL / UNSTABLE`; it remains non-authoritative independently of the product's Alpha/Beta/RC phase.
 - Current UI presentation contract: `docs/advanced/maintenance/UI-PRESENTATION.md`.
-- The provider-neutral per-Skill routing implementation is complete through deterministic source tests: execution ownership, exact route identity, settings migration, audited override, sealed 3-case × 3-repetition evaluation suites, fail-closed runtime routing, receipt/report provenance, and provider-only UI/CLI are implemented. Fresh live route qualification, exact-source final hardening after seed freeze, and Operator acceptance remain outstanding.
+- The provider-neutral per-Skill routing implementation now includes one audited manual override plus automatic/data and Alpha automatic/no-data substates. True no-data uses Codex native Medium as `PROVISIONAL_UNQUALIFIED`; current positive data selects the qualified route; adverse/stale data blocks. Conditional receipt provenance and pre-`Working` RTC/STC route preflight are implemented. Fresh exact-source final hardening and Operator acceptance remain outstanding.
 - Machine-local runtime state, caches, `localdata/.system/runtime/python`, `runtime/venv`, and `host-capability.json` must not ship in the vanilla Core distribution.
 
 
@@ -29,7 +29,8 @@ Any governed source or test change after qualification begins invalidates all re
 - Validate later RTC stages remain bounded to each child scope and do not inherit unrelated whole-book evidence.
 - Validate chapter-scoped final reports contain only that chapter's findings/evidence and use actual configured Project names.
 - Validate Configure AI entry readiness, provider-only controls without implicit rechecks, and explicit connection testing.
-- Validate the guarded global override, fail-closed per-Skill qualification, and exact route metadata in Job menus and Run reports.
+- Validate the guarded global override, automatic/data route selection, automatic/no-data Medium fallback, and exact route metadata in Job menus and Run reports.
+- Resume the preserved blocked JOS RTC Run with `CONTINUE RUN` and confirm it retries the same sealed task rather than creating a replacement Run.
 - Run controlled live qualification against packaged synthetic cases only, review exact receipts, and
   freeze accepted seed evidence before any real Job continues under the new router.
 - Validate that deterministic task phases remain Python-owned, local-model work remains non-authoritative and evidence-restricted, and deterministic handoff reduction never combines isolated OL or secondary-rendering items.

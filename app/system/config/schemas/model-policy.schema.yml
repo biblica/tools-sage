@@ -4,6 +4,7 @@ required:
   - qualification_policy_version
   - unknown_route_status
   - accepted_operational_statuses
+  - provisional_routing
   - recommendation_order
   - skill_routes
 controls:
@@ -14,6 +15,12 @@ controls:
   accepted_operational_statuses:
     - RECOMMENDED
     - QUALIFIED
+  provisional_routing:
+    release_state_gate: required
+    no_data_status: PROVISIONAL_UNQUALIFIED
+    provider_native_reasoning: required
+    known_negative_effect: BLOCK
+    stale_evidence_effect: BLOCK
   availability_states:
     - AVAILABLE
     - UNAVAILABLE
@@ -24,6 +31,7 @@ controls:
     - FAILED
     - UNASSESSED
     - STALE
+    - PROVISIONAL_UNQUALIFIED
   reasoning_order: provider_native
   universal_reasoning_scale: prohibited
   model_self_qualification: prohibited

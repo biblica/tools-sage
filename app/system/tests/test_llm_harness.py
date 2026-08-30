@@ -32,7 +32,12 @@ from sage.registry import load_ecosystem
 from sage.resource_mounts import mounts_path, set_resource_mount
 
 
-def _synthetic_task(root: Path, *, conditional: bool = False) -> Path:
+def _synthetic_task(
+    root: Path,
+    *,
+    conditional: bool = False,
+    qualified: bool = True,
+) -> Path:
     """Create a minimal immutable task for sealed-execution regression tests."""
     evidence = root / "evidence.txt"
     evidence.write_text("bounded evidence\n", encoding="utf-8")
@@ -86,12 +91,13 @@ def _synthetic_task(root: Path, *, conditional: bool = False) -> Path:
     }
     path = task / "task-manifest.json"
     atomic_write_json(path, manifest)
-    _qualify_test_route(
-        root,
-        skill_id=str(manifest["skill_id"]),
-        model="gpt-5.6-sol" if conditional else "gpt-5.6-terra",
-        reasoning_id="high" if conditional else "medium",
-    )
+    if qualified:
+        _qualify_test_route(
+            root,
+            skill_id=str(manifest["skill_id"]),
+            model="gpt-5.6-sol" if conditional else "gpt-5.6-terra",
+            reasoning_id="high" if conditional else "medium",
+        )
     return path
 
 
@@ -436,6 +442,7 @@ def test_task_dry_run_resolves_exact_route_without_provider_execution(
     assert result["skill_id"] == "bic-inspect"
     assert result["routing_mode"] == "AUTOMATIC"
     assert result["qualification_status"] == "RECOMMENDED"
+    assert result["selection_mode"] == "EXACT_SKILL_QUALIFICATION"
     assert len(result["route_id"]) == 64
     assert result["provider"] == "codex"
     assert result["model"] == "gpt-5.6-terra"
@@ -450,6 +457,39 @@ def test_task_dry_run_resolves_exact_route_without_provider_execution(
     (root / "evidence.txt").write_text("changed\n", encoding="utf-8")
     with pytest.raises(ValidationError, match="changed after task creation"):
         execute_task(config, task_manifest=manifest, dry_run=True)
+
+
+def test_task_dry_run_exposes_truthful_provisional_route_without_execution(
+    make_workspace,
+    monkeypatch,
+) -> None:
+    """Replacing the route selection mode with AUTOMATIC must hide the no-data basis."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest = _synthetic_task(root, qualified=False)
+    config = load_ecosystem(root / "ecosystem.yml")
+
+    class FakeExecutor:
+        """Expose a live catalog while proving dry-run never calls the provider."""
+
+        def status(self):
+            """Return the live-looking no-data capability snapshot."""
+            return _fake_codex_status()
+
+        def execute(self, _request):
+            """Fail if a dry-run sends the sealed request."""
+            raise AssertionError("dry-run must not execute provider evidence")
+
+    monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
+
+    result = execute_task(config, task_manifest=manifest, dry_run=True)
+
+    assert result["status"] == "READY_TO_EXECUTE"
+    assert result["qualification_status"] == "PROVISIONAL_UNQUALIFIED"
+    assert result["model"] == "gpt-5.6-sol"
+    assert result["reasoning_effort"] == "medium"
+    assert result["selection_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert result["qualification_evidence_sha256"] is None
+    assert len(result["routing_basis_sha256"]) == 64
 
 
 def test_task_executor_materializes_only_exact_allowlist(make_workspace, monkeypatch) -> None:
@@ -496,6 +536,43 @@ def test_task_executor_materializes_only_exact_allowlist(make_workspace, monkeyp
     files = [p.relative_to(manifest.parent).as_posix() for p in manifest.parent.rglob("*") if p.is_file()]
     assert "output/result.txt" in files
     assert not any(path.startswith("output/") and path != "output/result.txt" for path in files)
+
+
+def test_provisional_execution_receipt_uses_policy_basis_not_qualification_evidence(
+    make_workspace,
+    monkeypatch,
+) -> None:
+    """Inventing an evidence hash or omitting the policy basis must invalidate provenance."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest = _synthetic_task(root, qualified=False)
+    config = load_ecosystem(root / "ecosystem.yml")
+
+    class FakeExecutor:
+        """Return one valid output through the provisional route."""
+
+        def status(self, **_kwargs):
+            """Return the live-looking no-data capability snapshot."""
+            return _fake_codex_status()
+
+        def execute(self, request):
+            """Return the allowlisted synthetic output without external execution."""
+            payload = {
+                "schema_version": "1.0",
+                "task_id": "synthetic-task-1",
+                "files": {"output/result.txt": "accepted\n"},
+            }
+            return ProviderResponse(
+                "codex", request.model, json.dumps(payload), {}, request.reasoning_effort
+            )
+
+    monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
+
+    result = execute_task(config, task_manifest=manifest)
+
+    assert result["qualification_status"] == "PROVISIONAL_UNQUALIFIED"
+    assert result["selection_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert result["qualification_evidence_sha256"] is None
+    assert len(result["routing_basis_sha256"]) == 64
 
 
 def test_provider_handoff_blocks_missing_narrative_language() -> None:
@@ -993,20 +1070,22 @@ def test_task_execution_rejects_manifest_skill_workflow_mismatch(
     assert caught.value.code == "LLM_TASK_SKILL_IDENTITY_INVALID"
 
 
-def test_task_execution_rejects_unqualified_route_before_prompt(
+def test_task_execution_rejects_known_failed_route_before_prompt(
     make_workspace, monkeypatch
 ) -> None:
-    """An unqualified exact route fails after status probing and before task execution."""
+    """Known failed evidence blocks after status probing and before task execution."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     manifest = _synthetic_task(root)
     seed_path = root / "system/config/model-qualification-seeds.json"
-    seed_path.write_text('{"routes": [], "schema_version": "1.0"}\n', encoding="utf-8")
+    seeds = json.loads(seed_path.read_text(encoding="utf-8"))
+    seeds["routes"][0]["qualification_status"] = "FAILED"
+    seed_path.write_text(json.dumps(seeds, indent=2) + "\n", encoding="utf-8")
 
     class FakeExecutor:
         """Expose live capabilities and reject any attempt to send task evidence."""
 
         def status(self):
-            """Return available but deliberately unqualified model capabilities."""
+            """Return capabilities that exactly match the known failed evidence."""
             return _fake_codex_status()
 
         def execute(self, _request):
@@ -1016,7 +1095,7 @@ def test_task_execution_rejects_unqualified_route_before_prompt(
     monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
     with pytest.raises(ValidationError) as caught:
         execute_task(load_ecosystem(root / "ecosystem.yml"), task_manifest=manifest)
-    assert caught.value.code == "NO_QUALIFIED_SKILL_ROUTE"
+    assert caught.value.code == "MODEL_QUALIFICATION_FAILED"
 
 
 def test_task_execution_uses_exact_audited_global_override(make_workspace, monkeypatch) -> None:

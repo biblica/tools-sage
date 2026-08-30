@@ -7,7 +7,7 @@ controls.
 
 | Provider | Adapter/configuration | v0.02alpha1 governed execution |
 |---|---|---|
-| Codex | Implemented | Enabled only for exact qualified Skill routes |
+| Codex | Implemented | Exact qualified routes, plus truthful Alpha-only Medium fallback in a true no-data state |
 | Ollama | Optional local admin assistant | Disabled for BIC/SAW |
 | Grok | Future adapter slot | Not implemented |
 | Gemini | Future adapter slot | Not implemented |
@@ -40,13 +40,14 @@ test. Merely opening a Job, reading a recommendation, or changing an override do
 evidence to a model.
 
 Startup verifies provider installation and authentication without generating analytical output. A
-ready provider does not imply that every Skill is ready: an unqualified Skill fails closed before
-Scripture evidence is sent.
+ready provider does not imply that every Skill is ready. In Alpha, a true no-data Skill uses the
+governed Medium fallback; stale, failed, unreliable, unsupported, or unavailable states still fail
+closed before Scripture evidence is sent.
 
 ## Exact per-Skill routing
 
-Every governed task manifest carries one registered `skill_id`. SAGE deterministically resolves an
-available route qualified for that exact Skill. A route binds:
+Every governed task manifest carries one registered `skill_id`. SAGE deterministically resolves the
+exact route for that Skill. A route binds:
 
 - provider ID;
 - provider-reported model ID and capability fingerprint;
@@ -60,8 +61,10 @@ Provider-native labels and order are retained. A model, model alias, capability 
 reasoning option, Skill, suite, or policy change produces `UNASSESSED` or `STALE` evidence until that
 exact route is evaluated again.
 
-Operational routing accepts only `RECOMMENDED` or `QUALIFIED`. The model cannot qualify or recommend
-itself: sealed synthetic responses pass through deterministic production validators. Every Skill has
+Automatic routing uses current `RECOMMENDED` or `QUALIFIED` evidence when it exists. In a true
+no-data state, the Alpha policy selects Codex native `medium` and labels it
+`PROVISIONAL_UNQUALIFIED`; Medium is not thereby tested or qualified. The model cannot qualify or
+recommend itself: sealed synthetic responses pass through deterministic production validators. Every Skill has
 three cases—positive, zero-finding, and adversarial—and each case is repeated three times. Any hard
 contract failure is `FAILED`; inconsistent repetitions are `UNRELIABLE`; all required assertions and
 validators passing is `QUALIFIED`.
@@ -100,6 +103,20 @@ The destination must not already exist. This command accepts only reconciled `QU
 and never overwrites `system/config/model-qualification-seeds.json`; human review and a later governed
 source change are required for Core promotion.
 
+## Routing precedence
+
+SAGE has one manual state and two automatic substates:
+
+| State | Selection |
+|---|---|
+| `USER_OVERRIDE` | Use the existing audited exact override when it remains available and qualified for the Skill |
+| `AUTOMATIC / DATA` | Use the deterministic recommendation from current exact qualification data |
+| `AUTOMATIC / NO DATA` | Use provider-native `medium` under the Alpha provisional policy |
+
+Current failed, unreliable, stale, unavailable, hidden, or prohibited routes do not become no-data
+fallback candidates. Configure AI shows the automatic/no-data policy default beside the existing
+Advanced routing override; there is no second manual preference layer.
+
 ## Advanced global override
 
 The optional global override is a diagnostic/Alpha control, not a normal Setup default. It pins one
@@ -131,7 +148,9 @@ Original-language adjudication is one item per request. Secondary-language repor
 exactly one reported item per request and inherits the originating item's exact route. SAGE does not combine
 items or reuse provider conversation state to reduce calls.
 
-Every new execution receipt records the exact route and qualification evidence. Job/Run displays and
+Every new execution receipt records the exact route and selection source. Qualified receipts carry
+qualification evidence; provisional receipts carry the policy routing-basis hash and no
+qualification-evidence claim. Job/Run displays and
 final reports use actual receipt data when available; they never rewrite history using a later
 recommendation.
 
