@@ -27,6 +27,7 @@ from .hashing import sha256_bytes, sha256_file
 from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
 from .model_policy import cache_provider_catalog
+from .ol_referrals import OL_REFERRAL_CONFLICT_CLASSES, OL_REFERRAL_CONTRACT_V1
 from .profiles import load_workflow_profile
 from .routing_override import resolve_routing_mode
 from .sfm_slicer import measure_sfm_text
@@ -283,6 +284,40 @@ def _saw_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
             "evidence_ids": evidence_array,
         },
     }
+    if manifest.get("ol_referral_contract") == OL_REFERRAL_CONTRACT_V1:
+        ol_request["required"].extend(
+            [
+                "conflict_class",
+                "wip_proposition",
+                "reference_proposition",
+                "fundamental_impact",
+                "source_dependency",
+            ]
+        )
+        ol_request["properties"].update(
+            {
+                "conflict_class": {
+                    "type": "string",
+                    "enum": sorted(OL_REFERRAL_CONFLICT_CLASSES),
+                },
+                "wip_proposition": _narrative_field_schema(
+                    narrative_tag,
+                    "State the WIP proposition.",
+                ),
+                "reference_proposition": _narrative_field_schema(
+                    narrative_tag,
+                    "State the REFERENCE proposition.",
+                ),
+                "fundamental_impact": _narrative_field_schema(
+                    narrative_tag,
+                    "Explain how the difference changes the core proposition.",
+                ),
+                "source_dependency": {
+                    "type": "string",
+                    "enum": ["UNRESOLVED_REQUIRES_ORIGINAL_LANGUAGE"],
+                },
+            }
+        )
     ol_resolution = {
         "type": "object",
         "additionalProperties": False,

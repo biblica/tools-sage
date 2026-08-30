@@ -131,7 +131,228 @@ def _meaning_document(manifest: dict, *, request_ref: str | None = None) -> dict
             "reason": "WIP and REFERENCE evidence do not resolve the issue.",
             "evidence_ids": [manifest["allowed_evidence_ids"][0]],
         }]
+        if manifest.get("ol_referral_contract") == "SAW_OL_REFERRAL_ADMISSION_V1":
+            document["ol_review_requests"][0].update(
+                {
+                    "conflict_class": "NEGATION_OR_POLARITY_CONFLICT",
+                    "wip_proposition": "The subject did not leave.",
+                    "reference_proposition": "The subject left.",
+                    "fundamental_impact": "The core event polarity is reversed.",
+                    "source_dependency": "UNRESOLVED_REQUIRES_ORIGINAL_LANGUAGE",
+                }
+            )
     return document
+
+
+def _strict_meaning_manifest() -> dict:
+    """Return a small sealed-contract fixture for direct output validation."""
+    return {
+        "task_id": "saw-rtc-jhn-v1",
+        "scope": "JHN 1:1-2",
+        "expected_references": ["JHN 1:1", "JHN 1:2"],
+        "allowed_evidence_ids": ["WIP", "REFERENCE"],
+        "task_fingerprint": "v1-fixture-fingerprint",
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        },
+        "review_requirements": {
+            "expected_work_unit_ids": ["SAW-RTC-JHN-U001"],
+            "required_checks": ["MEANING_EQUIVALENCE"],
+        },
+        "ol_referral_contract": "SAW_OL_REFERRAL_ADMISSION_V1",
+    }
+
+
+def _strict_referral(**overrides: object) -> dict:
+    """Return one complete V1 referral, with literal independently checked values."""
+    request = {
+        "request_id": "OLR-1",
+        "deferred_finding_id": "OL-F-001",
+        "target_reference": "JHN 1:1",
+        "question": "Which proposition is supported by the original-language text?",
+        "reason": "The routed non-OL evidence cannot settle the fundamental conflict.",
+        "evidence_ids": ["WIP", "REFERENCE"],
+        "conflict_class": "NEGATION_OR_POLARITY_CONFLICT",
+        "wip_proposition": "The subject did not leave.",
+        "reference_proposition": "The subject left.",
+        "fundamental_impact": "The core event polarity is reversed.",
+        "source_dependency": "UNRESOLVED_REQUIRES_ORIGINAL_LANGUAGE",
+    }
+    request.update(overrides)
+    return request
+
+
+def _validate_strict_meaning(tmp_path: Path, requests: list[dict], *, findings: list[dict] | None = None) -> dict:
+    """Validate one exact V1 fixture through the real SAW output boundary."""
+    manifest = _strict_meaning_manifest()
+    document = _meaning_document(manifest)
+    document["ol_review_requests"] = requests
+    document["findings"] = list(findings or [])
+    output_path = tmp_path / "strict-findings.json"
+    output_path.write_text(json.dumps(document), encoding="utf-8")
+    return validate_saw_findings(
+        output_path,
+        task_id=manifest["task_id"],
+        operation="rtc",
+        rtc_stage="REFERENCE_TEXT_COMPARISON",
+        scope_value=manifest["scope"],
+        focus=None,
+        check_type=None,
+        expected_references=manifest["expected_references"],
+        structural_candidate_ids=[],
+        grammar_rule_ids=[],
+        allowed_evidence_ids=manifest["allowed_evidence_ids"],
+        task_fingerprint=manifest["task_fingerprint"],
+        required_review_checks=manifest["review_requirements"]["required_checks"],
+        expected_work_unit_ids=manifest["review_requirements"]["expected_work_unit_ids"],
+        narrative_language="en",
+        ol_referral_contract=manifest["ol_referral_contract"],
+    )
+
+
+@pytest.mark.parametrize(
+    "conflict_class",
+    (
+        "NEGATION_OR_POLARITY_CONFLICT",
+        "PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT",
+        "CORE_EVENT_OR_STATE_CONFLICT",
+        "CORE_PROPOSITION_OMISSION_OR_ADDITION",
+    ),
+)
+def test_strict_ol_referral_accepts_each_closed_conflict_class(
+    tmp_path: Path,
+    conflict_class: str,
+) -> None:
+    """Removing any approved class would incorrectly reject a qualified conflict."""
+    result = _validate_strict_meaning(
+        tmp_path,
+        [_strict_referral(conflict_class=conflict_class)],
+    )
+
+    request = result["ol_review_requests"][0]
+    assert request["conflict_class"] == conflict_class
+    assert len(request["conflict_key"]) == 64
+
+
+def test_strict_ol_referral_rejects_missing_admission_fields(tmp_path: Path) -> None:
+    """A provider cannot bypass admission by omitting its structured assertions."""
+    request = _strict_referral()
+    del request["fundamental_impact"]
+
+    with pytest.raises(ValidationError) as caught:
+        _validate_strict_meaning(tmp_path, [request])
+
+    assert caught.value.code == "SAW_OL_REFERRAL_FIELDS_MISSING"
+
+
+def test_strict_ol_referral_rejects_unsupported_conflict_class(tmp_path: Path) -> None:
+    """Lexical intensity cannot open the closed referral class vocabulary."""
+    with pytest.raises(ValidationError) as caught:
+        _validate_strict_meaning(
+            tmp_path,
+            [_strict_referral(conflict_class="LEXICAL_INTENSITY_DIFFERENCE")],
+        )
+
+    assert caught.value.code == "SAW_OL_REFERRAL_CLASS_INVALID"
+
+
+def test_strict_ol_referral_rejects_equivalent_propositions(tmp_path: Path) -> None:
+    """Equivalent propositions cannot be routed merely for different wording."""
+    with pytest.raises(ValidationError) as caught:
+        _validate_strict_meaning(
+            tmp_path,
+            [_strict_referral(reference_proposition=" the subject DID NOT leave. ")],
+        )
+
+    assert caught.value.code == "SAW_OL_REFERRAL_ADMISSION_INVALID"
+
+
+def test_strict_ol_referral_rejects_duplicate_normalized_conflict(tmp_path: Path) -> None:
+    """Changing provider IDs cannot create two tasks for one semantic conflict."""
+    duplicate = _strict_referral(
+        request_id="OLR-2",
+        deferred_finding_id="OL-F-002",
+        wip_proposition=" the SUBJECT did not leave. ",
+        reference_proposition="THE SUBJECT LEFT.",
+    )
+
+    with pytest.raises(ValidationError) as caught:
+        _validate_strict_meaning(tmp_path, [_strict_referral(), duplicate])
+
+    assert caught.value.code == "SAW_OL_REFERRAL_DUPLICATE"
+
+
+def test_strict_ol_referral_uses_specific_scope_error(tmp_path: Path) -> None:
+    """An admitted source question remains bounded by its sealed meaning task."""
+    with pytest.raises(ValidationError) as caught:
+        _validate_strict_meaning(
+            tmp_path,
+            [_strict_referral(target_reference="JHN 1:3")],
+        )
+
+    assert caught.value.code == "SAW_OL_REFERRAL_SCOPE_INVALID"
+
+
+def test_strict_ol_referral_uses_specific_evidence_error(tmp_path: Path) -> None:
+    """Admission cannot cite evidence that the controller did not route."""
+    with pytest.raises(ValidationError) as caught:
+        _validate_strict_meaning(
+            tmp_path,
+            [_strict_referral(evidence_ids=["EXTERNAL_COMMENTARY"])],
+        )
+
+    assert caught.value.code == "SAW_OL_REFERRAL_EVIDENCE_INVALID"
+
+
+def test_strict_ol_referral_rejects_final_finding_overlap(tmp_path: Path) -> None:
+    """The same issue cannot be both final and deferred to source adjudication."""
+    finding = {
+        "finding_id": "OL-F-001",
+        "target_reference": "JHN 1:1",
+        "category": "MEANING",
+        "issue": "The two renderings assert opposite event polarity.",
+        "required_action": "Resolve the issue after source adjudication.",
+        "action_level": "REVIEW",
+        "confidence": "HIGH",
+        "evidence_ids": ["WIP", "REFERENCE"],
+        "grammar_rule_ids": [],
+        "original_language_evidence": "",
+    }
+
+    with pytest.raises(ValidationError) as caught:
+        _validate_strict_meaning(tmp_path, [_strict_referral()], findings=[finding])
+
+    assert caught.value.code == "SAW_OL_REFERRAL_FINDING_OVERLAP"
+
+
+def test_legacy_meaning_output_without_contract_retains_sealed_schema(tmp_path: Path) -> None:
+    """Absence of V1 keeps an already-sealed task on its original referral contract."""
+    manifest = _strict_meaning_manifest()
+    manifest.pop("ol_referral_contract")
+    document = _meaning_document(manifest, request_ref="JHN 1:1")
+    output_path = tmp_path / "legacy-findings.json"
+    output_path.write_text(json.dumps(document), encoding="utf-8")
+
+    result = validate_saw_findings(
+        output_path,
+        task_id=manifest["task_id"],
+        operation="rtc",
+        rtc_stage="REFERENCE_TEXT_COMPARISON",
+        scope_value=manifest["scope"],
+        focus=None,
+        check_type=None,
+        expected_references=manifest["expected_references"],
+        structural_candidate_ids=[],
+        grammar_rule_ids=[],
+        allowed_evidence_ids=manifest["allowed_evidence_ids"],
+        task_fingerprint=manifest["task_fingerprint"],
+        required_review_checks=manifest["review_requirements"]["required_checks"],
+        expected_work_unit_ids=manifest["review_requirements"]["expected_work_unit_ids"],
+        narrative_language="en",
+    )
+
+    assert "conflict_key" not in result["ol_review_requests"][0]
 
 
 def test_bounded_target_merge_preserves_out_of_scope_content() -> None:
@@ -342,12 +563,17 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     config = load_ecosystem(root / "ecosystem.yml")
     plan = create_act_task(config, workflow="saw", operation="rtc", output_project_id="usWIP", contemporary_source_id="usNIVv2", scope_value="MAT 1:1-3")
     assert plan["current_stage"] == "REFERENCE_TEXT_COMPARISON"
+    assert plan["ol_referral_contract"] == "SAW_OL_REFERRAL_ADMISSION_V1"
     meaning_path = Path(plan["manifest_path"])
     meaning = json.loads(meaning_path.read_text(encoding="utf-8"))
+    assert meaning["ol_referral_contract"] == "SAW_OL_REFERRAL_ADMISSION_V1"
     act_text = (meaning_path.parent / "ACT.md").read_text(encoding="utf-8")
-    assert "Defer every material content-bearing variance" in act_text
+    assert "if and only if every admission rule passes" in act_text
+    assert "PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT" in act_text
+    assert "lexical nuance or intensity" in act_text
+    assert "equivalent paraphrase" in act_text
     assert "OT requests to the Job-bound Hebrew resource and NT requests to the Job-bound Greek resource" in act_text
-    assert "Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency defects remain direct RTC findings" in act_text
+    assert "one issue at the smallest necessary Scripture scope" in act_text
     (meaning_path.parent / "output" / "findings.json").write_text(json.dumps(_meaning_document(meaning, request_ref="MAT 1:2")), encoding="utf-8")
     submit_act_task(config, meaning_path)
     next_stage = continue_saw_plan(config, Path(plan["plan_path"]))
@@ -360,6 +586,9 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     assert ol["review_requirements"]["expected_ol_request_ids"] == [request_id]
     assert request["submitted_request_id"] == "OLR-1"
     assert request["submitted_deferred_finding_id"] == "OL-F-001"
+    assert request["conflict_class"] == "NEGATION_OR_POLARITY_CONFLICT"
+    assert len(request["conflict_key"]) == 64
+    assert ol["ol_referral_contract"] == "SAW_OL_REFERRAL_ADMISSION_V1"
     assert ol["packets"]["original_language"]["evidence_id"] == "ORIGINAL_LANGUAGE_GREEK"
     assert "ORIGINAL_LANGUAGE_GREEK" in ol["allowed_evidence_ids"]
     assert "ORIGINAL_LANGUAGE" not in ol["allowed_evidence_ids"]
@@ -445,6 +674,10 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     aggregate = json.loads(Path(final["aggregate_path"]).read_text(encoding="utf-8"))
     assert aggregate["ol_review_requests"][0]["request_id"] == request_id
     assert aggregate["ol_review_requests"][0]["submitted_request_id"] == "OLR-1"
+    assert aggregate["ol_review_requests"][0]["conflict_key"] == request["conflict_key"]
+    assert aggregate["ol_review_requests"][0]["conflict_class"] == (
+        "NEGATION_OR_POLARITY_CONFLICT"
+    )
     assert aggregate["ol_resolutions"][0]["outcome"] == "NO_FINDING"
 
 
@@ -482,6 +715,11 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
             "question": "Resolve the third exact bounded semantic ambiguity from the OL evidence.",
             "reason": "WIP and REFERENCE evidence do not resolve the third issue.",
             "evidence_ids": [meaning_manifest["allowed_evidence_ids"][0]],
+            "conflict_class": "PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT",
+            "wip_proposition": "The first participant received the message.",
+            "reference_proposition": "The second participant received the message.",
+            "fundamental_impact": "The core recipient identity differs.",
+            "source_dependency": "UNRESOLVED_REQUIRES_ORIGINAL_LANGUAGE",
         }
     )
     (meaning_path.parent / "output" / "findings.json").write_text(
@@ -518,6 +756,15 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
         manifest["review_requirements"]["expected_ol_requests"][0]["submitted_request_id"]
         for manifest in manifests
     ] == ["OLR-1", "OLR-3"]
+    assert all(
+        manifest["ol_referral_contract"] == "SAW_OL_REFERRAL_ADMISSION_V1"
+        for manifest in manifests
+    )
+    assert all(
+        len(manifest["review_requirements"]["expected_ol_requests"][0]["conflict_key"])
+        == 64
+        for manifest in manifests
+    )
     assert [
         manifest["review_requirements"]["stage_references"]
         for manifest in manifests
