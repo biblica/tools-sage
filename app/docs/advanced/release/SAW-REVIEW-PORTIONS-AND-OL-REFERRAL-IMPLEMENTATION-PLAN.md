@@ -10,7 +10,7 @@
 
 **Spec:** `app/docs/advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-DESIGN.md`
 
-**Status:** Runtime, qualification, compatibility, and progress work is implemented and verified on the Alpha branch. The release-checkpoint and push rows remain open until their commands have completed.
+**Status:** Completed, regression-verified, and pushed on `alpha/0.02alpha1`. Verification recorded 882 passed, 2 established skips, a clean 620-file source audit, and 3,042/3,042 documented Python procedures.
 
 ## Global Constraints
 
@@ -358,20 +358,20 @@ Expected: all tests pass, with only established skips.
 
 Record the implemented contract, exact test totals, legacy compatibility, and Operator-visible terminology. Mark completed plan checkboxes only after their evidence exists.
 
-- [ ] **Step 4: Verify the release diff**
+- [x] **Step 4: Verify the release diff**
 
 Run: `git diff --check && git status --short --branch && git log --oneline --decorate origin/alpha/0.02alpha1..HEAD`
 
 Expected: no whitespace errors, only intended Alpha commits, and no untracked runtime/test artifacts.
 
-- [ ] **Step 5: Commit the verified release checkpoint**
+- [x] **Step 5: Commit the verified release checkpoint**
 
 ```bash
 git add app/docs/advanced/release
 git commit -m "docs: record SAW referral hardening verification"
 ```
 
-- [ ] **Step 6: Push only the Alpha branch**
+- [x] **Step 6: Push only the Alpha branch**
 
 Run: `git push origin alpha/0.02alpha1`
 
