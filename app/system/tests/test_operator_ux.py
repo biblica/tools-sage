@@ -311,7 +311,7 @@ def test_saw_continuation_displays_composite_unit_progress(make_workspace, monke
 
     center._continue_saw_plan(job, run)
 
-    assert "SAW work unit 1/10: MAT 1:1-2" in center.io.output.getvalue()
+    assert "Review portion:   1/10 — MAT 1:1-2" in center.io.output.getvalue()
 
 
 def test_saw_route_block_propagates_before_visible_work_or_run_mutation(
@@ -387,14 +387,26 @@ def test_saw_plan_continuation_advances_all_submitted_units_without_menu_round_t
                 "completed_units": 0,
                 "total_units": 2,
                 "composite_stage": "REFERENCE_TEXT_COMPARISON",
-                "next_unit": {"manifest_path": str(manifests[0]), "scope": "MAT 1:1-12"},
+                "next_unit": {
+                    "manifest_path": str(manifests[0]),
+                    "scope": "MAT 1:1-12",
+                    "review_portion_id": "SAW-RTC-MAT-U001",
+                    "review_portion_index": 1,
+                    "review_portion_total": 2,
+                },
             },
             {
                 "status": "NEXT_WORK_UNIT",
                 "completed_units": 1,
                 "total_units": 2,
                 "composite_stage": "REFERENCE_TEXT_COMPARISON",
-                "next_unit": {"manifest_path": str(manifests[1]), "scope": "MAT 1:13-25"},
+                "next_unit": {
+                    "manifest_path": str(manifests[1]),
+                    "scope": "MAT 1:13-25",
+                    "review_portion_id": "SAW-RTC-MAT-U002",
+                    "review_portion_index": 2,
+                    "review_portion_total": 2,
+                },
             },
             {"status": "COMPLETE"},
         )
@@ -415,10 +427,62 @@ def test_saw_plan_continuation_advances_all_submitted_units_without_menu_round_t
     assert completed.status == "COMPLETE"
     assert actions == manifests
     rendered = center.io.output.getvalue()
-    assert "SAW work unit 1/2: MAT 1:1-12" in rendered
-    assert "SAW work unit 2/2: MAT 1:13-25" in rendered
+    assert "Review range:     MAT 1" in rendered
+    assert "Review portion:   1/2 — MAT 1:1-12" in rendered
+    assert "Review portion:   2/2 — MAT 1:13-25" in rendered
+    assert "SAW work unit" not in rendered
     assert "SAW RUN COMPLETE" in rendered
     assert "Reference Text Comparison (RTC)" in rendered
+
+
+def test_saw_source_check_progress_is_local_to_stable_review_portion(
+    make_workspace,
+    monkeypatch,
+) -> None:
+    """A source case must not inflate or renumber the approved review portions."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="JHN 1:1-21:25")
+    plan_path = run.root / "plans" / "composite.json"
+    run = store.update_run(run, plan_path=str(plan_path), status="COMPOSITE")
+    manifest = run.root / "tasks" / "source-case" / "task-manifest.json"
+    responses = iter(
+        (
+            {
+                "status": "NEXT_WORK_UNIT",
+                "completed_units": 19,
+                "total_units": 97,
+                "composite_stage": "SELECTIVE_OL_ADJUDICATION",
+                "next_unit": {
+                    "manifest_path": str(manifest),
+                    "scope": "JHN 5:34",
+                    "parent_review_portion_id": "SAW-RTC-JHN-U004",
+                    "review_portion_scope": "JHN 5:1-47",
+                    "review_portion_index": 4,
+                    "review_portion_total": 19,
+                    "stage_case_index": 2,
+                    "stage_case_total": 5,
+                },
+            },
+            {"status": "COMPLETE"},
+        )
+    )
+    center = _center(root, [""])
+    monkeypatch.setattr(center, "controller", lambda _job, _arguments: next(responses))
+    monkeypatch.setattr(
+        center,
+        "_task_action",
+        lambda _job, current, _path: (current, True),
+    )
+
+    center._continue_saw_plan(job, run)
+
+    rendered = center.io.output.getvalue()
+    assert "Review range:     JHN 1:1-21:25" in rendered
+    assert "Review portion:   4/19 — JHN 5:1-47" in rendered
+    assert "Source check:     2/5 — JHN 5:34" in rendered
+    assert "work unit 20/97" not in rendered.casefold()
 
 
 def test_stc_run_template_uses_primary_source_and_shared_completion_layout(
@@ -441,7 +505,8 @@ def test_stc_run_template_uses_primary_source_and_shared_completion_layout(
     rendered = center.io.output.getvalue()
     assert f"{job.output_project} checked against GRK OL" in rendered
     assert f"checked against {job.contemporary_source}" not in rendered
-    assert "Checking Source Text Correspondence (STC) for MAT 1" in rendered
+    assert "Check:            Source Text Correspondence (STC)" in rendered
+    assert "Review range:     MAT 1" in rendered
     assert "SAW RUN COMPLETE" in rendered
     assert f"{'Check':<20}Source Text Correspondence (STC)" in rendered
     assert "SAGE/localdata/reports" in rendered
@@ -488,7 +553,7 @@ def test_stc_normal_run_hides_controller_chatter_behind_rtc_progress_template(
 
     rendered = center.io.output.getvalue()
     assert completed.status == "COMPLETE"
-    assert "Working on SAW work unit 1/1: MAT 1" in rendered
+    assert "Review portion:   1/1 — MAT 1" in rendered
     assert "SAW RUN COMPLETE" in rendered
     for internal in (
         "Checking SAW resources for each planned section",
