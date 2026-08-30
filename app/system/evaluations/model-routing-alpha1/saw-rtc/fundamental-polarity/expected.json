@@ -1,29 +1,29 @@
 {
-  "case_id": "false-ol-referral",
-  "case_kind": "ADVERSARIAL",
-  "expected_decision": "NO_OL_REFERRAL",
+  "case_id": "fundamental-polarity",
+  "case_kind": "POSITIVE",
+  "expected_decision": "OL_REFERRAL_ADMITTED",
   "expected_evidence_ids": [
     "SYNTHETIC_PRIMARY"
   ],
   "expected_finding_ids": [],
   "expected_reviewed_item_ids": [
-    "ITEM-FALSE-OL-REFERRAL"
+    "ITEM-FUNDAMENTAL-POLARITY"
   ],
   "passing_response": {
-    "case_id": "false-ol-referral",
-    "decision": "NO_OL_REFERRAL",
+    "case_id": "fundamental-polarity",
+    "decision": "OL_REFERRAL_ADMITTED",
     "evidence_ids": [
       "SYNTHETIC_PRIMARY"
     ],
     "finding_ids": [],
     "prohibited_actions": [],
     "reviewed_item_ids": [
-      "ITEM-FALSE-OL-REFERRAL"
+      "ITEM-FUNDAMENTAL-POLARITY"
     ],
     "schema_version": "1.0",
     "scope": "MAT 1:1",
     "skill_id": "saw-rtc",
-    "task_id": "EVAL-SAW-RTC-FALSE-OL-REFERRAL"
+    "task_id": "EVAL-SAW-RTC-FUNDAMENTAL-POLARITY"
   },
   "prohibited_actions": [
     "EXPANDED_SCOPE",

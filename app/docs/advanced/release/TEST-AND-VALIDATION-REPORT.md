@@ -31,7 +31,7 @@ non-Textual TUI service/state coverage remains active.
 Schema validation covers **42 schemas / 42 IDs / 42 owner mappings** and reports PASS with no
 warnings/errors. Package validation reports READY with no warnings/errors. Source deep audit covers
 605 governed files and **2,992 / 2,992 documented Python procedures** and reports PASS with no
-warnings/errors. Sealed model-evaluation regeneration verifies **7 Skills / 21 cases / 85 files**.
+warnings/errors. Sealed model-evaluation regeneration verifies **7 Skills / 23 cases / 93 files**.
 
 This is development evidence, not a production-release claim. Formal exact-source hardening receipts
 remain machine-local evidence and must be regenerated after any governed-source change. Deterministic

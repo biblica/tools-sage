@@ -89,6 +89,9 @@ check_policy:
         mode: NORMAL
     original_language:
       source_text_drift_adjudication: PROHIBITED
+      # New RTC tasks seal SAW_OL_REFERRAL_ADMISSION_V1 in their manifests.
+      # The runtime admits only closed-class, fundamental, unresolved source conflicts
+      # and creates exactly one isolated selective task per admitted request.
 
 permissions:
   may_write_projects: []

@@ -2106,6 +2106,8 @@ def _create_approved_saw_rtc_stage(
     """Create the exact approved work units for a partitionable SAW RTC stage."""
     units = [dict(item) for item in approved_plan.get("units", [])]
     references_by_portion: dict[str, list[str]] = {}
+    # Stage references are grouped only after each complete case has been proven to
+    # belong to one approved parent; meaning stages retain every approved portion.
     for reference in rtc_stage_references:
         progress = _review_portion_for_reference(units, str(reference))
         references_by_portion.setdefault(progress["review_portion_id"], []).append(
@@ -2827,6 +2829,8 @@ def _create_saw_rtc_composite(
         ).encode("utf-8")
     )
     plan_id = f"SAW-RTC-{scope.book}-{plan_seed[:10].upper()}"
+    # The approved inventory is copied into lightweight progress provenance; the
+    # signed/approved source plan itself is never rewritten by stage creation.
     review_portions = (
         [
             {

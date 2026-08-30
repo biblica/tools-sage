@@ -18,7 +18,13 @@ EXPECTED_CASES = {
     "bic-inspect": ["seeded-material-issue", "clean-source", "forged-evidence"],
     "bic-rewrite": ["authorized-challenges", "no-change-required", "scope-expansion"],
     "bic-self-check": ["detect-regression", "approve-clean", "blocking-regression"],
-    "saw-rtc": ["seeded-variance", "aligned-pair", "false-ol-referral"],
+    "saw-rtc": [
+        "seeded-variance",
+        "aligned-pair",
+        "false-ol-referral",
+        "fundamental-polarity",
+        "participant-identity",
+    ],
     "saw-stc": ["seeded-correspondence", "complete-no-finding", "reference-contamination"],
     "saw-focused-check": ["bounded-answer", "bounded-zero-result", "question-expansion"],
     "saw-original-language-review": [
@@ -35,8 +41,8 @@ def _evaluation_module():
     return importlib.import_module("sage.model_evaluation")
 
 
-def test_contract_inventory_has_three_exact_cases_per_registered_skill(package_root: Path) -> None:
-    """The sealed Alpha suite must cover positive, zero, and adversarial behavior for every Skill."""
+def test_contract_inventory_has_exact_registered_cases_per_skill(package_root: Path) -> None:
+    """Each sealed Skill suite must match its explicit semantic case inventory."""
     path = package_root / "system/config/skill-evaluation-contracts.json"
     assert path.is_file()
     contracts = json.loads(path.read_text(encoding="utf-8"))
@@ -50,6 +56,18 @@ def test_contract_inventory_has_three_exact_cases_per_registered_skill(package_r
         contracts["skills"][skill_id]["repetitions_per_case"] == 3
         for skill_id in EXPECTED_CASES
     )
+    for skill_id, case_ids in EXPECTED_CASES.items():
+        for case_id in case_ids:
+            manifest = json.loads(
+                (
+                    package_root
+                    / "system/evaluations/model-routing-alpha1"
+                    / skill_id
+                    / case_id
+                    / "task-manifest.json"
+                ).read_text(encoding="utf-8")
+            )
+            assert manifest["maximum_review_items_per_request"] == 1
 
 
 def test_case_builder_verifies_the_committed_sealed_bundles(package_root: Path) -> None:
@@ -67,7 +85,7 @@ def test_case_builder_verifies_the_committed_sealed_bundles(package_root: Path) 
     payload = json.loads(result.stdout)
     assert payload["status"] == "PASS"
     assert payload["skill_count"] == 7
-    assert payload["case_count"] == 21
+    assert payload["case_count"] == 23
 
 
 class PassingTransport:
@@ -309,7 +327,7 @@ def test_evaluation_rejects_response_route_metadata_mismatch(package_root: Path)
     )
 
     assert receipt["qualification_status"] == "FAILED"
-    assert receipt["hard_failure_count"] == 9
+    assert receipt["hard_failure_count"] == 15
     assert all(
         "provider identity" in row["hard_errors"][0].lower()
         for row in receipt["attempts"]
@@ -344,7 +362,7 @@ def test_evaluation_rejects_missing_exact_route_metadata(package_root: Path) -> 
     )
 
     assert receipt["qualification_status"] == "FAILED"
-    assert receipt["hard_failure_count"] == 9
+    assert receipt["hard_failure_count"] == 15
     assert all(
         {"Model identity differs from the evaluated route", "Reasoning identity differs from the evaluated route"}
         <= set(row["hard_errors"])

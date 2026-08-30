@@ -216,7 +216,7 @@ git commit -m "feat: migrate provider settings and audit route overrides"
 
 **Step 1: Write failing inventory and reconciliation tests.**
 
-Require exactly three sealed cases per Skill and exactly three independent attempts per case. Use these stable case IDs:
+Require an explicit sealed case inventory per Skill and exactly three independent attempts per case. The initial inventory used three cases per Skill; later RTC referral hardening adds two RTC-only semantic boundary cases.
 
 | Skill | Positive | Zero finding | Adversarial |
 |---|---|---|---|
@@ -490,7 +490,7 @@ Record the combined receipt path and SHA-256. This supersedes the pre-implementa
 
 **Step 1: Run controlled live evaluation—never pytest—against enabled Alpha providers.**
 
-For each available Codex model and each of the seven Skills, query current native reasoning options, evaluate lowest to highest with three repetitions of all three sealed cases, and stop at the first qualifying setting unless comparison was explicitly requested. Preserve every local receipt, including `FAILED` and `UNRELIABLE` outcomes.
+For each available Codex model and each of the seven Skills, query current native reasoning options, evaluate lowest to highest with three repetitions of every case in that Skill's sealed inventory, and stop at the first qualifying setting unless comparison was explicitly requested. Preserve every local receipt, including `FAILED` and `UNRELIABLE` outcomes.
 
 Do not use live Job/Project data. Do not run multiple OL items or secondary rendering items in one request.
 
@@ -524,7 +524,7 @@ Record defects on `alpha/0.02alpha1`, fix test-first, and repeat exact-source ha
 ## Plan self-review checklist
 
 - Every current global-selection consumer is covered: `llm_settings.py`, `model_service.py`, `llm_tasks.py`, `report_translation.py`, CLI, menu, and TUI.
-- Every registered analytical Skill has one exact policy key and three sealed cases.
+- Every registered analytical Skill has one exact policy key and an explicit sealed case inventory.
 - Qualification uses production validators and fake-provider tests; models never judge themselves.
 - Runtime cannot bypass qualification through direct flags or override state.
 - Receipt provenance reaches both BIC and SAW reports without changing deterministic composition ownership.

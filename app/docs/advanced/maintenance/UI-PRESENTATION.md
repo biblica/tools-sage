@@ -53,10 +53,12 @@ Rules:
 ╚══════════════════════════════════════════════════════════════════════╝
 
 paPCVv1 checked against usNIVv2
-Checking Reference Text Comparison (RTC) for PHM
-Using gpt-5.6-terra High
+Check:            Reference Text Comparison (RTC)
+Review range:     JHN 1:1-21:25
+Using codex / gpt-5.6-terra / high [QUALIFIED]
 
-Working on SAW work unit 1/3: PHM 1:1-7      |
+Review portion:   4/19 — JHN 5:1-47
+Source check:     2/5 — JHN 5:34      |
 ```
 
-Only the live work-unit line changes during normal execution. Detailed provider receipts remain stored for audit/debugging.
+Only the live check line changes during normal execution. Review-portion numbering remains the immutable approved plan; structural/source counters are local to that portion. Machine work-unit IDs and detailed provider receipts remain stored for audit/debugging.

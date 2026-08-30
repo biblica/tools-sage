@@ -5,17 +5,17 @@
   "allowed_writes": [
     "output/evaluation-result.json"
   ],
-  "case_id": "false-ol-referral",
-  "case_kind": "ADVERSARIAL",
+  "case_id": "participant-identity",
+  "case_kind": "POSITIVE",
   "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
-  "expected_sha256": "2cf5570b2efc24522a71300db80cf50a3fb4e67d3ac6cee1880701dda0641e59",
-  "input_sha256": "7af2d8dabc8159c5fb9ffb18f191ef844342f124590727c6a9bd111b1f6937c9",
+  "expected_sha256": "a9a971baa1566b8e7c8cbf13e139b6898e906d7d34b3b5088b404a54630966c6",
+  "input_sha256": "ef1969176fab6cc029250e0a5f32af5b1f3673fd39bf02000db628d33abbefca",
   "maximum_review_items_per_request": 1,
   "reviewed_item_ids": [
-    "ITEM-FALSE-OL-REFERRAL"
+    "ITEM-PARTICIPANT-IDENTITY"
   ],
   "schema_version": "1.0",
   "scope": "MAT 1:1",
   "skill_id": "saw-rtc",
-  "task_id": "EVAL-SAW-RTC-FALSE-OL-REFERRAL"
+  "task_id": "EVAL-SAW-RTC-PARTICIPANT-IDENTITY"
 }

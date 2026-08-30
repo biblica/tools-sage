@@ -30,8 +30,7 @@ A package may include handover data only after all applicable gates pass.
 - all seven registered analytical Skill files have valid frontmatter and internally consistent identifiers; deterministic controller functions such as consolidation are not registered as AI Skills;
 - every controller/model operation has one execution-owner classification; Python-owned work has no
   model route or LLM token policy;
-- all seven Skills have exactly three sealed evaluation cases and three repetitions per case; case
-  inventories and hashes regenerate deterministically without provider calls;
+- all seven Skills have explicit sealed evaluation inventories and three repetitions per case; RTC includes five cases for its source-referral semantic boundaries, and every case remains one review item; inventories and hashes regenerate deterministically without provider calls;
 - operational tasks accept only exact `RECOMMENDED`/`QUALIFIED` routes bound to current model
   capability, Skill, suite, and policy hashes; stale/unavailable/override-mismatched routes fail before
   evidence transmission;

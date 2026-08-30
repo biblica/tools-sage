@@ -1,0 +1,4 @@
+\id MAT SAGE synthetic evaluation data
+\c 1
+\v 1 Synthetic tokens for saw-rtc case participant-identity.
+\rem WIP identifies participant A as the recipient; REFERENCE identifies participant B as the recipient. No reversal is required: the core recipient identity differs, and routed non-source evidence cannot settle it. Admit one PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT referral.

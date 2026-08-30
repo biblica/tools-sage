@@ -1,0 +1,4 @@
+\id MAT SAGE synthetic evaluation data
+\c 1
+\v 1 Synthetic tokens for saw-rtc case fundamental-polarity.
+\rem WIP asserts that the synthetic subject did not leave; REFERENCE asserts that the same subject left. Routed non-source evidence cannot settle the opposite event polarity. Admit one NEGATION_OR_POLARITY_CONFLICT referral.

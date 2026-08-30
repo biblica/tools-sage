@@ -65,7 +65,7 @@ Automatic routing uses current `RECOMMENDED` or `QUALIFIED` evidence when it exi
 no-data state, the Alpha policy selects Codex native `medium` and labels it
 `PROVISIONAL_UNQUALIFIED`; Medium is not thereby tested or qualified. The model cannot qualify or
 recommend itself: sealed synthetic responses pass through deterministic production validators. Every Skill has
-three cases—positive, zero-finding, and adversarial—and each case is repeated three times. Any hard
+an explicit positive, zero-finding, and adversarial inventory, extended where a Skill has additional semantic boundary criteria; each case is repeated three times. Any hard
 contract failure is `FAILED`; inconsistent repetitions are `UNRELIABLE`; all required assertions and
 validators passing is `QUALIFIED`.
 
@@ -82,8 +82,7 @@ validators passing is `QUALIFIED`.
 
 Evaluation uses only packaged synthetic cases. For every selected model/Skill, SAGE tests the
 provider's advertised reasoning settings in provider order and stops at the first `QUALIFIED`
-setting. Each tested setting performs nine isolated attempts: three repetitions of three sealed
-cases. `--comparison` explicitly continues through every advertised setting. A provider without a
+setting. Most tested settings perform nine isolated attempts. SAW RTC performs fifteen because its five-case suite adds fundamental polarity and participant-identity referral boundaries. `--comparison` explicitly continues through every advertised setting. A provider without a
 reasoning control is evaluated once as `provider-default`.
 
 Evaluation must not use Operator Jobs, Projects, reports, or Scripture. It is an explicit Alpha

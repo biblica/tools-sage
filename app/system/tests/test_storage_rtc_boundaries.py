@@ -559,6 +559,8 @@ def test_saw_submission_canonicalizes_provider_local_finding_id_syntax(package_r
 
 def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_root: Path, make_workspace) -> None:
     """Selective OL reviews only requested coordinates and cannot submit a finding without OL evidence."""
+    # Maintenance invariant: the admitted MAT 1:2 question must be the only source
+    # scope inherited by the adjudication task and its final aggregate.
     root = make_workspace(qualification_status="VALIDATED", verse_max=3)
     _initialize(package_root, root)
     saw_profile = root / "system" / "config" / "workflows" / "saw" / "profile.yml"

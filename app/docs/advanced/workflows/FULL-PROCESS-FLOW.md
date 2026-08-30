@@ -56,7 +56,9 @@ batch finalized Run results into Job report catalog
         `--> reports/<BOOK>/<BOOK>_<CCC>_RTC_OPERATOR-NOTE.txt
 ```
 
-Each AI stage is an isolated governed task inside the same Run. The structural stage is covered only for routed structural-candidate coordinates; the required meaning stage covers the complete parent RTC Run scope. Structural and meaning stages receive no OL Scripture. The meaning stage may defer exact issues to OL using request IDs plus reserved deferred finding IDs. Only the selective OL stage receives the exact requested coordinates and configured Job-bound GRK/HEB evidence. It must return one structured OL resolution per request; finalization preserves that request/resolution ledger.
+Each AI stage is an isolated governed task inside the same Run. The structural stage covers only routed structural-candidate coordinates; the required meaning stage covers every immutable approved review portion. Structural and meaning stages receive no OL Scripture. The meaning stage may defer an issue only through `SAW_OL_REFERRAL_ADMISSION_V1`: a fundamental incompatible proposition, one of four closed conflict classes, source-dependent and unresolved by routed non-OL evidence, one smallest-scope issue, and unique. Python validates the structured admission and derives its conflict key. Only the selective OL stage receives the exact requested coordinates and configured Job-bound GRK/HEB evidence. Each request becomes its own task and returns exactly one resolution; finalization preserves the request/resolution ledger.
+
+Operator progress reports the stable `Review range`, immutable `Review portion n/N`, and local `Structural check` or `Source check` counters. Stage cases cannot cross approved portions; machine task totals never replace the approved portion denominator.
 
 Run-local tasks, validation receipts, and raw final results remain governed Job provenance.
 Deterministic finalization consolidates compatible chapter results, stores the canonical combined

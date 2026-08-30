@@ -1,4 +1,4 @@
-# Sealed model evaluation — saw-rtc — false-ol-referral
+# Sealed model evaluation — saw-rtc — fundamental-polarity
 
 Use only input.fixture.txt and the registered Skill contract.
 Return one JSON object matching the evaluation-result schema.

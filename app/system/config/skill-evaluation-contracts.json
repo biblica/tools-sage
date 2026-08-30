@@ -155,31 +155,43 @@
     "saw-rtc": {
       "cases": [
         {
-          "bundle_sha256": "cf317eab192bddebca8933ea9785f6efa27f61df999491e74f2e4e347ff5d2a3",
+          "bundle_sha256": "c81beb7b4466669c402f55c7da939020106085df5d573ccf39d03045c774131e",
           "case_id": "seeded-variance",
           "case_kind": "POSITIVE",
           "path": "system/evaluations/model-routing-alpha1/saw-rtc/seeded-variance"
         },
         {
-          "bundle_sha256": "f8cacbb6948a3eb7008769a15f92d7b2d89d5512dbaf7aa13db67e4b190a2d99",
+          "bundle_sha256": "5e9a7fc9a0dd6aecbd655c1da24ecd59a42e73bf7a15e16dd12b411fbaa8f202",
           "case_id": "aligned-pair",
           "case_kind": "ZERO_FINDING",
           "path": "system/evaluations/model-routing-alpha1/saw-rtc/aligned-pair"
         },
         {
-          "bundle_sha256": "b545b75d3129b0c22b9fdac490b574aca7bc51b0b2d9cab656cef03464b12725",
+          "bundle_sha256": "39882936c225fb5cfffb0c0a433d1a14b24bffbf621a7218bc281f64a18dc319",
           "case_id": "false-ol-referral",
           "case_kind": "ADVERSARIAL",
           "path": "system/evaluations/model-routing-alpha1/saw-rtc/false-ol-referral"
+        },
+        {
+          "bundle_sha256": "71b8b168162f4021e3ec834df1432ba455f01289cecedbc1d7d773e4b5cddeb2",
+          "case_id": "fundamental-polarity",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/saw-rtc/fundamental-polarity"
+        },
+        {
+          "bundle_sha256": "bfae3cf2eafa6acc216bea253f3ebd683672137670de3e692da1d37d5072ad35",
+          "case_id": "participant-identity",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/saw-rtc/participant-identity"
         }
       ],
-      "disqualifying_behavior": "Change coverage, misuse original-language referral, or finalize a referred dispute.",
+      "disqualifying_behavior": "Change coverage, refer nuance or equivalent wording, miss an admitted polarity/participant conflict, or finalize a referred dispute.",
       "execution_class": "GOVERNED_SKILL",
       "repetitions_per_case": 3,
-      "required_semantic_success": "Complete exact WIP and Reference coverage and report only seeded variances.",
+      "required_semantic_success": "Complete exact WIP and Reference coverage, admit only fundamental source-dependent conflicts, and keep every referral isolated.",
       "suite_id": "alpha1-saw-rtc",
-      "suite_sha256": "d67fa243de3c348eea245de7ca452ff4580a09386c18cf144a25204a0b1096f9",
-      "suite_version": "1.0",
+      "suite_sha256": "62a2721e373bbf84c020f1262eb8278c94df8f207cd131d94847555ba759432b",
+      "suite_version": "1.1",
       "validator_id": "sealed-semantic-contract-v1"
     },
     "saw-stc": {
