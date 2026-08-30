@@ -1,6 +1,6 @@
 # SAW review portions and OL referral admission design
 
-Status: design approved in chat; written specification pending Operator review.
+Status: implemented and regression-verified on `alpha/0.02alpha1`; Operator field acceptance remains pending.
 
 ## Purpose
 
