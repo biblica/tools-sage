@@ -332,6 +332,16 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/evaluations/model-routing-alpha1/saw-rtc/false-ol-referral/expected.json`
 - `system/evaluations/model-routing-alpha1/saw-rtc/false-ol-referral/input.fixture.txt`
 - `system/evaluations/model-routing-alpha1/saw-rtc/false-ol-referral/task-manifest.json`
+- `system/evaluations/model-routing-alpha1/saw-rtc/fundamental-polarity`
+- `system/evaluations/model-routing-alpha1/saw-rtc/fundamental-polarity/ACT.md`
+- `system/evaluations/model-routing-alpha1/saw-rtc/fundamental-polarity/expected.json`
+- `system/evaluations/model-routing-alpha1/saw-rtc/fundamental-polarity/input.fixture.txt`
+- `system/evaluations/model-routing-alpha1/saw-rtc/fundamental-polarity/task-manifest.json`
+- `system/evaluations/model-routing-alpha1/saw-rtc/participant-identity`
+- `system/evaluations/model-routing-alpha1/saw-rtc/participant-identity/ACT.md`
+- `system/evaluations/model-routing-alpha1/saw-rtc/participant-identity/expected.json`
+- `system/evaluations/model-routing-alpha1/saw-rtc/participant-identity/input.fixture.txt`
+- `system/evaluations/model-routing-alpha1/saw-rtc/participant-identity/task-manifest.json`
 - `system/evaluations/model-routing-alpha1/saw-rtc/seeded-variance`
 - `system/evaluations/model-routing-alpha1/saw-rtc/seeded-variance/ACT.md`
 - `system/evaluations/model-routing-alpha1/saw-rtc/seeded-variance/expected.json`
@@ -586,6 +596,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/ollama_policy.py`
 - `system/src/sage/operator_overrides.py`
 - `system/src/sage/original_language_resources.py`
+- `system/src/sage/ol_referrals.py`
 - `system/src/sage/out_of_box_reset.py`
 - `system/src/sage/paratext_catalog.py`
 - `system/src/sage/plan_continuation.py`

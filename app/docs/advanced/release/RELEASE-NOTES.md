@@ -12,7 +12,7 @@
 - Preserves PRIMARY plus inert future SECONDARY original-language authority registration without analytical effect unless explicitly routed.
 - Replaces normal global model/reasoning selection with provider-only Setup and deterministic exact
   per-Skill route resolution using provider-native reasoning labels.
-- Adds sealed three-case, three-repetition route qualification for all seven analytical Skills, an
+- Adds sealed three-repetition route qualification for all seven analytical Skills, with explicit per-Skill case inventories and five RTC referral-boundary cases, an
   audited exact-route override, fail-closed stale/unavailable handling, and route evidence in task
   receipts, Job/Run status, and final reports.
 - Adds the Alpha automatic/no-data fallback: Codex native Medium is executable only in a true absence
@@ -23,6 +23,8 @@
   report composition/naming, and finalization; these operations have no LLM tokenization.
 - Enforces one request per source-text adjudication item and one request per secondary-language report
   item, without provider conversation reuse.
+- Seals `SAW_OL_REFERRAL_ADMISSION_V1` on new RTC Runs: four closed fundamental-conflict classes, fail-closed structured assertions, controller-derived conflict keys, duplicate/overlap rejection, and legacy readability for pre-contract tasks.
+- Separates Operator `Review range`, immutable `Review portion`, and local `Structural check` / `Source check` progress so internal task expansion never appears as a changed review-plan denominator.
 - Keeps the classic menu/CLI authoritative; Textual remains `EXPERIMENTAL / UNSTABLE`.
 
 

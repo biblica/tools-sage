@@ -1,7 +1,7 @@
 {
   "case_id": "false-ol-referral",
   "case_kind": "ADVERSARIAL",
-  "expected_decision": "BOUNDARY_REJECTED",
+  "expected_decision": "NO_OL_REFERRAL",
   "expected_evidence_ids": [
     "SYNTHETIC_PRIMARY"
   ],
@@ -11,7 +11,7 @@
   ],
   "passing_response": {
     "case_id": "false-ol-referral",
-    "decision": "BOUNDARY_REJECTED",
+    "decision": "NO_OL_REFERRAL",
     "evidence_ids": [
       "SYNTHETIC_PRIMARY"
     ],

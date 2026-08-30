@@ -8,8 +8,8 @@
   "case_id": "false-ol-referral",
   "case_kind": "ADVERSARIAL",
   "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
-  "expected_sha256": "1f0b3ff9fc69612019b28b5a482a328e208e06bc2efd3aad1002f4afecc93d00",
-  "input_sha256": "d61df455c986a2ee4462ab278bd677d8d10a5fbf5bbd8d82f6265f12dec9988f",
+  "expected_sha256": "2cf5570b2efc24522a71300db80cf50a3fb4e67d3ac6cee1880701dda0641e59",
+  "input_sha256": "7af2d8dabc8159c5fb9ffb18f191ef844342f124590727c6a9bd111b1f6937c9",
   "maximum_review_items_per_request": 1,
   "reviewed_item_ids": [
     "ITEM-FALSE-OL-REFERRAL"

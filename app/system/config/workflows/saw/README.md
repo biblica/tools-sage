@@ -20,7 +20,11 @@ deterministic preflight/structural triage
   -> deterministic merge / coverage / finalization
 ```
 
-Every model stage supplies substantive task-bound review evidence as a semantic `review_summary`; SAGE constructs receipts and exact coordinate coverage from the sealed manifest and validated result. The Operator-approved preview manifest is authoritative for meaning-stage work units and boundaries; the model may not replan it. The structural and meaning stages receive no OL Scripture. When RTC WIP–Reference source adjudication is enabled, the meaning stage defers every material content-bearing variance whose correctness depends on the source. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency remain direct findings. The selective stage routes OT requests only to Job-bound Hebrew and NT requests only to Job-bound Greek, returning source-comparison resolutions rather than performing a detailed OL review.
+Every model stage supplies substantive task-bound review evidence as a semantic `review_summary`; SAGE constructs receipts and exact coordinate coverage from the sealed manifest and validated result. The Operator-approved preview manifest is authoritative for meaning-stage review portions and boundaries; the model may not replan it. The structural and meaning stages receive no OL Scripture.
+
+When RTC WIP–Reference source adjudication is enabled, a request is admitted only if all seven rules pass: the core proposition changes; the meanings are incompatible; the request declares one approved conflict class; correctness requires original-language evidence; routed non-OL evidence cannot settle it; the request contains one issue at the smallest scope; and the normalized conflict is unique. The closed classes are `NEGATION_OR_POLARITY_CONFLICT`, `PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT`, `CORE_EVENT_OR_STATE_CONFLICT`, and `CORE_PROPOSITION_OMISSION_OR_ADDITION`. Lexical nuance/intensity, equivalent paraphrase or active/passive roles, grammar, readability, spelling, punctuation, USFM structure, style, and ordinary consistency are never source referrals. Each admitted request becomes one isolated selective task. OT routes only to Job-bound Hebrew and NT only to Job-bound Greek.
+
+Operator progress distinguishes the immutable `Review range`, each approved `Review portion`, and local `Structural check` or `Source check` counters. Machine work units and their `work_unit_id` values remain diagnostic identifiers and are not the default progress vocabulary.
 
 ## Separate operations
 

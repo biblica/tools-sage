@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "fundamental-polarity",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "b9092cc901afe52c424b94ff3d9e60bed3821ceca5174ece5d9effaee042a90f",
+  "input_sha256": "967005f28c9625b74e00568523ba0d26821348a6bae2573896028cf5d1d64e2f",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-FUNDAMENTAL-POLARITY"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "saw-rtc",
+  "task_id": "EVAL-SAW-RTC-FUNDAMENTAL-POLARITY"
+}

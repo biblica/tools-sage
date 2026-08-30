@@ -65,4 +65,14 @@ The classic UI presents primary actions first, then check toggles and text-polic
 
 ## WIP–Reference source adjudication
 
-Reference Text Comparison (RTC) stores `source_text_drift_adjudication` as `PROHIBITED` or `ENABLED` for schema compatibility. When enabled, option 11 automatically defers every material content-bearing WIP–Reference variance whose correctness depends on the source. SAGE routes OT requests to the Job-bound Hebrew resource and NT requests to the Job-bound Greek resource. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency remain direct RTC findings. This internal adjudication is distinct from the separate Original-Language Review, which requires an explicit bounded question and performs a detailed OL check.
+Reference Text Comparison (RTC) stores `source_text_drift_adjudication` as `PROHIBITED` or `ENABLED` for schema compatibility. New enabled RTC tasks seal `SAW_OL_REFERRAL_ADMISSION_V1`. A request is admitted if and only if:
+
+1. The difference changes the core proposition rather than nuance, intensity, style, register, or preference.
+2. WIP and REFERENCE communicate incompatible meanings.
+3. It declares exactly one of `NEGATION_OR_POLARITY_CONFLICT`, `PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT`, `CORE_EVENT_OR_STATE_CONFLICT`, or `CORE_PROPOSITION_OMISSION_OR_ADDITION`.
+4. Correctness genuinely requires the applicable original-language text.
+5. Routed WIP, REFERENCE, grammar, and other non-OL evidence cannot settle it.
+6. It asks one question at the smallest necessary Scripture scope.
+7. The same normalized conflict is not requested twice.
+
+Different subject, object, recipient, speaker, possessor, or other core participant identity may qualify without a reversal. Equivalent active/passive roles do not. Lexical nuance/intensity, equivalent paraphrase, grammar, readability, spelling, punctuation, USFM structure, style, ordinary consistency, and any issue resolvable from non-OL evidence never qualify. `dislike` versus `hate` remains RTC; `love` versus `hate` may qualify when every rule passes. Each admitted request produces one isolated selective task. SAGE routes OT requests to Job-bound Hebrew and NT requests to Job-bound Greek. This internal adjudication is distinct from the separate detailed Original-Language Review.

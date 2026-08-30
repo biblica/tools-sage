@@ -12,6 +12,7 @@ from sage.ol_referrals import (
 
 
 def _admission(**overrides: str) -> dict[str, str]:
+    """Build one valid referral-admission record with optional field overrides."""
     value = {
         "conflict_class": "NEGATION_OR_POLARITY_CONFLICT",
         "wip_proposition": "The subject did not leave.",
@@ -24,12 +25,14 @@ def _admission(**overrides: str) -> dict[str, str]:
 
 
 def test_normalize_referral_admission_accepts_closed_contract() -> None:
+    """Verify that the closed V1 admission record survives normalization."""
     result = normalize_referral_admission(_admission(), index=1)
 
     assert result == _admission()
 
 
 def test_referral_conflict_key_normalizes_case_and_whitespace() -> None:
+    """Verify that harmless casing and spacing changes keep one conflict key."""
     first = referral_conflict_key(
         target_reference="JHN 1:1",
         conflict_class="NEGATION_OR_POLARITY_CONFLICT",
@@ -58,6 +61,7 @@ def test_referral_conflict_key_normalizes_case_and_whitespace() -> None:
     ),
 )
 def test_normalize_referral_admission_rejects_missing_fields(field: str) -> None:
+    """Verify that every V1 admission field is mandatory."""
     request = _admission()
     del request[field]
 
@@ -68,6 +72,7 @@ def test_normalize_referral_admission_rejects_missing_fields(field: str) -> None
 
 
 def test_normalize_referral_admission_rejects_open_ended_class() -> None:
+    """Verify that an unlisted conflict class cannot open a source referral."""
     with pytest.raises(ValidationError) as caught:
         normalize_referral_admission(
             _admission(conflict_class="LEXICAL_INTENSITY_DIFFERENCE"),
@@ -78,6 +83,7 @@ def test_normalize_referral_admission_rejects_open_ended_class() -> None:
 
 
 def test_normalize_referral_admission_rejects_non_source_dependency() -> None:
+    """Verify that reference-resolvable differences cannot reach source review."""
     with pytest.raises(ValidationError) as caught:
         normalize_referral_admission(
             _admission(source_dependency="RESOLVABLE_FROM_REFERENCE"),
@@ -88,6 +94,7 @@ def test_normalize_referral_admission_rejects_non_source_dependency() -> None:
 
 
 def test_normalize_referral_admission_rejects_identical_propositions() -> None:
+    """Verify that identical normalized propositions cannot form a conflict."""
     with pytest.raises(ValidationError) as caught:
         normalize_referral_admission(
             _admission(

@@ -32,7 +32,7 @@ Example Operator intents:
 - "Review Philippians for translation and meaning issues."
 - "Check this chapter systematically against the REFERENCE."
 
-Reference Text Comparison (RTC) is a composite governed operation. Its structural and translation/meaning stages do not receive OL Scripture. If option 11, **Adjudicate WIP–Reference variance**, is `ENABLED`, the meaning stage defers every material content-bearing variance whose correctness depends on the source. SAGE automatically routes OT requests to Job-bound Hebrew and NT requests to Job-bound Greek. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency remain direct findings. This internal adjudication is not the separate detailed Original-Language Review, which requires one explicit bounded question.
+Reference Text Comparison (RTC) is a composite governed operation. Its structural and translation/meaning stages do not receive OL Scripture. If option 11, **Adjudicate WIP–Reference variance**, is `ENABLED`, the meaning stage may refer only an incompatible, fundamental core-proposition conflict from one of four closed classes: polarity/negation, participant identity or role, core event or state, or essential proposition omission/addition. The conflict must require original-language evidence, remain unresolved by routed non-OL evidence, be one smallest-scope issue, and be unique. Nuance/intensity, equivalent paraphrase or active/passive roles, grammar, readability, punctuation, spelling, USFM structure, style, and ordinary consistency remain RTC. Each admitted request is routed alone: OT to Job-bound Hebrew and NT to Job-bound Greek. This is not the separate detailed Original-Language Review.
 
 Use Reference Text Comparison (RTC) when the Operator does not already know the specific issue that needs investigation.
 
@@ -167,18 +167,20 @@ When an active Run exists, **Continue active Run** must show enough context abov
 Do not use **Basic RTC**: it implies reduced rigor. Use **Reference Text Comparison (RTC)** as the canonical beta Operator term. Do not use **Focused Check** as the canonical beta Operator term because "focused" describes scope but can be misread as implying original-language investigation.
 ## Compact execution feedback
 
-The default Operator terminal must not print provider receipts, ACT paths, selection modes, repeated submission states, or aggregate JSON paths while a normal SAW Run is progressing. Stable Run parameters are printed once, followed by one replaceable work-unit progress line:
+The default Operator terminal must not print provider receipts, ACT paths, selection modes, repeated submission states, or aggregate JSON paths while a normal SAW Run is progressing. Stable Run parameters are printed once. The immutable Run range and approved review-portion denominator remain stable; structural/source cases use counters local to their parent portion:
 
 ```text
 SAW_paPCVv1-usNIVv2
 ========================================================================
 
 paPCVv1 checked against usNIVv2
-Checking Reference Text Comparison (RTC) for PHM
-Using gpt-5.6-terra High
+Check:            Reference Text Comparison (RTC)
+Review range:     JHN 1:1-21:25
+Using codex / gpt-5.6-terra / high [QUALIFIED]
 
 ------------------------------------------------------------------------
-Working on SAW work unit 1/3: PHM 1:1-7      |
+Review portion:   4/19 — JHN 5:1-47
+Source check:     2/5 — JHN 5:34      |
 ```
 
-The spinner rotates in place through `| / - \`. Technical execution data remains in governed machine receipts and diagnostic surfaces.
+The spinner rotates in place through `| / - \`. Machine work-unit IDs and global stage-task counts remain in governed receipts and diagnostics rather than the default progress stream.

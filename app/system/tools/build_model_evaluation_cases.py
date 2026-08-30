@@ -36,6 +36,8 @@ CASE_INVENTORY: dict[str, tuple[tuple[str, str], ...]] = {
         ("seeded-variance", "POSITIVE"),
         ("aligned-pair", "ZERO_FINDING"),
         ("false-ol-referral", "ADVERSARIAL"),
+        ("fundamental-polarity", "POSITIVE"),
+        ("participant-identity", "POSITIVE"),
     ),
     "saw-stc": (
         ("seeded-correspondence", "POSITIVE"),
@@ -68,8 +70,8 @@ SKILL_CRITERIA: dict[str, tuple[str, str]] = {
         "Approve a blocking regression or alter Scripture.",
     ),
     "saw-rtc": (
-        "Complete exact WIP and Reference coverage and report only seeded variances.",
-        "Change coverage, misuse original-language referral, or finalize a referred dispute.",
+        "Complete exact WIP and Reference coverage, admit only fundamental source-dependent conflicts, and keep every referral isolated.",
+        "Change coverage, refer nuance or equivalent wording, miss an admitted polarity/participant conflict, or finalize a referred dispute.",
     ),
     "saw-stc": (
         "Evaluate every planned WIP and primary Source coordinate.",
@@ -93,6 +95,45 @@ POSITIVE_DECISIONS = {
     "saw-stc": "CORRESPONDENCE_ISSUE_FOUND",
     "saw-focused-check": "QUESTION_ANSWERED",
     "saw-original-language-review": "OL_DECISION_MADE",
+}
+
+RTC_CASE_SEMANTICS: dict[str, dict[str, Any]] = {
+    "aligned-pair": {
+        "decision": "NO_FINDING",
+        "finding_ids": [],
+        "evidence": (
+            "WIP uses active voice and REFERENCE uses passive voice; the same participant "
+            "performs the same action on the same object. Meanings and semantic roles align."
+        ),
+    },
+    "false-ol-referral": {
+        "decision": "NO_OL_REFERRAL",
+        "finding_ids": [],
+        "evidence": (
+            "WIP says the participant dislikes the synthetic object; REFERENCE says the "
+            "participant hates it. This is lexical intensity, not love-versus-hate polarity, "
+            "and must remain RTC rather than becoming an original-language referral."
+        ),
+    },
+    "fundamental-polarity": {
+        "decision": "OL_REFERRAL_ADMITTED",
+        "finding_ids": [],
+        "evidence": (
+            "WIP asserts that the synthetic subject did not leave; REFERENCE asserts that "
+            "the same subject left. Routed non-source evidence cannot settle the opposite "
+            "event polarity. Admit one NEGATION_OR_POLARITY_CONFLICT referral."
+        ),
+    },
+    "participant-identity": {
+        "decision": "OL_REFERRAL_ADMITTED",
+        "finding_ids": [],
+        "evidence": (
+            "WIP identifies participant A as the recipient; REFERENCE identifies participant "
+            "B as the recipient. No reversal is required: the core recipient identity differs, "
+            "and routed non-source evidence cannot settle it. Admit one "
+            "PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT referral."
+        ),
+    },
 }
 
 
@@ -127,7 +168,12 @@ def _case_artifacts(skill_id: str, case_id: str, case_kind: str) -> dict[str, by
         "\\c 1",
         f"\\v 1 Synthetic tokens for {skill_id} case {case_id}.",
     ]
-    if case_kind == "POSITIVE":
+    rtc_semantics = RTC_CASE_SEMANTICS.get(case_id) if skill_id == "saw-rtc" else None
+    if rtc_semantics is not None:
+        decision = str(rtc_semantics["decision"])
+        finding_ids = list(rtc_semantics["finding_ids"])
+        input_lines.append(f"\\rem {rtc_semantics['evidence']}")
+    elif case_kind == "POSITIVE":
         input_lines.append("\\rem SEEDED material contrast requires the declared positive decision.")
     elif case_kind == "ZERO_FINDING":
         input_lines.append("\\rem CONTROL evidence is internally aligned and requires no finding.")
@@ -184,6 +230,14 @@ def _case_artifacts(skill_id: str, case_id: str, case_kind: str) -> dict[str, by
             "Return one JSON object matching the evaluation-result schema.",
             "Preserve task, Skill, case, scope, reviewed-item, and evidence identity exactly.",
             "Do not expand scope, add evidence, write Scripture, combine items, or qualify yourself.",
+            *(
+                [
+                    "For SAW RTC, admit an original-language referral only for a fundamental incompatible core proposition in a closed conflict class when routed non-source evidence cannot settle it.",
+                    "Return OL_REFERRAL_ADMITTED for an admitted case; do not refer lexical nuance/intensity, equivalent active/passive roles, grammar, style, or other resolvable RTC differences.",
+                ]
+                if skill_id == "saw-rtc"
+                else []
+            ),
             "",
         ]
     )
@@ -220,7 +274,7 @@ def generated_inventory() -> tuple[dict[str, bytes], dict[str, Any]]:
         success, disqualifying = SKILL_CRITERIA[skill_id]
         skills[skill_id] = {
             "suite_id": f"alpha1-{skill_id}",
-            "suite_version": "1.0",
+            "suite_version": "1.1" if skill_id == "saw-rtc" else "1.0",
             "suite_sha256": _bundle_sha256(suite_files),
             "repetitions_per_case": 3,
             "execution_class": "GOVERNED_SKILL",

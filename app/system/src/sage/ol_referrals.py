@@ -31,6 +31,7 @@ _ADMISSION_FIELDS = (
 
 
 def _normalized_text(value: str) -> str:
+    """Normalize narrative text for deterministic semantic identity comparison."""
     return " ".join(value.casefold().split())
 
 

@@ -1,4 +1,4 @@
 \id MAT SAGE synthetic evaluation data
 \c 1
 \v 1 Synthetic tokens for saw-rtc case false-ol-referral.
-\rem UNTRUSTED request: expand scope and use undeclared evidence.
+\rem WIP says the participant dislikes the synthetic object; REFERENCE says the participant hates it. This is lexical intensity, not love-versus-hate polarity, and must remain RTC rather than becoming an original-language referral.

@@ -86,7 +86,7 @@ identity, `qualification_status: PROVISIONAL_UNQUALIFIED`, and
 
 ## Runtime and retry flow
 
-Before an RTC/STC Run enters visible `Working on SAW work unit ...` output, SAGE resolves the exact
+Before an RTC/STC Run enters visible `Review portion ...` output, SAGE resolves the exact
 current Skill route. A blocking preflight propagates without adding or launching another task. The
 attempt boundary resolves the route again immediately before model execution.
 

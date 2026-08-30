@@ -36,7 +36,11 @@ Marker context controls **finding elevation**, never finding severity:
 - `MATERIAL_ONLY` — non-material wording/style detections are omitted; material semantic/consistency/structural issues are reported at their normal severity.
 - `STRUCTURE_ONLY` — only marker/USFM structure is evaluated as a finding source.
 
-Defaults: `\add` and `\nd` = `MATERIAL_ONLY`; `\f` and `\x` = `STRUCTURE_ONLY`. Quotations are checked normally and are not an Operator policy toggle. The effective policy is snapshotted into the Run.
+Defaults: `\add` and `\nd` = `MATERIAL_ONLY`; `\f` = `STRUCTURE_ONLY`; `\x` = `NORMAL`. Cross-references are therefore checked for structure, presence, payload, ordering, and Scripture targets by default. Quotations are checked normally and are not an Operator policy toggle. The effective policy is snapshotted into the Run.
+
+### Selective source referral
+
+An RTC issue becomes a source referral only when it changes the core proposition, creates incompatible meanings, fits one closed class, genuinely requires original-language evidence, remains unresolved by routed non-OL evidence, contains one smallest-scope issue, and is unique. Closed classes: polarity/negation, participant identity or role, core event or state, and essential proposition omission/addition. Nuance or intensity (`dislike` versus `hate`), equivalent paraphrase/voice, grammar, style, readability, spelling, punctuation, USFM, and ordinary consistency stay in RTC. Each admitted request is evaluated alone.
 
 ## Source Text Correspondence (STC)
 
@@ -58,3 +62,5 @@ Natural-language entry may request Reference Text Comparison (RTC), Source Text 
 ## Run state
 
 A successful SAW Run progresses through governed tasks and becomes `FINALIZED` only after required findings, coverage, and report outputs pass their contracts. SAW never edits Scripture projects. Aggregation, coverage reconciliation, report composition, report naming, and publication are deterministic Python work with no LLM tokenization. Optional secondary-language rendering is one reported item per request and cannot change the canonical result.
+
+Progress uses `Review range` for the Run, `Review portion` for the immutable approved partition, and local `Structural check` / `Source check` counters inside that portion. A source case never increases or renumbers the approved portion denominator.
