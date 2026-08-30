@@ -2077,6 +2077,13 @@ def _approved_saw_rtc_work_plan(
                 }),
             },
         )
+    portion_total = len(units)
+    for index, unit in enumerate(units, start=1):
+        unit["review_portion_id"] = str(unit["unit_id"])
+        unit["review_portion_index"] = index
+        unit["review_portion_total"] = portion_total
+        unit["review_portion_scope"] = str(unit["primary_scope"])
+    plan["units"] = units
     return {**plan, "approved_manifest_path": str(plan_path)}
 
 
@@ -2094,13 +2101,30 @@ def _create_approved_saw_rtc_stage(
     rtc_stage: str,
     rtc_predecessor_files: Sequence[str],
     ol_referral_contract: str | None,
+    rtc_stage_references: Sequence[str] = (),
 ) -> dict[str, Any]:
     """Create the exact approved work units for a partitionable SAW RTC stage."""
     units = [dict(item) for item in approved_plan.get("units", [])]
+    references_by_portion: dict[str, list[str]] = {}
+    for reference in rtc_stage_references:
+        progress = _review_portion_for_reference(units, str(reference))
+        references_by_portion.setdefault(progress["review_portion_id"], []).append(
+            str(reference)
+        )
+    if references_by_portion:
+        units = [
+            unit
+            for unit in units
+            if str(unit["review_portion_id"]) in references_by_portion
+        ]
     stage_plan_id = f"{parent_plan_id}-{rtc_stage}"
     children: list[dict[str, Any]] = []
     for unit in units:
-        raw_atoms = unit.get("primary_coverage_atoms")
+        stage_unit_references = references_by_portion.get(
+            str(unit["review_portion_id"]),
+            [],
+        )
+        raw_atoms = stage_unit_references or unit.get("primary_coverage_atoms")
         if not isinstance(raw_atoms, list) or not raw_atoms:
             raw_atoms = unit.get("primary_references", [])
         unit_atoms = list(atomic_reference_labels(str(value) for value in raw_atoms))
@@ -2121,6 +2145,18 @@ def _create_approved_saw_rtc_stage(
                 rtc_stage=rtc_stage,
                 rtc_predecessor_files=rtc_predecessor_files,
                 ol_referral_contract=ol_referral_contract,
+                review_portion_id=str(unit["review_portion_id"]),
+                review_portion_index=int(unit["review_portion_index"]),
+                review_portion_total=int(unit["review_portion_total"]),
+                review_portion_scope=str(unit["review_portion_scope"]),
+                parent_review_portion_id=(
+                    str(unit["review_portion_id"])
+                    if stage_unit_references
+                    else None
+                ),
+                stage_case_index=1 if stage_unit_references else None,
+                stage_case_total=1 if stage_unit_references else None,
+                rtc_stage_references=stage_unit_references,
                 context_before_references=[str(value) for value in unit.get("context_before", [])],
                 context_after_references=[str(value) for value in unit.get("context_after", [])],
             )
@@ -2156,6 +2192,15 @@ def _create_approved_saw_rtc_stage(
             "primary_coverage_atoms": unit_atoms,
             "source_spans": dict(package.get("source_spans") or {}),
             "context_budget": child.get("context_budget"),
+            "review_portion_id": unit["review_portion_id"],
+            "review_portion_index": unit["review_portion_index"],
+            "review_portion_total": unit["review_portion_total"],
+            "review_portion_scope": unit["review_portion_scope"],
+            "parent_review_portion_id": (
+                unit["review_portion_id"] if stage_unit_references else None
+            ),
+            "stage_case_index": 1 if stage_unit_references else None,
+            "stage_case_total": 1 if stage_unit_references else None,
         })
     if len(children) == 1:
         child = children[0]
@@ -2170,6 +2215,10 @@ def _create_approved_saw_rtc_stage(
             "scope": child["scope"],
             "expected_references": manifest.get("expected_references", []),
             "context_budget": child.get("context_budget"),
+            "review_portion_id": child.get("review_portion_id"),
+            "review_portion_index": child.get("review_portion_index"),
+            "review_portion_total": child.get("review_portion_total"),
+            "review_portion_scope": child.get("review_portion_scope"),
         }
     plan = {
         "schema_version": "1.0",
@@ -2262,6 +2311,50 @@ def _scope_for_case_atoms(atoms: Sequence[VerseRef]) -> ScriptureScope:
     )
 
 
+def _review_portion_for_reference(
+    review_portions: Sequence[Mapping[str, Any]],
+    target_reference: str,
+) -> dict[str, Any]:
+    """Resolve one stage case to exactly one immutable review portion."""
+    case_atoms = tuple(expand_reference_atoms(target_reference))
+    matches: list[dict[str, Any]] = []
+    for raw in review_portions:
+        portion = dict(raw)
+        portion_scope_value = str(
+            portion.get("review_portion_scope")
+            or portion.get("primary_scope")
+            or ""
+        ).strip()
+        if not portion_scope_value:
+            continue
+        portion_scope = parse_scope(portion_scope_value)
+        if case_atoms and all(portion_scope.contains(ref) for ref in case_atoms):
+            matches.append(portion)
+    if len(matches) != 1:
+        raise ValidationError(
+            "Stage case must belong wholly to exactly one approved review portion",
+            code="SAW_STAGE_CASE_PORTION_MISMATCH",
+            affected_scope=target_reference,
+            details={
+                "matching_review_portion_ids": [
+                    str(row.get("review_portion_id") or row.get("unit_id") or "")
+                    for row in matches
+                ]
+            },
+        )
+    match = matches[0]
+    return {
+        "review_portion_id": str(
+            match.get("review_portion_id") or match.get("unit_id") or ""
+        ),
+        "review_portion_index": int(match["review_portion_index"]),
+        "review_portion_total": int(match["review_portion_total"]),
+        "review_portion_scope": str(
+            match.get("review_portion_scope") or match.get("primary_scope") or ""
+        ),
+    }
+
+
 def _partition_selective_ol_cases(
     config: EcosystemConfig,
     *,
@@ -2298,13 +2391,49 @@ def _partition_selective_ol_cases(
             code="SAW_OL_REQUEST_INVENTORY_INVALID",
         )
 
+    parent_totals: dict[str, int] = {}
+    progress_rows: list[dict[str, Any]] = []
+    for request in requests:
+        parent_id = str(request.get("parent_review_portion_id") or "").strip()
+        portion_id = str(request.get("review_portion_id") or parent_id).strip()
+        try:
+            portion_index = int(request["review_portion_index"])
+            portion_total = int(request["review_portion_total"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValidationError(
+                "Selective OL request lacks inherited review-portion progress",
+                code="SAW_STAGE_CASE_PORTION_MISMATCH",
+            ) from exc
+        portion_scope = str(request.get("review_portion_scope") or "").strip()
+        if not parent_id or portion_id != parent_id or not portion_scope:
+            raise ValidationError(
+                "Selective OL request has inconsistent review-portion provenance",
+                code="SAW_STAGE_CASE_PORTION_MISMATCH",
+            )
+        progress_rows.append(
+            {
+                "review_portion_id": portion_id,
+                "review_portion_index": portion_index,
+                "review_portion_total": portion_total,
+                "review_portion_scope": portion_scope,
+                "parent_review_portion_id": parent_id,
+            }
+        )
+        parent_totals[parent_id] = parent_totals.get(parent_id, 0) + 1
+
     policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy(operation)
     plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
     children: list[dict[str, Any]] = []
     created_tasks: list[dict[str, Any]] = []
+    parent_positions: dict[str, int] = {}
     # Keep request order as the immutable parent aggregate declared it; task IDs and
     # aggregation reconciliation both depend on this stable one-case sequence.
     for index, request in enumerate(requests, start=1):
+        progress = progress_rows[index - 1]
+        parent_id = str(progress["parent_review_portion_id"])
+        parent_positions[parent_id] = parent_positions.get(parent_id, 0) + 1
+        stage_case_index = parent_positions[parent_id]
+        stage_case_total = parent_totals[parent_id]
         target_reference = str(request.get("target_reference") or "").strip()
         atoms = tuple(sorted(set(expand_reference_atoms(target_reference))))
         if not atoms or any(not scope.contains(ref) for ref in atoms):
@@ -2339,6 +2468,13 @@ def _partition_selective_ol_cases(
             expected_ol_requests=[request],
             rtc_stage_references=atom_labels,
             ol_referral_contract=ol_referral_contract,
+            review_portion_id=str(progress["review_portion_id"]),
+            review_portion_index=int(progress["review_portion_index"]),
+            review_portion_total=int(progress["review_portion_total"]),
+            review_portion_scope=str(progress["review_portion_scope"]),
+            parent_review_portion_id=parent_id,
+            stage_case_index=stage_case_index,
+            stage_case_total=stage_case_total,
         )
         created_tasks.append(child)
         manifest = load_json(Path(str(child["manifest_path"])))
@@ -2372,6 +2508,9 @@ def _partition_selective_ol_cases(
             "primary_coverage_atoms": child_atoms,
             "ol_request_ids": child_request_ids,
             "context_budget": child.get("context_budget"),
+            **progress,
+            "stage_case_index": stage_case_index,
+            "stage_case_total": stage_case_total,
         })
 
     if len(created_tasks) == 1:
@@ -2688,27 +2827,82 @@ def _create_saw_rtc_composite(
         ).encode("utf-8")
     )
     plan_id = f"SAW-RTC-{scope.book}-{plan_seed[:10].upper()}"
+    review_portions = (
+        [
+            {
+                "review_portion_id": str(unit["review_portion_id"]),
+                "review_portion_index": int(unit["review_portion_index"]),
+                "review_portion_total": int(unit["review_portion_total"]),
+                "review_portion_scope": str(unit["review_portion_scope"]),
+            }
+            for unit in approved_work_plan.get("units", [])
+        ]
+        if approved_work_plan is not None
+        else [
+            {
+                "review_portion_id": f"{plan_id}-P001",
+                "review_portion_index": 1,
+                "review_portion_total": 1,
+                "review_portion_scope": scope.label(),
+            }
+        ]
+    )
     stage_references = sorted({
         ref
         for candidate in candidates
         for ref in candidate.get("references", [])
     }) if first_stage == "STRUCTURAL_ADJUDICATION" else []
-    result = create_act_task(
-        config,
-        workflow="saw",
-        operation="rtc",
-        output_project_id=output_project_id,
-        contemporary_source_id=contemporary_source_id,
-        scope_value=scope.label(),
-        grammar_override_id=grammar_override_id,
-        auto_partition=auto_partition,
-        parent_plan_id=plan_id,
-        job_id=job_id,
-        run_id=run_id,
-        rtc_stage=first_stage,
-        rtc_stage_references=stage_references,
-        ol_referral_contract=OL_REFERRAL_CONTRACT_V1,
-    )
+    if first_stage == "STRUCTURAL_ADJUDICATION" and approved_work_plan is not None:
+        approved_units = [dict(item) for item in approved_work_plan.get("units", [])]
+        for candidate in candidates:
+            parent_ids = {
+                _review_portion_for_reference(approved_units, str(reference))[
+                    "review_portion_id"
+                ]
+                for reference in candidate.get("references", [])
+            }
+            if len(parent_ids) != 1:
+                raise ValidationError(
+                    "Structural case crosses approved review portions",
+                    code="SAW_STAGE_CASE_PORTION_MISMATCH",
+                    affected_scope="; ".join(
+                        str(value) for value in candidate.get("references", [])
+                    ),
+                    details={"candidate_id": candidate.get("candidate_id")},
+                )
+    if first_stage == "STRUCTURAL_ADJUDICATION" and approved_work_plan is not None:
+        result = _create_approved_saw_rtc_stage(
+            config,
+            approved_plan=approved_work_plan,
+            output_project_id=output_project_id,
+            contemporary_source_id=contemporary_source_id,
+            scope=scope,
+            grammar_override_id=grammar_override_id,
+            parent_plan_id=plan_id,
+            job_id=job_id,
+            run_id=run_id,
+            rtc_stage=first_stage,
+            rtc_predecessor_files=(),
+            ol_referral_contract=OL_REFERRAL_CONTRACT_V1,
+            rtc_stage_references=stage_references,
+        )
+    else:
+        result = create_act_task(
+            config,
+            workflow="saw",
+            operation="rtc",
+            output_project_id=output_project_id,
+            contemporary_source_id=contemporary_source_id,
+            scope_value=scope.label(),
+            grammar_override_id=grammar_override_id,
+            auto_partition=auto_partition,
+            parent_plan_id=plan_id,
+            job_id=job_id,
+            run_id=run_id,
+            rtc_stage=first_stage,
+            rtc_stage_references=stage_references,
+            ol_referral_contract=OL_REFERRAL_CONTRACT_V1,
+        )
     stage = _stage_record(result, first_stage)
     plan = {
         "schema_version": "1.0",
@@ -2726,6 +2920,7 @@ def _create_saw_rtc_composite(
         "structural_stage_required": bool(candidates and structure_enabled),
         "rtc_policy": rtc_policy,
         "ol_referral_contract": OL_REFERRAL_CONTRACT_V1,
+        "review_portions": review_portions,
         "approved_work_plan_path": (
             approved_work_plan.get("approved_manifest_path")
             if approved_work_plan is not None
@@ -3191,6 +3386,13 @@ def create_act_task(
     context_before_references: Sequence[str] = (),
     context_after_references: Sequence[str] = (),
     ol_referral_contract: str | None = None,
+    review_portion_id: str | None = None,
+    review_portion_index: int | None = None,
+    review_portion_total: int | None = None,
+    review_portion_scope: str | None = None,
+    parent_review_portion_id: str | None = None,
+    stage_case_index: int | None = None,
+    stage_case_total: int | None = None,
 ) -> dict[str, Any]:
     """Create one isolated SAGE_GOVERNED_TASK_V1 task with exact project and source boundaries."""
     workflow = workflow.strip().lower()
@@ -3200,6 +3402,9 @@ def create_act_task(
         if isinstance(ol_referral_contract, str) and ol_referral_contract.strip()
         else None
     )
+    review_portion_id = str(review_portion_id or "").strip() or None
+    review_portion_scope = str(review_portion_scope or "").strip() or None
+    parent_review_portion_id = str(parent_review_portion_id or "").strip() or None
     if workflow not in ACT_OPERATIONS or operation not in ACT_OPERATIONS[workflow]:
         raise ValidationError(f"Unsupported ACT operation: {workflow}/{operation}")
     if ol_referral_contract is not None and (
@@ -3231,6 +3436,51 @@ def create_act_task(
         raise ValidationError("--type is valid only for SAW Targeted Checks")
 
     scope = parse_scope(scope_value)
+    portion_values = (
+        review_portion_id,
+        review_portion_index,
+        review_portion_total,
+        review_portion_scope,
+    )
+    if any(value is not None for value in portion_values):
+        if any(value is None for value in portion_values):
+            raise ValidationError(
+                "Review-portion progress metadata must be complete",
+                code="SAW_TASK_CONTRACT_INVALID",
+            )
+        assert review_portion_index is not None and review_portion_total is not None
+        if review_portion_index < 1 or review_portion_total < review_portion_index:
+            raise ValidationError(
+                "Review-portion progress indices are invalid",
+                code="SAW_TASK_CONTRACT_INVALID",
+            )
+        portion_scope = parse_scope(str(review_portion_scope))
+        task_atoms = expand_reference_atoms(scope.label())
+        if any(not portion_scope.contains(ref) for ref in task_atoms):
+            raise ValidationError(
+                "Task scope crosses its declared review portion",
+                code="SAW_STAGE_CASE_PORTION_MISMATCH",
+                affected_scope=scope.label(),
+            )
+    stage_values = (parent_review_portion_id, stage_case_index, stage_case_total)
+    if any(value is not None for value in stage_values):
+        if any(value is None for value in stage_values) or review_portion_id is None:
+            raise ValidationError(
+                "Stage-case progress metadata must include its review portion",
+                code="SAW_TASK_CONTRACT_INVALID",
+            )
+        assert stage_case_index is not None and stage_case_total is not None
+        if stage_case_index < 1 or stage_case_total < stage_case_index:
+            raise ValidationError(
+                "Stage-case progress indices are invalid",
+                code="SAW_TASK_CONTRACT_INVALID",
+            )
+        if parent_review_portion_id != review_portion_id:
+            raise ValidationError(
+                "Stage case parent differs from its review portion",
+                code="SAW_STAGE_CASE_PORTION_MISMATCH",
+                affected_scope=scope.label(),
+            )
     parsed_context_before = tuple(
         parse_scope(str(value).strip())
         for value in context_before_references
@@ -3585,6 +3835,13 @@ def create_act_task(
         "parent_plan_id": parent_plan_id,
         "work_unit_id": work_unit_id,
         "ol_referral_contract": ol_referral_contract,
+        "review_portion_id": review_portion_id,
+        "review_portion_index": review_portion_index,
+        "review_portion_total": review_portion_total,
+        "review_portion_scope": review_portion_scope,
+        "parent_review_portion_id": parent_review_portion_id,
+        "stage_case_index": stage_case_index,
+        "stage_case_total": stage_case_total,
         "context_before_references": list(context_before),
         "context_after_references": list(context_after),
     }
@@ -4416,6 +4673,13 @@ def create_act_task(
             "parent_plan_id": parent_plan_id,
             "work_unit_id": work_unit_id or task_id,
             "ol_referral_contract": ol_referral_contract,
+            "review_portion_id": review_portion_id,
+            "review_portion_index": review_portion_index,
+            "review_portion_total": review_portion_total,
+            "review_portion_scope": review_portion_scope,
+            "parent_review_portion_id": parent_review_portion_id,
+            "stage_case_index": stage_case_index,
+            "stage_case_total": stage_case_total,
             "context_references": {
                 "mode": "CONTEXT_ONLY",
                 "before": list(context_before),
@@ -5332,23 +5596,39 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             lineage_display_names = dict(names) if isinstance(names, dict) else {}
         elif lineage_fingerprints != required_lineage:
             raise ValidationError("Aggregated work-unit resource lineage is inconsistent")
+        normalized_for_globalization = {
+            **normalized,
+            "findings": [
+                {
+                    **dict(row),
+                    **(
+                        {"execution_route": dict(normalized["execution_route"])}
+                        if isinstance(normalized.get("execution_route"), Mapping)
+                        and not isinstance(row.get("execution_route"), Mapping)
+                        else {}
+                    ),
+                }
+                for row in normalized.get("findings", [])
+                if isinstance(row, Mapping)
+            ],
+        }
+        if (
+            plan.get("rtc_stage") == "REFERENCE_TEXT_COMPARISON"
+            and unit.get("review_portion_id")
+        ):
+            normalized_for_globalization["ol_review_requests"] = [
+                {
+                    **dict(row),
+                    "parent_review_portion_id": unit["review_portion_id"],
+                    "review_portion_index": unit["review_portion_index"],
+                    "review_portion_total": unit["review_portion_total"],
+                    "review_portion_scope": unit["review_portion_scope"],
+                }
+                for row in normalized.get("ol_review_requests", [])
+                if isinstance(row, Mapping)
+            ]
         globalized = globalize_result_finding_ids(
-            {
-                **normalized,
-                "findings": [
-                    {
-                        **dict(row),
-                        **(
-                            {"execution_route": dict(normalized["execution_route"])}
-                            if isinstance(normalized.get("execution_route"), Mapping)
-                            and not isinstance(row.get("execution_route"), Mapping)
-                            else {}
-                        ),
-                    }
-                    for row in normalized.get("findings", [])
-                    if isinstance(row, Mapping)
-                ],
-            },
+            normalized_for_globalization,
             unit_id=unit_id or str(submission.get("task_id") or "UNIT"),
             run_id=str(plan.get("run_id") or plan.get("plan_id") or "RUN"),
             prefix="SAW",
@@ -5397,6 +5677,13 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             "source_spans": dict(unit.get("source_spans") or {}),
             "submission_sha256": sha256_file(submission_path),
             "execution_route": normalized.get("execution_route"),
+            "review_portion_id": unit.get("review_portion_id"),
+            "review_portion_index": unit.get("review_portion_index"),
+            "review_portion_total": unit.get("review_portion_total"),
+            "review_portion_scope": unit.get("review_portion_scope"),
+            "parent_review_portion_id": unit.get("parent_review_portion_id"),
+            "stage_case_index": unit.get("stage_case_index"),
+            "stage_case_total": unit.get("stage_case_total"),
         })
     validate_global_finding_ids(findings)
     if len(expected) != len(set(expected)):

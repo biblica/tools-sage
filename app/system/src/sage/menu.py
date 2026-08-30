@@ -3445,7 +3445,8 @@ class SageControlCenter:
                 or ("GRK" if book in NT_27 else "HEB")
             ) + " OL"
         self.io.write(f"{project.output_project} checked against {comparison_project}")
-        self.io.write(f"Checking {self._saw_operation_label(run.operation)} for {run.scope}")
+        self.io.write(f"{'Check:':<18}{self._saw_operation_label(run.operation)}")
+        self.io.write(f"{'Review range:':<18}{run.scope}")
         self.io.write(f"Using {route_text}")
         self.io.write()
         self.io.write("-" * 72)
@@ -3457,15 +3458,37 @@ class SageControlCenter:
         index: int,
         total: int,
         scope: str,
+        composite_stage: str | None = None,
+        review_portion_index: int | None = None,
+        review_portion_total: int | None = None,
+        review_portion_scope: str | None = None,
+        stage_case_index: int | None = None,
+        stage_case_total: int | None = None,
     ) -> Iterator[None]:
-        """Render the one shared STC/RTC work-unit line and suppress nested admin chatter."""
+        """Render stable review-portion progress and suppress nested admin chatter."""
         previous = getattr(self, "_compact_saw_progress", False)
         self._compact_saw_progress = True
+        portion_index = review_portion_index or index
+        portion_total = review_portion_total or total
+        portion_scope = str(review_portion_scope or scope)
+        stage_label = {
+            "STRUCTURAL_ADJUDICATION": "Structural check:",
+            "SELECTIVE_OL_ADJUDICATION": "Source check:",
+        }.get(str(composite_stage or "").upper())
+        if stage_label:
+            self.io.write(
+                f"{'Review portion:':<18}{portion_index}/{portion_total} — {portion_scope}"
+            )
+            status_text = (
+                f"{stage_label:<18}{stage_case_index or index}/"
+                f"{stage_case_total or total} — {scope}"
+            )
+        else:
+            status_text = (
+                f"{'Review portion:':<18}{portion_index}/{portion_total} — {portion_scope}"
+            )
         try:
-            with self.io.working(
-                f"Working on SAW work unit {index}/{total}: {scope}",
-                ellipsis=False,
-            ):
+            with self.io.working(status_text, ellipsis=False):
                 yield
         finally:
             self._compact_saw_progress = previous
@@ -3597,6 +3620,22 @@ class SageControlCenter:
                     index=completed + 1,
                     total=total,
                     scope=unit_scope,
+                    composite_stage=str(result.get("composite_stage") or ""),
+                    review_portion_index=int(
+                        next_unit.get("review_portion_index") or 0
+                    )
+                    or None,
+                    review_portion_total=int(
+                        next_unit.get("review_portion_total") or 0
+                    )
+                    or None,
+                    review_portion_scope=str(
+                        next_unit.get("review_portion_scope") or unit_scope
+                    ),
+                    stage_case_index=int(next_unit.get("stage_case_index") or 0)
+                    or None,
+                    stage_case_total=int(next_unit.get("stage_case_total") or 0)
+                    or None,
                 ):
                     run, submitted = self._task_action(project, run, path)
                 progress = f"{completed + (1 if submitted else 0)}/{total}"

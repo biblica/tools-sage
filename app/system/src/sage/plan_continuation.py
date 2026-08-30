@@ -529,17 +529,27 @@ def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict
             first_unfinished = index
         elif finalized and first_unfinished is not None:
             finalized_after_gap.append(str(unit.get("unit_id")))
-        states.append(
-            {
-                "index": index + 1,
-                "unit_id": unit.get("unit_id"),
-                "task_id": unit.get("task_id"),
-                "scope": unit.get("scope"),
-                "status": status,
-                "manifest_path": str(manifest_path),
-                "submission_sha256": submission_sha256,
-            }
-        )
+        state = {
+            "index": index + 1,
+            "unit_id": unit.get("unit_id"),
+            "task_id": unit.get("task_id"),
+            "scope": unit.get("scope"),
+            "status": status,
+            "manifest_path": str(manifest_path),
+            "submission_sha256": submission_sha256,
+        }
+        for key in (
+            "review_portion_id",
+            "review_portion_index",
+            "review_portion_total",
+            "review_portion_scope",
+            "parent_review_portion_id",
+            "stage_case_index",
+            "stage_case_total",
+        ):
+            if unit.get(key) is not None:
+                state[key] = unit[key]
+        states.append(state)
     if finalized_after_gap:
         raise ValidationError(
             "SAW plan contains finalized work units after an unfinished predecessor",
@@ -584,14 +594,27 @@ def _composite_stage_result(config: EcosystemConfig, stage: dict[str, Any]) -> t
         submission = manifest.parent / "validation" / "submission.json"
         normalized = manifest.parent / "validation" / "normalized-findings.json"
         if not submission.is_file():
+            manifest_document = _load_object(manifest, "composite stage manifest")
+            next_unit = {
+                "unit_id": manifest_document.get("work_unit_id") or stage.get("stage"),
+                "scope": manifest_document.get("scope"),
+                "manifest_path": str(manifest),
+            }
+            for key in (
+                "review_portion_id",
+                "review_portion_index",
+                "review_portion_total",
+                "review_portion_scope",
+                "parent_review_portion_id",
+                "stage_case_index",
+                "stage_case_total",
+            ):
+                if manifest_document.get(key) is not None:
+                    next_unit[key] = manifest_document[key]
             return "PENDING", None, {
                 "schema_version": "1.0",
                 "status": "NEXT_WORK_UNIT",
-                "next_unit": {
-                    "unit_id": stage.get("stage"),
-                    "scope": None,
-                    "manifest_path": str(manifest),
-                },
+                "next_unit": next_unit,
                 "act_path": str(manifest.parent / "ACT.md"),
                 "submit_command": render_sage_command(["task", "submit", "--task", manifest]),
             }
@@ -679,6 +702,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         "workflow": "saw",
         "operation": "rtc",
         "ol_referral_contract": plan.get("ol_referral_contract"),
+        "review_portions": list(plan.get("review_portions") or []),
         "resource_bindings": resource_bindings,
         "resource_display_names": resource_display_names,
         "stage": "COMPOSITE_FINALIZED",
@@ -756,12 +780,35 @@ def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[
         predecessor_files = [str(result_path)]
     elif stage_name == "REFERENCE_TEXT_COMPARISON":
         meaning = _load_object(Path(str(result_path)), "SAW RTC meaning-stage result")
+        from .act_tasks import _review_portion_for_reference
+
         requests = globalize_ol_review_request_ids(
             list(meaning.get("ol_review_requests", [])),
             unit_id=f"{plan['plan_id']}-{stage_name}",
             run_id=str(plan.get("run_id") or plan["plan_id"]),
             prefix="SAW",
         )
+        review_portions = [
+            dict(item)
+            for item in plan.get("review_portions", [])
+            if isinstance(item, dict)
+        ]
+        if requests and not review_portions:
+            review_portions = [
+                {
+                    "review_portion_id": f"{plan['plan_id']}-P001",
+                    "review_portion_index": 1,
+                    "review_portion_total": 1,
+                    "review_portion_scope": str(plan["requested_scope"]),
+                }
+            ]
+        for request in requests:
+            progress = _review_portion_for_reference(
+                review_portions,
+                str(request.get("target_reference") or ""),
+            )
+            request.update(progress)
+            request["parent_review_portion_id"] = progress["review_portion_id"]
         drift_state = str(
             dict((plan.get("rtc_policy") or {}).get("original_language") or {}).get(
                 "source_text_drift_adjudication", "PROHIBITED"

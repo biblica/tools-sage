@@ -13,7 +13,12 @@ import yaml
 
 from sage.storage import storage_layout
 from sage.act_outputs import validate_saw_findings
-from sage.act_tasks import aggregate_act_plan, create_act_task, submit_act_task
+from sage.act_tasks import (
+    _review_portion_for_reference,
+    aggregate_act_plan,
+    create_act_task,
+    submit_act_task,
+)
 from sage.bounded_target import merge_bounded_usfm, revert_target_scope
 from sage.canon import PROJECT_ROLE_VALUES
 from sage.errors import ConfigurationError, TransactionError, ValidationError
@@ -578,6 +583,10 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     submit_act_task(config, meaning_path)
     next_stage = continue_saw_plan(config, Path(plan["plan_path"]))
     ol_path = Path(next_stage["next_unit"]["manifest_path"])
+    assert next_stage["next_unit"]["review_portion_index"] == 1
+    assert next_stage["next_unit"]["review_portion_total"] == 1
+    assert next_stage["next_unit"]["stage_case_index"] == 1
+    assert next_stage["next_unit"]["stage_case_total"] == 1
     ol = json.loads(ol_path.read_text(encoding="utf-8"))
     request = ol["review_requirements"]["expected_ol_requests"][0]
     request_id = request["request_id"]
@@ -589,6 +598,10 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     assert request["conflict_class"] == "NEGATION_OR_POLARITY_CONFLICT"
     assert len(request["conflict_key"]) == 64
     assert ol["ol_referral_contract"] == "SAW_OL_REFERRAL_ADMISSION_V1"
+    assert ol["review_portion_index"] == 1
+    assert ol["review_portion_total"] == 1
+    assert ol["stage_case_index"] == 1
+    assert ol["stage_case_total"] == 1
     assert ol["packets"]["original_language"]["evidence_id"] == "ORIGINAL_LANGUAGE_GREEK"
     assert "ORIGINAL_LANGUAGE_GREEK" in ol["allowed_evidence_ids"]
     assert "ORIGINAL_LANGUAGE" not in ol["allowed_evidence_ids"]
@@ -765,6 +778,9 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
         == 64
         for manifest in manifests
     )
+    assert [manifest["stage_case_index"] for manifest in manifests] == [1, 2]
+    assert [manifest["stage_case_total"] for manifest in manifests] == [2, 2]
+    assert len({manifest["parent_review_portion_id"] for manifest in manifests}) == 1
     assert [
         manifest["review_requirements"]["stage_references"]
         for manifest in manifests
@@ -897,10 +913,45 @@ def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_roo
     assert result["approved_work_plan_fingerprint"] == "a" * 64
     stage_plan = json.loads(Path(result["stages"][0]["plan_path"]).read_text(encoding="utf-8"))
     assert [item["scope"] for item in stage_plan["work_units"]] == ["MAT 1:1-2", "MAT 1:3"]
+    assert [item["review_portion_index"] for item in stage_plan["work_units"]] == [1, 2]
+    assert [item["review_portion_total"] for item in stage_plan["work_units"]] == [2, 2]
+    assert [item["review_portion_scope"] for item in stage_plan["work_units"]] == [
+        "MAT 1:1-2",
+        "MAT 1:3",
+    ]
     manifests = [json.loads(Path(item["manifest_path"]).read_text(encoding="utf-8")) for item in stage_plan["work_units"]]
     assert [item["work_unit_id"] for item in manifests] == [
         "SAW-RTC-MAT-APPROVED-U001", "SAW-RTC-MAT-APPROVED-U002"
     ]
+    assert [item["review_portion_id"] for item in manifests] == [
+        "SAW-RTC-MAT-APPROVED-U001",
+        "SAW-RTC-MAT-APPROVED-U002",
+    ]
+    assert [item["review_portion_index"] for item in manifests] == [1, 2]
+    assert [item["review_portion_total"] for item in manifests] == [2, 2]
+
+
+def test_stage_case_cannot_cross_two_approved_review_portions() -> None:
+    """A single structural/source case must have exactly one approved parent."""
+    portions = [
+        {
+            "review_portion_id": "SAW-RTC-JHN-U004",
+            "review_portion_index": 4,
+            "review_portion_total": 19,
+            "review_portion_scope": "JHN 5:1-20",
+        },
+        {
+            "review_portion_id": "SAW-RTC-JHN-U005",
+            "review_portion_index": 5,
+            "review_portion_total": 19,
+            "review_portion_scope": "JHN 5:21-47",
+        },
+    ]
+
+    with pytest.raises(ValidationError) as caught:
+        _review_portion_for_reference(portions, "JHN 5:20-21")
+
+    assert caught.value.code == "SAW_STAGE_CASE_PORTION_MISMATCH"
 
 
 def test_new_rtc_approved_plan_becomes_stale_when_reference_changes(
@@ -1058,6 +1109,13 @@ def test_operator_approved_saw_plan_reconciles_verse_bridge_coordinates(
     assert result["approved_work_plan_fingerprint"] == "b" * 64
     manifest_path = Path(result["stages"][0]["manifest_path"])
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["review_portion_id"] == "SAW-RTC-MAT-BRIDGE-APPROVED-U001"
+    assert manifest["review_portion_index"] == 1
+    assert manifest["review_portion_total"] == 1
+    if result["current_stage"] == "STRUCTURAL_ADJUDICATION":
+        assert manifest["parent_review_portion_id"] == manifest["review_portion_id"]
+        assert manifest["stage_case_index"] == 1
+        assert manifest["stage_case_total"] == 1
     required_checks = manifest["review_requirements"]["required_checks"]
     assert "VERSE_BRIDGE_MAPPING" in required_checks
     assert "VERSE_BRIDGE_CONTENT" in required_checks
