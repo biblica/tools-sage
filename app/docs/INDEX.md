@@ -70,6 +70,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Administrative AI Routing Design](advanced/release/ADMINISTRATIVE-AI-ROUTING-DESIGN.md) — deterministic-first administration, Local AI preference, hosted fallback consent, and low/Instant restrictions.
 - [Provisional Medium Skill Routing Design](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-DESIGN.md) — no-data Alpha fallback, qualification precedence, truthful receipts, and early route preflight.
 - [Provisional Medium Skill Routing Implementation Plan](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-IMPLEMENTATION-PLAN.md) — test-first resolver, preference, receipt, preflight, documentation, and hardening sequence.
+- [SAW Review Portions and OL Referral Admission Design](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-DESIGN.md) — stable review-range progress and fail-closed fundamental-conflict admission for selective OL checks.
 - [Vanilla Installation Manifest](advanced/release/VANILLA-INSTALL-MANIFEST.md) — complete clean package inventory.
 
 ## Advanced: future, non-current designs
