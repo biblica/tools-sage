@@ -1030,6 +1030,48 @@ def test_ai_menu_probes_on_open_and_exposes_skill_routing_actions(make_workspace
     assert "Check competency for configured languages" not in rendered
 
 
+def test_available_model_view_labels_provisional_skills_separately(make_workspace) -> None:
+    """Hiding provisional rows behind 'Qualified Skills: none' must mislead the Operator."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput([]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    class FakeService:
+        """Expose one catalog row with only a provisional Skill route."""
+
+        def list_models(self, _provider):
+            """Return a truthful no-data catalog fixture."""
+            return {
+                "models": [
+                    {
+                        "model": "gpt-5.6-sol",
+                        "display_name": "GPT-5.6 Sol",
+                        "reasoning_efforts": ["medium", "high"],
+                        "qualified_skill_routes": [],
+                        "provisional_skill_routes": [
+                            {
+                                "skill_id": "saw-rtc",
+                                "reasoning_id": "medium",
+                                "qualification": "PROVISIONAL_UNQUALIFIED",
+                            }
+                        ],
+                    }
+                ]
+            }
+
+    center._model_show_codex_catalog(FakeService())
+
+    rendered = output.getvalue()
+    assert "Qualified Skills: none" in rendered
+    assert "Provisional Skills: saw-rtc:medium" in rendered
+
+
 def test_rtc_policy_menu_omits_mandatory_cross_reference_toggle(make_workspace) -> None:
     """Keep cross-reference review always on and reuse item 10 for the OL policy."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
@@ -1120,6 +1162,14 @@ def test_ai_menu_checks_connection_only_on_entry_and_explicit_check(make_workspa
         def routing_override_status(self):
             """Return local automatic routing without a provider probe."""
             return {"routing_mode": "AUTOMATIC", "override": None}
+
+        def policy(self):
+            """Return the release-owned no-data default without probing a provider."""
+            return {
+                "provisional_routing": {
+                    "default_reasoning_by_provider": {"codex": "medium"}
+                }
+            }
 
         def quick_codex_status(self):
             """Report a ready authenticated runtime for each requested connection refresh."""

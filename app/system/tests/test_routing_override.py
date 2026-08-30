@@ -245,5 +245,6 @@ def test_model_service_applies_override_mode_to_each_skill_status(
 
     assert enabled["qualified_skill_count"] == 1
     assert rows["saw-rtc"]["routing_mode"] == "GLOBAL_OVERRIDE"
+    assert rows["saw-rtc"]["selection_mode"] == "USER_OVERRIDE"
     assert rows["saw-stc"]["reason_code"] == "GLOBAL_OVERRIDE_NOT_QUALIFIED_FOR_SKILL"
     assert cleared["routing_mode"] == "AUTOMATIC"

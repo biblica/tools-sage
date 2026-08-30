@@ -200,4 +200,8 @@ def resolve_routing_mode(
             f"Global override route is not qualified for {skill_id}",
             code="GLOBAL_OVERRIDE_NOT_QUALIFIED_FOR_SKILL",
         ) from exc
-    return replace(route, routing_mode="GLOBAL_OVERRIDE")
+    return replace(
+        route,
+        routing_mode="GLOBAL_OVERRIDE",
+        selection_mode="USER_OVERRIDE",
+    )

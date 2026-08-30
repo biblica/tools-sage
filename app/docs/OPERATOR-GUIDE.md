@@ -74,10 +74,11 @@ does not select one global model or reasoning level. **Configure AI** exposes th
 the read-only model catalog, exact per-Skill recommendations, a separately audited advanced override,
 sealed model evaluation, Local AI, and the explicit **Check LLM connection** action.
 
-Provider readiness and Skill readiness are distinct. SAGE resolves an available, qualified provider /
-model / provider-native reasoning route for the exact Skill when a governed task starts. A connected
-provider may therefore be ready while a particular Skill remains `UNASSESSED`, `STALE`, or blocked.
-That Skill fails closed before Scripture evidence is sent. Job menus show current recommendations when
+Provider readiness and Skill readiness are distinct. Routing has one manual state plus two automatic
+substates: an audited exact `USER_OVERRIDE`; `AUTOMATIC / DATA`, which uses current exact
+qualification evidence; and `AUTOMATIC / NO DATA`, which uses Codex native `medium` as the truthful
+Alpha-only `PROVISIONAL_UNQUALIFIED` fallback. Stale, failed, unreliable, unsupported, or unavailable
+routes still fail closed before Scripture evidence is sent. Job menus show current routes when
 idle and actual execution-receipt routes for active attempts. Direct task provider/model/reasoning
 flags cannot bypass this routing boundary.
 

@@ -3403,9 +3403,8 @@ class SageControlCenter:
         self.io.pause()
         return run
 
-    def _write_saw_run_header(self, project: Job, run: Run) -> None:
-        """Render the shared STC/RTC Run header before live work-unit progress."""
-        route_text = "AUTOMATIC Skill routing (resolved per task)"
+    def _preflight_saw_route(self, run: Run) -> dict[str, Any] | None:
+        """Resolve the exact current SAW route before task creation or visible work."""
         skill_ids = {
             "rtc": "saw-rtc",
             "stc": "saw-stc",
@@ -3413,17 +3412,25 @@ class SageControlCenter:
             "ol": "saw-original-language-review",
         }
         actual = self._active_run_route_row(run)
-        try:
-            route = actual
-            if route is None and not self.dry_run_provider:
-                route = ModelService(self.root).recommendation_for_skill(skill_ids[run.operation])
-            if route is not None:
-                route_text = (
-                    f"{route.get('provider')} / {route.get('model_id')} / "
-                    f"{route.get('reasoning_id')} [{route.get('qualification')}]"
-                )
-        except Exception:
-            pass
+        if self.dry_run_provider:
+            return actual
+        return ModelService(self.root).recommendation_for_skill(skill_ids[run.operation])
+
+    def _write_saw_run_header(
+        self,
+        project: Job,
+        run: Run,
+        *,
+        route: dict[str, Any] | None = None,
+    ) -> None:
+        """Render the shared STC/RTC Run header before live work-unit progress."""
+        route_text = "AUTOMATIC Skill routing (resolved per task)"
+        route = route or self._active_run_route_row(run)
+        if route is not None:
+            route_text = (
+                f"{route.get('provider')} / {route.get('model_id')} / "
+                f"{route.get('reasoning_id')} [{route.get('qualification')}]"
+            )
         self.io.write()
         self.io.write(project.job_id)
         self.io.write("=" * 72)
@@ -3491,6 +3498,7 @@ class SageControlCenter:
     def _continue_saw(self, project: Job, run: Run) -> Run:
         """Implement ` continue saw` in the deterministic terminal control flow."""
         standard_run_ui = run.operation in {"rtc", "stc"}
+        preflight_route = self._preflight_saw_route(run) if standard_run_ui else None
         if not run.task_manifests and not run.plan_path:
             if standard_run_ui:
                 self._compact_saw_progress = True
@@ -3516,7 +3524,7 @@ class SageControlCenter:
                 return self._continue_saw_plan(project, run)
             path = self._manifest_path(run.task_manifests[-1])
             if standard_run_ui:
-                self._write_saw_run_header(project, run)
+                self._write_saw_run_header(project, run, route=preflight_route)
                 with self._saw_work_unit_status(index=1, total=1, scope=run.scope):
                     run, submitted = self._task_action(project, run, path)
             else:
@@ -3544,7 +3552,7 @@ class SageControlCenter:
         state, _ = self._task_state(path)
         if state != "FINALIZED":
             if standard_run_ui:
-                self._write_saw_run_header(project, run)
+                self._write_saw_run_header(project, run, route=preflight_route)
                 with self._saw_work_unit_status(index=1, total=1, scope=run.scope):
                     run, _ = self._task_action(project, run, path)
             else:
@@ -3570,7 +3578,8 @@ class SageControlCenter:
 
     def _continue_saw_plan(self, project: Job, run: Run) -> Run:
         """Advance a SAW plan with one compact live work-unit progress line."""
-        self._write_saw_run_header(project, run)
+        route = self._preflight_saw_route(run)
+        self._write_saw_run_header(project, run, route=route)
         while True:
             result = self.controller(project, ["task", "continue", "--plan", str(run.plan_path)])
             if not isinstance(result, dict):
@@ -5562,6 +5571,14 @@ class SageControlCenter:
                 if isinstance(item, dict)
             ]
             self.io.write(f"  Qualified Skills: {', '.join(labels) if labels else 'none'}")
+            provisional = row.get("provisional_skill_routes") or []
+            provisional_labels = [
+                f"{item['skill_id']}:{item['reasoning_id']}"
+                for item in provisional
+                if isinstance(item, dict)
+            ]
+            if provisional_labels:
+                self.io.write(f"  Provisional Skills: {', '.join(provisional_labels)}")
 
     def _model_show_recommendation_status(self, service: ModelService) -> None:
         """Render exact per-Skill availability and qualification independently."""
@@ -5831,11 +5848,20 @@ class SageControlCenter:
             self.io.write(f"{'Connection':<28}{connection}")
             self.io.write(f"{'Provider':<28}{provider.title()}")
             self.io.write(f"{'AI Routing':<28}{override_state['routing_mode']}")
+            policy_default = str(
+                service.policy()["provisional_routing"]["default_reasoning_by_provider"].get(
+                    provider,
+                    "UNAVAILABLE",
+                )
+            )
+            self.io.write(
+                f"{'Auto / no data':<28}{policy_default} (POLICY DEFAULT)"
+            )
             self.io.write(f"{'Provider runtime':<28}{provider}-cli {runtime_version}" if provider == "codex" else f"{'Provider runtime':<28}{runtime_version}")
             if selection_checked and not ai.get("ready") and ai.get("diagnostic"):
                 self.io.write(f"{'Status detail':<28}{ai.get('diagnostic')}")
             elif not selection_checked:
-                self.io.write(f"{'Status detail':<28}Choose 8 to check the current configuration")
+                self.io.write(f"{'Status detail':<28}Choose 7 to check the current configuration")
 
             self.io.write_menu_header("AI settings", major=False)
             self.io.write(menu_item(1, "Change provider"))

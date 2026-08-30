@@ -142,6 +142,20 @@ def test_runtime_policy_loader_accepts_the_provider_neutral_contract(package_roo
     assert policy["accepted_operational_statuses"] == ["RECOMMENDED", "QUALIFIED"]
 
 
+def test_runtime_policy_declares_alpha_no_data_provisional_routing(package_root: Path) -> None:
+    """Removing the governed Alpha fallback must make no-data execution policy incomplete."""
+    policy = load_model_policy(package_root)
+
+    assert policy["provisional_routing"] == {
+        "enabled_release_states": ["ALPHA"],
+        "no_data_qualification_status": "PROVISIONAL_UNQUALIFIED",
+        "default_reasoning_by_provider": {"codex": "medium"},
+        "prohibited_reasoning_by_provider": {"codex": ["none", "minimal", "low"]},
+        "known_negative_effect": "BLOCK",
+        "stale_evidence_effect": "BLOCK",
+    }
+
+
 def _routing_module():
     """Load the routing API only after asserting that the production module exists."""
     assert importlib.util.find_spec("sage.skill_routing") is not None
@@ -271,6 +285,8 @@ def test_resolver_returns_an_exact_qualified_skill_route(package_root: Path, tmp
     assert route.qualification == "RECOMMENDED"
     assert route.routing_mode == "AUTOMATIC"
     assert route.evidence_sha256 == "b" * 64
+    assert route.selection_mode == "EXACT_SKILL_QUALIFICATION"
+    assert route.routing_basis_sha256 is None
 
 
 def test_resolver_accepts_a_replaceable_qualification_evidence_repository(
@@ -405,15 +421,101 @@ def test_resolver_accepts_provider_native_non_sage_effort_names(package_root: Pa
     assert route.identity.reasoning_id == "fast"
 
 
-def test_resolver_rejects_an_unseen_model_as_unassessed(package_root: Path, tmp_path: Path) -> None:
-    """A live model without exact qualification evidence must remain unroutable."""
+def test_resolver_uses_medium_provisionally_when_no_evidence_exists(
+    package_root: Path,
+    tmp_path: Path,
+) -> None:
+    """Removing the Alpha no-data branch must return the obsolete no-qualified-route error."""
     routing = _routing_module()
     root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+
+    route = routing.resolve_skill_route(root, "saw-rtc", [_status("codex", _capability())])
+
+    assert route.identity.provider == "codex"
+    assert route.identity.model_id == "gpt-5.6-sol"
+    assert route.identity.reasoning_id == "medium"
+    assert route.qualification == "PROVISIONAL_UNQUALIFIED"
+    assert route.selection_mode == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert route.evidence_sha256 is None
+    assert route.routing_basis_sha256 is not None
+
+
+def test_resolver_uses_qualification_data_instead_of_no_data_medium(
+    package_root: Path,
+    tmp_path: Path,
+) -> None:
+    """Ignoring current data must leave automatic routing on the no-data Medium fallback."""
+    routing = _routing_module()
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    capability = _capability()
+    provisional = routing.resolve_skill_route(root, "saw-rtc", [_status("codex", capability)])
+    assert provisional.identity.reasoning_id == "medium"
+    assert provisional.selection_mode == "PROVISIONAL_PROVIDER_DEFAULT"
+
+    _write_seed(
+        root,
+        provider="codex",
+        capability=capability,
+        fingerprint=routing.capability_fingerprint(capability),
+        reasoning_id="high",
+        skill_id="saw-rtc",
+        skill_sha256=skill_sha256,
+        suite_sha256=suite_sha256,
+    )
+    qualified = routing.resolve_skill_route(root, "saw-rtc", [_status("codex", capability)])
+    assert qualified.identity.reasoning_id == "high"
+    assert qualified.qualification == "RECOMMENDED"
+    assert qualified.selection_mode == "EXACT_SKILL_QUALIFICATION"
+
+
+@pytest.mark.parametrize(
+    ("qualification_status", "reason_code"),
+    (("FAILED", "MODEL_QUALIFICATION_FAILED"), ("UNRELIABLE", "MODEL_QUALIFICATION_UNRELIABLE")),
+)
+def test_resolver_blocks_known_adverse_evidence_instead_of_using_provisional(
+    package_root: Path,
+    tmp_path: Path,
+    qualification_status: str,
+    reason_code: str,
+) -> None:
+    """Dropping an adverse-evidence branch must incorrectly make a tested bad route executable."""
+    routing = _routing_module()
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    capability = _capability()
+    _write_seed(
+        root,
+        provider="codex",
+        capability=capability,
+        fingerprint=routing.capability_fingerprint(capability),
+        reasoning_id="medium",
+        skill_id="saw-rtc",
+        skill_sha256=skill_sha256,
+        suite_sha256=suite_sha256,
+        status=qualification_status,
+    )
+
+    with pytest.raises(ValidationError) as caught:
+        routing.resolve_skill_route(root, "saw-rtc", [_status("codex", capability)])
+
+    assert caught.value.code == reason_code
+
+
+def test_resolver_disables_provisional_routes_outside_alpha(
+    package_root: Path,
+    tmp_path: Path,
+) -> None:
+    """Removing the release-state gate must make an unqualified route executable after Alpha."""
+    routing = _routing_module()
+    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    standard_path = root / "system/config/sage-standard.json"
+    standard = json.loads(standard_path.read_text(encoding="utf-8"))
+    standard["release"]["status"] = "BETA"
+    standard_path.write_text(json.dumps(standard, indent=2) + "\n", encoding="utf-8")
 
     with pytest.raises(ValidationError) as caught:
         routing.resolve_skill_route(root, "saw-rtc", [_status("codex", _capability())])
 
-    assert caught.value.code == "NO_QUALIFIED_SKILL_ROUTE"
+    assert caught.value.code == "NO_PROVISIONAL_SKILL_ROUTE"
 
 
 def test_legacy_workflow_recommendation_is_an_exact_skill_route_facade(
@@ -448,6 +550,31 @@ def test_legacy_workflow_recommendation_is_an_exact_skill_route_facade(
     assert recommendation.selection_basis == "exact_skill_qualification"
 
 
+def test_legacy_workflow_recommendation_labels_automatic_no_data_medium(
+    package_root: Path,
+    tmp_path: Path,
+) -> None:
+    """Calling a no-data route evidence-qualified must make the compatibility result fail."""
+    root, _skill_sha256, _suite_sha256 = _route_workspace(
+        package_root,
+        tmp_path,
+        "bic-inspect",
+    )
+
+    recommendation = recommend_model(
+        root=root,
+        status=_status("codex", _capability()),
+        workflow="bic",
+        operation="inspect",
+    )
+
+    assert recommendation.complexity == "PROVISIONAL_NO_DATA"
+    assert recommendation.reasoning_effort == "medium"
+    assert recommendation.qualification_status == "PROVISIONAL_UNQUALIFIED"
+    assert recommendation.qualification_basis.startswith("provisional routing policy ")
+    assert recommendation.selection_basis == "automatic_no_data_default"
+
+
 def test_model_service_exposes_recommendation_by_exact_skill(
     package_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -478,10 +605,10 @@ def test_model_service_exposes_recommendation_by_exact_skill(
     assert result["reasoning_id"] == "medium"
 
 
-def test_model_service_lists_blocked_and_recommended_skills_separately(
+def test_model_service_lists_qualified_and_provisional_skills_separately(
     package_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """One qualified Skill must not make unrelated unassessed Skills appear ready."""
+    """Folding provisional rows into qualified status must make the truthful counts fail."""
     routing = _routing_module()
     root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
     capability = _capability()
@@ -502,10 +629,13 @@ def test_model_service_lists_blocked_and_recommended_skills_separately(
     result = service.skill_routes()
     rows = {row["skill_id"]: row for row in result["skills"]}
 
-    assert result["status"] == "PARTIALLY_ROUTABLE"
+    assert result["status"] == "READY_PROVISIONAL"
+    assert result["qualified_skills"] == 1
+    assert result["provisional_skills"] == len(REGISTERED_SKILLS) - 1
     assert rows["saw-rtc"]["qualification"] == "RECOMMENDED"
-    assert rows["saw-stc"]["qualification"] == "UNASSESSED"
-    assert rows["saw-stc"]["reason_code"] == "NO_QUALIFIED_SKILL_ROUTE"
+    assert rows["saw-stc"]["qualification"] == "PROVISIONAL_UNQUALIFIED"
+    assert rows["saw-stc"]["selection_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert rows["saw-stc"]["reason_code"] is None
 
 
 def test_available_model_catalog_lists_exact_qualified_skill_routes(
@@ -540,6 +670,55 @@ def test_available_model_catalog_lists_exact_qualified_skill_routes(
             "evidence_sha256": "b" * 64,
         }
     ]
+    assert {
+        item["skill_id"] for item in result["models"][0]["provisional_skill_routes"]
+    } == set(REGISTERED_SKILLS) - {"saw-rtc"}
+    assert all(
+        item["qualification"] == "PROVISIONAL_UNQUALIFIED"
+        and item["evidence_sha256"] is None
+        for item in result["models"][0]["provisional_skill_routes"]
+    )
+
+
+def test_model_service_reports_no_data_route_as_provisional(
+    package_root: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Hard-coding recommendation status must mislabel an unqualified no-data route."""
+    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    service = ModelService(root)
+    status = _status("codex", _capability())
+    monkeypatch.setattr(service, "probe", lambda *_args, **_kwargs: (status, None))
+
+    result = service.recommendation_for_skill("saw-rtc")
+
+    assert result["status"] == "PROVISIONAL_UNQUALIFIED"
+    assert result["qualification"] == "PROVISIONAL_UNQUALIFIED"
+    assert result["selection_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert result["reasoning_id"] == "medium"
+    assert result["evidence_sha256"] is None
+
+
+def test_legacy_model_service_does_not_hardcode_recommended_for_no_data(
+    package_root: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Hard-coding the compatibility status must contradict its provisional recommendation body."""
+    root, _skill_sha256, _suite_sha256 = _route_workspace(
+        package_root,
+        tmp_path,
+        "bic-inspect",
+    )
+    service = ModelService(root)
+    status = _status("codex", _capability())
+    monkeypatch.setattr(service, "probe", lambda *_args, **_kwargs: (status, None))
+
+    result = service.recommendation("bic", "inspect")
+
+    assert result["status"] == "PROVISIONAL_UNQUALIFIED"
+    assert result["qualification_status"] == "PROVISIONAL_UNQUALIFIED"
 
 
 def test_release_provider_preference_breaks_only_otherwise_equal_route_ties(

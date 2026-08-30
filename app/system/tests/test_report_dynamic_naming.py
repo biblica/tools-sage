@@ -129,6 +129,37 @@ def test_execution_route_projection_verifies_task_and_output_hashes(tmp_path: Pa
     assert caught.value.code == "EXECUTION_RECEIPT_OUTPUT_MISMATCH"
 
 
+def test_execution_route_projection_accepts_provisional_policy_provenance(tmp_path: Path) -> None:
+    """Requiring qualification evidence for an Alpha fallback must reject its truthful receipt."""
+    task_root = tmp_path / "task"
+    receipt = _execution_receipt(task_root)
+    receipt.update(
+        {
+            "qualification_status": "PROVISIONAL_UNQUALIFIED",
+            "qualification_evidence_sha256": None,
+            "routing_basis_sha256": "e" * 64,
+            "selection_mode": "PROVISIONAL_PROVIDER_DEFAULT",
+        }
+    )
+    validation = task_root / "validation"
+    validation.mkdir()
+    (validation / "llm-execution-receipt.json").write_text(
+        json.dumps(receipt),
+        encoding="utf-8",
+    )
+
+    route = execution_route_from_receipt(
+        task_root,
+        task_id=receipt["task_id"],
+        output_hashes=receipt["output_sha256"],
+    )
+
+    assert route["status"] == "PROVED"
+    assert route["qualification_status"] == "PROVISIONAL_UNQUALIFIED"
+    assert route["qualification_evidence_sha256"] is None
+    assert route["routing_basis_sha256"] == "e" * 64
+
+
 def test_execution_route_aggregation_and_rendering_preserve_distinct_routes() -> None:
     """Route summaries count tasks without collapsing distinct provider identities."""
     first = {

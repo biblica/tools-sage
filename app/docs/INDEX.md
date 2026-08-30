@@ -69,6 +69,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Skill-qualified Model Routing Implementation Plan](advanced/release/SKILL-ROUTING-IMPLEMENTATION-PLAN.md) — test-first Alpha1 implementation, qualification, hardening, and Operator-acceptance sequence.
 - [Administrative AI Routing Design](advanced/release/ADMINISTRATIVE-AI-ROUTING-DESIGN.md) — deterministic-first administration, Local AI preference, hosted fallback consent, and low/Instant restrictions.
 - [Provisional Medium Skill Routing Design](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-DESIGN.md) — no-data Alpha fallback, qualification precedence, truthful receipts, and early route preflight.
+- [Provisional Medium Skill Routing Implementation Plan](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-IMPLEMENTATION-PLAN.md) — test-first resolver, preference, receipt, preflight, documentation, and hardening sequence.
 - [Vanilla Installation Manifest](advanced/release/VANILLA-INSTALL-MANIFEST.md) — complete clean package inventory.
 
 ## Advanced: future, non-current designs

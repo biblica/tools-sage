@@ -11,6 +11,7 @@ from typing import Any, Iterable, Mapping, Protocol, Sequence
 from .errors import ConfigurationError, ValidationError
 from .executors.base import ModelCapability, ProviderStatus
 from .model_policy import load_model_policy
+from .standard import load_standard
 from .storage import storage_layout
 
 
@@ -79,7 +80,9 @@ class SkillRoute:
     availability: str
     qualification: str
     routing_mode: str
-    evidence_sha256: str
+    evidence_sha256: str | None
+    selection_mode: str
+    routing_basis_sha256: str | None
     provider_runtime_version: str | None
     model_identity_strength: str
     cost_class: str
@@ -92,6 +95,8 @@ class SkillRoute:
             "qualification": self.qualification,
             "routing_mode": self.routing_mode,
             "evidence_sha256": self.evidence_sha256,
+            "selection_mode": self.selection_mode,
+            "routing_basis_sha256": self.routing_basis_sha256,
             "provider_runtime_version": self.provider_runtime_version,
             "model_identity_strength": self.model_identity_strength,
             "cost_class": self.cost_class,
@@ -225,13 +230,24 @@ def _record_identity_matches(
     return all(str(row.get(key) or "") == str(value) for key, value in expected.items())
 
 
+@dataclass(frozen=True)
+class CandidateRouteState:
+    """Exact qualification reconciliation state for one Skill and capability snapshot."""
+
+    routes: tuple[SkillRoute, ...]
+    exact_but_unavailable: bool
+    stale_observed: bool
+    adverse_statuses: frozenset[str]
+    evidence_present: bool
+
+
 def _candidate_skill_routes(
     root: Path,
     skill_id: str,
     statuses: Sequence[ProviderStatus],
     *,
     evidence_repository: QualificationEvidenceRepository | None = None,
-) -> tuple[list[SkillRoute], bool, bool]:
+) -> CandidateRouteState:
     """Return sorted exact candidates plus unavailable and stale evidence state."""
     root = root.expanduser().resolve()
     skill_sha256, policy, route_policy = _skill_identity(root, skill_id)
@@ -253,6 +269,8 @@ def _candidate_skill_routes(
     candidates: list[tuple[tuple[Any, ...], SkillRoute]] = []
     exact_but_unavailable = False
     stale_observed = False
+    adverse_statuses: set[str] = set()
+    exact_evidence_seen = False
 
     # Keep evidence matching and recommendation ordering in one pass so no
     # status view can accidentally apply weaker identity rules than execution.
@@ -288,7 +306,11 @@ def _candidate_skill_routes(
             if related and not exact:
                 stale_observed = True
             for row in exact:
+                exact_evidence_seen = True
                 qualification = str(row.get("qualification_status") or "")
+                if qualification in {"FAILED", "UNRELIABLE"}:
+                    adverse_statuses.add(qualification)
+                    continue
                 if qualification not in accepted:
                     continue
                 if not status.available or not status.ready:
@@ -311,6 +333,8 @@ def _candidate_skill_routes(
                     qualification="QUALIFIED",
                     routing_mode="AUTOMATIC",
                     evidence_sha256=str(row.get("evidence_sha256") or ""),
+                    selection_mode="EXACT_SKILL_QUALIFICATION",
+                    routing_basis_sha256=None,
                     provider_runtime_version=status.version,
                     model_identity_strength=capability.identity_strength,
                     cost_class=str(row.get("cost_class") or capability.cost_class or "UNKNOWN"),
@@ -344,7 +368,15 @@ def _candidate_skill_routes(
                 )
 
     candidates.sort(key=lambda item: item[0])
-    return [route for _rank, route in candidates], exact_but_unavailable, stale_observed
+    if evidence and not exact_evidence_seen:
+        stale_observed = True
+    return CandidateRouteState(
+        routes=tuple(route for _rank, route in candidates),
+        exact_but_unavailable=exact_but_unavailable,
+        stale_observed=stale_observed,
+        adverse_statuses=frozenset(adverse_statuses),
+        evidence_present=bool(evidence),
+    )
 
 
 def _raise_unresolved_skill_route(
@@ -352,12 +384,23 @@ def _raise_unresolved_skill_route(
     *,
     exact_but_unavailable: bool,
     stale_observed: bool,
+    adverse_statuses: frozenset[str] = frozenset(),
 ) -> None:
     """Raise the most specific fail-closed route resolution error."""
     if exact_but_unavailable:
         raise ValidationError(
             f"Qualified route for {skill_id} is not currently available",
             code="PROVIDER_ROUTE_UNAVAILABLE",
+        )
+    if "FAILED" in adverse_statuses:
+        raise ValidationError(
+            f"Current qualification evidence failed for {skill_id}",
+            code="MODEL_QUALIFICATION_FAILED",
+        )
+    if "UNRELIABLE" in adverse_statuses:
+        raise ValidationError(
+            f"Current qualification evidence is unreliable for {skill_id}",
+            code="MODEL_QUALIFICATION_UNRELIABLE",
         )
     if stale_observed:
         raise ValidationError(
@@ -378,22 +421,112 @@ def qualified_skill_routes(
     evidence_repository: QualificationEvidenceRepository | None = None,
 ) -> tuple[SkillRoute, ...]:
     """Return every available qualified route in deterministic recommendation order."""
-    routes, exact_but_unavailable, stale_observed = _candidate_skill_routes(
+    state = _candidate_skill_routes(
         root,
         skill_id,
         statuses,
         evidence_repository=evidence_repository,
     )
-    if not routes:
+    if not state.routes:
         _raise_unresolved_skill_route(
             skill_id,
-            exact_but_unavailable=exact_but_unavailable,
-            stale_observed=stale_observed,
+            exact_but_unavailable=state.exact_but_unavailable,
+            stale_observed=state.stale_observed,
+            adverse_statuses=state.adverse_statuses,
         )
     return tuple(
         replace(route, qualification="RECOMMENDED" if index == 0 else "QUALIFIED")
-        for index, route in enumerate(routes)
+        for index, route in enumerate(state.routes)
     )
+
+
+def _provisional_skill_route(
+    root: Path,
+    skill_id: str,
+    statuses: Sequence[ProviderStatus],
+) -> SkillRoute:
+    """Return one deterministic Alpha-only route for a true no-data Skill state."""
+    skill_sha256, policy, route_policy = _skill_identity(root, skill_id)
+    provisional = policy["provisional_routing"]
+    release_state = load_standard(root).release_status
+    if release_state not in provisional["enabled_release_states"]:
+        raise ValidationError(
+            f"Provisional routing for {skill_id} is not enabled in release state {release_state}",
+            code="NO_PROVISIONAL_SKILL_ROUTE",
+        )
+    preferred_providers = [
+        str(value) for value in (policy.get("release_preference") or {}).get("providers", [])
+    ]
+    preferred_models_by_provider = (policy.get("release_preference") or {}).get("models") or {}
+    defaults = provisional["default_reasoning_by_provider"]
+    prohibited_by_provider = provisional["prohibited_reasoning_by_provider"]
+    candidates: list[tuple[tuple[Any, ...], SkillRoute]] = []
+    routing_basis_sha256 = _canonical_sha256(
+        {
+            "qualification_policy_version": policy["qualification_policy_version"],
+            "provisional_routing": provisional,
+        }
+    )
+
+    for status, capability, fingerprint in _capability_rows(statuses):
+        if not status.available or not status.ready or capability.hidden:
+            continue
+        provider_default = str(defaults.get(status.provider) or "").strip()
+        if not provider_default:
+            continue
+        preferred_reasoning = provider_default
+        selection_mode = "PROVISIONAL_PROVIDER_DEFAULT"
+        native_reasoning = capability.reasoning_efforts or ("provider-default",)
+        prohibited = {
+            str(value) for value in prohibited_by_provider.get(status.provider, [])
+        }
+        if preferred_reasoning not in native_reasoning or preferred_reasoning in prohibited:
+            continue
+        identity = RouteIdentity(
+            provider=status.provider,
+            model_id=capability.model,
+            capability_fingerprint=fingerprint,
+            reasoning_id=preferred_reasoning,
+            skill_id=skill_id,
+            skill_sha256=skill_sha256,
+            suite_id=str(route_policy.get("suite_id") or ""),
+            suite_sha256=str(route_policy.get("suite_sha256") or ""),
+            policy_version=str(policy.get("qualification_policy_version") or ""),
+        )
+        route = SkillRoute(
+            identity=identity,
+            availability="AVAILABLE",
+            qualification=str(provisional["no_data_qualification_status"]),
+            routing_mode="AUTOMATIC",
+            evidence_sha256=None,
+            selection_mode=selection_mode,
+            routing_basis_sha256=routing_basis_sha256,
+            provider_runtime_version=status.version,
+            model_identity_strength=capability.identity_strength,
+            cost_class=capability.cost_class,
+        )
+        provider_rank = (
+            preferred_providers.index(status.provider)
+            if status.provider in preferred_providers
+            else len(preferred_providers)
+        )
+        preferred_models = [
+            str(value) for value in preferred_models_by_provider.get(status.provider, [])
+        ]
+        model_rank = (
+            preferred_models.index(capability.model)
+            if capability.model in preferred_models
+            else len(preferred_models)
+        )
+        candidates.append(((provider_rank, model_rank, capability.model, identity.route_id), route))
+
+    if not candidates:
+        raise ValidationError(
+            f"No enabled, available provisional route exists for {skill_id}",
+            code="NO_PROVISIONAL_SKILL_ROUTE",
+        )
+    candidates.sort(key=lambda item: item[0])
+    return candidates[0][1]
 
 
 def resolve_skill_route(
@@ -403,13 +536,28 @@ def resolve_skill_route(
     *,
     evidence_repository: QualificationEvidenceRepository | None = None,
 ) -> SkillRoute:
-    """Resolve the recommended available exact route for one registered Skill."""
-    return qualified_skill_routes(
+    """Resolve a qualified route first, then the Alpha-only true no-data fallback."""
+    state = _candidate_skill_routes(
         root,
         skill_id,
         statuses,
         evidence_repository=evidence_repository,
-    )[0]
+    )
+    if state.routes:
+        return replace(state.routes[0], qualification="RECOMMENDED")
+    if state.exact_but_unavailable or state.adverse_statuses or state.stale_observed:
+        _raise_unresolved_skill_route(
+            skill_id,
+            exact_but_unavailable=state.exact_but_unavailable,
+            stale_observed=state.stale_observed,
+            adverse_statuses=state.adverse_statuses,
+        )
+    if state.evidence_present:
+        raise ValidationError(
+            f"Qualification evidence for {skill_id} is not executable",
+            code="NO_QUALIFIED_SKILL_ROUTE",
+        )
+    return _provisional_skill_route(root, skill_id, statuses)
 
 
 def resolve_specific_skill_route(

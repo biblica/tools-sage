@@ -181,6 +181,7 @@ class ModelService:
             policy = load_model_policy(self.root)
             for capability in status.model_capabilities:
                 qualifications: list[dict[str, Any]] = []
+                provisional_routes: list[dict[str, Any]] = []
                 for skill_id in policy["skill_routes"]:
                     try:
                         route = resolve_skill_route(self.root, skill_id, [status])
@@ -188,20 +189,23 @@ class ModelService:
                         continue
                     if route.identity.model_id != capability.model:
                         continue
-                    qualifications.append(
-                        {
-                            "skill_id": skill_id,
-                            "reasoning_id": route.identity.reasoning_id,
-                            "qualification": route.qualification,
-                            "evidence_sha256": route.evidence_sha256,
-                        }
-                    )
+                    route_row = {
+                        "skill_id": skill_id,
+                        "reasoning_id": route.identity.reasoning_id,
+                        "qualification": route.qualification,
+                        "evidence_sha256": route.evidence_sha256,
+                    }
+                    if route.qualification == "PROVISIONAL_UNQUALIFIED":
+                        provisional_routes.append(route_row)
+                    else:
+                        qualifications.append(route_row)
                 rows.append(
                     {
                         **capability.to_dict(),
                         "capability_fingerprint": capability_fingerprint(capability),
                         "reasoning_efforts": list(capability.reasoning_efforts),
                         "qualified_skill_routes": qualifications,
+                        "provisional_skill_routes": provisional_routes,
                         "selected": capability.model == selected_model or capability.id == selected_model,
                     }
                 )
@@ -233,7 +237,7 @@ class ModelService:
             operation=operation,
         )
         return {
-            "status": "RECOMMENDED",
+            "status": recommendation.qualification_status,
             **recommendation.to_dict(),
             "catalog_cache": str(cache_path) if cache_path else None,
         }
@@ -246,9 +250,9 @@ class ModelService:
         ]
 
     def recommendation_for_skill(self, skill_id: str) -> dict[str, Any]:
-        """Return the current exact evidence-qualified route for one registered Skill."""
+        """Return the current exact qualified or truthfully provisional Skill route."""
         route = resolve_routing_mode(self.root, skill_id, self._routing_statuses())
-        return {"status": "RECOMMENDED", **route.to_dict()}
+        return {"status": route.qualification, **route.to_dict()}
 
     def skill_routes(self) -> dict[str, Any]:
         """Return independent readiness for every registered Skill under one catalog snapshot."""
@@ -257,6 +261,8 @@ class ModelService:
         routing_mode = "GLOBAL_OVERRIDE" if load_global_override(self.root) else "AUTOMATIC"
         rows: list[dict[str, Any]] = []
         ready_count = 0
+        qualified_count = 0
+        provisional_count = 0
         for skill_id in policy["skill_routes"]:
             try:
                 route = resolve_routing_mode(self.root, skill_id, statuses)
@@ -264,6 +270,8 @@ class ModelService:
                 qualification = {
                     "SKILL_ROUTE_EVIDENCE_STALE": "STALE",
                     "PROVIDER_ROUTE_UNAVAILABLE": "QUALIFIED",
+                    "MODEL_QUALIFICATION_FAILED": "FAILED",
+                    "MODEL_QUALIFICATION_UNRELIABLE": "UNRELIABLE",
                 }.get(exc.code, "UNASSESSED")
                 rows.append(
                     {
@@ -281,12 +289,22 @@ class ModelService:
                 )
             else:
                 ready_count += 1
+                if route.qualification == "PROVISIONAL_UNQUALIFIED":
+                    provisional_count += 1
+                else:
+                    qualified_count += 1
                 rows.append({**route.to_dict(), "reason_code": None, "diagnostic": ""})
-        overall = "READY" if ready_count == len(rows) else ("PARTIALLY_ROUTABLE" if ready_count else "BLOCKED")
+        overall = (
+            ("READY_PROVISIONAL" if provisional_count else "READY")
+            if ready_count == len(rows)
+            else ("PARTIALLY_ROUTABLE" if ready_count else "BLOCKED")
+        )
         return {
             "status": overall,
             "routing_mode": routing_mode,
             "ready_skills": ready_count,
+            "qualified_skills": qualified_count,
+            "provisional_skills": provisional_count,
             "total_skills": len(rows),
             "skills": rows,
         }

@@ -4,6 +4,19 @@ unknown_route_status: UNASSESSED
 accepted_operational_statuses:
   - RECOMMENDED
   - QUALIFIED
+provisional_routing:
+  enabled_release_states:
+    - ALPHA
+  no_data_qualification_status: PROVISIONAL_UNQUALIFIED
+  default_reasoning_by_provider:
+    codex: medium
+  prohibited_reasoning_by_provider:
+    codex:
+      - none
+      - minimal
+      - low
+  known_negative_effect: BLOCK
+  stale_evidence_effect: BLOCK
 recommendation_order:
   - hard_contracts
   - cost_class

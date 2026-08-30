@@ -314,6 +314,57 @@ def test_saw_continuation_displays_composite_unit_progress(make_workspace, monke
     assert "SAW work unit 1/10: MAT 1:1-2" in center.io.output.getvalue()
 
 
+def test_saw_route_block_propagates_before_visible_work_or_run_mutation(
+    make_workspace,
+    monkeypatch,
+) -> None:
+    """Swallowing route preflight errors must incorrectly enter Working and append a task."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
+    plan_path = run.root / "plans" / "composite.json"
+    run = store.update_run(run, plan_path=str(plan_path), status="COMPOSITE")
+    center = _center(root, [])
+    center.dry_run_provider = False
+    monkeypatch.setattr(
+        "sage.menu.ModelService.recommendation_for_skill",
+        lambda _service, _skill: (_ for _ in ()).throw(
+            ValidationError(
+                "Known route evidence is unreliable",
+                code="MODEL_QUALIFICATION_UNRELIABLE",
+            )
+        ),
+    )
+    actions: list[Path] = []
+    monkeypatch.setattr(
+        center,
+        "_task_action",
+        lambda _job, current, path: (actions.append(path) or current, False),
+    )
+    monkeypatch.setattr(
+        center,
+        "controller",
+        lambda _job, _arguments: {
+            "status": "NEXT_WORK_UNIT",
+            "completed_units": 0,
+            "total_units": 1,
+            "next_unit": {
+                "manifest_path": str(run.root / "tasks" / "same-task" / "task-manifest.json"),
+                "scope": "MAT 1",
+            },
+        },
+    )
+
+    with pytest.raises(ValidationError) as caught:
+        center._continue_saw_plan(job, run)
+
+    assert caught.value.code == "MODEL_QUALIFICATION_UNRELIABLE"
+    assert actions == []
+    assert not store.load_run(job, run.run_id).task_manifests
+    assert "Working on SAW work unit" not in center.io.output.getvalue()
+
+
 def test_saw_plan_continuation_advances_all_submitted_units_without_menu_round_trips(
     make_workspace,
     monkeypatch,

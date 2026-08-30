@@ -69,8 +69,11 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/projects-and-resources/RWC-SEMDOM-INDEXES.md`
 - `docs/advanced/projects-and-resources/VERSIFICATION.md`
 - `docs/advanced/release`
+- `docs/advanced/release/ADMINISTRATIVE-AI-ROUTING-DESIGN.md`
 - `docs/advanced/release/HANDOVER.md`
 - `docs/advanced/release/IMPLEMENTATION-REPORT.md`
+- `docs/advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-DESIGN.md`
+- `docs/advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-IMPLEMENTATION-PLAN.md`
 - `docs/advanced/release/RELEASE-GATES.md`
 - `docs/advanced/release/RELEASE-NOTES.md`
 - `docs/advanced/release/SKILL-ROUTING-IMPLEMENTATION-PLAN.md`

@@ -1942,6 +1942,14 @@ def command_model_list(args: argparse.Namespace) -> int:
             )
         elif result["provider"] == "codex":
             print("  Qualified Skills: none")
+        if row.get("provisional_skill_routes"):
+            print(
+                "  Provisional Skills: "
+                + ", ".join(
+                    f"{item['skill_id']}:{item['reasoning_id']}"
+                    for item in row["provisional_skill_routes"]
+                )
+            )
     print(result.get("diagnostic", ""))
     return 0
 
