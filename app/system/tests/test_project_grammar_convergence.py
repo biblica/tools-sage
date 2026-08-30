@@ -85,6 +85,11 @@ def _rtc_stage_document(manifest: dict, *, ol_request: bool = False, resolved_id
             "question": "Does the bounded original-language evidence resolve this specific meaning ambiguity?",
             "reason": "The WIP and REFERENCE comparison leaves one bounded semantic ambiguity unresolved.",
             "evidence_ids": [manifest["allowed_evidence_ids"][0]],
+            "conflict_class": "NEGATION_OR_POLARITY_CONFLICT",
+            "wip_proposition": "The bounded WIP proposition affirms the event.",
+            "reference_proposition": "The bounded REFERENCE proposition denies the event.",
+            "fundamental_impact": "The two renderings assert opposite event polarity.",
+            "source_dependency": "UNRESOLVED_REQUIRES_ORIGINAL_LANGUAGE",
         }]
     if resolved_ids is not None:
         expected = {row["request_id"]: row for row in manifest["review_requirements"].get("expected_ol_requests", [])}

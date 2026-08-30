@@ -47,7 +47,7 @@ skill_routes:
     execution_class: GOVERNED_SKILL
   saw-rtc:
     suite_id: alpha1-saw-rtc
-    suite_sha256: d67fa243de3c348eea245de7ca452ff4580a09386c18cf144a25204a0b1096f9
+    suite_sha256: 62a2721e373bbf84c020f1262eb8278c94df8f207cd131d94847555ba759432b
     execution_class: GOVERNED_SKILL
   saw-stc:
     suite_id: alpha1-saw-stc
