@@ -688,6 +688,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_model_language_competency.py`
 - `system/tests/test_model_evaluation.py`
 - `system/tests/test_natural_language_routing.py`
+- `system/tests/test_ol_referrals.py`
 - `system/tests/test_ol_authority_profiles.py`
 - `system/tests/test_ollama_admin.py`
 - `system/tests/test_operator_ux.py`

@@ -279,8 +279,10 @@ def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> l
                 )
                 continue
             cases = contract.get("cases")
-            if not isinstance(cases, list) or len(cases) != 3:
-                errors.append(f"skill-evaluation-contracts.json skills.{skill_id} must contain three cases")
+            if not isinstance(cases, list) or len(cases) < 3:
+                errors.append(
+                    f"skill-evaluation-contracts.json skills.{skill_id} must contain at least three cases"
+                )
             else:
                 kinds = {str(case.get("case_kind") or "") for case in cases if isinstance(case, dict)}
                 if kinds != {"POSITIVE", "ZERO_FINDING", "ADVERSARIAL"}:

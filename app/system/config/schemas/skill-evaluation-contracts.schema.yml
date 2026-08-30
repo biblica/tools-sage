@@ -23,5 +23,5 @@ controls:
   schema_version: '1.0'
   exact_registered_skill_inventory: required
   repetitions_per_case: 3
-  cases_per_skill: 3
+  minimum_cases_per_skill: 3
   provider_calls_during_package_validation: prohibited
