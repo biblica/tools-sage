@@ -14,6 +14,11 @@ from .hashing import sha256_file
 from .human_output import catalogue_text, render_report_language_authority
 from .iso_languages import iso_language
 from .language_identification import resolve_country
+from .ol_referrals import (
+    OL_REFERRAL_CONTRACT_V1,
+    normalize_referral_admission,
+    referral_conflict_key,
+)
 from .references import (
     BOOK_ORDER,
     ScriptureScope,
@@ -530,6 +535,7 @@ def validate_saw_findings(
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
     narrative_language: str | None = None,
+    ol_referral_contract: str | None = None,
 ) -> dict[str, Any]:
     """Validate staged SAW findings, complete coverage, and bounded focus answers."""
     # Validation order is deliberate: scope and schema checks precede evidence and coverage acceptance.
@@ -684,17 +690,38 @@ def validate_saw_findings(
     if operation == "rtc" and _normalised_stage(operation, rtc_stage) == "REFERENCE_TEXT_COMPARISON":
         seen_request_ids: set[str] = set()
         seen_deferred_ids: set[str] = set()
+        seen_conflict_keys: set[str] = set()
+        strict_referrals = ol_referral_contract == OL_REFERRAL_CONTRACT_V1
         for index, request in enumerate(raw_requests, start=1):
+            admission = (
+                normalize_referral_admission(request, index=index)
+                if strict_referrals
+                else {}
+            )
             request_id = _require_string(request.get("request_id"), f"ol_review_requests[{index}].request_id", maximum=80).upper()
             if request_id in seen_request_ids:
                 raise ValidationError(f"Duplicate OL review request_id: {request_id}")
             seen_request_ids.add(request_id)
             reference = normalize_scope_set(_require_string(request.get("target_reference"), f"ol_review_requests[{index}].target_reference", maximum=160))
             if not _scope_contains_reference(parse_scope(scope_value), reference):
-                raise ValidationError(f"ol_review_requests[{index}].target_reference is outside the task scope")
+                raise ValidationError(
+                    f"ol_review_requests[{index}].target_reference is outside the task scope",
+                    code=(
+                        "SAW_OL_REFERRAL_SCOPE_INVALID"
+                        if strict_referrals
+                        else "VALIDATION_ERROR"
+                    ),
+                )
             evidence_ids = _string_list(request.get("evidence_ids"), f"ol_review_requests[{index}].evidence_ids", allow_empty=False)
             if set(evidence_ids) - set(allowed_evidence_ids):
-                raise ValidationError(f"ol_review_requests[{index}] cites evidence not routed to the task")
+                raise ValidationError(
+                    f"ol_review_requests[{index}] cites evidence not routed to the task",
+                    code=(
+                        "SAW_OL_REFERRAL_EVIDENCE_INVALID"
+                        if strict_referrals
+                        else "VALIDATION_ERROR"
+                    ),
+                )
             deferred_finding_id = _canonical_saw_local_finding_id(
                 request.get("deferred_finding_id"),
                 f"ol_review_requests[{index}].deferred_finding_id",
@@ -702,14 +729,32 @@ def validate_saw_findings(
             if deferred_finding_id in seen_deferred_ids:
                 raise ValidationError(f"Duplicate deferred_finding_id: {deferred_finding_id}")
             seen_deferred_ids.add(deferred_finding_id)
-            ol_review_requests.append({
+            conflict_key = ""
+            if strict_referrals:
+                conflict_key = referral_conflict_key(
+                    target_reference=reference,
+                    conflict_class=admission["conflict_class"],
+                    wip_proposition=admission["wip_proposition"],
+                    reference_proposition=admission["reference_proposition"],
+                )
+                if conflict_key in seen_conflict_keys:
+                    raise ValidationError(
+                        f"ol_review_requests[{index}] duplicates an admitted semantic conflict",
+                        code="SAW_OL_REFERRAL_DUPLICATE",
+                    )
+                seen_conflict_keys.add(conflict_key)
+            normalized_request = {
                 "request_id": request_id,
                 "deferred_finding_id": deferred_finding_id,
                 "target_reference": reference,
                 "question": _require_string(request.get("question"), f"ol_review_requests[{index}].question", maximum=1200),
                 "reason": _require_string(request.get("reason"), f"ol_review_requests[{index}].reason", maximum=1600),
                 "evidence_ids": evidence_ids,
-            })
+            }
+            if strict_referrals:
+                normalized_request.update(admission)
+                normalized_request["conflict_key"] = conflict_key
+            ol_review_requests.append(normalized_request)
     elif raw_requests:
         raise ValidationError("OL review requests may be emitted only by the SAW Reference Text Comparison (RTC) meaning stage")
 
@@ -891,7 +936,12 @@ def validate_saw_findings(
         if overlap:
             raise ValidationError(
                 "Meaning-stage findings cannot simultaneously be final findings and deferred OL issues: "
-                + ", ".join(sorted(overlap))
+                + ", ".join(sorted(overlap)),
+                code=(
+                    "SAW_OL_REFERRAL_FINDING_OVERLAP"
+                    if ol_referral_contract == OL_REFERRAL_CONTRACT_V1
+                    else "VALIDATION_ERROR"
+                ),
             )
     if operation == "rtc" and stage_name == "SELECTIVE_OL_ADJUDICATION":
         expected_finding_ids = {

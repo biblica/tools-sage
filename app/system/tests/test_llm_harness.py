@@ -754,6 +754,61 @@ def test_saw_provider_schema_requests_only_stage_semantics() -> None:
     assert "required_action" in finding_properties
     assert "recommended_action" not in finding_properties
     assert "English (`en`)" in finding_properties["issue"]["description"]
+    legacy_request = findings_schema["properties"]["ol_review_requests"]["items"]
+    assert set(legacy_request["required"]) == {
+        "request_id",
+        "deferred_finding_id",
+        "target_reference",
+        "question",
+        "reason",
+        "evidence_ids",
+    }
+
+
+def test_saw_v1_provider_schema_requires_closed_ol_referral_admission() -> None:
+    """A V1 meaning task cannot emit an open-ended source referral."""
+    manifest = {
+        "task_id": "saw-rtc-jhn-v1",
+        "workflow": "saw",
+        "operation": "rtc",
+        "rtc_stage": "REFERENCE_TEXT_COMPARISON",
+        "ol_referral_contract": "SAW_OL_REFERRAL_ADMISSION_V1",
+        "scope": "JHN 1:1",
+        "allowed_writes": ["output/findings.json"],
+        "allowed_evidence_ids": ["WIP", "REFERENCE"],
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        },
+    }
+
+    schema = _output_schema(manifest)
+    request = schema["properties"]["files"]["properties"]["output/findings.json"][
+        "properties"
+    ]["ol_review_requests"]["items"]
+
+    assert set(request["required"]) == {
+        "request_id",
+        "deferred_finding_id",
+        "target_reference",
+        "question",
+        "reason",
+        "evidence_ids",
+        "conflict_class",
+        "wip_proposition",
+        "reference_proposition",
+        "fundamental_impact",
+        "source_dependency",
+    }
+    assert set(request["properties"]["conflict_class"]["enum"]) == {
+        "NEGATION_OR_POLARITY_CONFLICT",
+        "PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT",
+        "CORE_EVENT_OR_STATE_CONFLICT",
+        "CORE_PROPOSITION_OMISSION_OR_ADDITION",
+    }
+    assert request["properties"]["source_dependency"]["enum"] == [
+        "UNRESOLVED_REQUIRES_ORIGINAL_LANGUAGE"
+    ]
 
 
 def test_stc_provider_schema_uses_only_stc_semantics() -> None:

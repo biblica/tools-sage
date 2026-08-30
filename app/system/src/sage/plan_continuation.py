@@ -678,6 +678,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         "run_id": plan["run_id"],
         "workflow": "saw",
         "operation": "rtc",
+        "ol_referral_contract": plan.get("ol_referral_contract"),
         "resource_bindings": resource_bindings,
         "resource_display_names": resource_display_names,
         "stage": "COMPOSITE_FINALIZED",
@@ -813,6 +814,11 @@ def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[
         expected_ol_request_ids=expected_ids,
         expected_ol_requests=expected_requests,
         rtc_stage_references=stage_references,
+        ol_referral_contract=(
+            str(plan.get("ol_referral_contract"))
+            if plan.get("ol_referral_contract")
+            else None
+        ),
     )
     new_stage = _stage_record(result, next_stage)
     stages.append(new_stage)

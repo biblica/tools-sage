@@ -66,6 +66,7 @@ from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
 from .linguistic_profiles import complete_language_profile_contract
 from .original_language_resources import OL_AUTHORITY_PROFILE_FILE
+from .ol_referrals import OL_REFERRAL_CONTRACT_V1
 from .references import (
     ScriptureScope,
     atomic_reference_labels,
@@ -2092,6 +2093,7 @@ def _create_approved_saw_rtc_stage(
     run_id: str,
     rtc_stage: str,
     rtc_predecessor_files: Sequence[str],
+    ol_referral_contract: str | None,
 ) -> dict[str, Any]:
     """Create the exact approved work units for a partitionable SAW RTC stage."""
     units = [dict(item) for item in approved_plan.get("units", [])]
@@ -2118,6 +2120,7 @@ def _create_approved_saw_rtc_stage(
                 run_id=run_id,
                 rtc_stage=rtc_stage,
                 rtc_predecessor_files=rtc_predecessor_files,
+                ol_referral_contract=ol_referral_contract,
                 context_before_references=[str(value) for value in unit.get("context_before", [])],
                 context_after_references=[str(value) for value in unit.get("context_after", [])],
             )
@@ -2175,6 +2178,7 @@ def _create_approved_saw_rtc_stage(
         "workflow": "saw",
         "operation": "rtc",
         "rtc_stage": rtc_stage,
+        "ol_referral_contract": ol_referral_contract,
         "requested_scope": scope.label(),
         "output_project": output_project_id,
         "contemporary_source": contemporary_source_id,
@@ -2277,6 +2281,7 @@ def _partition_selective_ol_cases(
     rtc_predecessor_files: Sequence[str],
     expected_ol_request_ids: Sequence[str],
     expected_ol_requests: Sequence[Mapping[str, Any]],
+    ol_referral_contract: str | None,
 ) -> dict[str, Any]:
     """Create exactly one isolated model task for each inherited selective-OL case."""
     requests = [dict(row) for row in expected_ol_requests]
@@ -2333,6 +2338,7 @@ def _partition_selective_ol_cases(
             expected_ol_request_ids=[request_ids[index - 1]],
             expected_ol_requests=[request],
             rtc_stage_references=atom_labels,
+            ol_referral_contract=ol_referral_contract,
         )
         created_tasks.append(child)
         manifest = load_json(Path(str(child["manifest_path"])))
@@ -2386,6 +2392,7 @@ def _partition_selective_ol_cases(
         "workflow": workflow,
         "operation": operation,
         "rtc_stage": "SELECTIVE_OL_ADJUDICATION",
+        "ol_referral_contract": ol_referral_contract,
         "partition_basis": "ONE_OL_REQUEST_PER_MODEL_TASK",
         "requested_scope": scope.label(),
         "output_project": output_project_id,
@@ -2429,6 +2436,7 @@ def _partition_act_request(
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
     rtc_stage_references: Sequence[str] = (),
+    ol_referral_contract: str | None = None,
 ) -> dict[str, Any]:
     """Connect the work-unit planner to ACT generation for oversized requests."""
     if workflow == "bic" and operation not in {"inspect"}:
@@ -2456,6 +2464,7 @@ def _partition_act_request(
             rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=expected_ol_request_ids,
             expected_ol_requests=expected_ol_requests,
+            ol_referral_contract=ol_referral_contract,
         )
     profile = load_workflow_profile(config, config.workflow(workflow))
     policy = profile.evidence_policy(operation)
@@ -2560,6 +2569,7 @@ def _partition_act_request(
             rtc_stage_references=child_stage_references,
             context_before_references=unit_record["context_before"],
             context_after_references=unit_record["context_after"],
+            ol_referral_contract=ol_referral_contract,
         )
         child_manifest = load_json(Path(str(child["manifest_path"])))
         child_atoms = list(atomic_reference_labels(
@@ -2599,6 +2609,7 @@ def _partition_act_request(
         "workflow": workflow,
         "operation": operation,
         "rtc_stage": rtc_stage,
+        "ol_referral_contract": ol_referral_contract,
         "requested_scope": scope.label(),
         "output_project": output_project_id,
         "contemporary_source": contemporary_source_id,
@@ -2696,6 +2707,7 @@ def _create_saw_rtc_composite(
         run_id=run_id,
         rtc_stage=first_stage,
         rtc_stage_references=stage_references,
+        ol_referral_contract=OL_REFERRAL_CONTRACT_V1,
     )
     stage = _stage_record(result, first_stage)
     plan = {
@@ -2713,6 +2725,7 @@ def _create_saw_rtc_composite(
         "grammar_override_id": grammar_override_id,
         "structural_stage_required": bool(candidates and structure_enabled),
         "rtc_policy": rtc_policy,
+        "ol_referral_contract": OL_REFERRAL_CONTRACT_V1,
         "approved_work_plan_path": (
             approved_work_plan.get("approved_manifest_path")
             if approved_work_plan is not None
@@ -3177,12 +3190,27 @@ def create_act_task(
     rtc_stage_references: Sequence[str] = (),
     context_before_references: Sequence[str] = (),
     context_after_references: Sequence[str] = (),
+    ol_referral_contract: str | None = None,
 ) -> dict[str, Any]:
     """Create one isolated SAGE_GOVERNED_TASK_V1 task with exact project and source boundaries."""
     workflow = workflow.strip().lower()
     operation = operation.strip().lower()
+    ol_referral_contract = (
+        ol_referral_contract.strip().upper()
+        if isinstance(ol_referral_contract, str) and ol_referral_contract.strip()
+        else None
+    )
     if workflow not in ACT_OPERATIONS or operation not in ACT_OPERATIONS[workflow]:
         raise ValidationError(f"Unsupported ACT operation: {workflow}/{operation}")
+    if ol_referral_contract is not None and (
+        workflow != "saw"
+        or operation != "rtc"
+        or ol_referral_contract != OL_REFERRAL_CONTRACT_V1
+    ):
+        raise ValidationError(
+            "Unsupported SAW OL referral contract",
+            code="SAW_TASK_CONTRACT_INVALID",
+        )
     if rtc_stage is not None:
         rtc_stage = rtc_stage.strip().upper()
         if workflow != "saw" or operation != "rtc" or rtc_stage not in SAW_RTC_STAGES:
@@ -3362,6 +3390,7 @@ def create_act_task(
                 run_id=run_id,
                 rtc_stage=rtc_stage,
                 rtc_predecessor_files=rtc_predecessor_files,
+                ol_referral_contract=ol_referral_contract,
             )
     # Focus-oriented batching is expressed as a discourse-unit ceiling, never a
     # verse-chopping rule. Protected paragraphs/lists/poetry units remain indivisible
@@ -3426,6 +3455,7 @@ def create_act_task(
                     expected_ol_request_ids=expected_ol_request_ids,
                     expected_ol_requests=expected_ol_requests,
                     rtc_stage_references=rtc_stage_references,
+                    ol_referral_contract=ol_referral_contract,
                 )
     conditional_ol_attention: dict[str, Any] | None = None
     if conditional_ol:
@@ -3554,6 +3584,7 @@ def create_act_task(
         "predecessor_task_id": predecessor.get("task_id") if predecessor else None,
         "parent_plan_id": parent_plan_id,
         "work_unit_id": work_unit_id,
+        "ol_referral_contract": ol_referral_contract,
         "context_before_references": list(context_before),
         "context_after_references": list(context_after),
     }
@@ -3590,6 +3621,7 @@ def create_act_task(
             expected_ol_request_ids=expected_ol_request_ids,
             expected_ol_requests=expected_ol_requests,
             rtc_stage_references=rtc_stage_references,
+            ol_referral_contract=ol_referral_contract,
         )
     base_task_id = f"{workflow}-{operation}-{scope.book.lower()}-{seed[:12]}"
     task_id = base_task_id
@@ -4383,6 +4415,7 @@ def create_act_task(
             "rtc_policy": rtc_policy if workflow == "saw" and operation == "rtc" else None,
             "parent_plan_id": parent_plan_id,
             "work_unit_id": work_unit_id or task_id,
+            "ol_referral_contract": ol_referral_contract,
             "context_references": {
                 "mode": "CONTEXT_ONLY",
                 "before": list(context_before),
@@ -4676,6 +4709,45 @@ def create_act_task(
                         "source_text_drift_adjudication", "PROHIBITED"
                     )
                 ).upper() == "ENABLED"
+                if not drift_enabled:
+                    referral_instruction = (
+                        "7. Source-text drift adjudication is PROHIBITED. Do not emit "
+                        "ol_review_requests; assess only from the authorized non-OL evidence "
+                        "routed to this stage."
+                    )
+                elif ol_referral_contract == OL_REFERRAL_CONTRACT_V1:
+                    referral_instruction = (
+                        "7. Automatic WIP-Reference source adjudication is ENABLED under "
+                        "SAW_OL_REFERRAL_ADMISSION_V1. Emit an ol_review_requests entry if and "
+                        "only if every admission rule passes: (1) the difference changes the "
+                        "core proposition; (2) WIP and REFERENCE communicate incompatible "
+                        "meanings; (3) conflict_class is exactly one of "
+                        "NEGATION_OR_POLARITY_CONFLICT, "
+                        "PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT, "
+                        "CORE_EVENT_OR_STATE_CONFLICT, or "
+                        "CORE_PROPOSITION_OMISSION_OR_ADDITION; (4) correctness genuinely "
+                        "requires the applicable original-language text; (5) routed non-OL "
+                        "evidence cannot settle the issue; (6) the request contains one issue "
+                        "at the smallest necessary Scripture scope; and (7) the same normalized "
+                        "conflict is not requested twice. Do not refer lexical nuance or "
+                        "intensity, style, register, readability, grammar, spelling, punctuation, "
+                        "USFM structure, ordinary consistency, equivalent paraphrase, or any "
+                        "issue resolvable from routed non-OL evidence. Do not finalize the same "
+                        "issue as an RTC finding. SAGE routes OT requests to the Job-bound Hebrew "
+                        "resource and NT requests to the Job-bound Greek resource."
+                    )
+                else:
+                    referral_instruction = (
+                        f"7. Automatic WIP-Reference source adjudication is ENABLED. Defer every "
+                        f"material content-bearing variance where choosing between "
+                        f"{output.project_id} and {source.project_id} depends on the source text. "
+                        "Emit one bounded ol_review_requests entry per variance and do not "
+                        "finalize that same issue in this stage. SAGE routes OT requests to the "
+                        "Job-bound Hebrew resource and NT requests to the Job-bound Greek "
+                        "resource. Grammar, readability, punctuation, spelling, USFM/structure, "
+                        "style, and ordinary consistency defects remain direct RTC findings and "
+                        "must not be routed to OL."
+                    )
                 act_lines.extend([
                     "1. Perform only the RTC checks enabled in the sealed rtc_policy across every bounded primary coordinate in this work unit.",
                     "2. SAGE has already formed and bounded this work unit deterministically. Do not re-plan, split, merge, or certify its mechanical boundaries.",
@@ -4683,11 +4755,7 @@ def create_act_task(
                     "4. Context-only coordinates may inform interpretation but must not appear in ordinary findings or OL requests.",
                     "5. Treat each WIP or Reference verse bridge as one indivisible record while reviewing every coordinate it covers. Check bridge mapping under structure/completeness and check the complete bridged text against all corresponding WIP and Reference content under translation/meaning, whether their bridge shapes match or differ.",
                     "6. Do not read original-language Scripture in this stage.",
-                    (
-                        f"7. Automatic WIP-Reference source adjudication is ENABLED. Defer every material content-bearing variance where choosing between {output.project_id} and {source.project_id} depends on the source text. Emit one bounded ol_review_requests entry per variance and do not finalize that same issue in this stage. SAGE routes OT requests to the Job-bound Hebrew resource and NT requests to the Job-bound Greek resource. Grammar, readability, punctuation, spelling, USFM/structure, style, and ordinary consistency defects remain direct RTC findings and must not be routed to OL."
-                        if drift_enabled
-                        else "7. Source-text drift adjudication is PROHIBITED. Do not emit ol_review_requests; assess only from the authorized non-OL evidence routed to this stage."
-                    ),
+                    referral_instruction,
                     "8. Review every WIP and Reference cross-reference span (`\\x ... \\x*`) under the sealed x-context policy. At minimum verify balanced containers and valid field structure. In NORMAL mode also compare presence, payload, ordering, and Scripture targets; report missing, malformed, unexpected, or materially mismatched cross-references at the owning WIP coordinate.",
                 ])
             else:
@@ -4847,6 +4915,7 @@ def create_act_task(
                     expected_ol_request_ids=expected_ol_request_ids,
                     expected_ol_requests=expected_ol_requests,
                     rtc_stage_references=rtc_stage_references,
+                    ol_referral_contract=ol_referral_contract,
                 )
             raise error
 
@@ -5949,6 +6018,11 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 expected_ol_requests=list((raw.get("review_requirements") or {}).get("expected_ol_requests", [])),
                 narrative_language=str(
                     dict(raw.get("narrative_language") or {}).get("tag") or ""
+                ),
+                ol_referral_contract=(
+                    str(raw.get("ol_referral_contract"))
+                    if raw.get("ol_referral_contract")
+                    else None
                 ),
             )
         except ValidationError as exc:
