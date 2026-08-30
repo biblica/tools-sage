@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tools-sage"
-version = "0.02alpha1"
+version = "0.01beta2"
 description = "SAGE 0.02 Alpha 1 with STC, routed-SFM sizing, governed linguistic profiles, and an experimental unstable Textual TUI"
 requires-python = ">=3.10"
 dependencies = [

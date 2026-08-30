@@ -1,12 +1,12 @@
 # Provisional Medium Skill Routing Design
 
-**Status:** implemented for Alpha Operator testing on `alpha/0.02alpha1`
+**Status:** implemented universally in `0.01beta2`; originally introduced on historical `alpha/0.02alpha1`
 **Date:** 2026-08-30
 
 ## Purpose
 
-SAGE must let an Alpha Operator begin governed BIC/SAW testing when no current model-qualification
-data exists. In that exact state, deterministic Python selects provider-native `medium` for the
+SAGE must let an Operator begin governed BIC/SAW work when no current model-qualification data
+exists. In that exact state, deterministic Python always selects provider-native `medium` for the
 current Codex provider and labels the route `PROVISIONAL_UNQUALIFIED`. When current exact
 qualification data becomes available, automatic routing uses that data instead.
 
@@ -21,7 +21,7 @@ Routing follows this state machine:
 |---|---|---|
 | `USER_OVERRIDE` | Existing audited exact global override | Use the Operator-selected route when it remains available and qualified for the exact Skill |
 | `AUTOMATIC / DATA` | Current reconciled exact qualification evidence | Use the deterministic qualified recommendation |
-| `AUTOMATIC / NO DATA` | Alpha provisional policy | Use provider-native `medium` and label it `PROVISIONAL_UNQUALIFIED` |
+| `AUTOMATIC / NO DATA` | Universal no-data policy | Always use provider-native `medium` and label it `PROVISIONAL_UNQUALIFIED` |
 
 The existing Advanced routing override is the single manual control. SAGE does not create a second
 automatic-mode Operator preference. The override remains qualification-only and fails closed for a
@@ -51,11 +51,11 @@ the exact native ID `medium` and prohibits administrative-only `none`, `minimal`
 Future provider adapters must declare their own reviewed provider-native balanced/default mapping.
 SAGE never guesses equivalence from labels, cost, latency, marketing metadata, or a model response.
 
-## Alpha boundary
+## Universal release-state boundary
 
-Provisional routing is enabled only when `sage-standard.json` reports release state `ALPHA`. A later
-release must ship current qualification evidence or approve a new explicit release policy. The Alpha
-fallback does not imply RC or public-production readiness.
+Provisional routing is independent of the release state reported by `sage-standard.json`. A true
+no-data route uses Medium in Alpha, Beta, RC, and final builds. Release status must never convert the
+fallback into a qualification claim or imply public-production readiness.
 
 ## Policy and receipt contract
 
@@ -63,7 +63,6 @@ The release policy declares:
 
 ```yaml
 provisional_routing:
-  enabled_release_states: [ALPHA]
   no_data_qualification_status: PROVISIONAL_UNQUALIFIED
   default_reasoning_by_provider:
     codex: medium
@@ -110,7 +109,7 @@ Automatic/data may display `RECOMMENDED`; a manual route displays routing/select
 
 ## Acceptance criteria
 
-- Empty qualification inventory selects Codex Medium only in Alpha.
+- Empty qualification inventory selects Codex Medium in every release state.
 - Positive exact data replaces Medium in automatic mode.
 - The audited exact Operator override remains the highest-precedence route state.
 - Failed, unreliable, stale, unavailable, hidden, and prohibited candidates cannot trigger fallback.

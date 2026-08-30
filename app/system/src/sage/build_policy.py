@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from .errors import ConfigurationError
 
-BUILD_POLICY_VERSION = "0.02alpha1"
+BUILD_POLICY_VERSION = "0.01beta2"
 IMPLEMENTED_PROVIDER_IDS = ("codex", "ollama")
 ENABLED_AUTOMATED_PROVIDER_IDS = ("codex",)
 FUTURE_PROVIDER_IDS = ("grok", "gemini")

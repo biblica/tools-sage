@@ -1,4 +1,4 @@
-# BIC and SAW authority boundaries — v0.02alpha1
+# BIC and SAW authority boundaries — v0.01beta2
 
 This is the current authority boundary for the two executable workflows. BIC and SAW are independent; neither creates, converts or hands work directly to the other.
 
@@ -57,6 +57,6 @@ Invariants:
 There is no BIC TARGET -> SAW WIP handoff, automatic generation handoff, automatic role conversion, shared lifecycle, or dependency. An Operator may later configure any suitable Paratext/PTLite project independently for SAW; SAGE treats that as a separate SAW project configuration.
 
 
-## Alpha bounded SAW OL authority
+## Beta bounded SAW OL authority
 
 When original-language Scripture is explicitly routed to a bounded SAW task, the configured GRK/HEB resource is the primary textual authority for questions of source-text meaning within that task and scope. REFERENCE remains the authorized LWC Reference Project comparison, but it does not override contrary original-language evidence. Outside an OL-routed task, OL Scripture has no implicit authority and must not be read.

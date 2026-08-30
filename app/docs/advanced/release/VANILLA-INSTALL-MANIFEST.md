@@ -1,6 +1,6 @@
 # Vanilla Installation Manifest
 
-This is the complete governed `app/` directory/file inventory for a clean SAGE v0.02alpha1 source installation.
+This is the complete governed `app/` directory/file inventory for a clean SAGE v0.01beta2 source installation.
 
 ## Installation boundary
 

@@ -4,7 +4,7 @@ SAGE stores canonical machine records once. Every Job owns one required primary 
 
 ## Interface localization
 
-Terminal interface localization is separate from report-language authority. The workstation selection is stored under `interface.language` in `ecosystem.yml`; menu text is loaded from `system/config/localization/menu-localization.json`. v0.02alpha1 ships complete localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`. The source is formatted UTF-8 JSON so Operators can inspect and edit it without changing Python source. Functional choices remain numeric and footer navigation uses invariant `A`/`B`/`C`/`D` semantic controls.
+Terminal interface localization is separate from report-language authority. The workstation selection is stored under `interface.language` in `ecosystem.yml`; menu text is loaded from `system/config/localization/menu-localization.json`. v0.01beta2 ships complete localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`. The source is formatted UTF-8 JSON so Operators can inspect and edit it without changing Python source. Functional choices remain numeric and footer navigation uses invariant `A`/`B`/`C`/`D` semantic controls.
 
 Changing interface language does not change report language, Job bindings, Scripture language, grammar profiles, commands, identifiers, paths, status codes, or machine records.
 
@@ -173,6 +173,6 @@ When a SAW Action Report has a secondary rendering, keep each language's actiona
 ```
 
 Do not render all Issue blocks first and all Required-action blocks afterward. Evidence IDs, grammar-rule IDs, and OL evidence remain shared canonical fields after the language-grouped prose.
-## Alpha path normalization
+## Beta path normalization
 
 Generated report paths must not repeat an identical adjacent scope segment. A whole-book report uses `localdata/reports/<job-id>/<BOOK>/`; chapter or narrower scope directories may appear beneath `<BOOK>` only when they add coordinate information. Canonical `report_data/` follows the same rule.

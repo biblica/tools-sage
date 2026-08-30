@@ -18,7 +18,7 @@ Before Project registration, SAGE shows **LANGUAGE IDENTIFICATION** with resolve
 
 If Paratext supplies multiple countries, SAGE requires an Operator choice. If Paratext supplies no country and SAGE has one deterministic regional suggestion, it is labeled as a suggestion rather than Paratext evidence.
 
-Alpha keeps these concepts distinct in catalog/provenance metadata:
+Beta keeps these concepts distinct in catalog/provenance metadata:
 
 - exact Paratext language code;
 - canonical ISO 639-3 identity;

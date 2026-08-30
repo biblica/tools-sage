@@ -1,8 +1,8 @@
-# SAGE TUI — EXPERIMENTAL / UNSTABLE in v0.02alpha1
+# SAGE TUI — EXPERIMENTAL / UNSTABLE in v0.01beta2
 
 ## Status
 
-The Textual TUI is **EXPERIMENTAL / UNSTABLE** in `v0.02alpha1`. It may change incompatibly, includes incomplete and read-only workflows, and is not qualified as an authoritative Operator surface. The classic menu and scriptable CLI remain authoritative.
+The Textual TUI is **EXPERIMENTAL / UNSTABLE** in `v0.01beta2`. It may change incompatibly, includes incomplete and read-only workflows, and is not qualified as an authoritative Operator surface. The classic menu and scriptable CLI remain authoritative.
 
 Launch it explicitly:
 
@@ -12,7 +12,7 @@ sage tui
 
 The root `./sage` / `sage.cmd` launchers still enter the classic menu by default while TUI parity is incomplete.
 
-## Implemented through 0.02alpha1
+## Implemented through 0.01beta2
 
 - full-screen Textual application shell targeting `100 x 30` during the current layout iteration;
 - keyboard and mouse navigation with numeric `1`-`4` functional shortcuts;
@@ -91,6 +91,6 @@ Textual is selected because the framework supports terminal keyboard/mouse inter
 6. Keep `sage menu` as fallback until action parity and recovery behavior pass release gates.
 7. Only then consider making the TUI the default no-argument interface.
 
-## Experimental Alpha parity rule
+## Experimental Beta parity rule
 
 The Textual TUI uses the same information architecture and labels as the authoritative text UI: SAW two-level Job/check flow, Reference Text Comparison (RTC)/Source Text Correspondence (STC)/Targeted Check/Original-Language Review, Configure AI, Configure Languages, diagnostics/report ownership, and configured Project names in Operator-facing context. TUI controls may replace numeric choices with buttons/switches/links, but they must map to the same governed operations. Mouse and keyboard activation must invoke the same action. Until a write surface reaches parity, the TUI shows the state read-only and directs writes to the text UI rather than inventing an alternate workflow.

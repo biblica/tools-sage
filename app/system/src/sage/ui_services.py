@@ -1,6 +1,6 @@
 """UI-independent presentation and session services shared by SAGE interfaces.
 
-This module is the first extraction boundary for the 0.02alpha1 Alpha TUI migration. It keeps
+This module is the first extraction boundary for the 0.01beta2 Beta TUI migration. It keeps
 operator-facing state assembly out of terminal-specific rendering code so the
 classic menu, Textual TUI, and future interfaces can consume the same facts.
 """

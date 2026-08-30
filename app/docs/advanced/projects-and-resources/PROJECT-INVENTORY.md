@@ -1,4 +1,4 @@
-# SAGE Project Inventory and Paratext Catalog — v0.02alpha1
+# SAGE Project Inventory and Paratext Catalog — v0.01beta2
 
 SAGE ships with **zero SAGE translation Projects**. Static product policy remains in `ecosystem.yml`. Operator-selected Projects are persisted in `localdata/.system/state/project-inventory.json`; derived Paratext discovery metadata is stored separately in `localdata/.system/state/paratext-project-catalog.json`.
 

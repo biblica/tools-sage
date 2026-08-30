@@ -1,4 +1,4 @@
-# Governed Original-Language Resources — v0.02alpha1
+# Governed Original-Language Resources — v0.01beta2
 
 ## Stable aliases
 
@@ -18,7 +18,7 @@ system/resources/scripture/original-language/grk/
 system/resources/scripture/original-language/heb/
 ```
 
-The v0.02alpha1 distribution includes the manually governed Greek NT (27 books) and Hebrew Bible (39 books) `.SFM` resources in these locations. They are the immutable distribution source of record; SAGE never silently downloads or substitutes another corpus.
+The v0.01beta2 distribution includes the manually governed Greek NT (27 books) and Hebrew Bible (39 books) `.SFM` resources in these locations. They are the immutable distribution source of record; SAGE never silently downloads or substitutes another corpus.
 
 If a bundled corpus is absent, setup reports OL capability as PARTIAL or UNAVAILABLE without blocking general SAGE setup.
 

@@ -1,18 +1,18 @@
 # SAGE provider and Skill routing policy
 
-## v0.02alpha1 execution policy
+## v0.01beta2 execution policy
 
 Provider architecture, provider connection, and permission to execute a governed Skill are separate
 controls.
 
-| Provider | Adapter/configuration | v0.02alpha1 governed execution |
+| Provider | Adapter/configuration | v0.01beta2 governed execution |
 |---|---|---|
-| Codex | Implemented | Exact qualified routes, plus truthful Alpha-only Medium fallback in a true no-data state |
+| Codex | Implemented | Exact qualified routes, plus truthful Medium fallback in every true no-data state |
 | Ollama | Optional local admin assistant | Disabled for BIC/SAW |
 | Grok | Future adapter slot | Not implemented |
 | Gemini | Future adapter slot | Not implemented |
 
-`build_policy.allowed_automated_providers` is effectively `[CODEX]` in v0.02alpha1. A connected,
+`build_policy.allowed_automated_providers` is effectively `[CODEX]` in v0.01beta2. A connected,
 available, or provisioned provider is not automatically qualified for a Skill.
 
 No OpenAI API-key, access-token, service-account, direct API, or API-fallback route is supported.
@@ -40,7 +40,7 @@ test. Merely opening a Job, reading a recommendation, or changing an override do
 evidence to a model.
 
 Startup verifies provider installation and authentication without generating analytical output. A
-ready provider does not imply that every Skill is ready. In Alpha, a true no-data Skill uses the
+ready provider does not imply that every Skill is ready. In every release state, a true no-data Skill uses the
 governed Medium fallback; stale, failed, unreliable, unsupported, or unavailable states still fail
 closed before Scripture evidence is sent.
 
@@ -62,7 +62,7 @@ reasoning option, Skill, suite, or policy change produces `UNASSESSED` or `STALE
 exact route is evaluated again.
 
 Automatic routing uses current `RECOMMENDED` or `QUALIFIED` evidence when it exists. In a true
-no-data state, the Alpha policy selects Codex native `medium` and labels it
+no-data state, the universal policy selects Codex native `medium` and labels it
 `PROVISIONAL_UNQUALIFIED`; Medium is not thereby tested or qualified. The model cannot qualify or
 recommend itself: sealed synthetic responses pass through deterministic production validators. Every Skill has
 an explicit positive, zero-finding, and adversarial inventory, extended where a Skill has additional semantic boundary criteria; each case is repeated three times. Any hard
@@ -85,7 +85,7 @@ provider's advertised reasoning settings in provider order and stops at the firs
 setting. Most tested settings perform nine isolated attempts. SAW RTC performs fifteen because its five-case suite adds fundamental polarity and participant-identity referral boundaries. `--comparison` explicitly continues through every advertised setting. A provider without a
 reasoning control is evaluated once as `provider-default`.
 
-Evaluation must not use Operator Jobs, Projects, reports, or Scripture. It is an explicit Alpha
+Evaluation must not use Operator Jobs, Projects, reports, or Scripture. It is an explicit maintainer
 qualification activity and is never run by pytest, package validation, startup, or a normal Job.
 Because a full catalog benchmark can take hours, `model evaluate` is maintainer/release CLI tooling
 and is not offered in normal Configure AI. Operators should receive reviewed qualification seeds or,
@@ -110,7 +110,7 @@ SAGE has one manual state and two automatic substates:
 |---|---|
 | `USER_OVERRIDE` | Use the existing audited exact override when it remains available and qualified for the Skill |
 | `AUTOMATIC / DATA` | Use the deterministic recommendation from current exact qualification data |
-| `AUTOMATIC / NO DATA` | Use provider-native `medium` under the Alpha provisional policy |
+| `AUTOMATIC / NO DATA` | Always use provider-native `medium` under the universal no-data policy |
 
 Current failed, unreliable, stale, unavailable, hidden, or prohibited routes do not become no-data
 fallback candidates. Configure AI shows the automatic/no-data policy default beside the existing
@@ -118,7 +118,7 @@ Advanced routing override; there is no second manual preference layer.
 
 ## Advanced global override
 
-The optional global override is a diagnostic/Alpha control, not a normal Setup default. It pins one
+The optional global override is a diagnostic/pre-release control, not a normal Setup default. It pins one
 exact provider/model/capability/reasoning combination. SAGE records an audit receipt when the override
 is set, changed, or cleared and displays how many registered Skills currently qualify for that route.
 

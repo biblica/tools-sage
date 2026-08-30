@@ -92,9 +92,9 @@ def load_model_policy(root: Path) -> dict[str, Any]:
     provisional = value.get("provisional_routing")
     if not isinstance(provisional, dict):
         raise ConfigurationError("SAGE model policy provisional_routing must be an object")
-    if provisional.get("enabled_release_states") != ["ALPHA"]:
+    if "enabled_release_states" in provisional:
         raise ConfigurationError(
-            "SAGE model policy provisional routing must be enabled only for ALPHA"
+            "SAGE model policy provisional routing must not use a release-state gate"
         )
     if provisional.get("no_data_qualification_status") != "PROVISIONAL_UNQUALIFIED":
         raise ConfigurationError(

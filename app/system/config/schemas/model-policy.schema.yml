@@ -16,7 +16,7 @@ controls:
     - RECOMMENDED
     - QUALIFIED
   provisional_routing:
-    release_state_gate: required
+    release_state_gate: prohibited
     no_data_status: PROVISIONAL_UNQUALIFIED
     provider_native_reasoning: required
     known_negative_effect: BLOCK

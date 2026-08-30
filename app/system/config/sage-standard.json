@@ -3,8 +3,8 @@
   "release": {
     "id": "sage",
     "name": "Scripture Analysis and Generation Engine",
-    "version": "0.02alpha1",
-    "status": "ALPHA",
+    "version": "0.01beta2",
+    "status": "BETA",
     "public_release_ready": false,
     "feature_classifications": {
       "tui": "EXPERIMENTAL_UNSTABLE"

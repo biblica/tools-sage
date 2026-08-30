@@ -13,14 +13,14 @@ quarantine is present. For a release ZIP, first keep the ZIP and its adjacent `.
 and verify the exact artifact from their containing directory:
 
 ```sh
-shasum -a 256 -c SAGE-v0.02alpha1-Full-Distribution.zip.sha256
+shasum -a 256 -c SAGE-v0.01beta2-Full-Distribution.zip.sha256
 ```
 
 Only after that prints `OK`, and only when the checksum came from a trusted SAGE release channel,
 authorize that exact extracted copy:
 
 ```sh
-/usr/bin/xattr -dr com.apple.quarantine "/absolute/path/to/SAGE-v0.02alpha1-Full-Distribution"
+/usr/bin/xattr -dr com.apple.quarantine "/absolute/path/to/SAGE-v0.01beta2-Full-Distribution"
 ```
 
 Then rerun `./sage`. Do not use `spctl --master-disable`, do not disable Gatekeeper globally, and do

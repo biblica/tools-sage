@@ -1,9 +1,9 @@
-# SAGE v0.02alpha1 Handover
+# SAGE v0.01beta2 Handover
 
 ## Current continuation state
 
-- Version: `0.02alpha1`
-- Status: **Alpha; pre-release; not an RC and not FINAL.**
+- Version: `0.01beta2`
+- Status: **Beta; pre-release; not an RC and not FINAL.**
 - Prior-release promotion-baseline qualification is historical reference evidence only.
 - The version reset and subsequent governed edits invalidate earlier qualification receipts. Fresh exact-source qualification is required before the first real RC.
 - Current implementation carries section-preferred SAW slicing that coalesces adjacent fitting sections, with bounded lookahead and balanced oversized-section partitioning; scope-projected predecessor/selective-OL evidence; chapter-first report compilation; actual WIP/Reference Project names in reports; three-column numeric menu alignment; provider-only Configure AI; exact per-Skill route qualification/resolution; and explicit connection testing.
@@ -11,11 +11,11 @@
 - Current UI presentation contract: `docs/advanced/maintenance/UI-PRESENTATION.md`.
 - New RTC composites enforce `SAW_OL_REFERRAL_ADMISSION_V1`: only closed-class fundamental meaning conflicts unresolved by routed non-source evidence can become source referrals. Each admitted referral is isolated, while legacy sealed tasks remain resumable under their original contract.
 - SAW execution progress now keeps `Review range` and the approved `Review portion n/N` stable; structural and source checks use local counters under their parent portion rather than replacing the approved denominator with internal work-unit totals.
-- The provider-neutral per-Skill routing implementation now includes one audited manual override plus automatic/data and Alpha automatic/no-data substates. True no-data uses Codex native Medium as `PROVISIONAL_UNQUALIFIED`; current positive data selects the qualified route; adverse/stale data blocks. Conditional receipt provenance and pre-`Working` RTC/STC route preflight are implemented. Fresh exact-source final hardening and Operator acceptance remain outstanding.
+- The provider-neutral per-Skill routing implementation now includes one audited manual override plus automatic/data and automatic/no-data substates. In every release state, true no-data always uses Codex native Medium as `PROVISIONAL_UNQUALIFIED`; current positive data selects the qualified route; adverse/stale data blocks. Conditional receipt provenance and pre-`Working` RTC/STC route preflight are implemented. Fresh exact-source final hardening and Operator acceptance remain outstanding.
 - Machine-local runtime state, caches, `localdata/.system/runtime/python`, `runtime/venv`, and `host-capability.json` must not ship in the vanilla Core distribution.
 
 
-0.01beta remains the mainline baseline. 0.02alpha1 is developed on the parallel Alpha branch; all qualification and release artifacts described below are Alpha-branch evidence only.
+`0.01beta2` is the current mainline Beta. It incorporates the approved work validated on the historical `alpha/0.02alpha1` non-release branch; the branch receipts remain provenance, not qualification for the changed Beta source hash.
 
 ## Qualification rule
 
@@ -42,8 +42,8 @@ Any governed source or test change after qualification begins invalidates all re
 
 ## Release status
 
-The clean `0.02alpha1` source/package gates are qualified for group testing only when accompanied by
+The clean `0.01beta2` source/package gates are qualified for group testing only when accompanied by
 matching exact-source hardening and checksum receipts. The current routing source has not yet completed
 live route qualification or Operator acceptance. Native Windows/macOS acceptance remains required
-before any production-release promotion, and this Alpha branch must not be merged to `main` before
+before any production-release promotion. The historical Alpha branch was merged to `main` only after
 explicit Operator approval.

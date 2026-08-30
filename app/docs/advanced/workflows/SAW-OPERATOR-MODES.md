@@ -1,6 +1,6 @@
 # SAW Operator modes
 
-This document defines the Operator-facing distinction between the four SAW check modes for Alpha. It governs menu wording, help text, Operator documentation, and examples. Machine operation names remain compatible with the current runtime unless an Alpha migration explicitly changes them.
+This document defines the Operator-facing distinction between the four SAW check modes for Beta. It governs menu wording, help text, Operator documentation, and examples. Machine operation names remain compatible with the current runtime unless a Beta migration explicitly changes them.
 
 ## Operator decision rule
 

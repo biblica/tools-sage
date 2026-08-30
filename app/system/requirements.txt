@@ -1,4 +1,4 @@
-# SAGE 0.02alpha1 deterministic base runtime.
+# SAGE 0.01beta2 deterministic base runtime.
 # Every dependency (including transitive dependencies) is explicitly pinned so
 # bootstrap can install with --no-deps and avoid resolver drift.
 PyYAML==6.0.3

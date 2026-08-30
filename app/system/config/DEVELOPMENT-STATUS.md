@@ -1,6 +1,6 @@
-# Development Status — SAGE v0.02alpha1
+# Development Status — SAGE v0.01beta2
 
-**Status: ALPHA — PRE-RELEASE; FRESH EXACT-SOURCE QUALIFICATION IS REQUIRED BEFORE THE FIRST RC. PUBLIC-PRODUCTION READINESS IS NOT CLAIMED.** This Alpha carries Windows UTF-8 execution hardening, UTF-8 CLI/controller output handling, canonical numbered-book report naming, governed interruption/retry behavior, regional Language Profiles, Source Text Correspondence (STC), routed-SFM-only Scripture sizing, universal model-facing linguistic-profile specificity, and current Operator UI/reporting convergence. The classic menu and scriptable CLI remain authoritative while TUI parity is incomplete.
+**Status: BETA — PRE-RELEASE; FRESH EXACT-SOURCE QUALIFICATION IS REQUIRED BEFORE THE FIRST RC. PUBLIC-PRODUCTION READINESS IS NOT CLAIMED.** This Beta carries Windows UTF-8 execution hardening, UTF-8 CLI/controller output handling, canonical numbered-book report naming, governed interruption/retry behavior, regional Language Profiles, Source Text Correspondence (STC), routed-SFM-only Scripture sizing, universal model-facing linguistic-profile specificity, and current Operator UI/reporting convergence. The classic menu and scriptable CLI remain authoritative while TUI parity is incomplete.
 
 See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workflows/JOB-STORAGE-MAINTENANCE.md`, and `docs/advanced/maintenance/WINDOWS-CODEX-EXECUTION-AUDIT.md`.
 
@@ -26,7 +26,7 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 
 ## Project and language state
 
-- The v0.02alpha1 vanilla tree ships a regional library of `PROJECT_REVIEW_REQUIRED` WIP grammar starters keyed by canonical BCP 47 region tags. New Project imports resolve and confirm a regional profile identity; Paratext shorthand is retained only as provenance.
+- The v0.01beta2 vanilla tree ships a regional library of `PROJECT_REVIEW_REQUIRED` WIP grammar starters keyed by canonical BCP 47 region tags. New Project imports resolve and confirm a regional profile identity; Paratext shorthand is retained only as provenance.
 - The Setup-owned terminal interface ships complete editable menu-localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR` in `system/config/localization/menu-localization.json`. Interface locale is independent from Job reporting and Scripture-language identity.
 - The persistent ordinary Project collection is `localdata/.system/state/project-inventory.json` and is described to operators as the **SAGE Project Inventory**.
 - SAGE Projects are role-neutral. Adding one never grants BIC TARGET write authority or assigns a workflow role.
@@ -71,11 +71,11 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 
 ## Pre-release data policy
 
-`localdata` is persistent local/operator state even during Alpha testing. Product-version changes do not delete Projects, Jobs, Runs, reports, local resources/plugins, or operator settings. Explicitly regenerable `.system` state may be invalidated by its own schema/fingerprint contract, and the managed runtime at `localdata/.system/runtime/venv` is repaired/rebuilt when dependency fingerprints change. This Alpha intentionally provides no migration path from the retired in-Core development layout; `0.02alpha1` establishes the canonical external-data contract.
+`localdata` is persistent local/operator state during Beta testing. Product-version changes do not delete Projects, Jobs, Runs, reports, local resources/plugins, or operator settings. Explicitly regenerable `.system` state may be invalidated by its own schema/fingerprint contract, and the managed runtime at `localdata/.system/runtime/venv` is repaired/rebuilt when dependency fingerprints change. This Beta intentionally provides no migration path from the retired in-Core development layout; `0.01beta2` establishes the canonical external-data contract.
 
 ## Naming and serialization state
 
-- Qualification evidence created under the pre-reset development labels is historical. The v0.02alpha1 source requires a new clean staged-source qualification before it may become an RC; `MS-ALPHA-QUALIFY` tracks that gate and is currently blocked by `BI-20260826-001` until the refactored external-data Core completes exact-source qualification.
+- Qualification evidence created under earlier development labels is historical. The v0.01beta2 source requires a new clean staged-source qualification before it may become an RC; `MS-BETA2-QUALIFY` tracks that gate and is currently blocked by `BI-20260826-001` until the refactored external-data Core completes exact-source qualification.
 - Current SAGE-owned configuration/policy/profile filenames use lowercase kebab-case; Python remains snake_case and current Markdown documents remain uppercase kebab-case.
 - `sage.yml` and `terminology.yml` are consolidated into `system/config/sage-standard.json`.
 - Skill, qualification-baseline, authority-source, protected-pin, and Run-manifest records now use JSON.
@@ -86,7 +86,7 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 
 - `system/tools/validate_schemas.py` validates all 36 shipped schema contracts, unique IDs, duplicate keys, owner mappings, and applicable source instances, including `OL_AUTHORITY_PROFILE`.
 - `validate_package.py` requires every shipped schema, including evaluation-set and resource-rights contracts.
-- Focused Alpha validation is required after the version reset. Clean source-package and deep-audit claims are deferred to `MS-ALPHA-QUALIFY`.
+- Focused Beta validation is required after the version change. Clean source-package and deep-audit claims are deferred to `MS-BETA2-QUALIFY`.
 - U.S. English is canonical for current system/operator prose; localized `en-GB` remains governed only in the interface localization source.
 
 ## Source hygiene

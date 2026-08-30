@@ -58,9 +58,9 @@ completed schema, menu, runtime, catalog, and validation adjustment.
   exact lowercase spelling of command names, schema fields, identifiers, and path components. For
   example: `SAGE creates and manages Projects, Jobs, Runs, tasks, and reports.`
 - Product: `SAGE` — Scripture Analysis and Generation Engine.
-- Release: use `SAGE v0.02alpha1` for the exact product version and `current Alpha development` in general prose. State `pre-release; fresh exact-source qualification required before the first RC; public-production readiness not claimed` in current entry-point, release, status, packaging, and testing material. Historical documents may retain their original release label when clearly identified as historical.
-- Version progression: progress from `v0.02alpha1` through later `v0.02alphaN` builds as required, then `v0.02beta`, then qualified candidates beginning at `v0.02rc1`. Reserve `v0.02` for the approved release. Do not describe Alpha or Beta builds as release candidates.
-- Feature maturity: use machine state `EXPERIMENTAL_UNSTABLE` and exact display label `EXPERIMENTAL / UNSTABLE` for incomplete, non-authoritative features that may change incompatibly. Feature maturity is independent of the product phase and does not advance automatically with Alpha, Beta, RC, or release promotion. The v0.02alpha1 Textual TUI has this classification; the classic menu and scriptable CLI remain authoritative.
+- Release: use `SAGE v0.01beta2` for the exact product version and `current Beta group testing` in general prose. State `pre-release; fresh exact-source qualification required before the first RC; public-production readiness not claimed` in current entry-point, release, status, packaging, and testing material. Historical documents may retain their original release label when clearly identified as historical.
+- Version progression: progress from `v0.01beta2` through later `v0.01betaN` builds as required, then qualified candidates beginning at `v0.01rc1`. Reserve `v0.01` for the approved release. Do not describe Beta builds as release candidates.
+- Feature maturity: use machine state `EXPERIMENTAL_UNSTABLE` and exact display label `EXPERIMENTAL / UNSTABLE` for incomplete, non-authoritative features that may change incompatibly. Feature maturity is independent of the product phase and does not advance automatically with Alpha, Beta, RC, or release promotion. The v0.01beta2 Textual TUI has this classification; the classic menu and scriptable CLI remain authoritative.
 - Workflow: `BIC` — Bible Index & Context.
 - Workflow: `SAW` — Scripture Analysis Workbench.
 - Execution mode: `SAGE_GOVERNED_TASK_V1`.
@@ -170,19 +170,19 @@ A bilingual rendering is one canonical record displayed in two languages; never 
 
 Every bilingual report must state that the Job-primary rendering governs interpretation but does not guarantee that every finding is correct. It must identify the secondary rendering as assistive, lower-confidence, unverified translation that may contain ambiguity and must be checked against the primary before action. Canonical machine records, reason codes, evidence IDs, and Scripture coordinates remain authoritative.
 
-### Alpha Language/Profile hierarchy
+### Beta Language/Profile hierarchy
 
 Use `Language identity` for the broad ISO language/macrolanguage identity, `member language` where ISO defines one, and `regional Language Profile` for the working SAGE namespace bound to Projects and Grammar Profiles. Examples: `English [en/eng] -> en-US/en-GB`; `Persian [fa/fas] -> Iranian Persian [pes] -> pes-IR`; `Persian [fa/fas] -> Dari [prs] -> prs-AF`. Do not model these relationships with `profile_alias`. Legacy aliases are migration-only compatibility data.
 
 Projects must have a confirmed regional Language Profile before SAGE registration completes. Grammar Profiles are subordinate role-specific dependants and may remain unconfigured until Job setup requires them.
 
-### Alpha report/storage grammar
+### Beta report/storage grammar
 
 Processing and evidence granularity may be smaller than a chapter; Operator report granularity is one chapter. Use `<BOOK>_<CCC>_<REPORT-ID>_ACTION-REPORT.md` and `<BOOK>_<CCC>_<REPORT-ID>_OPERATOR-NOTE.txt`, with a three-digit chapter even for single-chapter books. `<REPORT-ID>` is the uppercase stabilized SAW report identity: `RTC` or `STC`. The Markdown report is canonical; TXT is a deterministic non-AI rendering of that finalized Markdown. Root `reports/` contains Operator deliverables only. Technical execution data belongs to `diagnostics/`, machine aggregation to `report_data/`, and block evidence to `tasks/`.
 
 Operator-facing report prose resolves internal `WIP` and `REFERENCE` roles to configured Project display names. Original-language drift adjudication likewise reports `<project-name> CLOSER TO SOURCE`, `BOTH DEFENSIBLE`, or `INCONCLUSIVE`; it must not expose bare role labels as the decision.
 
-### Alpha RTC policy
+### Beta RTC policy
 
 Reference Text Comparison (RTC) has four independently toggled checks: structure/completeness, translation/meaning, language/readability, and consistency. USFM context policies are `NORMAL`, `MATERIAL_ONLY`, and `STRUCTURE_ONLY`; selecting a context cycles directly through these values. `MATERIAL_ONLY` controls finding elevation and never downgrades severity. `STRUCTURE_ONLY` validates marker structure without treating enclosed content as translation prose. The current contexts are `\add`, `\nd`, `\f`, and `\x`; quotation `\qt` is not an Operator policy toggle. `Check source-text drift adjudication` toggles `PROHIBITED`/`ENABLED`. Under V1, an OL request requires an incompatible fundamental proposition in one closed class (polarity/negation, participant identity/role, core event/state, or essential proposition omission/addition), genuine source dependency, unresolved non-OL evidence, one smallest-scope issue, and uniqueness. Nuance/intensity, equivalent paraphrase or participant roles, grammar, readability, punctuation, spelling, USFM structure, style, and ordinary consistency never trigger OL routing. Each admitted case is evaluated alone; OL becomes primary source-text authority only for that bounded adjudication.
 
@@ -283,6 +283,6 @@ Files named `ORIGINAL-*`, promotion reports, historical conversion inputs, and d
 - **DECLARED PROJECT VRS**: a configured base/custom VRS explicitly supplied by Project metadata or approved by the operator; it overrides the default.
 - **SAW VRS ADVISORY**: a coordinate discrepancy that is invalid under the effective Project VRS but specifically valid/explained under the default Project VRS. It is reported and retained but does not block SAW execution.
 - A genuine coordinate omission under the default Project VRS is not an advisory and may still block.
-## Alpha path normalization
+## Beta path normalization
 
 - Generated path grammar: never emit identical adjacent directory segments. For polished SAW output, use `localdata/reports/<job-id>/<BOOK>/` for a whole-book scope; add a distinct scope directory only when it contributes additional coordinates. The same non-duplication rule applies to Job `report_data/`.

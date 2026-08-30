@@ -1,6 +1,6 @@
 # Clone and Install
 
-SAGE 0.02alpha1 normally needs no separate setup command:
+SAGE 0.01beta2 normally needs no separate setup command:
 
 ```text
 git clone <repository> SAGE

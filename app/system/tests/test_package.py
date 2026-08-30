@@ -63,7 +63,7 @@ def test_standard_version_matches_version_file(package_root: Path) -> None:
     """Verify that standard version matches version file."""
     standard = load_standard(package_root)
     assert standard.version == (package_root / "VERSION").read_text(encoding="utf-8").strip()
-    assert standard.release_status == "ALPHA"
+    assert standard.release_status == "BETA"
     assert standard.feature_classifications["tui"] == "EXPERIMENTAL_UNSTABLE"
     assert "EXPERIMENTAL_UNSTABLE" in standard.feature_maturity_states
     assert standard.public_release_ready is False
@@ -222,10 +222,10 @@ def test_source_audit_rejects_stale_compact_prerelease_labels(package_root: Path
     assert any("Previous pre-release reference" in error for error in payload.get("errors", [])), payload.get("errors", [])
 
 
-def test_source_audit_allows_explicit_beta_mainline_lineage_in_alpha_handover(
+def test_source_audit_allows_explicit_historical_alpha_lineage_in_beta_handover(
     package_root: Path, tmp_path: Path
 ) -> None:
-    """Alpha handover may name the prior Beta only in the explicit mainline-baseline lineage statement."""
+    """Beta handover may name the historical Alpha branch only as non-release provenance."""
     import json
     import shutil
     import subprocess
@@ -238,7 +238,7 @@ def test_source_audit_allows_explicit_beta_mainline_lineage_in_alpha_handover(
     handover = copy / "docs" / "advanced" / "release" / "HANDOVER.md"
     handover.write_text(
         handover.read_text(encoding="utf-8")
-        + "\n0.01beta remains the mainline baseline. 0.02alpha1 is developed on the parallel Alpha branch.\n",
+        + "\nThe historical alpha/0.02alpha1 branch was a non-release validation branch merged into 0.01beta2.\n",
         encoding="utf-8",
     )
     result = subprocess.run(

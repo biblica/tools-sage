@@ -1,6 +1,6 @@
-# SAGE v0.02alpha1 - Implementation Report
+# SAGE v0.01beta2 - Implementation Report
 
-**Development status:** Alpha; pre-release group-testing baseline. Qualification is bound to the exact source hash used by the release builder.
+**Development status:** Beta; pre-release group-testing baseline. Qualification is bound to the exact source hash used by the release builder.
 
 ## Implemented
 
@@ -24,7 +24,7 @@
 18. **One routed-SFM sizing authority.** BIC, RTC, STC, Targeted Check, and OL Review use the general deterministic SFM slicer. Only Scripture SFM actually routed to a model review item contributes tokens/hard bytes; controller JSON, prompts, schemas, profiles, IDs, hashes, provenance, diagnostics, and transport overhead do not.
 19. **Universal language specificity.** Every bounded model-facing natural-language stream carries its complete canonical profile. Project/reporting streams use `LANGUAGE_PROFILE`; GRK/HEB use source-bound `OL_AUTHORITY_PROFILE`. Missing or ambiguous specificity fails closed, including BIC microtransactions, retries, RTC/STC, Targeted Check, OL Review, and secondary report rendering.
 20. **Extensible OL authority families.** GRK/HEB retain exactly one configured PRIMARY authority for current workflows and may register zero or more SECONDARY authorities. Secondary authorities remain analytically inert until an explicit future review item routes them.
-21. **Provider-neutral exact Skill routing.** Normal Setup retains provider connection/enablement only. Routing has one audited manual override plus automatic/data and automatic/no-data substates. True no-data Alpha attempts use Codex native Medium as `PROVISIONAL_UNQUALIFIED`; provider-native IDs are retained without a fictional universal scale.
+21. **Provider-neutral exact Skill routing.** Normal Setup retains provider connection/enablement only. Routing has one audited manual override plus automatic/data and automatic/no-data substates. In every release state, true no-data attempts always use Codex native Medium as `PROVISIONAL_UNQUALIFIED`; provider-native IDs are retained without a fictional universal scale.
 22. **Deterministic execution ownership.** Planning, parsing, SFM slicing, coverage, token measurement, validation, aggregation, report composition/naming, and finalization are explicitly Python-owned and never enter LLM routing or LLM token accounting. Local AI remains non-authoritative `ASSISTIVE_ONLY` work.
 23. **Sealed route qualification.** All seven Skills have explicit packaged positive, zero-finding, and adversarial inventories, repeated three times per candidate route. RTC adds dedicated polarity and participant-identity referral cases for five total. Production validators determine `QUALIFIED`, `FAILED`, or `UNRELIABLE`; models cannot qualify themselves. Model/capability/Skill/suite/policy drift becomes `UNASSESSED` or `STALE`.
 24. **Audited advanced override.** One optional exact provider/model/capability/reasoning route may be pinned outside normal Setup. Set/change/clear actions create local receipts, and execution still fails closed when the route is not qualified for the current Skill.
@@ -45,4 +45,4 @@ BIC and SAW remain independent. BIC binds exactly one SOURCE, DONOR, and TARGET.
 
 ## Compatibility rule
 
-A narrow set of internal Python function names and machine keys retain legacy names where changing them would add unnecessary migration risk. They are compatibility implementation details only. Current operator-visible Project grammar uses the canonical v0.02alpha1 terms.
+A narrow set of internal Python function names and machine keys retain legacy names where changing them would add unnecessary migration risk. They are compatibility implementation details only. Current operator-visible Project grammar uses the canonical v0.01beta2 terms.

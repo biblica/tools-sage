@@ -1,4 +1,4 @@
-# Scripture Project Operator Cheat Sheet — v0.02alpha1
+# Scripture Project Operator Cheat Sheet — v0.01beta2
 
 Every menu, including Manage Jobs, Scripture Projects, BIC, SAW, and SAGE
 Maintenance, ends with the same navigation block:

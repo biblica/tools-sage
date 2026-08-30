@@ -1,4 +1,4 @@
-"""First-class Language Profile namespace maintenance for Alpha."""
+"""First-class Language Profile namespace maintenance for pre-release builds."""
 from __future__ import annotations
 
 from pathlib import Path

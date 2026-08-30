@@ -1,8 +1,8 @@
-# Model Handoff Optimization — v0.02alpha1
+# Model Handoff Optimization — v0.01beta2
 
 ## Purpose
 
-`0.02alpha1` retains the proven provider projections established during earlier development and adds conservative planning/focus optimizations without reducing the governed evidence available to SAGE. The controller remains authoritative for evidence admission, hashing, task identity, coverage, receipts, validation, and file materialization. Optimization occurs only after those local controls are established.
+`0.01beta2` retains the proven provider projections established during earlier development and adds conservative planning/focus optimizations without reducing the governed evidence available to SAGE. The controller remains authoritative for evidence admission, hashing, task identity, coverage, receipts, validation, and file materialization. Optimization occurs only after those local controls are established.
 
 ## 1. Governance inputs versus model reads
 

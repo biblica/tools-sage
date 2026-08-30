@@ -1,6 +1,6 @@
 # SAGE Project Tree
 
-SAGE 0.02alpha1 separates replaceable Git-controlled Core from persistent local data.
+SAGE 0.01beta2 separates replaceable Git-controlled Core from persistent local data.
 
 ```text
 SAGE/

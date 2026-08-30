@@ -1,4 +1,4 @@
-"""Deterministic Paratext language/country evidence collection for Alpha."""
+"""Deterministic Paratext language/country evidence collection for pre-release builds."""
 from __future__ import annotations
 
 import json

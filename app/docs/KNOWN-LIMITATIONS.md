@@ -1,14 +1,14 @@
-# Known Limitations — v0.02alpha1
+# Known Limitations — v0.01beta2
 
 - Commentary and operator/runtime diagnostics are not yet fully separated into distinct report artifacts; provider execution diagnostics may still appear in the human report during interrupted Runs.
-- v0.02alpha1 enables governed BIC/SAW execution through CODEX only. Ollama remains optional explicit administration tooling and cannot execute governed tasks; administrative explanations and executive summaries are deterministic. Grok/Gemini remain future provider-adapter possibilities.
+- v0.01beta2 enables governed BIC/SAW execution through CODEX only. Ollama remains optional explicit administration tooling and cannot execute governed tasks; administrative explanations and executive summaries are deterministic. Grok/Gemini remain future provider-adapter possibilities.
 - Local AI mode intentionally disables Job secondary reporting while enabled. Existing secondary-language Jobs must be cleared by the Operator before Local AI can be enabled; SAGE does not silently modify them.
 - The local admin assistant is disabled on hosts with less than 16 GiB total RAM. Its community-converted Gemma 4 E2B Q5_K_M GGUF is fetched from an immutable pinned upstream revision and accepted only after the fixed SHA-256 check succeeds.
 - OpenAI API keys, direct OpenAI API execution, service accounts, and API fallback are unavailable/prohibited for SAGE.
 - External Paratext/PTLite access is deliberately limited to `.SFM` and `.VRS` reads; only an explicitly writable BIC TARGET may receive `.SFM` writes. `.VRS` is always read-only.
 - Bounded BIC TARGET merge fails closed when a requested scope partially intersects a verse bridge or another USFM structure that cannot be replaced safely without broadening the governed scope.
 - A new TARGET book can be created progressively from bounded commits; insertion into an existing book requires the relevant chapter structure to exist rather than inventing surrounding USFM structure.
-- The operating contract assumes Paratext/PTLite editors are closed while SAGE executes. v0.02alpha1 does not implement cross-application editor locking.
+- The operating contract assumes Paratext/PTLite editors are closed while SAGE executes. v0.01beta2 does not implement cross-application editor locking.
 - SAGE/SAW does not create or modify Paratext Notes XML. SAW emits plain Operator note text for manual copy/paste.
 - Normal SAW Reference Text Comparison (RTC) can require multiple isolated model stages; it is one Operator operation, not one guaranteed model call.
 - WDA / Word Data Analysis is future work and is not implemented as part of SAW.

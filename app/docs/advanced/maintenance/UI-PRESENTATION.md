@@ -1,6 +1,6 @@
-# Alpha Operator UI Presentation
+# Beta Operator UI Presentation
 
-Alpha standardizes the classic terminal interaction grammar.
+Beta standardizes the classic terminal interaction grammar.
 
 ## Interactive template
 
