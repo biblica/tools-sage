@@ -3,6 +3,13 @@
 This is an append-only implementation ledger. New entries go first. Historical version detail from
 before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/release/RELEASE-NOTES.md`.
 
+### IMP-20260830-BETA2 — STC and Alpha hardening integrated into 0.01beta2
+
+- **Version:** `0.01beta2`
+- **Milestone:** `MS-BETA2-QUALIFY`
+- **Implemented:** Merged the approved `alpha/0.02alpha1` development work into main while retaining the 0.01 release line; promoted the active identity to Beta 2; included independent SAW Source Text Correspondence, strict RTC source-referral admission, stable review-portion progress, and provider-neutral per-Skill routing with a universal no-data Medium fallback.
+- **Verification:** The merged Beta source must pass the complete managed-runtime suite, schema/package gates, and deep source audit before this checkpoint is committed; exact-source release hardening and native acceptance remain separate promotion gates.
+
 ### IMP-20260828-ALPHA1 — 0.02alpha1 release line approved
 
 - **Version:** `0.02alpha1`

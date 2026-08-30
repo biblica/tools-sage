@@ -1,4 +1,4 @@
-# SAGE architecture — v0.02alpha1
+# SAGE architecture — v0.01beta2
 
 ## 1. Controller boundary
 
@@ -10,7 +10,7 @@ Operator
   -> deterministic parsers + VRS + semantic indexes
   -> Run + immutable governed task + hashes
   -> provider registry + build policy
-  -> enabled executor (v0.02alpha1: Codex only)
+  -> enabled executor (v0.01beta2: Codex only)
   -> structured response gate
   -> deterministic validation / transaction / reporting
 ```
@@ -71,7 +71,7 @@ BIC and SAW have no direct interface, automatic handoff, role conversion, or sha
 
 Adapters live under `system/src/sage/executors/`. `system/src/sage/build_policy.py` determines which implemented adapters may execute in the current release.
 
-v0.02alpha1 enables Codex only for governed BIC/SAW execution. Ollama is also a
+v0.01beta2 enables Codex only for governed BIC/SAW execution. Ollama is also a
 host-local runtime for the optional capability-restricted admin assistant; that
 path cannot acquire workflow execution authority. Future providers can be added
 behind the same abstraction. No OpenAI API-key path exists.

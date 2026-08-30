@@ -1,9 +1,9 @@
-# Release Notes - SAGE v0.02alpha1
+# Release Notes - SAGE v0.01beta2
 
 
-## 0.02alpha1
+## 0.01beta2
 
-`0.02alpha1` is the first Alpha build of the 0.02 development line. It remains pre-release and is not public-production ready.
+`0.01beta2` is the second group-testing Beta of the 0.01 line. It integrates the work validated on the historical `alpha/0.02alpha1` branch and remains pre-release and not public-production ready.
 
 - Adds governed Source Text Correspondence (STC) as an independent WIP-to-PRIMARY-original-language SAW operation.
 - Unifies BIC, RTC, and STC Scripture planning under routed-SFM-only deterministic sizing.
@@ -15,7 +15,7 @@
 - Adds sealed three-repetition route qualification for all seven analytical Skills, with explicit per-Skill case inventories and five RTC referral-boundary cases, an
   audited exact-route override, fail-closed stale/unavailable handling, and route evidence in task
   receipts, Job/Run status, and final reports.
-- Adds the Alpha automatic/no-data fallback: Codex native Medium is executable only in a true absence
+- Establishes the universal automatic/no-data fallback: Codex native Medium is executable in every release state only in a true absence
   of qualification evidence and is labelled `PROVISIONAL_UNQUALIFIED`; current data selects the
   qualified route, while the existing audited exact override remains the sole manual state.
 - Resolves RTC/STC routing before visible work and preserves the same sealed task for `CONTINUE RUN`.
@@ -28,7 +28,9 @@
 - Keeps the classic menu/CLI authoritative; Textual remains `EXPERIMENTAL / UNSTABLE`.
 
 
-0.01beta remains the mainline baseline. 0.02alpha1 is developed on the parallel Alpha branch; this Alpha release does not replace, rename, or promote the 0.01beta mainline.
+### Historical Alpha branch provenance
+
+The `0.02alpha1` identity was used only on the parallel `alpha/0.02alpha1` non-release development branch. Its approved work was merged into the 0.01 line as `0.01beta2`; no `0.02alpha1` public release was created.
 
 ## 0.01beta baseline
 

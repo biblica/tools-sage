@@ -1,4 +1,4 @@
-# SAGE Documentation Index — v0.02alpha1
+# SAGE Documentation Index — v0.01beta2
 
 Normal Operators should begin with [SAGE Help](OPERATOR-GUIDE.md). Short daily-use instructions stay
 in the `docs/` root. Technical and governance material is grouped under
@@ -7,7 +7,7 @@ in the `docs/` root. Technical and governance material is grouped under
 ## Operator guides
 
 - [SAGE Help](OPERATOR-GUIDE.md) — compact main-menu map, first-launch contract, reports, and fallback entry points.
-- [TUI](TUI.md) — experimental/unstable v0.02alpha1 Textual shell, migration boundary, keyboard/mouse controls, and parity plan.
+- [TUI](TUI.md) — experimental/unstable v0.01beta2 Textual shell, migration boundary, keyboard/mouse controls, and parity plan.
 - [Scripture Project Operator Cheat Sheet](PROJECT-OPERATOR-CHEAT-SHEET.md) — discovery, Add-to-SAGE, Project maintenance, Job-owned reports, reporting languages, and original-language resources.
 - [BIC Cheat Sheet](BIC-CHEAT-SHEET.md) — BIC Job, Run, task, state, and recovery quick reference.
 - [SAW Cheat Sheet](SAW-CHEAT-SHEET.md) — SAW RTC, STC, Targeted Check, Original-Language Review, finalization, and read-only boundaries.
@@ -46,7 +46,7 @@ in the `docs/` root. Technical and governance material is grouped under
 ## Advanced: models and AI
 
 - [Model Selection and Provider Build Policy](advanced/models-and-ai/MODEL-SELECTION-AND-REASONING.md) — Codex execution, local admin assistant, and model qualification.
-- [Skill Routing and Model Qualification](advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md) — ALPHA1 provider-only Setup, per-Skill route evidence, global override, and operator reporting design.
+- [Skill Routing and Model Qualification](advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md) — provider-only Setup, per-Skill route evidence, global override, and operator reporting design.
 - [Model Handoff Optimization](advanced/models-and-ai/MODEL-HANDOFF-OPTIMIZATION.md) — governed projections, response contracts, and token telemetry.
 - [Model Language Competency](advanced/models-and-ai/MODEL-LANGUAGE-COMPETENCY.md) — per-model-release estimated capability.
 - [Local AI Assistive Mode](advanced/models-and-ai/LOCAL-AI-ASSISTIVE-MODE.md) — restricted local administration support.
@@ -68,7 +68,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Release Gates](advanced/release/RELEASE-GATES.md), [Release Notes](advanced/release/RELEASE-NOTES.md), and [Handover](advanced/release/HANDOVER.md).
 - [Skill-qualified Model Routing Implementation Plan](advanced/release/SKILL-ROUTING-IMPLEMENTATION-PLAN.md) — test-first Alpha1 implementation, qualification, hardening, and Operator-acceptance sequence.
 - [Administrative AI Routing Design](advanced/release/ADMINISTRATIVE-AI-ROUTING-DESIGN.md) — deterministic-first administration, Local AI preference, hosted fallback consent, and low/Instant restrictions.
-- [Provisional Medium Skill Routing Design](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-DESIGN.md) — no-data Alpha fallback, qualification precedence, truthful receipts, and early route preflight.
+- [Provisional Medium Skill Routing Design](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-DESIGN.md) — universal no-data Medium fallback, qualification precedence, truthful receipts, and early route preflight.
 - [Provisional Medium Skill Routing Implementation Plan](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-IMPLEMENTATION-PLAN.md) — test-first resolver, preference, receipt, preflight, documentation, and hardening sequence.
 - [SAW Review Portions and OL Referral Admission Design](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-DESIGN.md) — stable review-range progress and fail-closed fundamental-conflict admission for selective OL checks.
 - [SAW Review Portions and OL Referral Admission Implementation Plan](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-IMPLEMENTATION-PLAN.md) — test-first contract, versioning, provenance, progress, qualification, and Alpha release sequence.

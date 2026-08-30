@@ -139,8 +139,8 @@ def test_project_management_ledgers_are_internal_version_linked_records() -> Non
         "IMP-20260826-004",
         "IMP-20260826-005",
         "IMP-20260826-006",
-        "MS-ALPHA-QUALIFY",
-        "RCLEAN-0.02alpha1-001",
+        "MS-BETA2-QUALIFY",
+        "RCLEAN-0.01beta2-001",
     ):
         assert token in combined
     for name in ("DEVELOPMENT-STATUS.md", "NEXT-DEVELOPMENT-WORK.md"):
@@ -154,10 +154,10 @@ def test_project_management_ledgers_are_internal_version_linked_records() -> Non
     assert "system/config/project-management/" in project_tree
     versioning = (pm_root / "VERSIONING-POLICY.md").read_text(encoding="utf-8")
     for token in (
-        "0.02alpha1",
-        "0.02beta",
-        "0.02rc1",
-        "ALPHA",
+        "0.01beta2",
+        "0.01betaN",
+        "0.01rc1",
+        "BETA",
         "RELEASE_CANDIDATE",
         "SAGE-v<version>-Full-Distribution",
         "EXPERIMENTAL_UNSTABLE",
@@ -173,17 +173,17 @@ def test_project_management_ledgers_are_internal_version_linked_records() -> Non
     assert "Rebuild changed canonical menu text" in cleanup
 
 
-def test_current_release_identity_is_002alpha1() -> None:
-    """Active release surfaces identify the approved 0.02alpha1 development line."""
-    assert (ROOT / "VERSION").read_text(encoding="utf-8").strip() == "0.02alpha1"
+def test_current_release_identity_is_001beta2() -> None:
+    """Active release surfaces identify the approved 0.01beta2 group-testing line."""
+    assert (ROOT / "VERSION").read_text(encoding="utf-8").strip() == "0.01beta2"
     standard = json.loads((ROOT / "system" / "config" / "sage-standard.json").read_text(encoding="utf-8"))
-    assert standard["release"]["version"] == "0.02alpha1"
-    assert standard["release"]["status"] == "ALPHA"
+    assert standard["release"]["version"] == "0.01beta2"
+    assert standard["release"]["status"] == "BETA"
     assert standard["release"]["public_release_ready"] is False
     pyproject = (ROOT / "system" / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.02alpha1"' in pyproject
-    assert '__version__ = "0.02alpha1"' in (ROOT / "system" / "src" / "sage" / "__init__.py").read_text(encoding="utf-8")
-    assert 'BUILD_POLICY_VERSION = "0.02alpha1"' in (ROOT / "system" / "src" / "sage" / "build_policy.py").read_text(encoding="utf-8")
+    assert 'version = "0.01beta2"' in pyproject
+    assert '__version__ = "0.01beta2"' in (ROOT / "system" / "src" / "sage" / "__init__.py").read_text(encoding="utf-8")
+    assert 'BUILD_POLICY_VERSION = "0.01beta2"' in (ROOT / "system" / "src" / "sage" / "build_policy.py").read_text(encoding="utf-8")
     for rel in (
         "README.md",
         "docs/INDEX.md",
@@ -193,7 +193,7 @@ def test_current_release_identity_is_002alpha1() -> None:
         "docs/advanced/release/TEST-AND-VALIDATION-REPORT.md",
         "system/config/DEVELOPMENT-STATUS.md",
     ):
-        assert "0.02alpha1" in (ROOT / rel).read_text(encoding="utf-8"), rel
+        assert "0.01beta2" in (ROOT / rel).read_text(encoding="utf-8"), rel
 
 
 def test_required_operator_help_set_exists_and_has_no_placeholders() -> None:
@@ -311,8 +311,8 @@ def test_bic_and_saw_documented_flows_match_enforced_scope() -> None:
     assert "SELECTIVE_OL_ADJUDICATION" in saw
 
 
-def test_alpha_current_operator_grammar_is_consistent() -> None:
-    """Current Alpha templates use qualified status, Targeted Check, project names, and governed OL toggling."""
+def test_beta2_current_operator_grammar_is_consistent() -> None:
+    """Current Beta 2 templates use qualified status, Targeted Check, names, and governed OL toggling."""
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     handover = (ROOT / "docs" / "advanced" / "release" / "HANDOVER.md").read_text(encoding="utf-8")
     human = (ROOT / "docs" / "advanced" / "architecture" / "HUMAN-OUTPUT-AND-LOGGING.md").read_text(encoding="utf-8")
@@ -325,7 +325,7 @@ def test_alpha_current_operator_grammar_is_consistent() -> None:
     assert "Fresh exact-source qualification is required before the first release candidate" in readme
     assert "Fresh exact-source qualification is required before the first real RC" in handover
     grammar = (ROOT / "docs" / "advanced" / "architecture" / "SAGE-SYSTEM-GRAMMAR.md").read_text(encoding="utf-8")
-    assert "`SAGE v0.02alpha1`" in grammar and "`v0.02rc1`" in grammar and "`v0.02`" in grammar
+    assert "`SAGE v0.01beta2`" in grammar and "`v0.01rc1`" in grammar and "`v0.01`" in grammar
     assert "configured Project display names" in human
     assert "Project IDs rather than bare" not in human
     assert "Original-language: `NOT CONSULTED`" not in human
@@ -963,22 +963,19 @@ def test_release_gates_use_current_skill_count_and_routed_sfm_budget_authority()
     assert "only the SFM Scripture streams routed to that review item" in release_gates
 
 
-def test_alpha_release_line_is_parallel_to_beta_mainline() -> None:
-    """0.02 Alpha is a development branch; 0.01beta remains the mainline baseline."""
+def test_beta2_release_line_records_historical_alpha_provenance() -> None:
+    """Beta 2 remains on 0.01 while recording the non-release Alpha branch provenance."""
     versioning = (ROOT / "system" / "config" / "project-management" / "VERSIONING-POLICY.md").read_text(encoding="utf-8")
     notes = (ROOT / "docs" / "advanced" / "release" / "RELEASE-NOTES.md").read_text(encoding="utf-8")
     handover = (ROOT / "docs" / "advanced" / "release" / "HANDOVER.md").read_text(encoding="utf-8")
-    required = (
-        "0.01beta remains the mainline baseline",
-        "0.02alpha1 is developed on the parallel Alpha branch",
-    )
+    required = ("0.01beta2", "alpha/0.02alpha1", "non-release")
     for text in (versioning, notes, handover):
         for phrase in required:
             assert phrase in text
 
 
-def test_alpha_release_docs_do_not_describe_branch_as_fork() -> None:
-    """Keep Alpha release-line terminology within the same repository."""
+def test_historical_alpha_release_docs_do_not_describe_branch_as_fork() -> None:
+    """Keep historical Alpha branch terminology within the same repository."""
     paths = (
         ROOT / "system" / "config" / "project-management" / "VERSIONING-POLICY.md",
         ROOT / "docs" / "advanced" / "release" / "RELEASE-NOTES.md",

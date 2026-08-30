@@ -1,6 +1,6 @@
 # SAGE Help
 
-**Alpha — pre-release; fresh exact-source qualification is required before an RC.** Use for controlled Operator testing and development only.
+**Beta — pre-release; fresh exact-source qualification is required before an RC.** Use for controlled Operator testing and development only.
 
 Open a terminal in the SAGE root. The classic menu remains the authoritative default: run `.\sage.cmd` on Windows or `./sage` on macOS/Linux. The **EXPERIMENTAL / UNSTABLE** TUI is explicit: run `.\sage.cmd tui` or `./sage tui`. Do **not** start Codex first. SAGE remains the parent process and invokes Codex only for sign-in or bounded AI work.
 
@@ -19,7 +19,7 @@ Open a terminal in the SAGE root. The classic menu remains the authoritative def
 
 ## Experimental / unstable TUI
 
-The v0.02alpha1 TUI is experimental, may change incompatibly, and does not yet provide authoritative workflow parity. It targets a `100 x 30` terminal and uses the same `1`-`4` functional controls and `A`-`F` global controls as the classic interface. Mouse buttons route through the same semantic actions. The main dashboard keeps four operational blocks visible: **System Status**, **Active AI**, **Project**, and one sequential **Active Job**. SAGE does not run multiple Jobs in parallel in this development line.
+The v0.01beta2 TUI is experimental, may change incompatibly, and does not yet provide authoritative workflow parity. It targets a `100 x 30` terminal and uses the same `1`-`4` functional controls and `A`-`F` global controls as the classic interface. Mouse buttons route through the same semantic actions. The main dashboard keeps four operational blocks visible: **System Status**, **Active AI**, **Project**, and one sequential **Active Job**. SAGE does not run multiple Jobs in parallel in this development line.
 
 The Active Job block reports a compact governed progress quantifier without exposing token accounting:
 
@@ -77,14 +77,14 @@ sealed model evaluation, Local AI, and the explicit **Check LLM connection** act
 Provider readiness and Skill readiness are distinct. Routing has one manual state plus two automatic
 substates: an audited exact `USER_OVERRIDE`; `AUTOMATIC / DATA`, which uses current exact
 qualification evidence; and `AUTOMATIC / NO DATA`, which uses Codex native `medium` as the truthful
-Alpha-only `PROVISIONAL_UNQUALIFIED` fallback. Stale, failed, unreliable, unsupported, or unavailable
+`PROVISIONAL_UNQUALIFIED` fallback in every release state. Stale, failed, unreliable, unsupported, or unavailable
 routes still fail closed before Scripture evidence is sent. Job menus show current routes when
 idle and actual execution-receipt routes for active attempts. Direct task provider/model/reasoning
 flags cannot bypass this routing boundary.
 
 Startup displays an empty valid inventory as **No SAGE Projects added yet**. The corresponding machine-record state is `READY_EMPTY`; it does not mean workstation configuration is complete. Until the Paratext Projects root is configured and available, startup and the complete system check report `INCOMPLETE` with `PROJECTS_ROOT_NOT_CONFIGURED` or `PROJECTS_ROOT_NOT_FOUND`.
 
-The workstation interface language is stored in the local `localdata/.system/config/local-settings.yml` overlay and is selectable in guided Setup or with `D. Language` from any menu. v0.02alpha1 ships complete editable menu-localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`. Functional menu choices remain numeric. The global footer is two rows: `A. Back   B. Main Menu   C. Exit SAGE`, then `D. Language   E. Help   F. Status`. Help and Status return to the same active menu. Localized labels never control navigation.
+The workstation interface language is stored in the local `localdata/.system/config/local-settings.yml` overlay and is selectable in guided Setup or with `D. Language` from any menu. v0.01beta2 ships complete editable menu-localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`. Functional menu choices remain numeric. The global footer is two rows: `A. Back   B. Main Menu   C. Exit SAGE`, then `D. Language   E. Help   F. Status`. Help and Status return to the same active menu. Localized labels never control navigation.
 
 Reporting language is a separate authority. Every Job owns one required primary reporting language and may add one optional secondary language for downstream localized rendering. The global Operator language supplies only the default captured when a new Job is created; changing it does not change an existing Job. Narrative-generating ACTs bind the Job primary explicitly, and neither interface nor secondary language is sent as canonical narrative authority. Projects do not own report-language settings. Governed `@GRK` and `@HEB` sources are configured separately under **Scripture Projects > Original-language resources**.
 
@@ -126,9 +126,9 @@ During pre-release testing, the main menu prints the running SAGE version and de
 ## Guided Input
 
 When SAGE returns `INPUT_REQUIRED`, use Guided Input to provide the requested bounded Operator value. SAGE must not invent missing project identity, primary audience country, Job binding, or scope.
-## Alpha interaction pattern
+## Beta interaction pattern
 
 Interactive classic-menu navigation starts each new form on a fresh terminal viewport. A full-width `=` boundary appears above and below the screen title, so a new panel remains obvious when a short result message is intentionally retained. Redirected/scripted output contains the same panel boundary without ANSI control codes. `-` remains the section/footer boundary; primary actions and fixed-width label/value columns remain consistent. Optional file/path prompts show `[Enter to cancel]`; pressing Enter cancels rather than raising a required-input error. See `docs/advanced/maintenance/UI-PRESENTATION.md`.
-## Alpha path normalization
+## Beta path normalization
 
 Path rule: SAGE never repeats the same adjacent Book/scope directory. Whole-book output is published under `localdata/reports/<job-id>/<BOOK>/`; a distinct scope directory is added only when it carries additional chapter/verse information.

@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.02alpha1
+## 0.01beta2
+
+`0.01beta2` is the current group-testing Beta. It incorporates the accepted work from the historical `alpha/0.02alpha1` non-release branch while retaining the 0.01 product line.
 
 - Added Source Text Correspondence (STC) with WIP-to-PRIMARY OL correspondence and fail-closed exact coverage/finalization.
 - Unified BIC/RTC/STC review sizing under routed-SFM-only deterministic slicing.

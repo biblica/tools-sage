@@ -51,4 +51,4 @@ Promotion to Core occurs only through the normal source-control, RTC, review, an
 - Core-candidate promotion through pull request and full release gates;
 - explicit UI distinction between Core, approved plugin, community/candidate, and local resources.
 
-This is a planned feature, not part of the 0.02alpha1 executable feature set.
+This is a planned feature, not part of the 0.01beta2 executable feature set.

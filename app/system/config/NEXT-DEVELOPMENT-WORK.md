@@ -7,16 +7,16 @@
 5. Exercise SAW Reference Text Comparison (RTC) against representative real Project scopes to tune deterministic preflight thresholds and selective-OL request granularity without changing authority boundaries.
 6. Exercise broad Book/section scopes on real translations to validate the current pre-Run work/token preview, structural splitting, and Change-scope recovery path under realistic text sizes.
 7. Continue menu-first convergence for any remaining low-frequency CLI-only maintenance actions; keep direct CLI syntax documented as a shortcut rather than the primary operator story.
-8. Decide during the Alpha development whether to retire the narrow internal compatibility aliases whose Python names still contain legacy Project-registration terminology. They are not operator-facing and should not be renamed during the Alpha development without a migration reason.
-9. Define a future localdata schema-migration policy before any release introduces an incompatible persisted-data schema. The first published `0.02alpha1` baseline requires no migration from unpublished legacy layouts.
+8. Decide during Beta development whether to retire the narrow internal compatibility aliases whose Python names still contain legacy Project-registration terminology. They are not operator-facing and should not be renamed during Beta development without a migration reason.
+9. Define a future localdata schema-migration policy before any release introduces an incompatible persisted-data schema. The first published `0.01beta2` baseline requires no migration from unpublished legacy layouts.
 10. Evaluate later provider enablement only after the development interaction grammar stabilizes. Ollama remains explicit administration tooling only; Grok/Gemini remain future adapters.
 11. Continue regression testing of protected BIC rewrite-detail and verb-selection rules. Keep WDA and existing-target revision parked as separate future work.
 12. Build a hosted qualification-registry service so normal Operators can begin work within minutes without running local catalog benchmarks. Publish signed, immutable route records keyed by provider, exact model/capability fingerprint, provider-native reasoning ID, Skill/adapted-Skill hash, suite hash, policy version, verdict, evidence hash, and review/expiry state. SAGE must query through the replaceable local qualification-evidence repository API, verify signatures and exact identities locally, cache an approved last-known registry for offline use, fail closed on mismatch, and never accept provider/model self-qualification. Full benchmarking remains release/maintainer tooling; local evaluation is only a fallback for new, unavailable, or disputed routes.
 
 
-## 0.02alpha1 TUI work — IN PROGRESS
+## 0.01beta2 TUI work — IN PROGRESS
 
-`0.02alpha1` marks the Textual migration **EXPERIMENTAL / UNSTABLE**. The classic terminal menu/CLI remains authoritative and is the default launch surface until parity and acceptance gates pass:
+`0.01beta2` keeps the Textual migration **EXPERIMENTAL / UNSTABLE**. The classic terminal menu/CLI remains authoritative and is the default launch surface until parity and acceptance gates pass:
 
 1. **IN PROGRESS:** extract UI-independent Project, Job, Run, AI, report, recovery, and setup services. Shared AI/status/help/dashboard services are implemented; workflow-changing action services remain.
 2. Retain the scriptable CLI permanently.

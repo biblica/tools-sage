@@ -1,4 +1,4 @@
-"""Command-line interface for the SAGE v0.02alpha1 build."""
+"""Command-line interface for the SAGE v0.01beta2 build."""
 
 from __future__ import annotations
 
@@ -4496,7 +4496,7 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
 
     tui = subparsers.add_parser(
         "tui",
-        help="Open the EXPERIMENTAL / UNSTABLE 0.02alpha1 full-screen interface",
+        help="Open the EXPERIMENTAL / UNSTABLE 0.01beta2 full-screen interface",
     )
     tui.add_argument(
         "--dry-run-provider",

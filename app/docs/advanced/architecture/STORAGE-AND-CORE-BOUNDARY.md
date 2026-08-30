@@ -1,6 +1,6 @@
 # Storage and Core Boundary
 
-SAGE 0.02alpha1 uses a hard ownership boundary between the Git-controlled product and local data.
+SAGE 0.01beta2 uses a hard ownership boundary between the Git-controlled product and local data.
 
 ## Canonical layout
 

@@ -142,12 +142,11 @@ def test_runtime_policy_loader_accepts_the_provider_neutral_contract(package_roo
     assert policy["accepted_operational_statuses"] == ["RECOMMENDED", "QUALIFIED"]
 
 
-def test_runtime_policy_declares_alpha_no_data_provisional_routing(package_root: Path) -> None:
-    """Removing the governed Alpha fallback must make no-data execution policy incomplete."""
+def test_runtime_policy_declares_universal_no_data_provisional_routing(package_root: Path) -> None:
+    """Adding a release-phase gate must not restrict the universal no-data fallback."""
     policy = load_model_policy(package_root)
 
     assert policy["provisional_routing"] == {
-        "enabled_release_states": ["ALPHA"],
         "no_data_qualification_status": "PROVISIONAL_UNQUALIFIED",
         "default_reasoning_by_provider": {"codex": "medium"},
         "prohibited_reasoning_by_provider": {"codex": ["none", "minimal", "low"]},
@@ -500,22 +499,22 @@ def test_resolver_blocks_known_adverse_evidence_instead_of_using_provisional(
     assert caught.value.code == reason_code
 
 
-def test_resolver_disables_provisional_routes_outside_alpha(
+def test_resolver_uses_medium_without_a_release_state_gate(
     package_root: Path,
     tmp_path: Path,
 ) -> None:
-    """Removing the release-state gate must make an unqualified route executable after Alpha."""
+    """A true no-data state must use Medium independently of release phase."""
     routing = _routing_module()
     root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
     standard_path = root / "system/config/sage-standard.json"
     standard = json.loads(standard_path.read_text(encoding="utf-8"))
-    standard["release"]["status"] = "BETA"
+    standard["release"]["status"] = "RELEASE_CANDIDATE"
     standard_path.write_text(json.dumps(standard, indent=2) + "\n", encoding="utf-8")
 
-    with pytest.raises(ValidationError) as caught:
-        routing.resolve_skill_route(root, "saw-rtc", [_status("codex", _capability())])
+    route = routing.resolve_skill_route(root, "saw-rtc", [_status("codex", _capability())])
 
-    assert caught.value.code == "NO_PROVISIONAL_SKILL_ROUTE"
+    assert route.identity.reasoning_id == "medium"
+    assert route.qualification == "PROVISIONAL_UNQUALIFIED"
 
 
 def test_legacy_workflow_recommendation_is_an_exact_skill_route_facade(

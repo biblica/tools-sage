@@ -16,7 +16,7 @@ interface:
   menu_localization_source: system/config/localization/menu-localization.json
 ```
 
-Supported interface languages in v0.02alpha1 are `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`.
+Supported interface languages in v0.01beta2 are `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`.
 
 ## Menu grammar
 

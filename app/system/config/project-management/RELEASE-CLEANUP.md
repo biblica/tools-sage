@@ -7,13 +7,13 @@ Operator-owned data in an active installation merely to make a release gate pass
 
 ## Current release record
 
-Promotion sequence: `v0.02alpha1` → later `v0.02alphaN` as required → `v0.02beta` → `v0.02rc1` → later numbered RCs as required → `v0.02` only after final approval.
+Promotion sequence: `v0.01beta2` → later `v0.01betaN` as required → `v0.01rc1` → later numbered RCs as required → `v0.01` only after final approval.
 
 | Field | Value |
 |---|---|
-| Record | `RCLEAN-0.02alpha1-001` |
-| Version | `0.02alpha1` |
-| Milestone | `MS-ALPHA-QUALIFY` |
+| Record | `RCLEAN-0.01beta2-001` |
+| Version | `0.01beta2` |
+| Milestone | `MS-BETA2-QUALIFY` |
 | State | IN_PROGRESS |
 | Blocking issue | Exact-source hardening and deterministic artifact qualification pending |
 | Source hash | NOT RECORDED |

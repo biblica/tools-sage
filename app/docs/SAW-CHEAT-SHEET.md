@@ -19,8 +19,8 @@ The Job menu exposes:
 The Job view also shows `AI Routing` and a compact `SKILL | PROVIDER | MODEL | REASONING | STATUS`
 table. Idle rows are current recommendations. An active attempt uses its immutable execution receipt.
 Normal Setup chooses a provider only. The audited advanced override is the single manual route
-control. Automatic routing uses exact qualification data when present; in a true no-data Alpha state
-it uses Codex native `medium` and displays `PROVISIONAL_UNQUALIFIED`. Failed, unreliable, stale, or
+control. Automatic routing uses exact qualification data when present; in a true no-data state it
+always uses Codex native `medium` and displays `PROVISIONAL_UNQUALIFIED`, regardless of release state. Failed, unreliable, stale, or
 unavailable evidence does not trigger fallback. The advanced override cannot bypass per-Skill
 qualification.
 

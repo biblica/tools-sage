@@ -11,7 +11,6 @@ from typing import Any, Iterable, Mapping, Protocol, Sequence
 from .errors import ConfigurationError, ValidationError
 from .executors.base import ModelCapability, ProviderStatus
 from .model_policy import load_model_policy
-from .standard import load_standard
 from .storage import storage_layout
 
 
@@ -445,15 +444,9 @@ def _provisional_skill_route(
     skill_id: str,
     statuses: Sequence[ProviderStatus],
 ) -> SkillRoute:
-    """Return one deterministic Alpha-only route for a true no-data Skill state."""
+    """Return one deterministic Medium route for a true no-data Skill state."""
     skill_sha256, policy, route_policy = _skill_identity(root, skill_id)
     provisional = policy["provisional_routing"]
-    release_state = load_standard(root).release_status
-    if release_state not in provisional["enabled_release_states"]:
-        raise ValidationError(
-            f"Provisional routing for {skill_id} is not enabled in release state {release_state}",
-            code="NO_PROVISIONAL_SKILL_ROUTE",
-        )
     preferred_providers = [
         str(value) for value in (policy.get("release_preference") or {}).get("providers", [])
     ]
@@ -536,7 +529,7 @@ def resolve_skill_route(
     *,
     evidence_repository: QualificationEvidenceRepository | None = None,
 ) -> SkillRoute:
-    """Resolve a qualified route first, then the Alpha-only true no-data fallback."""
+    """Resolve current qualification data first, then true no-data Medium fallback."""
     state = _candidate_skill_routes(
         root,
         skill_id,

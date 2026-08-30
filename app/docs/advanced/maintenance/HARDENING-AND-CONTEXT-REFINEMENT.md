@@ -1,8 +1,8 @@
-# SAGE v0.02alpha1 hardening and context refinement
+# SAGE v0.01beta2 hardening and context refinement
 
-Version: `0.02alpha1`
+Version: `0.01beta2`
 
-`0.02alpha1` includes the current hardening/refinement baseline. It preserves the established project-cardinality grammar, BIC/SAW authority boundaries, provider architecture, and byte-pinned protected BIC linguistic contracts while tightening bounded TARGET safety, routed-SFM review-item budgeting, canonical linguistic-profile handoff, OL micro-scoping, SAW discourse segmentation, history ordering, and release validation.
+`0.01beta2` includes the current hardening/refinement baseline. It preserves the established project-cardinality grammar, BIC/SAW authority boundaries, provider architecture, and byte-pinned protected BIC linguistic contracts while tightening bounded TARGET safety, routed-SFM review-item budgeting, canonical linguistic-profile handoff, OL micro-scoping, SAW discourse segmentation, history ordering, and release validation.
 
 ## Bounded TARGET safety
 

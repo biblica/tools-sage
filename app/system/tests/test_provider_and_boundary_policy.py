@@ -175,7 +175,7 @@ def test_provider_build_policy_enables_only_codex_and_preserves_ollama_admin(tmp
     assert PROVIDER_IDS == ("codex", "ollama")
     assert ENABLED_AUTOMATED_PROVIDER_IDS == ("codex",)
     assert set(FUTURE_PROVIDER_IDS) >= {"grok", "gemini"}
-    with pytest.raises(ConfigurationError, match="disabled by the 0.02alpha1 build policy"):
+    with pytest.raises(ConfigurationError, match="disabled by the 0.01beta2 build policy"):
         make_executor("ollama", DEFAULT_LLM_SETTINGS)
 
     sage_root = tmp_path / "SAGE" / "app"

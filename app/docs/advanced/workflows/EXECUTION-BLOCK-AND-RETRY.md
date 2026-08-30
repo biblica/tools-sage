@@ -1,6 +1,6 @@
 # Execution interruptions, blocks, retries, and reports
 
-SAGE v0.02alpha1 reserves `BLOCKED` for the narrow case where the exact requested operation cannot safely proceed. Recoverable provider/task conditions use narrower dispositions and are persisted as execution evidence.
+SAGE v0.01beta2 reserves `BLOCKED` for the narrow case where the exact requested operation cannot safely proceed. Recoverable provider/task conditions use narrower dispositions and are persisted as execution evidence.
 
 ## Dispositions
 

@@ -7,11 +7,11 @@ at the top of the active table. Resolution notes remain in this file after closu
 
 | ID | Opened | Version | Milestone | Priority | State | Summary |
 |---|---|---|---|---|---|---|
-| `BI-20260826-001` | 2026-08-26 | `0.02alpha1` | `MS-ALPHA-QUALIFY` | HIGH | INVESTIGATING | External-data/Core-boundary refactor requires fresh exact-source qualification before ZIP promotion. |
+| `BI-20260826-001` | 2026-08-26 | `0.01beta2` | `MS-BETA2-QUALIFY` | HIGH | INVESTIGATING | External-data/Core-boundary refactor requires fresh exact-source qualification before ZIP promotion. |
 
 ### BI-20260826-001 — Refactored Core requires fresh exact-source qualification
 
-- **Observed:** The 0.02alpha1 refactor moved all persistent local/operator/runtime state out of Core
+- **Observed:** The 0.01beta2 refactor moved all persistent local/operator/runtime state out of Core
   into configurable `localdata`, removed the shipped virtual environment, and changed storage/runtime
   contracts across bootstrap, Jobs, reports, resources, tests, and release tooling.
 - **Evidence:** Focused converted contract suites are passing, but release promotion remains blocked

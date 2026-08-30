@@ -965,6 +965,12 @@ def audit(root: Path, mode: str) -> dict[str, Any]:
     historical_text_exemptions = {
         "docs/advanced/maintenance/HARDENING-AND-CONTEXT-REFINEMENT.md",
         "docs/advanced/release/IMPLEMENTATION-REPORT.md",
+        "docs/advanced/release/ADMINISTRATIVE-AI-ROUTING-DESIGN.md",
+        "docs/advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-DESIGN.md",
+        "docs/advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-IMPLEMENTATION-PLAN.md",
+        "docs/advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-DESIGN.md",
+        "docs/advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-IMPLEMENTATION-PLAN.md",
+        "docs/advanced/release/SKILL-ROUTING-IMPLEMENTATION-PLAN.md",
         "docs/advanced/maintenance/MACOS-LINUX-PATH-EXECUTION-REPORT.md",
         "docs/advanced/maintenance/WINDOWS-CODEX-EXECUTION-AUDIT.md",
         "system/config/project-management/IMPLEMENTED-UPDATES.md",
@@ -1029,13 +1035,14 @@ def audit(root: Path, mode: str) -> dict[str, Any]:
                     line_start = text.rfind("\n", 0, match.start()) + 1
                     line_end = text.find("\n", match.end())
                     line = text[line_start:] if line_end < 0 else text[line_start:line_end]
-                    alpha_branch_lineage = (
+                    historical_branch_lineage = (
                         rel == "docs/advanced/release/HANDOVER.md"
-                        and f"{token} remains the mainline baseline" in line
+                        and "historical" in line.casefold()
+                        and "non-release" in line.casefold()
+                        and "alpha/" in line.casefold()
                         and version in line
-                        and "parallel Alpha branch" in line
                     )
-                    if alpha_branch_lineage:
+                    if historical_branch_lineage:
                         continue
                     stale_tokens.add(token)
                 if stale_tokens:

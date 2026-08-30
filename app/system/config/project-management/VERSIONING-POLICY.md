@@ -9,30 +9,30 @@ separate contracts and do not inherit the product version.
 - The root `VERSION` file is the canonical machine product version and never includes a leading
   `v`.
 - Human-facing product labels, source-control tags, and release headings add the leading `v`.
-- Preserve the approved two-digit minor spelling. The current source identity is `0.02alpha1`; the
-  human label is `v0.02alpha1`.
-- Python packaging tools may normalize `0.02alpha1` to the PEP 440 equivalent `0.2a1` in installed
+- Preserve the approved two-digit minor spelling. The current source identity is `0.01beta2`; the
+  human label is `v0.01beta2`.
+- Python packaging tools may normalize `0.01beta2` to the PEP 440 equivalent `0.1b2` in installed
   distribution metadata. SAGE menus, reports, documentation, artifacts, and tags continue to use
   the canonical SAGE spelling.
 
 
-## Parallel release lines
+## Current release line
 
-0.01beta remains the mainline baseline. 0.02alpha1 is developed on the parallel Alpha branch. Alpha qualification, tags, artifacts, and promotion records apply only to that branch and do not rewrite or advance the 0.01beta mainline.
+`0.01beta2` is the current mainline group-testing identity. It incorporates the approved work validated on the historical `alpha/0.02alpha1` branch while retaining the 0.01 product line. No `0.02alpha1` public release or immutable release tag was created.
 
 ## Promotion sequence
 
 | Phase | Machine version | Human label | Release status | Public ready |
 |---|---|---|---|---|
-| Alpha 1 baseline | `0.02alpha1` | `v0.02alpha1` | `ALPHA` | `false` |
-| Later Alpha builds | `0.02alphaN` | `v0.02alphaN` | `ALPHA` | `false` |
-| Beta baseline | `0.02beta` | `v0.02beta` | `BETA` | `false` |
-| First qualified candidate | `0.02rc1` | `v0.02rc1` | `RELEASE_CANDIDATE` | `false` |
-| Later qualified candidates | `0.02rcN` | `v0.02rcN` | `RELEASE_CANDIDATE` | `false` |
-| Approved release | `0.02` | `v0.02` | `RELEASE` | Set `true` only after final approval |
+| Historical Beta baseline | `0.01beta` | `v0.01beta` | `BETA` | `false` |
+| Current Beta 2 | `0.01beta2` | `v0.01beta2` | `BETA` | `false` |
+| Later Beta builds | `0.01betaN` | `v0.01betaN` | `BETA` | `false` |
+| First qualified candidate | `0.01rc1` | `v0.01rc1` | `RELEASE_CANDIDATE` | `false` |
+| Later qualified candidates | `0.01rcN` | `v0.01rcN` | `RELEASE_CANDIDATE` | `false` |
+| Approved release | `0.01` | `v0.01` | `RELEASE` | Set `true` only after final approval |
 
 Increment `N` for every new candidate source hash. Never reuse an RC number, move an existing tag,
-or describe a Beta build as an RC. The `0.02` development line was approved for `0.02alpha1`; subsequent phase promotion remains governed by Milestones, the changelog, and release notes.
+or describe a Beta build as an RC. Subsequent 0.01 phase promotion remains governed by Milestones, the changelog, and release notes.
 
 ## Feature-maturity classifications
 
@@ -45,13 +45,13 @@ contain features at different maturity levels when the release definition explic
 | `EXPERIMENTAL_UNSTABLE` | `EXPERIMENTAL / UNSTABLE` | Incomplete, non-authoritative, and permitted to change incompatibly. |
 | `DEPRECATED` | `DEPRECATED` | Retained temporarily for migration and scheduled for removal. |
 
-The exact current Alpha binding is:
+The exact current Beta binding is:
 
 | Feature | Classification | Authority consequence |
 |---|---|---|
 | Textual TUI | `EXPERIMENTAL_UNSTABLE` (`EXPERIMENTAL / UNSTABLE`) | Classic menu and scriptable CLI remain authoritative. |
 
-Advancing the product through Alpha/Beta to an RC does not automatically promote a feature. Changing a
+Advancing the product through Beta to an RC does not automatically promote a feature. Changing a
 feature classification requires an Implemented Update, its own acceptance evidence, synchronized
 machine and human release definitions, and approval through the applicable milestone.
 
@@ -69,7 +69,7 @@ machine and human release definitions, and approval through the applicable miles
 8. Build and verify the distribution before creating the immutable source-control tag.
 
 Any governed source or test change invalidates the current receipts. Requalify the changed source
-and use the next RC number. Promotion to `v0.02` additionally requires explicit public-readiness
+and use the next RC number. Promotion to `v0.01` additionally requires explicit public-readiness
 approval; passing deterministic tests alone is insufficient.
 
 ## Required synchronized surfaces
@@ -109,6 +109,6 @@ compatibility tests. Current source, menus, PM targets, package metadata, and re
 always use the canonical active identity.
 
 
-## Historical baseline
+## Historical baselines
 
-The prior governed baseline was `0.01beta`; its historical records and protected provenance remain unchanged.
+The prior governed baseline was `0.01beta`; its historical records and protected provenance remain unchanged. The parallel `alpha/0.02alpha1` branch was a non-release validation branch whose accepted work entered main as `0.01beta2`.

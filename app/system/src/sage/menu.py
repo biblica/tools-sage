@@ -2369,7 +2369,7 @@ class SageControlCenter:
 
     @staticmethod
     def _saw_operation_label(operation: str) -> str:
-        """Return the Alpha Operator label while preserving stable machine operation IDs."""
+        """Return the pre-release Operator label while preserving stable machine operation IDs."""
         return {"rtc": "Reference Text Comparison (RTC)", "stc": "Source Text Correspondence (STC)", "focused": "Targeted Check", "ol": "Original-Language Review"}.get(
             str(operation).lower(), str(operation).upper()
         )
