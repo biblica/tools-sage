@@ -3,6 +3,13 @@
 This is an append-only implementation ledger. New entries go first. Historical version detail from
 before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/release/RELEASE-NOTES.md`.
 
+### IMP-20260831-001 — Cross-chapter RTC staging restored
+
+- **Version:** `0.01beta2`
+- **Milestone:** `MS-BETA2-QUALIFY`
+- **Implemented:** Replaced the RTC progress path's misuse of strict coverage expansion with direct Scripture-scope containment, so an approved compact portion such as `GEN 32:1-33:20` can create its task from the plan's already sealed exact verse atoms. Strict coverage parsing remains unchanged. Structural-stage references are now normalized and sorted as numeric Scripture coordinates instead of lexically sorted labels. Approved multi-child stage creation also rolls back task and control records created by the unpublished attempt if a later child fails.
+- **Verification:** Real cross-chapter approved-plan regressions prove exact RTC task coverage with and without structural adjudication, including verse numbers above nine, and a two-child failure regression proves no unregistered child task or control survives. The complete managed-runtime suite, schema/package gates, and source deep audit must pass on the final source.
+
 ### IMP-20260830-BETA2 — STC and Alpha hardening integrated into 0.01beta2
 
 - **Version:** `0.01beta2`

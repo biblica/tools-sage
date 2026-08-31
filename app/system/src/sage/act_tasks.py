@@ -2087,6 +2087,50 @@ def _approved_saw_rtc_work_plan(
     return {**plan, "approved_manifest_path": str(plan_path)}
 
 
+def _rollback_unregistered_stage_tasks(
+    config: EcosystemConfig,
+    run_id: str,
+    tasks: Sequence[Mapping[str, Any]],
+) -> None:
+    """Remove only child tasks created by an RTC stage that failed before publication."""
+    import shutil
+
+    workflow = config.workflow("saw")
+    expected_task_parent = task_container(workflow, run_id).resolve()
+    expected_control_parent = (workflow.state_root / "act-tasks").resolve()
+    for task in reversed(tasks):
+        manifest_path = Path(str(task.get("manifest_path") or "")).resolve()
+        task_root = manifest_path.parent
+        control_path = Path(str(task.get("control_path") or "")).resolve()
+        if task_root.parent != expected_task_parent:
+            raise ValidationError(
+                "Refusing to roll back an RTC stage task outside its current Run",
+                code="SAW_TASK_ROLLBACK_BOUNDARY_VIOLATION",
+            )
+        if control_path.parent != expected_control_parent:
+            raise ValidationError(
+                "Refusing to roll back an RTC stage control outside SAW state",
+                code="SAW_TASK_ROLLBACK_BOUNDARY_VIOLATION",
+            )
+        if control_path.is_file():
+            try:
+                os.chmod(control_path, 0o600)
+            except OSError:
+                pass
+            control_path.unlink()
+        if task_root.is_dir():
+            for path in task_root.rglob("*"):
+                try:
+                    os.chmod(path, 0o700 if path.is_dir() else 0o600)
+                except OSError:
+                    pass
+            try:
+                os.chmod(task_root, 0o700)
+            except OSError:
+                pass
+            shutil.rmtree(task_root)
+
+
 def _create_approved_saw_rtc_stage(
     config: EcosystemConfig,
     *,
@@ -2121,6 +2165,7 @@ def _create_approved_saw_rtc_stage(
         ]
     stage_plan_id = f"{parent_plan_id}-{rtc_stage}"
     children: list[dict[str, Any]] = []
+    created_tasks: list[dict[str, Any]] = []
     for unit in units:
         stage_unit_references = references_by_portion.get(
             str(unit["review_portion_id"]),
@@ -2163,6 +2208,7 @@ def _create_approved_saw_rtc_stage(
                 context_after_references=[str(value) for value in unit.get("context_after", [])],
             )
         except EvidenceLimitError as exc:
+            _rollback_unregistered_stage_tasks(config, run_id, created_tasks)
             raise ValidationError(
                 "Approved SAW RTC work-unit boundaries no longer fit the exact provider handoff",
                 code="SAW_APPROVED_PLAN_STALE",
@@ -2170,9 +2216,14 @@ def _create_approved_saw_rtc_stage(
                 next_action="Rebuild and approve the affected SAW Run plan; boundaries will not change silently.",
                 details={"limit_error": exc.to_dict()},
             ) from exc
+        except Exception:
+            _rollback_unregistered_stage_tasks(config, run_id, created_tasks)
+            raise
+        created_tasks.append(child)
         child_manifest = load_json(Path(str(child["manifest_path"])))
         child_atoms = list(child_manifest.get("expected_references", []))
         if child_atoms != unit_atoms:
+            _rollback_unregistered_stage_tasks(config, run_id, created_tasks)
             raise ValidationError(
                 "Approved SAW RTC work-unit atoms differ from the generated sealed task",
                 code="SAW_APPROVED_PLAN_STALE",
@@ -2246,7 +2297,11 @@ def _create_approved_saw_rtc_stage(
         "created_utc": utc_now(),
     }
     plan_path = plan_container(config.workflow("saw"), run_id) / f"{stage_plan_id}.json"
-    atomic_write_json(plan_path, plan)
+    try:
+        atomic_write_json(plan_path, plan)
+    except Exception:
+        _rollback_unregistered_stage_tasks(config, run_id, created_tasks)
+        raise
     return {**plan, "plan_path": str(plan_path)}
 
 
@@ -2311,6 +2366,35 @@ def _scope_for_case_atoms(atoms: Sequence[VerseRef]) -> ScriptureScope:
         end_chapter=last.chapter,
         end_verse=last.verse,
     )
+
+
+def _scope_contains_scope(container: ScriptureScope, candidate: ScriptureScope) -> bool:
+    """Return whether one normalized Scripture scope wholly contains another."""
+    if container.book != candidate.book:
+        return False
+    if container.start_chapter is None:
+        return True
+    if candidate.start_chapter is None:
+        return False
+
+    def bounds(value: ScriptureScope) -> tuple[tuple[int, int], tuple[int, int]]:
+        """Return inclusive comparable bounds without requiring chapter maxima."""
+        assert value.start_chapter is not None
+        start_verse = value.start_verse if value.start_verse is not None else -1
+        end_chapter = value.end_chapter or value.start_chapter
+        if value.start_verse is None:
+            end_verse = 2**31 - 1
+        else:
+            end_verse = (
+                value.end_verse
+                if value.end_verse is not None
+                else value.start_verse
+            )
+        return (value.start_chapter, start_verse), (end_chapter, end_verse)
+
+    container_start, container_end = bounds(container)
+    candidate_start, candidate_end = bounds(candidate)
+    return container_start <= candidate_start and candidate_end <= container_end
 
 
 def _review_portion_for_reference(
@@ -2851,11 +2935,16 @@ def _create_saw_rtc_composite(
             }
         ]
     )
-    stage_references = sorted({
-        ref
-        for candidate in candidates
-        for ref in candidate.get("references", [])
-    }) if first_stage == "STRUCTURAL_ADJUDICATION" else []
+    stage_references = (
+        [ref.label() for ref in sorted({
+            atom
+            for candidate in candidates
+            for reference in candidate.get("references", [])
+            for atom in expand_reference_atoms(str(reference))
+        })]
+        if first_stage == "STRUCTURAL_ADJUDICATION"
+        else []
+    )
     if first_stage == "STRUCTURAL_ADJUDICATION" and approved_work_plan is not None:
         approved_units = [dict(item) for item in approved_work_plan.get("units", [])]
         for candidate in candidates:
@@ -3459,8 +3548,7 @@ def create_act_task(
                 code="SAW_TASK_CONTRACT_INVALID",
             )
         portion_scope = parse_scope(str(review_portion_scope))
-        task_atoms = expand_reference_atoms(scope.label())
-        if any(not portion_scope.contains(ref) for ref in task_atoms):
+        if not _scope_contains_scope(portion_scope, scope):
             raise ValidationError(
                 "Task scope crosses its declared review portion",
                 code="SAW_STAGE_CASE_PORTION_MISMATCH",

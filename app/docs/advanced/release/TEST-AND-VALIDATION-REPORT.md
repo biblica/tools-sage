@@ -23,14 +23,14 @@ The release process uses one frozen governed source hash and requires all of the
 
 ## Current automated evidence
 
-Working-source validation on 2026-08-30 collected **884 outcomes**. The direct managed-runtime suite
-recorded **882 passed**, **2 skipped**, and **0 failed/error outcomes** under
+Working-source validation on 2026-08-31 collected **887 outcomes**. The direct managed-runtime suite
+recorded **885 passed**, **2 skipped**, and **0 failed/error outcomes** under
 SAGE-managed CPython 3.12.14. The two skips are guarded optional Textual interaction cases;
 non-Textual TUI service/state coverage remains active.
 
 Schema validation covers **42 schemas / 42 IDs / 42 owner mappings** and reports PASS with no
 warnings/errors. Package validation reports READY with no warnings/errors. Source deep audit covers
-620 governed files and **3,042 / 3,042 documented Python procedures** and reports PASS with no
+620 governed files and **3,049 / 3,049 documented Python procedures** and reports PASS with no
 warnings/errors. Sealed model-evaluation regeneration verifies **7 Skills / 23 cases / 93 files**.
 
 This is development evidence, not a production-release claim. Formal exact-source hardening receipts
