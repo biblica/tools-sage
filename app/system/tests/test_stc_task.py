@@ -9,7 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from sage.act_tasks import create_act_task
+from sage.act_tasks import create_act_task, submit_act_task
 from sage.external_access import READ_ONLY_SCRIPTURE
 from sage.registry import load_ecosystem
 from sage.resource_mounts import set_resource_mount
@@ -77,6 +77,76 @@ def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, mak
     assert "Authorized REFERENCE" not in act
     assert "Reference Project" not in act
     assert "- REFERENCE:" not in act
+
+
+def test_stc_task_reports_empty_primary_ol_coordinate_without_aborting(
+    package_root,
+    make_workspace,
+) -> None:
+    """A one-verse WIP scope survives when the ready GRK source has no such verse."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=2)
+    _install_fixture_ol_profile(root, package_root, "GRK")
+    greek_file = root.parent / "localdata/work/projects/GRK/41MAT.SFM"
+    greek_file.write_text(
+        "\n".join(
+            line for line in greek_file.read_text(encoding="utf-8").splitlines()
+            if not line.startswith("\\v 2 ")
+        ) + "\n",
+        encoding="utf-8",
+    )
+    _initialize(package_root, root)
+
+    task = create_act_task(
+        load_ecosystem(root / "ecosystem.yml"),
+        workflow="saw",
+        operation="stc",
+        output_project_id="usWIP",
+        contemporary_source_id="usNIVv2",
+        scope_value="MAT 1:2",
+    )
+
+    manifest_path = Path(task["manifest_path"])
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["expected_references"] == ["MAT 1:2"]
+    assert manifest["packets"]["original_language"]["primary_references"] == []
+    assert manifest["source_text_issues"] == [{
+        "status": "REPORT_ONLY",
+        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
+        "workflow": "STC",
+        "source_stream": "GRK:PRIMARY",
+        "source_project_id": "GRK",
+        "scope": "MAT 1:2",
+        "reference": "MAT 1:2",
+        "message": (
+            "GRK:PRIMARY has no source text at MAT 1:2; "
+            "the run continued without inventing comparison evidence."
+        ),
+    }]
+    assert Path(manifest_path.parent / "packet/original-language.sfm").read_text(
+        encoding="utf-8"
+    ) == "\\id MAT\n\\c 1\n"
+    assert "Do not invent wording for source coordinates reported as absent" in Path(
+        task["act_path"]
+    ).read_text(encoding="utf-8")
+
+    output = manifest_path.parent / "output/findings.json"
+    output.write_text(
+        json.dumps({
+            "review_summary": "The WIP coordinate was reviewed; no OL wording was available.",
+            "report_language": manifest["narrative_language"]["tag"],
+            "findings": [],
+        }),
+        encoding="utf-8",
+    )
+    result = submit_act_task(load_ecosystem(root / "ecosystem.yml"), manifest_path)
+    normalized = json.loads(
+        (manifest_path.parent / "validation/normalized-findings.json").read_text(encoding="utf-8")
+    )
+    assert normalized["source_comparison_status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
+    assert normalized["source_text_issues"] == manifest["source_text_issues"]
+    published_report = Path(result["report_path"]).read_text(encoding="utf-8")
+    assert "## Source text issues" in published_report
+    assert "MAT 1:2" in published_report
 
 
 def test_stc_task_accepts_governed_authority_profile_from_external_ol_root(

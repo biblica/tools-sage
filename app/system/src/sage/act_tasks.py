@@ -111,6 +111,11 @@ from .vocabulary import (
 )
 from .work_units import records_from_project_result, select_records_for_scope
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_text, plan_sfm_work_units
+from .source_coverage import (
+    source_comparison_status,
+    source_text_issues,
+    unique_source_text_issues,
+)
 
 ACT_OPERATIONS = {
     "bic": {"inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check"},
@@ -918,7 +923,12 @@ def validate_act_request_readiness(
     }
 
 
-def _scope_units(path: Path, scope: ScriptureScope) -> tuple[list[dict[str, Any]], set[VerseRef], str]:
+def _scope_units(
+    path: Path,
+    scope: ScriptureScope,
+    *,
+    allow_empty: bool = False,
+) -> tuple[list[dict[str, Any]], set[VerseRef], str]:
     """Select authorized USJ units from one atomic read and return its exact byte hash."""
     try:
         raw = path.read_bytes()
@@ -948,7 +958,7 @@ def _scope_units(path: Path, scope: ScriptureScope) -> tuple[list[dict[str, Any]
             )
         selected.append(unit)
         refs.update(unit_refs)
-    if not selected:
+    if not selected and not allow_empty:
         raise ValidationError(f"Scope {scope.label()} is absent from {path.name}")
     return selected, refs, sha256_bytes(raw)
 
@@ -1002,11 +1012,17 @@ def _comparison_usj(
 
 
 def _write_scope_usj_packet(
-    source: Path, scope: ScriptureScope, destination: Path
+    source: Path,
+    scope: ScriptureScope,
+    destination: Path,
+    *,
+    allow_empty: bool = False,
 ) -> tuple[dict[str, Any], str]:
     """Write bounded comparison evidence as USJ and return private USFM for validation/indexing."""
-    units, refs, source_sha256 = _scope_units(source, scope)
+    units, refs, source_sha256 = _scope_units(source, scope, allow_empty=allow_empty)
     lines = [f"\\id {scope.book} SAGE bounded comparison evidence"]
+    if not units and scope.start_chapter is not None:
+        lines.append(f"\\c {scope.start_chapter}")
     current_chapter: int | None = None
     for unit in units:
         chapter = int(unit["chapter"])
@@ -1096,6 +1112,7 @@ def _write_reference_inventory_usj_packet(
     destination: Path,
     *,
     parent_scope: ScriptureScope,
+    allow_empty: bool = False,
 ) -> tuple[dict[str, Any], str]:
     """Write exact composite-RTC coordinates as deterministic bounded comparison USJ."""
     raw = source.read_bytes()
@@ -1125,9 +1142,14 @@ def _write_reference_inventory_usj_packet(
             )
         selected.append(unit)
         refs.update(unit_refs)
-    if not selected:
+    if not selected and not allow_empty:
         raise ValidationError("Composite RTC stage references are absent from the routed Scripture resource")
     lines = [f"\\id {parent_scope.book} SAGE bounded stage comparison evidence"]
+    if not selected:
+        lines.extend(
+            f"\\c {chapter}"
+            for chapter in sorted({scope.start_chapter for scope in requested_scopes if scope.start_chapter is not None})
+        )
     current_chapter: int | None = None
     for unit in selected:
         chapter = int(unit["chapter"])
@@ -2728,7 +2750,11 @@ def _partition_act_request(
             compiled[source_project_id],
             resource_role="REFERENCE",
         )
-        route_streams.append(SfmStream("REFERENCE", tuple(reference_records)))
+        route_streams.append(SfmStream(
+            "REFERENCE",
+            tuple(reference_records),
+            require_primary_coverage=not (operation == "rtc"),
+        ))
     if workflow == "saw" and operation == "ol":
         bound = JobStore(config.root, config.settings_path).load_job(str(job_id), tool="saw")
         family = "GREEK" if stc_authority_family(scope.book) == "GRK" else "HEBREW"
@@ -3052,6 +3078,7 @@ def _bounded_sfm_packet(
     destination: Path,
     *,
     context_references: Sequence[str] = (),
+    allow_empty: bool = False,
 ) -> dict[str, Any]:
     """Write only bounded Scripture SFM selected by primary scope plus explicit context."""
     try:
@@ -3082,9 +3109,11 @@ def _bounded_sfm_packet(
             )
         selected.append(unit)
         refs.update(unit_refs)
-    if not selected:
+    if not selected and not allow_empty:
         raise ValidationError(f"STC scope {primary_scope.label()} is absent from {source.name}")
     lines = [f"\\id {primary_scope.book}"]
+    if not selected and primary_scope.start_chapter is not None:
+        lines.append(f"\\c {primary_scope.start_chapter}")
     current_chapter: int | None = None
     for unit in selected:
         chapter = int(unit["chapter"])
@@ -3197,7 +3226,10 @@ def _create_saw_stc_task(
     wip_records_all = records_from_project_result(output.project_id, compiled[output.project_id], resource_role="WIP")
     ol_records_all = records_from_project_result(ol_project.project_id, compiled[ol_project.project_id], resource_role=family)
     selected_wip = select_records_for_scope(wip_records_all, scope)
-    selected_ol = select_records_for_scope(ol_records_all, scope)
+    selected_ol = tuple(
+        record for record in ol_records_all
+        if any(scope.contains(ref) for ref in record.refs)
+    )
     policy = load_workflow_profile(config, config.workflow("saw")).evidence_policy("stc")
     units = plan_stc_work_units(
         selected_wip,
@@ -3276,10 +3308,26 @@ def _create_saw_stc_task(
         wip_path = packet_root / "wip.sfm"
         ol_path = packet_root / "original-language.sfm"
         wip_packet = _bounded_sfm_packet(output_file, scope, wip_path, context_references=all_context)
-        ol_packet = _bounded_sfm_packet(ol_file, scope, ol_path, context_references=all_context)
+        ol_packet = _bounded_sfm_packet(
+            ol_file,
+            scope,
+            ol_path,
+            context_references=all_context,
+            allow_empty=True,
+        )
         expected_references = list(wip_packet["primary_references"])
-        if expected_references != list(ol_packet["primary_references"]):
-            raise ValidationError("STC WIP/OL primary coverage differs", code="STC_OL_COVERAGE_MISMATCH")
+        source_issue_rows = list(source_text_issues(
+            (ref for value in expected_references for ref in expand_reference_atoms(value)),
+            (
+                ref
+                for value in ol_packet["primary_references"]
+                for ref in expand_reference_atoms(str(value))
+            ),
+            workflow="STC",
+            source_stream=f"{family}:PRIMARY",
+            source_project_id=ol_project.project_id,
+            scope=scope.label(),
+        ))
         target_grammar_path, target_profile = _write_grammar_contract(config, output, packet_root, "wip")
         if target_grammar_path is None or target_profile is None:
             raise ValidationError(
@@ -3378,6 +3426,7 @@ def _create_saw_stc_task(
             "linguistic_profile_bindings": linguistic_profile_bindings,
             "evidence_policy": task_evidence_policy("saw"),
             "packets": {"wip": wip_packet, "original_language": {**ol_packet, "evidence_id": expected_role}},
+            "source_text_issues": source_issue_rows,
             "preflight": None,
             "resource_fingerprints": {
                 "settings": sha256_file(config.settings_path), "workflow_profile": sha256_file(config.workflow("saw").profile_path),
@@ -3427,6 +3476,15 @@ def _create_saw_stc_task(
             "Compare OL element/phrase/construction with the WIP rendering. Do not assume one-to-one lexical alignment.",
             "Report only governed OMISSION, ADDITION, VARIATION, or CONSISTENCY findings established by the bounded evidence.",
             "Review every assigned primary coordinate even if there are zero findings.", "",
+            *(
+                [
+                    "## Source text issues", "",
+                    "Do not invent wording for source coordinates reported as absent; continue the run using only supplied evidence.",
+                    *[f"- `{row['reference']}` — {row['message']}" for row in source_issue_rows], "",
+                ]
+                if source_issue_rows
+                else []
+            ),
             "## Allowed model reads", "",
             *[f"- `{item['path']}` — `{item['evidence_class']}`" for item in allowed_reads], "",
             "## Allowed writes", "", "- `output/findings.json`", "",
@@ -3993,10 +4051,19 @@ def create_act_task(
         )
         packet_records["contemporary_source"], contemporary_semantic_usfm = (
             _write_reference_inventory_usj_packet(
-                source_file, stage_reference_values, contemporary_packet, parent_scope=scope
+                source_file,
+                stage_reference_values,
+                contemporary_packet,
+                parent_scope=scope,
+                allow_empty=workflow == "saw" and operation == "rtc",
             )
             if workflow == "saw" and operation == "rtc" and stage_reference_values
-            else _write_scope_usj_packet(source_file, scope, contemporary_packet)
+            else _write_scope_usj_packet(
+                source_file,
+                scope,
+                contemporary_packet,
+                allow_empty=workflow == "saw" and operation == "rtc",
+            )
         )
         packet_records["contemporary_source"]["evidence_id"] = "SOURCE" if workflow == "bic" else "REFERENCE"
         contemporary_model_packet = packet_root / ("source.sfm" if workflow == "bic" else "reference.sfm")
@@ -4012,6 +4079,7 @@ def create_act_task(
                 context_references,
                 context_reference_packet,
                 parent_scope=scope,
+                allow_empty=workflow == "saw" and operation == "rtc",
             )
             context_reference_model_packet = packet_root / "context-reference.sfm"
             atomic_write_text(context_reference_model_packet, context_reference_semantic_usfm)
@@ -4547,6 +4615,26 @@ def create_act_task(
             if workflow == "saw"
             else list(packet_records["contemporary_source"]["atomic_references"])
         )
+        source_issue_rows = (
+            list(source_text_issues(
+                (
+                    ref
+                    for value in expected_references
+                    for ref in expand_reference_atoms(str(value))
+                ),
+                (
+                    ref
+                    for value in packet_records["contemporary_source"]["atomic_references"]
+                    for ref in expand_reference_atoms(str(value))
+                ),
+                workflow="RTC",
+                source_stream="REFERENCE",
+                source_project_id=source.project_id,
+                scope=scope.label(),
+            ))
+            if workflow == "saw" and operation == "rtc"
+            else []
+        )
         structural_candidate_ids = [
             row["candidate_id"] for row in (preflight or {}).get("structural_candidates", [])
         ]
@@ -4885,6 +4973,7 @@ def create_act_task(
             "linguistic_profile_bindings": linguistic_profile_bindings,
             "evidence_policy": task_evidence_policy(workflow),
             "packets": packet_records,
+            "source_text_issues": source_issue_rows,
             "preflight": preflight,
             "resource_fingerprints": resource_fingerprints,
             "expected_references": expected_references,
@@ -5008,6 +5097,14 @@ def create_act_task(
             act_lines.append(f"- Focus: {focus}")
         if normalized_check_type:
             act_lines.append(f"- Check type: `{normalized_check_type}`")
+        if source_issue_rows:
+            act_lines.extend([
+                "",
+                "## Source text issues",
+                "",
+                "Do not invent wording for source coordinates reported as absent; continue the run using only supplied evidence.",
+                *[f"- `{row['reference']}` — {row['message']}" for row in source_issue_rows],
+            ])
         if target_profile:
             act_lines.append(
                 f"- Selected project grammar profile: `{target_profile.language}/{target_profile.profile_id}` "
@@ -5526,6 +5623,12 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         requested_scope=str(plan.get("requested_scope") or ""),
         results=accepted_results,
     )
+    source_issue_rows = unique_source_text_issues(
+        dict(row)
+        for result in accepted_results
+        for row in result.get("source_text_issues", [])
+        if isinstance(row, Mapping)
+    )
     result = {
         "schema_version": "1.0",
         "status": "FINALIZED",
@@ -5538,6 +5641,8 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         "primary_ol_authority": ol_authority,
         "authority_family": family,
         "finding_count": sum(int(row.get("finding_count") or 0) for row in accepted_results),
+        "source_comparison_status": source_comparison_status(source_issue_rows),
+        "source_text_issues": source_issue_rows,
         "work_unit_count": len(accepted_results),
         "resource_fingerprints": lineage or {},
         "execution_routes": aggregate_execution_routes(accepted_results),
@@ -5590,6 +5695,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
     ol_review_requests: list[dict[str, Any]] = []
     ol_resolutions: list[dict[str, Any]] = []
     resolved_ol_request_ids: list[str] = []
+    source_issue_rows: list[dict[str, Any]] = []
     child_results: list[dict[str, Any]] = []
     lineage_fingerprints: dict[str, str] | None = None
     lineage_bindings: dict[str, Any] | None = None
@@ -5761,6 +5867,12 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         ol_resolutions.extend(globalized.get("ol_resolutions", []))
         resolved_ol_request_ids.extend(globalized.get("resolved_ol_request_ids", []))
         findings.extend(globalized.get("findings", []))
+        unit_source_issues = [
+            dict(row)
+            for row in normalized.get("source_text_issues", [])
+            if isinstance(row, Mapping)
+        ]
+        source_issue_rows.extend(unit_source_issues)
         child_results.append({
             "unit_id": unit_id,
             "task_id": submission.get("task_id"),
@@ -5776,6 +5888,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             "parent_review_portion_id": unit.get("parent_review_portion_id"),
             "stage_case_index": unit.get("stage_case_index"),
             "stage_case_total": unit.get("stage_case_total"),
+            "source_text_issues": unit_source_issues,
         })
     validate_global_finding_ids(findings)
     if len(expected) != len(set(expected)):
@@ -5835,6 +5948,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
                     "resolved_request_ids": resolved_request_ids,
                 },
             )
+    source_issue_rows = unique_source_text_issues(source_issue_rows)
     aggregate = {
         "schema_version": "1.0",
         "status": "FINALIZED",
@@ -5860,6 +5974,8 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         "resolved_ol_request_ids": resolved_ol_request_ids,
         "findings": findings,
         "finding_count": len(findings),
+        "source_comparison_status": source_comparison_status(source_issue_rows),
+        "source_text_issues": source_issue_rows,
         "work_units": child_results,
         "execution_routes": aggregate_execution_routes(child_results),
         "finalized_utc": utc_now(),
@@ -5883,6 +5999,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         f"- Reviewed coordinates: `{len(expected)}`",
         f"- Review receipts: `{len(receipts)}`",
         f"- Findings: `{len(findings)}`",
+        f"- Source comparison: `{source_comparison_status(source_issue_rows)}`",
         "",
     ]
     authority_notice = render_report_language_authority(authority, markdown=True)
@@ -6309,7 +6426,15 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "resource_bindings": raw.get("resource_bindings", {}),
                 "resource_display_names": raw.get("resource_display_names", {}),
                 "resource_fingerprints": raw.get("resource_fingerprints", {}),
+                "source_text_issues": unique_source_text_issues(
+                    dict(row)
+                    for row in raw.get("source_text_issues", [])
+                    if isinstance(row, Mapping)
+                ),
             }
+        )
+        normalized["source_comparison_status"] = source_comparison_status(
+            normalized["source_text_issues"]
         )
         validation_root = task_root / "validation"
         atomic_write_json(validation_root / "normalized-findings.json", normalized)
@@ -6433,7 +6558,15 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "resource_bindings": raw.get("resource_bindings", {}),
                 "resource_display_names": raw.get("resource_display_names", {}),
                 "resource_fingerprints": raw.get("resource_fingerprints", {}),
+                "source_text_issues": unique_source_text_issues(
+                    dict(row)
+                    for row in raw.get("source_text_issues", [])
+                    if isinstance(row, Mapping)
+                ),
             }
+        )
+        normalized["source_comparison_status"] = source_comparison_status(
+            normalized["source_text_issues"]
         )
         authority = report_language_authority(
             config.human_output.logs_and_reports,

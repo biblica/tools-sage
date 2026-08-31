@@ -22,6 +22,7 @@ from .references import parse_scope
 from .registry import EcosystemConfig
 from .report_translation import ensure_secondary_saw_report_rendering
 from .storage import resolve_persisted_path, storage_layout
+from .source_coverage import source_comparison_status, unique_source_text_issues
 
 
 def _load_object(path: Path, label: str) -> dict[str, Any]:
@@ -103,6 +104,15 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
     coverage = list(document.get("primary_coverage") or [])
     findings = [dict(row) for row in document.get("findings", []) if isinstance(row, Mapping)]
     findings.sort(key=_finding_sort_key)
+    source_issues = unique_source_text_issues(
+        dict(row)
+        for row in document.get("source_text_issues", [])
+        if isinstance(row, Mapping)
+    )
+    comparison_status = str(
+        document.get("source_comparison_status")
+        or source_comparison_status(source_issues)
+    )
 
     lines = [
         "# Source Text Correspondence (STC) Report",
@@ -110,6 +120,7 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
         f"- Sources: `{wip_name}` checked against `{ol_name} OL`",
         f"- Scope: `{document.get('scope', '')}`",
         f"- Coverage: `COMPLETE` ({len(coverage)} coordinates)",
+        f"- Source comparison: `{comparison_status}`",
         f"- Report languages: `{primary}`" + (f"; `{secondary}`" if secondary else ""),
     ]
     raw_routes = document.get("execution_routes")
@@ -127,6 +138,19 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
         translated_notice = catalogue_text(secondary, "message.secondary_rendering_unavailable")
         if translated_notice != catalogue_text(primary, "message.secondary_rendering_unavailable"):
             lines.append(f"> **{translated_notice}**")
+    if source_issues:
+        lines.extend([
+            "",
+            "## Source text issues",
+            "",
+            "These source-text coordinate differences did not block STC execution.",
+            "",
+        ])
+        for row in source_issues:
+            lines.append(
+                f"- `{row.get('reference', '')}` | `{row.get('source_project_id', '')}` | "
+                f"`{row.get('code', 'SOURCE_TEXT_ISSUE')}` — {row.get('message', '')}"
+            )
     lines.extend(["", "## Findings", ""])
     if not findings:
         lines.append("No governed STC findings were reported. All planned STC review items completed.")
@@ -218,6 +242,12 @@ def publish_stc_reports(
     finding_ids = [str(row.get("finding_id") or "") for row in all_findings]
     if not all(finding_ids) or len(finding_ids) != len(set(finding_ids)):
         raise ValidationError("STC report publication received duplicate or missing finding identity")
+    all_source_issues = unique_source_text_issues(
+        dict(value)
+        for row in documents
+        for value in row.get("source_text_issues", [])
+        if isinstance(value, Mapping)
+    )
 
     layout = storage_layout(config.root)
     report_root = layout.reports_root / job_id / book
@@ -234,6 +264,11 @@ def publish_stc_reports(
     for chapter in chapters:
         chapter_coverage = [value for value in coverage if _chapter(value) == chapter]
         chapter_findings = [row for row in all_findings if _chapter(str(row.get("target_reference") or "")) == chapter]
+        chapter_source_issues = [
+            row
+            for row in all_source_issues
+            if _chapter(str(row.get("reference") or row.get("scope") or "")) == chapter
+        ]
         first = next(row for row in documents if any(_chapter(str(value)) == chapter for value in row.get("primary_coverage", [])))
         bindings = dict(first.get("resource_bindings") or {})
         ol_role = "ORIGINAL_LANGUAGE_GREEK" if family == "GRK" else "ORIGINAL_LANGUAGE_HEBREW"
@@ -265,6 +300,8 @@ def publish_stc_reports(
                 dict(first.get("resource_display_names") or {}),
             ),
             "primary_coverage": chapter_coverage,
+            "source_comparison_status": source_comparison_status(chapter_source_issues),
+            "source_text_issues": chapter_source_issues,
             "finding_count": len(projected_findings),
             "findings": projected_findings,
             "execution_routes": aggregate_execution_routes(

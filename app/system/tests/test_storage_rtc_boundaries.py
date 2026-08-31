@@ -587,6 +587,65 @@ def test_saw_submission_canonicalizes_provider_local_finding_id_syntax(package_r
     assert len(finding_id) <= 64
 
 
+def test_rtc_task_reports_empty_reference_coordinate_without_aborting(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A one-verse WIP scope survives when the ready REFERENCE has no such verse."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=2)
+    reference_file = root.parent / "localdata/work/projects/usNIVv2/41MAT.SFM"
+    reference_file.write_text(
+        "\n".join(
+            line for line in reference_file.read_text(encoding="utf-8").splitlines()
+            if not line.startswith("\\v 2 ")
+        ) + "\n",
+        encoding="utf-8",
+    )
+    _initialize(package_root, root)
+
+    plan = create_act_task(
+        load_ecosystem(root / "ecosystem.yml"),
+        workflow="saw",
+        operation="rtc",
+        output_project_id="usWIP",
+        contemporary_source_id="usNIVv2",
+        scope_value="MAT 1:2",
+    )
+
+    manifest_path = Path(plan["manifest_path"])
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["expected_references"] == ["MAT 1:2"]
+    assert manifest["packets"]["contemporary_source"]["atomic_references"] == []
+    assert manifest["source_text_issues"] == [{
+        "status": "REPORT_ONLY",
+        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
+        "workflow": "RTC",
+        "source_stream": "REFERENCE",
+        "source_project_id": "usNIVv2",
+        "scope": "MAT 1:2",
+        "reference": "MAT 1:2",
+        "message": (
+            "REFERENCE has no source text at MAT 1:2; "
+            "the run continued without inventing comparison evidence."
+        ),
+    }]
+    assert "Do not invent wording for source coordinates reported as absent" in Path(
+        plan["act_path"]
+    ).read_text(encoding="utf-8")
+
+    config = load_ecosystem(root / "ecosystem.yml")
+    output_path = manifest_path.parent / "output/findings.json"
+    output_path.write_text(json.dumps(_meaning_document(manifest)), encoding="utf-8")
+    submit_act_task(config, manifest_path)
+    final = continue_saw_plan(config, Path(plan["plan_path"]))
+    aggregate = json.loads(Path(final["aggregate_path"]).read_text(encoding="utf-8"))
+    assert aggregate["source_comparison_status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
+    assert aggregate["source_text_issues"] == manifest["source_text_issues"]
+    report = Path(final["report_path"]).read_text(encoding="utf-8")
+    assert "## Source text issues" in report
+    assert "MAT 1:2" in report
+
+
 def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_root: Path, make_workspace) -> None:
     """Selective OL reviews only requested coordinates and cannot submit a finding without OL evidence."""
     # Maintenance invariant: the admitted MAT 1:2 question must be the only source
@@ -961,6 +1020,95 @@ def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_roo
     ]
     assert [item["review_portion_index"] for item in manifests] == [1, 2]
     assert [item["review_portion_total"] for item in manifests] == [2, 2]
+
+
+def test_partitioned_rtc_aggregate_preserves_source_text_issues(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A missing REFERENCE coordinate survives the partition-stage aggregation boundary."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=2)
+    reference_file = storage_layout(root).projects_root / "usNIVv2" / "41MAT.SFM"
+    reference_file.write_text(
+        "\n".join(
+            line for line in reference_file.read_text(encoding="utf-8").splitlines()
+            if not line.startswith("\\v 2 ")
+        ) + "\n",
+        encoding="utf-8",
+    )
+    _initialize(package_root, root)
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-2")
+    config = load_ecosystem(store.ensure_runtime_files(job))
+    compiled = compile_project_scope(
+        config,
+        config.project(job.bindings["wip"]),
+        parse_scope(run.scope),
+    )
+    approved = {
+        "schema_version": "1.2",
+        "plan_id": "SAW-RTC-MAT-SOURCE-GAP",
+        "plan_fingerprint": "f" * 64,
+        "workflow_id": "saw",
+        "operation": "rtc",
+        "operator_scope": run.scope,
+        "project_id": job.bindings["wip"],
+        "approval_status": "OPERATOR_APPROVED",
+        "approved_job_id": job.job_id,
+        "approved_run_id": run.run_id,
+        "shared_hashes": {
+            "resource_sha256": compiled["resource_sha256"],
+            "compiled_files_sha256": compiled["compiled_files_sha256"],
+            "effective_vrs_sha256": compiled["effective_vrs"]["effective_sha256"],
+            "structure_policy_sha256": compiled["structure_policy"]["effective_sha256"],
+        },
+        "units": [
+            {
+                "unit_id": "SAW-RTC-MAT-SOURCE-GAP-U001",
+                "primary_scope": "MAT 1:1",
+                "primary_references": ["MAT 1:1"],
+                "context_before": [],
+                "context_after": [],
+            },
+            {
+                "unit_id": "SAW-RTC-MAT-SOURCE-GAP-U002",
+                "primary_scope": "MAT 1:2",
+                "primary_references": ["MAT 1:2"],
+                "context_before": [],
+                "context_after": [],
+            },
+        ],
+    }
+    approved_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
+    approved_path.write_text(json.dumps(approved), encoding="utf-8")
+    store.update_run(run, approved_work_plan_path=str(approved_path))
+
+    composite = create_act_task(
+        config,
+        workflow="saw",
+        operation="rtc",
+        output_project_id=job.bindings["wip"],
+        contemporary_source_id=job.bindings["reference"],
+        scope_value=run.scope,
+        job_id=job.job_id,
+        run_id=run.run_id,
+    )
+    stage_plan_path = Path(composite["stages"][0]["plan_path"])
+    stage_plan = json.loads(stage_plan_path.read_text(encoding="utf-8"))
+    for unit in stage_plan["work_units"]:
+        manifest_path = Path(unit["manifest_path"])
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        (manifest_path.parent / "output/findings.json").write_text(
+            json.dumps(_meaning_document(manifest)),
+            encoding="utf-8",
+        )
+        submit_act_task(config, manifest_path)
+
+    aggregate = aggregate_act_plan(config, stage_plan_path)
+
+    assert aggregate["source_comparison_status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
+    assert [row["reference"] for row in aggregate["source_text_issues"]] == ["MAT 1:2"]
 
 
 def test_cross_chapter_approved_review_portion_creates_exact_rtc_task(

@@ -30,6 +30,7 @@ from .platform_commands import render_sage_command
 from .local_assistive import maybe_write_report_executive_summary
 from .report_translation import ensure_secondary_saw_report_rendering
 from .execution_events import events_for_run
+from .source_coverage import source_comparison_status, unique_source_text_issues
 
 
 def _report_scope_slug(scope: str) -> str:
@@ -206,6 +207,12 @@ def _chapter_document(document: dict[str, Any], *, book: str, chapter: int) -> d
         dict(row) for row in document.get("versification_advisories", [])
         if isinstance(row, dict) and _reference_chapter(str(row.get("scope") or row.get("reference") or "")) == chapter
     ]
+    source_issues = unique_source_text_issues(
+        dict(row)
+        for row in document.get("source_text_issues", [])
+        if isinstance(row, dict)
+        and _reference_chapter(str(row.get("reference") or row.get("scope") or "")) == chapter
+    )
     events: list[dict[str, Any]] = []
     for row in document.get("execution_events", []):
         if not isinstance(row, dict):
@@ -250,6 +257,8 @@ def _chapter_document(document: dict[str, Any], *, book: str, chapter: int) -> d
         if isinstance(row, dict) and _reference_chapter(str(row.get("scope") or "")) == chapter
     ]
     result["versification_advisories"] = advisories
+    result["source_text_issues"] = source_issues
+    result["source_comparison_status"] = source_comparison_status(source_issues)
     result["execution_events"] = events
     # Secondary renderings are regenerated per chapter so their finding inventory is exact.
     result.pop("report_renderings", None)
@@ -666,6 +675,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
     ol_resolutions: list[dict[str, Any]] = []
     resource_bindings: dict[str, Any] = {}
     resource_display_names: dict[str, Any] = {}
+    source_issue_rows: list[dict[str, Any]] = []
     for stage in plan.get("stages", []):
         state, result_path, _ = _composite_stage_result(config, stage)
         if state != "FINALIZED" or not result_path:
@@ -677,6 +687,11 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
             resource_bindings = dict(result["resource_bindings"])
         if not resource_display_names and isinstance(result.get("resource_display_names"), dict):
             resource_display_names = dict(result["resource_display_names"])
+        source_issue_rows.extend(
+            dict(row)
+            for row in result.get("source_text_issues", [])
+            if isinstance(row, dict)
+        )
         refs = list((result.get("coverage") or {}).get("reviewed_references", []))
         if stage.get("stage") == "REFERENCE_TEXT_COMPARISON":
             coverage_refs = refs
@@ -694,6 +709,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
     validate_global_finding_ids(findings)
     if not coverage_refs:
         raise ValidationError("Composite RTC finalization is missing meaning-stage coordinate coverage")
+    source_issue_rows = unique_source_text_issues(source_issue_rows)
     document = {
         "schema_version": "2.0",
         "task_id": plan["plan_id"],
@@ -718,6 +734,8 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         "resolved_ol_request_ids": [str(row.get("request_id", "")) for row in ol_resolutions],
         "findings": findings,
         "finding_count": len(findings),
+        "source_comparison_status": source_comparison_status(source_issue_rows),
+        "source_text_issues": source_issue_rows,
         "versification_advisories": _run_versification_advisories(path),
         "execution_events": events_for_run(path.parent.parent),
         "execution_routes": aggregate_execution_routes(execution_sources),

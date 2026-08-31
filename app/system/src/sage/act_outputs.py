@@ -1207,12 +1207,22 @@ def render_action_report(document: Mapping[str, Any]) -> str:
     report_title = _report_label(document, "report.saw_action_report")
     if str(document.get("operation") or "").strip().lower() == "rtc":
         report_title = f"Reference Text Comparison (RTC) — {report_title}"
+    source_issues = [
+        dict(row)
+        for row in document.get("source_text_issues", [])
+        if isinstance(row, Mapping)
+    ]
+    source_status = str(
+        document.get("source_comparison_status")
+        or ("COMPLETE_WITH_SOURCE_TEXT_ISSUES" if source_issues else "COMPLETE")
+    )
     lines = [
         "# " + report_title,
         "",
         f"- Projects: `{wip}` checked against `{reference}`",
         f"- {_report_label(document, 'label.scope')}: `{document['scope']}`",
         f"- {_report_label(document, 'label.coverage')}: `{document['coverage']['status']}` ({len(document['coverage']['reviewed_references'])} coordinates)",
+        *([f"- Source comparison: `{source_status}`"] if source_issues else []),
         f"- Report languages: `{primary}`" + (f"; `{secondary}`" if secondary else ""),
     ]
     raw_routes = document.get("execution_routes")
@@ -1264,6 +1274,19 @@ def render_action_report(document: Mapping[str, Any]) -> str:
             coordinate = row.get("reference") or row.get("scope") or ""
             lines.append(
                 f"- `{coordinate}` | `{row.get('project_id', '')}` | `{row.get('code', 'VRS_ADVISORY')}` — {row.get('message', '')}"
+            )
+    if source_issues:
+        lines.extend([
+            "",
+            "## Source text issues",
+            "",
+            "These source-text coordinate differences did not block RTC/STC execution.",
+            "",
+        ])
+        for row in source_issues:
+            lines.append(
+                f"- `{row.get('reference', '')}` | `{row.get('source_project_id', '')}` | "
+                f"`{row.get('code', 'SOURCE_TEXT_ISSUE')}` — {row.get('message', '')}"
             )
     lines.extend(["", "## " + _report_label(document, "report.actionable_findings"), ""])
     findings = sorted(
