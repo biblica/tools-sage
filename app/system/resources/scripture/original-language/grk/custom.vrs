@@ -1,0 +1,21 @@
+# Versification "Bundled Greek resource"
+# custom modifications to org.vrs
+#
+# These coordinates are absent from the bundled Greek SFM. Passages that are
+# present in double brackets remain valid coordinates and are not excluded.
+#! -MAT 17:21
+#! -MAT 18:11
+#! -MAT 23:14
+#! -MRK 7:16
+#! -MRK 9:44
+#! -MRK 9:46
+#! -MRK 11:26
+#! -MRK 15:28
+#! -LUK 17:36
+#! -LUK 23:17
+#! -JHN 5:4
+#! -ACT 8:37
+#! -ACT 15:34
+#! -ACT 24:7
+#! -ACT 28:29
+#! -ROM 16:24

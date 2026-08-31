@@ -418,6 +418,43 @@ def test_action_report_renders_nonblocking_versification_advisories() -> None:
     assert "usNASB" in report
 
 
+def test_action_report_renders_nonblocking_source_text_issues() -> None:
+    """RTC reports source-coordinate gaps as text issues without hiding WIP coverage."""
+    document = {
+        "task_id": "SAW-JHN-001",
+        "operation": "rtc",
+        "stage": "REFERENCE_TEXT_COMPARISON",
+        "scope": "JHN 5:1-6",
+        "coverage": {
+            "status": "COMPLETE",
+            "reviewed_references": ["JHN 5:3", "JHN 5:4", "JHN 5:5"],
+        },
+        "findings": [],
+        "source_text_issues": [{
+            "status": "REPORT_ONLY",
+            "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
+            "workflow": "RTC",
+            "source_stream": "REFERENCE",
+            "source_project_id": "usREF",
+            "scope": "JHN 5:1-6",
+            "reference": "JHN 5:4",
+            "message": (
+                "REFERENCE has no source text at JHN 5:4; "
+                "the run continued without inventing comparison evidence."
+            ),
+        }],
+    }
+
+    report = render_action_report(document)
+
+    assert "Source comparison: `COMPLETE_WITH_SOURCE_TEXT_ISSUES`" in report
+    assert "## Source text issues" in report
+    assert "did not block RTC/STC execution" in report
+    assert "SOURCE_PRIMARY_COVERAGE_MISMATCH" in report
+    assert "JHN 5:4" in report
+    assert "usREF" in report
+
+
 def test_saw_action_report_uses_compact_project_ids_and_omits_empty_ol_metadata() -> None:
     """Finding prose resolves bare roles to Project IDs and never prints synthetic OL filler."""
     document = {

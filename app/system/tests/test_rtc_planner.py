@@ -117,6 +117,48 @@ def test_reference_heavy_rtc_package_is_resliced_after_wip_boundary_planning() -
     assert all(item["route"]["basis"] == "ROUTED_SFM_ONLY" for item in packages)
 
 
+def test_rtc_planning_reports_missing_reference_coordinate_without_blocking() -> None:
+    """A ready REFERENCE gap is a text issue while WIP coverage stays complete."""
+    wip = tuple(_record(verse, "w", role="WIP") for verse in range(1, 3))
+    reference = (_record(1, "r", role="REFERENCE"),)
+    base = EvidencePolicy(
+        target_estimated_tokens=100,
+        hard_estimated_tokens=32000,
+        hard_serialized_bytes=224000,
+        minimum_target_tokens=1,
+        maximum_primary_verse_units=220,
+        context_before_verses=0,
+        context_after_verses=0,
+    )
+
+    units, packages, _ = plan_rtc_work_units(
+        wip,
+        base,
+        _sizing(),
+        unit_prefix="SAW-RTC-MAT-SOURCE-GAP",
+        shared={},
+        wip_context_pool=wip,
+        reference_records=reference,
+    )
+
+    assert [ref.label() for ref in sorted(units[0].primary_refs)] == [
+        "MAT 1:1", "MAT 1:2"
+    ]
+    assert packages[0]["source_text_issues"] == [{
+        "status": "REPORT_ONLY",
+        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
+        "workflow": "RTC",
+        "source_stream": "REFERENCE",
+        "source_project_id": "",
+        "scope": "MAT 1:1-2",
+        "reference": "MAT 1:2",
+        "message": (
+            "REFERENCE has no source text at MAT 1:2; "
+            "the run continued without inventing comparison evidence."
+        ),
+    }]
+
+
 def test_reference_bridge_moves_internal_wip_boundary_to_its_far_edge() -> None:
     """A REFERENCE 3-4 span keeps WIP atoms 3 and 4 in one primary owner."""
     wip = tuple(_record(verse, "w" * 6000, role="WIP") for verse in range(1, 7))

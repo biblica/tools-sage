@@ -13,6 +13,8 @@ from .evidence import EvidenceMeasurement, EvidencePolicy
 from .hashing import sha256_bytes
 from .references import expand_reference_atoms, parse_scope
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
+from .source_coverage import source_text_issues
+from .source_coverage import source_comparison_status, unique_source_text_issues
 from .work_units import EvidenceRecord, WorkUnit
 from .vrs import VerseRef
 
@@ -53,7 +55,7 @@ def plan_stc_work_units(
         route_id=STC_ANALYSIS_ROUTE,
         streams=(
             SfmStream("WIP", tuple(context_pool) if context_pool is not None else selected),
-            SfmStream(f"{family}:PRIMARY", ol),
+            SfmStream(f"{family}:PRIMARY", ol, require_primary_coverage=False),
         ),
     )
     return plan_sfm_work_units(
@@ -96,17 +98,18 @@ def stc_package_measurements(
         ))
         ol_slice = _records_for_refs(original_language, unit.primary_refs)
         covered = frozenset(ref for record in ol_slice for ref in record.refs)
-        if covered != unit.primary_refs:
-            missing = sorted(unit.primary_refs - covered)
-            raise ValidationError(
-                "SAW STC primary OL does not cover the complete WIP slice: "
-                + ", ".join(ref.label() for ref in missing),
-                code="SFM_ROUTE_PRIMARY_COVERAGE_MISMATCH",
-            )
+        primary_scope = str(unit.to_dict()["primary_scope"])
         packages.append({
             "sizing_basis": "ROUTED_SFM_ONLY",
             "analysis_route": STC_ANALYSIS_ROUTE,
             "primary_coverage_atoms": [ref.label() for ref in sorted(unit.primary_refs)],
+            "source_text_issues": list(source_text_issues(
+                unit.primary_refs,
+                covered,
+                workflow="STC",
+                source_stream=f"{stc_authority_family(unit.primary[0].book)}:PRIMARY",
+                scope=primary_scope,
+            )),
             "wip": _component(measure_sfm_slice(wip_slice)),
             "ol": _component(measure_sfm_slice(ol_slice)),
             "route": _component(unit.measurement),
@@ -262,6 +265,7 @@ def finalize_stc_run(
     observed_atoms: list[str] = []
     findings: list[dict[str, Any]] = []
     receipts: list[dict[str, Any]] = []
+    source_issue_rows: list[dict[str, Any]] = []
     for unit_id, plan in plan_by_id.items():
         planned = list(plan.get("primary_coverage") or plan.get("primary_coverage_atoms") or [])
         observed = list(result_by_id[unit_id].get("primary_coverage") or [])
@@ -271,6 +275,11 @@ def finalize_stc_run(
         observed_atoms.extend(observed)
         findings.extend(dict(row) for row in result_by_id[unit_id].get("findings", []) if isinstance(row, Mapping))
         receipts.append(dict(result_by_id[unit_id].get("analytical_completion") or {}))
+        source_issue_rows.extend(
+            dict(row)
+            for row in result_by_id[unit_id].get("source_text_issues", [])
+            if isinstance(row, Mapping)
+        )
     if len(planned_atoms) != len(set(planned_atoms)):
         raise ValidationError("STC plan has duplicate primary ownership", code="AGGREGATE_COVERAGE_MISMATCH")
     if observed_atoms != planned_atoms:
@@ -278,6 +287,8 @@ def finalize_stc_run(
     finding_ids = [str(row.get("finding_id") or "") for row in findings]
     if len(finding_ids) != len(set(finding_ids)):
         raise ValidationError("STC aggregate contains duplicate finding identity", code="DUPLICATE_STC_FINDING")
+    source_issue_rows = unique_source_text_issues(source_issue_rows)
+    comparison_status = source_comparison_status(source_issue_rows)
     output_root.mkdir(parents=True, exist_ok=True)
     run_path = output_root / "STC_RUN_RESULT.json"
     findings_path = output_root / "STC_FINDINGS.json"
@@ -286,7 +297,9 @@ def finalize_stc_run(
         "schema_version": STC_RESULT_VERSION,
         "run_id": run_id,
         "operation": "stc",
-        "status": "COMPLETE",
+        "status": comparison_status,
+        "source_comparison_status": comparison_status,
+        "source_text_issues": source_issue_rows,
         "planned_work_units": plans,
         "accepted_work_unit_count": len(results),
         "planned_primary_coverage": planned_atoms,
@@ -298,11 +311,26 @@ def finalize_stc_run(
         "run_id": run_id,
         "operation": "stc",
         "finding_count": len(findings),
+        "source_comparison_status": comparison_status,
+        "source_text_issues": source_issue_rows,
         "findings": findings,
     }
     atomic_write_json(run_path, run_document)
     atomic_write_json(findings_path, findings_document)
     lines = ["# STC Report", "", f"Run: `{run_id}`", f"Findings: {len(findings)}", ""]
+    if source_issue_rows:
+        lines.extend([
+            "## Source text issues",
+            "",
+            "These source-text coordinate differences did not block STC execution.",
+            "",
+            *[
+                f"- `{row.get('reference', '')}` | `{row.get('source_project_id', '')}` | "
+                f"`{row.get('code', 'SOURCE_TEXT_ISSUE')}` — {row.get('message', '')}"
+                for row in source_issue_rows
+            ],
+            "",
+        ])
     if not findings:
         lines.append("No governed STC findings were reported. All planned STC review items completed.")
     else:

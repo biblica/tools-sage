@@ -10,6 +10,7 @@ from typing import Any, Mapping, Sequence
 from .act_outputs import aggregate_execution_routes
 from .errors import ValidationError
 from .hashing import sha256_file
+from .source_coverage import source_comparison_status, unique_source_text_issues
 
 
 _FINDING_EQUIVALENCE_FIELDS = (
@@ -171,6 +172,11 @@ def consolidate_result_documents(
     # Project the combined record through the normal report renderer without touching inputs.
     result = deepcopy(normalised[-1])
     scope = next(iter(scopes))
+    source_issue_rows = unique_source_text_issues(
+        row
+        for document in normalised
+        for row in _unique_rows([document], "source_text_issues")
+    )
     result.update(
         {
             "schema_version": "2.0",
@@ -183,6 +189,8 @@ def consolidate_result_documents(
             "ol_review_requests": _unique_rows(normalised, "ol_review_requests"),
             "ol_resolutions": _unique_rows(normalised, "ol_resolutions"),
             "versification_advisories": _unique_rows(normalised, "versification_advisories"),
+            "source_comparison_status": source_comparison_status(source_issue_rows),
+            "source_text_issues": source_issue_rows,
             "findings": retained,
             "finding_count": len(retained),
             "execution_routes": aggregate_execution_routes(normalised),

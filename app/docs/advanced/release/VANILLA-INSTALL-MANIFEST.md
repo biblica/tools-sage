@@ -94,6 +94,11 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/workflows/SAW-OPERATOR-MODES.md`
 - `docs/advanced/workflows/STRUCTURE-PLANNING.md`
 - `docs/advanced/workflows/TARGET-GENERATIONS.md`
+- `docs/superpowers`
+- `docs/superpowers/plans`
+- `docs/superpowers/plans/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
+- `docs/superpowers/specs`
+- `docs/superpowers/specs/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
 - `docs/macos-linux`
 - `docs/macos-linux/CHEAT-SHEET.md`
 - `docs/macos-linux/ERRORS.md`
@@ -410,6 +415,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/resources/scripture/original-language/grk/README.md`
 - `system/resources/scripture/original-language/grk/Settings.xml`
 - `system/resources/scripture/original-language/grk/authority-profile.yml`
+- `system/resources/scripture/original-language/grk/custom.vrs`
 - `system/resources/scripture/original-language/heb`
 - `system/resources/scripture/original-language/heb/01GENhebRES.SFM`
 - `system/resources/scripture/original-language/heb/02EXOhebRES.SFM`
@@ -637,6 +643,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/semantic/store.py`
 - `system/src/sage/semantic_cli.py`
 - `system/src/sage/sfm_slicer.py`
+- `system/src/sage/source_coverage.py`
 - `system/src/sage/stage_reset.py`
 - `system/src/sage/standard.py`
 - `system/src/sage/state.py`

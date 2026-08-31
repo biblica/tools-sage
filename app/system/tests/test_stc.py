@@ -105,14 +105,28 @@ def test_stc_package_exposes_wip_source_and_combined_route_measurements() -> Non
     assert package["analysis_route"] == "STC_CORRESPONDENCE"
 
 
-def test_stc_planning_fails_closed_when_ol_coverage_is_missing() -> None:
-    """Every planned WIP primary coordinate must have routed primary-OL coverage."""
+def test_stc_planning_reports_missing_ol_coordinate_without_blocking() -> None:
+    """A ready primary-OL source gap is a text issue, not a planning abort."""
     wip = tuple(_record("JHN", verse, "w", role="WIP") for verse in range(1, 3))
     ol = (_record("JHN", 1, "α", role="GRK"),)
 
-    with pytest.raises(ValidationError) as caught:
-        plan_stc_work_units(wip, ol, _policy(), unit_prefix="STC-JHN")
-    assert caught.value.code == "SFM_ROUTE_PRIMARY_COVERAGE_MISMATCH"
+    units = plan_stc_work_units(wip, ol, _policy(), unit_prefix="STC-JHN")
+    package = stc_package_measurements(units, ol)[0]
+
+    assert package["primary_coverage_atoms"] == ["JHN 1:1", "JHN 1:2"]
+    assert package["source_text_issues"] == [{
+        "status": "REPORT_ONLY",
+        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
+        "workflow": "STC",
+        "source_stream": "GRK:PRIMARY",
+        "source_project_id": "",
+        "scope": "JHN 1:1-2",
+        "reference": "JHN 1:2",
+        "message": (
+            "GRK:PRIMARY has no source text at JHN 1:2; "
+            "the run continued without inventing comparison evidence."
+        ),
+    }]
 
 
 def test_stc_categories_are_frozen() -> None:
@@ -212,6 +226,43 @@ def test_stc_finalizer_writes_canonical_zero_finding_artifacts(tmp_path) -> None
     assert run["finding_count"] == 0
 
 
+def test_stc_finalizer_reports_source_text_issue_without_aborting(tmp_path) -> None:
+    """STC completion preserves a missing primary-OL coordinate as a report-only issue."""
+    issue = {
+        "status": "REPORT_ONLY",
+        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
+        "workflow": "STC",
+        "source_stream": "GRK:PRIMARY",
+        "source_project_id": "GRK",
+        "scope": "JHN 5:4",
+        "reference": "JHN 5:4",
+        "message": (
+            "GRK:PRIMARY has no source text at JHN 5:4; "
+            "the run continued without inventing comparison evidence."
+        ),
+    }
+    paths = finalize_stc_run(
+        run_id="RUN-JHN",
+        planned_units=[{"work_unit_id": "WU-1", "primary_coverage": ["JHN 5:4"]}],
+        accepted_results=[{
+            "work_unit_id": "WU-1",
+            "primary_coverage": ["JHN 5:4"],
+            "analytical_completion": {"status": "COMPLETE"},
+            "source_text_issues": [issue],
+            "findings": [],
+        }],
+        output_root=tmp_path,
+    )
+
+    run = json.loads(paths["run_result"].read_text(encoding="utf-8"))
+    assert run["status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
+    assert run["source_text_issues"] == [issue]
+    report = paths["report"].read_text(encoding="utf-8")
+    assert "## Source text issues" in report
+    assert "SOURCE_PRIMARY_COVERAGE_MISMATCH" in report
+    assert "JHN 5:4" in report
+
+
 def test_stc_finalizer_rejects_missing_result_and_coverage_drift(tmp_path) -> None:
     """Exact planned work-unit ownership is fail-closed."""
     plan = [{"work_unit_id": "WU-1", "primary_coverage": ["JHN 1:1"]}]
@@ -255,6 +306,19 @@ def test_controller_aggregate_routes_partitioned_stc_to_canonical_finalizer(make
     validation.mkdir(parents=True, exist_ok=True)
     manifest_path = task_root / "task-manifest.json"
     lineage = {"project.usWIP": "WIP-SHA", "project.GRK": "GRK-SHA"}
+    source_issue = {
+        "status": "REPORT_ONLY",
+        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
+        "workflow": "STC",
+        "source_stream": "GRK:PRIMARY",
+        "source_project_id": "GRK",
+        "scope": "MAT 1:1",
+        "reference": "MAT 1:1",
+        "message": (
+            "GRK:PRIMARY has no source text at MAT 1:1; "
+            "the run continued without inventing comparison evidence."
+        ),
+    }
     manifest_path.write_text(json.dumps({
         "task_id": unit_id,
         "task_fingerprint": "TASK-SHA",
@@ -273,6 +337,8 @@ def test_controller_aggregate_routes_partitioned_stc_to_canonical_finalizer(make
         "resource_bindings": {"WIP": "usWIP", "ORIGINAL_LANGUAGE_GREEK": "GRK"},
         "primary_coverage": ["MAT 1:1"],
         "analytical_completion": {"status": "COMPLETE", "review_item": "STC_CORRESPONDENCE", "reviewed_primary_coordinates": ["MAT 1:1"]},
+        "source_comparison_status": "COMPLETE_WITH_SOURCE_TEXT_ISSUES",
+        "source_text_issues": [source_issue],
         "finding_count": 0, "findings": [],
     }) + "\n", encoding="utf-8")
     plan_path = plans_root / f"{plan_id}.json"
@@ -290,6 +356,8 @@ def test_controller_aggregate_routes_partitioned_stc_to_canonical_finalizer(make
 
     assert result["status"] == "FINALIZED"
     assert result["finding_count"] == 0
+    assert result["source_comparison_status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
+    assert result["source_text_issues"] == [source_issue]
     assert Path(result["canonical_artifacts"]["run_result"]).name == "STC_RUN_RESULT.json"
     assert Path(result["canonical_artifacts"]["findings"]).name == "STC_FINDINGS.json"
     assert Path(result["canonical_artifacts"]["report"]).name == "STC_REPORT.md"

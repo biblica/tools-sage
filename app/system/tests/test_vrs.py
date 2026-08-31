@@ -10,6 +10,7 @@ import yaml
 from sage.storage import storage_layout
 from sage.errors import ConfigurationError
 from sage.registry import load_ecosystem
+from sage.usj import compile_usfm_file, parse_usj_units
 from sage.vrs import VerseRef, load_project_vrs, parse_vrs_file, resolve_project_vrs_paths
 
 
@@ -48,6 +49,56 @@ def test_vrs_parser_supports_exclusions_and_mappings(tmp_path: Path) -> None:
     assert VerseRef("MAT", 1, 10) in schema.exclusions
     assert len(schema.mappings) == 3
     assert schema.mappings[0].continuation is True
+
+
+def test_bundled_grk_custom_vrs_excludes_only_absent_candidate_coordinates(package_root) -> None:
+    """The bundled Greek VRS must distinguish absent coordinates from present variant text."""
+    grk_root = package_root / "system" / "resources" / "scripture" / "original-language" / "grk"
+    schema = parse_vrs_file(
+        grk_root / "custom.vrs",
+        schema_id="GRK-custom",
+        canonical_id="org.vrs",
+    )
+    absent = {
+        VerseRef("MAT", 17, 21),
+        VerseRef("MAT", 18, 11),
+        VerseRef("MAT", 23, 14),
+        VerseRef("MRK", 7, 16),
+        VerseRef("MRK", 9, 44),
+        VerseRef("MRK", 9, 46),
+        VerseRef("MRK", 11, 26),
+        VerseRef("MRK", 15, 28),
+        VerseRef("LUK", 17, 36),
+        VerseRef("LUK", 23, 17),
+        VerseRef("JHN", 5, 4),
+        VerseRef("ACT", 8, 37),
+        VerseRef("ACT", 15, 34),
+        VerseRef("ACT", 24, 7),
+        VerseRef("ACT", 28, 29),
+        VerseRef("ROM", 16, 24),
+    }
+    present = {
+        VerseRef("JHN", 7, 53),
+        *(VerseRef("JHN", 8, verse) for verse in range(1, 12)),
+        *(VerseRef("MRK", 16, verse) for verse in range(9, 21)),
+        VerseRef("1JN", 5, 7),
+        VerseRef("1JN", 5, 8),
+    }
+
+    actual: set[VerseRef] = set()
+    for path in sorted(grk_root.glob("*.SFM")):
+        usj = compile_usfm_file(path)
+        book = str(usj["sage"]["book_code"])
+        for unit in parse_usj_units(usj):
+            actual.update(
+                VerseRef(book, int(unit["chapter"]), verse)
+                for verse in range(int(unit["verse_start"]), int(unit["verse_end"]) + 1)
+            )
+
+    assert schema.exclusions == absent
+    assert absent.isdisjoint(actual)
+    assert present <= actual
+    assert schema.exclusions.isdisjoint(present)
 
 
 def test_vrs_invalid_utf8_is_rejected(tmp_path: Path) -> None:

@@ -9,6 +9,7 @@ from .errors import ConfigurationError, EvidenceLimitError, ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy
 from .references import expand_reference_atoms
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
+from .source_coverage import source_text_issues
 from .work_units import EvidenceRecord, WorkUnit
 from .vrs import VerseRef
 
@@ -103,15 +104,7 @@ def _measure_review_item(
     """Persist WIP, Reference, and combined review-item SFM measurements for audit/UI."""
     reference_primary = _records_for_refs(reference_records, unit.primary_refs)
     covered = frozenset(ref for record in reference_primary for ref in record.refs)
-    if covered != unit.primary_refs:
-        missing = sorted(unit.primary_refs - covered)
-        raise ValidationError(
-            "SAW RTC REFERENCE does not cover the complete WIP slice: "
-            + ", ".join(ref.label() for ref in missing),
-            code="SAW_RTC_REFERENCE_RANGE_INCOMPLETE",
-            affected_scope=unit.primary[0].reference if unit.primary else None,
-            next_action="Correct the bound REFERENCE/VRS resource before rebuilding the RTC plan.",
-        )
+    primary_scope = str(unit.to_dict()["primary_scope"])
     wip_records = tuple(sorted(
         (*unit.context_before, *unit.primary, *unit.context_after),
         key=lambda item: (item.chapter, item.verse_start, item.verse_end),
@@ -128,6 +121,13 @@ def _measure_review_item(
             "WIP": [record.reference for record in unit.primary],
             "REFERENCE": [record.reference for record in reference_primary],
         },
+        "source_text_issues": list(source_text_issues(
+            unit.primary_refs,
+            covered,
+            workflow="RTC",
+            source_stream="REFERENCE",
+            scope=primary_scope,
+        )),
         "wip": _component(wip_measurement),
         "ref": _component(reference_measurement),
         "route": _component(unit.measurement),
@@ -167,7 +167,7 @@ def plan_rtc_work_units(
         route_id="REFERENCE_TEXT_COMPARISON",
         streams=(
             SfmStream("WIP", context),
-            SfmStream("REFERENCE", reference),
+            SfmStream("REFERENCE", reference, require_primary_coverage=False),
         ),
         target_stream_ids=("WIP",),
         stream_hard_token_limits=(("WIP", sizing.wip_hard_exclusive_tokens - 1),),
