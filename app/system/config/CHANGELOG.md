@@ -17,6 +17,10 @@
   final reports while keeping deterministic report composition outside LLM token accounting.
 - Enforced one provider request per original-language adjudication item and per secondary-language
   report item.
+- Restored approved RTC portions spanning chapters by validating scope containment directly against
+  the immutable plan's exact atoms; structural-stage atoms now retain canonical numeric Scripture
+  order. Unpublished multi-child stage creation rolls back its newly created task/control records if
+  a later child fails.
 
 ## 0.01beta
 

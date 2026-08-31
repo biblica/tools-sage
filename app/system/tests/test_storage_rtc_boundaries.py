@@ -51,6 +51,36 @@ def _initialize(package_root: Path, root: Path) -> None:
     assert result.returncode == 0, result.stderr + result.stdout
 
 
+def _write_two_chapter_mat_fixture(
+    root: Path,
+    *,
+    chapter_one_max: int = 2,
+) -> None:
+    """Replace the one-chapter workspace text/VRS with two exact MAT chapters."""
+    scripture = (
+        "\\id MAT Fixture\n"
+        "\\c 1\n"
+        "\\s1 One cross-chapter section\n"
+        "\\p\n"
+        + "".join(
+            f"\\v {verse} Chapter one, verse {verse}.\n"
+            for verse in range(1, chapter_one_max + 1)
+        )
+        + "\\c 2\n"
+        + "\\v 1 Chapter two, verse one.\n"
+        + "\\v 2 Chapter two, verse two.\n"
+    )
+    for project in storage_layout(root).projects_root.iterdir():
+        scripture_path = project / "41MAT.SFM"
+        if scripture_path.is_file():
+            scripture_path.write_text(scripture, encoding="utf-8")
+    for name in ("eng.vrs", "org.vrs"):
+        (root / "system" / "resources" / "scripture" / name).write_text(
+            f"MAT 1:{chapter_one_max} 2:2\n",
+            encoding="utf-8",
+        )
+
+
 def _write_bic_assessment(task: dict, output_path: Path) -> None:
     """Write governed grammar evidence required by BIC REWRITE/SELF-CHECK submission."""
     grammar = task["project_grammar"]
@@ -931,6 +961,235 @@ def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_roo
     ]
     assert [item["review_portion_index"] for item in manifests] == [1, 2]
     assert [item["review_portion_total"] for item in manifests] == [2, 2]
+
+
+def test_cross_chapter_approved_review_portion_creates_exact_rtc_task(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A valid cross-chapter review portion must not be parsed as raw coverage shorthand."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=2)
+    _write_two_chapter_mat_fixture(root)
+    _initialize(package_root, root)
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-2:2")
+    config = load_ecosystem(store.ensure_runtime_files(job))
+    compiled = compile_project_scope(
+        config,
+        config.project(job.bindings["wip"]),
+        parse_scope("MAT 1:1-2:2"),
+    )
+    atoms = ["MAT 1:1", "MAT 1:2", "MAT 2:1", "MAT 2:2"]
+    approved = {
+        "schema_version": "1.2",
+        "plan_id": "SAW-RTC-MAT-CROSS-CHAPTER",
+        "plan_fingerprint": "c" * 64,
+        "workflow_id": "saw",
+        "operation": "rtc",
+        "operator_scope": "MAT 1:1-2:2",
+        "project_id": job.bindings["wip"],
+        "approval_status": "OPERATOR_APPROVED",
+        "approved_job_id": job.job_id,
+        "approved_run_id": run.run_id,
+        "shared_hashes": {
+            "resource_sha256": compiled["resource_sha256"],
+            "compiled_files_sha256": compiled["compiled_files_sha256"],
+            "effective_vrs_sha256": compiled["effective_vrs"]["effective_sha256"],
+            "structure_policy_sha256": compiled["structure_policy"]["effective_sha256"],
+        },
+        "units": [
+            {
+                "unit_id": "SAW-RTC-MAT-CROSS-CHAPTER-U001",
+                "primary_scope": "MAT 1:1-2:2",
+                "primary_references": atoms,
+                "primary_coverage_atoms": atoms,
+                "context_before": [],
+                "context_after": [],
+            }
+        ],
+    }
+    approved_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
+    approved_path.write_text(json.dumps(approved), encoding="utf-8")
+    store.update_run(run, approved_work_plan_path=str(approved_path))
+
+    result = create_act_task(
+        config,
+        workflow="saw",
+        operation="rtc",
+        output_project_id=job.bindings["wip"],
+        contemporary_source_id=job.bindings["reference"],
+        scope_value="MAT 1:1-2:2",
+        job_id=job.job_id,
+        run_id=run.run_id,
+    )
+
+    manifest = json.loads(Path(result["task_manifests"][0]).read_text(encoding="utf-8"))
+    assert manifest["scope"] == "MAT 1:1-2:2"
+    assert manifest["review_portion_scope"] == "MAT 1:1-2:2"
+    assert manifest["expected_references"] == atoms
+
+
+def test_cross_chapter_structural_stage_keeps_scripture_atom_order(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """Structural-stage deduplication must not lexically reorder verse coordinates."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=12)
+    _write_two_chapter_mat_fixture(root, chapter_one_max=12)
+    projects_root = storage_layout(root).projects_root
+    (projects_root / "usWIP" / "custom.vrs").write_text(
+        "#! &MAT 1:1-12 = MAT 1:1\n",
+        encoding="utf-8",
+    )
+    settings = root / "ecosystem.yml"
+    settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
+    settings.write_text(yaml.safe_dump(settings_data, sort_keys=False), encoding="utf-8")
+    _initialize(package_root, root)
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-2:2")
+    config = load_ecosystem(store.ensure_runtime_files(job))
+    compiled = compile_project_scope(
+        config,
+        config.project(job.bindings["wip"]),
+        parse_scope("MAT 1:1-2:2"),
+    )
+    atoms = [
+        "MAT 1:1",
+        "MAT 1:2",
+        "MAT 1:3",
+        "MAT 1:4",
+        "MAT 1:5",
+        "MAT 1:6",
+        "MAT 1:7",
+        "MAT 1:8",
+        "MAT 1:9",
+        "MAT 1:10",
+        "MAT 1:11",
+        "MAT 1:12",
+        "MAT 2:1",
+        "MAT 2:2",
+    ]
+    approved = {
+        "schema_version": "1.2",
+        "plan_id": "SAW-RTC-MAT-CROSS-CHAPTER-STRUCTURAL",
+        "plan_fingerprint": "e" * 64,
+        "workflow_id": "saw",
+        "operation": "rtc",
+        "operator_scope": "MAT 1:1-2:2",
+        "project_id": job.bindings["wip"],
+        "approval_status": "OPERATOR_APPROVED",
+        "approved_job_id": job.job_id,
+        "approved_run_id": run.run_id,
+        "shared_hashes": {
+            "resource_sha256": compiled["resource_sha256"],
+            "compiled_files_sha256": compiled["compiled_files_sha256"],
+            "effective_vrs_sha256": compiled["effective_vrs"]["effective_sha256"],
+            "structure_policy_sha256": compiled["structure_policy"]["effective_sha256"],
+        },
+        "units": [
+            {
+                "unit_id": "SAW-RTC-MAT-CROSS-CHAPTER-STRUCTURAL-U001",
+                "primary_scope": "MAT 1:1-2:2",
+                "primary_references": atoms,
+                "primary_coverage_atoms": atoms,
+                "context_before": [],
+                "context_after": [],
+            }
+        ],
+    }
+    approved_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
+    approved_path.write_text(json.dumps(approved), encoding="utf-8")
+    store.update_run(run, approved_work_plan_path=str(approved_path))
+
+    result = create_act_task(
+        config,
+        workflow="saw",
+        operation="rtc",
+        output_project_id=job.bindings["wip"],
+        contemporary_source_id=job.bindings["reference"],
+        scope_value="MAT 1:1-2:2",
+        job_id=job.job_id,
+        run_id=run.run_id,
+    )
+
+    assert result["current_stage"] == "STRUCTURAL_ADJUDICATION"
+    manifest = json.loads(Path(result["manifest_path"]).read_text(encoding="utf-8"))
+    assert manifest["expected_references"] == atoms[:12]
+
+
+def test_failed_approved_stage_creation_rolls_back_unregistered_children(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A later child failure must not leave earlier stage tasks or controls behind."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=3)
+    _initialize(package_root, root)
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-3")
+    config = load_ecosystem(store.ensure_runtime_files(job))
+    compiled = compile_project_scope(
+        config,
+        config.project(job.bindings["wip"]),
+        parse_scope("MAT 1:1-3"),
+    )
+    approved = {
+        "schema_version": "1.2",
+        "plan_id": "SAW-RTC-MAT-ROLLBACK",
+        "plan_fingerprint": "d" * 64,
+        "workflow_id": "saw",
+        "operation": "rtc",
+        "operator_scope": "MAT 1:1-3",
+        "project_id": job.bindings["wip"],
+        "approval_status": "OPERATOR_APPROVED",
+        "approved_job_id": job.job_id,
+        "approved_run_id": run.run_id,
+        "shared_hashes": {
+            "resource_sha256": compiled["resource_sha256"],
+            "compiled_files_sha256": compiled["compiled_files_sha256"],
+            "effective_vrs_sha256": compiled["effective_vrs"]["effective_sha256"],
+            "structure_policy_sha256": compiled["structure_policy"]["effective_sha256"],
+        },
+        "units": [
+            {
+                "unit_id": "SAW-RTC-MAT-ROLLBACK-U001",
+                "primary_scope": "MAT 1:1",
+                "primary_references": ["MAT 1:1"],
+                "context_before": [],
+                "context_after": ["MAT 1:2"],
+            },
+            {
+                "unit_id": "SAW-RTC-MAT-ROLLBACK-U002",
+                "primary_scope": "MAT 1:2-3",
+                "primary_references": ["MAT 1:2", "MAT 1:3"],
+                "context_before": ["MAT 1:1"],
+                "context_after": ["MAT 1:3"],
+            },
+        ],
+    }
+    approved_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
+    approved_path.write_text(json.dumps(approved), encoding="utf-8")
+    store.update_run(run, approved_work_plan_path=str(approved_path))
+
+    with pytest.raises(ValidationError, match="Context-after references must follow"):
+        create_act_task(
+            config,
+            workflow="saw",
+            operation="rtc",
+            output_project_id=job.bindings["wip"],
+            contemporary_source_id=job.bindings["reference"],
+            scope_value="MAT 1:1-3",
+            job_id=job.job_id,
+            run_id=run.run_id,
+        )
+
+    task_root = run.root / "tasks"
+    assert not task_root.exists() or not list(task_root.iterdir())
+    control_root = config.workflow("saw").state_root / "act-tasks"
+    assert not control_root.exists() or not list(control_root.glob("*.json"))
 
 
 def test_stage_case_cannot_cross_two_approved_review_portions() -> None:
