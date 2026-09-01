@@ -10,6 +10,7 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
+from datetime import datetime
 from threading import Event, Thread
 from dataclasses import dataclass
 from pathlib import Path
@@ -98,7 +99,6 @@ from .job_layout import audit_job_layout, migrate_job_layout, render_job_layout_
 from .out_of_box_reset import reset_to_out_of_box
 from .jobs import (
     RUN_CLOSED_STATUSES,
-    TOOL_IDS,
     Job as Job,
     JobDiscoveryReport as JobDiscoveryReport,
     JobLoadIssue as JobLoadIssue,
@@ -106,6 +106,7 @@ from .jobs import (
     Run as Run,
     default_job_name,
 )
+from .workflow_identity import OPERATOR_WORKFLOWS, canonical_analysis_job_id
 from .project_inventory import (
     load_project_registry, registered_project_records, unregister_project, update_project_record,
     summarize_scope, scope_testament,
@@ -553,8 +554,10 @@ class SageControlCenter:
             and state.get("settings_sha256") == settings_hash
         ):
             return state
-        if project.tool == "saw":
+        if project.tool in {"saw", "rtc"}:
             label = f"Initializing {project.output_project} analyzed against {project.contemporary_source}"
+        elif project.tool == "stc":
+            label = f"Initializing WIP Project {project.output_project} for original-language analysis"
         else:
             label = f"Initializing {project.display_name}"
         with self.io.working(label, ellipsis=False):
@@ -757,7 +760,7 @@ class SageControlCenter:
     def _setup_initialize_projects(self) -> dict[str, Any]:
         """Initialize selected projects and report blocked actions without leaving setup."""
         results: dict[str, Any] = {}
-        for tool in TOOL_IDS:
+        for tool in (*OPERATOR_WORKFLOWS, "saw"):
             project = self.store.active_job(tool)
             if project is None:
                 continue
@@ -776,7 +779,7 @@ class SageControlCenter:
                 if exc.next_action:
                     self.io.write(f"  Next: {exc.next_action}")
         if not results:
-            self.io.write("No active BIC or SAW Job yet.")
+            self.io.write("No active BIC, RTC, or STC Job yet.")
         return results
 
     def _setup_next_step(
@@ -1091,7 +1094,7 @@ class SageControlCenter:
             return
 
     def system_configuration_menu(self) -> str:
-        """Keep system administration separate from BIC/SAW Job work."""
+        """Keep system administration separate from BIC/RTC/STC Job work."""
         while True:
             choice = self.io.choose(
                 "SAGE MAINTENANCE",
@@ -1439,7 +1442,7 @@ class SageControlCenter:
 
     def job_storage_maintenance_menu(self, tool: str) -> None:
         """Maintain one workflow's Jobs and audit shared legacy storage safely."""
-        if tool not in TOOL_IDS:
+        if tool not in (*OPERATOR_WORKFLOWS, "saw"):
             raise ConfigurationError(f"Unsupported Job-storage workflow: {tool}")
         audit_path = storage_layout(self.root).diagnostics_root / "job-layout" / "JOB-LAYOUT-AUDIT.json"
         while True:
@@ -1722,7 +1725,8 @@ class SageControlCenter:
                 + (f"ACTION NEEDED - {next_label}" if system_action_needed else "READY")
             )
             self.io.write(f"BIC:       {self._setup_workflow_status('bic', init_results)}")
-            self.io.write(f"SAW:       {self._setup_workflow_status('saw', init_results)}")
+            self.io.write(f"RTC:       {self._setup_workflow_status('rtc', init_results)}")
+            self.io.write(f"STC:       {self._setup_workflow_status('stc', init_results)}")
             self.io.write(f"Interface: {self.localizer.language_name()} [{self.localizer.language}]")
             self.io.write(f"Next:      {next_label}")
 
@@ -1734,11 +1738,12 @@ class SageControlCenter:
                     "MANAGE JOBS",
                     (
                         ("1", "BIC Jobs"),
-                        ("2", "SAW Jobs"),
-                        ("3", "Manage active Jobs"),
-                        ("4", system_label),
-                        ("5", "Interface language"),
-                        ("6", "Continue to Main Menu"),
+                        ("2", "RTC Jobs"),
+                        ("3", "STC Jobs"),
+                        ("4", "Manage active Jobs"),
+                        ("5", system_label),
+                        ("6", "Interface language"),
+                        ("7", "Continue to Main Menu"),
                         ("X", "Exit SAGE"),
                     ),
                 )
@@ -1749,7 +1754,7 @@ class SageControlCenter:
                 self.io.write("Connect and test workflow AI before entering the Main Menu.")
                 self.io.pause()
                 continue
-            if choice == "6":
+            if choice == "7":
                 if not model_row.get("ready"):
                     self.io.write("AI prerequisite: BLOCKED")
                     self.io.write("A working workflow-AI connection is required before entering the Main Menu.")
@@ -1764,18 +1769,20 @@ class SageControlCenter:
                 if choice == "1":
                     self.job_management_menu("bic")
                 elif choice == "2":
-                    self.job_management_menu("saw")
+                    self.job_management_menu("rtc")
                 elif choice == "3":
+                    self.job_management_menu("stc")
+                elif choice == "4":
                     init_results = self._setup_initialize_projects()
                     self.io.pause()
-                elif choice == "4":
+                elif choice == "5":
                     destination = self.system_configuration_menu()
                     if destination == "EXIT":
                         exit_requested = True
                         break
                     if destination == "MAIN":
                         break
-                elif choice == "5":
+                elif choice == "6":
                     self.interface_language_menu()
             except SageError as exc:
                 self.show_error(exc)
@@ -1823,8 +1830,9 @@ class SageControlCenter:
                 self.store.record_cue("MAIN_MENU_SELECTED", selection=choice)
                 if choice == "1": self.resource_menu()
                 elif choice == "2": self.bic_menu()
-                elif choice == "3": self.saw_menu()
-                elif choice == "4":
+                elif choice == "3": self.analysis_menu("rtc")
+                elif choice == "4": self.analysis_menu("stc")
+                elif choice == "5":
                     destination = self.system_configuration_menu()
                     if destination == "EXIT":
                         self.store.record_cue("SAGE_EXITED")
@@ -1841,9 +1849,17 @@ class SageControlCenter:
     def reports_home_menu(self) -> None:
         """Choose a Job before entering its generated reports/history surface."""
         while True:
-            choice = self.io.choose("REPORTS", (("1", "BIC reports and history"), ("2", "SAW reports and history"), ("B", "Back")))
+            choice = self.io.choose(
+                "REPORTS",
+                (
+                    ("1", "BIC reports and history"),
+                    ("2", "RTC reports and history"),
+                    ("3", "STC reports and history"),
+                    ("B", "Back"),
+                ),
+            )
             if choice == "B": return
-            tool = "bic" if choice == "1" else "saw"
+            tool = {"1": "bic", "2": "rtc", "3": "stc"}[choice]
             project = self.store.active_job(tool) or self.choose_job(tool)
             if project is not None: self.reports_menu(project)
 
@@ -1852,23 +1868,25 @@ class SageControlCenter:
         while True:
             choice = self.io.choose("HELP", (
                 ("1", "First-time setup"), ("2", "Add a Paratext Project to SAGE"),
-                ("3", "Create a BIC Job"), ("4", "Create a SAW Job"),
-                ("5", "Enter Scripture ranges"), ("6", "How SAGE splits large scopes"),
-                ("7", "Project status meanings"), ("8", "Reporting languages"),
-                ("9", "Greek and Hebrew resources"), ("10", "Command and recovery guides"), ("B", "Back")))
+                ("3", "Create a BIC Job"), ("4", "Create an RTC Job"),
+                ("5", "Create an STC Job"), ("6", "Enter Scripture ranges"),
+                ("7", "How SAGE splits large scopes"), ("8", "Project status meanings"),
+                ("9", "Reporting languages"), ("10", "Greek and Hebrew resources"),
+                ("11", "Command and recovery guides"), ("B", "Back")))
             if choice == "B": return
             guides = {
                 "1": "Configure paths and resources first; Project addition and Job setup are separate tasks.",
                 "2": "Scripture Projects > Add Projects to SAGE. Scan, choose, review metadata, then add. No Job role is assigned here.",
                 "3": "BIC > Add BIC Job. Assign a SAGE Project as SOURCE, DONOR and TARGET; only TARGET receives governed write access.",
-                "4": "SAW > Add SAW Job. Assign a SAGE Project as WIP and another as REFERENCE.",
-                "5": "Choose a Book, then leave range blank for the whole book or enter 1, 1-3, 1:1-10, or 1:1-2:20. Expert entry such as LUK 1:1-10 remains available.",
-                "6": "Before a Run, SAGE shows measured work units and conservative estimated routed-SFM tokens; sections are preferred split points only when the combined packet does not fit.",
-                "7": "READY can be used directly; WARNING is usable with a disclosed issue; ERROR requires correction before affected work.",
-                "8": "The global Operator language is the default primary language for new Jobs. Each Job owns one required primary and may add one optional secondary reporting language.",
-                "9": "@GRK and @HEB are governed original-language resources and are not ordinary SAGE Projects.",
+                "4": "RTC > Add RTC Job. Assign a WIP Project and a different REFERENCE Project.",
+                "5": "STC > Add STC Job. Assign only a WIP Project; STC uses GRK or HEB by Book canon.",
+                "6": "Choose a Book, then leave range blank for the whole book or enter 1, 1-3, 1:1-10, or 1:1-2:20. Expert entry such as LUK 1:1-10 remains available.",
+                "7": "Before a Run, SAGE shows measured work units and conservative estimated routed-SFM tokens; sections are preferred split points only when the combined packet does not fit.",
+                "8": "READY can be used directly; WARNING is usable with a disclosed issue; ERROR requires correction before affected work.",
+                "9": "The global Operator language is the default primary language for new Jobs. Each Job owns one required primary and may add one optional secondary reporting language.",
+                "10": "GRK and HEB are governed original-language authorities; STC does not use a REFERENCE Project.",
             }
-            if choice == "10": self._show_support_docs()
+            if choice == "11": self._show_support_docs()
             else:
                 self.io.write(guides[choice])
                 self.io.pause()
@@ -1936,10 +1954,18 @@ class SageControlCenter:
         elif not self.dry_run_provider:
             try:
                 routes = service.skill_routes()
+                allowed_skills = {
+                    "rtc": {"saw-rtc"},
+                    "stc": {"saw-stc"},
+                }.get(tool)
                 rows = [
                     dict(row)
                     for row in routes.get("skills", [])
-                    if str(row.get("skill_id") or "").startswith(tool + "-")
+                    if (
+                        str(row.get("skill_id") or "") in allowed_skills
+                        if allowed_skills is not None
+                        else str(row.get("skill_id") or "").startswith(tool + "-")
+                    )
                 ]
             except Exception:
                 rows = []
@@ -1976,7 +2002,8 @@ class SageControlCenter:
         self.io.write(f"{release['release_status']} - PRE-RELEASE")
         self.io.write("-" * 72)
         self.io.write(f"BIC active Job: {self._job_summary('bic')}")
-        self.io.write(f"SAW active Job: {self._job_summary('saw')}")
+        self.io.write(f"RTC active Job: {self._job_summary('rtc')}")
+        self.io.write(f"STC active Job: {self._job_summary('stc')}")
         if self._last_run_is_resumable():
             self.io.write(f"Unfinished Run: {self._last_run_summary()}")
         return self.io.choose(
@@ -1984,11 +2011,12 @@ class SageControlCenter:
             (
                 ("1", "Manage SAGE Scripture Projects"),
                 ("2", "BIC"),
-                ("3", "SAW"),
-                ("4", "SAGE Maintenance"),
+                ("3", "Reference Text Comparison (RTC)"),
+                ("4", "Source Text Correspondence (STC)"),
+                ("5", "SAGE Maintenance"),
                 ("X", "Exit SAGE"),
             ),
-            blank_before=("2", "4"),
+            blank_before=("2", "5"),
         )
 
     def resume_or_start_task(self) -> None:
@@ -1998,36 +2026,30 @@ class SageControlCenter:
             return
         choice = self.io.choose(
             "New Task",
-            (("1", "BIC"), ("2", "SAW"), ("B", "Back")),
+            (
+                ("1", "BIC"),
+                ("2", "Reference Text Comparison (RTC)"),
+                ("3", "Source Text Correspondence (STC)"),
+                ("B", "Back"),
+            ),
         )
         if choice == "1":
             project = self.store.active_job("bic") or self.choose_job("bic")
             if project is not None:
                 self.store.record_cue("NEW_TASK_SELECTED", tool="bic", job_id=project.job_id)
                 self.start_bic_run(project)
-        elif choice == "2":
-            project = self.store.active_job("saw") or self.choose_job("saw")
+        elif choice in {"2", "3"}:
+            tool = "rtc" if choice == "2" else "stc"
+            project = self.store.active_job(tool) or self.choose_job(tool)
             if project is None:
                 return
-            operation = self.io.choose(
-                "SAW Task",
-                (
-                    ("1", "Run Reference Text Comparison (RTC)"),
-                    ("2", "Run Source Text Correspondence (STC)"),
-                    ("3", "Run Targeted Check"),
-                    ("4", "Run Original-Language Review"),
-                    ("B", "Back"),
-                ),
+            self.store.record_cue(
+                "NEW_TASK_SELECTED",
+                tool=tool,
+                job_id=project.job_id,
+                operation=tool,
             )
-            operation_id = {"1": "rtc", "2": "stc", "3": "focused", "4": "ol"}.get(operation)
-            if operation_id is not None:
-                self.store.record_cue(
-                    "NEW_TASK_SELECTED",
-                    tool="saw",
-                    job_id=project.job_id,
-                    operation=operation_id,
-                )
-                self.start_saw_run(project, operation_id)
+            self.start_saw_run(project, tool)
 
     def continue_last_run(self) -> None:
         """Continue the recorded run through its existing checkpoint-aware state machine."""
@@ -2058,32 +2080,35 @@ class SageControlCenter:
                 "Jobs and Projects",
                 (
                     ("1", "Choose active BIC Job"),
-                    ("2", "Choose active SAW Job"),
-                    ("3", "BIC Jobs"),
-                    ("4", "SAW Jobs"),
-                    ("5", "Scripture Projects"),
-                    ("6", "Active Job status"),
-                    ("7", "Clear active BIC Job"),
-                    ("8", "Clear active SAW Job"),
+                    ("2", "Choose active RTC Job"),
+                    ("3", "Choose active STC Job"),
+                    ("4", "BIC Jobs"),
+                    ("5", "RTC Jobs"),
+                    ("6", "STC Jobs"),
+                    ("7", "Scripture Projects"),
+                    ("8", "Active Job status"),
+                    ("9", "Clear active BIC Job"),
+                    ("10", "Clear active RTC Job"),
+                    ("11", "Clear active STC Job"),
                     ("B", "Back"),
                 ),
             )
             if choice == "B":
                 return
-            if choice in {"1", "2"}:
-                self.choose_job("bic" if choice == "1" else "saw")
-            elif choice == "3":
-                self.job_management_menu("bic")
+            if choice in {"1", "2", "3"}:
+                self.choose_job({"1": "bic", "2": "rtc", "3": "stc"}[choice])
             elif choice == "4":
-                self.job_management_menu("saw")
+                self.job_management_menu("bic")
             elif choice == "5":
-                self.resource_menu()
+                self.job_management_menu("rtc")
             elif choice == "6":
-                self.show_active_readiness()
+                self.job_management_menu("stc")
             elif choice == "7":
-                self.store.set_active_job("bic", None)
+                self.resource_menu()
             elif choice == "8":
-                self.store.set_active_job("saw", None)
+                self.show_active_readiness()
+            elif choice in {"9", "10", "11"}:
+                self.store.set_active_job({"9": "bic", "10": "rtc", "11": "stc"}[choice], None)
 
     def choose_job(self, tool: str) -> Job | None:
         """Implement `choose project` in the deterministic terminal control flow."""
@@ -2198,7 +2223,7 @@ class SageControlCenter:
         self.io.write()
         self.io.write("ACTIVE JOB READINESS")
         self.io.write("-" * 72)
-        for tool in TOOL_IDS:
+        for tool in OPERATOR_WORKFLOWS:
             report = self.store.discover_report(tool, include_archived=True)
             active_id = self.store.active_jobs().get(tool)
             project, issue = self._active_job_from_report(report, active_id)
@@ -2295,7 +2320,7 @@ class SageControlCenter:
                     ("4", "Memory and terminology"),
                     ("5", "TARGET generations"),
                     ("6", "Reports and exports"),
-                    ("7", "Job settings"),
+                    ("7", "Manage Job"),
                     ("8", "Recovery and diagnostics"),
                     ("B", "Back"),
                 ),
@@ -2331,6 +2356,168 @@ class SageControlCenter:
             self.io.write(f"Created BIC Run: {run.run_id}")
             self.continue_run(project, run)
             return
+
+    def analysis_menu(self, tool: str) -> None:
+        """Choose, create, and operate one fixed RTC or STC primary-flow Job."""
+        normalized = tool.strip().lower()
+        if normalized not in {"rtc", "stc"}:
+            raise ValidationError(f"Analysis menu requires RTC or STC, not {tool}")
+        title = (
+            "REFERENCE TEXT COMPARISON (RTC)"
+            if normalized == "rtc"
+            else "SOURCE TEXT CORRESPONDENCE (STC)"
+        )
+        binding_label = "[WIP, REFERENCE]" if normalized == "rtc" else "[WIP]"
+        while True:
+            report = self.store.discover_report(normalized, include_archived=True)
+            active_id = self.store.active_jobs().get(normalized)
+            active, active_issue = self._active_job_from_report(report, active_id)
+            active_label = active.job_id if active else active_issue.job_id if active_issue else "NONE"
+            if active_issue is not None:
+                active_label += " [ACTION NEEDED]"
+            context = [f"Active Job                   {active_label}"]
+            if active is not None:
+                context.append(f"WIP Project                  {active.bindings['wip']}")
+                if normalized == "rtc":
+                    context.append(
+                        f"REFERENCE Project            {active.bindings['reference']}"
+                    )
+                snapshot = dict(active.wip_snapshot or {})
+                context.append(
+                    f"WIP snapshot date             {snapshot.get('snapshot_date') or 'UNKNOWN'}"
+                )
+            choice = self.io.choose(
+                title,
+                (
+                    ("1", f"Open active {normalized.upper()} Job"),
+                    ("2", f"Choose active {normalized.upper()} Job"),
+                    ("3", f"Add {normalized.upper()} Job {binding_label}"),
+                    ("4", f"Manage {normalized.upper()} Jobs"),
+                    ("5", "Reports and history"),
+                    ("6", "Recovery and diagnostics"),
+                    ("7", "Maintain Job storage"),
+                    ("B", "Back"),
+                ),
+                context=tuple(context),
+            )
+            if choice == "B":
+                return
+            if choice == "1":
+                selected = active
+                if active_issue is not None:
+                    selected = self._present_job_action_needed(
+                        active_issue,
+                        offer_onboarding=True,
+                    )
+                    if selected is not None:
+                        self.store.set_active_job(normalized, selected.job_id)
+                if selected is None:
+                    selected = self.choose_job(normalized)
+                if selected is not None:
+                    self.analysis_job_menu(selected)
+            elif choice == "2":
+                selected = self.choose_job(normalized)
+                if selected is not None:
+                    self.analysis_job_menu(selected)
+            elif choice == "3":
+                selected = self.create_job_wizard(normalized)
+                if isinstance(selected, Job):
+                    self.analysis_job_menu(selected)
+            elif choice == "4":
+                self.job_management_menu(normalized)
+            elif choice in {"5", "6"}:
+                selected = active or self.choose_job(normalized)
+                if selected is not None:
+                    if choice == "5":
+                        self.reports_menu(selected)
+                    else:
+                        self.recovery_menu(selected)
+            elif choice == "7":
+                self.job_storage_maintenance_menu(normalized)
+
+    def analysis_job_menu(self, project: Job) -> None:
+        """Operate one RTC or STC Job with exactly its fixed Run action."""
+        if project.tool not in {"rtc", "stc"}:
+            raise ValidationError("Analysis Job menu requires an RTC or STC Job")
+        operation_label = {
+            "rtc": "Run Reference Text Comparison (RTC)",
+            "stc": "Run Source Text Correspondence (STC)",
+        }[project.tool]
+        while True:
+            project = self.store.active_job(project.tool) or self.store.load_job(
+                project.job_id,
+                tool=project.tool,
+            )
+            run = self.store.active_run(project)
+            snapshot = dict(project.wip_snapshot or {})
+            self.io.write()
+            self.io.write(f"{project.tool.upper()} JOB - {project.job_id}")
+            self.io.write("-" * 72)
+            self.io.write(f"WIP Project                  {project.bindings['wip']}")
+            if project.tool == "rtc":
+                self.io.write(
+                    f"REFERENCE Project            {project.bindings['reference']}"
+                )
+            self.io.write(
+                f"WIP snapshot date             {snapshot.get('snapshot_date') or 'UNKNOWN'}"
+            )
+            self.io.write(
+                f"WIP snapshot fingerprint      {snapshot.get('content_fingerprint') or 'UNKNOWN'}"
+            )
+            self.io.write()
+            self._write_job_ai_routing(project.tool, run)
+            if run is None:
+                self.io.write("Active Run                   NONE")
+                options = (
+                    ("1", operation_label),
+                    ("2", "Runs and task history"),
+                    ("3", "Manage Job"),
+                    ("4", "Reports and exports"),
+                    ("5", "Recovery and diagnostics"),
+                    ("B", "Back"),
+                )
+            else:
+                self.io.write("Active Run")
+                self.io.write(f"  Run                        {run.run_id}")
+                self.io.write(f"  Scope                      {run.scope}")
+                self.io.write(f"  Task                       {run.current_stage}")
+                self.io.write(f"  Status                     {run.status}")
+                options = (
+                    ("1", "Continue active Run"),
+                    ("2", operation_label),
+                    ("3", "Runs and task history"),
+                    ("4", "Manage Job"),
+                    ("5", "Reports and exports"),
+                    ("6", "Recovery and diagnostics"),
+                    ("B", "Back"),
+                )
+            choice = self.io.choose(f"{project.tool.upper()} CHECK", options)
+            if choice == "B":
+                return
+            if run is None:
+                if choice == "1":
+                    self.start_saw_run(project, project.tool)
+                elif choice == "2":
+                    self.runs_menu(project)
+                elif choice == "3":
+                    self._job_settings_menu(project)
+                elif choice == "4":
+                    self.reports_menu(project)
+                elif choice == "5":
+                    self.recovery_menu(project)
+            else:
+                if choice == "1":
+                    self.continue_run(project, run)
+                elif choice == "2":
+                    self.start_saw_run(project, project.tool)
+                elif choice == "3":
+                    self.runs_menu(project)
+                elif choice == "4":
+                    self._job_settings_menu(project)
+                elif choice == "5":
+                    self.reports_menu(project)
+                elif choice == "6":
+                    self.recovery_menu(project)
 
     def saw_menu(self) -> None:
         """Choose/setup one SAW Job; checks are run only from the selected Job screen."""
@@ -2723,10 +2910,10 @@ class SageControlCenter:
             f"Planning bounded {project.tool.upper()} work...",
             lambda: self.controller(
                 project,
-                ["workflow", "plan", "--workflow", project.tool, "--operation", operation, "--scope", scope, "--output", output],
+                ["workflow", "plan", "--workflow", project.runtime_tool, "--operation", operation, "--scope", scope, "--output", output],
             ),
             visible=not (
-                project.tool == "saw"
+                project.runtime_tool == "saw"
                 and operation.strip().lower() in {"rtc", "stc"}
             ),
         )
@@ -2738,8 +2925,8 @@ class SageControlCenter:
         self.io.write()
         self.io.write("REVIEW WORK BEFORE RUNNING")
         self.io.write("-" * 72)
-        rtc_preview = project.tool == "saw" and operation.strip().lower() == "rtc"
-        stc_preview = project.tool == "saw" and operation.strip().lower() == "stc"
+        rtc_preview = project.runtime_tool == "saw" and operation.strip().lower() == "rtc"
+        stc_preview = project.runtime_tool == "saw" and operation.strip().lower() == "stc"
         operation_label = (
             "Reference Text Comparison (RTC)"
             if rtc_preview
@@ -2849,11 +3036,19 @@ class SageControlCenter:
             bindings = list(base_bindings)
             if require_original_language:
                 if parsed_scope.book in NT_27:
-                    ol_label = "SAW OL GREEK"
-                    ol_project_id = str(project.bindings.get("original_language_greek") or "")
+                    ol_label = "GRK"
+                    ol_project_id = (
+                        "GRK"
+                        if project.tool in {"rtc", "stc"}
+                        else str(project.bindings.get("original_language_greek") or "")
+                    )
                 elif parsed_scope.book in OT_39:
-                    ol_label = "SAW OL HEBREW"
-                    ol_project_id = str(project.bindings.get("original_language_hebrew") or "")
+                    ol_label = "HEB"
+                    ol_project_id = (
+                        "HEB"
+                        if project.tool in {"rtc", "stc"}
+                        else str(project.bindings.get("original_language_hebrew") or "")
+                    )
                 else:
                     ol_label = "SAW OL"
                     ol_project_id = ""
@@ -2866,8 +3061,9 @@ class SageControlCenter:
                         "code": "APPLICABLE_ORIGINAL_LANGUAGE_NOT_CONFIGURED",
                         "reference": unit_scope,
                         "message": (
-                            "Option 11 requires the applicable Job-bound original-language "
-                            "resource before the Run can start."
+                            "STC requires the applicable GRK or HEB authority before the Run can start."
+                            if operation == "stc"
+                            else "RTC option #10 requires the applicable GRK or HEB authority before the Run can start."
                         ),
                         "effective_vrs": "UNKNOWN",
                         "default_vrs": config.default_versification,
@@ -3053,7 +3249,7 @@ class SageControlCenter:
             "task",
             "create",
             "--workflow",
-            project.tool,
+            project.runtime_tool,
             "--operation",
             operation,
         ]
@@ -3065,10 +3261,9 @@ class SageControlCenter:
             if project.lexical_donor:
                 arguments.extend(["--donor", project.lexical_donor])
         else:
-            arguments.extend([
-                "--wip", project.output_project,
-                "--reference", project.contemporary_source,
-            ])
+            arguments.extend(["--wip", project.output_project])
+            if project.contemporary_source:
+                arguments.extend(["--reference", project.contemporary_source])
         arguments.extend([
             "--scope",
             scope or run.scope,
@@ -4225,11 +4420,11 @@ class SageControlCenter:
                 return
             try:
                 if choice == "1":
-                    self.print_payload(self.controller(project, ["transaction", "list", "--workflow", project.tool]))
+                    self.print_payload(self.controller(project, ["transaction", "list", "--workflow", project.runtime_tool]))
                 elif choice == "2":
                     transaction_id = self.io.text("Transaction ID")
                     self.print_payload(
-                        self.controller(project, ["transaction", "recover", "--workflow", project.tool, "--id", transaction_id])
+                        self.controller(project, ["transaction", "recover", "--workflow", project.runtime_tool, "--id", transaction_id])
                     )
                 elif choice == "3":
                     self.print_payload(self.ensure_initialized(project, force=True))
@@ -4435,9 +4630,7 @@ class SageControlCenter:
                     self.io.write(f"  - {job.job_id} - {job.display_name}{marker}")
             else:
                 self.io.write(f"No {tool.upper()} Jobs exist.")
-            open_label = (
-                "Open active SAW Job" if tool == "saw" else "Open active BIC Job"
-            )
+            open_label = f"Open active {tool.upper()} Job"
             choice = self.io.choose(
                 f"{tool.upper()} - {self.localizer.text('Job management')}",
                 (("1", open_label), ("2", "Choose active Job"), ("3", "Add Job"),
@@ -4452,6 +4645,8 @@ class SageControlCenter:
                         self.store.set_active_job(tool, repaired.job_id)
                         if tool == "saw":
                             self._saw_job_menu(repaired)
+                        elif tool in {"rtc", "stc"}:
+                            self.analysis_job_menu(repaired)
                         else:
                             self._bic_job_menu(repaired)
                 elif active is None:
@@ -4459,6 +4654,8 @@ class SageControlCenter:
                     self.io.pause()
                 elif tool == "saw":
                     self._saw_job_menu(active)
+                elif tool in {"rtc", "stc"}:
+                    self.analysis_job_menu(active)
                 else:
                     self._bic_job_menu(active)
                 continue
@@ -4564,14 +4761,22 @@ class SageControlCenter:
             return True, requested
 
     def _job_settings_menu(self, project: Job) -> None:
-        """Configure Job-owned primary and optional secondary report languages."""
+        """Manage Job bindings, snapshot, reporting languages, and manifest."""
         while True:
             project = self.store.load_job(project.job_id, tool=project.tool)
             primary = project.primary_report_language
             secondary = project.secondary_report_language
             self.io.write()
-            self.io.write(f"JOB SETTINGS - {project.job_id}")
+            self.io.write(f"MANAGE JOB - {project.job_id}")
             self.io.write("-" * 72)
+            if project.tool in {"rtc", "stc"}:
+                self.io.write(f"WIP Project:               {project.bindings['wip']}")
+                if project.tool == "rtc":
+                    self.io.write(f"REFERENCE Project:         {project.bindings['reference']}")
+                self.io.write(
+                    "WIP snapshot date:          "
+                    + str(dict(project.wip_snapshot or {}).get("snapshot_date") or "UNKNOWN")
+                )
             self.io.write(f"Primary report language:   {primary} [JOB, REQUIRED]")
             self.io.write(f"Secondary report language: {secondary or 'NONE'} [JOB]")
             if secondary:
@@ -4583,18 +4788,61 @@ class SageControlCenter:
                     "Cost and review: secondary output adds model usage and compilation time, "
                     "and requires more human review than a single-language report."
                 )
-            choice = self.io.choose(
-                "Job settings",
-                (
+            options: list[tuple[str, str]] = [
                     ("1", "Set secondary reporting language"),
                     ("2", "Clear secondary reporting language"),
                     ("3", "Set primary reporting language"),
                     ("4", "Show Job manifest"),
-                    ("B", "Back"),
-                ),
+            ]
+            if project.tool in {"rtc", "stc"}:
+                options.extend([
+                    ("5", "Refresh WIP snapshot from Project source"),
+                    ("6", "Replace WIP Project"),
+                ])
+                if project.tool == "rtc":
+                    options.append(("7", "Update REFERENCE Project"))
+            options.append(("B", "Back"))
+            choice = self.io.choose(
+                "Manage Job",
+                tuple(options),
             )
             if choice == "B":
                 return
+            if choice == "5" and project.tool in {"rtc", "stc"}:
+                try:
+                    project = self.store.refresh_job_snapshot(project)
+                    self.io.write(
+                        f"WIP snapshot refreshed: {dict(project.wip_snapshot or {}).get('snapshot_date')}"
+                    )
+                except SageError as exc:
+                    self.show_error(exc)
+                self.io.pause()
+                continue
+            if choice == "6" and project.tool in {"rtc", "stc"}:
+                replacement = self._replace_analysis_wip(project)
+                if replacement is not None:
+                    project = replacement
+                continue
+            if choice == "7" and project.tool == "rtc":
+                reference = self.choose_or_add_resource(
+                    "CHOOSE RTC <REFERENCE>",
+                    "REFERENCE",
+                )
+                if reference is None:
+                    continue
+                try:
+                    project = self.store.revise_job(
+                        project,
+                        bindings={
+                            "wip": project.bindings["wip"],
+                            "reference": reference.project_id,
+                        },
+                    )
+                    self.io.write(f"RTC REFERENCE Project updated: {reference.project_id}")
+                except SageError as exc:
+                    self.show_error(exc)
+                self.io.pause()
+                continue
             if choice == "4":
                 self.io.write(project.manifest_path.read_text(encoding="utf-8"))
                 self.io.pause()
@@ -4638,8 +4886,8 @@ class SageControlCenter:
                 self.io.pause()
                 continue
             config = load_ecosystem(self.store.settings_path)
-            audience_role = "WIP" if project.tool == "saw" else "TARGET"
-            audience_binding = "wip" if project.tool == "saw" else "generated_target"
+            audience_role = "WIP" if project.tool in {"saw", "rtc", "stc"} else "TARGET"
+            audience_binding = "wip" if project.tool in {"saw", "rtc", "stc"} else "generated_target"
             audience_language = config.project(project.bindings[audience_binding]).language_code
             changed, requested = self._choose_secondary_reporting_language(
                 role=audience_role,
@@ -4656,7 +4904,67 @@ class SageControlCenter:
             self.io.write(f"Job secondary reporting language saved: {requested}")
             self.io.pause()
 
-    def create_job_wizard(self, tool: str) -> None:
+    def _replace_analysis_wip(self, project: Job) -> Job | None:
+        """Create a new snapshot-dated Job for a replacement WIP Project."""
+        replacement_wip = self.choose_or_add_resource(
+            f"CHOOSE {project.tool.upper()} <WIP>",
+            "WIP",
+        )
+        if replacement_wip is None:
+            return None
+        if replacement_wip.project_id == project.bindings["wip"]:
+            self.io.write("The selected WIP Project is already bound to this Job.")
+            self.io.pause()
+            return project
+        open_runs = [
+            run.run_id
+            for run in self.store.list_runs(project)
+            if run.status not in RUN_CLOSED_STATUSES
+        ]
+        if open_runs:
+            self.show_error(
+                ValidationError(
+                    "Changing WIP Project is unavailable while a non-closed Run exists",
+                    code="JOB_WIP_CHANGE_RUN_OPEN",
+                    details={"run_ids": open_runs},
+                )
+            )
+            self.io.pause()
+            return project
+        imported_at = datetime.now().astimezone()
+        bindings = {"wip": replacement_wip.project_id}
+        if project.tool == "rtc":
+            bindings["reference"] = project.bindings["reference"]
+        job_id = canonical_analysis_job_id(
+            project.tool,
+            replacement_wip.project_id,
+            imported_at.strftime("%Y%m%d"),
+        )
+        try:
+            replacement = self.store.create_job(
+                tool=project.tool,
+                job_id=job_id,
+                display_name=project.display_name,
+                bindings=bindings,
+                defaults=dict(project.defaults),
+                primary_report_language=project.primary_report_language,
+                secondary_report_language=project.secondary_report_language,
+                imported_at=imported_at,
+            )
+            self.store.revise_job(project, status="ARCHIVED")
+            old_snapshot = project.root / "snapshot"
+            if old_snapshot.exists():
+                shutil.rmtree(old_snapshot)
+            self.store.set_active_job(project.tool, replacement.job_id)
+            self.io.write(f"Created and selected replacement Job: {replacement.job_id}")
+            self.io.pause()
+            return replacement
+        except SageError as exc:
+            self.show_error(exc)
+            self.io.pause()
+            return project
+
+    def create_job_wizard(self, tool: str) -> Job | None:
         """Create one Job by assigning roles to Projects already in the SAGE Project Inventory."""
         # The wizard deliberately resolves every binding before it asks JobStore to persist anything.
         if tool == "bic":
@@ -4676,19 +4984,65 @@ class SageControlCenter:
                         **({"original_language_greek": greek} if greek else {}), **({"original_language_hebrew": hebrew} if hebrew else {})}
             profiles: dict[str, str] = {}
             defaults = {"publication_enabled": True}
-        else:
+            imported_at = None
+        elif tool == "saw":
             output = self.choose_or_add_resource("CHOOSE SAW <WIP>", "WIP")
-            if not output: return
+            if not output:
+                return None
             source = self.choose_or_add_resource("CHOOSE SAW <REFERENCE>", "REFERENCE")
-            if not source: return
+            if not source:
+                return None
             job_id = default_job_name("saw", output.project_id, source.project_id)
             name = f"{output.project_id} analyzed against {source.project_id}"
             greek = active_ol_project_id(self.root, "GRK")
             hebrew = active_ol_project_id(self.root, "HEB")
-            bindings = {"wip": output.project_id, "reference": source.project_id,
-                        **({"original_language_greek": greek} if greek else {}), **({"original_language_hebrew": hebrew} if hebrew else {})}
+            bindings = {
+                "wip": output.project_id,
+                "reference": source.project_id,
+                **({"original_language_greek": greek} if greek else {}),
+                **({"original_language_hebrew": hebrew} if hebrew else {}),
+            }
             profiles = {}
             defaults = {}
+            imported_at = None
+        elif tool in {"rtc", "stc"}:
+            output = self.choose_or_add_resource(
+                f"CHOOSE {tool.upper()} <WIP Project>",
+                "WIP",
+            )
+            if not output: return
+            imported_at = datetime.now().astimezone()
+            job_id = canonical_analysis_job_id(
+                tool,
+                output.project_id,
+                imported_at.strftime("%Y%m%d"),
+            )
+            bindings = {"wip": output.project_id}
+            source = None
+            if tool == "rtc":
+                while True:
+                    source = self.choose_or_add_resource(
+                        "CHOOSE RTC <REFERENCE Project>",
+                        "REFERENCE",
+                    )
+                    if not source:
+                        return None
+                    if source.project_id != output.project_id:
+                        break
+                    self.show_error(
+                        ValidationError(
+                            "RTC WIP and REFERENCE must use different Projects",
+                            code="PROJECT_BINDING_ROLE_CONFLICT",
+                        )
+                    )
+                bindings["reference"] = source.project_id
+                name = f"{output.project_id} compared with {source.project_id}"
+            else:
+                name = f"{output.project_id} compared with GRK/HEB"
+            profiles = {}
+            defaults = {}
+        else:
+            raise ValidationError(f"Unsupported Job wizard workflow: {tool}")
         secondary_report_language: str | None = None
         while True:
             self.io.write()
@@ -4699,9 +5053,17 @@ class SageControlCenter:
                 self.io.write(f"{'DONOR':<20}{donor.project_id}")
                 self.io.write(f"{'TARGET':<20}{output.project_id}")
                 self.io.write(f"{'TARGET access':<20}GOVERNED WRITE")
+            elif tool in {"saw", "rtc"}:
+                assert source is not None
+                self.io.write(f"{'WIP Project' if tool == 'rtc' else 'WIP':<20}{output.project_id}")
+                self.io.write(f"{'REFERENCE Project' if tool == 'rtc' else 'REFERENCE':<20}{source.project_id}")
+                if imported_at is not None:
+                    self.io.write(f"{'WIP snapshot date':<20}{imported_at.strftime('%Y%m%d')}")
             else:
-                self.io.write(f"{'WIP':<20}{output.project_id}")
-                self.io.write(f"{'REFERENCE':<20}{source.project_id}")
+                self.io.write(f"{'WIP Project':<20}{output.project_id}")
+                self.io.write(f"{'Authority':<20}GRK / HEB by Book canon")
+                self.io.write(f"{'REFERENCE Project':<20}NOT USED")
+                self.io.write(f"{'WIP snapshot date':<20}{imported_at.strftime('%Y%m%d')}")
             self.io.write(f"{'Job name':<20}{job_id}")
             self.io.write(
                 f"{'Report languages':<20}"
@@ -4735,7 +5097,7 @@ class SageControlCenter:
                     self.store.settings_path
                 ).human_output.operator_language
                 changed, requested = self._choose_secondary_reporting_language(
-                    role="WIP" if tool == "saw" else "TARGET",
+                    role="WIP" if tool in {"saw", "rtc", "stc"} else "TARGET",
                     project_language=output.language_code,
                     operator_language=operator_language,
                     current=secondary_report_language,
@@ -4752,11 +5114,12 @@ class SageControlCenter:
                     profiles=profiles,
                     defaults=defaults,
                     secondary_report_language=secondary_report_language,
+                    imported_at=imported_at,
                 )
                 self.store.set_active_job(tool, project.job_id)
                 self.io.write(f"Created and selected Job: {project.job_id}")
                 self.io.pause()
-                return
+                return project
             except ValidationError as exc:
                 if exc.code == "LANGUAGE_PROFILE_SELECTION_REQUIRED":
                     details = dict(exc.details or {})
@@ -4765,18 +5128,22 @@ class SageControlCenter:
                         selected = self.io.choose("CHOOSE LANGUAGE PROFILE FOR JOB ROLE", [(str(i), value) for i, value in enumerate(candidates, 1)] + [("B", "Back")])
                         if selected == "B": return
                         role = str(details.get("role", ""))
-                        profiles["source_grammar" if role == "CONTENT_SOURCE" else "target_grammar"] = candidates[int(selected) - 1]
+                        profile_key = {
+                            "CONTENT_SOURCE": "source_grammar",
+                            "REFERENCE": "reference_grammar",
+                        }.get(role, "target_grammar")
+                        profiles[profile_key] = candidates[int(selected) - 1]
                         continue
                 if exc.code == "LANGUAGE_PROFILE_NOT_CONFIGURED":
                     if self._maintain_missing_language_profile(exc):
                         continue
                 self.show_error(exc)
                 self.io.pause()
-                return
+                return None
             except SageError as exc:
                 self.show_error(exc)
                 self.io.pause()
-                return
+                return None
 
     @staticmethod
     def _grammar_roles_for_job_role(role: str) -> set[str]:
