@@ -246,7 +246,8 @@ class OperatorUIService:
 
     def configured_tools(self) -> set[str]:
         """Return workflows that currently have one active Job binding."""
-        return {tool for tool in TOOL_IDS if self.store.active_job(tool) is not None}
+        active = self.store.active_jobs()
+        return {tool for tool in TOOL_IDS if active.get(tool)}
 
     def projects_root_status(self) -> tuple[str, Path | None]:
         """Return live readiness for the required workstation Paratext Projects root."""
@@ -293,8 +294,23 @@ class OperatorUIService:
         results: dict[str, Any] = {}
         ready_states = {"READY", "READY_WITH_ACTIONS", "READY_WITH_LIMITATIONS"}
         for tool in TOOL_IDS:
+            active_id = self.store.active_jobs().get(tool)
             job = self.store.active_job(tool)
             if job is None:
+                if active_id:
+                    report = self.store.discover_report(tool, include_archived=True)
+                    issue = next(
+                        (item for item in report.issues if item.job_id == active_id),
+                        None,
+                    )
+                    if issue is not None:
+                        results[active_id] = {
+                            "status": "ACTION_NEEDED",
+                            "reason_code": issue.code,
+                            "message": issue.message,
+                            "source": "JOB_BINDING_CHECK",
+                            "ready": False,
+                        }
                 continue
             try:
                 settings = self.store.ensure_runtime_files(job)
@@ -330,8 +346,17 @@ class OperatorUIService:
 
     def workflow_setup_status(self, tool: str, initialization: dict[str, Any]) -> str:
         """Return one concise independent setup status for BIC or SAW."""
+        active_id = self.store.active_jobs().get(tool)
         job = self.store.active_job(tool)
         if job is None:
+            if active_id:
+                report = self.store.discover_report(tool, include_archived=True)
+                issue = next(
+                    (item for item in report.issues if item.job_id == active_id),
+                    None,
+                )
+                if issue is not None:
+                    return f"ACTION NEEDED - {active_id} [{issue.code}]"
             stale_pointer = self.store.stale_active_job_pointers().get(tool)
             if stale_pointer:
                 return f"RECOVERY NEEDED - {stale_pointer} [Job manifest missing]"
@@ -372,7 +397,7 @@ class OperatorUIService:
         for tool in sorted(configured_tools):
             job = self.store.active_job(tool)
             if job is None:
-                continue
+                return "VALIDATE", "Manage active Jobs"
             status = str(initialization.get(job.job_id, {}).get("status", ""))
             if status not in ready_states:
                 return "VALIDATE", "Manage active Jobs"
@@ -458,6 +483,15 @@ class OperatorUIService:
         """Return one compact active-Job readiness summary."""
         job = self.store.active_job(tool)
         if job is None:
+            active_id = self.store.active_jobs().get(tool)
+            if active_id:
+                report = self.store.discover_report(tool, include_archived=True)
+                issue = next(
+                    (item for item in report.issues if item.job_id == active_id),
+                    None,
+                )
+                if issue is not None:
+                    return f"{issue.display_name} [ACTION NEEDED]"
             return "NONE"
         try:
             from .registry import load_ecosystem
@@ -484,7 +518,7 @@ class OperatorUIService:
         if normalized not in TOOL_IDS:
             raise ValueError(f"Unknown workflow: {tool}")
         candidates: list[tuple[Any, Any]] = []
-        for job in self.store.discover(normalized, include_archived=True):
+        for job in self.store.discover_report(normalized, include_archived=True).jobs:
             try:
                 candidates.extend((job, run) for run in self.store.list_runs(job, include_archived=True))
             except SageError:
@@ -721,8 +755,10 @@ class OperatorUIService:
             }
         if view in {"bic", "saw"}:
             jobs = []
-            active = self.store.active_job(view)
-            for job in self.store.discover(view, include_archived=True):
+            report = self.store.discover_report(view, include_archived=True)
+            active_id = self.store.active_jobs().get(view)
+            active = next((job for job in report.jobs if job.job_id == active_id), None)
+            for job in report.jobs:
                 jobs.append(
                     {
                         "job_id": job.job_id,
@@ -731,8 +767,19 @@ class OperatorUIService:
                         "archived": str(job.status).upper() == "ARCHIVED",
                     }
                 )
+            for issue in report.issues:
+                jobs.append(
+                    {
+                        "job_id": issue.job_id,
+                        "display_name": issue.display_name,
+                        "active": issue.job_id == active_id,
+                        "archived": issue.status == "ARCHIVED",
+                        "action_needed": True,
+                        "reason_code": issue.code,
+                    }
+                )
             return {
-                "active_job": active.job_id if active else None,
+                "active_job": active_id,
                 "jobs": jobs,
                 "last_run": self.last_run_summary(view),
             }

@@ -9,6 +9,8 @@ import re
 import zipfile
 from pathlib import Path
 
+import yaml
+
 from sage.storage import storage_layout
 from sage.cli import build_parser
 from sage.menu import MenuIO, SageControlCenter, ScriptedInput
@@ -438,6 +440,126 @@ def test_job_management_uses_the_same_open_active_grammar_for_bic(make_workspace
     assert f"{bic.job_id} - {bic.display_name} [ACTIVE]" in rendered
     assert f"BIC JOB - {bic.job_id}" in rendered
     assert "Run BIC check" in rendered
+
+
+def test_open_job_reports_missing_projects_and_offers_guided_onboarding(make_workspace) -> None:
+    """Opening an invalid active Job reports corrective action without aborting Job management."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store, projects = _bootstrap(root)
+    saw = next(project for project in projects if project.tool == "saw")
+    store.set_active_job("saw", saw.job_id)
+    raw = yaml.safe_load((root / "ecosystem.yml").read_text(encoding="utf-8"))
+    del raw["projects"]["usWIP"]
+    del raw["projects"]["usNIVv2"]
+    (root / "ecosystem.yml").write_text(
+        yaml.safe_dump(raw, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+    prompts: list[str] = []
+    responses = iter(("1", "no", "a"))
+
+    def respond(prompt: str) -> str:
+        """Record each prompt while supplying the bounded operator responses."""
+        prompts.append(prompt)
+        return next(responses)
+
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=respond, output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    center.job_management_menu("saw")
+
+    rendered = output.getvalue()
+    assert f"{saw.job_id} - {saw.display_name} [ACTIVE, ACTION NEEDED]" in rendered
+    assert "JOB ACTION NEEDED" in rendered
+    assert "Reason code: PROJECT_BINDING_MISMATCH" in rendered
+    assert "Missing onboarded Projects:" in rendered
+    assert "- WIP: usWIP" in rendered
+    assert "- REFERENCE: usNIVv2" in rendered
+    assert "Job and Project data were not changed." in rendered
+    assert "SAGE ERROR" not in rendered
+    assert any("Open Add Projects to SAGE now?" in prompt for prompt in prompts)
+    assert store.active_jobs()["saw"] == saw.job_id
+
+
+def test_open_job_reports_same_project_role_conflict_before_rtc(make_workspace) -> None:
+    """Keep a legacy SAW self-comparison visible but prevent it from reaching runtime validation."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store, projects = _bootstrap(root)
+    default = next(project for project in projects if project.tool == "saw")
+    raw = yaml.safe_load(default.manifest_path.read_text(encoding="utf-8"))
+    job_id = "SAW_usNIRVv2-usNIRVv2"
+    raw["job_id"] = job_id
+    raw["display_name"] = "usNIRVv2 analyzed against usNIRVv2"
+    raw["bindings"]["wip"] = "usNIRVv2"
+    raw["bindings"]["reference"] = "usNIRVv2"
+    manifest = store.job_root("saw", job_id) / "job.yml"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text(
+        yaml.safe_dump(raw, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+    store.active_jobs_path.write_text(
+        json.dumps({"schema_version": "1.0", "bic": None, "saw": job_id}),
+        encoding="utf-8",
+    )
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(("1", "a", "a")), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    center.job_management_menu("saw")
+
+    rendered = output.getvalue()
+    assert job_id in rendered
+    assert "[ACTIVE, ACTION NEEDED]" in rendered
+    assert "Reason code: PROJECT_BINDING_ROLE_CONFLICT" in rendered
+    assert "WIP and REFERENCE both bind usNIRVv2" in rendered
+    assert "different SAGE Projects" in rendered
+    assert "SAW JOB - SAW_usNIVv2-usNIVv2" not in rendered
+    assert "SAGE ERROR" not in rendered
+
+
+def test_bic_and_saw_entry_menus_preserve_invalid_active_job_as_action_needed(make_workspace) -> None:
+    """Workflow entry must check the raw active pointer instead of disguising it as no active Job."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store, projects = _bootstrap(root)
+    for job in projects:
+        store.set_active_job(job.tool, job.job_id)
+    raw = yaml.safe_load((root / "ecosystem.yml").read_text(encoding="utf-8"))
+    for project_id in ("idKKHv0", "usNIVv2", "usBOLx1", "usWIP"):
+        del raw["projects"][project_id]
+    (root / "ecosystem.yml").write_text(
+        yaml.safe_dump(raw, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+    for tool in ("bic", "saw"):
+        job = next(project for project in projects if project.tool == tool)
+        output = io.StringIO()
+        center = SageControlCenter(
+            sage_root=root,
+            settings_path=root / "ecosystem.yml",
+            io=MenuIO(input_func=ScriptedInput(("1", "no", "a")), output=output),
+            skip_setup=True,
+            dry_run_provider=True,
+        )
+
+        (center.bic_menu if tool == "bic" else center.saw_menu)()
+
+        rendered = output.getvalue()
+        assert job.job_id in rendered
+        assert "ACTION NEEDED" in rendered
+        assert "JOB ACTION NEEDED" in rendered
+        assert "SAGE ERROR" not in rendered
 
 
 def test_home_and_exit_footer_keys_unwind_nested_workflow_menu(make_workspace) -> None:

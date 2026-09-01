@@ -481,6 +481,67 @@ def test_invalid_job_binding_leaves_no_persisted_job(make_workspace) -> None:
     assert not (storage_layout(root).jobs_root / "bic" / project_id).exists()
 
 
+def test_same_project_saw_bindings_leave_no_persisted_job(make_workspace) -> None:
+    """Reject a SAW Job whose WIP and REFERENCE cannot have distinct runtime semantics."""
+    root = make_workspace(qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job_id = "SAW_usNIRVv2-usNIRVv2"
+
+    with pytest.raises(ValidationError) as raised:
+        store.create_job(
+            tool="saw",
+            job_id=job_id,
+            display_name="Invalid self-comparison",
+            bindings={
+                "wip": "usNIRVv2",
+                "reference": "usNIRVv2",
+                "original_language_greek": "GRK",
+                "original_language_hebrew": "HEB",
+            },
+        )
+
+    assert raised.value.code == "PROJECT_BINDING_ROLE_CONFLICT"
+    assert raised.value.details == {
+        "project_id": "usNIRVv2",
+        "conflicting_roles": ["WIP", "REFERENCE"],
+    }
+    assert "different SAGE Projects" in (raised.value.next_action or "")
+    assert not (storage_layout(root).jobs_root / "saw" / job_id).exists()
+
+
+def test_existing_same_project_saw_job_is_reported_before_runtime_generation(make_workspace) -> None:
+    """Classify a legacy self-comparison Job as actionable without writing derived runtime files."""
+    root = make_workspace(qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    default = next(job for job in store.bootstrap_default_jobs() if job.tool == "saw")
+    raw = yaml.safe_load(default.manifest_path.read_text(encoding="utf-8"))
+    job_id = "SAW_usNIRVv2-usNIRVv2"
+    raw["job_id"] = job_id
+    raw["display_name"] = "Invalid self-comparison"
+    raw["bindings"]["wip"] = "usNIRVv2"
+    raw["bindings"]["reference"] = "usNIRVv2"
+    manifest = store.job_root("saw", job_id) / "job.yml"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text(
+        yaml.safe_dump(raw, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+
+    report = store.discover_report("saw", include_archived=True)
+
+    issue = next(item for item in report.issues if item.job_id == job_id)
+    assert issue.code == "PROJECT_BINDING_ROLE_CONFLICT"
+    assert issue.details == {
+        "project_id": "usNIRVv2",
+        "conflicting_roles": ["WIP", "REFERENCE"],
+    }
+    assert "different SAGE Projects" in (issue.next_action or "")
+    assert not (store.controller_jobs_root / "saw" / job_id / "runtime.yml").exists()
+    with pytest.raises(ConfigurationError) as raised:
+        store.load_job(job_id, tool="saw")
+    assert raised.value.code == "PROJECT_BINDING_ROLE_CONFLICT"
+
+
 
 def test_job_load_rejects_semantically_tampered_binding(make_workspace) -> None:
     """Reject a persisted Job whose resource binding no longer satisfies its declared role."""
@@ -504,6 +565,77 @@ def test_job_load_rejects_semantically_tampered_binding(make_workspace) -> None:
     project.manifest_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
     with pytest.raises(ConfigurationError, match="canonical identity does not match bindings"):
         store.load_job(project.job_id, tool="bic")
+
+
+def test_job_discovery_reports_all_missing_saw_projects_and_keeps_valid_jobs(make_workspace) -> None:
+    """One stale SAW manifest must not hide valid Jobs or stop after its first missing binding."""
+    root = make_workspace(qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    projects = store.bootstrap_default_jobs()
+    stale = next(project for project in projects if project.tool == "saw")
+    valid = store.create_job(
+        tool="saw",
+        job_id="SAW_usBOLx1-usNIRVv2",
+        display_name="Valid comparison",
+        bindings={
+            "wip": "usBOLx1",
+            "reference": "usNIRVv2",
+            "original_language_greek": "GRK",
+            "original_language_hebrew": "HEB",
+        },
+    )
+    raw = yaml.safe_load((root / "ecosystem.yml").read_text(encoding="utf-8"))
+    del raw["projects"]["usWIP"]
+    del raw["projects"]["usNIVv2"]
+    (root / "ecosystem.yml").write_text(
+        yaml.safe_dump(raw, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+
+    report = store.discover_report("saw", include_archived=True)
+
+    assert [job.job_id for job in report.jobs] == [valid.job_id]
+    assert len(report.issues) == 1
+    issue = report.issues[0]
+    assert issue.job_id == stale.job_id
+    assert issue.code == "PROJECT_BINDING_MISMATCH"
+    assert issue.details["missing_project_bindings"] == [
+        {"binding": "wip", "role": "WIP", "project_id": "usWIP"},
+        {"binding": "reference", "role": "REFERENCE", "project_id": "usNIVv2"},
+    ]
+    assert "Add Projects to SAGE" in (issue.next_action or "")
+
+    with pytest.raises(ConfigurationError) as raised:
+        store.load_job(stale.job_id, tool="saw")
+    assert raised.value.code == "PROJECT_BINDING_MISMATCH"
+    assert raised.value.details == issue.details
+
+
+def test_job_discovery_uses_same_missing_project_report_for_bic(make_workspace) -> None:
+    """BIC SOURCE, DONOR, and TARGET bindings use the same Project-Inventory guard."""
+    root = make_workspace(qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    projects = store.bootstrap_default_jobs()
+    stale = next(project for project in projects if project.tool == "bic")
+    raw = yaml.safe_load((root / "ecosystem.yml").read_text(encoding="utf-8"))
+    for project_id in ("idKKHv0", "usNIVv2", "usBOLx1"):
+        del raw["projects"][project_id]
+    (root / "ecosystem.yml").write_text(
+        yaml.safe_dump(raw, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+
+    report = store.discover_report("bic", include_archived=True)
+
+    assert not report.jobs
+    assert len(report.issues) == 1
+    assert report.issues[0].job_id == stale.job_id
+    assert report.issues[0].details["missing_project_bindings"] == [
+        {"binding": "content_source", "role": "SOURCE", "project_id": "idKKHv0"},
+        {"binding": "lexical_donor", "role": "DONOR", "project_id": "usNIVv2"},
+        {"binding": "generated_target", "role": "TARGET", "project_id": "usBOLx1"},
+    ]
+
 
 def test_direct_bic_chain_reuses_same_run(package_root: Path, make_workspace) -> None:
     """Direct BIC stages for the same project/scope continue one governed Run."""

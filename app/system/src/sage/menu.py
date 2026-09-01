@@ -100,6 +100,8 @@ from .jobs import (
     RUN_CLOSED_STATUSES,
     TOOL_IDS,
     Job as Job,
+    JobDiscoveryReport as JobDiscoveryReport,
+    JobLoadIssue as JobLoadIssue,
     JobStore as JobStore,
     Run as Run,
     default_job_name,
@@ -2085,20 +2087,111 @@ class SageControlCenter:
 
     def choose_job(self, tool: str) -> Job | None:
         """Implement `choose project` in the deterministic terminal control flow."""
-        projects = self.store.discover(tool)
-        if not projects:
+        report = self.store.discover_report(tool)
+        entries: list[tuple[str, Job | JobLoadIssue]] = [
+            (job.job_id, job) for job in report.jobs
+        ] + [
+            (issue.job_id, issue) for issue in report.issues
+        ]
+        entries.sort(key=lambda item: item[0].casefold())
+        if not entries:
             self.io.write(f"No {tool.upper()} Jobs exist. Open {tool.upper()} from the Main Menu to create one.")
             self.io.pause()
             return None
-        options = [(str(index), f"{project.display_name} [{project.job_id}]") for index, project in enumerate(projects, 1)]
+        options = [
+            (
+                str(index),
+                f"{item.display_name} [{item.job_id}]"
+                + (" [ACTION NEEDED]" if isinstance(item, JobLoadIssue) else ""),
+            )
+            for index, (_job_id, item) in enumerate(entries, 1)
+        ]
         options.append(("B", "Back"))
         choice = self.io.choose(f"{self.localizer.text('Choose active Job')} [{tool.upper()}]", options)
         if choice == "B":
             return None
-        project = projects[int(choice) - 1]
+        selected = entries[int(choice) - 1][1]
+        if isinstance(selected, JobLoadIssue):
+            project = self._present_job_action_needed(selected, offer_onboarding=True)
+            if project is None:
+                return None
+        else:
+            project = selected
         self.store.set_active_job(tool, project.job_id)
         self.io.write(f"Active {tool.upper()} job: {project.display_name}")
         return project
+
+    @staticmethod
+    def _active_job_from_report(
+        report: JobDiscoveryReport,
+        active_job_id: str | None,
+    ) -> tuple[Job | None, JobLoadIssue | None]:
+        """Resolve one raw active pointer against valid Jobs and collected loading issues."""
+        if not active_job_id:
+            return None, None
+        job = next((item for item in report.jobs if item.job_id == active_job_id), None)
+        issue = next((item for item in report.issues if item.job_id == active_job_id), None)
+        return job, issue
+
+    def _present_job_action_needed(
+        self,
+        issue: JobLoadIssue,
+        *,
+        offer_onboarding: bool,
+    ) -> Job | None:
+        """Render one recoverable Job problem and optionally open guided Project onboarding."""
+        missing = list(issue.details.get("missing_project_bindings") or [])
+        self.io.write()
+        self.io.write("JOB ACTION NEEDED")
+        self.io.write("-" * 72)
+        self.io.write(f"Job: {issue.job_id} - {issue.display_name}")
+        self.io.write(f"Reason code: {issue.code}")
+        if missing:
+            self.io.write("Missing onboarded Projects:")
+            for item in missing:
+                self.io.write(f"  - {item.get('role')}: {item.get('project_id')}")
+            try:
+                catalogue = load_paratext_catalog(self.root)
+                catalogued = set(dict(catalogue.get("projects") or {}))
+            except SageError:
+                catalogued = set()
+            missing_ids = [str(item.get("project_id")) for item in missing]
+            found = [project_id for project_id in missing_ids if project_id in catalogued]
+            absent = [project_id for project_id in missing_ids if project_id not in catalogued]
+            if found and not absent:
+                subject = "Both Projects" if len(found) == 2 else "All missing Projects"
+                self.io.write(f"{subject} were found in the Paratext catalog.")
+            elif found:
+                self.io.write(f"Found in Paratext catalog: {', '.join(found)}")
+                self.io.write(f"Not found in Paratext catalog: {', '.join(absent)}")
+            else:
+                self.io.write("The missing Projects were not found in the current Paratext catalog.")
+        else:
+            self.io.write(f"What happened: {operator_text(self.root, issue.message)}")
+        self.io.write("Job and Project data were not changed.")
+        self.io.write(
+            f"Next action: {operator_text(self.root, issue.next_action)}"
+            if issue.next_action
+            else "Next action: Review the Job configuration, correct it, and open the Job again."
+        )
+        if not offer_onboarding or not missing:
+            self.io.pause()
+            return None
+        if not self.io.confirm("Open Add Projects to SAGE now?", default=True):
+            return None
+        self.discover_register_projects_menu()
+        refreshed = self.store.discover_report(issue.tool, include_archived=True)
+        project = next((job for job in refreshed.jobs if job.job_id == issue.job_id), None)
+        if project is not None:
+            self.io.write(f"Job binding check: READY - {project.job_id}")
+            return project
+        refreshed_issue = next(
+            (item for item in refreshed.issues if item.job_id == issue.job_id),
+            None,
+        )
+        if refreshed_issue is not None:
+            self._present_job_action_needed(refreshed_issue, offer_onboarding=False)
+        return None
 
     def show_active_readiness(self) -> None:
         """Implement `show active readiness` in the deterministic terminal control flow."""
@@ -2106,7 +2199,12 @@ class SageControlCenter:
         self.io.write("ACTIVE JOB READINESS")
         self.io.write("-" * 72)
         for tool in TOOL_IDS:
-            project = self.store.active_job(tool)
+            report = self.store.discover_report(tool, include_archived=True)
+            active_id = self.store.active_jobs().get(tool)
+            project, issue = self._active_job_from_report(report, active_id)
+            if issue is not None:
+                self.io.write(f"{tool.upper()}: {issue.job_id} - ACTION NEEDED [{issue.code}]")
+                continue
             if project is None:
                 self.io.write(f"{tool.upper()}: NONE")
                 continue
@@ -2123,8 +2221,15 @@ class SageControlCenter:
     def bic_menu(self) -> None:
         """Open BIC even when no Job exists; Job creation is a tool-setup task."""
         while True:
-            project = self.store.active_job("bic")
-            active = project.display_name if project is not None else "NONE"
+            report = self.store.discover_report("bic", include_archived=True)
+            active_id = self.store.active_jobs().get("bic")
+            project, active_issue = self._active_job_from_report(report, active_id)
+            if project is not None:
+                active = project.display_name
+            elif active_issue is not None:
+                active = f"{active_issue.job_id} - ACTION NEEDED"
+            else:
+                active = "NONE"
             choice = self.io.choose(
                 "BIC JOBS",
                 (
@@ -2158,6 +2263,12 @@ class SageControlCenter:
             if choice == "6":
                 self.job_storage_maintenance_menu("bic")
                 continue
+            if active_issue is not None:
+                project = self._present_job_action_needed(active_issue, offer_onboarding=True)
+                if project is not None:
+                    self.store.set_active_job("bic", project.job_id)
+                else:
+                    continue
             if project is None:
                 project = self.choose_job("bic")
             if project is not None:
@@ -2224,12 +2335,17 @@ class SageControlCenter:
     def saw_menu(self) -> None:
         """Choose/setup one SAW Job; checks are run only from the selected Job screen."""
         while True:
-            active = self.store.active_job("saw")
-            context: list[str] = [f"Active Job                   {active.job_id if active else 'NONE'}"]
-            if active is not None:
+            report = self.store.discover_report("saw", include_archived=True)
+            active_id = self.store.active_jobs().get("saw")
+            active, active_issue = self._active_job_from_report(report, active_id)
+            active_label = active.job_id if active else active_issue.job_id if active_issue else "NONE"
+            if active_issue is not None:
+                active_label += " [ACTION NEEDED]"
+            context: list[str] = [f"Active Job                   {active_label}"]
+            if active is not None or active_issue is not None:
                 context.extend([
-                    f"WIP                          {active.bindings.get('wip')}",
-                    f"REFERENCE                    {active.bindings.get('reference')}",
+                    f"WIP                          {active.bindings.get('wip') if active else 'CHECK REQUIRED'}",
+                    f"REFERENCE                    {active.bindings.get('reference') if active else 'CHECK REQUIRED'}",
                 ])
                 options = (
                     ("1", "Open active SAW Job"),
@@ -2254,9 +2370,15 @@ class SageControlCenter:
             choice = self.io.choose("SAW", options, context=tuple(context))
             if choice == "B":
                 return
-            if active is not None:
+            if active is not None or active_issue is not None:
                 if choice == "1":
-                    self._saw_job_menu(active)
+                    selected = active
+                    if active_issue is not None:
+                        selected = self._present_job_action_needed(active_issue, offer_onboarding=True)
+                        if selected is not None:
+                            self.store.set_active_job("saw", selected.job_id)
+                    if selected is not None:
+                        self._saw_job_menu(selected)
                 elif choice == "2":
                     selected = self.choose_job("saw")
                     if selected is not None:
@@ -2268,9 +2390,15 @@ class SageControlCenter:
                 elif choice == "4":
                     self.job_management_menu("saw")
                 elif choice == "5":
-                    self.reports_menu(active)
+                    if active is not None:
+                        self.reports_menu(active)
+                    elif active_issue is not None:
+                        self._present_job_action_needed(active_issue, offer_onboarding=True)
                 elif choice == "6":
-                    self.recovery_menu(active)
+                    if active is not None:
+                        self.recovery_menu(active)
+                    elif active_issue is not None:
+                        self._present_job_action_needed(active_issue, offer_onboarding=True)
                 elif choice == "7":
                     self.job_storage_maintenance_menu("saw")
             else:
@@ -4280,14 +4408,25 @@ class SageControlCenter:
     def job_management_menu(self, tool: str) -> None:
         """List Jobs, choose the active Job, or open it for governed work."""
         while True:
-            jobs = self.store.discover(tool, include_archived=True)
-            active = self.store.active_job(tool)
+            report = self.store.discover_report(tool, include_archived=True)
+            jobs = report.jobs
+            active_id = self.store.active_jobs().get(tool)
+            active, active_issue = self._active_job_from_report(report, active_id)
             self.io.write()
             self.io.write(f"{tool.upper()} JOBS")
             self.io.write("-" * 72)
-            if jobs:
-                for job in jobs:
-                    if active and job.job_id == active.job_id:
+            entries: list[Job | JobLoadIssue] = [*jobs, *report.issues]
+            entries.sort(key=lambda item: item.job_id.casefold())
+            if entries:
+                for job in entries:
+                    if isinstance(job, JobLoadIssue):
+                        if active_id == job.job_id:
+                            marker = " [ACTIVE, ACTION NEEDED]"
+                        elif job.status not in {"ACTIVE", "UNKNOWN"}:
+                            marker = f" [{job.status}, ACTION NEEDED]"
+                        else:
+                            marker = " [ACTION NEEDED]"
+                    elif active and job.job_id == active.job_id:
                         marker = " [ACTIVE]"
                     elif job.status != "ACTIVE":
                         marker = f" [{job.status}]"
@@ -4307,7 +4446,15 @@ class SageControlCenter:
             )
             if choice == "B": return
             if choice == "1":
-                if active is None:
+                if active_issue is not None:
+                    repaired = self._present_job_action_needed(active_issue, offer_onboarding=True)
+                    if repaired is not None:
+                        self.store.set_active_job(tool, repaired.job_id)
+                        if tool == "saw":
+                            self._saw_job_menu(repaired)
+                        else:
+                            self._bic_job_menu(repaired)
+                elif active is None:
                     self.io.write(f"No active {tool.upper()} Job. Choose or add one first.")
                     self.io.pause()
                 elif tool == "saw":
@@ -4344,8 +4491,11 @@ class SageControlCenter:
                     self.io.pause()
                 continue
             if project is None:
-                self.io.write(f"No active {tool.upper()} Job. Choose or add one first.")
-                self.io.pause()
+                if active_issue is not None:
+                    self._present_job_action_needed(active_issue, offer_onboarding=True)
+                else:
+                    self.io.write(f"No active {tool.upper()} Job. Choose or add one first.")
+                    self.io.pause()
                 continue
             if choice == "4":
                 self._job_settings_menu(project)

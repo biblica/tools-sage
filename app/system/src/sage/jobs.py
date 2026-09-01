@@ -16,7 +16,7 @@ import yaml
 
 from .atomic import atomic_write_json, atomic_write_text
 from .config import load_json, load_yaml, require_mapping, require_string
-from .errors import ConfigurationError, ValidationError
+from .errors import ConfigurationError, SageError, ValidationError
 from .registry import EcosystemConfig, load_ecosystem
 from .resource_mounts import apply_resource_mounts
 from .project_inventory import merge_registered_projects, registered_project_records
@@ -90,6 +90,29 @@ class Job:
 
 
 @dataclass(frozen=True)
+class JobLoadIssue:
+    """One expected Job loading problem that should remain visible to the operator."""
+
+    job_id: str
+    tool: str
+    display_name: str
+    status: str
+    code: str
+    message: str
+    next_action: str | None
+    details: dict[str, Any]
+    manifest_path: Path
+
+
+@dataclass(frozen=True)
+class JobDiscoveryReport:
+    """Valid Jobs plus independently collected expected loading problems."""
+
+    jobs: tuple[Job, ...]
+    issues: tuple[JobLoadIssue, ...]
+
+
+@dataclass(frozen=True)
 class Run:
     """One bounded operator execution owned by exactly one Job."""
 
@@ -160,6 +183,26 @@ def default_job_name(
     return f"SAW_{output}-{source}"
 
 
+def _validate_saw_role_separation(job_id: str, bindings: dict[str, str]) -> None:
+    """Reject one Project serving contradictory WIP and REFERENCE roles in the same SAW Job."""
+    if bindings["wip"] != bindings["reference"]:
+        return
+    project_id = bindings["wip"]
+    raise ValidationError(
+        f"SAW Job {job_id} is invalid: WIP and REFERENCE both bind {project_id}; "
+        "the two roles require different runtime content states.",
+        code="PROJECT_BINDING_ROLE_CONFLICT",
+        next_action=(
+            "Choose or add a SAW Job that uses different SAGE Projects for WIP and REFERENCE, "
+            "then open the Job again."
+        ),
+        details={
+            "project_id": project_id,
+            "conflicting_roles": ["WIP", "REFERENCE"],
+        },
+    )
+
+
 
 def _resource_slug(project_id: str) -> str:
     """Display slug helper; never use this to construct Job identity."""
@@ -210,6 +253,48 @@ class JobStore:
                 if include_archived or job.status != "ARCHIVED":
                     result.append(job)
         return sorted(result, key=lambda item: (item.tool, item.job_id.casefold()))
+
+    def discover_report(
+        self,
+        tool: str | None = None,
+        *,
+        include_archived: bool = False,
+    ) -> JobDiscoveryReport:
+        """Collect valid Jobs and expected per-manifest issues without aborting discovery."""
+        tools: Iterable[str] = (tool.strip().lower(),) if tool else TOOL_IDS
+        jobs: list[Job] = []
+        issues: list[JobLoadIssue] = []
+        for tool_id in tools:
+            for manifest in sorted(self.tool_root(tool_id).glob("*/job.yml")):
+                try:
+                    job = self.load_job(manifest.parent.name, tool=tool_id)
+                except SageError as exc:
+                    raw: dict[str, Any] = {}
+                    try:
+                        raw = load_yaml(manifest)
+                    except SageError:
+                        pass
+                    status = str(raw.get("status") or "UNKNOWN").strip().upper()
+                    if not include_archived and status == "ARCHIVED":
+                        continue
+                    issues.append(JobLoadIssue(
+                        job_id=str(raw.get("job_id") or manifest.parent.name),
+                        tool=str(raw.get("tool") or tool_id).strip().lower(),
+                        display_name=str(raw.get("display_name") or raw.get("job_id") or manifest.parent.name),
+                        status=status,
+                        code=exc.code,
+                        message=exc.message,
+                        next_action=exc.next_action,
+                        details=dict(exc.details),
+                        manifest_path=manifest,
+                    ))
+                    continue
+                if include_archived or job.status != "ARCHIVED":
+                    jobs.append(job)
+        return JobDiscoveryReport(
+            jobs=tuple(sorted(jobs, key=lambda item: (item.tool, item.job_id.casefold()))),
+            issues=tuple(sorted(issues, key=lambda item: (item.tool, item.job_id.casefold()))),
+        )
 
     def load_job(self, job_id: str, *, tool: str | None = None) -> Job:
         """Load and validate one current Job."""
@@ -264,6 +349,17 @@ class JobStore:
                 raise ConfigurationError(
                     "BIC Job requires exactly_one SOURCE, DONOR, and TARGET; the three bindings must be distinct"
                 )
+        else:
+            try:
+                _validate_saw_role_separation(manifest_job_id, bindings)
+            except ValidationError as exc:
+                raise ConfigurationError(
+                    exc.message,
+                    code=exc.code,
+                    next_action=exc.next_action,
+                    affected_scope=exc.affected_scope,
+                    details=exc.details,
+                ) from exc
         expected_job_id = default_job_name(
             job_tool,
             bindings["generated_target"] if job_tool == "bic" else bindings["wip"],
@@ -330,7 +426,13 @@ class JobStore:
                 tool=job_tool, job_id=manifest_job_id, bindings=bindings, profiles=profiles,
             )
         except ValidationError as exc:
-            raise ConfigurationError(f"Job {manifest_job_id} has invalid semantic bindings: {exc}") from exc
+            raise ConfigurationError(
+                f"Job {manifest_job_id} has invalid semantic bindings: {exc}",
+                code=exc.code,
+                next_action=exc.next_action,
+                affected_scope=exc.affected_scope,
+                details=exc.details,
+            ) from exc
         return Job(
             job_id=manifest_job_id, tool=job_tool,
             display_name=require_string(raw.get("display_name", manifest_job_id), "job display_name"),
@@ -355,6 +457,35 @@ class JobStore:
         """Resolve Job bindings and derive role-specific grammar profiles at Job scope."""
         # Project inventory stays role-neutral here; all semantic authority below is Job-scoped.
         config = load_ecosystem(self.settings_path)
+
+        ordinary_roles = (
+            (
+                ("content_source", "SOURCE"),
+                ("lexical_donor", "DONOR"),
+                ("generated_target", "TARGET"),
+            )
+            if tool == "bic"
+            else (("wip", "WIP"), ("reference", "REFERENCE"))
+        )
+        missing_project_bindings = [
+            {"binding": key, "role": role, "project_id": bindings[key]}
+            for key, role in ordinary_roles
+            if bindings[key] not in config.projects
+        ]
+        if missing_project_bindings:
+            rendered = ", ".join(
+                f"{item['role']}={item['project_id']}" for item in missing_project_bindings
+            )
+            project_ids = ", ".join(item["project_id"] for item in missing_project_bindings)
+            raise ValidationError(
+                f"Job {job_id} references Projects that are not onboarded in SAGE: {rendered}",
+                code="PROJECT_BINDING_MISMATCH",
+                next_action=(
+                    "Open Manage SAGE Scripture Projects > Add Projects to SAGE, add "
+                    f"{project_ids}, then open the Job again."
+                ),
+                details={"missing_project_bindings": missing_project_bindings},
+            )
 
         def bound(key: str, role: str):
             """Resolve one SAGE Project; ``role`` exists only in this Job binding."""
@@ -542,6 +673,8 @@ class JobStore:
                     "BIC Job requires one bound SOURCE resource, one bound DONOR resource, and one bound TARGET resource; the three bindings must be distinct",
                     code="PROJECT_BINDING_MISMATCH",
                 )
+        else:
+            _validate_saw_role_separation(normalized_id, bindings)
         canonical_profiles = self._validate_project_bindings(
             tool=normalized_tool,
             job_id=normalized_id,
@@ -1096,7 +1229,10 @@ class JobStore:
             return None
         if not manifest.is_file():
             return None
-        return self.load_job(job_id, tool=normalized)
+        try:
+            return self.load_job(job_id, tool=normalized)
+        except SageError:
+            return None
 
     def create_run(
         self,
