@@ -97,6 +97,11 @@ from .stc_reporting import publish_stc_task_reports
 from .operator_overrides import load_effective_settings, write_local_settings
 from .job_layout import audit_job_layout, migrate_job_layout, render_job_layout_audit, verify_job_layout, write_job_layout_audit
 from .out_of_box_reset import reset_to_out_of_box
+from .job_data_reset import wipe_all_job_data
+from .resource_status_report import (
+    build_resource_status_report,
+    render_resource_status_report,
+)
 from .jobs import (
     RUN_CLOSED_STATUSES,
     Job as Job,
@@ -1103,7 +1108,9 @@ class SageControlCenter:
                     ("2", "Configure languages"),
                     ("3", "Configure paths and storage"),
                     ("4", "Run system checks"),
-                    ("5", "System information, recovery and diagnostics"),
+                    ("5", "Resource Status Report"),
+                    ("6", "Wipe all Job data"),
+                    ("7", "System information, recovery and diagnostics"),
                     ("B", "Back"), ("H", "Main Menu"), ("X", "Exit SAGE"),
                 ),
             )
@@ -1115,10 +1122,43 @@ class SageControlCenter:
                 elif choice == "2": self.configure_languages_menu()
                 elif choice == "3": self.paths_and_workspace_menu()
                 elif choice == "4": self.system_diagnostics_menu()
-                elif choice == "5":
+                elif choice == "5": self._show_resource_status_report()
+                elif choice == "6": self._wipe_all_job_data_menu()
+                elif choice == "7":
                     self.system_recovery_menu()
             except SageError as exc:
                 self.show_error(exc)
+
+    def _show_resource_status_report(self) -> None:
+        """Display one read-only inventory of current Projects and authorities."""
+        report = build_resource_status_report(
+            self.root,
+            settings_path=self.store.settings_path,
+        )
+        self.io.write()
+        self.io.write(render_resource_status_report(report).rstrip())
+        self.io.pause()
+
+    def _wipe_all_job_data_menu(self) -> None:
+        """Require two deliberate confirmations before deleting bounded Job data."""
+        self.io.write()
+        self.io.write("WIPE ALL JOB DATA")
+        self.io.write("=" * 72)
+        self.io.write("This removes every BIC, RTC, STC, and legacy SAW Job, Run,")
+        self.io.write("task, report, export, history, pointer, lock, and transaction.")
+        self.io.write("Projects, resource mappings, configuration, indexes, and the")
+        self.io.write("managed virtual environment and dependencies are preserved.")
+        if not self.io.confirm("Wipe all Job data?", default=False):
+            self.io.write("Job-data wipe cancelled.")
+            return
+        typed = self.io.text("Type WIPE JOB DATA to confirm")
+        if typed != "WIPE JOB DATA":
+            self.io.write("Job-data wipe cancelled; confirmation text did not match.")
+            return
+        result = wipe_all_job_data(self.root)
+        self.io.write("JOB DATA WIPED")
+        self.io.write(f"Receipt: {result['receipt_path']}")
+        self.io.write("SAGE is ready for new BIC, RTC, or STC Jobs.")
 
     def _language_ui_config(self) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
         """Load governed language identity, relationship, and competency display configuration."""
@@ -5951,7 +5991,7 @@ class SageControlCenter:
         self._show_support_docs()
 
     def system_recovery_menu(self) -> None:
-        """Expose system recovery without mixing in BIC/SAW Job recovery actions."""
+        """Expose system recovery without mixing in workflow Job recovery actions."""
         while True:
             from . import __version__
             config = load_ecosystem(self.store.settings_path)
@@ -5979,13 +6019,14 @@ class SageControlCenter:
                     f"{'Project inventory':<28}{storage_layout(self.root).state_root / 'project-inventory.json'}",
                     f"{'Resource mappings':<28}{storage_layout(self.root).state_root / 'resource-mounts.json'}",
                     f"{'BIC Jobs':<28}{self.store.tool_root('bic')}",
-                    f"{'SAW Jobs':<28}{self.store.tool_root('saw')}",
+                    f"{'RTC Jobs':<28}{self.store.tool_root('rtc')}",
+                    f"{'STC Jobs':<28}{self.store.tool_root('stc')}",
                     f"{'Reports':<28}{storage_layout(self.root).reports_root}",
                     f"{'Setup state':<28}{self.store.setup_state_path}",
                     f"{'Last Run':<28}{self.store.last_run_path}",
                     f"{'Operator cues':<28}{self.store.operator_cues_path}",
                     "",
-                    "Use BIC/SAW Recovery and diagnostics for Job or Run recovery.",
+                    "Use BIC/RTC/STC Recovery and diagnostics for Job or Run recovery.",
                     "Use the system actions below for installation-wide maintenance.",
                 ),
                 option_heading="SYSTEM ACTIONS",
