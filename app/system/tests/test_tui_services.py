@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import yaml
+
 from sage.storage import storage_layout
 from sage.cli import build_parser, command_tui
+from sage.jobs import JobStore
+from sage.resource_mounts import set_project_root
 from sage.runtime_status import RuntimeStatus
 from sage.ui_services import OperatorUIService, context_help_lines, probe_workflow_ai
 
@@ -94,6 +98,43 @@ def test_startup_readiness_blocks_operational_surfaces_without_projects_root(mak
     assert snapshot["requires_setup"] is True
     assert snapshot["projects_root_status"] == "NOT_CONFIGURED"
     assert snapshot["next_step"] == "CONFIGURE_PROJECT_ROOT"
+
+
+def test_invalid_active_job_is_action_needed_without_blocking_main_ui(make_workspace) -> None:
+    """A Project-register mismatch stays configured and visible while the main UI remains available."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    set_project_root(root, project_root=storage_layout(root).projects_root)
+    store = JobStore(root, root / "ecosystem.yml")
+    saw = next(job for job in store.bootstrap_default_jobs() if job.tool == "saw")
+    store.set_active_job("saw", saw.job_id)
+    raw = yaml.safe_load((root / "ecosystem.yml").read_text(encoding="utf-8"))
+    del raw["projects"]["usWIP"]
+    del raw["projects"]["usNIVv2"]
+    (root / "ecosystem.yml").write_text(
+        yaml.safe_dump(raw, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+    store.write_setup_state({"scripture_resources": {"status": "READY"}})
+    service = OperatorUIService(root=root, settings_path=root / "ecosystem.yml")
+
+    startup = service.startup_readiness({"available": True, "ready": True})
+    section = service.section_snapshot("saw")
+
+    assert startup["status"] == "READY"
+    assert startup["requires_setup"] is False
+    assert startup["next_step"] == "VALIDATE"
+    assert startup["workflows"]["saw"] == (
+        f"ACTION NEEDED - {saw.job_id} [PROJECT_BINDING_MISMATCH]"
+    )
+    assert section["active_job"] == saw.job_id
+    assert section["jobs"] == [{
+        "job_id": saw.job_id,
+        "display_name": saw.display_name,
+        "active": True,
+        "archived": False,
+        "action_needed": True,
+        "reason_code": "PROJECT_BINDING_MISMATCH",
+    }]
 
 
 def test_project_snapshot_uses_inventory_display_name_and_language_code(make_workspace) -> None:
