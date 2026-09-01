@@ -1,4 +1,4 @@
-"""Persistent BIC/SAW Jobs, active selections, Runs, and derived runtime configs."""
+"""Persistent workflow Jobs, active selections, Runs, and derived runtime configs."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import json
 import os
 import re
 import shutil
+import tempfile
 import zipfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -17,6 +18,8 @@ import yaml
 from .atomic import atomic_write_json, atomic_write_text
 from .config import load_json, load_yaml, require_mapping, require_string
 from .errors import ConfigurationError, SageError, ValidationError
+from .job_snapshots import capture_wip_snapshot, seal_run_snapshot
+from .locking import WorkspaceLock
 from .registry import EcosystemConfig, load_ecosystem
 from .resource_mounts import apply_resource_mounts
 from .project_inventory import merge_registered_projects, registered_project_records
@@ -28,17 +31,29 @@ from .runtime_paths import validate_context_id
 from .state import append_event
 from .progress import DEFAULT_JOB_PROGRESS_POLICY, validate_job_progress_policy
 from .storage import StorageError, declare_governed_path, resolve_declared_path, resolve_persisted_path, storage_layout
+from .workflow_identity import (
+    ANALYSIS_WORKFLOWS,
+    SUPPORTED_JOB_TOOLS,
+    canonical_analysis_job_id,
+    runtime_workflow_id,
+)
 
+# Compatibility export used by the existing SAW menu until the primary-flow menu
+# switches to OPERATOR_WORKFLOWS. Persistence already understands RTC and STC.
 TOOL_IDS = ("bic", "saw")
+PERSISTED_JOB_TOOLS = SUPPORTED_JOB_TOOLS
 JOB_SCHEMA_VERSION = "1.0"
 RUN_SCHEMA_VERSION = "1.0"
 RUN_CLOSED_STATUSES = frozenset({"COMPLETE", "ARCHIVED", "ABANDONED"})
-_JOB_ID_RE = re.compile(r"^(BIC|SAW)_[A-Za-z0-9][A-Za-z0-9._-]{1,190}$")
+_JOB_ID_RE = re.compile(
+    r"^(?:(?:BIC|SAW)_[A-Za-z0-9][A-Za-z0-9._-]{1,190}"
+    r"|(?:RTC|STC)-[A-Za-z0-9][A-Za-z0-9._-]{0,63}_[0-9]{8})$"
+)
 
 
 @dataclass(frozen=True)
 class Job:
-    """One persistent BIC or SAW Job with fixed SAGE Project bindings."""
+    """One persistent workflow Job with fixed SAGE Project bindings."""
 
     job_id: str
     tool: str
@@ -52,6 +67,7 @@ class Job:
     secondary_report_language: str | None
     reporting_contract_persisted: bool
     configuration_revision: int
+    wip_snapshot: dict[str, Any] | None
     root: Path
     manifest_path: Path
     controller_root: Path
@@ -72,16 +88,21 @@ class Job:
         return self.controller_root / "state"
 
     @property
+    def runtime_tool(self) -> str:
+        """Return the internal workflow adapter used to execute this Job."""
+        return runtime_workflow_id(self.tool)
+
+    @property
     def output_project(self) -> str:
         """Manage `output project` for Job-scoped state and storage."""
         key = "generated_target" if self.tool == "bic" else "wip"
         return self.bindings[key]
 
     @property
-    def contemporary_source(self) -> str:
-        """Return the BIC SOURCE or SAW REFERENCE binding for Job-scoped state."""
+    def contemporary_source(self) -> str | None:
+        """Return the comparison Project when this workflow has one."""
         key = "content_source" if self.tool == "bic" else "reference"
-        return self.bindings[key]
+        return self.bindings.get(key)
 
     @property
     def lexical_donor(self) -> str | None:
@@ -184,16 +205,17 @@ def default_job_name(
 
 
 def _validate_saw_role_separation(job_id: str, bindings: dict[str, str]) -> None:
-    """Reject one Project serving contradictory WIP and REFERENCE roles in the same SAW Job."""
+    """Reject one Project serving contradictory WIP and REFERENCE roles."""
     if bindings["wip"] != bindings["reference"]:
         return
     project_id = bindings["wip"]
+    workflow = "RTC" if job_id.startswith("RTC-") else "SAW"
     raise ValidationError(
-        f"SAW Job {job_id} is invalid: WIP and REFERENCE both bind {project_id}; "
-        "the two roles require different runtime content states.",
+        f"{workflow} Job {job_id} is invalid: WIP and REFERENCE both bind {project_id}; "
+        "the two roles must use different Projects and require different runtime content states.",
         code="PROJECT_BINDING_ROLE_CONFLICT",
         next_action=(
-            "Choose or add a SAW Job that uses different SAGE Projects for WIP and REFERENCE, "
+            f"Choose or add a {workflow} Job that uses different SAGE Projects for WIP and REFERENCE, "
             "then open the Job again."
         ),
         details={
@@ -201,6 +223,27 @@ def _validate_saw_role_separation(job_id: str, bindings: dict[str, str]) -> None
             "conflicting_roles": ["WIP", "REFERENCE"],
         },
     )
+
+
+def _binding_contract(tool: str) -> tuple[set[str], set[str]]:
+    """Return required and optional persisted bindings for one Job workflow."""
+    contracts = {
+        "bic": (
+            {"content_source", "lexical_donor", "generated_target"},
+            {"original_language_greek", "original_language_hebrew"},
+        ),
+        "saw": (
+            {"wip", "reference"},
+            {"original_language_greek", "original_language_hebrew"},
+        ),
+        "rtc": ({"wip", "reference"}, set()),
+        "stc": ({"wip"}, set()),
+    }
+    try:
+        required, optional = contracts[tool]
+    except KeyError as exc:
+        raise ValidationError(f"Unsupported tool: {tool}") from exc
+    return set(required), set(optional)
 
 
 
@@ -233,7 +276,7 @@ class JobStore:
     def tool_root(self, tool: str) -> Path:
         """Manage `tool root` for Job-scoped state and storage."""
         normalized = tool.strip().lower()
-        if normalized not in TOOL_IDS:
+        if normalized not in PERSISTED_JOB_TOOLS:
             raise ValidationError(f"Unsupported tool: {tool}")
         return self.jobs_root / normalized
 
@@ -245,7 +288,7 @@ class JobStore:
 
     def discover(self, tool: str | None = None, *, include_archived: bool = False) -> list[Job]:
         """Load current Jobs in stable canonical-name order."""
-        tools: Iterable[str] = (tool.strip().lower(),) if tool else TOOL_IDS
+        tools: Iterable[str] = (tool.strip().lower(),) if tool else PERSISTED_JOB_TOOLS
         result: list[Job] = []
         for tool_id in tools:
             for manifest in sorted(self.tool_root(tool_id).glob("*/job.yml")):
@@ -261,7 +304,7 @@ class JobStore:
         include_archived: bool = False,
     ) -> JobDiscoveryReport:
         """Collect valid Jobs and expected per-manifest issues without aborting discovery."""
-        tools: Iterable[str] = (tool.strip().lower(),) if tool else TOOL_IDS
+        tools: Iterable[str] = (tool.strip().lower(),) if tool else PERSISTED_JOB_TOOLS
         jobs: list[Job] = []
         issues: list[JobLoadIssue] = []
         for tool_id in tools:
@@ -300,7 +343,7 @@ class JobStore:
         """Load and validate one current Job."""
         job_id = validate_context_id(job_id, "job_id")
         assert job_id is not None
-        tools = (tool.strip().lower(),) if tool else TOOL_IDS
+        tools = (tool.strip().lower(),) if tool else PERSISTED_JOB_TOOLS
         existing = [self.job_root(tool_id, job_id) / "job.yml" for tool_id in tools]
         existing = [path for path in existing if path.is_file()]
         if len(existing) != 1:
@@ -325,17 +368,13 @@ class JobStore:
         job_tool = require_string(raw.get("tool"), "job tool").lower()
         if manifest_job_id != path.parent.name or not _JOB_ID_RE.fullmatch(manifest_job_id):
             raise ConfigurationError(f"Invalid or mismatched Job ID: {manifest_job_id}")
-        if job_tool not in TOOL_IDS or path.parent.parent.name != job_tool:
+        if job_tool not in PERSISTED_JOB_TOOLS or path.parent.parent.name != job_tool:
             raise ConfigurationError(f"Invalid or mismatched Job workflow: {job_tool}")
         bindings = {
             str(key): require_string(value, f"job bindings.{key}")
             for key, value in require_mapping(raw.get("bindings"), "job bindings").items()
         }
-        required = (
-            {"content_source", "lexical_donor", "generated_target"}
-            if job_tool == "bic" else {"wip", "reference"}
-        )
-        optional = {"original_language_greek", "original_language_hebrew"}
+        required, optional = _binding_contract(job_tool)
         allowed = required | optional
         missing = sorted(required - set(bindings))
         extra = sorted(set(bindings) - allowed)
@@ -349,7 +388,7 @@ class JobStore:
                 raise ConfigurationError(
                     "BIC Job requires exactly_one SOURCE, DONOR, and TARGET; the three bindings must be distinct"
                 )
-        else:
+        elif job_tool in {"saw", "rtc"}:
             try:
                 _validate_saw_role_separation(manifest_job_id, bindings)
             except ValidationError as exc:
@@ -360,12 +399,53 @@ class JobStore:
                     affected_scope=exc.affected_scope,
                     details=exc.details,
                 ) from exc
-        expected_job_id = default_job_name(
-            job_tool,
-            bindings["generated_target"] if job_tool == "bic" else bindings["wip"],
-            bindings["content_source"] if job_tool == "bic" else bindings["reference"],
-            bindings.get("lexical_donor"),
-        )
+        wip_snapshot: dict[str, Any] | None = None
+        if job_tool in ANALYSIS_WORKFLOWS:
+            if "wip_snapshot" not in raw:
+                raise ConfigurationError(
+                    f"Job {manifest_job_id} is missing its WIP snapshot receipt"
+                )
+            wip_snapshot = dict(
+                require_mapping(raw.get("wip_snapshot"), "job wip_snapshot")
+            )
+            snapshot_project = require_string(
+                wip_snapshot.get("project_id"), "job wip_snapshot.project_id"
+            )
+            snapshot_date = require_string(
+                wip_snapshot.get("snapshot_date"), "job wip_snapshot.snapshot_date"
+            )
+            if snapshot_project != bindings["wip"]:
+                raise ConfigurationError(
+                    f"Job {manifest_job_id} WIP snapshot belongs to {snapshot_project}, "
+                    f"not {bindings['wip']}"
+                )
+            expected_job_id = canonical_analysis_job_id(
+                job_tool,
+                bindings["wip"],
+                snapshot_date,
+            )
+            snapshot_receipt_path = path.parent / "snapshot" / "SNAPSHOT.json"
+            if (
+                not snapshot_receipt_path.is_file()
+                and str(raw.get("status", "")).strip().upper() != "ARCHIVED"
+            ):
+                raise ConfigurationError(
+                    f"Job {manifest_job_id} WIP snapshot evidence is missing"
+                )
+            if snapshot_receipt_path.is_file():
+                snapshot_receipt = load_json(snapshot_receipt_path)
+                for field in ("project_id", "snapshot_date", "content_fingerprint"):
+                    if snapshot_receipt.get(field) != wip_snapshot.get(field):
+                        raise ConfigurationError(
+                            f"Job {manifest_job_id} WIP snapshot receipt mismatch: {field}"
+                        )
+        else:
+            expected_job_id = default_job_name(
+                job_tool,
+                bindings["generated_target"] if job_tool == "bic" else bindings["wip"],
+                bindings["content_source"] if job_tool == "bic" else bindings["reference"],
+                bindings.get("lexical_donor"),
+            )
         if manifest_job_id != expected_job_id:
             raise ConfigurationError(
                 f"Job {manifest_job_id} canonical identity does not match bindings; expected {expected_job_id}"
@@ -441,7 +521,8 @@ class JobStore:
             primary_report_language=primary_report_language,
             secondary_report_language=secondary_report_language,
             reporting_contract_persisted=reporting_contract_persisted,
-            configuration_revision=revision, root=path.parent, manifest_path=path,
+            configuration_revision=revision, wip_snapshot=wip_snapshot,
+            root=path.parent, manifest_path=path,
             controller_root=self.controller_jobs_root / job_tool / manifest_job_id,
         )
 
@@ -458,15 +539,16 @@ class JobStore:
         # Project inventory stays role-neutral here; all semantic authority below is Job-scoped.
         config = load_ecosystem(self.settings_path)
 
-        ordinary_roles = (
-            (
+        if tool == "bic":
+            ordinary_roles = (
                 ("content_source", "SOURCE"),
                 ("lexical_donor", "DONOR"),
                 ("generated_target", "TARGET"),
             )
-            if tool == "bic"
-            else (("wip", "WIP"), ("reference", "REFERENCE"))
-        )
+        elif tool in {"saw", "rtc"}:
+            ordinary_roles = (("wip", "WIP"), ("reference", "REFERENCE"))
+        else:
+            ordinary_roles = (("wip", "WIP"),)
         missing_project_bindings = [
             {"binding": key, "role": role, "project_id": bindings[key]}
             for key, role in ordinary_roles
@@ -588,7 +670,7 @@ class JobStore:
                 "donor_grammar": resolve_profile(donor, "LEXICAL_DONOR", "donor_grammar"),
                 "target_grammar": resolve_profile(target, "GENERATED_TARGET", "target_grammar"),
             }
-        else:
+        elif tool in {"saw", "rtc"}:
             wip = bound("wip", "WIP")
             reference = bound("reference", "REFERENCE")
             greek = optional_bound("original_language_greek", "ORIGINAL_LANGUAGE_GREEK")
@@ -596,12 +678,17 @@ class JobStore:
             for resource in (reference, greek, hebrew):
                 if resource is not None and resource.content_state != "LOCKED":
                     raise ValidationError(
-                        f"SAW authority resource {resource.project_id} must be LOCKED",
+                        f"{tool.upper()} authority resource {resource.project_id} must be LOCKED",
                         code="PROJECT_BINDING_MISMATCH",
                     )
             expected_profiles = {
                 "target_grammar": resolve_profile(wip, "WIP", "target_grammar"),
                 "reference_grammar": resolve_profile(reference, "REFERENCE", "reference_grammar"),
+            }
+        else:
+            wip = bound("wip", "WIP")
+            expected_profiles = {
+                "target_grammar": resolve_profile(wip, "WIP", "target_grammar"),
             }
         unknown_profiles = sorted(set(supplied) - set(expected_profiles))
         if unknown_profiles:
@@ -624,19 +711,15 @@ class JobStore:
         defaults: dict[str, Any] | None = None,
         primary_report_language: str | None = None,
         secondary_report_language: str | None = None,
+        imported_at: datetime | None = None,
         overwrite: bool = False,
     ) -> Job:
         """Create one canonical Job from fixed SAGE Project bindings."""
         # Keep validation, runtime isolation, and receipt creation in this one transaction.
         normalized_tool = tool.strip().lower()
-        if normalized_tool not in TOOL_IDS:
+        if normalized_tool not in PERSISTED_JOB_TOOLS:
             raise ValidationError(f"Unsupported tool: {tool}")
-        required_bindings = (
-            {"content_source", "lexical_donor", "generated_target"}
-            if normalized_tool == "bic"
-            else {"wip", "reference"}
-        )
-        optional_bindings = {"original_language_greek", "original_language_hebrew"}
+        required_bindings, optional_bindings = _binding_contract(normalized_tool)
         allowed_bindings = required_bindings | optional_bindings
         binding_keys = set(bindings)
         missing_bindings = sorted(required_bindings - binding_keys)
@@ -652,12 +735,26 @@ class JobStore:
                 code="PROJECT_BINDING_MISMATCH",
             )
         requested_id = job_id.strip()
-        expected_id = default_job_name(
-            normalized_tool,
-            bindings["generated_target"] if normalized_tool == "bic" else bindings["wip"],
-            bindings["content_source"] if normalized_tool == "bic" else bindings["reference"],
-            bindings.get("lexical_donor"),
-        )
+        snapshot_time: datetime | None = None
+        if normalized_tool in ANALYSIS_WORKFLOWS:
+            snapshot_time = imported_at or datetime.now(timezone.utc)
+            if snapshot_time.tzinfo is None or snapshot_time.utcoffset() is None:
+                raise ValidationError(
+                    "WIP import timestamp must include a timezone.",
+                    code="INVALID_WIP_IMPORT_TIME",
+                )
+            expected_id = canonical_analysis_job_id(
+                normalized_tool,
+                bindings["wip"],
+                snapshot_time.astimezone().strftime("%Y%m%d"),
+            )
+        else:
+            expected_id = default_job_name(
+                normalized_tool,
+                bindings["generated_target"] if normalized_tool == "bic" else bindings["wip"],
+                bindings["content_source"] if normalized_tool == "bic" else bindings["reference"],
+                bindings.get("lexical_donor"),
+            )
         normalized_id = requested_id or expected_id
         if normalized_id != expected_id:
             raise ValidationError(
@@ -673,7 +770,7 @@ class JobStore:
                     "BIC Job requires one bound SOURCE resource, one bound DONOR resource, and one bound TARGET resource; the three bindings must be distinct",
                     code="PROJECT_BINDING_MISMATCH",
                 )
-        else:
+        elif normalized_tool in {"saw", "rtc"}:
             _validate_saw_role_separation(normalized_id, bindings)
         canonical_profiles = self._validate_project_bindings(
             tool=normalized_tool,
@@ -713,36 +810,57 @@ class JobStore:
                     details={"existing": existing.bindings, "requested": bindings},
                 )
             return existing
-        root.mkdir(parents=True, exist_ok=True)
-        for relative in ("runs", "diagnostics", "exports"):
-            (root / relative).mkdir(parents=True, exist_ok=True)
         controller_root = self.controller_jobs_root / normalized_tool / normalized_id
-        for relative in ("state", "locks", "transactions", "indexes", "cache"):
-            (controller_root / relative).mkdir(parents=True, exist_ok=True)
-        if normalized_tool == "bic":
-            for relative in ("memory", "generations", "target-history"):
+        created_root = not root.exists()
+        created_controller = not controller_root.exists()
+        try:
+            root.mkdir(parents=True, exist_ok=True)
+            for relative in ("runs", "diagnostics", "exports"):
                 (root / relative).mkdir(parents=True, exist_ok=True)
-        payload = {
-            "schema_version": JOB_SCHEMA_VERSION,
-            "job_id": normalized_id,
-            "tool": normalized_tool,
-            "display_name": display_name.strip() or normalized_id,
-            "status": "ACTIVE",
-            "bindings": bindings,
-            "profiles": canonical_profiles,
-            "defaults": defaults or {},
-            "progress_quantifier": DEFAULT_JOB_PROGRESS_POLICY.to_dict(),
-            "reporting": {
-                "primary_language": canonical_primary,
-                "secondary_language": canonical_secondary,
-            },
-            "configuration_revision": 1,
-        }
-        atomic_write_text(root / "job.yml", _safe_yaml(payload))
-        atomic_write_text(root / "README.md", self._render_project_readme(payload))
-        project = self.load_job(normalized_id, tool=normalized_tool)
-        self.write_runtime_files(project)
-        return project
+            for relative in ("state", "locks", "transactions", "indexes", "cache"):
+                (controller_root / relative).mkdir(parents=True, exist_ok=True)
+            if normalized_tool == "bic":
+                for relative in ("memory", "generations", "target-history"):
+                    (root / relative).mkdir(parents=True, exist_ok=True)
+            wip_snapshot = None
+            if normalized_tool in ANALYSIS_WORKFLOWS:
+                assert snapshot_time is not None
+                wip_snapshot = capture_wip_snapshot(
+                    self.sage_root,
+                    settings_path=self.settings_path,
+                    project_id=bindings["wip"],
+                    destination=root / "snapshot",
+                    imported_at=snapshot_time,
+                )
+            payload = {
+                "schema_version": JOB_SCHEMA_VERSION,
+                "job_id": normalized_id,
+                "tool": normalized_tool,
+                "display_name": display_name.strip() or normalized_id,
+                "status": "ACTIVE",
+                "bindings": bindings,
+                "profiles": canonical_profiles,
+                "defaults": defaults or {},
+                "progress_quantifier": DEFAULT_JOB_PROGRESS_POLICY.to_dict(),
+                "reporting": {
+                    "primary_language": canonical_primary,
+                    "secondary_language": canonical_secondary,
+                },
+                "configuration_revision": 1,
+            }
+            if wip_snapshot is not None:
+                payload["wip_snapshot"] = wip_snapshot
+            atomic_write_text(root / "job.yml", _safe_yaml(payload))
+            atomic_write_text(root / "README.md", self._render_project_readme(payload))
+            project = self.load_job(normalized_id, tool=normalized_tool)
+            self.write_runtime_files(project)
+            return project
+        except Exception:
+            if created_root and root.exists():
+                shutil.rmtree(root)
+            if created_controller and controller_root.exists():
+                shutil.rmtree(controller_root)
+            raise
 
     def revise_job(
         self,
@@ -808,6 +926,144 @@ class JobStore:
         atomic_write_text(updated.root / "README.md", self._render_project_readme(raw))
         self.write_runtime_files(updated)
         return self.load_job(project.job_id, tool=project.tool)
+
+    def refresh_job_snapshot(
+        self,
+        project: Job,
+        *,
+        imported_at: datetime | None = None,
+    ) -> Job:
+        """Refresh mutable WIP evidence without changing any sealed Run snapshot."""
+        current = self.load_job(project.job_id, tool=project.tool)
+        if current.tool not in ANALYSIS_WORKFLOWS or current.wip_snapshot is None:
+            raise ValidationError(
+                "WIP snapshot refresh is available only for RTC and STC Jobs",
+                code="JOB_SNAPSHOT_REFRESH_UNSUPPORTED",
+            )
+        if current.status != "ACTIVE":
+            raise ValidationError(
+                f"Cannot refresh a {current.status.lower()} Job snapshot",
+                code="JOB_SNAPSHOT_REFRESH_STATUS_INVALID",
+            )
+        nonclosed = [
+            run.run_id
+            for run in self.list_runs(current)
+            if run.status not in RUN_CLOSED_STATUSES
+        ]
+        if nonclosed:
+            raise ValidationError(
+                f"Cannot refresh WIP snapshot while a non-closed Run exists: {', '.join(nonclosed)}",
+                code="JOB_SNAPSHOT_REFRESH_RUN_OPEN",
+                next_action="Complete or abandon the active Run, then refresh the WIP snapshot.",
+                details={"run_ids": nonclosed},
+            )
+
+        refresh_time = imported_at or datetime.now(timezone.utc)
+        if refresh_time.tzinfo is None or refresh_time.utcoffset() is None:
+            raise ValidationError(
+                "WIP import timestamp must include a timezone.",
+                code="INVALID_WIP_IMPORT_TIME",
+            )
+        snapshot_date = refresh_time.astimezone().strftime("%Y%m%d")
+        next_job_id = canonical_analysis_job_id(
+            current.tool,
+            current.bindings["wip"],
+            snapshot_date,
+        )
+        lock_path = current.controller_root / "locks" / "snapshot-refresh.lock"
+        with WorkspaceLock(lock_path, f"{current.tool.upper()}_SNAPSHOT_REFRESH"):
+            if next_job_id != current.job_id:
+                if (self.job_root(current.tool, next_job_id) / "job.yml").exists():
+                    raise ValidationError(
+                        f"Snapshot-dated Job already exists: {next_job_id}",
+                        code="JOB_SNAPSHOT_DATE_EXISTS",
+                    )
+                replacement = self.create_job(
+                    tool=current.tool,
+                    job_id=next_job_id,
+                    display_name=current.display_name,
+                    bindings=dict(current.bindings),
+                    profiles=dict(current.profiles),
+                    defaults=dict(current.defaults),
+                    primary_report_language=current.primary_report_language,
+                    secondary_report_language=current.secondary_report_language,
+                    imported_at=refresh_time,
+                )
+                try:
+                    replacement_raw = load_yaml(replacement.manifest_path)
+                    replacement_raw["progress_quantifier"] = dict(current.progress_quantifier)
+                    replacement_raw["configuration_revision"] = current.configuration_revision + 1
+                    replacement_raw["refreshed_from_job"] = current.job_id
+                    replacement_raw["revised_utc"] = _utc_now()
+                    atomic_write_text(replacement.manifest_path, _safe_yaml(replacement_raw))
+                    replacement = self.load_job(replacement.job_id, tool=replacement.tool)
+                    atomic_write_text(
+                        replacement.root / "README.md",
+                        self._render_project_readme(replacement_raw),
+                    )
+                    self.write_runtime_files(replacement)
+                except Exception:
+                    if replacement.root.exists():
+                        shutil.rmtree(replacement.root)
+                    if replacement.controller_root.exists():
+                        shutil.rmtree(replacement.controller_root)
+                    raise
+
+                old_raw = load_yaml(current.manifest_path)
+                old_raw["status"] = "ARCHIVED"
+                old_raw["configuration_revision"] = current.configuration_revision + 1
+                old_raw["replaced_by_job"] = replacement.job_id
+                old_raw["revised_utc"] = _utc_now()
+                atomic_write_text(current.manifest_path, _safe_yaml(old_raw))
+                if self.active_jobs().get(current.tool) == current.job_id:
+                    self.set_active_job(current.tool, replacement.job_id)
+                old_snapshot = current.root / "snapshot"
+                if old_snapshot.exists():
+                    shutil.rmtree(old_snapshot)
+                return self.load_job(replacement.job_id, tool=replacement.tool)
+
+            temporary_root = Path(
+                tempfile.mkdtemp(prefix="snapshot-refresh-", dir=current.controller_root)
+            )
+            staged_snapshot = temporary_root / "snapshot"
+            old_snapshot = current.root / "snapshot"
+            backup_snapshot = temporary_root / "previous-snapshot"
+            swapped = False
+            previous_manifest = load_yaml(current.manifest_path)
+            try:
+                receipt = capture_wip_snapshot(
+                    self.sage_root,
+                    settings_path=self.settings_path,
+                    project_id=current.bindings["wip"],
+                    destination=staged_snapshot,
+                    imported_at=refresh_time,
+                )
+                os.replace(old_snapshot, backup_snapshot)
+                os.replace(staged_snapshot, old_snapshot)
+                swapped = True
+                raw = load_yaml(current.manifest_path)
+                raw["wip_snapshot"] = receipt
+                raw["configuration_revision"] = current.configuration_revision + 1
+                raw["revised_utc"] = _utc_now()
+                atomic_write_text(current.manifest_path, _safe_yaml(raw))
+                updated = self.load_job(current.job_id, tool=current.tool)
+                atomic_write_text(updated.root / "README.md", self._render_project_readme(raw))
+                self.write_runtime_files(updated)
+                return self.load_job(updated.job_id, tool=updated.tool)
+            except Exception:
+                if swapped:
+                    if old_snapshot.exists():
+                        shutil.rmtree(old_snapshot)
+                    if backup_snapshot.exists():
+                        os.replace(backup_snapshot, old_snapshot)
+                    atomic_write_text(
+                        current.manifest_path,
+                        _safe_yaml(previous_manifest),
+                    )
+                raise
+            finally:
+                if temporary_root.exists():
+                    shutil.rmtree(temporary_root)
 
     def remove_job(self, project: Job) -> None:
         """Remove one Job directory without touching Projects or root-level published reports."""
@@ -937,12 +1193,18 @@ class JobStore:
                 f"- Selected SOURCE grammar profile: `{profiles.get('source_grammar') or 'NOT_CONFIGURED'}`",
                 f"- Selected TARGET grammar profile: `{profiles.get('target_grammar') or 'NOT_CONFIGURED'}`",
             ])
-        else:
+        elif str(payload["tool"]).lower() in {"saw", "rtc"}:
             lines.extend([
                 f"- WIP — one bound resource: `{bindings['wip']}`",
                 f"- REFERENCE — one bound resource: `{bindings['reference']}`",
                 f"- Configured Greek resource: `{bindings.get('original_language_greek') or 'NOT_CONFIGURED'}`",
                 f"- Configured Hebrew resource: `{bindings.get('original_language_hebrew') or 'NOT_CONFIGURED'}`",
+                f"- Selected WIP grammar profile: `{profiles.get('target_grammar') or 'NOT_CONFIGURED'}`",
+            ])
+        else:
+            lines.extend([
+                f"- WIP Project: `{bindings['wip']}`",
+                "- Original-language authority: exact `GRK` or `HEB` resource selected by Book canon.",
                 f"- Selected WIP grammar profile: `{profiles.get('target_grammar') or 'NOT_CONFIGURED'}`",
             ])
         lines.extend(
@@ -954,7 +1216,7 @@ class JobStore:
                 "- `diagnostics/`: Job-local technical execution and validation diagnostics; finalized Operator reports are published only under root `reports/<job-id>/`.",
                 "- `exports/`: portable Job and Run export archives.",
                 "- Controller-owned runtime state is stored outside this folder under `localdata/.system/jobs/`.",
-                "- BIC `memory/` and `generations/` belong only to that BIC Job; SAW has no generation-handoff state.",
+                "- BIC `memory/` and `generations/` belong only to that BIC Job; analysis Jobs have no generation-handoff state.",
                 "",
             ]
         )
@@ -977,22 +1239,31 @@ class JobStore:
     def write_runtime_files(self, project: Job) -> Path:
         """Derive a stable Job-scoped ecosystem settings file and workflow profile."""
         raw = self._base_raw()
-        project_profile = self._base_profile(project.tool, raw)
+        project_profile = self._base_profile(project.runtime_tool, raw)
         if project.tool == "bic":
             role_bindings = {
                 "CONTENT_SOURCE": project.bindings["content_source"],
                 "LEXICAL_DONOR": project.bindings["lexical_donor"],
                 "GENERATED_TARGET": project.bindings["generated_target"],
             }
-        else:
+        elif project.tool in {"saw", "rtc"}:
             role_bindings = {
                 "WIP": project.bindings["wip"],
                 "REFERENCE": project.bindings["reference"],
             }
-        if project.bindings.get("original_language_greek"):
-            role_bindings["ORIGINAL_LANGUAGE_GREEK"] = project.bindings["original_language_greek"]
-        if project.bindings.get("original_language_hebrew"):
-            role_bindings["ORIGINAL_LANGUAGE_HEBREW"] = project.bindings["original_language_hebrew"]
+        else:
+            role_bindings = {"WIP": project.bindings["wip"]}
+        if project.tool in ANALYSIS_WORKFLOWS:
+            available_projects = require_mapping(raw.get("projects", {}), "projects")
+            if "GRK" in available_projects:
+                role_bindings["ORIGINAL_LANGUAGE_GREEK"] = "GRK"
+            if "HEB" in available_projects:
+                role_bindings["ORIGINAL_LANGUAGE_HEBREW"] = "HEB"
+        else:
+            if project.bindings.get("original_language_greek"):
+                role_bindings["ORIGINAL_LANGUAGE_GREEK"] = project.bindings["original_language_greek"]
+            if project.bindings.get("original_language_hebrew"):
+                role_bindings["ORIGINAL_LANGUAGE_HEBREW"] = project.bindings["original_language_hebrew"]
         project_profile["bindings"] = role_bindings
         if project.tool == "bic":
             permissions = dict(require_mapping(project_profile.get("permissions", {}), "BIC permissions"))
@@ -1090,7 +1361,7 @@ class JobStore:
         workflow_data = require_mapping(raw.get("workflows"), "workflows")
         for workflow_id in TOOL_IDS:
             entry = dict(require_mapping(workflow_data.get(workflow_id), f"workflows.{workflow_id}"))
-            if workflow_id == project.tool:
+            if workflow_id == project.runtime_tool:
                 controller_token = f"@system/jobs/{project.tool}/{project.job_id}"
                 job_token = f"@jobs/{project.tool}/{project.job_id}"
                 entry["profile"] = f"{controller_token}/profile.yml"
@@ -1178,7 +1449,9 @@ class JobStore:
                     value = loaded
             except (OSError, json.JSONDecodeError):
                 value = {}
-        return {tool: value.get(tool) if isinstance(value.get(tool), str) else None for tool in TOOL_IDS}
+        tools = list(TOOL_IDS)
+        tools.extend(tool for tool in ("rtc", "stc") if tool in value)
+        return {tool: value.get(tool) if isinstance(value.get(tool), str) else None for tool in tools}
 
     def stale_active_job_pointers(self) -> dict[str, str]:
         """Return active pointers whose operator-facing Job manifest is unavailable."""
@@ -1198,7 +1471,7 @@ class JobStore:
     def set_active_job(self, tool: str, job_id: str | None) -> dict[str, str | None]:
         """Set the active Job for one workflow."""
         normalized = tool.strip().lower()
-        if normalized not in TOOL_IDS:
+        if normalized not in PERSISTED_JOB_TOOLS:
             raise ValidationError(f"Unsupported tool: {tool}")
         state = self.active_jobs()
         if job_id is not None:
@@ -1244,53 +1517,77 @@ class JobStore:
         check_type: str | None = None,
     ) -> Run:
         """Create one deterministic Run and make it current for the selected Job."""
-        date = datetime.now(timezone.utc).strftime("%Y%m%d")
-        prefix = f"{project.job_id}-{date}-"
-        run_root = project.root / "runs"
-        existing = [path.name for path in run_root.glob(f"{prefix}*") if path.is_dir()]
-        sequences: list[int] = []
-        for value in existing:
+        normalized_operation = operation.strip().lower()
+        expected_operation = {"rtc": "rtc", "stc": "stc"}.get(project.tool)
+        if expected_operation and normalized_operation != expected_operation:
+            raise ValidationError(
+                f"{project.tool.upper()} Job can create only {expected_operation.upper()} Runs",
+                code="JOB_OPERATION_MISMATCH",
+            )
+
+        lock_path = project.controller_root / "locks" / "run-create.lock"
+        with WorkspaceLock(lock_path, f"{project.tool.upper()}_RUN_CREATE"):
+            if project.tool in ANALYSIS_WORKFLOWS:
+                prefix = f"{project.job_id}-"
+            else:
+                date = datetime.now(timezone.utc).strftime("%Y%m%d")
+                prefix = f"{project.job_id}-{date}-"
+            run_root = project.root / "runs"
+            existing = [path.name for path in run_root.glob(f"{prefix}*") if path.is_dir()]
+            sequences: list[int] = []
+            for value in existing:
+                try:
+                    sequences.append(int(value.rsplit("-", 1)[1]))
+                except (ValueError, IndexError):
+                    continue
+            run_id = f"{prefix}{(max(sequences, default=0) + 1):03d}"
+            root = run_root / run_id
             try:
-                sequences.append(int(value.rsplit("-", 1)[1]))
-            except (ValueError, IndexError):
-                continue
-        run_id = f"{prefix}{(max(sequences, default=0) + 1):03d}"
-        root = run_root / run_id
-        for relative in ("tasks", "plans", "diagnostics"):
-            (root / relative).mkdir(parents=True, exist_ok=True)
-        now = _utc_now()
-        payload = {
-            "schema_version": RUN_SCHEMA_VERSION,
-            "run_id": run_id,
-            "tool": project.tool,
-            "job_id": project.job_id,
-            "operation": operation.strip().lower(),
-            "scope": scope.strip(),
-            "focus": focus.strip() if isinstance(focus, str) and focus.strip() else None,
-            "check_type": check_type.strip().upper() if isinstance(check_type, str) and check_type.strip() else None,
-            "status": "NEW",
-            "current_stage": "NEW",
-            "result": None,
-            "result_reason": None,
-            "task_manifests": [],
-            "plan_path": None,
-            "approved_work_plan_path": None,
-            "created_utc": now,
-            "updated_utc": now,
-        }
-        atomic_write_json(root / "run.json", payload)
-        atomic_write_json(root / "status.json", payload)
-        atomic_write_json(
-            project.controller_state_root / "active-run.json",
-            {
-                "schema_version": "1.0",
-                "tool": project.tool,
-                "job_id": project.job_id,
-                "run_id": run_id,
-                "updated_utc": now,
-            },
-        )
-        self.set_last_run(project.tool, project.job_id, run_id)
+                if project.tool in ANALYSIS_WORKFLOWS:
+                    seal_run_snapshot(
+                        project.root / "snapshot",
+                        root / "snapshot",
+                        run_id=run_id,
+                    )
+                for relative in ("tasks", "plans", "diagnostics"):
+                    (root / relative).mkdir(parents=True, exist_ok=True)
+                now = _utc_now()
+                payload = {
+                    "schema_version": RUN_SCHEMA_VERSION,
+                    "run_id": run_id,
+                    "tool": project.tool,
+                    "job_id": project.job_id,
+                    "operation": normalized_operation,
+                    "scope": scope.strip(),
+                    "focus": focus.strip() if isinstance(focus, str) and focus.strip() else None,
+                    "check_type": check_type.strip().upper() if isinstance(check_type, str) and check_type.strip() else None,
+                    "status": "NEW",
+                    "current_stage": "NEW",
+                    "result": None,
+                    "result_reason": None,
+                    "task_manifests": [],
+                    "plan_path": None,
+                    "approved_work_plan_path": None,
+                    "created_utc": now,
+                    "updated_utc": now,
+                }
+                atomic_write_json(root / "run.json", payload)
+                atomic_write_json(root / "status.json", payload)
+                atomic_write_json(
+                    project.controller_state_root / "active-run.json",
+                    {
+                        "schema_version": "1.0",
+                        "tool": project.tool,
+                        "job_id": project.job_id,
+                        "run_id": run_id,
+                        "updated_utc": now,
+                    },
+                )
+                self.set_last_run(project.tool, project.job_id, run_id)
+            except Exception:
+                if root.exists():
+                    shutil.rmtree(root)
+                raise
         return self.load_run(project, run_id)
 
     def restart_bic_scope(self, project: Job, *, scope: str) -> Run:
