@@ -20,6 +20,15 @@ from .human_output import (
 )
 from .references import parse_scope
 from .registry import EcosystemConfig
+from .jobs import JobStore
+from .report_authority import (
+    authority_header,
+    authority_markdown,
+    chapter_data_path,
+    chapter_note_path,
+    chapter_report_path,
+    write_job_summary,
+)
 from .report_translation import ensure_secondary_saw_report_rendering
 from .storage import resolve_persisted_path, storage_layout
 from .source_coverage import source_comparison_status, unique_source_text_issues
@@ -117,12 +126,17 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
     lines = [
         "# Source Text Correspondence (STC) Report",
         "",
-        f"- Sources: `{wip_name}` checked against `{ol_name} OL`",
+        f"- WIP Project: `{wip_name}` (`{wip_id}`)",
+        f"- Original-language authority: `{ol_id}`",
+        "- REFERENCE Project: `NOT USED`",
         f"- Scope: `{document.get('scope', '')}`",
         f"- Coverage: `COMPLETE` ({len(coverage)} coordinates)",
         f"- Source comparison: `{comparison_status}`",
         f"- Report languages: `{primary}`" + (f"; `{secondary}`" if secondary else ""),
     ]
+    raw_header = document.get("authority_header")
+    if isinstance(raw_header, list) and all(isinstance(value, str) for value in raw_header):
+        lines.extend(["", *authority_markdown(raw_header)])
     raw_routes = document.get("execution_routes")
     routes = (
         [dict(row) for row in raw_routes if isinstance(row, Mapping)]
@@ -161,7 +175,7 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
             f"### {finding_id} — {finding.get('target_reference', '')}",
             "",
             f"- Category: `{finding.get('category', '')}`",
-            f"- Authority: `{document.get('authority_family', '')} OL` (`PRIMARY`)",
+            f"- Authority: `{ol_id}` (`PRIMARY`)",
             "",
             f"**Summary — {primary}**",
             "",
@@ -221,6 +235,13 @@ def publish_stc_reports(
     result_job, result_run, output_project, ol_authority, family = next(iter(identities))
     if result_job != job_id or result_run != run_id or family not in {"GRK", "HEB"}:
         raise ValidationError("STC report identity differs from its governed publication request")
+    store = JobStore(config.root, config.settings_path)
+    job = store.load_job(job_id)
+    if job.runtime_tool != "saw" or job.bindings.get("wip") != output_project:
+        raise ValidationError("STC report identity differs from its owning Job")
+    run = store.load_run(job, run_id)
+    if run.operation != "stc":
+        raise ValidationError("STC report is not owned by an STC Run")
 
     coverage = [str(value) for row in documents for value in row.get("primary_coverage", [])]
     chapters = sorted({chapter for value in coverage if (chapter := _chapter(value)) is not None})
@@ -251,9 +272,7 @@ def publish_stc_reports(
 
     layout = storage_layout(config.root)
     report_root = layout.reports_root / job_id / book
-    data_root = layout.jobs_root / "saw" / job_id / "report_data" / book
     report_root.mkdir(parents=True, exist_ok=True)
-    data_root.mkdir(parents=True, exist_ok=True)
     authority = report_language_authority(
         config.human_output.logs_and_reports,
         operator_language=config.human_output.operator_language,
@@ -315,12 +334,21 @@ def publish_stc_reports(
                 ]
             ),
         }
+        document["authority_header"] = list(
+            authority_header(
+                job,
+                run,
+                family=family,
+                fingerprints=dict(first.get("resource_fingerprints") or {}),
+            )
+        )
         if authority:
             document["language_authority"] = authority
-        base = f"{book}_{chapter:03d}_STC"
-        report_path = report_root / f"{base}_ACTION-REPORT.md"
-        note_path = report_root / f"{base}_OPERATOR-NOTE.txt"
-        data_path = data_root / f"{base}_CONSOLIDATED.json"
+        report_path = chapter_report_path(layout.reports_root, job, run, book, chapter)
+        note_path = chapter_note_path(layout.reports_root, job, run, book, chapter)
+        data_path = chapter_data_path(job, run, book, chapter)
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        data_path.parent.mkdir(parents=True, exist_ok=True)
         document = ensure_secondary_saw_report_rendering(config.root, report_path, document)
         markdown = _stc_report_markdown(document)
         atomic_write_text(report_path, markdown)
@@ -329,6 +357,11 @@ def publish_stc_reports(
         report_paths.append(str(report_path))
         note_paths.append(str(note_path))
         data_paths.append(str(data_path))
+    summary_path = write_job_summary(
+        layout.reports_root,
+        job,
+        report_paths=[Path(value) for value in report_paths],
+    )
     return {
         "report_directory": str(report_root),
         "report_paths": report_paths,
@@ -337,6 +370,7 @@ def publish_stc_reports(
         "report_path": report_paths[0],
         "operator_note_text_path": note_paths[0],
         "consolidated_data_path": data_paths[0],
+        "job_summary_path": str(summary_path),
     }
 
 

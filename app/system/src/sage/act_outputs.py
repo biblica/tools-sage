@@ -19,6 +19,7 @@ from .ol_referrals import (
     normalize_referral_admission,
     referral_conflict_key,
 )
+from .report_authority import authority_markdown
 from .references import (
     BOOK_ORDER,
     ScriptureScope,
@@ -1225,6 +1226,9 @@ def render_action_report(document: Mapping[str, Any]) -> str:
         *([f"- Source comparison: `{source_status}`"] if source_issues else []),
         f"- Report languages: `{primary}`" + (f"; `{secondary}`" if secondary else ""),
     ]
+    raw_header = document.get("authority_header")
+    if isinstance(raw_header, list) and all(isinstance(value, str) for value in raw_header):
+        lines.extend(["", *authority_markdown(raw_header)])
     raw_routes = document.get("execution_routes")
     routes = (
         [dict(row) for row in raw_routes if isinstance(row, Mapping)]

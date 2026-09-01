@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .atomic import atomic_write_json, atomic_write_text
+from .canon import NT_27
 from .act_outputs import (
     aggregate_execution_routes,
     render_action_report,
@@ -26,6 +27,13 @@ from .registry import EcosystemConfig, load_ecosystem
 from .references import parse_scope
 from .runtime_paths import plan_is_governed, task_is_governed
 from .jobs import JobStore
+from .report_authority import (
+    authority_header,
+    chapter_data_path,
+    chapter_note_path,
+    chapter_report_path,
+    write_job_summary,
+)
 from .platform_commands import render_sage_command
 from .local_assistive import maybe_write_report_executive_summary
 from .report_translation import ensure_secondary_saw_report_rendering
@@ -68,8 +76,11 @@ def _job_root_from_plan(plan_path: Path) -> Path:
     if plan_path.parent.name != "plans" or run_root.parent.name != "runs":
         raise ValidationError("SAW report plan is not inside a canonical Job Run")
     job_root = run_root.parent.parent
-    if job_root.parent.name != "saw" or job_root.parent.parent.name != "jobs":
-        raise ValidationError("SAW report plan is not owned by a canonical SAW Job")
+    if (
+        job_root.parent.name not in {"rtc", "stc", "saw"}
+        or job_root.parent.parent.name != "jobs"
+    ):
+        raise ValidationError("Analysis report plan is not owned by a canonical RTC/STC Job")
     return job_root
 
 
@@ -266,6 +277,7 @@ def _chapter_document(document: dict[str, Any], *, book: str, chapter: int) -> d
 
 
 def _chapter_bundle_paths(
+    config: EcosystemConfig,
     plan_path: Path,
     *,
     book: str,
@@ -274,18 +286,17 @@ def _chapter_bundle_paths(
 ) -> tuple[Path, Path, Path]:
     """Return chapter paths that expose the SAW report/operation identity."""
     job_root = _job_root_from_plan(plan_path)
-    reports_root = _append_parts(_job_reports_root(plan_path), (book,))
-    report_data_root = _append_parts(job_root / "report_data", (book,))
-    reports_root.mkdir(parents=True, exist_ok=True)
-    report_data_root.mkdir(parents=True, exist_ok=True)
     operation = str(report_id or "").strip().upper()
     if operation not in {"RTC", "STC"}:
         raise ValidationError(f"Unsupported SAW report ID: {report_id!r}")
-    base = f"{book}_{chapter:03d}_{operation}"
+    store = JobStore(config.root, config.settings_path)
+    job = store.load_job(job_root.name)
+    run_id = plan_path.parent.parent.name
+    run = store.load_run(job, run_id)
     return (
-        reports_root / f"{base}_ACTION-REPORT.md",
-        reports_root / f"{base}_OPERATOR-NOTE.txt",
-        report_data_root / f"{base}_CONSOLIDATED.json",
+        chapter_report_path(storage_layout(config.root).reports_root, job, run, book, chapter),
+        chapter_note_path(storage_layout(config.root).reports_root, job, run, book, chapter),
+        chapter_data_path(job, run, book, chapter),
     )
 
 
@@ -311,6 +322,9 @@ def _write_chapter_report_bundles(
     report_paths: list[str] = []
     note_paths: list[str] = []
     data_paths: list[str] = []
+    store = JobStore(config.root, config.settings_path)
+    job = store.load_job(_job_root_from_plan(plan_path).name)
+    run = store.load_run(job, plan_path.parent.parent.name)
     for chapter in chapters:
         chapter_pairs = [
             (document, source_path)
@@ -330,12 +344,35 @@ def _write_chapter_report_bundles(
         )
         if authority:
             chapter_doc["language_authority"] = authority
+        has_ol_evidence = bool(
+            chapter_doc.get("ol_review_requests")
+            or chapter_doc.get("ol_resolutions")
+            or any(
+                str(row.get("original_language_evidence") or "").strip()
+                for row in chapter_doc.get("findings", [])
+                if isinstance(row, dict)
+            )
+        )
+        family = None
+        if has_ol_evidence:
+            family = "GRK" if book in NT_27 else "HEB"
+        chapter_doc["authority_header"] = list(
+            authority_header(
+                job,
+                run,
+                family=family,
+                fingerprints=dict(chapter_doc.get("resource_fingerprints") or {}),
+            )
+        )
         report_path, note_path, data_path = _chapter_bundle_paths(
+            config,
             plan_path,
             book=book,
             chapter=chapter,
             report_id=str(chapter_doc.get("operation") or ""),
         )
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        data_path.parent.mkdir(parents=True, exist_ok=True)
         chapter_doc = ensure_secondary_saw_report_rendering(config.root, report_path, chapter_doc)
         markdown = render_action_report(chapter_doc)
         atomic_write_text(report_path, markdown)
@@ -344,6 +381,11 @@ def _write_chapter_report_bundles(
         report_paths.append(str(report_path))
         note_paths.append(str(note_path))
         data_paths.append(str(data_path))
+    summary_path = write_job_summary(
+        storage_layout(config.root).reports_root,
+        job,
+        report_paths=[Path(value) for value in report_paths],
+    )
     return {
         "report_directory": str(_append_parts(_job_reports_root(plan_path), (book,))),
         "report_paths": report_paths,
@@ -352,6 +394,7 @@ def _write_chapter_report_bundles(
         "report_path": report_paths[0] if report_paths else None,
         "operator_note_text_path": note_paths[0] if note_paths else None,
         "consolidated_data_path": data_paths[0] if data_paths else None,
+        "job_summary_path": str(summary_path),
     }
 
 
@@ -905,7 +948,9 @@ def continue_saw_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any
     if not job_id:
         raise ValidationError("SAW continuation plan is missing canonical Job identity")
     store = JobStore(config.root, config.settings_path)
-    job = store.load_job(job_id, tool="saw")
+    job = store.load_job(job_id)
+    if job.runtime_tool != "saw":
+        raise ValidationError("Analysis continuation Job does not use the SAW runtime adapter")
     config = load_ecosystem(store.ensure_runtime_files(job))
     if not plan_is_governed(config.workflow("saw"), path):
         raise ValidationError("SAW continuation plan must be inside the governed plans directory")

@@ -378,86 +378,42 @@ def test_composite_rtc_meaning_to_selective_ol_to_final_text(package_root: Path,
     )
     submit_act_task(config, ol_manifest_path)
     plan_document = json.loads(Path(result["plan_path"]).read_text(encoding="utf-8"))
-    reports_root = storage_layout(root).reports_root / plan_document["job_id"] / "MAT"
+    reports_root = (
+        storage_layout(root).reports_root
+        / plan_document["job_id"]
+        / "MAT"
+        / "001"
+    )
     reports_root.mkdir(parents=True, exist_ok=True)
     final = continue_saw_plan(config, Path(result["plan_path"]))
     assert final["status"] == "COMPLETE"
     assert Path(final["aggregate_path"]).is_file()
     report_path = Path(final["report_path"])
     assert report_path.parent == reports_root
-    assert report_path.name == "MAT_001_RTC_ACTION-REPORT.md"
+    assert report_path.name == (
+        f"{plan_document['run_id']}_MAT-001_ACTION-REPORT.md"
+    )
     note_path = Path(final["operator_note_text_path"])
     assert note_path.is_file()
     assert note_path.parent == reports_root
-    assert note_path.name == "MAT_001_RTC_OPERATOR-NOTE.txt"
+    assert note_path.name == (
+        f"{plan_document['run_id']}_MAT-001_OPERATOR-NOTE.txt"
+    )
     note_text = note_path.read_text(encoding="utf-8")
     assert "<?xml" not in note_text and "<Note" not in note_text
-
-    # Older Book/scope directory layouts migrate into the flattened Book directory.
     plan_path = Path(result["plan_path"])
-    nested_reports = reports_root / "MAT-001-001"
-    nested_reports.mkdir()
-    nested_report = nested_reports / report_path.name
-    nested_note = nested_reports / note_path.name
-    report_path.replace(nested_report)
-    note_path.replace(nested_note)
-    consolidated = Path(final["consolidated_data_path"])
-    nested_data = consolidated.parent / "MAT-001-001"
-    nested_data.mkdir()
-    nested_consolidated = nested_data / consolidated.name
-    consolidated.replace(nested_consolidated)
-    nested_plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    nested_plan["report_path"] = str(nested_report)
-    nested_plan["operator_note_text_path"] = str(nested_note)
-    nested_plan["consolidated_data_path"] = str(nested_consolidated)
-    plan_path.write_text(json.dumps(nested_plan), encoding="utf-8")
+    report_text = report_path.read_text(encoding="utf-8")
+    assert "Analysis                     RTC" in report_text
+    assert "WIP Project                  usWIP" in report_text
+    assert "REFERENCE Project            usNIVv2" in report_text
+    assert "Original-language authority  GRK" in report_text
+    assert (
+        storage_layout(root).reports_root
+        / plan_document["job_id"]
+        / "JOB-SUMMARY.md"
+    ).is_file()
 
-    flattened = continue_saw_plan(config, plan_path)
-    report_path = Path(flattened["report_path"])
-    note_path = Path(flattened["operator_note_text_path"])
-    assert report_path.parent == reports_root
-    assert note_path.parent == reports_root
-    assert not nested_reports.exists()
-    assert not nested_data.exists()
-
-    # Operation-less filenames from older builds migrate to an explicit RTC identity.
-    ambiguous_report = reports_root / "MAT_001_ACTION-REPORT.md"
-    ambiguous_note = reports_root / "MAT_001_OPERATOR-NOTE.txt"
-    report_path.replace(ambiguous_report)
-    note_path.replace(ambiguous_note)
-    ambiguous_plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    ambiguous_plan["report_path"] = str(ambiguous_report)
-    ambiguous_plan["operator_note_text_path"] = str(ambiguous_note)
-    plan_path.write_text(json.dumps(ambiguous_plan), encoding="utf-8")
-
-    identified = continue_saw_plan(config, plan_path)
-
-    report_path = Path(identified["report_path"])
-    note_path = Path(identified["operator_note_text_path"])
-    assert report_path.name == "MAT_001_RTC_ACTION-REPORT.md"
-    assert note_path.name == "MAT_001_RTC_OPERATOR-NOTE.txt"
-    assert not ambiguous_report.exists()
-    assert not ambiguous_note.exists()
-
-    # Finalized plans from older builds migrate their plan-adjacent reports on resume.
-    legacy_report = plan_path.with_name("legacy-ACTION-REPORT.md")
-    legacy_note = plan_path.with_name("legacy-OPERATOR-NOTE.txt")
-    report_path.replace(legacy_report)
-    note_path.replace(legacy_note)
-    legacy_plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    legacy_plan["report_path"] = str(legacy_report)
-    legacy_plan["operator_note_text_path"] = str(legacy_note)
-    plan_path.write_text(json.dumps(legacy_plan), encoding="utf-8")
-
-    migrated = continue_saw_plan(config, plan_path)
-
-    assert Path(migrated["report_path"]).parent == reports_root
-    assert Path(migrated["operator_note_text_path"]).parent == reports_root
-    assert not legacy_report.exists()
-    assert not legacy_note.exists()
-
-    migrated_report = Path(migrated["report_path"])
-    migrated_report.write_text("stale collision\n", encoding="utf-8")
+    report_path.write_text("stale collision\n", encoding="utf-8")
     repaired = continue_saw_plan(config, plan_path)
     repaired_text = Path(repaired["report_path"]).read_text(encoding="utf-8")
     assert repaired_text != "stale collision\n"
