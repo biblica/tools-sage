@@ -8,14 +8,14 @@ New Jobs no longer create `archive/` or `.sage/workspace_data/`. New Runs no lon
 
 ## Maintenance flow
 
-Use **BIC > Maintain Job storage** or **SAW > Maintain Job storage**, or use CLI commands:
+Use **BIC/RTC/STC > Maintain Job storage**, or use CLI commands:
 
 - `sage maintenance jobs audit-layout`
 - `sage maintenance jobs migrate-layout --from-audit <JOB-LAYOUT-AUDIT.json>` (dry run)
 - add `--apply` only after reviewing the exact audit
 - `sage maintenance jobs verify-layout`
 
-The audit carries a stable structural SHA-256. Apply refuses a stale audit if the Job tree changed. Empty retired directories may be removed. Recognized legacy polished reports are copied to `localdata/reports/<job-id>/LEGACY/<run-id>/`, hash-verified, and only then removed from the old path. Unknown/non-empty content is always preserved for review.
+The audit carries a stable structural SHA-256. Apply refuses a stale audit if the Job tree changed. Empty retired directories may be removed. Unknown/non-empty content is always preserved for review. This release does not migrate legacy SAW Jobs into RTC/STC; use the governed Job-data wipe before creating the new primary-flow Jobs.
 
 ## Beta ownership
 
@@ -25,3 +25,12 @@ The audit carries a stable structural SHA-256. Apply refuses a stale audit if th
 - `tasks/` contains block-level governed evidence.
 - New Runs do not create empty `decisions/` or `findings/` directories.
 - Legacy technical `reports/` migrate to `diagnostics/` with hash verification; obsolete polished Run-local reports are quarantined under `localdata/.system/diagnostics/legacy-reports/` and never republished automatically.
+
+## Wipe all Job data
+
+**SAGE Maintenance > Wipe all Job data** requires exact `WIPE JOB DATA`. It removes all
+BIC/RTC/STC and legacy SAW Jobs, Runs, tasks, reports, exports, histories, pointers,
+controller state, locks, and transactions. It preserves Project Inventory, external Paratext
+locations, resource mappings and selections, language/grammar/AI configuration, indexes,
+SAGE Core, and `localdata/.system/runtime/venv`. The receipt is
+`localdata/.system/state/job-data-wipe.json`.

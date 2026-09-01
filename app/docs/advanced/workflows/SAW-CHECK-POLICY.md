@@ -1,4 +1,4 @@
-# SAW Reference Text Comparison (RTC) Check Policy — Beta
+# Reference Text Comparison (RTC) Check Policy — Beta
 
 Reference Text Comparison (RTC) can split work into four check groups: structure/completeness, translation/meaning, language/readability, and consistency. All are enabled by default and may be toggled before the Run starts.
 
@@ -17,7 +17,7 @@ Text-context policy is marker-class based:
 | `MATERIAL_ONLY` | Detect normally, but omit non-material wording/style findings. Material semantic, consistency, or structural findings retain their normal severity. |
 | `STRUCTURE_ONLY` | Evaluate marker/USFM structure only; enclosed content is not elevated as translation findings. |
 
-Default contexts: `\\add` and `\\nd` = `MATERIAL_ONLY`; `\\f` and `\\x` = `STRUCTURE_ONLY`. Quotations are checked normally and are not an Operator policy toggle.
+Default contexts: `\\add` and `\\nd` = `MATERIAL_ONLY`; `\\f` = `STRUCTURE_ONLY`. Cross-references and quotations are checked by fixed policy rather than an Operator toggle.
 
 **Suppression never means LOW priority.** The policy answers whether a detection becomes a finding; it must not downgrade the finding's severity. The effective policy is written immutably to `check-policy.json` inside the Run.
 ## Operator setup screen
@@ -46,12 +46,10 @@ The classic UI presents primary actions first, then check toggles and text-polic
   7. Added text       \add...\add*     MATERIAL ONLY
   8. Name of Deity    \nd...\nd*       MATERIAL ONLY
   9. Footnotes        \f...\f*         STRUCTURE ONLY
- 10. Cross-references \x...\x*        STRUCTURE ONLY
-
 > Original-language evidence [Choose number to toggle]
 ────────────────────────────────────────────────────────────────────────
 
- 11. Adjudicate WIP-Reference variance        PROHIBITED
+ 10. Adjudicate WIP-Reference variance        PROHIBITED
 
 ┌──────────────────────────────────────────────────────────────────────┐
 │  A. Back   B. Main Menu   C. Exit SAGE                               │
@@ -75,4 +73,6 @@ Reference Text Comparison (RTC) stores `source_text_drift_adjudication` as `PROH
 6. It asks one question at the smallest necessary Scripture scope.
 7. The same normalized conflict is not requested twice.
 
-Different subject, object, recipient, speaker, possessor, or other core participant identity may qualify without a reversal. Equivalent active/passive roles do not. Lexical nuance/intensity, equivalent paraphrase, grammar, readability, spelling, punctuation, USFM structure, style, ordinary consistency, and any issue resolvable from non-OL evidence never qualify. `dislike` versus `hate` remains RTC; `love` versus `hate` may qualify when every rule passes. Each admitted request produces one isolated selective task. SAGE routes OT requests to Job-bound Hebrew and NT requests to Job-bound Greek. This internal adjudication is distinct from the separate detailed Original-Language Review.
+Different subject, object, recipient, speaker, possessor, or other core participant identity may qualify without a reversal. Equivalent active/passive roles do not. Lexical nuance/intensity, equivalent paraphrase, grammar, readability, spelling, punctuation, USFM structure, style, ordinary consistency, and any issue resolvable from non-OL evidence never qualify. `dislike` versus `hate` remains RTC; `love` versus `hate` may qualify when every rule passes. Each admitted request produces one isolated selective task. SAGE routes OT requests to `HEB` and NT requests to `GRK`; this is advanced RTC option `#10`, not a Job binding or a standalone menu flow.
+
+Targeted Check and standalone Original-Language Review code is parked for future work and is not exposed in the RTC or STC menus.

@@ -95,11 +95,23 @@ def test_documented_recovery_and_generation_flags_match_cli() -> None:
         recovery = (ROOT / "docs" / platform / "RECOVERY.md").read_text(encoding="utf-8")
         combined = cheat + "\n" + recovery
         assert "BIC > Recovery and diagnostics" in combined
-        assert "SAW > Recovery and diagnostics" in combined
+        assert "RTC > Recovery and diagnostics" in combined
+        assert "STC > Recovery and diagnostics" in combined
         assert "SAGE Maintenance > System recovery and diagnostics" in combined
         assert "--help" in combined
         assert "operator-cues.jsonl" in combined
         assert "generation pin [--consumer saw]" not in combined
+
+
+def test_primary_workflow_documentation_contracts() -> None:
+    """Operator docs describe the shipped RTC/STC identity and maintenance model."""
+    guide = (ROOT / "docs/OPERATOR-GUIDE.md").read_text(encoding="utf-8")
+    assert "Reference Text Comparison (RTC)" in guide
+    assert "Source Text Correspondence (STC)" in guide
+    assert "RTC-ukrNPUv1_20260901-001" in guide
+    assert "STC never uses a REFERENCE Project" in guide
+    assert "Wipe all Job data" in guide
+    assert "COMPLETE_WITH_STRUCTURE_PROBLEMS" in guide
 
 
 def test_current_documentation_links_resolve() -> None:

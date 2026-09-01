@@ -7,9 +7,10 @@ Open a terminal in the SAGE root. The classic menu remains the authoritative def
 ```text
   1. Manage SAGE Scripture Projects
 
-  2. BIC
-  3. SAW
-  4. SAGE Maintenance
+  2. Bible Index & Context (BIC)
+  3. Reference Text Comparison (RTC)
+  4. Source Text Correspondence (STC)
+  5. SAGE Maintenance
 
 ┌──────────────────────────────────────────────────────────────────────┐
 │  A. Back   B. Main Menu   C. Exit SAGE                               │
@@ -24,8 +25,8 @@ The v0.01beta2 TUI is experimental, may change incompatibly, and does not yet pr
 The Active Job block reports a compact governed progress quantifier without exposing token accounting:
 
 ```text
-SAW_UK-ENG  [████░░░░░░]  43%
-ACT 3 / SRC REVIEW / RUNNING
+RTC-ukrNPUv1_20260901-001  [████░░░░░░]  43%
+ACT 3 / REFERENCE TEXT COMPARISON / RUNNING
 ```
 
 The bar has 10 visual cells (10% each); the aligned numeric percentage remains integer-granular and is derived from finalized governed ACT work. A task advances the Job quantifier only after finalization, so retries do not falsely advance progress. Terminal results are `DONE`, `FAILED`, `BLOCKED`, or `CANCELLED`. A `BLOCKED` result includes a machine-readable reason and preserves progress for remediation/resume.
@@ -36,14 +37,14 @@ The classic menu `F. Status` uses the same canonical Active Job quantifier and s
 The TUI currently provides native Projects-root setup, tree-only Quick Scan, and AI/readiness retest. Other workflow-changing Project, Job, Run, report, and recovery actions remain in the classic menu/scriptable CLI until their shared service boundaries and parity tests are complete. If Textual cannot be installed, launch SAGE without `tui`; the base classic interface remains valid.
 
 Startup readiness, Job, Run, and Operator-cue state are persistent within the same pre-release
-version. Guided startup uses **Manage Jobs** for initial BIC and SAW readiness; the Main Menu opens
-the corresponding **BIC Jobs** and **SAW Jobs** surfaces. Reports, Job recovery, and Job-storage
-maintenance belong to their respective BIC/SAW menus. **SAGE Maintenance** owns workstation paths,
+version. Guided startup uses **Manage Jobs** for initial BIC, RTC, and STC readiness; the Main Menu opens
+the corresponding **BIC Jobs**, **RTC Jobs**, and **STC Jobs** surfaces. Reports, Job recovery, and Job-storage
+maintenance belong to their respective workflow menus. **SAGE Maintenance** owns workstation paths,
 resources, AI, system checks, and system recovery. Interface language is available from
 `D. Language`, `E. Help`, and `F. Status` in the global two-row footer. Governed workflow transaction journals remain authoritative
 for writes and recovery.
 
-The Job-management list marks exactly one selected row as `[ACTIVE]`. **Choose active Job** changes that marker and returns to the same list; it does not start work. Use **Open active SAW Job** or **Open active BIC Job** to enter the selected Job’s operational menu. This separation prevents Job selection from silently starting or trapping an operation.
+The Job-management list marks exactly one selected row as `[ACTIVE]`. **Choose active Job** changes that marker and returns to the same list; it does not start work. Use **Open active RTC Job**, **Open active STC Job**, or **Open active BIC Job** to enter the selected Job’s operational menu. This separation prevents Job selection from silently starting or trapping an operation.
 
 Guided input helps Operators complete missing command details without bypassing validation or Job authority.
 
@@ -52,7 +53,8 @@ Guided input helps Operators complete missing command details without bypassing 
 SAGE Jobs operate inside a closed **LOCAL EVIDENCE BOUNDARY**. Content-bearing evidence must be stored inside SAGE, governed, authorized for the owning Job/Project, and explicitly routed into the sealed task. A file does not become authorized merely because it is local, hashed, or allowlisted.
 
 - **BIC:** SOURCE is content authority; DONOR is lexical evidence only; TARGET is subject/output only; OL is available only when explicitly routed by the governed operation.
-- **SAW:** REFERENCE is the normal authorized LWC Reference Project comparison; WIP is the subject under analysis. When an explicitly bounded task is routed to original-language review, configured GRK/HEB is primary textual authority for the source-text question in that task only; REFERENCE remains comparative evidence and does not override contrary OL evidence.
+- **RTC:** the Job binds one WIP Project and a different locked REFERENCE Project. The REFERENCE is comparison authority. Advanced option `#10` may route bounded `GRK` or `HEB` evidence inside the RTC Run; it is not another Job binding.
+- **STC:** the Job binds only the WIP Project. STC never uses a REFERENCE Project. New Testament scope uses the exact `GRK` authority and Old Testament scope uses `HEB`.
 - Governed RWC/SEMDOM and future explicitly imported/merged project indexes are **PROJECT_INDEX_EVIDENCE**, not Scripture or translation authority.
 - Derived packets inherit the authority and restrictions of their authorized local provenance. Generic imported lexicon material cannot be promoted into Job content evidence merely by review status.
 - The model may use **GENERAL LINGUISTIC COMPETENCE** only for orthography, morphology, grammar, and syntax. Model recall/pretraining, external Scripture/translations/lexicons/commentary, web/search, cultural/history recall, and unstated facts are not evidence.
@@ -88,18 +90,22 @@ The workstation interface language is stored in the local `localdata/.system/con
 
 Reporting language is a separate authority. Every Job owns one required primary reporting language and may add one optional secondary language for downstream localized rendering. The global Operator language supplies only the default captured when a new Job is created; changing it does not change an existing Job. Narrative-generating ACTs bind the Job primary explicitly, and neither interface nor secondary language is sent as canonical narrative authority. Projects do not own report-language settings. Governed `@GRK` and `@HEB` sources are configured separately under **Scripture Projects > Original-language resources**.
 
-Finalized Run findings remain as governed Job data. SAGE consolidates compatible results for the
-same chapter/scope and publishes polished output at `localdata/reports/<job-id>/<BOOK>/`. For example,
-SAW Reference Text Comparison (RTC) on `GEN 1` publishes
-`localdata/reports/<job-id>/GEN/GEN_001_RTC_ACTION-REPORT.md` and its matching
-`GEN_001_RTC_OPERATOR-NOTE.txt`. The report ID (`RTC` or `STC`) is always
-visible in the filename. The canonical consolidation record remains under the Job's `report_data/`
+RTC and STC Job IDs seal the WIP import date, for example `RTC-ukrNPUv1_20260901` and
+`STC-ukrNPUv1_20260901`. Repeated analysis of that snapshot uses serial-only Run IDs such as
+`RTC-ukrNPUv1_20260901-001` and `-002`; the execution date does not replace the snapshot date.
+Paratext remains the authority, while the report records which static imported USJ snapshot was analyzed.
+
+Finalized Run findings remain as governed Job data. SAGE publishes one bundle per Book/chapter at
+`localdata/reports/<job-id>/<BOOK>/<CCC>/`. For example, an RTC Run on `JHN 5` publishes
+`localdata/reports/RTC-ukrNPUv1_20260901/JHN/005/RTC-ukrNPUv1_20260901-001_JHN-005_ACTION-REPORT.md`
+and its matching `_OPERATOR-NOTE.txt`. `JOB-SUMMARY.md` lives at the Job report root. The canonical
+consolidation record remains under the Job's `report_data/<BOOK>/<CCC>/`
 folder. Findings sharing a verse/category are not guessed to conflict. When an upstream validator
 supplies explicit conflict lineage, competing conclusions are retained and marked
 `HUMAN_REVIEW_REQUIRED`; SAGE never chooses one silently. Reports are never written into a
 Paratext Project.
 
-Every new final BIC/SAW report includes an Execution section derived from immutable task execution
+Every new final BIC/RTC/STC report includes an Execution section derived from immutable task execution
 receipts. It records the actual Skill, provider, model, provider-native reasoning, routing mode, and
 task count; a later recommendation never replaces historical execution evidence. Report composition,
 coverage aggregation, filenames, and publication are deterministic Python operations and are not sent
@@ -131,4 +137,10 @@ When SAGE returns `INPUT_REQUIRED`, use Guided Input to provide the requested bo
 Interactive classic-menu navigation starts each new form on a fresh terminal viewport. A full-width `=` boundary appears above and below the screen title, so a new panel remains obvious when a short result message is intentionally retained. Redirected/scripted output contains the same panel boundary without ANSI control codes. `-` remains the section/footer boundary; primary actions and fixed-width label/value columns remain consistent. Optional file/path prompts show `[Enter to cancel]`; pressing Enter cancels rather than raising a required-input error. See `docs/advanced/maintenance/UI-PRESENTATION.md`.
 ## Beta path normalization
 
-Path rule: SAGE never repeats the same adjacent Book/scope directory. Whole-book output is published under `localdata/reports/<job-id>/<BOOK>/`; a distinct scope directory is added only when it carries additional chapter/verse information.
+Path rule: chapter output is always under `localdata/reports/<job-id>/<BOOK>/<CCC>/`, where `<CCC>` is a zero-padded three-digit chapter.
+
+## Structural deficiencies and maintenance
+
+Missing comparison coordinates, custom-versification differences, and similar usable text-structure deficiencies are reported and do not abort an otherwise safe RTC or STC Run. Preflight may show `READY_WITH_STRUCTURE_PROBLEMS`; a completed analysis uses `COMPLETE_WITH_STRUCTURE_PROBLEMS`, with `VERSIFICATION_MISMATCH` and addition/omission detail in the chapter report. Software faults, malformed evidence, unsafe paths, or immutable evidence drift remain real failures.
+
+**SAGE Maintenance > Resource Status Report** inventories onboarded Projects, active RTC/STC roles, WIP snapshot identity, versification, and the exact `GRK`/`HEB` authority without changing resources. **Wipe all Job data** requires the exact confirmation `WIPE JOB DATA`; it removes Jobs, Runs, tasks, reports, exports, history, pointers, locks, and transactions while retaining the managed environment/dependencies, Project Inventory and external Paratext locations, resource mappings, indexes, and configuration. **Reset SAGE to out-of-box state** remains the stronger first-run reset and requires `RESET SAGE`.
