@@ -3194,6 +3194,134 @@
       "fr": "Correspondance du texte source SAW (STC)",
       "ru": "Соответствие исходному тексту SAW (STC)",
       "pt-BR": "Correspondência do texto-fonte SAW (STC)"
+    },
+    "menu.bible.index.and.context.bic": {
+      "en-US": "Bible Index & Context (BIC)",
+      "en-GB": "Bible Index & Context (BIC)",
+      "id": "Indeks & Konteks Alkitab (BIC)",
+      "fr": "Index et contexte bibliques (BIC)",
+      "ru": "Библейский индекс и контекст (BIC)",
+      "pt-BR": "Índice e contexto bíblicos (BIC)"
+    },
+    "menu.choose.active.rtc.job": {
+      "en-US": "Choose active RTC Job",
+      "en-GB": "Choose active RTC Job",
+      "id": "Pilih RTC Job aktif",
+      "fr": "Choisir le Job RTC actif",
+      "ru": "Выбрать активный Job RTC",
+      "pt-BR": "Escolher Job RTC ativo"
+    },
+    "menu.choose.active.stc.job": {
+      "en-US": "Choose active STC Job",
+      "en-GB": "Choose active STC Job",
+      "id": "Pilih STC Job aktif",
+      "fr": "Choisir le Job STC actif",
+      "ru": "Выбрать активный Job STC",
+      "pt-BR": "Escolher Job STC ativo"
+    },
+    "menu.clear.active.rtc.job": {
+      "en-US": "Clear active RTC Job",
+      "en-GB": "Clear active RTC Job",
+      "id": "Hapus RTC Job aktif",
+      "fr": "Effacer le Job RTC actif",
+      "ru": "Очистить активный Job RTC",
+      "pt-BR": "Limpar Job RTC ativo"
+    },
+    "menu.clear.active.stc.job": {
+      "en-US": "Clear active STC Job",
+      "en-GB": "Clear active STC Job",
+      "id": "Hapus STC Job aktif",
+      "fr": "Effacer le Job STC actif",
+      "ru": "Очистить активный Job STC",
+      "pt-BR": "Limpar Job STC ativo"
+    },
+    "menu.create.an.rtc.job": {
+      "en-US": "Create an RTC Job",
+      "en-GB": "Create an RTC Job",
+      "id": "Buat RTC Job",
+      "fr": "Créer un Job RTC",
+      "ru": "Создать Job RTC",
+      "pt-BR": "Criar um Job RTC"
+    },
+    "menu.create.an.stc.job": {
+      "en-US": "Create an STC Job",
+      "en-GB": "Create an STC Job",
+      "id": "Buat STC Job",
+      "fr": "Créer un Job STC",
+      "ru": "Создать Job STC",
+      "pt-BR": "Criar um Job STC"
+    },
+    "menu.manage.job": {
+      "en-US": "Manage Job",
+      "en-GB": "Manage Job",
+      "id": "Kelola Job",
+      "fr": "Gérer le Job",
+      "ru": "Управление Job",
+      "pt-BR": "Gerenciar Job"
+    },
+    "menu.reference.text.comparison.rtc": {
+      "en-US": "Reference Text Comparison (RTC)",
+      "en-GB": "Reference Text Comparison (RTC)",
+      "id": "Perbandingan Teks Referensi (RTC)",
+      "fr": "Comparaison du texte de référence (RTC)",
+      "ru": "Сравнение с эталонным текстом (RTC)",
+      "pt-BR": "Comparação de texto de referência (RTC)"
+    },
+    "menu.resource.status.report": {
+      "en-US": "Resource Status Report",
+      "en-GB": "Resource Status Report",
+      "id": "Laporan Status Sumber Daya",
+      "fr": "Rapport d’état des ressources",
+      "ru": "Отчёт о состоянии ресурсов",
+      "pt-BR": "Relatório de status dos recursos"
+    },
+    "menu.rtc.jobs": {
+      "en-US": "RTC Jobs",
+      "en-GB": "RTC Jobs",
+      "id": "RTC Jobs",
+      "fr": "Jobs RTC",
+      "ru": "Jobs RTC",
+      "pt-BR": "Jobs RTC"
+    },
+    "menu.rtc.reports.and.history": {
+      "en-US": "RTC reports and history",
+      "en-GB": "RTC reports and history",
+      "id": "Laporan dan riwayat RTC",
+      "fr": "Rapports et historique RTC",
+      "ru": "Отчёты и история RTC",
+      "pt-BR": "Relatórios e histórico RTC"
+    },
+    "menu.source.text.correspondence.stc": {
+      "en-US": "Source Text Correspondence (STC)",
+      "en-GB": "Source Text Correspondence (STC)",
+      "id": "Korespondensi Teks Sumber (STC)",
+      "fr": "Correspondance avec le texte source (STC)",
+      "ru": "Соответствие исходному тексту (STC)",
+      "pt-BR": "Correspondência com o texto-fonte (STC)"
+    },
+    "menu.stc.jobs": {
+      "en-US": "STC Jobs",
+      "en-GB": "STC Jobs",
+      "id": "STC Jobs",
+      "fr": "Jobs STC",
+      "ru": "Jobs STC",
+      "pt-BR": "Jobs STC"
+    },
+    "menu.stc.reports.and.history": {
+      "en-US": "STC reports and history",
+      "en-GB": "STC reports and history",
+      "id": "Laporan dan riwayat STC",
+      "fr": "Rapports et historique STC",
+      "ru": "Отчёты и история STC",
+      "pt-BR": "Relatórios e histórico STC"
+    },
+    "menu.wipe.all.job.data": {
+      "en-US": "Wipe all Job data",
+      "en-GB": "Wipe all Job data",
+      "id": "Hapus semua data Job",
+      "fr": "Effacer toutes les données de Job",
+      "ru": "Удалить все данные Job",
+      "pt-BR": "Apagar todos os dados de Job"
     }
   }
 }

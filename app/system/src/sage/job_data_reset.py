@@ -27,6 +27,7 @@ def _bounded_target(path: Path, data_root: Path) -> Path:
 
 
 def _remove(path: Path, data_root: Path, removed: list[str]) -> None:
+    """Remove one validated Job-data target and record its localdata-relative path."""
     target = _bounded_target(path, data_root)
     if not target.exists() and not target.is_symlink():
         return

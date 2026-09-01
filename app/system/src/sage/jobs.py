@@ -1009,6 +1009,8 @@ class JobStore:
         )
         lock_path = current.controller_root / "locks" / "snapshot-refresh.lock"
         with WorkspaceLock(lock_path, f"{current.tool.upper()}_SNAPSHOT_REFRESH"):
+            # A changed import date changes Job identity; the prior Job is archived so
+            # its sealed Runs keep pointing at the snapshot they actually analyzed.
             if next_job_id != current.job_id:
                 if (self.job_root(current.tool, next_job_id) / "job.yml").exists():
                     raise ValidationError(

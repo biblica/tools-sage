@@ -14,6 +14,7 @@ _BOOK_RE = re.compile(r"^[A-Z0-9]{3}$")
 
 
 def _field(label: str, value: object) -> str:
+    """Align one authority label and value for the shared text header."""
     return f"{label:<29}{value}"
 
 
@@ -37,6 +38,7 @@ def _fingerprint(
 
 
 def _snapshot_date(value: str) -> str:
+    """Render a compact snapshot date for an Operator-facing report."""
     raw = str(value or "").strip()
     if re.fullmatch(r"\d{8}", raw):
         return f"{raw[:4]}-{raw[4:6]}-{raw[6:]}"
@@ -115,6 +117,7 @@ def authority_markdown(lines: Sequence[str]) -> list[str]:
 
 
 def _chapter_root(reports_root: Path, job: Job, book: str, chapter: int) -> Path:
+    """Validate a Scripture coordinate and locate its canonical report directory."""
     code = str(book).strip().upper()
     if not _BOOK_RE.fullmatch(code):
         raise ValidationError(f"Invalid canonical report Book code: {book!r}")
@@ -138,6 +141,7 @@ def chapter_report_path(
     book: str,
     chapter: int,
 ) -> Path:
+    """Locate the canonical Operator action report for one chapter Run."""
     root = _chapter_root(reports_root, job, book, chapter)
     return root / f"{report_stem(run, book, chapter)}_ACTION-REPORT.md"
 
@@ -149,11 +153,13 @@ def chapter_note_path(
     book: str,
     chapter: int,
 ) -> Path:
+    """Locate the canonical Operator note for one chapter Run."""
     root = _chapter_root(reports_root, job, book, chapter)
     return root / f"{report_stem(run, book, chapter)}_OPERATOR-NOTE.txt"
 
 
 def chapter_data_path(job: Job, run: Run, book: str, chapter: int) -> Path:
+    """Locate sealed consolidated report data within the owning Job."""
     code = str(book).strip().upper()
     return (
         job.root

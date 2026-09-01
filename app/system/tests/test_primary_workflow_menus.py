@@ -11,6 +11,7 @@ from sage.menu import MenuIO, SageControlCenter, ScriptedInput
 
 
 def _center(root, *responses: str) -> tuple[SageControlCenter, io.StringIO]:
+    """Build a scripted control center and capture its Operator-facing output."""
     output = io.StringIO()
     return (
         SageControlCenter(
@@ -33,6 +34,7 @@ def test_main_menu_exposes_rtc_and_stc_without_saw(make_workspace) -> None:
 
     rendered = output.getvalue()
     assert "BIC active Job:" in rendered
+    assert "2. Bible Index & Context (BIC)" in rendered
     assert "RTC active Job:" in rendered
     assert "STC active Job:" in rendered
     assert "\n3. SAW\n" not in rendered

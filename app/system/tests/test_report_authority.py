@@ -11,6 +11,7 @@ from sage.report_authority import authority_header, chapter_report_path
 
 
 def _stc_job_and_run(root):
+    """Create a canonical STC fixture Job and its first serial Run."""
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="stc",
@@ -23,6 +24,7 @@ def _stc_job_and_run(root):
 
 
 def test_stc_header_names_project_and_grk(make_workspace) -> None:
+    """STC headers identify the WIP Project and exact Greek authority."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     job, run = _stc_job_and_run(root)
 
@@ -38,6 +40,7 @@ def test_stc_header_names_project_and_grk(make_workspace) -> None:
 
 
 def test_rtc_header_names_reference_and_snapshot(make_workspace) -> None:
+    """RTC headers identify both Projects and the imported WIP snapshot."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
@@ -67,6 +70,7 @@ def test_chapter_report_path_uses_job_run_book_and_chapter(
     make_workspace,
     tmp_path,
 ) -> None:
+    """Chapter reports nest beneath Job, Book, and zero-padded chapter."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     job, run = _stc_job_and_run(root)
 
