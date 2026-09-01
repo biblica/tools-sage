@@ -44,7 +44,9 @@ TOOL_IDS = ("bic", "saw")
 PERSISTED_JOB_TOOLS = SUPPORTED_JOB_TOOLS
 JOB_SCHEMA_VERSION = "1.0"
 RUN_SCHEMA_VERSION = "1.0"
-RUN_CLOSED_STATUSES = frozenset({"COMPLETE", "ARCHIVED", "ABANDONED"})
+RUN_CLOSED_STATUSES = frozenset(
+    {"COMPLETE", "COMPLETE_WITH_STRUCTURE_PROBLEMS", "ARCHIVED", "ABANDONED"}
+)
 _JOB_ID_RE = re.compile(
     r"^(?:(?:BIC|SAW)_[A-Za-z0-9][A-Za-z0-9._-]{1,190}"
     r"|(?:RTC|STC)-[A-Za-z0-9][A-Za-z0-9._-]{0,63}_[0-9]{8})$"
@@ -1760,7 +1762,7 @@ class JobStore:
         status = str(raw.get("status") or "").upper()
         explicit_result = str(raw.get("result") or "").upper()
         if not explicit_result:
-            if status == "COMPLETE":
+            if status in {"COMPLETE", "COMPLETE_WITH_STRUCTURE_PROBLEMS"}:
                 raw["result"] = "DONE"
             elif status == "ABANDONED":
                 raw["result"] = "CANCELLED"

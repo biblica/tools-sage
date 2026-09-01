@@ -4,11 +4,17 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
+from .structural_issues import (
+    COMPLETE_WITH_STRUCTURE_PROBLEMS,
+    classify_text_relation,
+    completion_status,
+    normalize_structure_problem,
+)
 from .vrs import VerseRef
 
 
 SOURCE_PRIMARY_COVERAGE_MISMATCH = "SOURCE_PRIMARY_COVERAGE_MISMATCH"
-COMPLETE_WITH_SOURCE_TEXT_ISSUES = "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
+COMPLETE_WITH_SOURCE_TEXT_ISSUES = COMPLETE_WITH_STRUCTURE_PROBLEMS
 
 
 def source_text_issues(
@@ -18,24 +24,29 @@ def source_text_issues(
     workflow: str,
     source_stream: str,
     source_project_id: str = "",
+    wip_project_id: str = "",
     scope: str,
 ) -> tuple[dict[str, Any], ...]:
     """Describe missing source coordinates without changing WIP coverage."""
     missing = sorted(frozenset(expected_refs) - frozenset(covered_refs))
+    authority = str(source_project_id).strip() or str(source_stream).split(":", 1)[0].upper()
+    wip = str(wip_project_id).strip()
+    relation = classify_text_relation(wip_has_text=True, authority_has_text=False)
     return tuple(
-        {
-            "status": "REPORT_ONLY",
+        normalize_structure_problem({
             "code": SOURCE_PRIMARY_COVERAGE_MISMATCH,
             "workflow": str(workflow).strip().upper(),
             "source_stream": str(source_stream).strip().upper(),
             "source_project_id": str(source_project_id).strip(),
+            "wip_project_id": wip,
             "scope": str(scope).strip(),
             "reference": ref.label(),
             "message": (
-                f"{str(source_stream).strip().upper()} has no source text at {ref.label()}; "
-                "the run continued without inventing comparison evidence."
+                f"{'Project ' + wip if wip else 'The WIP Project'} contains an {relation} "
+                f"at {ref.label()} relative to {authority}; the Run continued and reported "
+                "the structural deficiency."
             ),
-        }
+        }, versification=True, relation=relation)
         for ref in missing
     )
 
@@ -46,7 +57,7 @@ def unique_source_text_issues(
     """Return deterministic source-text issues without duplicate coordinates."""
     unique: dict[tuple[str, str, str, str], dict[str, Any]] = {}
     for value in rows:
-        row = dict(value)
+        row = normalize_structure_problem(value)
         key = (
             str(row.get("workflow") or "").upper(),
             str(row.get("source_stream") or "").upper(),
@@ -59,4 +70,4 @@ def unique_source_text_issues(
 
 def source_comparison_status(rows: Iterable[dict[str, Any]]) -> str:
     """Describe comparison completion independently from exact WIP coverage."""
-    return COMPLETE_WITH_SOURCE_TEXT_ISSUES if any(True for _ in rows) else "COMPLETE"
+    return completion_status(rows)

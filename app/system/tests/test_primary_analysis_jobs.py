@@ -3,15 +3,45 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import json
+import os
 from pathlib import Path
+import shutil
+import subprocess
+import sys
 
 import pytest
 import yaml
 
 from sage.errors import ValidationError
+from sage.act_tasks import create_act_task
 from sage.jobs import JobStore
+from sage.registry import load_ecosystem
 
 IMPORT_TIME = datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc)
+
+
+def _initialize(package_root: Path, root: Path) -> None:
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(package_root / "system/src")
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "sage.cli",
+            "--settings",
+            str(root / "ecosystem.yml"),
+            "workspace",
+            "initialize",
+        ],
+        text=True,
+        capture_output=True,
+        env=env,
+        check=False,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stderr + result.stdout
 
 
 def test_rtc_and_stc_use_independent_bindings(make_workspace) -> None:
@@ -190,3 +220,47 @@ def test_snapshot_refresh_refuses_nonclosed_run(make_workspace) -> None:
             job,
             imported_at=datetime(2026, 9, 1, 12, 0, tzinfo=timezone.utc),
         )
+
+
+def test_primary_stc_task_uses_its_job_without_any_reference(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """The internal SAW adapter resolves an STC Job and routes only WIP + GRK."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    shutil.copy2(
+        package_root
+        / "system/resources/scripture/original-language/grk/authority-profile.yml",
+        root.parent
+        / "localdata/work/projects/GRK/authority-profile.yml",
+    )
+    _initialize(package_root, root)
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="stc",
+        job_id="STC-usWIP_20260901",
+        display_name="STC without Reference",
+        bindings={"wip": "usWIP"},
+        imported_at=IMPORT_TIME,
+    )
+    run = store.create_run(job, operation="stc", scope="MAT 1:1")
+    runtime = load_ecosystem(store.ensure_runtime_files(job))
+
+    task = create_act_task(
+        runtime,
+        workflow="saw",
+        operation="stc",
+        output_project_id="usWIP",
+        contemporary_source_id=None,
+        scope_value="MAT 1:1",
+        auto_partition=False,
+        job_id=job.job_id,
+        run_id=run.run_id,
+    )
+
+    manifest = json.loads(Path(task["manifest_path"]).read_text(encoding="utf-8"))
+    assert manifest["contemporary_source"] is None
+    assert manifest["resource_bindings"] == {
+        "WIP": "usWIP",
+        "ORIGINAL_LANGUAGE_GREEK": "GRK",
+    }

@@ -447,8 +447,8 @@ def test_action_report_renders_nonblocking_source_text_issues() -> None:
 
     report = render_action_report(document)
 
-    assert "Source comparison: `COMPLETE_WITH_SOURCE_TEXT_ISSUES`" in report
-    assert "## Source text issues" in report
+    assert "Source comparison: `COMPLETE_WITH_STRUCTURE_PROBLEMS`" in report
+    assert "## Structural issues" in report
     assert "did not block RTC/STC execution" in report
     assert "SOURCE_PRIMARY_COVERAGE_MISMATCH" in report
     assert "JHN 5:4" in report

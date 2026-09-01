@@ -15,6 +15,7 @@ from .references import expand_reference_atoms, parse_scope
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
 from .source_coverage import source_text_issues
 from .source_coverage import source_comparison_status, unique_source_text_issues
+from .structural_issues import normalize_structure_problem
 from .work_units import EvidenceRecord, WorkUnit
 from .vrs import VerseRef
 
@@ -99,17 +100,19 @@ def stc_package_measurements(
         ol_slice = _records_for_refs(original_language, unit.primary_refs)
         covered = frozenset(ref for record in ol_slice for ref in record.refs)
         primary_scope = str(unit.to_dict()["primary_scope"])
+        issues = list(source_text_issues(
+            unit.primary_refs,
+            covered,
+            workflow="STC",
+            source_stream=f"{stc_authority_family(unit.primary[0].book)}:PRIMARY",
+            scope=primary_scope,
+        ))
         packages.append({
             "sizing_basis": "ROUTED_SFM_ONLY",
             "analysis_route": STC_ANALYSIS_ROUTE,
             "primary_coverage_atoms": [ref.label() for ref in sorted(unit.primary_refs)],
-            "source_text_issues": list(source_text_issues(
-                unit.primary_refs,
-                covered,
-                workflow="STC",
-                source_stream=f"{stc_authority_family(unit.primary[0].book)}:PRIMARY",
-                scope=primary_scope,
-            )),
+            "structural_issues": issues,
+            "source_text_issues": issues,
             "wip": _component(measure_sfm_slice(wip_slice)),
             "ol": _component(measure_sfm_slice(ol_slice)),
             "route": _component(unit.measurement),
@@ -275,9 +278,12 @@ def finalize_stc_run(
         observed_atoms.extend(observed)
         findings.extend(dict(row) for row in result_by_id[unit_id].get("findings", []) if isinstance(row, Mapping))
         receipts.append(dict(result_by_id[unit_id].get("analytical_completion") or {}))
+        raw_structure = result_by_id[unit_id].get("structural_issues")
+        if raw_structure is None:
+            raw_structure = result_by_id[unit_id].get("source_text_issues", [])
         source_issue_rows.extend(
-            dict(row)
-            for row in result_by_id[unit_id].get("source_text_issues", [])
+            normalize_structure_problem(dict(row))
+            for row in raw_structure
             if isinstance(row, Mapping)
         )
     if len(planned_atoms) != len(set(planned_atoms)):
@@ -298,7 +304,11 @@ def finalize_stc_run(
         "run_id": run_id,
         "operation": "stc",
         "status": comparison_status,
+        "structure_status": (
+            "VERSIFICATION_MISMATCH" if source_issue_rows else "READY"
+        ),
         "source_comparison_status": comparison_status,
+        "structural_issues": source_issue_rows,
         "source_text_issues": source_issue_rows,
         "planned_work_units": plans,
         "accepted_work_unit_count": len(results),
@@ -312,6 +322,7 @@ def finalize_stc_run(
         "operation": "stc",
         "finding_count": len(findings),
         "source_comparison_status": comparison_status,
+        "structural_issues": source_issue_rows,
         "source_text_issues": source_issue_rows,
         "findings": findings,
     }
@@ -320,9 +331,9 @@ def finalize_stc_run(
     lines = ["# STC Report", "", f"Run: `{run_id}`", f"Findings: {len(findings)}", ""]
     if source_issue_rows:
         lines.extend([
-            "## Source text issues",
+            "## Structural issues",
             "",
-            "These source-text coordinate differences did not block STC execution.",
+            "These coordinate or versification differences did not block STC execution.",
             "",
             *[
                 f"- `{row.get('reference', '')}` | `{row.get('source_project_id', '')}` | "

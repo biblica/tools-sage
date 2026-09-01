@@ -114,19 +114,14 @@ def test_stc_planning_reports_missing_ol_coordinate_without_blocking() -> None:
     package = stc_package_measurements(units, ol)[0]
 
     assert package["primary_coverage_atoms"] == ["JHN 1:1", "JHN 1:2"]
-    assert package["source_text_issues"] == [{
-        "status": "REPORT_ONLY",
-        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
-        "workflow": "STC",
-        "source_stream": "GRK:PRIMARY",
-        "source_project_id": "",
-        "scope": "JHN 1:1-2",
-        "reference": "JHN 1:2",
-        "message": (
-            "GRK:PRIMARY has no source text at JHN 1:2; "
-            "the run continued without inventing comparison evidence."
-        ),
-    }]
+    issue = package["source_text_issues"][0]
+    assert package["structural_issues"] == package["source_text_issues"]
+    assert issue["status"] == "REPORT_ONLY"
+    assert issue["classification"] == "STRUCTURE_PROBLEM"
+    assert issue["structure_status"] == "VERSIFICATION_MISMATCH"
+    assert issue["text_relation"] == "ADDITION"
+    assert issue["code"] == "SOURCE_PRIMARY_COVERAGE_MISMATCH"
+    assert issue["reference"] == "JHN 1:2"
 
 
 def test_stc_categories_are_frozen() -> None:
@@ -255,10 +250,12 @@ def test_stc_finalizer_reports_source_text_issue_without_aborting(tmp_path) -> N
     )
 
     run = json.loads(paths["run_result"].read_text(encoding="utf-8"))
-    assert run["status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
-    assert run["source_text_issues"] == [issue]
+    assert run["status"] == "COMPLETE_WITH_STRUCTURE_PROBLEMS"
+    assert run["structure_status"] == "VERSIFICATION_MISMATCH"
+    assert run["structural_issues"] == run["source_text_issues"]
+    assert run["source_text_issues"][0]["classification"] == "STRUCTURE_PROBLEM"
     report = paths["report"].read_text(encoding="utf-8")
-    assert "## Source text issues" in report
+    assert "## Structural issues" in report
     assert "SOURCE_PRIMARY_COVERAGE_MISMATCH" in report
     assert "JHN 5:4" in report
 
@@ -356,8 +353,8 @@ def test_controller_aggregate_routes_partitioned_stc_to_canonical_finalizer(make
 
     assert result["status"] == "FINALIZED"
     assert result["finding_count"] == 0
-    assert result["source_comparison_status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
-    assert result["source_text_issues"] == [source_issue]
+    assert result["source_comparison_status"] == "COMPLETE_WITH_STRUCTURE_PROBLEMS"
+    assert result["source_text_issues"][0]["classification"] == "STRUCTURE_PROBLEM"
     assert Path(result["canonical_artifacts"]["run_result"]).name == "STC_RUN_RESULT.json"
     assert Path(result["canonical_artifacts"]["findings"]).name == "STC_FINDINGS.json"
     assert Path(result["canonical_artifacts"]["report"]).name == "STC_REPORT.md"

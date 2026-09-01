@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import json
 from datetime import datetime, timezone
 
 from sage.jobs import Job
@@ -97,3 +98,48 @@ def test_analysis_creation_returns_selected_job(make_workspace) -> None:
 
     assert isinstance(created, Job)
     assert center.store.discover("stc") == [created]
+
+
+def test_run_completion_preserves_report_only_structure_status(make_workspace) -> None:
+    """A finalized task with a structural deficiency closes without becoming failed."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    center, output = _center(root)
+    job = center.store.create_job(
+        tool="stc",
+        job_id="STC-usWIP_20260901",
+        display_name="STC fixture",
+        bindings={"wip": "usWIP"},
+        imported_at=datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc),
+    )
+    run = center.store.create_run(job, operation="stc", scope="MAT 1:1")
+    task_root = run.root / "tasks" / "unit-001"
+    validation = task_root / "validation"
+    validation.mkdir(parents=True)
+    manifest = task_root / "task-manifest.json"
+    manifest.write_text("{}\n", encoding="utf-8")
+    (validation / "normalized-findings.json").write_text(
+        json.dumps(
+            {
+                "source_comparison_status": "COMPLETE_WITH_STRUCTURE_PROBLEMS",
+                "structural_issues": [
+                    {
+                        "classification": "STRUCTURE_PROBLEM",
+                        "structure_status": "VERSIFICATION_MISMATCH",
+                        "reference": "MAT 1:1",
+                    }
+                ],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    run = center.store.update_run(run, task_manifests=[str(manifest)])
+
+    status = center._saw_completion_status(run)
+    completed = center.store.update_run(run, status=status, current_stage=status)
+    center._write_saw_run_complete(job, completed)
+
+    assert completed.status == "COMPLETE_WITH_STRUCTURE_PROBLEMS"
+    assert completed.result == "DONE"
+    assert "STC RUN COMPLETE" in output.getvalue()
+    assert "COMPLETE_WITH_STRUCTURE_PROBLEMS" in output.getvalue()
