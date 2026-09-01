@@ -1008,7 +1008,7 @@ def test_routine_saw_preflight_keeps_vrs_advisory_details_out_of_ui(make_workspa
         require_original_language=True,
     )
 
-    assert status == "READY"
+    assert status == "READY_WITH_STRUCTURE_PROBLEMS"
     assert center._pending_saw_vrs_advisories == [advisory]
     rendered = output.getvalue()
     assert "SAW VERSIFICATION ADVISORY" not in rendered

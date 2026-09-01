@@ -1214,7 +1214,7 @@ def render_action_report(document: Mapping[str, Any]) -> str:
     ]
     source_status = str(
         document.get("source_comparison_status")
-        or ("COMPLETE_WITH_SOURCE_TEXT_ISSUES" if source_issues else "COMPLETE")
+        or ("COMPLETE_WITH_STRUCTURE_PROBLEMS" if source_issues else "COMPLETE")
     )
     lines = [
         "# " + report_title,
@@ -1278,9 +1278,9 @@ def render_action_report(document: Mapping[str, Any]) -> str:
     if source_issues:
         lines.extend([
             "",
-            "## Source text issues",
+            "## Structural issues",
             "",
-            "These source-text coordinate differences did not block RTC/STC execution.",
+            "These structural coordinate differences did not block RTC/STC execution.",
             "",
         ])
         for row in source_issues:

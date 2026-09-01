@@ -14,7 +14,7 @@ from typing import Any, Callable
 from .errors import SageError, ValidationError
 from .hashing import sha256_file
 from .interface_localization import InterfaceLocalizer
-from .jobs import JobStore
+from .jobs import RUN_CLOSED_STATUSES, JobStore
 from .llm_settings import load_llm_settings, local_ai_policy_status
 from .model_service import ModelService
 from .routing_override import load_global_override
@@ -557,7 +557,7 @@ class OperatorUIService:
         if not item:
             return False
         _, run = item
-        return run.status not in {"COMPLETE", "ARCHIVED", "ABANDONED"}
+        return run.status not in RUN_CLOSED_STATUSES
 
     def model_summary(self) -> str:
         """Return provider and routing mode without inventing a current recommendation."""

@@ -6,6 +6,7 @@ import json
 import os
 import re
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -101,6 +102,7 @@ from .semantic.evidence import scope_evidence_for_project
 from .state import ecosystem_state_path, read_state, utc_now
 from .transactions import FileTransaction, incomplete_transactions
 from .jobs import JobStore, default_job_name
+from .workflow_identity import canonical_analysis_job_id
 from .project_inventory import registered_project_records
 from .usj import compile_usfm_file, compile_usfm_text, parse_usj_units
 from .vrs import VerseRef, load_project_vrs, resolve_project_vrs_paths
@@ -494,11 +496,9 @@ def _select_ol_project(
         raise ValidationError(f"Cannot determine original-language source for {scope.book}")
     project_id: str | None = None
     if job_id:
-        job = JobStore(config.root, config.settings_path).load_job(
-            job_id, tool=workflow
-        )
+        job = _load_owning_job(config, job_id, workflow)
         project_id = job.bindings.get(binding_key)
-    else:
+    if not project_id:
         profile = load_workflow_profile(config, config.workflow(workflow))
         project_id = profile.bindings.get(role)
     if not project_id:
@@ -521,6 +521,21 @@ def _select_ol_project(
             raise
         return role, None
     return role, project
+
+
+def _load_owning_job(
+    config: EcosystemConfig,
+    job_id: str,
+    runtime_workflow: str,
+):
+    """Resolve an operator Job through its internal BIC/SAW runtime adapter."""
+    job = JobStore(config.root, config.settings_path).load_job(job_id)
+    if job.runtime_tool != runtime_workflow:
+        raise ValidationError(
+            f"Job {job.job_id} does not use the {runtime_workflow.upper()} runtime adapter",
+            code="PROJECT_BINDING_MISMATCH",
+        )
+    return job
 
 
 def _validate_task_projects(
@@ -757,7 +772,7 @@ def _ensure_task_context(
     workflow: str,
     operation: str,
     output_project_id: str,
-    contemporary_source_id: str,
+    contemporary_source_id: str | None,
     lexical_donor_id: str | None,
     scope: ScriptureScope,
     focus: str | None,
@@ -769,24 +784,30 @@ def _ensure_task_context(
     """Require one persisted Job and Run for every governed BIC/SAW task."""
     if bool(job_id) != bool(run_id):
         raise ValidationError("job_id and run_id must be supplied together")
+    source_id = str(contemporary_source_id or "").strip() or None
+    if source_id is None and not (workflow == "saw" and operation == "stc"):
+        raise ValidationError(
+            f"{workflow.upper()} {operation.upper()} requires a source/reference Project"
+        )
     store = JobStore(config.root, config.settings_path)
     if not job_id:
         profile = load_workflow_profile(config, config.workflow(workflow))
         if workflow == "bic":
+            assert source_id is not None
             donor_id = lexical_donor_id or profile.bindings.get("LEXICAL_DONOR")
             if not donor_id:
                 raise ValidationError("BIC task context requires one lexical DONOR")
             project_id = default_job_name(
-                "bic", output_project_id, contemporary_source_id, donor_id
+                "bic", output_project_id, source_id, donor_id
             )
             output = config.project(output_project_id)
-            source = config.project(contemporary_source_id)
+            source = config.project(source_id)
             job = store.create_job(
                 tool="bic",
                 job_id=project_id,
-                display_name=f"{contemporary_source_id} via {donor_id} to {output_project_id}",
+                display_name=f"{source_id} via {donor_id} to {output_project_id}",
                 bindings={
-                    "content_source": contemporary_source_id,
+                    "content_source": source_id,
                     "lexical_donor": donor_id,
                     "generated_target": output_project_id,
                     **({"original_language_greek": profile.bindings["ORIGINAL_LANGUAGE_GREEK"]} if profile.bindings.get("ORIGINAL_LANGUAGE_GREEK") else {}),
@@ -797,18 +818,35 @@ def _ensure_task_context(
             )
             lexical_donor_id = donor_id
             run_operation = "bic"
+        elif operation == "stc":
+            snapshot_time = datetime.now(timezone.utc)
+            project_id = canonical_analysis_job_id(
+                "stc", output_project_id, snapshot_time.astimezone().strftime("%Y%m%d")
+            )
+            output = config.project(output_project_id)
+            job = store.create_job(
+                tool="stc",
+                job_id=project_id,
+                display_name=f"{output_project_id} analyzed against GRK/HEB",
+                bindings={"wip": output_project_id},
+                profiles={"target_grammar": output.profile_ref},
+                defaults={},
+                imported_at=snapshot_time,
+            )
+            run_operation = "stc"
         else:
+            assert source_id is not None
             project_id = default_job_name(
-                "saw", output_project_id, contemporary_source_id
+                "saw", output_project_id, source_id
             )
             output = config.project(output_project_id)
             job = store.create_job(
                 tool="saw",
                 job_id=project_id,
-                display_name=f"{output_project_id} analyzed against {contemporary_source_id}",
+                display_name=f"{output_project_id} analyzed against {source_id}",
                 bindings={
                     "wip": output_project_id,
-                    "reference": contemporary_source_id,
+                    "reference": source_id,
                     **({"original_language_greek": profile.bindings["ORIGINAL_LANGUAGE_GREEK"]} if profile.bindings.get("ORIGINAL_LANGUAGE_GREEK") else {}),
                     **({"original_language_hebrew": profile.bindings["ORIGINAL_LANGUAGE_HEBREW"]} if profile.bindings.get("ORIGINAL_LANGUAGE_HEBREW") else {}),
                 },
@@ -819,7 +857,12 @@ def _ensure_task_context(
         # Reuse one active scope-owned Run so direct shortcuts obey the same Project/Job/Run grammar as the Control Center.
         reusable = None
         for candidate in store.list_runs(job, include_archived=False):
-            if candidate.status in {"COMPLETE", "ARCHIVED", "ABANDONED"}:
+            if candidate.status in {
+                "COMPLETE",
+                "COMPLETE_WITH_STRUCTURE_PROBLEMS",
+                "ARCHIVED",
+                "ABANDONED",
+            }:
                 continue
             if candidate.operation != run_operation or candidate.scope != scope.label():
                 continue
@@ -836,7 +879,7 @@ def _ensure_task_context(
         )
         return job.job_id, run.run_id, lexical_donor_id
 
-    job = store.load_job(job_id, tool=workflow)
+    job = _load_owning_job(config, job_id, workflow)
     run = store.load_run(job, run_id)
     if job.status != "ACTIVE":
         raise ValidationError(f"Job {job.job_id} is not ACTIVE")
@@ -848,7 +891,7 @@ def _ensure_task_context(
         if run.operation != "bic":
             raise ValidationError("BIC tasks must belong to one BIC Run")
         expected = {
-            "content_source": contemporary_source_id,
+            "content_source": source_id,
             "generated_target": output_project_id,
         }
         donor_id = lexical_donor_id or job.bindings["lexical_donor"]
@@ -859,7 +902,9 @@ def _ensure_task_context(
             raise ValidationError(
                 f"SAW task operation {operation} does not match Run operation {run.operation}"
             )
-        expected = {"wip": output_project_id, "reference": contemporary_source_id}
+        expected = {"wip": output_project_id}
+        if operation != "stc":
+            expected["reference"] = source_id
         if run.focus != focus:
             raise ValidationError("SAW task focus does not match the owning Run")
         if run.check_type != check_type:
@@ -1844,7 +1889,7 @@ def _approved_saw_rtc_work_plan(
 ) -> dict[str, Any] | None:
     """Load and revalidate the Operator-approved SAW work-unit plan for one Run."""
     store = JobStore(config.root, config.settings_path)
-    job = store.load_job(job_id, tool="saw")
+    job = _load_owning_job(config, job_id, "saw")
     run = store.load_run(job, run_id)
     if not run.approved_work_plan_path:
         return None
@@ -2756,7 +2801,7 @@ def _partition_act_request(
             require_primary_coverage=not (operation == "rtc"),
         ))
     if workflow == "saw" and operation == "ol":
-        bound = JobStore(config.root, config.settings_path).load_job(str(job_id), tool="saw")
+        bound = _load_owning_job(config, str(job_id), "saw")
         family = "GREEK" if stc_authority_family(scope.book) == "GRK" else "HEBREW"
         ol_project_id = str(bound.bindings.get(f"original_language_{family.lower()}") or "")
         if not ol_project_id or ol_project_id not in compiled:
@@ -2909,7 +2954,7 @@ def _create_saw_rtc_composite(
     """Create the first governed stage of one composite SAW RTC Run."""
     output = config.project(output_project_id)
     job_store = JobStore(config.root, config.settings_path)
-    owning_job = job_store.load_job(job_id, tool="saw")
+    owning_job = _load_owning_job(config, job_id, "saw")
     run = job_store.load_run(owning_job, run_id)
     rtc_policy = load_run_policy_snapshot(
         run.root,
@@ -3191,7 +3236,7 @@ def _create_saw_stc_task(
     *,
     output_project_id: str,
     scope: ScriptureScope,
-    contemporary_source_id: str,
+    contemporary_source_id: str | None,
     grammar_override_id: str | None,
     auto_partition: bool,
     parent_plan_id: str | None,
@@ -3326,6 +3371,7 @@ def _create_saw_stc_task(
             workflow="STC",
             source_stream=f"{family}:PRIMARY",
             source_project_id=ol_project.project_id,
+            wip_project_id=output.project_id,
             scope=scope.label(),
         ))
         target_grammar_path, target_profile = _write_grammar_contract(config, output, packet_root, "wip")
@@ -3334,7 +3380,7 @@ def _create_saw_stc_task(
                 f"STC WIP {output.project_id} has no canonical LANGUAGE_PROFILE",
                 code="LINGUISTIC_PROFILE_MISSING",
             )
-        bound_job = JobStore(config.root, config.settings_path).load_job(job_id, tool="saw")
+        bound_job = _load_owning_job(config, job_id, "saw")
         report_grammar_path, report_profile = _write_report_language_contract(
             config,
             bound_job.primary_report_language,
@@ -3426,6 +3472,7 @@ def _create_saw_stc_task(
             "linguistic_profile_bindings": linguistic_profile_bindings,
             "evidence_policy": task_evidence_policy("saw"),
             "packets": {"wip": wip_packet, "original_language": {**ol_packet, "evidence_id": expected_role}},
+            "structural_issues": source_issue_rows,
             "source_text_issues": source_issue_rows,
             "preflight": None,
             "resource_fingerprints": {
@@ -3478,7 +3525,7 @@ def _create_saw_stc_task(
             "Review every assigned primary coordinate even if there are zero findings.", "",
             *(
                 [
-                    "## Source text issues", "",
+                    "## Structural issues", "",
                     "Do not invent wording for source coordinates reported as absent; continue the run using only supplied evidence.",
                     *[f"- `{row['reference']}` — {row['message']}" for row in source_issue_rows], "",
                 ]
@@ -3517,7 +3564,7 @@ def create_act_task(
     workflow: str,
     operation: str,
     output_project_id: str,
-    contemporary_source_id: str,
+    contemporary_source_id: str | None,
     lexical_donor_id: str | None = None,
     scope_value: str,
     focus: str | None = None,
@@ -3687,7 +3734,7 @@ def create_act_task(
         allow_run_subscope=bool(parent_plan_id and work_unit_id),
     )
     job_store = JobStore(config.root, config.settings_path)
-    owning_job = job_store.load_job(job_id, tool=workflow)
+    owning_job = _load_owning_job(config, job_id, workflow)
     config = load_ecosystem(job_store.ensure_runtime_files(owning_job))
     if workflow == "saw" and operation == "stc":
         return _create_saw_stc_task(
@@ -4630,6 +4677,7 @@ def create_act_task(
                 workflow="RTC",
                 source_stream="REFERENCE",
                 source_project_id=source.project_id,
+                wip_project_id=output.project_id,
                 scope=scope.label(),
             ))
             if workflow == "saw" and operation == "rtc"
@@ -4757,9 +4805,7 @@ def create_act_task(
                         code="BIC_EVIDENCE_COHORT_CHANGED",
                         affected_scope=scope.label(),
                     )
-        bound_project = JobStore(config.root, config.settings_path).load_job(
-            job_id, tool=workflow
-        )
+        bound_project = _load_owning_job(config, job_id, workflow)
         if workflow == "bic":
             canonical_resource_bindings = {
                 "SOURCE": bound_project.bindings["content_source"],
@@ -4973,6 +5019,7 @@ def create_act_task(
             "linguistic_profile_bindings": linguistic_profile_bindings,
             "evidence_policy": task_evidence_policy(workflow),
             "packets": packet_records,
+            "structural_issues": source_issue_rows,
             "source_text_issues": source_issue_rows,
             "preflight": preflight,
             "resource_fingerprints": resource_fingerprints,
@@ -5100,7 +5147,7 @@ def create_act_task(
         if source_issue_rows:
             act_lines.extend([
                 "",
-                "## Source text issues",
+                "## Structural issues",
                 "",
                 "Do not invent wording for source coordinates reported as absent; continue the run using only supplied evidence.",
                 *[f"- `{row['reference']}` — {row['message']}" for row in source_issue_rows],
@@ -5642,6 +5689,7 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         "authority_family": family,
         "finding_count": sum(int(row.get("finding_count") or 0) for row in accepted_results),
         "source_comparison_status": source_comparison_status(source_issue_rows),
+        "structural_issues": source_issue_rows,
         "source_text_issues": source_issue_rows,
         "work_unit_count": len(accepted_results),
         "resource_fingerprints": lineage or {},
@@ -5889,6 +5937,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             "stage_case_index": unit.get("stage_case_index"),
             "stage_case_total": unit.get("stage_case_total"),
             "source_text_issues": unit_source_issues,
+            "structural_issues": unit_source_issues,
         })
     validate_global_finding_ids(findings)
     if len(expected) != len(set(expected)):
@@ -5975,6 +6024,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         "findings": findings,
         "finding_count": len(findings),
         "source_comparison_status": source_comparison_status(source_issue_rows),
+        "structural_issues": source_issue_rows,
         "source_text_issues": source_issue_rows,
         "work_units": child_results,
         "execution_routes": aggregate_execution_routes(child_results),
@@ -6056,7 +6106,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
     if workflow_hint not in ACT_OPERATIONS or not job_id or not run_id:
         raise ValidationError("ACT task manifest is missing canonical workflow/Job/Run identity")
     job_store = JobStore(config.root, config.settings_path)
-    owning_job = job_store.load_job(job_id, tool=workflow_hint)
+    owning_job = _load_owning_job(config, job_id, workflow_hint)
     config = load_ecosystem(job_store.ensure_runtime_files(owning_job))
     workflow = workflow_for_task(config, task_root)
     task_id = task_root.name
@@ -6414,6 +6464,11 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             task_fingerprint=str(raw.get("task_fingerprint", "")),
             narrative_language=str(dict(raw.get("narrative_language") or {}).get("tag") or ""),
         )
+        normalized_issues = unique_source_text_issues(
+            dict(row)
+            for row in raw.get("structural_issues", raw.get("source_text_issues", []))
+            if isinstance(row, Mapping)
+        )
         normalized.update(
             {
                 "execution_route": execution_route,
@@ -6426,11 +6481,8 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "resource_bindings": raw.get("resource_bindings", {}),
                 "resource_display_names": raw.get("resource_display_names", {}),
                 "resource_fingerprints": raw.get("resource_fingerprints", {}),
-                "source_text_issues": unique_source_text_issues(
-                    dict(row)
-                    for row in raw.get("source_text_issues", [])
-                    if isinstance(row, Mapping)
-                ),
+                "structural_issues": normalized_issues,
+                "source_text_issues": normalized_issues,
             }
         )
         normalized["source_comparison_status"] = source_comparison_status(
@@ -6547,6 +6599,11 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             "review_receipt_count": len(normalized.get("review_receipts", [])),
             "structural_candidates_reconciled": len(normalized["structural_adjudications"]),
         }
+        normalized_issues = unique_source_text_issues(
+            dict(row)
+            for row in raw.get("structural_issues", raw.get("source_text_issues", []))
+            if isinstance(row, Mapping)
+        )
         normalized.update(
             {
                 "execution_route": execution_route,
@@ -6558,11 +6615,8 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "resource_bindings": raw.get("resource_bindings", {}),
                 "resource_display_names": raw.get("resource_display_names", {}),
                 "resource_fingerprints": raw.get("resource_fingerprints", {}),
-                "source_text_issues": unique_source_text_issues(
-                    dict(row)
-                    for row in raw.get("source_text_issues", [])
-                    if isinstance(row, Mapping)
-                ),
+                "structural_issues": normalized_issues,
+                "source_text_issues": normalized_issues,
             }
         )
         normalized["source_comparison_status"] = source_comparison_status(

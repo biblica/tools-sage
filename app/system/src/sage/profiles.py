@@ -163,9 +163,15 @@ def _parse_bindings(
                 f"{workflow_id} WIP {project} must have content_state UNDER_REVIEW"
             )
         bindings[normalized_role] = project
+    runtime_context = config.raw.get("runtime_context")
+    runtime_tool = (
+        str(runtime_context.get("tool") or "").strip().lower()
+        if isinstance(runtime_context, dict)
+        else ""
+    )
     required_roles = {
         "bic": {"CONTENT_SOURCE", "LEXICAL_DONOR", "GENERATED_TARGET"},
-        "saw": {"WIP", "REFERENCE"},
+        "saw": {"WIP"} if runtime_tool == "stc" else {"WIP", "REFERENCE"},
     }[workflow_id]
     optional_roles = {"ORIGINAL_LANGUAGE_GREEK", "ORIGINAL_LANGUAGE_HEBREW"}
     allowed_roles = required_roles | optional_roles

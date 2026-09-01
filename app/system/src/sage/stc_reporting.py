@@ -141,9 +141,9 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
     if source_issues:
         lines.extend([
             "",
-            "## Source text issues",
+            "## Structural issues",
             "",
-            "These source-text coordinate differences did not block STC execution.",
+            "These structural coordinate differences did not block STC execution.",
             "",
         ])
         for row in source_issues:

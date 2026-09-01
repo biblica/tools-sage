@@ -748,19 +748,16 @@ def test_rtc_task_reports_empty_reference_coordinate_without_aborting(
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert manifest["expected_references"] == ["MAT 1:2"]
     assert manifest["packets"]["contemporary_source"]["atomic_references"] == []
-    assert manifest["source_text_issues"] == [{
-        "status": "REPORT_ONLY",
-        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
-        "workflow": "RTC",
-        "source_stream": "REFERENCE",
-        "source_project_id": "usNIVv2",
-        "scope": "MAT 1:2",
-        "reference": "MAT 1:2",
-        "message": (
-            "REFERENCE has no source text at MAT 1:2; "
-            "the run continued without inventing comparison evidence."
-        ),
-    }]
+    assert len(manifest["source_text_issues"]) == 1
+    issue = manifest["source_text_issues"][0]
+    assert issue["status"] == "REPORT_ONLY"
+    assert issue["classification"] == "STRUCTURE_PROBLEM"
+    assert issue["structure_status"] == "VERSIFICATION_MISMATCH"
+    assert issue["text_relation"] == "ADDITION"
+    assert issue["workflow"] == "RTC"
+    assert issue["source_project_id"] == "usNIVv2"
+    assert issue["wip_project_id"] == "usWIP"
+    assert issue["reference"] == "MAT 1:2"
     assert "Do not invent wording for source coordinates reported as absent" in Path(
         plan["act_path"]
     ).read_text(encoding="utf-8")
@@ -771,10 +768,10 @@ def test_rtc_task_reports_empty_reference_coordinate_without_aborting(
     submit_act_task(config, manifest_path)
     final = continue_saw_plan(config, Path(plan["plan_path"]))
     aggregate = json.loads(Path(final["aggregate_path"]).read_text(encoding="utf-8"))
-    assert aggregate["source_comparison_status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
+    assert aggregate["source_comparison_status"] == "COMPLETE_WITH_STRUCTURE_PROBLEMS"
     assert aggregate["source_text_issues"] == manifest["source_text_issues"]
     report = Path(final["report_path"]).read_text(encoding="utf-8")
-    assert "## Source text issues" in report
+    assert "## Structural issues" in report
     assert "MAT 1:2" in report
 
 
@@ -1239,7 +1236,7 @@ def test_partitioned_rtc_aggregate_preserves_source_text_issues(
 
     aggregate = aggregate_act_plan(config, stage_plan_path)
 
-    assert aggregate["source_comparison_status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
+    assert aggregate["source_comparison_status"] == "COMPLETE_WITH_STRUCTURE_PROBLEMS"
     assert [row["reference"] for row in aggregate["source_text_issues"]] == ["MAT 1:2"]
 
 

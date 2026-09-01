@@ -4379,8 +4379,7 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--contemporary-source", "--source", "--reference",
         dest="contemporary_source",
-        required=True,
-        help="BIC SOURCE content authority or SAW authorized REFERENCE",
+        help="BIC SOURCE content authority or RTC authorized REFERENCE; omitted for STC",
     )
     parser.add_argument(
         "--lexical-donor", "--donor",

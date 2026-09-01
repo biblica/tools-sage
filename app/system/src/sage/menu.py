@@ -2824,7 +2824,7 @@ class SageControlCenter:
             )
             if preflight == "CHANGE":
                 continue
-            if preflight != "READY":
+            if preflight not in {"READY", "READY_WITH_STRUCTURE_PROBLEMS"}:
                 return
             run = self.store.create_run(project, operation=operation, scope=scope, focus=focus, check_type=check_type)
             approved_plan_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
@@ -3168,7 +3168,9 @@ class SageControlCenter:
             # interactive UI. They remain persisted with the Run and available in the
             # final Action Report and explicit Job-validation surfaces.
             if not blockers:
-                return "READY"
+                return (
+                    "READY_WITH_STRUCTURE_PROBLEMS" if advisories else "READY"
+                )
             self.io.write()
             self.io.write("SAW RESOURCE PREFLIGHT BLOCKED")
             self.io.write("-" * 72)
@@ -3825,16 +3827,72 @@ class SageControlCenter:
     ) -> None:
         """Render one completion template for standalone and planned STC/RTC Runs."""
         self.io.write()
-        self.io.write("SAW RUN COMPLETE")
+        self.io.write(f"{project.tool.upper()} RUN COMPLETE")
         self.io.write("=" * 72)
         self.io.write(f"{'Job':<20}{project.job_id}")
         self.io.write(f"{'Check':<20}{self._saw_operation_label(run.operation)}")
         self.io.write(f"{'Scope':<20}{run.scope}")
-        self.io.write(f"{'Status':<20}COMPLETE")
+        self.io.write(f"{'Status':<20}{run.status}")
         if str(report_directory or "").strip():
             self.io.write(
                 f"{'Reports':<20}{operator_path(self.root, str(report_directory))}"
             )
+
+    @staticmethod
+    def _payload_has_structure_problems(payload: Any) -> bool:
+        """Recognize report-only structural evidence in a controller result."""
+        if not isinstance(payload, dict):
+            return False
+        structural_statuses = {
+            "READY_WITH_STRUCTURE_PROBLEMS",
+            "COMPLETE_WITH_STRUCTURE_PROBLEMS",
+            "VERSIFICATION_MISMATCH",
+        }
+        if any(
+            str(payload.get(key) or "").strip().upper() in structural_statuses
+            for key in (
+                "status",
+                "source_comparison_status",
+                "structure_status",
+                "readiness_status",
+            )
+        ):
+            return True
+        return any(
+            isinstance(payload.get(key), list) and bool(payload[key])
+            for key in (
+                "structural_issues",
+                "source_text_issues",
+                "versification_advisories",
+                "advisories",
+            )
+        )
+
+    def _saw_completion_status(self, run: Run, *payloads: Any) -> str:
+        """Close completed RTC/STC work while retaining report-only deficiencies."""
+        if any(self._payload_has_structure_problems(value) for value in payloads):
+            return "COMPLETE_WITH_STRUCTURE_PROBLEMS"
+        advisory_path = run.root / "diagnostics" / "VERSIFICATION-ADVISORIES.json"
+        if advisory_path.is_file():
+            try:
+                if self._payload_has_structure_problems(
+                    json.loads(advisory_path.read_text(encoding="utf-8"))
+                ):
+                    return "COMPLETE_WITH_STRUCTURE_PROBLEMS"
+            except (OSError, json.JSONDecodeError):
+                pass
+        for value in run.task_manifests:
+            manifest_path = self._manifest_path(value)
+            normalized_path = manifest_path.parent / "validation" / "normalized-findings.json"
+            if not normalized_path.is_file():
+                continue
+            try:
+                payload = json.loads(normalized_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if self._payload_has_structure_problems(payload):
+                return "COMPLETE_WITH_STRUCTURE_PROBLEMS"
+        return "COMPLETE"
 
     def _ensure_stc_task_publication(self, project: Job, manifest_path: Path) -> dict[str, Any]:
         """Regenerate a standalone STC report before closing or repairing its Run."""
@@ -3881,7 +3939,10 @@ class SageControlCenter:
                     if run.operation == "stc"
                     else {}
                 )
-                run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
+                completion = self._saw_completion_status(run, publication)
+                run = self.store.update_run(
+                    run, status=completion, current_stage=completion
+                )
                 if standard_run_ui:
                     self._write_saw_run_complete(
                         project,
@@ -3910,7 +3971,8 @@ class SageControlCenter:
             if run.operation == "stc"
             else {}
         )
-        run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
+        completion = self._saw_completion_status(run, publication)
+        run = self.store.update_run(run, status=completion, current_stage=completion)
         if standard_run_ui:
             self._write_saw_run_complete(
                 project,
@@ -3986,7 +4048,10 @@ class SageControlCenter:
                         current_stage=str(result.get("composite_stage") or "RTC"),
                     )
                     continue
-                run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
+                completion = self._saw_completion_status(run, aggregate)
+                run = self.store.update_run(
+                    run, status=completion, current_stage=completion
+                )
                 report_directory = str(aggregate.get("report_directory") or "").strip()
                 self._write_saw_run_complete(
                     project,
@@ -3996,7 +4061,10 @@ class SageControlCenter:
                 self.io.pause()
                 return run
             if status == "COMPLETE":
-                run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
+                completion = self._saw_completion_status(run, result)
+                run = self.store.update_run(
+                    run, status=completion, current_stage=completion
+                )
                 report_directory = str(result.get("report_directory") or "").strip()
                 self._write_saw_run_complete(
                     project,
@@ -4038,11 +4106,11 @@ class SageControlCenter:
                     self.io.pause()
             elif choice == "2":
                 self.show_run_list(
-                    [item for item in runs if item.status not in {"COMPLETE", "ARCHIVED", "ABANDONED"}]
+                    [item for item in runs if item.status not in RUN_CLOSED_STATUSES]
                 )
             elif choice == "3":
                 self.show_run_list(
-                    [item for item in runs if item.status in {"COMPLETE", "ARCHIVED"}]
+                    [item for item in runs if item.status in RUN_CLOSED_STATUSES]
                 )
             elif choice == "4":
                 query = self.io.text("Book, scope, operation, date, or run ID").casefold()

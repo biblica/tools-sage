@@ -144,19 +144,13 @@ def test_rtc_planning_reports_missing_reference_coordinate_without_blocking() ->
     assert [ref.label() for ref in sorted(units[0].primary_refs)] == [
         "MAT 1:1", "MAT 1:2"
     ]
-    assert packages[0]["source_text_issues"] == [{
-        "status": "REPORT_ONLY",
-        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
-        "workflow": "RTC",
-        "source_stream": "REFERENCE",
-        "source_project_id": "",
-        "scope": "MAT 1:1-2",
-        "reference": "MAT 1:2",
-        "message": (
-            "REFERENCE has no source text at MAT 1:2; "
-            "the run continued without inventing comparison evidence."
-        ),
-    }]
+    assert len(packages[0]["source_text_issues"]) == 1
+    issue = packages[0]["source_text_issues"][0]
+    assert issue["status"] == "REPORT_ONLY"
+    assert issue["classification"] == "STRUCTURE_PROBLEM"
+    assert issue["structure_status"] == "VERSIFICATION_MISMATCH"
+    assert issue["text_relation"] == "ADDITION"
+    assert issue["reference"] == "MAT 1:2"
 
 
 def test_reference_bridge_moves_internal_wip_boundary_to_its_far_edge() -> None:

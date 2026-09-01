@@ -44,7 +44,7 @@ def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, mak
         workflow="saw",
         operation="stc",
         output_project_id="usWIP",
-        contemporary_source_id="usNIVv2",
+        contemporary_source_id=None,
         scope_value="MAT 1:1",
     )
 
@@ -101,7 +101,7 @@ def test_stc_task_reports_empty_primary_ol_coordinate_without_aborting(
         workflow="saw",
         operation="stc",
         output_project_id="usWIP",
-        contemporary_source_id="usNIVv2",
+        contemporary_source_id=None,
         scope_value="MAT 1:2",
     )
 
@@ -109,19 +109,15 @@ def test_stc_task_reports_empty_primary_ol_coordinate_without_aborting(
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert manifest["expected_references"] == ["MAT 1:2"]
     assert manifest["packets"]["original_language"]["primary_references"] == []
-    assert manifest["source_text_issues"] == [{
-        "status": "REPORT_ONLY",
-        "code": "SOURCE_PRIMARY_COVERAGE_MISMATCH",
-        "workflow": "STC",
-        "source_stream": "GRK:PRIMARY",
-        "source_project_id": "GRK",
-        "scope": "MAT 1:2",
-        "reference": "MAT 1:2",
-        "message": (
-            "GRK:PRIMARY has no source text at MAT 1:2; "
-            "the run continued without inventing comparison evidence."
-        ),
-    }]
+    assert len(manifest["source_text_issues"]) == 1
+    issue = manifest["source_text_issues"][0]
+    assert issue["status"] == "REPORT_ONLY"
+    assert issue["classification"] == "STRUCTURE_PROBLEM"
+    assert issue["structure_status"] == "VERSIFICATION_MISMATCH"
+    assert issue["text_relation"] == "ADDITION"
+    assert issue["source_project_id"] == "GRK"
+    assert issue["wip_project_id"] == "usWIP"
+    assert issue["reference"] == "MAT 1:2"
     assert Path(manifest_path.parent / "packet/original-language.sfm").read_text(
         encoding="utf-8"
     ) == "\\id MAT\n\\c 1\n"
@@ -142,10 +138,10 @@ def test_stc_task_reports_empty_primary_ol_coordinate_without_aborting(
     normalized = json.loads(
         (manifest_path.parent / "validation/normalized-findings.json").read_text(encoding="utf-8")
     )
-    assert normalized["source_comparison_status"] == "COMPLETE_WITH_SOURCE_TEXT_ISSUES"
+    assert normalized["source_comparison_status"] == "COMPLETE_WITH_STRUCTURE_PROBLEMS"
     assert normalized["source_text_issues"] == manifest["source_text_issues"]
     published_report = Path(result["report_path"]).read_text(encoding="utf-8")
-    assert "## Source text issues" in published_report
+    assert "## Structural issues" in published_report
     assert "MAT 1:2" in published_report
 
 
@@ -172,7 +168,7 @@ def test_stc_task_accepts_governed_authority_profile_from_external_ol_root(
         workflow="saw",
         operation="stc",
         output_project_id="usWIP",
-        contemporary_source_id="usNIVv2",
+        contemporary_source_id=None,
         scope_value="MAT 1:1",
     )
 
@@ -199,7 +195,7 @@ def test_stc_submission_uses_stc_grammar_and_writes_standalone_canonical_artifac
         workflow="saw",
         operation="stc",
         output_project_id="usWIP",
-        contemporary_source_id="usNIVv2",
+        contemporary_source_id=None,
         scope_value="MAT 1:1",
     )
     manifest_path = Path(task["manifest_path"])
