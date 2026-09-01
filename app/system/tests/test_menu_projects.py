@@ -241,7 +241,9 @@ def test_scripted_control_center_can_open_and_exit(make_workspace) -> None:
     assert "SAGE v0.01beta2" in rendered
     assert "BETA - PRE-RELEASE" in rendered
     assert "BIC" in rendered
-    assert "SAW" in rendered
+    assert "Reference Text Comparison (RTC)" in rendered
+    assert "Source Text Correspondence (STC)" in rendered
+    assert "\n  3. SAW\n" not in rendered
     assert "SAGE Maintenance" in rendered
 
 
@@ -316,7 +318,7 @@ def test_guided_first_run_setup_records_missing_project_root_with_ready_test_ai(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
         io=MenuIO(
-            input_func=ScriptedInput(["6", "c"]),
+            input_func=ScriptedInput(["7", "c"]),
             output=output,
         ),
         dry_run_provider=True,
@@ -339,9 +341,10 @@ def test_guided_first_run_setup_records_missing_project_root_with_ready_test_ai(
     assert "Model                    dry-run" in rendered
     assert "Reasoning level          NOT APPLICABLE" in rendered
     assert "BIC:       NOT CONFIGURED" in rendered
-    assert "SAW:       NOT CONFIGURED" in rendered
+    assert "RTC:       NOT CONFIGURED" in rendered
+    assert "STC:       NOT CONFIGURED" in rendered
     assert "MANAGE JOBS" in rendered
-    assert "3. Manage active Jobs" in rendered
+    assert "4. Manage active Jobs" in rendered
     assert "Setup options" not in rendered
     assert "SAGE Maintenance" in rendered
     assert "B. Main Menu   C. Exit SAGE" in rendered
@@ -954,7 +957,7 @@ def test_active_job_route_rejects_receipt_for_another_task(make_workspace) -> No
 
 
 def test_main_menu_separates_scripture_project_management_from_workflows(make_workspace) -> None:
-    """The Project administration entry is explicit and visually separated from BIC/SAW."""
+    """Project administration is explicit and separated from BIC/RTC/STC."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
     center = SageControlCenter(
@@ -972,8 +975,10 @@ def test_main_menu_separates_scripture_project_management_from_workflows(make_wo
     rendered = output.getvalue()
     assert "1. Manage SAGE Scripture Projects" in rendered
     assert "Manage SAGE Scripture Projects\n\n  2. BIC" in rendered
-    assert "3. SAW\n\n  4. SAGE Maintenance" in rendered
-    assert "4. SAGE Maintenance" in rendered
+    assert "3. Reference Text Comparison (RTC)" in rendered
+    assert "4. Source Text Correspondence (STC)\n\n  5. SAGE Maintenance" in rendered
+    assert "\n  3. SAW\n" not in rendered
+    assert "5. SAGE Maintenance" in rendered
     assert "4. Reports" not in rendered
     assert "6. Recovery" not in rendered
     assert "Scripture Projects >>" not in rendered

@@ -14,7 +14,7 @@ from typing import Any, Callable
 from .errors import SageError, ValidationError
 from .hashing import sha256_file
 from .interface_localization import InterfaceLocalizer
-from .jobs import TOOL_IDS, JobStore
+from .jobs import JobStore
 from .llm_settings import load_llm_settings, local_ai_policy_status
 from .model_service import ModelService
 from .routing_override import load_global_override
@@ -27,6 +27,9 @@ from .registry import load_ecosystem
 from .storage import storage_layout
 from .state import ecosystem_state_path, read_state
 from .standard import load_standard
+from .workflow_identity import OPERATOR_WORKFLOWS
+
+_RUNTIME_COMPATIBILITY_WORKFLOWS = (*OPERATOR_WORKFLOWS, "saw")
 
 
 @dataclass(frozen=True)
@@ -79,7 +82,8 @@ class StartupReadiness:
 TOP_LEVEL_SECTIONS: tuple[UISection, ...] = (
     UISection("projects", "Scripture Projects", "Project discovery, registration, validation and Scripture resources."),
     UISection("bic", "BIC", "BIC Jobs, Runs, reports, recovery, generations and governed TARGET work."),
-    UISection("saw", "SAW", "SAW Jobs, checks, reports, and workflow recovery."),
+    UISection("rtc", "RTC", "Reference Text Comparison Jobs, Runs, reports, and recovery."),
+    UISection("stc", "STC", "Source Text Correspondence Jobs, Runs, reports, and recovery."),
     UISection("configure", "SAGE Maintenance", "System settings, diagnostics, storage maintenance and system recovery."),
 )
 
@@ -102,6 +106,16 @@ def context_help_lines(title: str) -> tuple[str, ...]:
         return (
             "BIC operates through governed Jobs and Runs. SOURCE and DONOR remain read-only; TARGET writes are governed.",
             "Status shows the active task and current AI configuration without leaving the current view.",
+        )
+    if "RTC" in key:
+        return (
+            "RTC compares a WIP Project with a distinct REFERENCE Project through one fixed Run action.",
+            "RTC option #10 admits bounded original-language review inside the RTC Run.",
+        )
+    if "STC" in key:
+        return (
+            "STC compares a WIP Project directly with the applicable GRK or HEB authority.",
+            "STC does not use a REFERENCE Project.",
         )
     if "SAW" in key:
         return (
@@ -247,7 +261,11 @@ class OperatorUIService:
     def configured_tools(self) -> set[str]:
         """Return workflows that currently have one active Job binding."""
         active = self.store.active_jobs()
-        return {tool for tool in TOOL_IDS if active.get(tool)}
+        return {
+            tool
+            for tool in _RUNTIME_COMPATIBILITY_WORKFLOWS
+            if active.get(tool)
+        }
 
     def projects_root_status(self) -> tuple[str, Path | None]:
         """Return live readiness for the required workstation Paratext Projects root."""
@@ -293,7 +311,7 @@ class OperatorUIService:
         prior = dict(previous or {})
         results: dict[str, Any] = {}
         ready_states = {"READY", "READY_WITH_ACTIONS", "READY_WITH_LIMITATIONS"}
-        for tool in TOOL_IDS:
+        for tool in _RUNTIME_COMPATIBILITY_WORKFLOWS:
             active_id = self.store.active_jobs().get(tool)
             job = self.store.active_job(tool)
             if job is None:
@@ -392,7 +410,7 @@ class OperatorUIService:
         if projects_root_status != "READY":
             return "CONFIGURE_PROJECT_ROOT", "Repair Paratext Projects root"
         if not configured_tools:
-            return "CONFIGURE_WORKFLOW", "Configure BIC or SAW"
+            return "CONFIGURE_WORKFLOW", "Configure BIC, RTC, or STC"
         ready_states = {"READY", "READY_WITH_ACTIONS", "READY_WITH_LIMITATIONS"}
         for tool in sorted(configured_tools):
             job = self.store.active_job(tool)
@@ -432,7 +450,13 @@ class OperatorUIService:
         # advertises validation needed until its first governed operation.
         requires_setup = next_step not in {"COMPLETE", "VALIDATE"}
         status = "READY" if not requires_setup else "INCOMPLETE"
-        workflows = {tool: self.workflow_setup_status(tool, initialization) for tool in TOOL_IDS}
+        visible_workflows = list(OPERATOR_WORKFLOWS)
+        if self.store.active_jobs().get("saw"):
+            visible_workflows.append("saw")
+        workflows = {
+            tool: self.workflow_setup_status(tool, initialization)
+            for tool in visible_workflows
+        }
         snapshot = StartupReadiness(
             status=status,
             requires_setup=requires_setup,
@@ -515,7 +539,7 @@ class OperatorUIService:
     def _latest_workflow_run(self, tool: str) -> tuple[Any, Any] | None:
         """Return the most recently updated Run for one workflow across all of its Jobs."""
         normalized = tool.strip().lower()
-        if normalized not in TOOL_IDS:
+        if normalized not in _RUNTIME_COMPATIBILITY_WORKFLOWS:
             raise ValueError(f"Unknown workflow: {tool}")
         candidates: list[tuple[Any, Any]] = []
         for job in self.store.discover_report(normalized, include_archived=True).jobs:
@@ -710,7 +734,8 @@ class OperatorUIService:
         return {
             **release,
             "bic_job": self.job_summary("bic"),
-            "saw_job": self.job_summary("saw"),
+            "rtc_job": self.job_summary("rtc"),
+            "stc_job": self.job_summary("stc"),
             "last_run": self.last_run_summary(),
             "unfinished_run": self.last_run_is_resumable(),
             "model": self.model_summary(),
@@ -753,7 +778,7 @@ class OperatorUIService:
                 "catalog": catalog,
                 "registered": rows,
             }
-        if view in {"bic", "saw"}:
+        if view in {"bic", "rtc", "stc", "saw"}:
             jobs = []
             report = self.store.discover_report(view, include_archived=True)
             active_id = self.store.active_jobs().get(view)

@@ -50,12 +50,14 @@ def test_tui_section_snapshots_are_read_only_and_bounded(make_workspace) -> None
 
     projects = service.section_snapshot("projects")
     bic = service.section_snapshot("bic")
-    saw = service.section_snapshot("saw")
+    rtc = service.section_snapshot("rtc")
+    stc = service.section_snapshot("stc")
     recovery = service.section_snapshot("recovery")
 
     assert set(projects) == {"projects_root", "catalog", "registered"}
     assert set(bic) == {"active_job", "jobs", "last_run"}
-    assert set(saw) == {"active_job", "jobs", "last_run"}
+    assert set(rtc) == {"active_job", "jobs", "last_run"}
+    assert set(stc) == {"active_job", "jobs", "last_run"}
     assert recovery["sage_home"] == str(root.resolve())
 
 
@@ -63,7 +65,8 @@ def test_context_help_is_shared_across_interactive_surfaces() -> None:
     """Verify context help is shared across interactive surfaces."""
     assert any("Quick Scan" in line for line in context_help_lines("SCRIPTURE PROJECTS"))
     assert any("SOURCE" in line for line in context_help_lines("BIC"))
-    assert any("WIP" in line for line in context_help_lines("SAW"))
+    assert any("WIP" in line for line in context_help_lines("RTC"))
+    assert any("does not use" in line for line in context_help_lines("STC"))
     assert any("classic menu" in line for line in context_help_lines("MAIN MENU"))
 
 

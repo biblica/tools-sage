@@ -867,6 +867,7 @@ class JobStore:
         project: Job,
         *,
         display_name: str | None = None,
+        bindings: dict[str, str] | None = None,
         defaults: dict[str, Any] | None = None,
         reporting: dict[str, Any] | None = None,
         status: str | None = None,
@@ -878,6 +879,40 @@ class JobStore:
             if not normalized_name:
                 raise ValidationError("Job display name cannot be blank")
             raw["display_name"] = normalized_name
+        if bindings is not None:
+            if project.tool not in ANALYSIS_WORKFLOWS:
+                raise ValidationError(
+                    "Binding changes are supported here only for RTC and STC Jobs",
+                    code="JOB_BINDING_REVISION_UNSUPPORTED",
+                )
+            required, optional = _binding_contract(project.tool)
+            supplied_keys = set(bindings)
+            missing = sorted(required - supplied_keys)
+            extra = sorted(supplied_keys - (required | optional))
+            if missing:
+                raise ValidationError(
+                    f"Job is missing required bindings: {', '.join(missing)}",
+                    code="PROJECT_BINDING_MISMATCH",
+                )
+            if extra:
+                raise ValidationError(
+                    f"Job has unsupported bindings: {', '.join(extra)}",
+                    code="PROJECT_BINDING_MISMATCH",
+                )
+            if bindings["wip"] != project.bindings["wip"]:
+                raise ValidationError(
+                    "Changing the WIP Project requires a new snapshot-dated Job",
+                    code="JOB_WIP_CHANGE_REQUIRES_NEW_JOB",
+                )
+            if project.tool == "rtc":
+                _validate_saw_role_separation(project.job_id, bindings)
+            raw["bindings"] = dict(bindings)
+            raw["profiles"] = self._validate_project_bindings(
+                tool=project.tool,
+                job_id=project.job_id,
+                bindings=dict(bindings),
+                profiles=None,
+            )
         if defaults is not None:
             raw["defaults"] = dict(defaults)
         if reporting is not None:

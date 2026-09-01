@@ -56,11 +56,11 @@ def test_tui_language_modal_changes_interface_without_losing_current_view(make_w
     async def exercise() -> None:
         """Exercise the mounted TUI through its headless Textual pilot."""
         async with app.run_test(size=(100, 30)) as pilot:
-            await pilot.click("#nav-saw")
-            assert app.current_view == "saw"
+            await pilot.click("#nav-rtc")
+            assert app.current_view == "rtc"
             await pilot.press("d")
             await pilot.click("#lang-fr")
-            assert app.current_view == "saw"
+            assert app.current_view == "rtc"
             assert service.localizer.language == "fr"
 
     asyncio.run(exercise())

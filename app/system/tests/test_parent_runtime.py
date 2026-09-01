@@ -266,7 +266,7 @@ def test_guided_setup_has_system_autosave_and_exit_paths(make_workspace, monkeyp
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["6"]), output=output),
+        io=MenuIO(input_func=ScriptedInput(["7"]), output=output),
         dry_run_provider=True,
     )
     monkeypatch.setattr(
@@ -278,7 +278,8 @@ def test_guided_setup_has_system_autosave_and_exit_paths(make_workspace, monkeyp
     assert center.guided_setup(pause_at_end=False) is False
     rendered = output.getvalue()
     assert "BIC Jobs" in rendered
-    assert "SAW Jobs" in rendered
+    assert "RTC Jobs" in rendered
+    assert "STC Jobs" in rendered
     assert "SAGE Maintenance" in rendered
     assert "Setup options" not in rendered
     assert "B. Main Menu   C. Exit SAGE" in rendered
@@ -431,7 +432,7 @@ def test_ai_prerequisite_blocks_main_menu_escape_during_guided_setup(make_worksp
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["n", "6", "", "b", "", "c"]), output=output),
+        io=MenuIO(input_func=ScriptedInput(["n", "7", "", "b", "", "c"]), output=output),
     )
     blocked = {
         "available": True,

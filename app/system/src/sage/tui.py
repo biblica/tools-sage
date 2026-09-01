@@ -194,8 +194,9 @@ class SageTUIApp(App[None]):
     BINDINGS = [
         ("1", "open_projects", "Scripture Projects"),
         ("2", "open_bic", "BIC"),
-        ("3", "open_saw", "SAW"),
-        ("4", "open_configure", "SAGE Maintenance"),
+        ("3", "open_rtc", "RTC"),
+        ("4", "open_stc", "STC"),
+        ("5", "open_configure", "SAGE Maintenance"),
         ("a", "back", "Back"),
         ("escape", "back", "Back"),
         ("b", "home", "Main Menu"),
@@ -561,7 +562,8 @@ class SageTUIApp(App[None]):
                     self._kv("Model", ai.get("model") or "NOT AVAILABLE"),
                     self._kv("Reasoning", ai.get("reasoning_level") or "NOT REPORTED"),
                     self._kv("BIC", workflows.get("bic") or "NOT CONFIGURED"),
-                    self._kv("SAW", workflows.get("saw") or "NOT CONFIGURED"),
+                    self._kv("RTC", workflows.get("rtc") or "NOT CONFIGURED"),
+                    self._kv("STC", workflows.get("stc") or "NOT CONFIGURED"),
                     "",
                     self._kv("Overall", data.get("status") or "INCOMPLETE"),
                     self._kv("Next", data.get("next_label") or "Complete setup"),
@@ -576,7 +578,8 @@ class SageTUIApp(App[None]):
                 [
                     self._kv("Release", f"v{data['version']} {data['release_status']}"),
                     self._kv("BIC active Job", data["bic_job"]),
-                    self._kv("SAW active Job", data["saw_job"]),
+                    self._kv("RTC active Job", data["rtc_job"]),
+                    self._kv("STC active Job", data["stc_job"]),
                     self._kv("Last Run", data["last_run"]),
                     self._kv("Workflow AI", (data.get("ai") or {}).get("connection")),
                     self._kv("Model policy", data["model"]),
@@ -612,7 +615,7 @@ class SageTUIApp(App[None]):
                     )
             return "\n".join(lines)
 
-        if view_id in {"bic", "saw"}:
+        if view_id in {"bic", "rtc", "stc"}:
             lines.extend([self._kv("Active Job", data.get("active_job") or "NONE"), self._kv("Last Run", data.get("last_run")), "", "Jobs"])
             jobs = data.get("jobs") or []
             if not jobs:
@@ -676,9 +679,13 @@ class SageTUIApp(App[None]):
         """Open BIC when startup prerequisites are ready."""
         self._set_view("bic")
 
-    def action_open_saw(self) -> None:
-        """Open SAW when startup prerequisites are ready."""
-        self._set_view("saw")
+    def action_open_rtc(self) -> None:
+        """Open Reference Text Comparison when startup prerequisites are ready."""
+        self._set_view("rtc")
+
+    def action_open_stc(self) -> None:
+        """Open Source Text Correspondence when startup prerequisites are ready."""
+        self._set_view("stc")
 
     def action_open_reports(self) -> None:
         """Open Reports when startup prerequisites are ready."""
