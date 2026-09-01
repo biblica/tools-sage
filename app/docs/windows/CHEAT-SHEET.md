@@ -31,10 +31,11 @@ shell -> SAGE -> Codex login / governed AI subprocess
 ```text
   1. Manage SAGE Scripture Projects
 
-  2. BIC
-  3. SAW
+  2. Bible Index & Context (BIC)
+  3. Reference Text Comparison (RTC)
+  4. Source Text Correspondence (STC)
 
-  4. SAGE Maintenance
+  5. SAGE Maintenance
 
 ┌──────────────────────────────────────────────────────────────────────┐
 │  A. Back   B. Main Menu   C. Exit SAGE                               │
@@ -42,7 +43,7 @@ shell -> SAGE -> Codex login / governed AI subprocess
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-The same `1`-`4` functional grammar and `A`-`F` global controls are used by the development TUI. Reports and Job recovery are under BIC/SAW; system recovery is under SAGE Maintenance. `F. Status` opens a non-destructive overlay and returns to the invoking view. The TUI targets a `100 x 30` terminal and shows System Status, Active AI, Project, and one sequential Active Job. Active Job progress is compact, for example `SAW_UK-ENG [████░░░░░░]  43%`.
+The same numeric functional grammar and `A`-`F` global controls are used by the development TUI. Reports and Job recovery are under BIC/RTC/STC; system recovery is under SAGE Maintenance. `F. Status` opens a non-destructive overlay and returns to the invoking view. The TUI targets a `100 x 30` terminal and shows System Status, Active AI, Project, and one sequential Active Job. Active Job progress is compact, for example `RTC-ukrNPUv1_20260901-001 [████░░░░░░]  43%`.
 
 The classic menu remains the default/fallback while TUI action parity is incomplete.
 
@@ -62,20 +63,22 @@ SAGE then discovers immediate project subfolders and stores mappings as **projec
 
 External reads remain limited to `.SFM` and `.VRS`. Only an explicitly authorized BIC TARGET may write `.SFM`.
 
-## Create BIC / SAW Job
+## Create BIC / RTC / STC Job
 
-Choose **Add BIC Job** or **Add SAW Job**. Role selectors list only SAGE Projects. **Add another Project to SAGE** temporarily opens Project administration and then returns to the selector. SAGE generates the canonical Job ID automatically; only the display name is optional to change.
+RTC binds different WIP and REFERENCE Projects. STC binds only WIP and chooses `GRK` or `HEB` by Book; it never uses REFERENCE. Analysis Job IDs use the WIP import date (`RTC-ukrNPUv1_20260901`), while repeated Runs append `-001`, `-002`, and later serials.
 
 ## Final reports
 
-SAGE validates and batches finalized Run findings into the owning Job's main report catalog. Final SAW reports do not remain in the Run `plans` folder:
+SAGE validates and batches finalized Run findings into the owning Job's main report catalog:
 
 ```text
-localdata\reports\<job-id>\GEN\GEN_001_RTC_ACTION-REPORT.md
-localdata\reports\<job-id>\GEN\GEN_001_RTC_OPERATOR-NOTE.txt
+localdata\reports\<job-id>\GEN\001\<run-id>_GEN-001_ACTION-REPORT.md
+localdata\reports\<job-id>\GEN\001\<run-id>_GEN-001_OPERATOR-NOTE.txt
 ```
 
 The `<job-id>` segment is the owning Job ID, not a Project ID. The completion screen prints the exact paths. SAGE does not write reports into the mapped Paratext Project folder.
+
+Reportable versification or source-coordinate gaps finish as `COMPLETE_WITH_STRUCTURE_PROBLEMS`; they do not abort safe RTC/STC analysis. Use **SAGE Maintenance > Resource Status Report** to inspect resources. **Wipe all Job data** requires `WIPE JOB DATA` and preserves the managed environment, Projects, resources, indexes, and configuration.
 
 ## Models
 

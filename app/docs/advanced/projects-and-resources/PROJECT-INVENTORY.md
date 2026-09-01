@@ -22,9 +22,11 @@ Do not use *register*, *registered*, or *unregister* for the SAGE Project lifecy
 
 ## Role-neutral inventory
 
-Adding a Project to SAGE records Scripture identity, language metadata, detected books/scope, location, VRS status, validation state, and short-code metadata. Report-language configuration belongs globally and to Jobs, never to Project inventory. Final workflow reports remain Job-owned. Adding a Project does not assign BIC/SAW roles and does not grant TARGET write authority.
+Adding a Project to SAGE records Scripture identity, language metadata, detected books/scope, location, VRS status, validation state, and short-code metadata. Report-language configuration belongs globally and to Jobs, never to Project inventory. Final workflow reports remain Job-owned. Adding a Project does not assign BIC/RTC/STC roles and does not grant TARGET write authority.
 
-BIC Job setup binds three SAGE Projects: SOURCE, DONOR, TARGET. SAW Job setup binds two: WIP, REFERENCE.
+BIC Job setup binds SOURCE, DONOR, and TARGET. RTC binds different WIP and REFERENCE Projects. STC binds only WIP and selects `GRK`/`HEB` by Book; STC has no REFERENCE binding.
+
+Before a Job opens and before a Run starts, SAGE checks its bindings against Project Inventory. Missing bindings are gathered into an `ACTION_NEEDED` structure report with the exact role, Project, and onboarding/Manage Job action; one invalid Job does not hide valid Jobs or abort the surrounding menu. **SAGE Maintenance > Resource Status Report** provides a read-only view of Project state, active roles, snapshots, versification, and OL authorities.
 
 ## Language identity
 
