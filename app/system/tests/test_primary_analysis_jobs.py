@@ -22,6 +22,7 @@ IMPORT_TIME = datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc)
 
 
 def _initialize(package_root: Path, root: Path) -> None:
+    """Initialize a fixture workspace through the public CLI boundary."""
     env = dict(os.environ)
     env["PYTHONPATH"] = str(package_root / "system/src")
     env["PYTHONDONTWRITEBYTECODE"] = "1"

@@ -20,6 +20,7 @@ _VERSE_RE = re.compile(rb"(?m)^\\v[ \t]+")
 
 
 def _read_object(path: Path) -> dict[str, Any] | None:
+    """Read one optional JSON object without turning a bad artifact into a report failure."""
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -53,6 +54,7 @@ def _project_fingerprint(path: Path) -> str | None:
 
 
 def _coverage(path: Path) -> dict[str, Any]:
+    """Summarize readable Books and verse markers for one resource directory."""
     try:
         books = discover_book_ids(path) if path.is_dir() else {}
     except OSError:
@@ -71,6 +73,7 @@ def _coverage(path: Path) -> dict[str, Any]:
 
 
 def _active_analysis_jobs(store: JobStore) -> tuple[list[Job], list[dict[str, Any]]]:
+    """Load active RTC/STC Jobs while preserving per-Job discovery deficiencies."""
     jobs: list[Job] = []
     issues: list[dict[str, Any]] = []
     active = store.active_jobs()
@@ -94,6 +97,7 @@ def _active_analysis_jobs(store: JobStore) -> tuple[list[Job], list[dict[str, An
 
 
 def _job_roles(jobs: list[Job]) -> tuple[dict[str, list[str]], dict[str, list[dict[str, Any]]]]:
+    """Index active analysis roles and WIP snapshot receipts by Project identity."""
     roles: dict[str, list[str]] = {}
     snapshots: dict[str, list[dict[str, Any]]] = {}
     for job in jobs:
@@ -119,6 +123,7 @@ def _job_roles(jobs: list[Job]) -> tuple[dict[str, list[str]], dict[str, list[di
 
 
 def _run_structure_issues(store: JobStore, jobs: list[Job]) -> dict[str, list[dict[str, Any]]]:
+    """Collect report-only structural issues from sealed Run diagnostics and findings."""
     by_project: dict[str, list[dict[str, Any]]] = {}
     for job in jobs:
         for run in store.list_runs(job, include_archived=True):

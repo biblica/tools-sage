@@ -70,7 +70,10 @@ def test_menu_is_a_canonical_cli_domain() -> None:
             and isinstance(item.elts[1], ast.Constant)
             and isinstance(item.elts[1].value, str)
         ]
-        normalized_labels = [label.replace(" (RTC)", "").replace(" (STC)", "") for label in labels]
+        normalized_labels = [
+            label.replace(" (BIC)", "").replace(" (RTC)", "").replace(" (STC)", "")
+            for label in labels
+        ]
         assert all("(" not in label and ")" not in label for label in normalized_labels)
         numbers = [int(key) for key in keys if key.isdecimal()]
         if numbers:
@@ -974,7 +977,7 @@ def test_main_menu_separates_scripture_project_management_from_workflows(make_wo
         assert isinstance(exc, MenuExitRequested)
     rendered = output.getvalue()
     assert "1. Manage SAGE Scripture Projects" in rendered
-    assert "Manage SAGE Scripture Projects\n\n  2. BIC" in rendered
+    assert "Manage SAGE Scripture Projects\n\n  2. Bible Index & Context (BIC)" in rendered
     assert "3. Reference Text Comparison (RTC)" in rendered
     assert "4. Source Text Correspondence (STC)\n\n  5. SAGE Maintenance" in rendered
     assert "\n  3. SAW\n" not in rendered

@@ -166,7 +166,7 @@ def test_menu_operator_action_grammar_uses_choose(package_root: Path) -> None:
 
 
 def test_every_job_resource_assignment_heading_highlights_its_formal_role(package_root: Path) -> None:
-    """Require angle-bracket role emphasis on every centralized BIC/SAW Project assignment chooser."""
+    """Require angle-bracket role emphasis on every literal Project assignment chooser."""
     tree = ast.parse((package_root / "system/src/sage/menu.py").read_text(encoding="utf-8"))
     titles: list[str] = []
     for call in ast.walk(tree):
@@ -186,6 +186,7 @@ def test_every_job_resource_assignment_heading_highlights_its_formal_role(packag
         "CHOOSE BIC <TARGET>",
         "CHOOSE SAW <WIP>",
         "CHOOSE SAW <REFERENCE>",
+        "CHOOSE RTC <REFERENCE>",
     }
     assert all(re.search(r"<[A-Z_]+>$", title) for title in titles)
 

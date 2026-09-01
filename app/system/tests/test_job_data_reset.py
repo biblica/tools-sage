@@ -13,6 +13,7 @@ from sage.storage import storage_layout
 
 
 def test_job_wipe_preserves_environment_projects_and_resources(make_workspace) -> None:
+    """Job-data wipe removes analysis artifacts but retains runtime and resource authority."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     layout = storage_layout(root, create=True)
     keep = layout.venv_root / "keep.txt"
@@ -50,6 +51,7 @@ def test_job_wipe_preserves_environment_projects_and_resources(make_workspace) -
 
 
 def test_job_wipe_does_not_follow_symlinked_job_target(make_workspace, tmp_path) -> None:
+    """A symlink in the Job tree is unlinked without deleting its external target."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     layout = storage_layout(root, create=True)
     outside = tmp_path / "outside-job-data"
@@ -66,6 +68,7 @@ def test_job_wipe_does_not_follow_symlinked_job_target(make_workspace, tmp_path)
 
 
 def test_maintenance_exposes_resource_report_and_job_wipe(make_workspace) -> None:
+    """Maintenance advertises both read-only inspection and bounded Job cleanup."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
     center = SageControlCenter(
@@ -83,6 +86,7 @@ def test_maintenance_exposes_resource_report_and_job_wipe(make_workspace) -> Non
 
 
 def test_menu_job_wipe_requires_exact_confirmation(make_workspace) -> None:
+    """The destructive maintenance action accepts only its exact confirmation phrase."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     layout = storage_layout(root, create=True)
     job_data = layout.jobs_root / "rtc" / "RTC-fixture_20260901"

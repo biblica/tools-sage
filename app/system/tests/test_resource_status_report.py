@@ -16,6 +16,7 @@ from sage.resource_status_report import (
 def test_resource_report_names_projects_and_authorities_without_mutation(
     make_workspace,
 ) -> None:
+    """The resource report names active roles without mutating Project inventory."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     rtc = store.create_job(
@@ -58,6 +59,7 @@ def test_resource_report_names_projects_and_authorities_without_mutation(
 
 
 def test_resource_report_collects_run_structure_problems(make_workspace) -> None:
+    """Run structural diagnostics elevate their resource to an advisory status."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
@@ -84,4 +86,3 @@ def test_resource_report_collects_run_structure_problems(make_workspace) -> None
     grk = next(row for row in report["resources"] if row["project_id"] == "GRK")
     assert grk["status"] == "READY_WITH_STRUCTURE_PROBLEMS"
     assert grk["structural_issues"][0]["reference"] == "JHN 5:4"
-

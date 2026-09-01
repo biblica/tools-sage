@@ -2050,7 +2050,7 @@ class SageControlCenter:
             "MAIN MENU",
             (
                 ("1", "Manage SAGE Scripture Projects"),
-                ("2", "BIC"),
+                ("2", "Bible Index & Context (BIC)"),
                 ("3", "Reference Text Comparison (RTC)"),
                 ("4", "Source Text Correspondence (STC)"),
                 ("5", "SAGE Maintenance"),
@@ -3076,19 +3076,19 @@ class SageControlCenter:
             bindings = list(base_bindings)
             if require_original_language:
                 if parsed_scope.book in NT_27:
-                    ol_label = "GRK"
-                    ol_project_id = (
-                        "GRK"
-                        if project.tool in {"rtc", "stc"}
-                        else str(project.bindings.get("original_language_greek") or "")
-                    )
+                    if project.tool in {"rtc", "stc"}:
+                        ol_label = "GRK"
+                        ol_project_id = "GRK"
+                    else:
+                        ol_label = "SAW OL GREEK"
+                        ol_project_id = str(project.bindings.get("original_language_greek") or "")
                 elif parsed_scope.book in OT_39:
-                    ol_label = "HEB"
-                    ol_project_id = (
-                        "HEB"
-                        if project.tool in {"rtc", "stc"}
-                        else str(project.bindings.get("original_language_hebrew") or "")
-                    )
+                    if project.tool in {"rtc", "stc"}:
+                        ol_label = "HEB"
+                        ol_project_id = "HEB"
+                    else:
+                        ol_label = "SAW OL HEBREW"
+                        ol_project_id = str(project.bindings.get("original_language_hebrew") or "")
                 else:
                     ol_label = "SAW OL"
                     ol_project_id = ""
@@ -4897,11 +4897,13 @@ class SageControlCenter:
                     "and requires more human review than a single-language report."
                 )
             options: list[tuple[str, str]] = [
-                    ("1", "Set secondary reporting language"),
-                    ("2", "Clear secondary reporting language"),
-                    ("3", "Set primary reporting language"),
-                    ("4", "Show Job manifest"),
+                ("1", "Set secondary reporting language"),
+                ("2", "Clear secondary reporting language"),
+                ("3", "Set primary reporting language"),
+                ("4", "Show Job manifest"),
             ]
+            # Analysis Jobs expose snapshot and binding maintenance while BIC keeps
+            # its existing reporting-only management surface.
             if project.tool in {"rtc", "stc"}:
                 options.extend([
                     ("5", "Refresh WIP snapshot from Project source"),
@@ -5130,7 +5132,7 @@ class SageControlCenter:
             if tool == "rtc":
                 while True:
                     source = self.choose_or_add_resource(
-                        "CHOOSE RTC <REFERENCE Project>",
+                        "CHOOSE RTC <REFERENCE>",
                         "REFERENCE",
                     )
                     if not source:

@@ -796,14 +796,14 @@ def test_saw_preview_preflight_localizes_reference_defect_to_affected_work_unit(
     assert any(row["reference"].startswith("MAT 1:3") for row in blockers)
 
 
-def test_option_11_preflight_requires_testament_specific_ol_binding(make_workspace) -> None:
-    """An enabled automatic variance adjudicator must fail before Run creation without Greek/ Hebrew."""
+def test_option_10_preflight_requires_testament_specific_ol_binding(make_workspace) -> None:
+    """Enabled RTC option #10 needs the applicable Greek or Hebrew binding before a Run."""
     root = make_workspace(configured=True, qualification_status="VALIDATED", verse_max=2)
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="saw",
         job_id="SAW_usWIP-usNIVv2",
-        display_name="Option 11 preflight",
+        display_name="Option 10 preflight",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         profiles={},
         defaults={},

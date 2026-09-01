@@ -147,6 +147,8 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
     notice = render_report_language_authority(authority if isinstance(authority, Mapping) else None, markdown=True)
     if notice:
         lines.extend(["", notice])
+    # Secondary-language renderings remain assistive; every finding keeps its
+    # sealed primary-language wording as the review authority.
     if secondary and rendering_status == "DEGRADED":
         lines.extend(["", f"> **{catalogue_text(primary, 'message.secondary_rendering_unavailable')}**"])
         translated_notice = catalogue_text(secondary, "message.secondary_rendering_unavailable")

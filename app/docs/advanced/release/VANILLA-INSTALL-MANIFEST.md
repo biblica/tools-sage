@@ -97,8 +97,10 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers`
 - `docs/superpowers/plans`
 - `docs/superpowers/plans/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
+- `docs/superpowers/plans/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS.md`
 - `docs/superpowers/specs`
 - `docs/superpowers/specs/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
+- `docs/superpowers/specs/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS-DESIGN.md`
 - `docs/macos-linux`
 - `docs/macos-linux/CHEAT-SHEET.md`
 - `docs/macos-linux/ERRORS.md`
@@ -581,6 +583,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/interface_localization.py`
 - `system/src/sage/iso_languages.py`
 - `system/src/sage/job_layout.py`
+- `system/src/sage/job_data_reset.py`
+- `system/src/sage/job_snapshots.py`
 - `system/src/sage/jobs.py`
 - `system/src/sage/language_codes.py`
 - `system/src/sage/language_identification.py`
@@ -614,12 +618,14 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/project_inventory.py`
 - `system/src/sage/references.py`
 - `system/src/sage/registry.py`
+- `system/src/sage/report_authority.py`
 - `system/src/sage/report_translation.py`
 - `system/src/sage/reset_state.py`
 - `system/src/sage/resource_discovery.py`
 - `system/src/sage/resource_mounts.py`
 - `system/src/sage/resource_registration.py`
 - `system/src/sage/resource_rights.py`
+- `system/src/sage/resource_status_report.py`
 - `system/src/sage/resource_validation.py`
 - `system/src/sage/rewrite_risk.py`
 - `system/src/sage/rtc_planner.py`
@@ -650,6 +656,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/stc.py`
 - `system/src/sage/stc_reporting.py`
 - `system/src/sage/storage.py`
+- `system/src/sage/structural_issues.py`
 - `system/src/sage/structure_policy.py`
 - `system/src/sage/task_retry.py`
 - `system/src/sage/transactions.py`
@@ -661,6 +668,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/validation.py`
 - `system/src/sage/vocabulary.py`
 - `system/src/sage/vrs.py`
+- `system/src/sage/workflow_identity.py`
 - `system/src/sage/work_units.py`
 - `system/tests`
 - `system/tests/conftest.py`
@@ -686,6 +694,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_guided_remediation.py`
 - `system/tests/test_hardening_and_segmentation.py`
 - `system/tests/test_human_output.py`
+- `system/tests/test_job_data_reset.py`
+- `system/tests/test_job_snapshots.py`
 - `system/tests/test_language_specificity_policy.py`
 - `system/tests/test_llm_harness.py`
 - `system/tests/test_local_ai_assistive.py`
@@ -706,6 +716,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_portability.py`
 - `system/tests/test_posix_portability.py`
 - `system/tests/test_progress_tracking.py`
+- `system/tests/test_primary_analysis_jobs.py`
+- `system/tests/test_primary_workflow_menus.py`
 - `system/tests/test_project_codes.py`
 - `system/tests/test_project_grammar_convergence.py`
 - `system/tests/test_project_inventory_and_job_isolation.py`
@@ -713,10 +725,12 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_rc_block_and_job_cleanup.py`
 - `system/tests/test_registry_and_profiles.py`
 - `system/tests/test_release_builder.py`
+- `system/tests/test_report_authority.py`
 - `system/tests/test_report_dynamic_naming.py`
 - `system/tests/test_report_translation.py`
 - `system/tests/test_resource_discovery.py`
 - `system/tests/test_resource_roots_and_project_creation.py`
+- `system/tests/test_resource_status_report.py`
 - `system/tests/test_rewrite_risk.py`
 - `system/tests/test_rtc_planner.py`
 - `system/tests/test_runtime.py`
@@ -732,6 +746,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_stc_task.py`
 - `system/tests/test_storage_layout.py`
 - `system/tests/test_storage_rtc_boundaries.py`
+- `system/tests/test_structural_issues.py`
 - `system/tests/test_transactions_and_memory.py`
 - `system/tests/test_tui_services.py`
 - `system/tests/test_tui_textual.py`
