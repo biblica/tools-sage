@@ -288,15 +288,20 @@ def test_controller_aggregate_routes_partitioned_stc_to_canonical_finalizer(make
     from pathlib import Path
 
     from sage.act_tasks import aggregate_act_plan
+    from sage.jobs import JobStore
     from sage.registry import load_ecosystem
+    from sage.storage import storage_layout
 
     root = make_workspace()
-    config = load_ecosystem(root / "ecosystem.yml")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="stc", scope="MAT 1:1")
+    config = load_ecosystem(store.ensure_runtime_files(job))
     plans_root = config.workflow("saw").output_root / "plans"
     active_root = config.workflow("saw").output_root / "active"
     plan_id = "SAW-STC-MAT-CONTROLLER"
-    run_id = "SAW-RUN-STC"
-    job_id = "SAW_usWIP-usNIVv2"
+    run_id = run.run_id
+    job_id = job.job_id
     unit_id = f"{plan_id}-U001"
     task_root = active_root / unit_id
     validation = task_root / "validation"
@@ -358,5 +363,12 @@ def test_controller_aggregate_routes_partitioned_stc_to_canonical_finalizer(make
     assert Path(result["canonical_artifacts"]["run_result"]).name == "STC_RUN_RESULT.json"
     assert Path(result["canonical_artifacts"]["findings"]).name == "STC_FINDINGS.json"
     assert Path(result["canonical_artifacts"]["report"]).name == "STC_REPORT.md"
-    assert Path(result["report_path"]).name == "MAT_001_STC_ACTION-REPORT.md"
-    assert Path(result["operator_note_text_path"]).name == "MAT_001_STC_OPERATOR-NOTE.txt"
+    report_path = Path(result["report_path"])
+    assert report_path.name == f"{run_id}_MAT-001_ACTION-REPORT.md"
+    assert report_path.parent == storage_layout(root).reports_root / job_id / "MAT" / "001"
+    report = report_path.read_text(encoding="utf-8")
+    assert "Original-language authority  GRK" in report
+    assert "REFERENCE Project            NOT USED" in report
+    assert Path(result["operator_note_text_path"]).name == (
+        f"{run_id}_MAT-001_OPERATOR-NOTE.txt"
+    )

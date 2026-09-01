@@ -223,8 +223,9 @@ def test_stc_submission_uses_stc_grammar_and_writes_standalone_canonical_artifac
     assert (canonical / "STC_REPORT.md").is_file()
     report_path = Path(result["report_path"])
     note_path = Path(result["operator_note_text_path"])
-    assert report_path.name == "MAT_001_STC_ACTION-REPORT.md"
-    assert note_path.name == "MAT_001_STC_OPERATOR-NOTE.txt"
-    assert report_path.parent.name == "MAT"
+    assert report_path.name == f"{normalized['run_id']}_MAT-001_ACTION-REPORT.md"
+    assert note_path.name == f"{normalized['run_id']}_MAT-001_OPERATOR-NOTE.txt"
+    assert report_path.parent.name == "001"
+    assert report_path.parent.parent.name == "MAT"
     assert "Source Text Correspondence (STC) Report" in report_path.read_text(encoding="utf-8")
     assert note_path.is_file()
