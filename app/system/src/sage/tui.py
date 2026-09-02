@@ -199,8 +199,8 @@ class SageTUIApp(App[None]):
         ("5", "open_configure", "SAGE Maintenance"),
         ("a", "back", "Back"),
         ("escape", "back", "Back"),
-        ("b", "home", "Main Menu"),
-        ("home", "home", "Main Menu"),
+        ("b", "home", "Main menu"),
+        ("home", "home", "Main menu"),
         ("c", "quit_sage", "Exit SAGE"),
         ("ctrl+q", "quit_sage", "Exit SAGE"),
         ("d", "language", "Language"),
@@ -208,7 +208,7 @@ class SageTUIApp(App[None]):
         ("?", "help", "Help"),
         ("f", "status", "Status"),
         ("p", "set_projects_root", "Set Projects root"),
-        ("q", "quick_scan", "Quick Scan"),
+        ("q", "quick_scan", "Quick scan"),
         ("r", "retry_readiness", "Retest AI / readiness"),
     ]
 
@@ -350,8 +350,8 @@ class SageTUIApp(App[None]):
         self._readiness: dict[str, Any] = {}
         self._last_error: SageError | None = None
         self._view_titles = {section.view_id: section.label for section in TOP_LEVEL_SECTIONS}
-        self._view_titles["main"] = "Main Menu"
-        self._view_titles["startup"] = "Startup Readiness"
+        self._view_titles["main"] = "Main menu"
+        self._view_titles["startup"] = "Startup readiness"
 
     def tr(self, value: str) -> str:
         """Localize one canonical menu phrase using the existing JSON source."""
@@ -379,15 +379,15 @@ class SageTUIApp(App[None]):
             yield Static("", id="view-content", markup=False)
             yield Static("", id="migration-note", markup=False)
             with Horizontal(id="view-actions"):
-                yield Button("P. Set Projects root", id="action-set-root")
-                yield Button("Q. Quick Scan", id="action-quick-scan")
+                yield Button("P. Set PROJECTS root", id="action-set-root")
+                yield Button("Q. Quick scan", id="action-quick-scan")
                 yield Button("R. Retest AI", id="action-retest-ai")
         with Horizontal(id="nav-row"):
             for index, section in enumerate(TOP_LEVEL_SECTIONS, start=1):
                 yield Button(menu_item(index, self.tr(section.label)), id=f"nav-{section.view_id}")
         with Horizontal(id="footer-row"):
             yield Button(f"A. {self.tr('Back')}", id="footer-back")
-            yield Button(f"B. {self.tr('Main Menu')}", id="footer-home")
+            yield Button(f"B. {self.tr('Main menu')}", id="footer-home")
             yield Button(f"C. {self.tr('Exit SAGE')}", id="footer-exit")
             yield Button(f"D. {self.tr('Language')}", id="footer-language")
             yield Button(f"E. {self.tr('Help')}", id="footer-help")
@@ -959,7 +959,7 @@ class SageTUIApp(App[None]):
         for index, section in enumerate(TOP_LEVEL_SECTIONS, start=1):
             self.query_one(f"#nav-{section.view_id}", Button).label = menu_item(index, self.tr(section.label))
         self.query_one("#footer-back", Button).label = f"A. {self.tr('Back')}"
-        self.query_one("#footer-home", Button).label = f"B. {self.tr('Main Menu')}"
+        self.query_one("#footer-home", Button).label = f"B. {self.tr('Main menu')}"
         self.query_one("#footer-exit", Button).label = f"C. {self.tr('Exit SAGE')}"
         self.query_one("#footer-language", Button).label = f"D. {self.tr('Language')}"
         self.query_one("#footer-help", Button).label = f"E. {self.tr('Help')}"

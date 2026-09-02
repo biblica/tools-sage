@@ -352,7 +352,7 @@ def test_beta2_current_operator_grammar_is_consistent() -> None:
     ui_contract = (ROOT / "docs" / "advanced" / "maintenance" / "UI-PRESENTATION.md").read_text(encoding="utf-8")
     operator_guide = (ROOT / "docs" / "OPERATOR-GUIDE.md").read_text(encoding="utf-8")
     assert "`  1.`, ` 11.`, `111.`" in ui_contract
-    assert "  1. Manage SAGE Scripture Projects" in operator_guide
+    assert "  1. Manage SAGE Scripture PROJECTS" in operator_guide
     assert "Scripture Projects >>" not in operator_guide
 
 
@@ -571,7 +571,7 @@ def test_project_tree_covers_governed_roots_and_handover_hygiene() -> None:
 def test_current_operator_navigation_and_tui_contracts_are_documented() -> None:
     """Keep current Operator docs aligned with the shared 1-4/A-F and TUI status grammar."""
     footer = (
-        "│  A. Back   B. Main Menu   C. Exit SAGE                               │\n"
+        "│  A. Back   B. Main menu   C. Exit SAGE                               │\n"
         "│  D. Language   E. Help   F. Status                                   │"
     )
     for relative in (

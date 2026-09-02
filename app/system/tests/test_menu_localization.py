@@ -18,6 +18,8 @@ from sage.ui_format import display_width
 
 
 DYNAMIC_MENU_TEXT = {
+    "Add RTC Job <WIP PROJECT, REFERENCE PROJECT>",
+    "Add STC Job <WIP PROJECT>",
     "Add another Project to SAGE",
     "Validate all SAGE Projects",
     "All languages",
@@ -148,7 +150,7 @@ def test_menu_localization_json_reduces_display_case_duplicates(package_root: Pa
     phrases = [value["en-US"] for value in raw["strings"].values()]
     assert "Help" in phrases
     assert "HELP" not in phrases
-    assert "Main Menu" in phrases
+    assert "Main menu" in phrases
     assert "MAIN MENU" not in phrases
     assert "SAGE Maintenance" in phrases
     assert "SAGE MAINTENANCE" not in phrases
@@ -212,8 +214,8 @@ def test_interface_language_hotkey_is_setup_owned_and_does_not_change_reporting(
     assert effective["interface"]["language"] == "id"
     assert effective.get("human_output") == before.get("human_output")
     rendered = output.getvalue()
-    assert "MENU UTAMA" in rendered
-    assert "B. Menu Utama   C. Keluar dari SAGE" in rendered
+    assert "Menu utama" in rendered
+    assert "B. Menu utama   C. Keluar dari SAGE" in rendered
     assert "D. Bahasa   E. Bantuan   F. Status" in rendered
 
 
@@ -277,7 +279,7 @@ def test_captured_menu_output_has_panel_boundary_without_ansi() -> None:
     assert "\x1b[" not in rendered
     assert rendered.startswith("\n╔" + "═" * 70 + "╗\n║ CAPTURED PANEL")
     assert "╚" + "═" * 70 + "╝\n\n  1. Continue" in rendered
-    assert "\n┌" + "─" * 70 + "┐\n│  B. Main Menu   C. Exit SAGE" in rendered
+    assert "\n┌" + "─" * 70 + "┐\n│  B. Main menu   C. Exit SAGE" in rendered
     assert rendered.endswith("└" + "─" * 70 + "┘\n\n")
 
 
@@ -293,7 +295,7 @@ def test_major_minor_and_footer_use_distinct_line_styles() -> None:
     rendered = output.getvalue()
     assert "╔" + "═" * 70 + "╗\n║ MAJOR" in rendered
     assert "\n> Minor\n" + "─" * 72 + "\n\n" in rendered
-    assert "│  A. Back   B. Main Menu   C. Exit SAGE" in rendered
+    assert "│  A. Back   B. Main menu   C. Exit SAGE" in rendered
     assert rendered.endswith("└" + "─" * 70 + "┘\n\n")
 
 
@@ -363,27 +365,76 @@ def test_information_rows_render_missing_values_consistently(make_workspace) -> 
     assert output.getvalue() == "Secondary language  —\n"
 
 
-def test_numeric_menu_rows_normalize_job_task_and_review_as_sentence_case() -> None:
-    """Catch title-case common nouns returning inside numeric menu labels."""
+def test_numeric_menu_rows_use_sentence_case_with_mid_sentence_protocol_entities() -> None:
+    """Distinguish governed menu entities from ordinary words and the Book of Job."""
     output = io.StringIO()
     menu = MenuIO(input_func=ScriptedInput(["a"]), output=output)
 
     assert menu.choose(
         "MENU COPY",
         (
-            ("1", "Add STC Job [WIP]"),
+            ("1", "Add STC Job <WIP PROJECT>"),
             ("2", "Runs and Task history"),
             ("3", "Run Original-Language Review"),
             ("4", "Review bound Projects"),
+            ("5", "Advanced Run controls"),
+            ("6", "Continue to main menu"),
+            ("7", "Job"),
             ("B", "Back"),
         ),
     ) == "B"
 
     rendered = output.getvalue()
-    assert "  1. Add STC job [WIP]" in rendered
-    assert "  2. Runs and task history" in rendered
-    assert "  3. Run Original-Language review" in rendered
-    assert "  4. Review bound Projects" in rendered
+    assert "  1. Add STC JOB <WIP PROJECT>" in rendered
+    assert "  2. Runs and TASK history" in rendered
+    assert "  3. Run Original-Language Review" in rendered
+    assert "  4. Review bound PROJECTS" in rendered
+    assert "  5. Advanced RUN controls" in rendered
+    assert "  6. Continue to main menu" in rendered
+    assert "  7. Job" in rendered
+
+
+def test_english_menu_copy_uses_sentence_case_and_declared_protocol_names(make_workspace) -> None:
+    """Catch incidental title case without flattening governed names or role selectors."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    output = io.StringIO()
+    menu = MenuIO(
+        input_func=ScriptedInput(["a", "a"]),
+        output=output,
+        localizer=InterfaceLocalizer.load(root, root / "ecosystem.yml"),
+    )
+
+    assert menu.choose(
+        "ADVANCED RUN CONTROLS",
+        (
+            ("1", "BIC Memory and Terminology"),
+            ("2", "Choose Book"),
+            ("3", "Continue to Main Menu"),
+            ("4", "Generated Target and Generations"),
+            ("5", "Recovery and Reset"),
+            ("6", "Paratext Project Catalog"),
+            ("7", "Quick Scan"),
+            ("8", "Resource Status Report"),
+            ("9", "Configure Local AI"),
+            ("10", "Use another location"),
+            ("B", "Back"),
+        ),
+    ) == "B"
+    assert menu.choose("CHOOSE BIC <SOURCE>", (("B", "Back"),)) == "B"
+
+    rendered = output.getvalue()
+    assert "Advanced RUN controls" in rendered
+    assert "  1. BIC memory and terminology" in rendered
+    assert "  2. Choose book" in rendered
+    assert "  3. Continue to main menu" in rendered
+    assert "  4. Generated TARGET and generations" in rendered
+    assert "  5. Recovery and reset" in rendered
+    assert "  6. Paratext PROJECT catalog" in rendered
+    assert "  7. Quick scan" in rendered
+    assert "  8. Resource Status Report" in rendered
+    assert "  9. Configure Local AI" in rendered
+    assert " 10. Use another location" in rendered
+    assert "CHOOSE BIC <SOURCE>" in rendered
 
 
 def test_plain_text_output_expands_tabs_before_viewport_wrapping() -> None:
@@ -402,9 +453,9 @@ def test_en_us_and_en_gb_are_distinct_editable_interface_rows(make_workspace) ->
     """Verify U.S. and U.K. English remain separate editable interface columns."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     localizer = InterfaceLocalizer.load(root, root / "ecosystem.yml")
-    assert localizer.text("Paratext Project Catalog") == "Paratext Project Catalog"
+    assert localizer.text("Paratext Project Catalog") == "Paratext Project catalog"
     localizer.set_language("en-GB")
-    assert localizer.text("Paratext Project Catalog") == "Paratext Project Catalogue"
+    assert localizer.text("Paratext Project Catalog") == "Paratext Project catalogue"
     assert localizer.text("Reinitialize Job") == "Reinitialise Job"
     localizer.set_language("en-US")
     assert localizer.text("Reinitialize Job") == "Reinitialize Job"
@@ -415,12 +466,12 @@ def test_all_six_interface_locales_render_the_invariant_footer(make_workspace) -
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     localizer = InterfaceLocalizer.load(root, root / "ecosystem.yml")
     expected = {
-        "en-US": ("MAIN MENU", "B. Main Menu   C. Exit SAGE", "D. Language   E. Help   F. Status"),
-        "en-GB": ("MAIN MENU", "B. Main Menu   C. Exit SAGE", "D. Language   E. Help   F. Status"),
-        "id": ("MENU UTAMA", "B. Menu Utama   C. Keluar dari SAGE", "D. Bahasa   E. Bantuan   F. Status"),
-        "fr": ("MENU PRINCIPAL", "B. Menu principal   C. Quitter SAGE", "D. Langue   E. Aide   F. État"),
-        "ru": ("ГЛАВНОЕ МЕНЮ", "B. Главное меню   C. Выйти из SAGE", "D. Язык   E. Справка   F. Состояние"),
-        "pt-BR": ("MENU PRINCIPAL", "B. Menu principal   C. Sair do SAGE", "D. Idioma   E. Ajuda   F. Status"),
+        "en-US": ("Main menu", "B. Main menu   C. Exit SAGE", "D. Language   E. Help   F. Status"),
+        "en-GB": ("Main menu", "B. Main menu   C. Exit SAGE", "D. Language   E. Help   F. Status"),
+        "id": ("Menu utama", "B. Menu utama   C. Keluar dari SAGE", "D. Bahasa   E. Bantuan   F. Status"),
+        "fr": ("Menu principal", "B. Menu principal   C. Quitter SAGE", "D. Langue   E. Aide   F. État"),
+        "ru": ("Главное меню", "B. Главное меню   C. Выйти из SAGE", "D. Язык   E. Справка   F. Состояние"),
+        "pt-BR": ("Menu principal", "B. Menu principal   C. Sair do SAGE", "D. Idioma   E. Ajuda   F. Status"),
     }
     for language, (title, navigation, services) in expected.items():
         localizer.set_language(language)

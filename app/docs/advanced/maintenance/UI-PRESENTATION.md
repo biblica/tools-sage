@@ -19,7 +19,7 @@ Beta standardizes the classic terminal interaction grammar.
   4. <option>                           <state/value>
 
 ┌──────────────────────────────────────────────────────────────────────┐
-│  A. Back   B. Main Menu   C. Exit SAGE                               │
+│  A. Back   B. Main menu   C. Exit SAGE                               │
 │  D. Language   E. Help   F. Status                                   │
 └──────────────────────────────────────────────────────────────────────┘
 

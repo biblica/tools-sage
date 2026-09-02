@@ -112,6 +112,7 @@ def test_saw_job_creation_can_add_new_detected_wip(make_workspace, tmp_path: Pat
         "en-US", # direct regional language tag resolves the ISO-3166 primary audience country
         "1",  # accept governed language identification
         "1",  # create the governed en-US Language Profile namespace
+        "",   # accept the detected PROJECT scope
         "",   # Add this Project to SAGE? [Y]
         "1",  # back in WIP selector: choose newWIP
         "2",  # REFERENCE: choose usNIVv2

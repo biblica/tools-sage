@@ -56,6 +56,23 @@ def test_tui_keyboard_and_mouse_navigation_preserve_position_across_status(
     asyncio.run(exercise())
 
 
+def test_tui_menu_controls_use_sentence_case_and_protocol_entities(make_workspace) -> None:
+    """Keep TUI menu capitalization aligned with the classic menu contract."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    service = OperatorUIService(root=root, settings_path=root / "ecosystem.yml")
+    app = SageTUIApp(service, live_ai=False)
+
+    async def exercise() -> None:
+        """Inspect the rendered navigation and action labels."""
+        async with app.run_test(size=(100, 30)):
+            assert str(app.query_one("#nav-projects").label) == "  1. Scripture PROJECTS"
+            assert str(app.query_one("#action-set-root").label) == "P. Set PROJECTS root"
+            assert str(app.query_one("#action-quick-scan").label) == "Q. Quick scan"
+            assert str(app.query_one("#footer-home").label) == "B. Main menu"
+
+    asyncio.run(exercise())
+
+
 def test_tui_language_modal_changes_interface_without_losing_current_view(
     make_workspace,
     monkeypatch,

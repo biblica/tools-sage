@@ -21,7 +21,9 @@ versification:
 - `NT`: complete New Testament book set.
 - `PORTIONS`: any smaller or mixed detected set.
 
-Adding a Project to SAGE detects readable canonical top-level `.SFM` files. Scope is derived from those books, never from the short-name iteration suffix. A later validation may report scope drift if the mapped Paratext project changes after the Project was added to SAGE; SAGE does not silently reinterpret Job authority from a folder name.
+Adding a Project to SAGE includes an explicit scope confirmation. SAGE proposes the Project's `canons.xml` book list when available; otherwise it proposes the readable canonical top-level `.SFM` set. The Operator may accept that proposal or enter `OT`, `NT`, `FB`, individual USFM IDs, inclusive canonical ranges such as `LUK-ACT`, or unions such as `NT, PSA`. The resolved canonical book set becomes `scope.expected_books`; scope is never inferred from the short-name iteration suffix.
+
+After import, the declared scope remains the authority boundary. A canonical `.SFM` file outside `scope.expected_books` is reported as out-of-scope inventory, retained in the whole-Project resource fingerprint, and excluded from USJ compilation and readiness. It does not block initialization; this permits early WIP material to coexist with the currently declared Project scope. To make that material operational, change the declared scope explicitly.
 
 ## Job roles
 

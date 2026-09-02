@@ -82,7 +82,7 @@ def test_maintenance_exposes_resource_report_and_job_wipe(make_workspace) -> Non
     center.system_configuration_menu()
     rendered = output.getvalue()
     assert "Resource Status Report" in rendered
-    assert "Wipe all job data" in rendered
+    assert "Wipe all JOB data" in rendered
 
 
 def test_menu_job_wipe_requires_exact_confirmation(make_workspace) -> None:

@@ -79,18 +79,6 @@ def save_interface_language(settings_path: Path, language: str) -> str:
     return selected
 
 
-def _has_case(value: str) -> bool:
-    """Return whether a string has cased letters."""
-    return any(ch.isalpha() and ch.lower() != ch.upper() for ch in value)
-
-
-def _render_case(source: str, localized: str) -> str:
-    """Apply display-only uppercase styling without duplicating localization entries."""
-    if _has_case(source) and source.upper() == source:
-        return localized.upper()
-    return localized
-
-
 @dataclass
 class InterfaceLocalizer:
     """Localize menu strings from the canonical human-editable UTF-8 JSON source."""
@@ -188,7 +176,6 @@ class InterfaceLocalizer:
         if row is None:
             return source
         localized = row.get(self.language) or row["en-US"]
-        localized = _render_case(normalized, localized)
         leading = source[: len(source) - len(source.lstrip())]
         trailing = source[len(source.rstrip()) :]
         return leading + localized + trailing

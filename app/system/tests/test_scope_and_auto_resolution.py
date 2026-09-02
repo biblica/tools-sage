@@ -12,7 +12,13 @@ import pytest
 import yaml
 
 from sage.storage import storage_layout
-from sage.canon import resolve_expected_books
+from sage.canon import (
+    BOOKS_66,
+    NT_27,
+    format_project_book_scope,
+    parse_project_book_scope,
+    resolve_expected_books,
+)
 from sage.errors import ConfigurationError
 from sage.registry import load_ecosystem
 from sage.standard import load_standard
@@ -64,6 +70,23 @@ def test_declared_canon_resolves_expected_books(make_workspace) -> None:
     assert len(resolve_expected_books(config.project("HEB").scope)) == 39
 
 
+def test_project_book_scope_accepts_presets_unions_and_usfm_ranges() -> None:
+    """Onboarding scope accepts presets alongside individual IDs and ranges."""
+    assert parse_project_book_scope("FB") == BOOKS_66
+    assert parse_project_book_scope("NT, PSA") == ("PSA", *NT_27)
+    assert parse_project_book_scope("LUK-ACT") == ("LUK", "JHN", "ACT")
+    combined = parse_project_book_scope("GEN-DEU, MAT MRK")
+    assert combined == ("GEN", "EXO", "LEV", "NUM", "DEU", "MAT", "MRK")
+    assert parse_project_book_scope(format_project_book_scope(combined)) == combined
+
+
+@pytest.mark.parametrize("value", ["ACT-LUK", "MAT-XYZ", "XYZ", "-"])
+def test_project_book_scope_rejects_invalid_or_reversed_ranges(value: str) -> None:
+    """Invalid USFM IDs and reverse canonical ranges receive an input error."""
+    with pytest.raises(ConfigurationError):
+        parse_project_book_scope(value)
+
+
 def test_scope_is_required(make_workspace) -> None:
     """Verify that scope is required."""
     root = make_workspace()
@@ -91,17 +114,29 @@ def test_incompatible_auto_scope_is_rejected(make_workspace) -> None:
         load_ecosystem(path)
 
 
-def test_scope_validation_rejects_unexpected_book(make_workspace) -> None:
-    """Verify that scope validation rejects unexpected book."""
-    root = make_workspace()
-    (storage_layout(root).projects_root / "idKKHv0" / "42MRK.SFM").write_text(
-        "\\id MRK Fixture\n\\c 1\n\\p\n\\v 1 Verse 1.\n",
-        encoding="utf-8",
+def test_scope_validation_and_initialization_ignore_out_of_scope_book(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """Out-of-scope early WIP is reported but neither read nor made blocking."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    (storage_layout(root).projects_root / "idKKHv0" / "19PSA.SFM").write_bytes(
+        b"\\id PSA Early WIP\n\\c 1\n\\v 1 unread outside scope: \xff\n"
     )
     config = load_ecosystem(root / "ecosystem.yml")
-    result = validate_static_ecosystem(config, load_standard(root))
-    assert result["status"] == "BLOCKED"
-    assert any("outside declared scope" in item for item in result["errors"])
+    static = validate_static_ecosystem(config, load_standard(root))
+    scope = static["project_scopes"]["idKKHv0"]
+    assert static["status"] != "BLOCKED"
+    assert scope["unexpected_books"] == ["PSA"]
+    assert not any("outside declared scope" in item for item in static["errors"])
+
+    result = _run_initialize(package_root, root)
+    assert result.returncode == 0, result.stderr + result.stdout
+    payload = json.loads(result.stdout)
+    project = payload["projects"]["idKKHv0"]
+    assert project["status"] == "READY"
+    assert project["summary"]["books"] == ["MAT"]
+    assert project["summary"]["ignored_out_of_scope_books"] == ["PSA"]
 
 
 def test_scope_validation_and_initialization_ignore_usfm_peripheral_books(

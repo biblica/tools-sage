@@ -106,8 +106,8 @@ def test_local_admin_menu_hides_runtime_install_when_ollama_is_running(make_work
     center.local_admin_assistant_menu()
 
     rendered = output.getvalue()
-    assert rendered.index("CONFIGURE LOCAL AI") < rendered.index("Local AI")
-    assert rendered.index("Model") < rendered.index("LOCAL AI ACTIONS")
+    assert rendered.index("Configure Local AI") < rendered.index("Local AI")
+    assert rendered.index("Model") < rendered.index("Local AI actions")
     assert "Model                 sage-gemma4-e2b:q5_k_m - NOT INSTALLED" in rendered
     assert "Ollama                INSTALLED" not in rendered
     assert "Service               RUNNING" not in rendered
@@ -142,7 +142,7 @@ def test_local_admin_menu_offers_runtime_install_only_when_ollama_is_absent(make
     center.local_admin_assistant_menu()
 
     rendered = output.getvalue()
-    assert "> LOCAL AI ACTIONS" in rendered
+    assert "> Local AI actions" in rendered
     assert "1. Enable Local AI" in rendered
     assert "2. Install Ollama on this host" in rendered
     assert "3. Manage Local AI models" in rendered
@@ -165,10 +165,10 @@ def test_local_model_management_owns_model_source_and_integrity_information(make
     center.local_admin_assistant_menu()
 
     rendered = output.getvalue()
-    assert "CONFIGURE LOCAL AI MODELS" in rendered
-    assert rendered.index("Configured model") < rendered.index("MODEL ACTIONS")
-    assert rendered.index("Source") < rendered.index("MODEL ACTIONS")
-    assert rendered.index("Integrity") < rendered.index("MODEL ACTIONS")
+    assert "Configure Local AI models" in rendered
+    assert rendered.index("Configured model") < rendered.index("Model actions")
+    assert rendered.index("Source") < rendered.index("Model actions")
+    assert rendered.index("Integrity") < rendered.index("Model actions")
     assert "1. Install configured model" in rendered
 
 

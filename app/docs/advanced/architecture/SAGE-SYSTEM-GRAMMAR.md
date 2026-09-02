@@ -57,6 +57,11 @@ completed schema, menu, runtime, catalog, and validation adjustment.
   text. Lowercase the same words when they are generic rather than SAGE terms, and preserve the
   exact lowercase spelling of command names, schema fields, identifiers, and path components. For
   example: `SAGE creates and manages Projects, Jobs, Runs, tasks, and reports.`
+- Menu-only disambiguation: when a governed entity occurs after the opening word of a menu heading
+  or item, render it as `PROJECT`, `JOB`, `RUN`, or `TASK` (including plurals). Keep a
+  sentence-initial entity in sentence case, so the standalone Scripture book name `Job` is never
+  rewritten as a SAGE `JOB`. This display convention does not change prose, schema fields, paths,
+  or identifiers.
 - Product: `SAGE` — Scripture Analysis and Generation Engine.
 - Release: use `SAGE v0.01beta2` for the exact product version and `current Beta group testing` in general prose. State `pre-release; fresh exact-source qualification required before the first RC; public-production readiness not claimed` in current entry-point, release, status, packaging, and testing material. Historical documents may retain their original release label when clearly identified as historical.
 - Version progression: progress from `v0.01beta2` through later `v0.01betaN` builds as required, then qualified candidates beginning at `v0.01rc1`. Reserve `v0.01` for the approved release. Do not describe Beta builds as release candidates.

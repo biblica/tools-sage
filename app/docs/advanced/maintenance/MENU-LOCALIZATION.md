@@ -28,7 +28,7 @@ Functional choices are numbered vertically. Persistent controls are alphabetic a
   3. ...
 
 ┌──────────────────────────────────────────────────────────────────────┐
-│  A. Back   B. Main Menu   C. Exit SAGE                               │
+│  A. Back   B. Main menu   C. Exit SAGE                               │
 │  D. Language   E. Help   F. Status                                   │
 └──────────────────────────────────────────────────────────────────────┘
 ```

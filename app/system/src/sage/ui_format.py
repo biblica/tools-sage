@@ -8,20 +8,23 @@ from collections.abc import Iterable
 
 
 DEFAULT_VIEWPORT_COLUMNS = 72
-_MENU_COMMON_NOUN_RE = re.compile(r"\b(?:Job|Jobs|Task|Tasks|Review|Reviews)\b")
+_MENU_PROTOCOL_ENTITY_RE = re.compile(
+    r"\b(?:Project|Projects|Job|Jobs|Run|Runs|Task|Tasks)\b",
+    flags=re.IGNORECASE,
+)
 
 
 def sentence_case_menu_label(label: str) -> str:
-    """Lowercase common UI nouns unless one begins the menu-item sentence."""
+    """Uppercase governed entity tokens only when they occur mid-sentence."""
     value = str(label)
     first_word = re.search(r"\b\w", value)
     first_index = first_word.start() if first_word is not None else -1
 
     def replace(match: re.Match[str]) -> str:
-        """Preserve a sentence-initial noun and lowercase later matching nouns."""
-        return match.group(0) if match.start() == first_index else match.group(0).lower()
+        """Keep sentence-initial display text natural and mark later protocol entities."""
+        return match.group(0) if match.start() == first_index else match.group(0).upper()
 
-    return _MENU_COMMON_NOUN_RE.sub(replace, value)
+    return _MENU_PROTOCOL_ENTITY_RE.sub(replace, value)
 
 
 def display_width(value: str) -> int:

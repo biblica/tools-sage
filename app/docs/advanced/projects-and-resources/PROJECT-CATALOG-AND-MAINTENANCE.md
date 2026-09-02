@@ -78,29 +78,31 @@ The **Base VRS root defaults to the configured Paratext Projects root**. An expl
 
 Standard USFM peripheral books (`FRT`, `INT`, `BAK`, `CNC`, `GLO`, `TDX`, `NDX`, `OTH`, and `XXA`–`XXG`) remain part of the Project resource fingerprint but are not treated as books in the declared biblical canon or compiled as verse-bearing Scripture.
 
+Canonical Scripture files outside the imported Project's declared book scope are handled similarly: SAGE reports them as out-of-scope inventory and retains them in the resource fingerprint, but does not compile them to USJ or block workspace initialization. During onboarding, `canons.xml` supplies the default scope when available and detected Scripture supplies the fallback. The Operator confirms or replaces that proposal using `OT`, `NT`, `FB`, individual USFM IDs, inclusive ranges such as `LUK-ACT`, or unions such as `NT, PSA`.
+
 When `custom.vrs` names a configured base VRS that differs from the stored Project selection, **Validate active Job** presents the detected change for Operator approval before validation. It never silently changes the Project's versification settings.
 
 ## Scripture Projects menu
 
 ```text
 ╔══════════════════════════════════════════════════════════════════════╗
-║ SCRIPTURE PROJECTS                                                   ║
+║ Scripture PROJECTS                                                   ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
 Paratext Projects root: <configured path> | NOT CONFIGURED
 
-  1. List / manage SAGE Scripture Projects
-  2. Add Projects to SAGE
-  3. Remove Project from SAGE
+  1. List / manage SAGE Scripture PROJECTS
+  2. Add PROJECTS to SAGE
+  3. Remove PROJECT from SAGE
   4. Language Profiles
-  5. Validate SAGE Projects
-  6. Paratext Projects root
-  7. Scan Paratext Projects
+  5. Validate SAGE PROJECTS
+  6. Paratext PROJECTS root
+  7. Scan Paratext PROJECTS
   8. Original-language resources
   9. Advanced resources
 
 ┌──────────────────────────────────────────────────────────────────────┐
-│  A. Back   B. Main Menu   C. Exit SAGE                               │
+│  A. Back   B. Main menu   C. Exit SAGE                               │
 │  D. Language   E. Help   F. Status                                   │
 └──────────────────────────────────────────────────────────────────────┘
 ```

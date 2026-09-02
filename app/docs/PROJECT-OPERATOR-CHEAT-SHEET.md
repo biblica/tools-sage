@@ -5,7 +5,7 @@ Maintenance, ends with the same navigation block:
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────┐
-│  A. Back   B. Main Menu   C. Exit SAGE                               │
+│  A. Back   B. Main menu   C. Exit SAGE                               │
 │  D. Language   E. Help   F. Status                                   │
 └──────────────────────────────────────────────────────────────────────┘
 ```
@@ -31,7 +31,7 @@ For a clean machine:
 2. SAGE scans direct child folders with valid `settings.xml` and saves the Paratext Project Catalog.
 3. Open **Add Projects to SAGE**.
 4. Optionally filter by **FB**, **NT**, **Portions**, or **Language**.
-5. Review the detected Project metadata and add the Project to SAGE.
+5. Review the detected metadata, confirm the Project book scope, and add the Project to SAGE.
 6. Create BIC, RTC, and STC Jobs separately and assign Job roles there.
 
 Project addition is a System task. SOURCE/DONOR/TARGET/WIP/REFERENCE assignment is a tool setup task.
@@ -41,6 +41,8 @@ Project addition is a System task. SOURCE/DONOR/TARGET/WIP/REFERENCE assignment 
 SAGE reads `settings.xml`, `canons.xml`, top-level `*.SFM`, `custom.vrs`, and the Project folder name. It does not modify those files during discovery or addition to SAGE.
 
 A Project is registered only after SAGE has confirmed a regional Language Profile namespace. Grammar Profiles remain separate and may be configured later when a Job role requires one. Settings.xml, all relevant LDML identities, Project-name prefix evidence, ISO relationships, and country evidence support the estimate; ambiguous identity or country choices require Operator confirmation.
+
+The onboarding scope accepts `OT`, `NT`, `FB`, individual USFM IDs, ranges such as `LUK-ACT`, and unions such as `NT, PSA`. `canons.xml` is the default proposal when available. Files outside the confirmed scope remain in the Project folder but do not enter USJ compilation or block initialization.
 
 Successful addition records the immutable full UTC import timestamp and displays its stable `YYYYMMDD` **Imported to SAGE** date. Project validation, rescanning, and remapping preserve it. Removing and later re-adding a Project creates a new import date.
 

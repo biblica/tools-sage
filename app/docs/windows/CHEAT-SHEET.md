@@ -29,7 +29,7 @@ shell -> SAGE -> Codex login / governed AI subprocess
 ## Main menu and TUI controls
 
 ```text
-  1. Manage SAGE Scripture Projects
+  1. Manage SAGE Scripture PROJECTS
 
   2. Bible Index & Context (BIC)
   3. Reference Text Comparison (RTC)
@@ -38,7 +38,7 @@ shell -> SAGE -> Codex login / governed AI subprocess
   5. SAGE Maintenance
 
 ┌──────────────────────────────────────────────────────────────────────┐
-│  A. Back   B. Main Menu   C. Exit SAGE                               │
+│  A. Back   B. Main menu   C. Exit SAGE                               │
 │  D. Language   E. Help   F. Status                                   │
 └──────────────────────────────────────────────────────────────────────┘
 ```

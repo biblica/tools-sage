@@ -20,11 +20,17 @@ from .ui_format import (
     display_width,
     information_rows,
     menu_item,
+    sentence_case_menu_label,
     wrap_display_text,
     wrapped_menu_item,
 )
 from .atomic import atomic_write_json, atomic_write_text
-from .canon import NT_27, OT_39
+from .canon import (
+    NT_27,
+    OT_39,
+    format_project_book_scope,
+    parse_project_book_scope,
+)
 from .external_access import READ_ONLY_SCRIPTURE, READ_WRITE_SCRIPTURE, READ_WRITE_TARGET
 from .errors import ConfigurationError, InputRequiredError, OperatorCancelledError, SageError, ValidationError
 from .display_paths import operator_path, operator_text
@@ -234,10 +240,20 @@ class MenuIO:
         ):
             self._emit(line)
 
-    def write_box(self, lines: Sequence[str], *, double: bool = False) -> None:
+    def write_box(
+        self,
+        lines: Sequence[str],
+        *,
+        double: bool = False,
+        localize: bool = True,
+    ) -> None:
         """Render one separated box using a complete single- or double-line Unicode set."""
         rendered_lines = [
-            (self.localizer.text(line) if self.localizer is not None else line).expandtabs(4)
+            (
+                self.localizer.text(line)
+                if localize and self.localizer is not None
+                else line
+            ).expandtabs(4)
             for line in lines
         ]
         inner_width = self.display_columns() - 2
@@ -261,8 +277,9 @@ class MenuIO:
     def write_menu_header(self, title: str, *, major: bool = True) -> None:
         """Render a boxed major title or an indented, underlined minor heading."""
         rendered = self.localizer.text(title) if self.localizer is not None else title
+        rendered = sentence_case_menu_label(rendered)
         if major:
-            self.write_box((f" {rendered}",), double=True)
+            self.write_box((f" {rendered}",), double=True, localize=False)
             return
         self._emit()
         self._write_rendered(f"> {rendered}")
@@ -275,7 +292,7 @@ class MenuIO:
         navigation = []
         if include_back:
             navigation.append(f"A. {tr('Back')}")
-        navigation.extend((f"B. {tr('Main Menu')}", f"C. {tr('Exit SAGE')}"))
+        navigation.extend((f"B. {tr('Main menu')}", f"C. {tr('Exit SAGE')}"))
         services: list[str] = []
         if allow_language and self.language_handler is not None:
             services.append(f"D. {tr('Language')}")
@@ -1199,7 +1216,7 @@ class SageControlCenter:
                     ("5", "Resource Status Report"),
                     ("6", "Wipe all Job data"),
                     ("7", "System information, recovery and diagnostics"),
-                    ("B", "Back"), ("H", "Main Menu"), ("X", "Exit SAGE"),
+                    ("B", "Back"), ("H", "Main menu"), ("X", "Exit SAGE"),
                 ),
             )
             if choice == "B": return "BACK"
@@ -1871,7 +1888,7 @@ class SageControlCenter:
                         ("4", "Manage active Jobs"),
                         ("5", system_label),
                         ("6", "Interface language"),
-                        ("7", "Continue to Main Menu"),
+                        ("7", "Continue to main menu"),
                         ("X", "Exit SAGE"),
                     ),
                 )
@@ -2135,7 +2152,7 @@ class SageControlCenter:
         if self._last_run_is_resumable():
             self.io.write(f"Unfinished Run: {self._last_run_summary()}")
         return self.io.choose(
-            "MAIN MENU",
+            "Main menu",
             (
                 ("1", "Manage SAGE Scripture Projects"),
                 ("2", "Bible Index & Context (BIC)"),
@@ -2388,7 +2405,10 @@ class SageControlCenter:
                 (
                     ("1", f"Open active BIC Job [{active}]"),
                     ("2", "BIC Jobs"),
-                    ("3", "Add BIC Job [SOURCE, DONOR, TARGET]"),
+                    (
+                        "3",
+                        "Add BIC JOB <SOURCE PROJECT, DONOR PROJECT, TARGET PROJECT>",
+                    ),
                     ("4", "Reports and history"),
                     ("5", "Recovery and diagnostics"),
                     ("6", "Maintain Job storage"),
@@ -2495,7 +2515,11 @@ class SageControlCenter:
             if normalized == "rtc"
             else "SOURCE TEXT CORRESPONDENCE (STC)"
         )
-        binding_label = "[WIP, REFERENCE]" if normalized == "rtc" else "[WIP]"
+        binding_label = (
+            "<WIP PROJECT, REFERENCE PROJECT>"
+            if normalized == "rtc"
+            else "<WIP PROJECT>"
+        )
         while True:
             report = self.store.discover_report(normalized, include_archived=True)
             active_id = self.store.active_jobs().get(normalized)
@@ -2665,7 +2689,7 @@ class SageControlCenter:
                 options = (
                     ("1", "Open active SAW Job"),
                     ("2", "Choose active SAW Job"),
-                    ("3", "Add SAW Job [WIP, REFERENCE]"),
+                    ("3", "Add SAW JOB <WIP PROJECT, REFERENCE PROJECT>"),
                     ("4", "Manage SAW Jobs"),
                     ("5", "Reports and history"),
                     ("6", "Recovery and diagnostics"),
@@ -2675,7 +2699,7 @@ class SageControlCenter:
             else:
                 options = (
                     ("1", "Choose active SAW Job"),
-                    ("2", "Add SAW Job [WIP, REFERENCE]"),
+                    ("2", "Add SAW JOB <WIP PROJECT, REFERENCE PROJECT>"),
                     ("3", "Manage SAW Jobs"),
                     ("4", "Reports and history"),
                     ("5", "Recovery and diagnostics"),
@@ -2981,7 +3005,7 @@ class SageControlCenter:
         while True:
             choice = self.io.choose(
                 "CHOOSE SCRIPTURE SCOPE",
-                (("1", "Choose Book"), ("2", "Enter complete scope directly"), ("B", "Back")),
+                (("1", "Choose book"), ("2", "Enter complete scope directly"), ("B", "Back")),
                 prompt="Choose or enter scope [1]: ",
                 allow_blank=True,
                 direct_validator=lambda value: parse_scope(value).label(),
@@ -3006,7 +3030,7 @@ class SageControlCenter:
                 self.io.write("No detected Scripture books are available for this Project.")
                 self.io.pause()
                 continue
-            selected = self.io.choose("CHOOSE BOOK", [(str(i), book) for i, book in enumerate(books, 1)] + [("B", "Back")])
+            selected = self.io.choose("Choose book", [(str(i), book) for i, book in enumerate(books, 1)] + [("B", "Back")])
             if selected == "B": continue
             book = books[int(selected) - 1]
             self.io.write()
@@ -4395,7 +4419,7 @@ class SageControlCenter:
     def advanced_run_menu(self, project: Job, run: Run) -> None:
         """Implement `advanced run menu` in the deterministic terminal control flow."""
         choice = self.io.choose(
-            "Advanced Run Controls",
+            "Advanced Run controls",
             (
                 ("1", "Reinitialize Job"),
                 ("2", "Show task commands"),
@@ -4429,7 +4453,7 @@ class SageControlCenter:
         """Implement `bic memory menu` in the deterministic terminal control flow."""
         while True:
             choice = self.io.choose(
-                "BIC Memory and Terminology",
+                "BIC memory and terminology",
                 (
                     ("1", "All memory records"),
                     ("2", "Records by state"),
@@ -4525,7 +4549,7 @@ class SageControlCenter:
         target = project.bindings["generated_target"]
         while True:
             choice = self.io.choose(
-                "Generated Target and Generations",
+                "Generated TARGET and generations",
                 (
                     ("1", "Generations"),
                     ("2", "Verify current generation"),
@@ -4610,7 +4634,7 @@ class SageControlCenter:
                 recovery_options.append(("7", "Restart one BIC scope [TARGET unchanged]"))
             recovery_options.append(("B", "Back"))
             choice = self.io.choose(
-                f"{project.tool.upper()} - {self.localizer.text('Recovery and Reset')}",
+                f"{project.tool.upper()} - {self.localizer.text('Recovery and reset')}",
                 tuple(recovery_options),
             )
             if choice == "B":
@@ -5227,7 +5251,7 @@ class SageControlCenter:
             imported_at = None
         elif tool in {"rtc", "stc"}:
             output = self.choose_or_add_resource(
-                f"Start new {tool.upper()} review <WIP Project>",
+                f"Start new {tool.upper()} review <WIP PROJECT>",
                 "WIP",
             )
             if not output: return
@@ -6729,11 +6753,19 @@ class SageControlCenter:
         """Return Job IDs and bindings that currently use one SAGE Project."""
         labels = {"content_source":"BIC SOURCE", "lexical_donor":"BIC DONOR", "generated_target":"BIC TARGET", "wip":"SAW WIP", "reference":"SAW REFERENCE", "original_language_greek":"OL GRK", "original_language_hebrew":"OL HEB"}
         values: set[str] = set()
-        for job in self.store.discover(include_archived=True):
+        for job in self._jobs_using_project(project_id):
             for key, value in job.bindings.items():
                 if value == project_id and key in labels:
                     values.add(f"{job.job_id} - {labels[key]}")
         return tuple(sorted(values))
+
+    def _jobs_using_project(self, project_id: str) -> tuple[Job, ...]:
+        """Return every active, inactive, or archived Job bound to one Project."""
+        return tuple(
+            job
+            for job in self.store.discover(include_archived=True)
+            if project_id in job.bindings.values()
+        )
 
     def _project_vrs_summary(self, value: dict[str, Any]) -> str:
         """Render one compact custom/base VRS summary without inventing missing metadata."""
@@ -6817,10 +6849,17 @@ class SageControlCenter:
             row = inspect_paratext_project(resolved_path)
         else:
             row = rescan_catalog_project(self.root, project_id)
-        books = tuple(str(book) for book in row.get("books", []))
         scope = dict(record.get("scope") or {})
-        scope["testament"] = scope_testament(books)
-        scope["expected_books"] = list(books) if books else scope.get("expected_books", [])
+        declared_value = scope.get("expected_books", [])
+        declared_books = (
+            tuple(str(book) for book in declared_value)
+            if isinstance(declared_value, list)
+            else tuple(str(book) for book in record.get("detected_books", []))
+        )
+        if not declared_books:
+            declared_books = tuple(str(book) for book in row.get("books", []))
+            scope["testament"] = scope_testament(declared_books)
+            scope["expected_books"] = list(declared_books)
         scope["roles"] = []
         vrs = dict(record.get("versification") or {})
         parsed_vrs = dict(row.get("versification") or {})
@@ -6836,10 +6875,10 @@ class SageControlCenter:
             project_id,
             {
                 "display_name": row.get("full_name") or project_id,
-                "detected_books": list(books),
+                "detected_books": list(declared_books),
                 "sfm_books": list(row.get("sfm_books", [])),
                 "scope": scope,
-                "scope_summary": summarize_scope(books),
+                "scope_summary": summarize_scope(declared_books),
                 "versification": vrs,
                 "paratext_metadata": {
                     "full_name": row.get("full_name"),
@@ -6880,10 +6919,11 @@ class SageControlCenter:
                     ("2", "Scripture books"),
                     ("3", "Versification"),
                     ("4", "Project location"),
-                    ("5", "Validate Project"),
-                    ("6", "Jobs using this Project"),
-                    ("7", "Advanced settings"),
-                    ("8", "Remove Project from SAGE"),
+                    ("5", "Refresh Project"),
+                    ("6", "Validate Project"),
+                    ("7", "Jobs using this Project"),
+                    ("8", "Advanced settings"),
+                    ("9", "Remove Project from SAGE"),
                     ("B", "Back"),
                 ),
             )
@@ -6895,13 +6935,15 @@ class SageControlCenter:
             elif action=="5":
                 try:
                     refreshed=self._refresh_registered_from_catalog(project_id)
-                    self.io.write(f"Validated {project_id}: scope={refreshed.get('scope_summary')} status={refreshed.get('validation_status')}")
+                    self.io.write(f"Refreshed {project_id}: scope={refreshed.get('scope_summary')} status={refreshed.get('validation_status')}")
                 except SageError as exc: self.show_error(exc)
+                self.io.pause()
+            elif action=="6":
                 self._setup_scripture_resource_status(render=True)
                 self.io.pause()
-            elif action=="6": self._project_jobs_menu(project_id)
-            elif action=="7": self._project_advanced_menu(project_id)
-            elif action=="8":
+            elif action=="7": self._project_jobs_menu(project_id)
+            elif action=="8": self._project_advanced_menu(project_id)
+            elif action=="9":
                 if self._unregister_project_menu(project_id): return
 
     def _project_information_menu(self, project_id: str) -> None:
@@ -6965,7 +7007,7 @@ class SageControlCenter:
                 "Project storage",
                 (
                     ("1", "Re-detect from Projects root"),
-                    ("2", "Use <Other location>"),
+                    ("2", "Use another location"),
                     ("3", "Test access"),
                     ("B", "Back"),
                 ),
@@ -7037,6 +7079,7 @@ class SageControlCenter:
 
     def _unregister_project_menu(self, project_id: str) -> bool:
         """Remove one Project from SAGE only; never delete Paratext files."""
+        bound_jobs = self._jobs_using_project(project_id)
         purposes=self._project_purposes(project_id)
         self.io.write()
         self.io.write(f"REMOVE PROJECT FROM SAGE - {project_id}")
@@ -7046,10 +7089,17 @@ class SageControlCenter:
         if purposes:
             self.io.write("Jobs currently using this Project:")
             for purpose in purposes: self.io.write(f"  {purpose}")
-            self.io.write("The Project cannot be removed while it is used by a Job. Remove the Job binding first.")
-            self.io.pause()
+            self.io.write("Removing this PROJECT also removes the listed SAGE JOBS and their JOB-local data.")
+            self.io.write("Paratext files and root-level published reports remain unchanged.")
+            if not self.io.confirm(
+                f"Remove {len(bound_jobs)} bound JOB{'S' if len(bound_jobs) != 1 else ''} and PROJECT {project_id} from SAGE?",
+                default=False,
+            ):
+                return False
+            for job in bound_jobs:
+                self.store.remove_job(job)
+        elif not self.io.confirm(f"Remove PROJECT {project_id} from SAGE?", default=False):
             return False
-        if not self.io.confirm(f"Remove {project_id} from SAGE?", default=False): return False
         remove_resource_mount(self.root, project_id=project_id)
         unregister_project(self.root, project_id=project_id)
         self.io.write(f"Removed {project_id} from SAGE. Paratext files were unchanged.")
@@ -7343,6 +7393,30 @@ class SageControlCenter:
         if row.get("warnings"): self.io.write("Warnings:         " + ", ".join(row["warnings"]))
         if not self._project_language_identification_menu(row):
             return None
+        proposed_books = tuple(str(book) for book in row.get("books", []))
+        if not proposed_books:
+            proposed_books = tuple(str(book) for book in row.get("sfm_books", []))
+        default_scope = format_project_book_scope(proposed_books)
+        self.io.write()
+        self.io.write("Declare which PROJECT books may enter USJ compilation.")
+        self.io.write("Use OT, NT, FB, USFM IDs/ranges, or unions (examples: NT, PSA; LUK-ACT).")
+        self.io.write_info((("Proposed PROJECT scope", default_scope),), label_width=24)
+        self.io.write("Leave blank to accept the proposed scope.")
+        scope_expression = self.io.text(
+            "PROJECT scope",
+            required=False,
+            validator=lambda value: format_project_book_scope(
+                parse_project_book_scope(value)
+            ),
+        ) or default_scope
+        declared_books = parse_project_book_scope(scope_expression)
+        row["books"] = list(declared_books)
+        row["book_count"] = len(declared_books)
+        row["scope"] = scope_testament(declared_books)
+        self.io.write_info(
+            (("Declared PROJECT scope", format_project_book_scope(declared_books)),),
+            label_width=24,
+        )
         if not self.io.confirm("Add this Project to SAGE?", default=True): return None
         try:
             created=register_catalogued_scripture_project(self.store.settings_path, catalogue_row=row)
@@ -7434,7 +7508,7 @@ class SageControlCenter:
             self.io.write(f"Projects discovered:    {summary.get('discovered', summary['projects'])}")
             self.io.write(f"Pending validation:     {summary.get('pending', 0)}")
             self.io.write(f"Last scan:              {summary['last_scan'] or 'NEVER'}")
-            choice=self.io.choose("Paratext Project Catalog", (("1","Set Paratext Projects root"),("2","Quick rescan"),("3","Full rescan"),("4","Show catalog summary"),("B", "Back")))
+            choice=self.io.choose("Paratext Project catalog", (("1","Set Paratext Projects root"),("2","Quick rescan"),("3","Full rescan"),("4","Show catalog summary"),("B", "Back")))
             if choice=="B": return
             try:
                 if choice=="1":

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Iterable
 
@@ -71,6 +72,71 @@ def normalize_book_list(values: Iterable[str], label: str) -> tuple[str, ...]:
     if unknown:
         raise ConfigurationError(f"{label} contains unsupported book IDs: {', '.join(unknown)}")
     return tuple(sorted(books, key=BOOK_ORDER.__getitem__))
+
+
+def parse_project_book_scope(value: str) -> tuple[str, ...]:
+    """Resolve Project-scope presets, USFM IDs, ranges, and their unions."""
+    normalized = str(value).strip().upper().replace("–", "-").replace("—", "-")
+    tokens = tuple(token for token in re.split(r"[\s,]+", normalized) if token)
+    if not tokens:
+        raise ConfigurationError("Project scope must name OT, NT, FB, or at least one USFM book ID")
+
+    presets = {"OT": OT_39, "NT": NT_27, "FB": BOOKS_66}
+    selected: set[str] = set()
+    for token in tokens:
+        if token in presets:
+            selected.update(presets[token])
+            continue
+        if "-" not in token:
+            if token not in BOOK_ORDER:
+                raise ConfigurationError(
+                    f"Project scope contains unsupported USFM book ID: {token}"
+                )
+            selected.add(token)
+            continue
+        endpoints = token.split("-")
+        if len(endpoints) != 2 or any(endpoint not in BOOK_ORDER for endpoint in endpoints):
+            raise ConfigurationError(f"Project scope contains invalid USFM book range: {token}")
+        start, end = endpoints
+        start_index = BOOK_ORDER[start] - 1
+        end_index = BOOK_ORDER[end] - 1
+        if start_index > end_index:
+            raise ConfigurationError(
+                f"Project scope range must follow canonical order: {token}"
+            )
+        selected.update(BOOKS_66[start_index : end_index + 1])
+    return tuple(book for book in BOOKS_66 if book in selected)
+
+
+def format_project_book_scope(books: Iterable[str]) -> str:
+    """Render one compact expression that round-trips through Project onboarding."""
+    normalized = normalize_book_list(books, "Project scope")
+    selected = set(normalized)
+    if selected == set(BOOKS_66):
+        return "FB"
+
+    tokens: list[str] = []
+    remaining = set(selected)
+    for label, preset in (("OT", OT_39), ("NT", NT_27)):
+        if set(preset).issubset(remaining):
+            tokens.append(label)
+            remaining.difference_update(preset)
+
+    index = 0
+    while index < len(BOOKS_66):
+        if BOOKS_66[index] not in remaining:
+            index += 1
+            continue
+        end = index
+        while end + 1 < len(BOOKS_66) and BOOKS_66[end + 1] in remaining:
+            end += 1
+        tokens.append(
+            BOOKS_66[index]
+            if end == index
+            else f"{BOOKS_66[index]}-{BOOKS_66[end]}"
+        )
+        index = end + 1
+    return ", ".join(tokens)
 
 
 def normalize_roles(values: Iterable[str], label: str) -> tuple[str, ...]:
