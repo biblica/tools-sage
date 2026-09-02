@@ -180,8 +180,8 @@ def test_uninitialized_active_job_starts_at_main_and_defers_validation_to_workfl
     assert snapshot["next_step"] == "VALIDATE"
     assert center.run() == 0
     rendered = output.getvalue()
-    assert "MAIN MENU" in rendered
-    assert "MANAGE JOBS" not in rendered
+    assert "Main menu" in rendered
+    assert "Manage JOBS" not in rendered
 
 
 def test_startup_reports_stale_active_job_pointer_as_recoverable(make_workspace) -> None:
@@ -277,12 +277,12 @@ def test_guided_setup_has_system_autosave_and_exit_paths(make_workspace, monkeyp
 
     assert center.guided_setup(pause_at_end=False) is False
     rendered = output.getvalue()
-    assert "BIC jobs" in rendered
-    assert "RTC jobs" in rendered
-    assert "STC jobs" in rendered
+    assert "BIC JOBS" in rendered
+    assert "RTC JOBS" in rendered
+    assert "STC JOBS" in rendered
     assert "SAGE Maintenance" in rendered
     assert "Setup options" not in rendered
-    assert "B. Main Menu   C. Exit SAGE" in rendered
+    assert "B. Main menu   C. Exit SAGE" in rendered
     assert "D. Language   E. Help   F. Status" in rendered
     assert "Save and return" not in rendered
 
@@ -294,7 +294,7 @@ def test_system_configuration_has_back_main_and_exit_routes(make_workspace) -> N
         center = _center(root, [selection])
         assert center.system_configuration_menu() == expected
         rendered = center.io.output.getvalue()
-        assert "A. Back   B. Main Menu   C. Exit SAGE" in rendered
+        assert "A. Back   B. Main menu   C. Exit SAGE" in rendered
         assert "D. Language   E. Help   F. Status" in rendered
 
 

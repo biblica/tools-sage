@@ -314,6 +314,7 @@ def test_registered_other_location_project_refreshes_without_primary_catalogue(m
     external.mkdir(parents=True)
     _settings(external / "settings.xml", language="English", full_name="External Project", iso="en")
     _sfm(external / "41MAT.SFM", "MAT")
+    _sfm(external / "42MRK.SFM", "MRK")
     (external / "custom.vrs").write_text('#\n# Versification "External"\n# based on eng.vrs\n', encoding="utf-8")
     register_project(
         root,
@@ -323,12 +324,15 @@ def test_registered_other_location_project_refreshes_without_primary_catalogue(m
         language_profile="en",
         base_vrs_file="eng.vrs",
         display_name="Old name",
+        declared_books=("MAT",),
     )
     set_resource_mount(root, project_id="usALTv0", external_path=external)
     center = SageControlCenter(sage_root=root, settings_path=root / "ecosystem.yml", skip_setup=True, dry_run_provider=True)
     refreshed = center._refresh_registered_from_catalog("usALTv0")
     assert refreshed["display_name"] == "External Project"
     assert refreshed["scope_summary"] == "MAT"
+    assert refreshed["scope"]["expected_books"] == ["MAT"]
+    assert refreshed["sfm_books"] == ["MAT", "MRK"]
     assert refreshed["versification"]["reported_base_file"] == "eng.vrs"
 
 

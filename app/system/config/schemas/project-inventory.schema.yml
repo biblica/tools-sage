@@ -9,10 +9,10 @@ controls:
     role_neutral: true
     discovery_source: localdata/.system/state/paratext-project-catalog.json
     discovery_gate: valid_settings.xml
-    declared_books_from: canons.xml_when_available
+    declared_books_from: operator_confirmed_scope_with_canons.xml_proposal_when_available
     actual_scripture_from: readable_top_level_SFM_id_markers
     vrs_only_folder_is_project: false
-    scope_derived_from_discovered_books: true
+    scope_derived_from_discovered_books: proposed_when_canons.xml_is_unavailable
     workflow_role_inferred_from_project_code: false
     original_language_aliases_are_separate: true
   project_record:

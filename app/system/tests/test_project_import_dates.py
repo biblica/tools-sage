@@ -114,7 +114,7 @@ def test_project_inventory_reports_the_original_sage_import_date(make_workspace)
     rendered = output.getvalue()
     assert "Imported" in rendered
     assert "Imported to SAGE: 20260829" in rendered
-    assert "\n  1. usWIP\n\n  2. Add another Project to SAGE" in rendered
+    assert "\n  1. usWIP\n\n  2. Add another PROJECT to SAGE" in rendered
 
 
 def test_registered_project_summary_keeps_fields_associated_at_72_columns(
@@ -382,14 +382,14 @@ def test_job_project_chooser_wraps_long_project_rows_and_separates_add_action(
         dry_run_provider=True,
     )
 
-    selected = center.choose_or_add_resource("Start new STC review <WIP Project>", "WIP")
+    selected = center.choose_or_add_resource("Start new STC review <WIP PROJECT>", "WIP")
 
     rendered = output.getvalue()
     assert selected is not None
     assert selected.project_id == "usWIP"
     assert "ukrNPUv1 New Ukrainian Translation ver. uk-UA" in rendered
     assert max(len(line) for line in rendered.splitlines()) <= 72
-    assert "[Imported 20260829]\n\n  2. Add another Project to SAGE" in rendered
+    assert "[Imported 20260829]\n\n  2. Add another PROJECT to SAGE" in rendered
 
 
 def test_bic_job_review_reports_all_selected_project_import_dates(

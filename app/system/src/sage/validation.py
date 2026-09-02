@@ -379,11 +379,6 @@ def validate_static_ecosystem(
             "unexpected_books": unexpected_books,
             "peripheral_books": peripheral_books,
         }
-        if project.enabled and unexpected_books:
-            errors.append(
-                f"Project {project_id} contains books outside declared scope: "
-                + ", ".join(unexpected_books)
-            )
         if (
             project.enabled
             and project.coverage_policy == "CONFIGURED_BOOKS_COMPLETE"

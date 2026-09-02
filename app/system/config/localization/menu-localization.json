@@ -14,7 +14,7 @@
       "Edit localized text values only; keep semantic keys stable.",
       "Every entry must contain all six locales.",
       "en-US is the canonical source wording used for runtime lookup.",
-      "Display capitalization is applied by the menu renderer; do not duplicate entries only for uppercase headings.",
+      "Use sentence case for menu headings and items; render mid-sentence governed entities as PROJECT, JOB, RUN, or TASK and reserve other uppercase forms for governed protocol tokens.",
       "Keep SAGE identifiers such as BIC, SAW, Job, Run, Project, TARGET, SOURCE, DONOR, WIP, REFERENCE, ACT, RWC, SEMDOM, FLEx, Combine, and Codex unchanged unless system grammar changes them."
     ]
   },
@@ -92,12 +92,12 @@
       "pt-BR": "Adicionar outro Project ao SAGE"
     },
     "menu.add.bic.job.source.donor.target": {
-      "en-US": "Add BIC Job [SOURCE, DONOR, TARGET]",
-      "en-GB": "Add BIC Job [SOURCE, DONOR, TARGET]",
-      "id": "tambahkan BIC Job [SOURCE, DONOR, TARGET]",
-      "fr": "ajouter un BIC Job [SOURCE, DONOR, TARGET]",
-      "ru": "добавить BIC Job [SOURCE, DONOR, TARGET]",
-      "pt-BR": "adicionar BIC Job [SOURCE, DONOR, TARGET]"
+      "en-US": "Add BIC JOB <SOURCE PROJECT, DONOR PROJECT, TARGET PROJECT>",
+      "en-GB": "Add BIC JOB <SOURCE PROJECT, DONOR PROJECT, TARGET PROJECT>",
+      "id": "tambahkan BIC JOB <SOURCE PROJECT, DONOR PROJECT, TARGET PROJECT>",
+      "fr": "ajouter un BIC JOB <SOURCE PROJECT, DONOR PROJECT, TARGET PROJECT>",
+      "ru": "добавить BIC JOB <SOURCE PROJECT, DONOR PROJECT, TARGET PROJECT>",
+      "pt-BR": "adicionar BIC JOB <SOURCE PROJECT, DONOR PROJECT, TARGET PROJECT>"
     },
     "menu.add.grammar.profile.from.yaml.file": {
       "en-US": "Add grammar profile from YAML file",
@@ -140,12 +140,28 @@
       "pt-BR": "Adicionar provedor"
     },
     "menu.add.saw.job.wip.reference": {
-      "en-US": "Add SAW Job [WIP, REFERENCE]",
-      "en-GB": "Add SAW Job [WIP, REFERENCE]",
-      "id": "tambahkan SAW Job [WIP, REFERENCE]",
-      "fr": "ajouter un SAW Job [WIP, REFERENCE]",
-      "ru": "добавить SAW Job [WIP, REFERENCE]",
-      "pt-BR": "adicionar SAW Job [WIP, REFERENCE]"
+      "en-US": "Add SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "en-GB": "Add SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "id": "tambahkan SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "fr": "ajouter un SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "ru": "добавить SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "pt-BR": "adicionar SAW JOB <WIP PROJECT, REFERENCE PROJECT>"
+    },
+    "menu.add.rtc.job.wip.project.reference.project": {
+      "en-US": "Add RTC Job <WIP PROJECT, REFERENCE PROJECT>",
+      "en-GB": "Add RTC Job <WIP PROJECT, REFERENCE PROJECT>",
+      "id": "tambahkan RTC Job <WIP PROJECT, REFERENCE PROJECT>",
+      "fr": "ajouter un RTC Job <WIP PROJECT, REFERENCE PROJECT>",
+      "ru": "добавить RTC Job <WIP PROJECT, REFERENCE PROJECT>",
+      "pt-BR": "adicionar RTC Job <WIP PROJECT, REFERENCE PROJECT>"
+    },
+    "menu.add.stc.job.wip.project": {
+      "en-US": "Add STC Job <WIP PROJECT>",
+      "en-GB": "Add STC Job <WIP PROJECT>",
+      "id": "tambahkan STC Job <WIP PROJECT>",
+      "fr": "ajouter un STC Job <WIP PROJECT>",
+      "ru": "добавить STC Job <WIP PROJECT>",
+      "pt-BR": "adicionar STC Job <WIP PROJECT>"
     },
     "menu.advanced.project.settings": {
       "en-US": "Advanced Project settings",
@@ -164,8 +180,8 @@
       "pt-BR": "recursos avançados"
     },
     "menu.advanced.run.controls": {
-      "en-US": "Advanced Run Controls",
-      "en-GB": "Advanced Run Controls",
+      "en-US": "Advanced Run controls",
+      "en-GB": "Advanced Run controls",
       "id": "kontrol Run lanjutan",
       "fr": "contrôles avancés du Run",
       "ru": "расширенное управление Run",
@@ -372,8 +388,8 @@
       "pt-BR": "Jobs BIC"
     },
     "menu.bic.memory.and.terminology": {
-      "en-US": "BIC Memory and Terminology",
-      "en-GB": "BIC Memory and Terminology",
+      "en-US": "BIC memory and terminology",
+      "en-GB": "BIC memory and terminology",
       "id": "memori dan terminologi BIC",
       "fr": "mémoire et terminologie BIC",
       "ru": "память и терминология BIC",
@@ -644,8 +660,8 @@
       "pt-BR": "Escolher outro código de idioma ISO"
     },
     "menu.choose.book": {
-      "en-US": "Choose Book",
-      "en-GB": "Choose Book",
+      "en-US": "Choose book",
+      "en-GB": "Choose book",
       "id": "pilih kitab",
       "fr": "choisir un livre",
       "ru": "выбрать книгу",
@@ -908,9 +924,9 @@
       "pt-BR": "continuar Run"
     },
     "menu.continue.to.main.menu": {
-      "en-US": "Continue to Main Menu",
-      "en-GB": "Continue to Main Menu",
-      "id": "lanjutkan ke Menu Utama",
+      "en-US": "Continue to main menu",
+      "en-GB": "Continue to main menu",
+      "id": "lanjutkan ke menu utama",
       "fr": "continuer vers le menu principal",
       "ru": "перейти в главное меню",
       "pt-BR": "continuar para o menu principal"
@@ -1164,12 +1180,12 @@
       "pt-BR": "nova varredura completa"
     },
     "menu.generated.target.and.generations": {
-      "en-US": "Generated Target and Generations",
-      "en-GB": "Generated Target and Generations",
-      "id": "Target yang Dihasilkan dan Generasi",
-      "fr": "Target généré et générations",
-      "ru": "созданный Target и поколения",
-      "pt-BR": "Target gerado e gerações"
+      "en-US": "Generated TARGET and generations",
+      "en-GB": "Generated TARGET and generations",
+      "id": "TARGET yang dihasilkan dan generasi",
+      "fr": "TARGET généré et générations",
+      "ru": "созданный TARGET и поколения",
+      "pt-BR": "TARGET gerado e gerações"
     },
     "menu.generations": {
       "en-US": "Generations",
@@ -1484,9 +1500,9 @@
       "pt-BR": "IA local"
     },
     "menu.main.menu": {
-      "en-US": "Main Menu",
-      "en-GB": "Main Menu",
-      "id": "Menu Utama",
+      "en-US": "Main menu",
+      "en-GB": "Main menu",
+      "id": "Menu utama",
       "fr": "Menu principal",
       "ru": "Главное меню",
       "pt-BR": "Menu principal"
@@ -1700,8 +1716,8 @@
       "pt-BR": "Saídas e relatórios"
     },
     "menu.paratext.project.catalog": {
-      "en-US": "Paratext Project Catalog",
-      "en-GB": "Paratext Project Catalogue",
+      "en-US": "Paratext Project catalog",
+      "en-GB": "Paratext Project catalogue",
       "id": "Katalog Paratext Project",
       "fr": "Catalogue des Paratext Projects",
       "ru": "каталог Paratext Projects",
@@ -1779,6 +1795,54 @@
       "ru": "ДЕЙСТВИЯ PROJECT",
       "pt-BR": "AÇÕES DO PROJECT"
     },
+    "menu.project.scope": {
+      "en-US": "PROJECT scope",
+      "en-GB": "PROJECT scope",
+      "id": "Cakupan PROJECT",
+      "fr": "Portée du PROJECT",
+      "ru": "Область PROJECT",
+      "pt-BR": "Escopo do PROJECT"
+    },
+    "menu.declared.project.scope": {
+      "en-US": "Declared PROJECT scope",
+      "en-GB": "Declared PROJECT scope",
+      "id": "Cakupan PROJECT yang dinyatakan",
+      "fr": "Portée déclarée du PROJECT",
+      "ru": "Заявленная область PROJECT",
+      "pt-BR": "Escopo declarado do PROJECT"
+    },
+    "menu.proposed.project.scope": {
+      "en-US": "Proposed PROJECT scope",
+      "en-GB": "Proposed PROJECT scope",
+      "id": "Cakupan PROJECT yang diusulkan",
+      "fr": "Portée proposée du PROJECT",
+      "ru": "Предлагаемая область PROJECT",
+      "pt-BR": "Escopo proposto do PROJECT"
+    },
+    "menu.declare.which.project.books.may.enter.usj.compilation": {
+      "en-US": "Declare which PROJECT books may enter USJ compilation.",
+      "en-GB": "Declare which PROJECT books may enter USJ compilation.",
+      "id": "Nyatakan kitab PROJECT yang boleh masuk ke kompilasi USJ.",
+      "fr": "Définissez les livres du PROJECT autorisés à entrer dans la compilation USJ.",
+      "ru": "Укажите книги PROJECT, которые могут войти в компиляцию USJ.",
+      "pt-BR": "Declare quais livros do PROJECT podem entrar na compilação USJ."
+    },
+    "menu.use.project.scope.expression": {
+      "en-US": "Use OT, NT, FB, USFM IDs/ranges, or unions (examples: NT, PSA; LUK-ACT).",
+      "en-GB": "Use OT, NT, FB, USFM IDs/ranges, or unions (examples: NT, PSA; LUK-ACT).",
+      "id": "Gunakan OT, NT, FB, ID/rentang USFM, atau gabungan (contoh: NT, PSA; LUK-ACT).",
+      "fr": "Utilisez OT, NT, FB, des identifiants/plages USFM ou des unions (exemples : NT, PSA ; LUK-ACT).",
+      "ru": "Используйте OT, NT, FB, идентификаторы/диапазоны USFM или объединения (примеры: NT, PSA; LUK-ACT).",
+      "pt-BR": "Use OT, NT, FB, IDs/intervalos USFM ou uniões (exemplos: NT, PSA; LUK-ACT)."
+    },
+    "menu.leave.blank.to.accept.proposed.scope": {
+      "en-US": "Leave blank to accept the proposed scope.",
+      "en-GB": "Leave blank to accept the proposed scope.",
+      "id": "Biarkan kosong untuk menerima cakupan yang diusulkan.",
+      "fr": "Laissez vide pour accepter la portée proposée.",
+      "ru": "Оставьте поле пустым, чтобы принять предлагаемую область.",
+      "pt-BR": "Deixe em branco para aceitar o escopo proposto."
+    },
     "menu.project.bindings": {
       "en-US": "Project bindings",
       "en-GB": "Project bindings",
@@ -1842,6 +1906,14 @@
       "fr": "nouvelle analyse rapide",
       "ru": "быстрое повторное сканирование",
       "pt-BR": "nova varredura rápida"
+    },
+    "menu.quick.scan": {
+      "en-US": "Quick scan",
+      "en-GB": "Quick scan",
+      "id": "Pemindaian cepat",
+      "fr": "Analyse rapide",
+      "ru": "Быстрое сканирование",
+      "pt-BR": "Verificação rápida"
     },
     "menu.rapidwords.folders": {
       "en-US": "RapidWords folders",
@@ -1940,9 +2012,9 @@
       "pt-BR": "Recuperação"
     },
     "menu.recovery.and.reset": {
-      "en-US": "Recovery and Reset",
-      "en-GB": "Recovery and Reset",
-      "id": "Pemulihan dan Reset",
+      "en-US": "Recovery and reset",
+      "en-GB": "Recovery and reset",
+      "id": "Pemulihan dan reset",
       "fr": "Récupération et réinitialisation",
       "ru": "Восстановление и сброс",
       "pt-BR": "Recuperação e redefinição"
@@ -3012,12 +3084,12 @@
       "pt-BR": "usar outro recurso local"
     },
     "menu.use.other.location": {
-      "en-US": "Use <Other location>",
-      "en-GB": "Use <Other location>",
-      "id": "Gunakan <Lokasi lain>",
-      "fr": "Utiliser <Autre emplacement>",
-      "ru": "Использовать <Другое расположение>",
-      "pt-BR": "Usar <Outro local>"
+      "en-US": "Use another location",
+      "en-GB": "Use another location",
+      "id": "Gunakan lokasi lain",
+      "fr": "Utiliser un autre emplacement",
+      "ru": "Использовать другое расположение",
+      "pt-BR": "Usar outro local"
     },
     "menu.use.paratext.root.for.base.vrs": {
       "en-US": "Use Paratext root for base VRS",

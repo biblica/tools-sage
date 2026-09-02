@@ -191,7 +191,7 @@ def test_scope_menu_blank_selection_defaults_to_choose_book(make_workspace, monk
 
     assert center._select_scripture_scope(job, primary_binding="wip") == "MAT"
     rendered = center.io.output.getvalue()
-    assert "1. Choose Book" in rendered
+    assert "1. Choose book" in rendered
     assert "2. Enter complete scope directly" in rendered
 
 

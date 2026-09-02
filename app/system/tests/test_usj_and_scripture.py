@@ -177,8 +177,8 @@ def test_note_only_coordinate_is_recorded_as_warning(make_workspace) -> None:
     assert any(item["code"] == "PRESENT_NOTE_ONLY" for item in result["warnings"])
 
 
-def test_scope_limited_compile_reads_only_requested_book(make_workspace) -> None:
-    """Verify that scope limited compile reads only requested book."""
+def test_compile_reads_only_requested_or_declared_books(make_workspace) -> None:
+    """Compilation never decodes a book beyond the requested or declared scope."""
     root = make_workspace()
     projects_root = storage_layout(root).projects_root
     for project_id in ("idKKHv0", "usNIRVv2", "usBOLx1", "usNIVv2", "GRK", "HEB"):
@@ -191,8 +191,11 @@ def test_scope_limited_compile_reads_only_requested_book(make_workspace) -> None
     assert selected["summary"]["scope_limited"] is True
     assert selected["summary"]["requested_books"] == ["MAT"]
     assert selected["summary"]["files"] == 1
-    with pytest.raises(ValidationError, match="Invalid UTF-8"):
-        compile_project(config, config.project("idKKHv0"))
+    declared = compile_project(config, config.project("idKKHv0"))
+    assert declared["status"] == "READY"
+    assert declared["summary"]["scope_limited"] is False
+    assert declared["summary"]["books"] == ["MAT"]
+    assert declared["summary"]["ignored_out_of_scope_books"] == ["MRK"]
 
 
 def test_inline_paragraph_and_verse_markers_produce_verse_records() -> None:

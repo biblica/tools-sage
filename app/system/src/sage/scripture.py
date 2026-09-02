@@ -326,20 +326,30 @@ def compile_project(
     *,
     books: set[str] | frozenset[str] | None = None,
 ) -> dict[str, Any]:
-    """Compile and validate one project or a selected book set without editing it."""
+    """Compile and validate declared Project content or a selected book set."""
     # Validate and cache books independently so one failed book cannot contaminate another result.
     requested_books = frozenset(book.upper() for book in (books or ()))
     all_files = discover_usfm_files(project.path)
+    declared_books = frozenset(resolve_expected_books(project.scope))
     files = (
         discover_usfm_files(project.path, books=requested_books)
         if books is not None
-        else [path for path in all_files if _peek_book_code(path) not in PERIPHERAL_BOOKS]
+        else discover_usfm_files(project.path, books=declared_books)
     )
     peripheral_books = sorted(
         {
             book
             for path in all_files
             if (book := _peek_book_code(path)) in PERIPHERAL_BOOKS
+        }
+    )
+    ignored_out_of_scope_books = sorted(
+        {
+            book
+            for path in all_files
+            if (book := _peek_book_code(path)) is not None
+            and book not in declared_books
+            and book not in PERIPHERAL_BOOKS
         }
     )
     if project.enabled and not project.path.exists():
@@ -571,6 +581,7 @@ def compile_project(
             "issues": len(project_issues),
             "warnings": len(project_warnings),
             "peripheral_books": peripheral_books,
+            "ignored_out_of_scope_books": ignored_out_of_scope_books,
             "scope_limited": books is not None,
             "requested_books": sorted(requested_books),
         },

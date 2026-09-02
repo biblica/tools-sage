@@ -19,6 +19,7 @@ from sage.runtime_paths import task_container
 from sage.jobs import JobStore
 from sage.llm_settings import load_llm_settings
 from sage.bic_memory import submit_inspect_transactionally
+from sage.canon import NT_27
 from sage.project_inventory import register_project, registered_project_records
 from sage.resource_mounts import load_resource_mounts, set_resource_mount
 
@@ -96,9 +97,9 @@ def test_scripture_projects_menu_exposes_projects_root_and_scan_separately(make_
 
     rendered = output.getvalue()
     assert "Paratext Projects root: NOT CONFIGURED" in rendered
-    assert "3. Remove Project from SAGE" in rendered
-    assert "6. Paratext Projects root" in rendered
-    assert "7. Scan Paratext Projects" in rendered
+    assert "3. Remove PROJECT from SAGE" in rendered
+    assert "6. Paratext PROJECTS root" in rendered
+    assert "7. Scan Paratext PROJECTS" in rendered
 
 
 def test_direct_remove_project_action_preserves_paratext_files(make_workspace) -> None:
@@ -138,8 +139,8 @@ def test_direct_remove_project_action_preserves_paratext_files(make_workspace) -
     assert f"Removed {project_id} from SAGE. Paratext files were unchanged." in rendered
 
 
-def test_direct_remove_project_action_blocks_job_bound_project(make_workspace) -> None:
-    """Keep a Project and its mapping while an active or archived Job still binds it."""
+def test_direct_remove_project_action_can_remove_job_bound_project(make_workspace) -> None:
+    """A bound Project can remove its dependent Jobs only after explicit confirmation."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     project_id = "usWIP"
     project_path = storage_layout(root).projects_root / project_id
@@ -157,7 +158,45 @@ def test_direct_remove_project_action_blocks_job_bound_project(make_workspace) -
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["3", "1", "a"]), output=output),
+        io=MenuIO(input_func=ScriptedInput(["3", "1", "yes", "a"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+    center.store.bootstrap_default_jobs()
+
+    center.resource_menu()
+
+    assert project_id not in registered_project_records(root)
+    assert project_id not in load_resource_mounts(root)
+    assert not any(project_id in job.bindings.values() for job in center.store.discover(include_archived=True))
+    assert project_path.is_dir()
+    rendered = output.getvalue()
+    assert "Jobs currently using this Project:" in rendered
+    assert "SAW WIP" in rendered
+    assert "Removing this PROJECT also removes the listed SAGE JOBS and their JOB-local data." in rendered
+    assert f"Removed {project_id} from SAGE." in rendered
+
+
+def test_bound_project_removal_can_be_cancelled_without_changes(make_workspace) -> None:
+    """Declining cascade removal preserves the Project, mount, and bound Jobs."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    project_id = "usWIP"
+    project_path = storage_layout(root).projects_root / project_id
+    register_project(
+        root,
+        project_id=project_id,
+        project_path=project_path,
+        language_code="en",
+        profile_variant="bol-target",
+        base_vrs_file="eng.vrs",
+        display_name="Bound WIP",
+    )
+    set_resource_mount(root, project_id=project_id, external_path=project_path)
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["3", "1", "no", "a"]), output=output),
         skip_setup=True,
         dry_run_provider=True,
     )
@@ -167,10 +206,47 @@ def test_direct_remove_project_action_blocks_job_bound_project(make_workspace) -
 
     assert project_id in registered_project_records(root)
     assert project_id in load_resource_mounts(root)
+    assert any(project_id in job.bindings.values() for job in center.store.discover(include_archived=True))
+
+
+def test_project_actions_expose_separate_refresh_and_validation(make_workspace, monkeypatch) -> None:
+    """Refresh rescans Project facts while validation remains a separate action."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    register_project(
+        root,
+        project_id="usWIP",
+        project_path=storage_layout(root).projects_root / "usWIP",
+        language_code="en",
+        base_vrs_file="eng.vrs",
+    )
+    events: list[str] = []
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["5", "a"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+    record = registered_project_records(root)["usWIP"]
+    monkeypatch.setattr(
+        center,
+        "_refresh_registered_from_catalog",
+        lambda project_id: events.append("refresh") or record,
+    )
+    monkeypatch.setattr(
+        center,
+        "_setup_scripture_resource_status",
+        lambda **kwargs: events.append("validate") or {},
+    )
+
+    center.registered_project_detail("usWIP")
+
+    assert events == ["refresh"]
     rendered = output.getvalue()
-    assert "Jobs currently using this Project:" in rendered
-    assert "SAW WIP" in rendered
-    assert "The Project cannot be removed while it is used by a Job." in rendered
+    assert "5. Refresh PROJECT" in rendered
+    assert "6. Validate PROJECT" in rendered
+    assert "9. Remove PROJECT from SAGE" in rendered
 
 
 def test_bic_and_saw_active_jobs_are_independent(make_workspace) -> None:
@@ -347,10 +423,10 @@ def test_guided_first_run_setup_records_missing_project_root_with_ready_test_ai(
     assert "RTC:       NOT CONFIGURED" in rendered
     assert "STC:       NOT CONFIGURED" in rendered
     assert "MANAGE JOBS" in rendered
-    assert "4. Manage active jobs" in rendered
+    assert "4. Manage active JOBS" in rendered
     assert "Setup options" not in rendered
     assert "SAGE Maintenance" in rendered
-    assert "B. Main Menu   C. Exit SAGE" in rendered
+    assert "B. Main menu   C. Exit SAGE" in rendered
     assert "D. Language   E. Help   F. Status" in rendered
     assert "SAGE v0.01beta2" in rendered
     assert "BETA - PRE-RELEASE" in rendered
@@ -374,7 +450,7 @@ def test_global_footer_is_rendered_for_main_bic_and_saw(make_workspace) -> None:
     rendered = output.getvalue()
     assert "BIC JOBS" in rendered
     assert "SAW" in rendered
-    assert rendered.count("A. Back   B. Main Menu   C. Exit SAGE") == 2
+    assert rendered.count("A. Back   B. Main menu   C. Exit SAGE") == 2
     assert rendered.count("D. Language   E. Help   F. Status") == 2
 
 
@@ -418,7 +494,7 @@ def test_job_management_can_open_the_active_saw_job(make_workspace) -> None:
     center.job_management_menu("saw")
 
     rendered = output.getvalue()
-    assert "Open active SAW job" in rendered
+    assert "Open active SAW JOB" in rendered
     assert f"{saw.job_id} - {saw.display_name} [ACTIVE]" in rendered
     assert f"SAW JOB - {saw.job_id}" in rendered
     assert "Run Reference Text Comparison (RTC)" in rendered
@@ -442,7 +518,7 @@ def test_job_management_uses_the_same_open_active_grammar_for_bic(make_workspace
     center.job_management_menu("bic")
 
     rendered = output.getvalue()
-    assert "Open active BIC job" in rendered
+    assert "Open active BIC JOB" in rendered
     assert f"{bic.job_id} - {bic.display_name} [ACTIVE]" in rendered
     assert f"BIC JOB - {bic.job_id}" in rendered
     assert "Run BIC check" in rendered
@@ -584,8 +660,8 @@ def test_home_and_exit_footer_keys_unwind_nested_workflow_menu(make_workspace) -
 
     rendered = output.getvalue()
     assert "BIC JOBS" in rendered
-    assert rendered.count("MAIN MENU") == 2
-    assert rendered.count("B. Main Menu   C. Exit SAGE") >= 3
+    assert rendered.count("║ Main menu") == 2
+    assert rendered.count("B. Main menu   C. Exit SAGE") >= 3
     assert rendered.count("D. Language   E. Help   F. Status") >= 3
 
 
@@ -737,12 +813,12 @@ def test_saw_flow_selects_job_then_exposes_checks_and_back_is_hierarchical(make_
 
     rendered = output.getvalue()
     assert "SAW" in rendered
-    assert "Choose active Job [SAW]" in rendered
+    assert "Choose active JOB [SAW]" in rendered
     assert f"SAW JOB - {saw.job_id}" in rendered
     assert "Active Run                   NONE" in rendered
     assert "Run Reference Text Comparison (RTC)" in rendered
     assert "Run Targeted Check" in rendered
-    assert "Run Original-Language review" in rendered
+    assert "Run Original-Language Review" in rendered
     assert "SAW RUN OPTIONS" not in rendered
     assert rendered.count("A. Back") >= 2
 
@@ -795,7 +871,7 @@ def test_saw_job_menu_visually_separates_work_from_administration(make_workspace
     center._saw_job_menu(saw)
 
     rendered = output.getvalue()
-    assert "  4. Run Original-Language review\n\n  5. Reports and exports" in rendered
+    assert "  4. Run Original-Language Review\n\n  5. Reports and exports" in rendered
 
     store.create_run(saw, operation="rtc", scope="JHN 1")
     output.seek(0)
@@ -805,7 +881,7 @@ def test_saw_job_menu_visually_separates_work_from_administration(make_workspace
     center._saw_job_menu(saw)
 
     rendered = output.getvalue()
-    assert "  5. Run Original-Language review\n\n  6. Reports and exports" in rendered
+    assert "  5. Run Original-Language Review\n\n  6. Reports and exports" in rendered
     assert "WORK\n" not in rendered
     assert "ADMINISTRATION\n" not in rendered
 
@@ -976,8 +1052,8 @@ def test_main_menu_separates_scripture_project_management_from_workflows(make_wo
         from sage.menu import MenuExitRequested
         assert isinstance(exc, MenuExitRequested)
     rendered = output.getvalue()
-    assert "1. Manage SAGE Scripture Projects" in rendered
-    assert "Manage SAGE Scripture Projects\n\n  2. Bible Index & Context (BIC)" in rendered
+    assert "1. Manage SAGE Scripture PROJECTS" in rendered
+    assert "Manage SAGE Scripture PROJECTS\n\n  2. Bible Index & Context (BIC)" in rendered
     assert "3. Reference Text Comparison (RTC)" in rendered
     assert "4. Source Text Correspondence (STC)\n\n  5. SAGE Maintenance" in rendered
     assert "\n  3. SAW\n" not in rendered
@@ -1010,24 +1086,24 @@ def test_reports_and_recovery_are_owned_by_workflow_or_sage_maintenance(make_wor
     rendered = output.getvalue()
     assert rendered.count("Reports and history") >= 2
     assert rendered.count("Recovery and diagnostics") >= 2
-    assert rendered.count("Maintain job storage") == 2
-    assert "SAGE MAINTENANCE" in rendered
+    assert rendered.count("Maintain JOB storage") == 2
+    assert "SAGE Maintenance" in rendered
     assert "System information, recovery and diagnostics" in rendered
     assert "Change interface language" not in rendered
     assert "Open system information" not in rendered
-    assert "SYSTEM INFORMATION" in rendered
-    assert "SYSTEM ACTIONS" in rendered
+    assert "System information" in rendered
+    assert "System actions" in rendered
     assert "Reset SAGE to out-of-box state" in rendered
-    assert rendered.index("SYSTEM RECOVERY AND DIAGNOSTICS") < rendered.index("SYSTEM INFORMATION")
-    assert rendered.index("SYSTEM INFORMATION") < rendered.index("SYSTEM ACTIONS")
-    assert "SAGE DATA FOLDERS" in rendered
+    assert rendered.index("║ System recovery and diagnostics") < rendered.index("\nSystem information\n")
+    assert rendered.index("\nSystem information\n") < rendered.index("> System actions")
+    assert "SAGE data folders" in rendered
     assert "Project inventory" in rendered
     assert "Resource mappings" in rendered
     assert "Show SAGE data folders" not in rendered
-    assert rendered.index("SYSTEM INFORMATION") < rendered.index("SAGE DATA FOLDERS")
-    assert rendered.index("SAGE DATA FOLDERS") < rendered.index("SYSTEM ACTIONS")
-    assert rendered.index("SYSTEM ACTIONS") < rendered.index("1. Export global diagnostics")
-    assert "\n> SYSTEM ACTIONS\n" + "─" * 72 + "\n\n" in rendered
+    assert rendered.index("System information") < rendered.index("SAGE data folders")
+    assert rendered.index("SAGE data folders") < rendered.index("System actions")
+    assert rendered.index("System actions") < rendered.index("1. Export global diagnostics")
+    assert "\n> System actions\n" + "─" * 72 + "\n\n" in rendered
 
 
 def test_workflow_storage_rebuilds_job_configuration_without_project_attribute_crash(
@@ -1053,8 +1129,8 @@ def test_workflow_storage_rebuilds_job_configuration_without_project_attribute_c
     for job in jobs:
         assert f"Rebuilt: {job.job_id}" in rendered
         assert job.runtime_settings_path.is_file()
-    assert "BIC JOB STORAGE" in rendered
-    assert "SAW JOB STORAGE" in rendered
+    assert "BIC JOB storage" in rendered
+    assert "SAW JOB storage" in rendered
 
 
 def test_system_recovery_excludes_job_configuration_rebuild(make_workspace) -> None:
@@ -1084,7 +1160,7 @@ def test_project_registration_does_not_display_or_lookup_global_competency(
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput([]), output=output),
+        io=MenuIO(input_func=ScriptedInput([""]), output=output),
         skip_setup=True,
         dry_run_provider=True,
     )
@@ -1109,8 +1185,10 @@ def test_project_registration_does_not_display_or_lookup_global_competency(
         "full_name": "Persian test Project",
         "language_name": "Persian",
         "language_iso": "fa-IR",
-        "scope": "NT",
+        "scope": "PORTIONS",
         "book_count": 1,
+        "books": ["MAT"],
+        "sfm_books": ["MAT"],
         "versification": {},
         "code_metadata": {"parse_status": "VALID"},
         "status": "READY",
@@ -1122,6 +1200,52 @@ def test_project_registration_does_not_display_or_lookup_global_competency(
     assert "PROJECT ADDED TO SAGE" in rendered
     assert "LANGUAGE COMPETENCY" not in rendered
     assert "competency evidence" not in rendered.casefold()
+
+
+def test_project_registration_accepts_scope_presets_unions_and_ranges(
+    make_workspace,
+    monkeypatch,
+) -> None:
+    """The onboarding scope becomes the exact declared Project book set."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["NT, PSA"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+    monkeypatch.setattr(center, "_project_language_identification_menu", lambda row: True)
+    monkeypatch.setattr(center.io, "confirm", lambda *args, **kwargs: True)
+    captured: dict[str, object] = {}
+
+    def register(_settings_path, *, catalogue_row):
+        captured.update(catalogue_row)
+        return "idTEST"
+
+    monkeypatch.setattr("sage.menu.register_catalogued_scripture_project", register)
+    created = center._register_catalogue_row({
+        "project_code": "idTEST",
+        "detail_status": "VALIDATED",
+        "full_name": "Scope fixture",
+        "language_name": "Indonesian",
+        "language_iso": "id-ID",
+        "scope": "PORTIONS",
+        "book_count": 2,
+        "books": ["MAT", "PSA"],
+        "sfm_books": ["MAT", "PSA"],
+        "versification": {},
+        "code_metadata": {"parse_status": "VALID"},
+        "status": "READY",
+        "warnings": [],
+    })
+
+    assert created == "idTEST"
+    assert captured["books"] == ["PSA", *NT_27]
+    assert captured["scope"] == "PORTIONS"
+    assert captured["book_count"] == 28
+    assert "USFM IDs/ranges" in output.getvalue()
 
 
 def test_ai_menu_probes_on_open_and_exposes_skill_routing_actions(make_workspace) -> None:
@@ -1142,7 +1266,7 @@ def test_ai_menu_probes_on_open_and_exposes_skill_routing_actions(make_workspace
     assert "Loading LLM state..." in rendered
     assert "LLM status" not in rendered
     assert "Connection                  READY" in rendered
-    assert rendered.index("CONFIGURE HOSTED AI") < rendered.index("Connection                  READY")
+    assert rendered.index("Configure Hosted AI") < rendered.index("Connection                  READY")
     assert "AI settings" in rendered
     assert "1. Change provider" in rendered
     assert "2. Available provider models" in rendered
@@ -1247,8 +1371,8 @@ def test_sage_maintenance_submenus_put_relevant_state_before_actions(
 
     center.paths_and_workspace_menu()
     paths = output.getvalue()
-    assert paths.index("PATHS AND WORKSPACE LOCATIONS") < paths.index("Paratext Projects root")
-    assert paths.index("Resource mappings") < paths.index("PATH ACTIONS")
+    assert paths.index("Paths and workspace locations") < paths.index("Paratext Projects root")
+    assert paths.index("Resource mappings") < paths.index("Path actions")
     assert "Show SAGE data folders" not in paths
 
     monkeypatch.setattr(
@@ -1263,8 +1387,8 @@ def test_sage_maintenance_submenus_put_relevant_state_before_actions(
     center.io.input_func = ScriptedInput(["a"])
     center.system_diagnostics_menu()
     checks = output.getvalue()
-    assert checks.index("SYSTEM CHECKS") < checks.index("CURRENT SYSTEM STATE [LAST KNOWN]")
-    assert checks.index("Last AI check") < checks.index("CHECK ACTIONS")
+    assert checks.index("System checks") < checks.index("Current system state [last known]")
+    assert checks.index("Last AI check") < checks.index("Check actions")
     assert "Configured paths" not in checks
     assert "6. Complete system check" in checks
 

@@ -52,7 +52,7 @@ The classic UI presents primary actions first, then check toggles and text-polic
  10. Adjudicate WIP-Reference variance        PROHIBITED
 
 ┌──────────────────────────────────────────────────────────────────────┐
-│  A. Back   B. Main Menu   C. Exit SAGE                               │
+│  A. Back   B. Main menu   C. Exit SAGE                               │
 │  D. Language   E. Help   F. Status                                   │
 └──────────────────────────────────────────────────────────────────────┘
 ```

@@ -139,14 +139,14 @@ Active Run
   Scope                      <scope>
   Progress                   <status>
 
-  1. Continue active Run
+  1. Continue active RUN
   2. Reference Text Comparison (RTC)
   3. Source Text Correspondence (STC)
   4. Targeted Check
   5. Original-Language Review
 
 ┌──────────────────────────────────────────────────────────────────────┐
-│  A. Back   B. Main Menu   C. Exit SAGE                               │
+│  A. Back   B. Main menu   C. Exit SAGE                               │
 │  D. Language   E. Help   F. Status                                   │
 └──────────────────────────────────────────────────────────────────────┘
 ```
