@@ -19,7 +19,7 @@ from .llm_settings import load_llm_settings, local_ai_policy_status
 from .model_service import ModelService
 from .routing_override import load_global_override
 from .paratext_catalog import catalog_summary, load_paratext_catalog, scan_paratext_projects
-from .project_inventory import registered_project_records
+from .project_inventory import project_import_date, project_imported_at, registered_project_records
 from .progress import format_activity_label, format_progress_line, quantify_run
 from .resource_mounts import load_resource_mount_state, normalize_operator_path, set_project_root
 from .runtime_status import AIStatus, RuntimeStatus, utc_now
@@ -587,6 +587,22 @@ class OperatorUIService:
         progress["job_id"] = getattr(job, "job_id", None)
         progress["run_id"] = getattr(run, "run_id", None)
         progress["stage"] = getattr(run, "current_stage", None)
+        inventory = registered_project_records(self.root)
+        project_imports: list[dict[str, Any]] = []
+        for role, project_id in dict(getattr(job, "bindings", {}) or {}).items():
+            if str(role).startswith("original_language_"):
+                continue
+            record = inventory.get(project_id, {})
+            imported = project_imported_at(record)
+            project_imports.append(
+                {
+                    "role": str(role).replace("_", " ").upper(),
+                    "project_id": project_id,
+                    "imported_date": project_import_date(record) or "UNKNOWN",
+                    "imported_utc": imported.isoformat() if imported is not None else None,
+                }
+            )
+        progress["project_imports"] = project_imports
         progress["line"] = format_progress_line(str(getattr(job, "job_id", "IDLE")), progress)
         progress["activity"] = format_activity_label(progress)
         return progress

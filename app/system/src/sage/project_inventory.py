@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -142,6 +143,7 @@ def register_project(
     declared_books: tuple[str, ...] | None = None,
     paratext_metadata: Mapping[str, Any] | None = None,
     versification_metadata: Mapping[str, Any] | None = None,
+    imported_at: datetime | None = None,
 ) -> dict[str, Any]:
     """Add one role-neutral Scripture Project to SAGE and return its stored record."""
     project_id = project_id.strip()
@@ -164,6 +166,13 @@ def register_project(
     if Path(base).name != base or Path(base).suffix.casefold() != ".vrs":
         raise ValidationError("Base VRS must be one .vrs filename", code="BASE_VRS_FILE_INVALID")
     parts = parse_project_code(project_id, type_codes=type_codes)
+    imported = imported_at or datetime.now(timezone.utc)
+    if imported.tzinfo is None or imported.utcoffset() is None:
+        raise ValidationError(
+            "Project import timestamp must include a timezone",
+            code="PROJECT_IMPORT_TIME_INVALID",
+        )
+    imported_utc = imported.astimezone(timezone.utc).replace(microsecond=0)
     state = load_project_registry(root)
     if project_id in state["projects"]:
         raise ValidationError(f"Project is already in SAGE: {project_id}", code="PROJECT_ALREADY_IN_SAGE")
@@ -173,6 +182,8 @@ def register_project(
     record: dict[str, Any] = {
         "project_id": project_id,
         "display_name": (display_name or project_id).strip() or project_id,
+        "imported_utc": imported_utc.isoformat(),
+        "imported_date": imported_utc.strftime("%Y%m%d"),
         "enabled": False,
         "path": project_id,
         "language": language,
@@ -204,6 +215,46 @@ def registered_project_records(root: Path) -> dict[str, dict[str, Any]]:
     """Return a defensive copy of all SAGE Project Inventory records."""
     state = load_project_registry(root)
     return {str(key): dict(value) for key, value in state["projects"].items() if isinstance(value, dict)}
+
+
+def project_import_date(record: Mapping[str, Any]) -> str | None:
+    """Return one validated YYYYMMDD SAGE import date, or None for legacy state."""
+    imported = project_imported_at(record)
+    return imported.strftime("%Y%m%d") if imported is not None else None
+
+
+def project_imported_at(record: Mapping[str, Any]) -> datetime | None:
+    """Return the audited UTC Project import timestamp when its date is consistent."""
+    raw = str(record.get("imported_utc") or "").strip()
+    date = str(record.get("imported_date") or "").strip()
+    if not raw or not re.fullmatch(r"[0-9]{8}", date):
+        return None
+    try:
+        datetime.strptime(date, "%Y%m%d")
+        value = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if value.tzinfo is None or value.utcoffset() != timedelta(0):
+        return None
+    imported = value.astimezone(timezone.utc)
+    return imported if imported.strftime("%Y%m%d") == date else None
+
+
+def require_project_imported_at(root: Path, project_id: str) -> datetime:
+    """Return one registered Project's audited import time or fail closed."""
+    record = registered_project_records(root).get(project_id)
+    imported = project_imported_at(record or {})
+    if imported is None:
+        raise ValidationError(
+            f"Project {project_id} has no valid SAGE import date",
+            code="PROJECT_IMPORT_DATE_MISSING",
+            next_action=(
+                "Remove and re-add this Project to SAGE so its import date can be "
+                "recorded, then retry Job setup."
+            ),
+            details={"project_id": project_id},
+        )
+    return imported
 
 
 def merge_registered_projects(raw: dict[str, Any], root: Path) -> dict[str, Any]:
@@ -240,6 +291,12 @@ def update_project_record(root: Path, project_id: str, updates: Mapping[str, Any
     current = state["projects"].get(project_id)
     if not isinstance(current, dict):
         raise ValidationError(f"Project is not in SAGE: {project_id}", code="PROJECT_NOT_IN_SAGE")
+    for field in ("imported_utc", "imported_date"):
+        if field in updates and updates[field] != current.get(field):
+            raise ValidationError(
+                f"Project {field} is immutable after registration",
+                code="PROJECT_IMPORT_DATE_IMMUTABLE",
+            )
     record = dict(current)
     record.update(dict(updates))
     state["projects"][project_id] = record

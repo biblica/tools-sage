@@ -103,7 +103,7 @@ from .state import ecosystem_state_path, read_state, utc_now
 from .transactions import FileTransaction, incomplete_transactions
 from .jobs import JobStore, default_job_name
 from .workflow_identity import canonical_analysis_job_id
-from .project_inventory import registered_project_records
+from .project_inventory import registered_project_records, require_project_imported_at
 from .usj import compile_usfm_file, compile_usfm_text, parse_usj_units
 from .vrs import VerseRef, load_project_vrs, resolve_project_vrs_paths
 from .vocabulary import (
@@ -819,9 +819,12 @@ def _ensure_task_context(
             lexical_donor_id = donor_id
             run_operation = "bic"
         elif operation == "stc":
-            snapshot_time = datetime.now(timezone.utc)
+            snapshot_time = require_project_imported_at(
+                config.root,
+                output_project_id,
+            )
             project_id = canonical_analysis_job_id(
-                "stc", output_project_id, snapshot_time.astimezone().strftime("%Y%m%d")
+                "stc", output_project_id, snapshot_time.astimezone(timezone.utc).strftime("%Y%m%d")
             )
             output = config.project(output_project_id)
             job = store.create_job(

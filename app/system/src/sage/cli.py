@@ -426,6 +426,12 @@ def command_overview(args: argparse.Namespace) -> int:
     if job_progress:
         print(f"Run progress: {job_progress.get('line') or '—'}")
         print(f"Run activity: {job_progress.get('activity') or '—'}")
+        for row in list(job_progress.get("project_imports") or []):
+            print(
+                "Project import: "
+                f"{row.get('role') or 'PROJECT'} {row.get('project_id') or 'UNKNOWN'} / "
+                f"{row.get('imported_date') or 'UNKNOWN'}"
+            )
     if setup_status not in {"COMPLETE", "READY_WITH_ACTIONS"}:
         print(f"Next: {render_sage_command(['setup'])}")
     if bool(getattr(args, "live", False)) and provider_ready is False:

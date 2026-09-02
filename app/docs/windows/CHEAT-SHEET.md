@@ -8,13 +8,13 @@ Classic menu (current default):
 .\sage.cmd
 ```
 
-TUI development surface:
+Frozen TUI preview (`0.01beta2`):
 
 ```bat
 .\sage.cmd tui
 ```
 
-The TUI uses the supplemental `system\requirements-tui.txt` profile. If that profile cannot be installed, the classic menu and scriptable CLI remain available.
+The TUI uses the supplemental `system\requirements-tui.txt` profile. Its current navigation/status baseline remains available, but additional workflow functionality is deferred to `0.02beta`. If the supplemental profile cannot be installed, the classic menu and scriptable CLI remain available.
 
 Run SAGE from Command Prompt/PowerShell; do not start `codex` first. If the Codex CLI is missing, installation requires explicit Operator confirmation. SAGE resolves/validates `localdata`, creates or repairs `localdata\.system\runtime\venv`, then checks Codex and the persisted ChatGPT login.
 
@@ -45,7 +45,7 @@ shell -> SAGE -> Codex login / governed AI subprocess
 
 The same numeric functional grammar and `A`-`F` global controls are used by the development TUI. Reports and Job recovery are under BIC/RTC/STC; system recovery is under SAGE Maintenance. `F. Status` opens a non-destructive overlay and returns to the invoking view. The TUI targets a `100 x 30` terminal and shows System Status, Active AI, Project, and one sequential Active Job. Active Job progress is compact, for example `RTC-ukrNPUv1_20260901-001 [████░░░░░░]  43%`.
 
-The classic menu remains the default/fallback while TUI action parity is incomplete.
+The classic menu remains authoritative for `0.01beta2`. Further TUI action parity is paused until `0.02beta`.
 
 ## Paratext / PTLite
 

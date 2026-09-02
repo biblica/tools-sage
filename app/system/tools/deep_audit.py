@@ -938,6 +938,22 @@ def iter_audit_paths(root: Path, mode: str):
             yield directory_path / name
 
 
+def _is_future_prerelease_target(token: str, current: str, line: str) -> bool:
+    """Allow later prerelease labels only in an explicit planning/deferral line."""
+    pattern = re.compile(
+        r"(?i)^(\d+)\.(\d+)(?:-?(?:alpha|beta|dev)\d*(?:\.\d+)?|-?rc\d+(?:\.\d+)?)$"
+    )
+    candidate = pattern.fullmatch(token)
+    active = pattern.fullmatch(current)
+    if candidate is None or active is None:
+        return False
+    candidate_lineage = (int(candidate.group(1)), int(candidate.group(2)))
+    active_lineage = (int(active.group(1)), int(active.group(2)))
+    planning = line.casefold()
+    markers = ("defer", "resume", "resumption", "paused until", "planned for", "future")
+    return candidate_lineage > active_lineage and any(marker in planning for marker in markers)
+
+
 def audit(root: Path, mode: str) -> dict[str, Any]:
     """Run the complete source or populated-workspace audit and return structured evidence."""
     # Collect all independent findings before deciding PASS or FAIL so one defect cannot hide another.
@@ -1043,6 +1059,8 @@ def audit(root: Path, mode: str) -> dict[str, Any]:
                         and version in line
                     )
                     if historical_branch_lineage:
+                        continue
+                    if _is_future_prerelease_target(token, version, line):
                         continue
                     stale_tokens.add(token)
                 if stale_tokens:

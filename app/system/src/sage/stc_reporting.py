@@ -184,11 +184,19 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
             str(finding.get("summary") or ""),
             "",
         ])
-        if isinstance(secondary_row, Mapping) and str(secondary_row.get("issue") or "").strip():
+        if secondary:
+            secondary_summary = ""
+            if isinstance(secondary_row, Mapping):
+                secondary_summary = str(secondary_row.get("issue") or "").strip()
+            if not secondary_summary:
+                secondary_summary = catalogue_text(
+                    secondary,
+                    "message.secondary_rendering_unavailable",
+                )
             lines.extend([
                 f"**Summary — {secondary}**",
                 "",
-                str(secondary_row.get("issue") or "").strip(),
+                secondary_summary,
                 "",
             ])
         lines.extend([

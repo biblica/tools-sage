@@ -10,13 +10,19 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
-from datetime import datetime
 from threading import Event, Thread
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Iterable, Iterator, Sequence, TextIO
 
-from .ui_format import menu_item
+from .ui_format import (
+    DEFAULT_VIEWPORT_COLUMNS,
+    display_width,
+    information_rows,
+    menu_item,
+    wrap_display_text,
+    wrapped_menu_item,
+)
 from .atomic import atomic_write_json, atomic_write_text
 from .canon import NT_27, OT_39
 from .external_access import READ_ONLY_SCRIPTURE, READ_WRITE_SCRIPTURE, READ_WRITE_TARGET
@@ -113,7 +119,7 @@ from .jobs import (
 )
 from .workflow_identity import OPERATOR_WORKFLOWS, canonical_analysis_job_id
 from .project_inventory import (
-    load_project_registry, registered_project_records, unregister_project, update_project_record,
+    load_project_registry, project_import_date, registered_project_records, require_project_imported_at, unregister_project, update_project_record,
     summarize_scope, scope_testament,
 )
 from .paratext_catalog import (
@@ -145,6 +151,7 @@ class MenuIO:
     language_handler: Callable[[], None] | None = None
     help_handler: Callable[[str], None] | None = None
     status_handler: Callable[[], None] | None = None
+    viewport_columns: int | None = None
 
     def request_panel_reset(self) -> None:
         """Retain the menu-transition hook without clearing terminal history."""
@@ -152,19 +159,88 @@ class MenuIO:
     def _prepare_panel_output(self) -> None:
         """Retain the output hook; classic menus form one continuous scrollback."""
 
+    def display_columns(self) -> int:
+        """Return the usable panel width without exceeding the active terminal viewport."""
+        columns = self.viewport_columns
+        if columns is None:
+            try:
+                columns = os.get_terminal_size(self.output.fileno()).columns
+            except (AttributeError, OSError, ValueError):
+                columns = DEFAULT_VIEWPORT_COLUMNS
+        return max(4, min(DEFAULT_VIEWPORT_COLUMNS, int(columns)))
+
+    def _viewport_bounded(self) -> bool:
+        """Return whether output is an interactive viewport or has an explicit test width."""
+        return self.viewport_columns is not None or bool(
+            getattr(self.output, "isatty", lambda: False)()
+        )
+
+    def _emit(self, value: str = "") -> None:
+        """Write already-localized, already-fitted output without another formatting pass."""
+        print(value, file=self.output)
+
+    def _write_rendered(self, rendered: str) -> None:
+        """Fit localized plain text to the active viewport and write every resulting line."""
+        width = self.display_columns()
+        for physical_line in rendered.expandtabs(4).split("\n"):
+            if physical_line and len(set(physical_line)) == 1 and physical_line[0] in "-=─═":
+                self._emit(physical_line[0] * width)
+                continue
+            if not self._viewport_bounded():
+                self._emit(physical_line)
+                continue
+            for line in wrap_display_text(physical_line, width):
+                self._emit(line)
+
     def write(self, value: str = "") -> None:
         """Implement `write` in the deterministic terminal control flow."""
         self._prepare_panel_output()
         rendered = self.localizer.text(value) if self.localizer is not None else value
-        print(rendered, file=self.output)
+        self._write_rendered(rendered)
+
+    def write_menu_item(self, number: int | str, label: str) -> None:
+        """Write one localized numeric menu row with viewport-aware hanging indentation."""
+        rendered = self.localizer.text(label) if self.localizer is not None else label
+        if not self._viewport_bounded():
+            self._emit(menu_item(number, rendered))
+            return
+        for line in wrapped_menu_item(number, rendered, self.display_columns()):
+            self._emit(line)
+
+    def write_info(
+        self,
+        rows: Iterable[tuple[str, object]],
+        *,
+        label_width: int = 20,
+        indent: str = "",
+    ) -> None:
+        """Write one aligned information block whose values wrap under their value column."""
+        localized = (
+            (
+                self.localizer.text(label) if self.localizer is not None else label,
+                (
+                    value
+                    if value in (None, "") or self.localizer is None
+                    else self.localizer.text(str(value))
+                ),
+            )
+            for label, value in rows
+        )
+        for line in information_rows(
+            localized,
+            self.display_columns(),
+            label_width=label_width,
+            indent=indent,
+        ):
+            self._emit(line)
 
     def write_box(self, lines: Sequence[str], *, double: bool = False) -> None:
         """Render one separated box using a complete single- or double-line Unicode set."""
         rendered_lines = [
-            self.localizer.text(line) if self.localizer is not None else line
+            (self.localizer.text(line) if self.localizer is not None else line).expandtabs(4)
             for line in lines
         ]
-        inner_width = max(70, *(len(line) for line in rendered_lines))
+        inner_width = self.display_columns() - 2
         if double:
             top_left, horizontal, top_right = "╔", "═", "╗"
             vertical = "║"
@@ -173,12 +249,14 @@ class MenuIO:
             top_left, horizontal, top_right = "┌", "─", "┐"
             vertical = "│"
             bottom_left, bottom_right = "└", "┘"
-        self.write()
-        self.write(top_left + horizontal * inner_width + top_right)
+        self._emit()
+        self._emit(top_left + horizontal * inner_width + top_right)
         for line in rendered_lines:
-            self.write(vertical + line.ljust(inner_width) + vertical)
-        self.write(bottom_left + horizontal * inner_width + bottom_right)
-        self.write()
+            for wrapped in wrap_display_text(line, inner_width):
+                padding = " " * max(0, inner_width - display_width(wrapped))
+                self._emit(vertical + wrapped + padding + vertical)
+        self._emit(bottom_left + horizontal * inner_width + bottom_right)
+        self._emit()
 
     def write_menu_header(self, title: str, *, major: bool = True) -> None:
         """Render a boxed major title or an indented, underlined minor heading."""
@@ -186,10 +264,10 @@ class MenuIO:
         if major:
             self.write_box((f" {rendered}",), double=True)
             return
-        self.write()
-        self.write(f"> {rendered}")
-        self.write("─" * 72)
-        self.write()
+        self._emit()
+        self._write_rendered(f"> {rendered}")
+        self._emit("─" * self.display_columns())
+        self._emit()
 
     def write_menu_footer(self, *, include_back: bool, allow_language: bool = True) -> None:
         """Render the invariant A-F controls in one separated single-line box."""
@@ -306,7 +384,7 @@ class MenuIO:
             for key, label in visible:
                 if key in blank_keys:
                     self.write()
-                self.write(menu_item(key, tr(label)))
+                self.write_menu_item(key, label)
             self.write_menu_footer(
                 include_back="B" in internal_navigation,
                 allow_language=allow_language_hotkey,
@@ -670,6 +748,16 @@ class SageControlCenter:
             self.io.write(
                 f"Tasks: {progress.get('task_completed', 0)}/{progress.get('task_total', 0)}"
             )
+            project_imports = list(progress.get("project_imports") or [])
+            if project_imports:
+                self.io.write()
+                self.io.write("PROJECT IMPORTS")
+                for row in project_imports:
+                    self.io.write(
+                        f"{str(row.get('role') or 'PROJECT'):<18}"
+                        f"{str(row.get('project_id') or 'UNKNOWN'):<12}"
+                        f"Imported to SAGE {row.get('imported_date') or 'UNKNOWN'}"
+                    )
             if progress.get("result") == "BLOCKED" and progress.get("reason_code"):
                 self.io.write(f"Block reason: {progress.get('reason_code')}")
         self.io.write()
@@ -2429,13 +2517,13 @@ class SageControlCenter:
             choice = self.io.choose(
                 title,
                 (
-                    ("1", f"Open active {normalized.upper()} Job"),
-                    ("2", f"Choose active {normalized.upper()} Job"),
-                    ("3", f"Add {normalized.upper()} Job {binding_label}"),
-                    ("4", f"Manage {normalized.upper()} Jobs"),
+                    ("1", f"Open active {normalized.upper()} job"),
+                    ("2", f"Choose active {normalized.upper()} job"),
+                    ("3", f"Add {normalized.upper()} job {binding_label}"),
+                    ("4", f"Manage {normalized.upper()} jobs"),
                     ("5", "Reports and history"),
                     ("6", "Recovery and diagnostics"),
-                    ("7", "Maintain Job storage"),
+                    ("7", "Maintain job storage"),
                     ("B", "Back"),
                 ),
                 context=tuple(context),
@@ -2753,17 +2841,17 @@ class SageControlCenter:
         policy_cycle = ("NORMAL", "MATERIAL_ONLY", "STRUCTURE_ONLY")
         while True:
             self.io.write_menu_header(f"REFERENCE TEXT COMPARISON (RTC): {scope}")
-            self.io.write(menu_item(1, "Run Reference Text Comparison (RTC)"))
-            self.io.write(menu_item(2, "Restore defaults"))
+            self.io.write_menu_item(1, "Run Reference Text Comparison (RTC)")
+            self.io.write_menu_item(2, "Restore defaults")
             self.io.write_menu_header("Checks [Choose number to toggle ON/OFF]", major=False)
             for index, (key, label) in enumerate(check_rows, 3):
-                self.io.write(menu_item(index, f"{label:<40}{'ON' if policy['checks'][key] else 'OFF'}"))
+                self.io.write_menu_item(index, f"{label:<40}{'ON' if policy['checks'][key] else 'OFF'}")
             self.io.write_menu_header("Text policy [Choose number to cycle]", major=False)
             for index, (key, label) in enumerate(context_rows, 7):
-                self.io.write(menu_item(index, f"{label:<40}{policy['usfm_contexts'][key].replace('_', ' ')}"))
+                self.io.write_menu_item(index, f"{label:<40}{policy['usfm_contexts'][key].replace('_', ' ')}")
             self.io.write_menu_header("Original-language evidence [Choose number to toggle]", major=False)
             drift = str((policy.get("original_language") or {}).get("source_text_drift_adjudication") or "PROHIBITED")
-            self.io.write(menu_item(10, f"{'Adjudicate WIP-Reference variance':<40}{drift}"))
+            self.io.write_menu_item(10, f"{'Adjudicate WIP-Reference variance':<40}{drift}")
             self.io.write_menu_footer(include_back=True)
             value = self.io.read("Choose: ").strip().casefold()
             if value == "a":
@@ -3023,7 +3111,7 @@ class SageControlCenter:
             else:
                 measurement = dict(unit.get("measurement") or {})
                 tokens = measurement.get("estimated_tokens", "?")
-                self.io.write(menu_item(index, f"{unit.get('primary_scope', '?'):<20} ~{tokens} estimated routed-SFM tokens"))
+                self.io.write_menu_item(index, f"{unit.get('primary_scope', '?'):<20} ~{tokens} estimated routed-SFM tokens")
         if rtc_preview:
             self.io.write(
                 f"{'':>3}  {'Largest work unit':<20} "
@@ -3218,8 +3306,9 @@ class SageControlCenter:
                 "Only sections with non-versification resource defects are blocked. No SAW Run has been created yet."
             )
             for index, row in enumerate(blockers[:20], 1):
-                self.io.write(
-                    menu_item(index, f"{row['scope']} | {row['role']} {row['project_id']} | {row['code']} | {row['reference']}")
+                self.io.write_menu_item(
+                    index,
+                    f"{row['scope']} | {row['role']} {row['project_id']} | {row['code']} | {row['reference']}",
                 )
                 self.io.write(f"   {row['message']}")
             if len(blockers) > 20:
@@ -4920,7 +5009,12 @@ class SageControlCenter:
                 return
             if choice == "5" and project.tool in {"rtc", "stc"}:
                 try:
-                    project = self.store.refresh_job_snapshot(project)
+                    project = self.store.refresh_job_snapshot(
+                        project,
+                        imported_at=self._required_project_imported_at(
+                            project.bindings["wip"]
+                        ),
+                    )
                     self.io.write(
                         f"WIP snapshot refreshed: {dict(project.wip_snapshot or {}).get('snapshot_date')}"
                     )
@@ -5014,6 +5108,15 @@ class SageControlCenter:
             self.io.write(f"Job secondary reporting language saved: {requested}")
             self.io.pause()
 
+    def _sage_import_date(self, project_id: str) -> str:
+        """Return one operator-facing Project import date without inventing legacy state."""
+        record = registered_project_records(self.root).get(project_id, {})
+        return project_import_date(record) or "UNKNOWN"
+
+    def _required_project_imported_at(self, project_id: str):
+        """Return an audited Project import timestamp required by RTC/STC snapshots."""
+        return require_project_imported_at(self.root, project_id)
+
     def _replace_analysis_wip(self, project: Job) -> Job | None:
         """Create a new snapshot-dated Job for a replacement WIP Project."""
         replacement_wip = self.choose_or_add_resource(
@@ -5041,7 +5144,14 @@ class SageControlCenter:
             )
             self.io.pause()
             return project
-        imported_at = datetime.now().astimezone()
+        try:
+            imported_at = self._required_project_imported_at(
+                replacement_wip.project_id
+            )
+        except SageError as exc:
+            self.show_error(exc)
+            self.io.pause()
+            return project
         bindings = {"wip": replacement_wip.project_id}
         if project.tool == "rtc":
             bindings["reference"] = project.bindings["reference"]
@@ -5117,11 +5227,16 @@ class SageControlCenter:
             imported_at = None
         elif tool in {"rtc", "stc"}:
             output = self.choose_or_add_resource(
-                f"CHOOSE {tool.upper()} <WIP Project>",
+                f"Start new {tool.upper()} review <WIP Project>",
                 "WIP",
             )
             if not output: return
-            imported_at = datetime.now().astimezone()
+            try:
+                imported_at = self._required_project_imported_at(output.project_id)
+            except SageError as exc:
+                self.show_error(exc)
+                self.io.pause()
+                return None
             job_id = canonical_analysis_job_id(
                 tool,
                 output.project_id,
@@ -5159,27 +5274,42 @@ class SageControlCenter:
             self.io.write(f"REVIEW {tool.upper()} JOB")
             self.io.write("=" * 72)
             if tool == "bic":
-                self.io.write(f"{'SOURCE':<20}{source.project_id}")
-                self.io.write(f"{'DONOR':<20}{donor.project_id}")
-                self.io.write(f"{'TARGET':<20}{output.project_id}")
-                self.io.write(f"{'TARGET access':<20}GOVERNED WRITE")
+                review_rows: list[tuple[str, object]] = [
+                    ("SOURCE", source.project_id),
+                    ("Date imported", self._sage_import_date(source.project_id)),
+                    ("DONOR", donor.project_id),
+                    ("Date imported", self._sage_import_date(donor.project_id)),
+                    ("TARGET", output.project_id),
+                    ("Date imported", self._sage_import_date(output.project_id)),
+                    ("TARGET access", "GOVERNED WRITE"),
+                ]
             elif tool in {"saw", "rtc"}:
                 assert source is not None
-                self.io.write(f"{'WIP Project' if tool == 'rtc' else 'WIP':<20}{output.project_id}")
-                self.io.write(f"{'REFERENCE Project' if tool == 'rtc' else 'REFERENCE':<20}{source.project_id}")
+                review_rows = [
+                    ("WIP Project" if tool == "rtc" else "WIP", output.project_id),
+                    ("Date imported", self._sage_import_date(output.project_id)),
+                    ("REFERENCE Project" if tool == "rtc" else "REFERENCE", source.project_id),
+                    ("Date imported", self._sage_import_date(source.project_id)),
+                ]
                 if imported_at is not None:
-                    self.io.write(f"{'WIP snapshot date':<20}{imported_at.strftime('%Y%m%d')}")
+                    review_rows.append(("WIP snapshot date", imported_at.strftime("%Y%m%d")))
             else:
-                self.io.write(f"{'WIP Project':<20}{output.project_id}")
-                self.io.write(f"{'Authority':<20}GRK / HEB by Book canon")
-                self.io.write(f"{'REFERENCE Project':<20}NOT USED")
-                self.io.write(f"{'WIP snapshot date':<20}{imported_at.strftime('%Y%m%d')}")
-            self.io.write(f"{'Job name':<20}{job_id}")
-            self.io.write(
-                f"{'Report languages':<20}"
-                + load_ecosystem(self.store.settings_path).human_output.operator_language
-                + (f" + {secondary_report_language}" if secondary_report_language else "")
+                review_rows = [
+                    ("WIP Project", output.project_id),
+                    ("Date imported", self._sage_import_date(output.project_id)),
+                    ("Authority", "GRK / HEB by Book canon"),
+                    ("REFERENCE Project", "NOT USED"),
+                    ("WIP snapshot date", imported_at.strftime("%Y%m%d")),
+                ]
+            report_languages = load_ecosystem(
+                self.store.settings_path
+            ).human_output.operator_language
+            if secondary_report_language:
+                report_languages += f" + {secondary_report_language}"
+            review_rows.extend(
+                (("Job name", job_id), ("Report languages", report_languages))
             )
+            self.io.write_info(review_rows, label_width=20)
             if secondary_report_language:
                 self.io.write()
                 self.io.write("Primary Job-language rendering governs.")
@@ -5926,7 +6056,12 @@ class SageControlCenter:
             raise ValidationError(f"No SAGE Projects are available{qualifier}", code="PROJECT_INVENTORY_EMPTY",
                                   next_action="Add the Paratext Project under Scripture Projects > Add Projects to SAGE, then retry.")
         options = [
-            (str(i), f"{item.project_id}: {inventory[item.project_id].get('display_name', item.project_id)}, {item.language_code} [{inventory[item.project_id].get('scope_summary', 'UNKNOWN')}]")
+            (
+                str(i),
+                f"{item.project_id}: {inventory[item.project_id].get('display_name', item.project_id)}, "
+                f"{item.language_code} [{inventory[item.project_id].get('scope_summary', 'UNKNOWN')}] "
+                f"[Imported {project_import_date(inventory[item.project_id]) or 'UNKNOWN'}]",
+            )
             for i, item in enumerate(values, 1)
         ]
         choice = self.io.choose(title, options)
@@ -5947,12 +6082,18 @@ class SageControlCenter:
             resources = [p for p in config.projects.values() if p.project_id in inventory and self._resource_eligible_for_role(p, role)]
             resources.sort(key=lambda item: item.project_id.casefold())
             options = [
-                (str(i), f"{item.project_id:<9} {str(inventory[item.project_id].get('display_name', item.project_id))[:38]:<38} {item.language_code}")
+                (
+                    str(i),
+                    f"{item.project_id}  "
+                    f"{str(inventory[item.project_id].get('display_name', item.project_id))}  "
+                    f"{item.language_code}  "
+                    f"[Imported {project_import_date(inventory[item.project_id]) or 'UNKNOWN'}]",
+                )
                 for i, item in enumerate(resources, 1)
             ]
             add_key = str(len(options) + 1)
             options.extend(((add_key, "Add another Project to SAGE"), ("B", "Back")))
-            choice = self.io.choose(title, options)
+            choice = self.io.choose(title, options, blank_before=(add_key,))
             if choice == "B": return None
             if choice == add_key:
                 self.discover_register_projects_menu(return_on_register=True)
@@ -6531,14 +6672,14 @@ class SageControlCenter:
                 self.io.write(f"{'Status detail':<28}Choose 7 to check the current configuration")
 
             self.io.write_menu_header("AI settings", major=False)
-            self.io.write(menu_item(1, "Change provider"))
-            self.io.write(menu_item(2, "Available provider models"))
-            self.io.write(menu_item(3, "Skill routing recommendations"))
-            self.io.write(menu_item(4, "Advanced routing override"))
+            self.io.write_menu_item(1, "Change provider")
+            self.io.write_menu_item(2, "Available provider models")
+            self.io.write_menu_item(3, "Skill routing recommendations")
+            self.io.write_menu_item(4, "Advanced routing override")
             self.io.write_menu_header("Provider management", major=False)
-            self.io.write(menu_item(5, "Connect OpenAI and ChatGPT"))
-            self.io.write(menu_item(6, "Configure Local AI"))
-            self.io.write(menu_item(7, "Check LLM connection"))
+            self.io.write_menu_item(5, "Connect OpenAI and ChatGPT")
+            self.io.write_menu_item(6, "Configure Local AI")
+            self.io.write_menu_item(7, "Check LLM connection")
             self.io.write_menu_footer(include_back=True)
             value = self.io.read("Choose: ").strip().casefold()
             if value == "a":
@@ -6622,14 +6763,26 @@ class SageControlCenter:
             self.io.write()
             self.io.write("SAGE SCRIPTURE PROJECTS")
             self.io.write("-"*72)
-            self.io.write("#   Project     Name                               Lang      Scope       Status")
             for i, pid in enumerate(ids,1):
                 row=records[pid]
                 language=str(row.get("language",{}).get("code","?"))
                 name=str(row.get("display_name") or pid)
                 scope=str(row.get("scope_summary") or "UNKNOWN")
+                imported=project_import_date(row) or "UNKNOWN"
                 status=str(row.get("validation_status") or "UNKNOWN")
-                self.io.write(f"{i:<3} {pid:<11} {name[:34]:<34} {language:<9} {scope:<11} {status}")
+                self.io.write_menu_item(i, pid)
+                self.io.write_info(
+                    (
+                        ("Name", name),
+                        ("Language", language),
+                        ("Scope", scope),
+                        ("Date imported", imported),
+                        ("Status", status),
+                    ),
+                    label_width=16,
+                    indent=" " * 5,
+                )
+                self.io.write()
             if not ids: self.io.write("No Projects have been added to SAGE yet.")
             add_key = str(len(ids) + 1)
             validate_key = str(len(ids) + 2)
@@ -6637,6 +6790,7 @@ class SageControlCenter:
                 "SAGE Scripture Projects",
                 [(str(i),pid) for i,pid in enumerate(ids,1)]
                 + [(add_key,"Add another Project to SAGE"),(validate_key,"Validate all SAGE Projects"),("B", "Back")],
+                blank_before=(add_key,),
             )
             if selected=="B": return
             if selected==add_key:
@@ -6717,6 +6871,7 @@ class SageControlCenter:
             self.io.write(f"Language:         {meta.get('language_name') or 'UNKNOWN'} [{record.get('language',{}).get('code','?')}]")
             self.io.write(f"Scope:            {record.get('scope_summary','UNKNOWN')}")
             self.io.write(f"Versification:    {self._project_vrs_summary(vrs)}")
+            self.io.write(f"Imported to SAGE: {project_import_date(record) or 'UNKNOWN'}")
             self.io.write(f"Status:           {record.get('validation_status','UNKNOWN')}")
             action = self.io.choose(
                 "PROJECT ACTIONS",
@@ -6758,6 +6913,7 @@ class SageControlCenter:
         self.io.write(f"Full name:         {record.get('display_name', project_id)}")
         self.io.write(f"Language:          {meta.get('language_name') or 'UNKNOWN'}")
         self.io.write(f"ISO language:      {record.get('language', {}).get('code', '?')}")
+        self.io.write(f"Imported to SAGE:  {project_import_date(record) or 'UNKNOWN'}")
         self.io.write(f"Type:              {code.get('type_name') or code.get('type_code') or 'UNPARSED'}")
         self.io.write(f"Iteration:         {code.get('iteration') if code.get('iteration') is not None else 'UNPARSED'}")
         self.io.write(f"Code parse:        {code.get('parse_status', 'UNPARSED')}")
@@ -7194,6 +7350,8 @@ class SageControlCenter:
             self.io.write("PROJECT ADDED TO SAGE")
             self.io.write("-"*72)
             self.io.write(f"{created} - {row.get('full_name') or created}")
+            record = registered_project_records(self.root).get(created, {})
+            self.io.write(f"Imported to SAGE: {project_import_date(record) or 'UNKNOWN'}")
             return created
         except SageError as exc:
             self.show_error(exc)

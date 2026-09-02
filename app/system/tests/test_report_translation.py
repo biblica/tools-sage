@@ -19,6 +19,7 @@ from sage.executors.base import (
 from sage.llm_settings import LOCAL_AI_EXTERNAL_RENDERING_REQUIRED, set_local_admin_enabled
 from sage.report_translation import ensure_secondary_saw_report_rendering
 from sage.skill_routing import capability_fingerprint, resolve_skill_route
+from sage.stc_reporting import _stc_report_markdown
 
 
 def _workspace_with_uk_profile(package_root: Path, make_workspace) -> Path:
@@ -319,6 +320,180 @@ def test_secondary_rendering_sends_exactly_one_report_item_per_provider_request(
     assert receipt["provider_request_count"] == 3
     assert set(receipt["findings"]) == {"SAW-RUT-001-0001", "SAW-RUT-001-0002"}
     assert set(receipt["events"]) == {"EVT-001"}
+
+
+def test_stc_summaries_use_the_provisional_originating_route_one_at_a_time(
+    tmp_path: Path,
+    monkeypatch,
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """Catch STC summaries being rejected before their one-item translation calls."""
+    summaries = {
+        "STC-JON-001": "The WIP contains an added verse at JON 1:17.",
+        "STC-JON-002": "The WIP wording requires a correspondence review.",
+    }
+    ukrainian = {
+        "STC-JON-001": "Робочий переклад містить доданий вірш у Йони 1:17.",
+        "STC-JON-002": "Формулювання робочого перекладу потребує перевірки відповідності.",
+    }
+    document = _document()
+    document.update(
+        {
+            "operation": "stc",
+            "authority_family": "HEB",
+            "resource_bindings": {
+                "WIP": "ukrNPUv1",
+                "ORIGINAL_LANGUAGE_HEBREW": "HEB",
+            },
+            "primary_coverage": ["JON 1:17"],
+            "source_comparison_status": "COMPLETE",
+            "findings": [
+                {
+                    "finding_id": finding_id,
+                    "target_reference": "JON 1:17",
+                    "category": "CORRESPONDENCE",
+                    "summary": summary,
+                    "issue": summary,
+                    "required_action": "",
+                    "wip_evidence": "WIP evidence",
+                    "ol_evidence": "HEB evidence",
+                    "evidence_ids": ["WIP", "ORIGINAL_LANGUAGE_HEBREW"],
+                }
+                for finding_id, summary in summaries.items()
+            ],
+        }
+    )
+    document["language_authority"]["secondary_language"] = "uk-UA"
+    calls = []
+
+    class FakeExecutor:
+        """Render each isolated STC Summary through its originating route."""
+
+        def status(self):
+            """Return the same live capability used by the provisional STC route."""
+            return _translation_status()
+
+        def execute(self, request):
+            """Return Ukrainian text for the one schema-enumerated Summary."""
+            calls.append(request)
+            finding_ids = request.schema["properties"]["findings"]["items"]["properties"]["finding_id"]["enum"]
+            assert len(finding_ids) == 1
+            finding_id = finding_ids[0]
+            return ProviderResponse(
+                provider="codex",
+                model="gpt-test",
+                reasoning_effort="medium",
+                content=json.dumps(
+                    {
+                        "schema_version": "1.0",
+                        "secondary_language": "uk-UA",
+                        "findings": [
+                            {
+                                "finding_id": finding_id,
+                                "issue": ukrainian[finding_id],
+                                "required_action": "",
+                            }
+                        ],
+                        "events": [],
+                    },
+                    ensure_ascii=False,
+                ),
+            )
+
+    monkeypatch.setattr(
+        "sage.report_translation.make_executor",
+        lambda provider, settings: FakeExecutor(),
+    )
+    sage_root = _workspace_with_uk_profile(package_root, make_workspace)
+    route = resolve_skill_route(sage_root, "saw-stc", [_translation_status()])
+    assert route.qualification == "PROVISIONAL_UNQUALIFIED"
+    document["execution_route"] = route.to_dict()
+
+    rendered = ensure_secondary_saw_report_rendering(
+        sage_root,
+        tmp_path / "STC-JON_ACTION-REPORT.md",
+        document,
+    )
+
+    assert rendered["report_renderings"]["status"] == "AVAILABLE"
+    assert len(calls) == 2
+    assert [
+        sum(summary in request.prompt for request in calls)
+        for summary in (
+            "The ukrNPUv1 contains an added verse at JON 1:17.",
+            "The ukrNPUv1 wording requires a correspondence review.",
+        )
+    ] == [1, 1]
+    report = _stc_report_markdown(rendered)
+    assert "**Summary — uk-UA**\n\n" + ukrainian["STC-JON-001"] in report
+    assert "**Summary — uk-UA**\n\n" + ukrainian["STC-JON-002"] in report
+    assert "Secondary report rendering is unavailable" not in report
+
+
+def test_tampered_provisional_route_projection_degrades_before_execution(
+    tmp_path: Path,
+    monkeypatch,
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """Catch projected route fields disagreeing with their retained route ID."""
+    calls = []
+
+    class FakeExecutor:
+        """Expose the current provisional route and record improper execution."""
+
+        def status(self):
+            """Return the unchanged live capability behind the original route ID."""
+            return _translation_status()
+
+        def execute(self, request):
+            """Return a valid payload so only route-integrity checks decide the result."""
+            calls.append(request)
+            return ProviderResponse(
+                provider="codex",
+                model="gpt-test",
+                reasoning_effort="medium",
+                content=json.dumps(
+                    {
+                        "schema_version": "1.0",
+                        "secondary_language": "uk",
+                        "findings": [
+                            {
+                                "finding_id": "SAW-RUT-001-0001",
+                                "issue": "Український виклад питання.",
+                                "required_action": "Український виклад дії.",
+                            }
+                        ],
+                        "events": [],
+                    },
+                    ensure_ascii=False,
+                ),
+            )
+
+    monkeypatch.setattr(
+        "sage.report_translation.make_executor",
+        lambda provider, settings: FakeExecutor(),
+    )
+    sage_root = _workspace_with_uk_profile(package_root, make_workspace)
+    route = resolve_skill_route(sage_root, "saw-stc", [_translation_status()])
+    assert route.qualification == "PROVISIONAL_UNQUALIFIED"
+    document = _document()
+    document["execution_route"] = route.to_dict()
+    document["execution_route"]["capability_fingerprint"] = "f" * 64
+
+    rendered = ensure_secondary_saw_report_rendering(
+        sage_root,
+        tmp_path / "TAMPERED_ACTION-REPORT.md",
+        document,
+    )
+
+    assert rendered["report_renderings"]["status"] == "DEGRADED"
+    assert (
+        rendered["report_renderings"]["reason_code"]
+        == "SECONDARY_REPORT_ROUTE_UNAVAILABLE"
+    )
+    assert calls == []
 
 
 def test_secondary_rendering_without_originating_route_degrades_before_provider(

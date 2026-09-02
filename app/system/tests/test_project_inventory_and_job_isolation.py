@@ -623,7 +623,7 @@ def test_existing_ecosystem_can_register_packaged_ukrainian_wip_and_retry_job(ma
         defaults={},
     )
     assert created.profiles["target_grammar"] == "uk-UA/wip"
-    assert "Register uk-UA/wip and retry Job creation" in output.getvalue()
+    assert "Register uk-UA/wip and retry job creation" in output.getvalue()
     assert "Updated local settings: language_profiles.uk-UA.variants.wip" in output.getvalue()
 
 

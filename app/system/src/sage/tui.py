@@ -115,7 +115,7 @@ class LanguageModal(ModalScreen[str | None]):
             )
         yield Container(
             Static("Interface language", id="modal-title"),
-            Vertical(*buttons, id="language-buttons"),
+            VerticalScroll(*buttons, id="language-buttons"),
             Button("Cancel", id="language-cancel"),
             id="modal-dialog",
         )
@@ -188,7 +188,7 @@ class SageTUIApp(App[None]):
     # Keep workflow-changing operations outside this shell until their service boundaries are shared.
 
     TITLE = "SAGE"
-    SUB_TITLE = "0.01beta2 Beta TUI — EXPERIMENTAL / UNSTABLE"
+    SUB_TITLE = "0.01beta2 Frozen TUI Preview — EXPERIMENTAL / UNSTABLE"
     ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [
@@ -215,8 +215,6 @@ class SageTUIApp(App[None]):
     CSS = """
     Screen {
         layout: vertical;
-        min-width: 80;
-        min-height: 24;
     }
     Header {
         height: 1;
@@ -273,8 +271,7 @@ class SageTUIApp(App[None]):
     }
     #view-actions Button {
         width: 1fr;
-        min-width: 18;
-        margin-right: 1;
+        min-width: 0;
     }
     #nav-row, #footer-row {
         height: 3;
@@ -283,8 +280,7 @@ class SageTUIApp(App[None]):
     }
     #nav-row Button, #footer-row Button {
         width: 1fr;
-        min-width: 12;
-        margin-right: 1;
+        min-width: 0;
     }
     InfoModal, LanguageModal, ProjectRootModal, StatusModal {
         align: center middle;
@@ -299,8 +295,8 @@ class SageTUIApp(App[None]):
         padding: 1 2;
     }
     StatusModal #modal-dialog {
-        width: 90;
-        height: 24;
+        width: 90%;
+        height: 90%;
         max-width: 90;
         max-height: 24;
     }
@@ -320,6 +316,9 @@ class SageTUIApp(App[None]):
         width: 100%;
         margin-bottom: 1;
     }
+    #language-buttons {
+        height: 1fr;
+    }
     #project-root-input {
         width: 100%;
         margin: 1 0;
@@ -329,7 +328,8 @@ class SageTUIApp(App[None]):
     }
     #project-root-actions Button {
         width: 1fr;
-        margin-right: 1;
+        min-width: 0;
+        margin: 0;
     }
     """
 
@@ -447,12 +447,12 @@ class SageTUIApp(App[None]):
         elif self.current_view in {"projects", "configure"}:
             note = (
                 "Native remediation is enabled for Projects-root setup, Quick Scan, and AI retest. "
-                "Other workflow-changing actions remain in the classic menu/CLI while they migrate."
+                "Other workflow-changing actions remain in the classic menu/CLI; TUI work resumes in 0.02beta."
             )
         elif self.current_view == "main":
             note = (
-                "EXPERIMENTAL / UNSTABLE TUI: navigation/status/readiness are native here. "
-                "Workflow-changing actions remain governed by existing services while migration continues."
+                "EXPERIMENTAL / UNSTABLE frozen preview: navigation/status/readiness are native here. "
+                "Workflow-changing actions remain in the classic menu/CLI until TUI work resumes in 0.02beta."
             )
         else:
             note = (

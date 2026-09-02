@@ -277,9 +277,9 @@ def test_guided_setup_has_system_autosave_and_exit_paths(make_workspace, monkeyp
 
     assert center.guided_setup(pause_at_end=False) is False
     rendered = output.getvalue()
-    assert "BIC Jobs" in rendered
-    assert "RTC Jobs" in rendered
-    assert "STC Jobs" in rendered
+    assert "BIC jobs" in rendered
+    assert "RTC jobs" in rendered
+    assert "STC jobs" in rendered
     assert "SAGE Maintenance" in rendered
     assert "Setup options" not in rendered
     assert "B. Main Menu   C. Exit SAGE" in rendered

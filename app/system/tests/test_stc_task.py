@@ -7,21 +7,48 @@ import shutil
 import os
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
+
 from sage.act_tasks import create_act_task, submit_act_task
+from sage.errors import ValidationError
 from sage.external_access import READ_ONLY_SCRIPTURE
+from sage.jobs import JobStore
+from sage.project_inventory import (
+    register_project,
+    registered_project_records,
+    update_project_record,
+)
 from sage.registry import load_ecosystem
 from sage.resource_mounts import set_resource_mount
+from sage.stc_reporting import _stc_report_markdown
+from sage.storage import storage_layout
 
 
-def _initialize(package_root: Path, root: Path) -> None:
-    """Initialize one isolated SAGE fixture through the real CLI."""
+def _initialize(package_root: Path, root: Path, *, register_wip: bool = True) -> None:
+    """Initialize one isolated SAGE fixture and optionally import its WIP Project."""
     env = dict(os.environ)
     env["PYTHONPATH"] = str(package_root / "system/src")
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     result = subprocess.run([sys.executable, "-m", "sage.cli", "--settings", str(root / "ecosystem.yml"), "workspace", "initialize"], text=True, capture_output=True, env=env, check=False, timeout=30)
     assert result.returncode == 0, result.stderr + result.stdout
+    if not register_wip:
+        return
+    registered = register_project(
+        root,
+        project_id="usWIP",
+        project_path=storage_layout(root).projects_root / "usWIP",
+        language_code="en",
+        profile_variant="bol-target",
+        base_vrs_file="eng.vrs",
+        content_state="UNDER_REVIEW",
+        imported_at=datetime(2026, 8, 29, 14, 35, tzinfo=timezone.utc),
+    )
+    scope = dict(registered["scope"])
+    scope["roles"] = ["WIP"]
+    update_project_record(root, "usWIP", {"enabled": True, "scope": scope})
 
 
 def _install_fixture_ol_profile(root: Path, package_root: Path, family: str) -> None:
@@ -29,6 +56,94 @@ def _install_fixture_ol_profile(root: Path, package_root: Path, family: str) -> 
     source = package_root / "system/resources/scripture/original-language" / family.lower() / "authority-profile.yml"
     target = root.parent / "localdata/work/projects" / family / "authority-profile.yml"
     shutil.copy2(source, target)
+
+
+def test_stc_shortcut_uses_registered_project_import_date(
+    package_root,
+    make_workspace,
+) -> None:
+    """Catch the scriptable STC shortcut inventing a Job date from task creation time."""
+    root = make_workspace(qualification_status="VALIDATED")
+    _install_fixture_ol_profile(root, package_root, "GRK")
+    _initialize(package_root, root)
+
+    task = create_act_task(
+        load_ecosystem(root / "ecosystem.yml"),
+        workflow="saw",
+        operation="stc",
+        output_project_id="usWIP",
+        contemporary_source_id=None,
+        scope_value="MAT 1:1",
+    )
+
+    assert task["job_id"] == "STC-usWIP_20260829"
+    job = JobStore(root, root / "ecosystem.yml").load_job(task["job_id"], tool="stc")
+    assert job.wip_snapshot is not None
+    assert job.wip_snapshot["snapshot_date"] == "20260829"
+    assert registered_project_records(root)["usWIP"]["imported_date"] == "20260829"
+
+
+def test_stc_shortcut_blocks_project_without_sage_import_date(
+    package_root,
+    make_workspace,
+) -> None:
+    """Catch direct STC creation bypassing the Project-import provenance contract."""
+    root = make_workspace(qualification_status="VALIDATED")
+    _install_fixture_ol_profile(root, package_root, "GRK")
+    _initialize(package_root, root, register_wip=False)
+
+    with pytest.raises(ValidationError) as exc_info:
+        create_act_task(
+            load_ecosystem(root / "ecosystem.yml"),
+            workflow="saw",
+            operation="stc",
+            output_project_id="usWIP",
+            contemporary_source_id=None,
+            scope_value="MAT 1:1",
+        )
+
+    assert exc_info.value.code == "PROJECT_IMPORT_DATE_MISSING"
+
+
+def test_stc_degraded_secondary_rendering_keeps_secondary_summary_section() -> None:
+    """Catch a selected secondary language appearing in the header but not findings."""
+    document = {
+        "report_language": "en",
+        "language_authority": {
+            "primary_language": "en",
+            "secondary_language": "uk-UA",
+        },
+        "report_renderings": {
+            "status": "DEGRADED",
+            "findings": {},
+        },
+        "resource_bindings": {
+            "WIP": "ukrNPUv1",
+            "ORIGINAL_LANGUAGE_GREEK": "GRK",
+        },
+        "authority_family": "GRK",
+        "primary_coverage": ["MAT 1:1"],
+        "source_comparison_status": "COMPLETE",
+        "scope": "MAT 1",
+        "findings": [
+            {
+                "finding_id": "STC-MAT-001-0001",
+                "target_reference": "MAT 1:1",
+                "category": "CORRESPONDENCE",
+                "summary": "The WIP wording requires review.",
+                "wip_evidence": "WIP evidence",
+                "ol_evidence": "OL evidence",
+            }
+        ],
+    }
+
+    report = _stc_report_markdown(document)
+
+    assert "- Report languages: `en`; `uk-UA`" in report
+    assert "**Summary — en**" in report
+    assert "**Summary — uk-UA**" in report
+    assert report.index("**Summary — en**") < report.index("**Summary — uk-UA**")
+    assert report.index("**Summary — uk-UA**") < report.index("**ukrNPUv1 evidence**")
 
 
 def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, make_workspace) -> None:

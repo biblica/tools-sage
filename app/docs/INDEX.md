@@ -7,7 +7,7 @@ in the `docs/` root. Technical and governance material is grouped under
 ## Operator guides
 
 - [SAGE Help](OPERATOR-GUIDE.md) — compact main-menu map, first-launch contract, reports, and fallback entry points.
-- [TUI](TUI.md) — experimental/unstable v0.01beta2 Textual shell, migration boundary, keyboard/mouse controls, and parity plan.
+- [TUI](TUI.md) — frozen experimental/unstable v0.01beta2 preview and the workflow-functionality backlog deferred to v0.02beta.
 - [Scripture Project Operator Cheat Sheet](PROJECT-OPERATOR-CHEAT-SHEET.md) — discovery, Add-to-SAGE, Project maintenance, Job-owned reports, reporting languages, and original-language resources.
 - [BIC Cheat Sheet](BIC-CHEAT-SHEET.md) — BIC Job, Run, task, state, and recovery quick reference.
 - [SAW Cheat Sheet](SAW-CHEAT-SHEET.md) — SAW RTC, STC, Targeted Check, Original-Language Review, finalization, and read-only boundaries.

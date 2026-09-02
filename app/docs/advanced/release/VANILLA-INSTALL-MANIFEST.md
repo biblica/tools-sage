@@ -720,6 +720,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_primary_workflow_menus.py`
 - `system/tests/test_project_codes.py`
 - `system/tests/test_project_grammar_convergence.py`
+- `system/tests/test_project_import_dates.py`
 - `system/tests/test_project_inventory_and_job_isolation.py`
 - `system/tests/test_provider_and_boundary_policy.py`
 - `system/tests/test_rc_block_and_job_cleanup.py`
