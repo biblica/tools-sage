@@ -32,7 +32,7 @@ For a clean machine:
 3. Open **Add Projects to SAGE**.
 4. Optionally filter by **FB**, **NT**, **Portions**, or **Language**.
 5. Review the detected Project metadata and add the Project to SAGE.
-6. Create BIC and SAW Jobs separately and assign Job roles there.
+6. Create BIC, RTC, and STC Jobs separately and assign Job roles there.
 
 Project addition is a System task. SOURCE/DONOR/TARGET/WIP/REFERENCE assignment is a tool setup task.
 
@@ -41,6 +41,8 @@ Project addition is a System task. SOURCE/DONOR/TARGET/WIP/REFERENCE assignment 
 SAGE reads `settings.xml`, `canons.xml`, top-level `*.SFM`, `custom.vrs`, and the Project folder name. It does not modify those files during discovery or addition to SAGE.
 
 A Project is registered only after SAGE has confirmed a regional Language Profile namespace. Grammar Profiles remain separate and may be configured later when a Job role requires one. Settings.xml, all relevant LDML identities, Project-name prefix evidence, ISO relationships, and country evidence support the estimate; ambiguous identity or country choices require Operator confirmation.
+
+Successful addition records the immutable full UTC import timestamp and displays its stable `YYYYMMDD` **Imported to SAGE** date. Project validation, rescanning, and remapping preserve it. Removing and later re-adding a Project creates a new import date.
 
 ## Base VRS
 
@@ -56,14 +58,20 @@ DONOR      Decontextualized vocabulary evidence only
 TARGET     Translation BIC may modify through governed writes
 ```
 
-SAW:
+RTC:
 
 ```text
 WIP        Translation being reviewed
 REFERENCE  Comparison/reference translation
 ```
 
-Role selectors show only SAGE Projects. **Add another Project to SAGE** temporarily opens Project administration and then returns to the selector.
+STC:
+
+```text
+WIP        Translation being reviewed against GRK/HEB authority
+```
+
+Role selectors show only SAGE Projects and report each Project's SAGE import date. The final Job review repeats every selected Project and date. RTC/STC Job IDs and WIP snapshot dates use the WIP Project import date; they do not use Job setup or Run execution time. **Add another Project to SAGE** temporarily opens Project administration and then returns to the selector.
 
 ## Scope and preview
 

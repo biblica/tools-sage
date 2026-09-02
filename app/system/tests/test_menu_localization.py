@@ -14,6 +14,7 @@ from sage.errors import ConfigurationError
 from sage.interface_localization import SUPPORTED_INTERFACE_LANGUAGES, InterfaceLocalizer
 from sage.menu import MenuExitRequested, MenuIO, SageControlCenter, ScriptedInput
 from sage.operator_overrides import load_effective_settings
+from sage.ui_format import display_width
 
 
 DYNAMIC_MENU_TEXT = {
@@ -294,6 +295,107 @@ def test_major_minor_and_footer_use_distinct_line_styles() -> None:
     assert "\n> Minor\n" + "─" * 72 + "\n\n" in rendered
     assert "│  A. Back   B. Main Menu   C. Exit SAGE" in rendered
     assert rendered.endswith("└" + "─" * 70 + "┘\n\n")
+
+
+def test_menu_output_wraps_within_the_configured_viewport() -> None:
+    """Catch long menu content or boxes expanding beyond the visible terminal."""
+    output = io.StringIO()
+    menu = MenuIO(
+        input_func=ScriptedInput(["a"]),
+        output=output,
+        viewport_columns=48,
+    )
+
+    assert menu.choose(
+        "START NEW STC REVIEW <WIP PROJECT>",
+        (
+            (
+                "1",
+                "ukrNPUv1 New Ukrainian Translation ver. uk-UA "
+                "[Imported 20260902]",
+            ),
+            ("2", "漢字 Project label remains bounded by terminal-cell width"),
+            ("B", "Back"),
+        ),
+        context=(
+            "This explanatory information block is intentionally wider than the viewport.",
+        ),
+    ) == "B"
+
+    rendered = output.getvalue()
+    assert max(display_width(line) for line in rendered.splitlines()) <= 48
+    assert "\n     uk-UA [Imported 20260902]" in rendered
+    assert "╔" + "═" * 46 + "╗" in rendered
+
+
+def test_information_rows_share_one_value_column_and_wrap_under_values() -> None:
+    """Catch ad-hoc padding that misaligns labels or wrapped information values."""
+    output = io.StringIO()
+    menu = MenuIO(output=output, viewport_columns=42)
+
+    menu.write_info(
+        (
+            ("WIP Project", "ukrNPUv1 New Ukrainian Translation"),
+            ("Date imported", "20260902"),
+        ),
+        label_width=20,
+    )
+
+    assert output.getvalue().splitlines() == [
+        "WIP Project         ukrNPUv1 New",
+        "                    Ukrainian Translation",
+        "Date imported       20260902",
+    ]
+
+
+def test_information_rows_render_missing_values_consistently(make_workspace) -> None:
+    """Catch localization coercing a missing information value into the word None."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    output = io.StringIO()
+    menu = MenuIO(
+        output=output,
+        localizer=InterfaceLocalizer.load(root, root / "ecosystem.yml"),
+        viewport_columns=32,
+    )
+
+    menu.write_info((("Secondary language", None),), label_width=20)
+
+    assert output.getvalue() == "Secondary language  —\n"
+
+
+def test_numeric_menu_rows_normalize_job_task_and_review_as_sentence_case() -> None:
+    """Catch title-case common nouns returning inside numeric menu labels."""
+    output = io.StringIO()
+    menu = MenuIO(input_func=ScriptedInput(["a"]), output=output)
+
+    assert menu.choose(
+        "MENU COPY",
+        (
+            ("1", "Add STC Job [WIP]"),
+            ("2", "Runs and Task history"),
+            ("3", "Run Original-Language Review"),
+            ("4", "Review bound Projects"),
+            ("B", "Back"),
+        ),
+    ) == "B"
+
+    rendered = output.getvalue()
+    assert "  1. Add STC job [WIP]" in rendered
+    assert "  2. Runs and task history" in rendered
+    assert "  3. Run Original-Language review" in rendered
+    assert "  4. Review bound Projects" in rendered
+
+
+def test_plain_text_output_expands_tabs_before_viewport_wrapping() -> None:
+    """Catch terminal-dependent tab stops bypassing deterministic block alignment."""
+    output = io.StringIO()
+    menu = MenuIO(output=output, viewport_columns=24)
+
+    menu.write("Header\tvalue that wraps")
+
+    rendered = output.getvalue()
+    assert "\t" not in rendered
+    assert max(len(line) for line in rendered.splitlines()) <= 24
 
 
 def test_en_us_and_en_gb_are_distinct_editable_interface_rows(make_workspace) -> None:

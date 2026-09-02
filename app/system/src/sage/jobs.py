@@ -22,7 +22,11 @@ from .job_snapshots import capture_wip_snapshot, seal_run_snapshot
 from .locking import WorkspaceLock
 from .registry import EcosystemConfig, load_ecosystem
 from .resource_mounts import apply_resource_mounts
-from .project_inventory import merge_registered_projects, registered_project_records
+from .project_inventory import (
+    merge_registered_projects,
+    registered_project_records,
+    require_project_imported_at,
+)
 from .original_language_resources import apply_original_language_resources, active_ol_provenance
 from .operator_overrides import load_effective_settings
 from .external_access import READ_ONLY_SCRIPTURE, READ_WRITE_SCRIPTURE, READ_WRITE_TARGET
@@ -274,6 +278,44 @@ class JobStore:
         self.last_run_path = self.state_root / "last-run.json"
         self.setup_state_path = self.state_root / "setup-state.json"
         self.operator_cues_path = self.state_root / "operator-cues.jsonl"
+
+    def _analysis_import_time(
+        self,
+        project_id: str,
+        requested: datetime | None,
+    ) -> datetime:
+        """Resolve RTC/STC provenance from immutable Project inventory metadata."""
+        records = registered_project_records(self.sage_root)
+        stored = (
+            require_project_imported_at(self.sage_root, project_id)
+            if project_id in records
+            else None
+        )
+        if requested is not None:
+            if requested.tzinfo is None or requested.utcoffset() is None:
+                raise ValidationError(
+                    "WIP import timestamp must include a timezone.",
+                    code="INVALID_WIP_IMPORT_TIME",
+                )
+            requested_utc = requested.astimezone(timezone.utc).replace(microsecond=0)
+            if stored is not None and requested_utc != stored:
+                raise ValidationError(
+                    f"Requested WIP import time does not match Project {project_id} inventory",
+                    code="PROJECT_IMPORT_DATE_MISMATCH",
+                    next_action=(
+                        "Use the Project's recorded SAGE import date, or remove and re-add "
+                        "the Project before creating a new snapshot-dated Job."
+                    ),
+                    details={
+                        "project_id": project_id,
+                        "recorded_imported_utc": stored.isoformat(),
+                        "requested_imported_utc": requested_utc.isoformat(),
+                    },
+                )
+            return stored or requested_utc
+        if stored is not None:
+            return stored
+        return require_project_imported_at(self.sage_root, project_id)
 
     def tool_root(self, tool: str) -> Path:
         """Manage `tool root` for Job-scoped state and storage."""
@@ -739,16 +781,11 @@ class JobStore:
         requested_id = job_id.strip()
         snapshot_time: datetime | None = None
         if normalized_tool in ANALYSIS_WORKFLOWS:
-            snapshot_time = imported_at or datetime.now(timezone.utc)
-            if snapshot_time.tzinfo is None or snapshot_time.utcoffset() is None:
-                raise ValidationError(
-                    "WIP import timestamp must include a timezone.",
-                    code="INVALID_WIP_IMPORT_TIME",
-                )
+            snapshot_time = self._analysis_import_time(bindings["wip"], imported_at)
             expected_id = canonical_analysis_job_id(
                 normalized_tool,
                 bindings["wip"],
-                snapshot_time.astimezone().strftime("%Y%m%d"),
+                snapshot_time.astimezone(timezone.utc).strftime("%Y%m%d"),
             )
         else:
             expected_id = default_job_name(
@@ -995,13 +1032,11 @@ class JobStore:
                 details={"run_ids": nonclosed},
             )
 
-        refresh_time = imported_at or datetime.now(timezone.utc)
-        if refresh_time.tzinfo is None or refresh_time.utcoffset() is None:
-            raise ValidationError(
-                "WIP import timestamp must include a timezone.",
-                code="INVALID_WIP_IMPORT_TIME",
-            )
-        snapshot_date = refresh_time.astimezone().strftime("%Y%m%d")
+        refresh_time = self._analysis_import_time(
+            current.bindings["wip"],
+            imported_at,
+        )
+        snapshot_date = refresh_time.astimezone(timezone.utc).strftime("%Y%m%d")
         next_job_id = canonical_analysis_job_id(
             current.tool,
             current.bindings["wip"],

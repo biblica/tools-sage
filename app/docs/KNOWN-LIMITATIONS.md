@@ -1,5 +1,6 @@
 # Known Limitations — v0.01beta2
 
+- Further TUI workflow functionality is deliberately paused for `0.01beta2` and deferred to `0.02beta`. The retained experimental preview provides navigation/status/readiness and its existing bounded setup-remediation actions; use the classic menu or scriptable CLI for authoritative Project, Job, Run, report, and recovery work.
 - Commentary and operator/runtime diagnostics are not yet fully separated into distinct report artifacts; provider execution diagnostics may still appear in the human report during interrupted Runs.
 - v0.01beta2 enables governed BIC/SAW execution through CODEX only. Ollama remains optional explicit administration tooling and cannot execute governed tasks; administrative explanations and executive summaries are deterministic. Grok/Gemini remain future provider-adapter possibilities.
 - Local AI mode intentionally disables Job secondary reporting while enabled. Existing secondary-language Jobs must be cleared by the Operator before Local AI can be enabled; SAGE does not silently modify them.

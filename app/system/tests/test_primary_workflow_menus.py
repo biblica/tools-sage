@@ -42,6 +42,22 @@ def test_main_menu_exposes_rtc_and_stc_without_saw(make_workspace) -> None:
     assert "Source Text Correspondence (STC)" in rendered
 
 
+def test_analysis_creation_labels_use_sentence_case_and_review_context(make_workspace) -> None:
+    """Catch title-case job nouns and generic chooser headings in RTC/STC setup."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    center, output = _center(root, "a")
+
+    center.analysis_menu("stc")
+
+    rendered = output.getvalue()
+    assert "Add STC job [WIP]" in rendered
+    assert "Add STC Job [WIP]" not in rendered
+
+    center, output = _center(root, "a")
+    assert center.create_job_wizard("stc") is None
+    assert "Start new STC review <WIP Project>" in output.getvalue()
+
+
 def test_stc_menu_has_no_reference_or_parked_checks(make_workspace) -> None:
     """STC shows its WIP Project and one fixed STC Run action only."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")

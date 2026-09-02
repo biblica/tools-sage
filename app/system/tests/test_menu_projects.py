@@ -347,7 +347,7 @@ def test_guided_first_run_setup_records_missing_project_root_with_ready_test_ai(
     assert "RTC:       NOT CONFIGURED" in rendered
     assert "STC:       NOT CONFIGURED" in rendered
     assert "MANAGE JOBS" in rendered
-    assert "4. Manage active Jobs" in rendered
+    assert "4. Manage active jobs" in rendered
     assert "Setup options" not in rendered
     assert "SAGE Maintenance" in rendered
     assert "B. Main Menu   C. Exit SAGE" in rendered
@@ -418,7 +418,7 @@ def test_job_management_can_open_the_active_saw_job(make_workspace) -> None:
     center.job_management_menu("saw")
 
     rendered = output.getvalue()
-    assert "Open active SAW Job" in rendered
+    assert "Open active SAW job" in rendered
     assert f"{saw.job_id} - {saw.display_name} [ACTIVE]" in rendered
     assert f"SAW JOB - {saw.job_id}" in rendered
     assert "Run Reference Text Comparison (RTC)" in rendered
@@ -442,7 +442,7 @@ def test_job_management_uses_the_same_open_active_grammar_for_bic(make_workspace
     center.job_management_menu("bic")
 
     rendered = output.getvalue()
-    assert "Open active BIC Job" in rendered
+    assert "Open active BIC job" in rendered
     assert f"{bic.job_id} - {bic.display_name} [ACTIVE]" in rendered
     assert f"BIC JOB - {bic.job_id}" in rendered
     assert "Run BIC check" in rendered
@@ -742,7 +742,7 @@ def test_saw_flow_selects_job_then_exposes_checks_and_back_is_hierarchical(make_
     assert "Active Run                   NONE" in rendered
     assert "Run Reference Text Comparison (RTC)" in rendered
     assert "Run Targeted Check" in rendered
-    assert "Run Original-Language Review" in rendered
+    assert "Run Original-Language review" in rendered
     assert "SAW RUN OPTIONS" not in rendered
     assert rendered.count("A. Back") >= 2
 
@@ -795,7 +795,7 @@ def test_saw_job_menu_visually_separates_work_from_administration(make_workspace
     center._saw_job_menu(saw)
 
     rendered = output.getvalue()
-    assert "  4. Run Original-Language Review\n\n  5. Reports and exports" in rendered
+    assert "  4. Run Original-Language review\n\n  5. Reports and exports" in rendered
 
     store.create_run(saw, operation="rtc", scope="JHN 1")
     output.seek(0)
@@ -805,7 +805,7 @@ def test_saw_job_menu_visually_separates_work_from_administration(make_workspace
     center._saw_job_menu(saw)
 
     rendered = output.getvalue()
-    assert "  5. Run Original-Language Review\n\n  6. Reports and exports" in rendered
+    assert "  5. Run Original-Language review\n\n  6. Reports and exports" in rendered
     assert "WORK\n" not in rendered
     assert "ADMINISTRATION\n" not in rendered
 
@@ -1010,7 +1010,7 @@ def test_reports_and_recovery_are_owned_by_workflow_or_sage_maintenance(make_wor
     rendered = output.getvalue()
     assert rendered.count("Reports and history") >= 2
     assert rendered.count("Recovery and diagnostics") >= 2
-    assert rendered.count("Maintain Job storage") == 2
+    assert rendered.count("Maintain job storage") == 2
     assert "SAGE MAINTENANCE" in rendered
     assert "System information, recovery and diagnostics" in rendered
     assert "Change interface language" not in rendered
@@ -1209,7 +1209,11 @@ def test_rtc_policy_menu_omits_mandatory_cross_reference_toggle(make_workspace) 
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["10", "1"]), output=output),
+        io=MenuIO(
+            input_func=ScriptedInput(["10", "1"]),
+            output=output,
+            viewport_columns=40,
+        ),
         skip_setup=True,
         dry_run_provider=True,
     )
@@ -1223,6 +1227,7 @@ def test_rtc_policy_menu_omits_mandatory_cross_reference_toggle(make_workspace) 
     assert "Check cross-references" not in rendered
     assert "10. Adjudicate WIP-Reference variance" in rendered
     assert "11. Adjudicate WIP-Reference variance" not in rendered
+    assert "\n     ON\n" in rendered
 
 
 def test_sage_maintenance_submenus_put_relevant_state_before_actions(

@@ -56,7 +56,7 @@ Run `./sage` from the SAGE root. Startup first resolves localdata and revalidate
 
 ## Recovery menus
 
-Open **BIC > Recovery and diagnostics**, **RTC > Recovery and diagnostics**, or **STC > Recovery and diagnostics** for recovery that belongs to a Job. Open **SAGE Maintenance > System recovery and diagnostics** for global state, configuration, and diagnostic actions. The experimental TUI remains read-only for workflow-changing recovery operations; use the classic governed action when a write is required.
+Open **BIC > Recovery and diagnostics**, **RTC > Recovery and diagnostics**, or **STC > Recovery and diagnostics** for recovery that belongs to a Job. Open **SAGE Maintenance > System recovery and diagnostics** for global state, configuration, and diagnostic actions. TUI recovery writes are deferred to `0.02beta`; use the classic governed action throughout `0.01beta2`.
 
 The workflow recovery menus can recover/reset the active Job and its Run. System recovery can:
 

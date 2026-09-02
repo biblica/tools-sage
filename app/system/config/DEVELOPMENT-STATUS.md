@@ -1,6 +1,6 @@
 # Development Status — SAGE v0.01beta2
 
-**Status: BETA — PRE-RELEASE; FRESH EXACT-SOURCE QUALIFICATION IS REQUIRED BEFORE THE FIRST RC. PUBLIC-PRODUCTION READINESS IS NOT CLAIMED.** This Beta carries Windows UTF-8 execution hardening, UTF-8 CLI/controller output handling, canonical numbered-book report naming, governed interruption/retry behavior, regional Language Profiles, Source Text Correspondence (STC), routed-SFM-only Scripture sizing, universal model-facing linguistic-profile specificity, and current Operator UI/reporting convergence. The classic menu and scriptable CLI remain authoritative while TUI parity is incomplete.
+**Status: BETA — PRE-RELEASE; FRESH EXACT-SOURCE QUALIFICATION IS REQUIRED BEFORE THE FIRST RC. PUBLIC-PRODUCTION READINESS IS NOT CLAIMED.** This Beta carries Windows UTF-8 execution hardening, UTF-8 CLI/controller output handling, canonical numbered-book report naming, governed interruption/retry behavior, regional Language Profiles, Source Text Correspondence (STC), routed-SFM-only Scripture sizing, universal model-facing linguistic-profile specificity, and current Operator UI/reporting convergence. The classic menu and scriptable CLI remain authoritative. Further TUI workflow functionality is paused for `0.01beta2` and deferred to `0.02beta`.
 
 See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workflows/JOB-STORAGE-MAINTENANCE.md`, and `docs/advanced/maintenance/WINDOWS-CODEX-EXECUTION-AUDIT.md`.
 
@@ -9,15 +9,15 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 ## Current operator surface
 
 - `sage tui` opens the optional **EXPERIMENTAL / UNSTABLE** full-screen Textual shell with keyboard/mouse navigation. It is not an authoritative Operator surface; no-argument launch opens the classic menu.
-- The TUI targets `100 x 30` and provides numeric `1`-`4` top-level navigation, persistent view history, Help/Status overlays, interface-language switching, live session/AI status, startup-readiness gating, and native Projects-root / Quick Scan / AI-retest remediation. Persistent System Status / Active AI / Project / Active Job blocks show one sequential Job at a time; the Active Job line uses the governed 10-cell progress bar. Job/Run/report mutation remains read-only in the TUI.
-- Workflow-changing operations other than the bounded startup-remediation actions remain in `sage menu` / CLI until migrated service-by-service and parity-tested.
+- The TUI targets `100 x 30` and provides numeric `1`-`5` top-level navigation, persistent view history, Help/Status overlays, interface-language switching, live session/AI status, startup-readiness gating, and native Projects-root / Quick Scan / AI-retest remediation. Persistent System Status / Active AI / Project / Active Job blocks show one sequential Job at a time; the Active Job line uses the governed 10-cell progress bar. Job/Run/report mutation remains read-only in the TUI.
+- The retained TUI baseline is frozen for the rest of `0.01beta2`. Workflow-changing operations other than the existing bounded startup-remediation actions remain in `sage menu` / CLI; their TUI migration resumes in `0.02beta`.
 - One normal root launcher per host: `.\sage.cmd` on Windows or `./sage` on macOS/Linux; both forward to the implementation under `system/bin/`.
-- Main is ownership-oriented: **Scripture Projects**, **BIC**, **SAW**, and **SAGE Maintenance**. Reports and Job recovery are under their BIC/SAW workflow; system recovery is under SAGE Maintenance. Contextual Help and Status are global footer services rather than numbered Main-menu operations.
-- Configuration persists when changed; there is no manual SAVE prerequisite before BIC/SAW appear or can be opened.
+- Main is ownership-oriented: **Scripture Projects**, **BIC**, **RTC**, **STC**, and **SAGE Maintenance**. Reports and Job recovery are under their BIC/RTC/STC workflow; system recovery is under SAGE Maintenance. Contextual Help and Status are global footer services rather than numbered Main-menu operations.
+- Configuration persists when changed; there is no manual SAVE prerequisite before BIC/RTC/STC appear or can be opened.
 - Scripture Project administration and workflow role assignment are separate concerns.
 - **Scripture Projects** manages the Paratext Project Catalog and SAGE Project Inventory. It scans, adds, validates, configures, and safely removes Projects.
-- **BIC/SAW Job setup** assigns only already-added SAGE Projects to SOURCE / DONOR / TARGET / WIP / REFERENCE roles. A selector can temporarily route to **Add another Project to SAGE**, then returns to the selector.
-- BIC and SAW have independent persistent Jobs and bounded Runs. Jobs can be added, selected, archived, validated, and removed.
+- **BIC/RTC/STC Job setup** assigns only already-added SAGE Projects to workflow-valid roles. BIC uses SOURCE / DONOR / TARGET, RTC uses WIP / REFERENCE, and STC uses WIP only. A selector can temporarily route to **Add another Project to SAGE**, then returns to the selector.
+- BIC, RTC, and STC have independent persistent Jobs and bounded Runs. Jobs can be added, selected, archived, validated, and removed.
 - Scripture scope supports guided Book/range entry and direct expert scope entry. A deterministic work/token preview is shown before Run creation.
 - Initial/Quick Paratext scans are tree-only marker discovery and do not open Project files; Full rescans perform detailed whole-root validation. Long full scans expose a rotating status line and progress count.
 - The two-row global footer is `A Back / B Main Menu / C Exit`, then `D Language / E Help / F Status`; Help/Status return to the invoking menu.

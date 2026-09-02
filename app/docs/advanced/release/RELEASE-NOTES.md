@@ -19,6 +19,7 @@
   of qualification evidence and is labelled `PROVISIONAL_UNQUALIFIED`; current data selects the
   qualified route, while the existing audited exact override remains the sole manual state.
 - Resolves RTC/STC routing before visible work and preserves the same sealed task for `CONTINUE RUN`.
+- Records an immutable UTC timestamp and stable `YYYYMMDD` date when each Project is added to SAGE; Project screens, Job setup, classic/CLI Run Status, and status JSON report it, while RTC/STC identity and WIP snapshot dates use the stored Project import date rather than Job creation time.
 - Makes deterministic Python ownership explicit for planning, slicing, validation, aggregation,
   report composition/naming, and finalization; these operations have no LLM tokenization.
 - Enforces one request per source-text adjudication item and one request per secondary-language report
@@ -31,6 +32,7 @@
   If any child task prevents an approved stage from being published, SAGE removes the unpublished
   child task/control records created by that attempt before returning the original error.
 - Keeps the classic menu/CLI authoritative; Textual remains `EXPERIMENTAL / UNSTABLE`.
+- Freezes the existing Textual navigation/status/readiness preview for the remainder of `0.01beta2`; further Project, Job, Run, report, and recovery functionality is deferred to `0.02beta`.
 
 
 ### Historical Alpha branch provenance
@@ -95,7 +97,7 @@ The `0.02alpha1` identity was used only on the parallel `alpha/0.02alpha1` non-r
 - Storage/path tests cover custom data homes, Unicode paths, Windows path forms, path containment, and fail-closed invalid locations.
 - Host capability detection selects a conservative BASIC/STANDARD/ADVANCED execution profile from available RAM and logical CPU threads. BASIC is selected below 4 GiB available RAM or 8 logical CPUs and caps release-hardening concurrency at 2 workers; STANDARD covers capable hosts below the ADVANCED threshold and caps at 4; ADVANCED requires both at least 16 GiB available RAM and 16 logical CPUs and caps at 6. Environment overrides may lower, but never exceed, the setup-selected ceiling.
 - BIC and SAW retain Job-scoped authority, governed source/project bindings, bounded work units, and operator-visible reports outside Core.
-- The classic terminal interface and scriptable CLI remain authoritative for Beta; the Textual TUI remains `EXPERIMENTAL / UNSTABLE`.
+- The classic terminal interface and scriptable CLI remain authoritative for Beta; the Textual TUI remains `EXPERIMENTAL / UNSTABLE`, and further workflow functionality is deferred to `0.02beta`.
 
 ## Release qualification
 

@@ -26,7 +26,7 @@ from .llm_settings import (
     load_llm_settings,
     local_ai_enabled,
 )
-from .skill_routing import resolve_specific_skill_route
+from .skill_routing import resolve_skill_route, resolve_specific_skill_route
 
 _JSON_FENCE = re.compile(r"^```(?:json)?\s*(.*?)\s*```$", re.IGNORECASE | re.DOTALL)
 
@@ -306,12 +306,28 @@ def _resolved_rendering_route(
             capability_fingerprint_value=fingerprint,
             reasoning_id=reasoning_id,
         )
-    except SageError as exc:
-        raise ValidationError(
-            "Originating secondary-rendering route is stale, unavailable, or unqualified",
-            code="SECONDARY_REPORT_ROUTE_UNAVAILABLE",
-        ) from exc
-    if route.identity.route_id != route_id:
+    except SageError as qualified_error:
+        try:
+            route = resolve_skill_route(root, skill_id, [status])
+        except SageError as exc:
+            raise ValidationError(
+                "Originating secondary-rendering route is stale, unavailable, or unqualified",
+                code="SECONDARY_REPORT_ROUTE_UNAVAILABLE",
+            ) from exc
+        if route.qualification != "PROVISIONAL_UNQUALIFIED":
+            raise ValidationError(
+                "Originating secondary-rendering route is stale, unavailable, or unqualified",
+                code="SECONDARY_REPORT_ROUTE_UNAVAILABLE",
+            ) from qualified_error
+    identity = route.identity
+    if (
+        identity.provider != provider
+        or identity.model_id != model_id
+        or identity.capability_fingerprint != fingerprint
+        or identity.reasoning_id != reasoning_id
+        or identity.skill_id != skill_id
+        or identity.route_id != route_id
+    ):
         raise ValidationError(
             "Originating secondary-rendering route identity has changed",
             code="SECONDARY_REPORT_ROUTE_UNAVAILABLE",

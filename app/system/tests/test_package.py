@@ -252,6 +252,36 @@ def test_source_audit_allows_explicit_historical_alpha_lineage_in_beta_handover(
     assert result.returncode == 0, payload.get("errors", [])
 
 
+def test_source_audit_allows_explicit_future_prerelease_deferral(
+    package_root: Path, tmp_path: Path
+) -> None:
+    """Current docs may identify a later prerelease only as a future work target."""
+    import json
+    import shutil
+    import subprocess
+    import sys
+
+    copy = tmp_path / "SAGE"
+    shutil.copytree(package_root, copy)
+    for cache in list(copy.rglob("__pycache__")) + list(copy.rglob(".pytest_cache")):
+        shutil.rmtree(cache, ignore_errors=True)
+    guide = copy / "docs" / "OPERATOR-GUIDE.md"
+    guide.write_text(
+        guide.read_text(encoding="utf-8")
+        + "\nFurther TUI workflow work is deferred to 0.02beta.\n",
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, str(copy / "system" / "tools" / "deep_audit.py"), str(copy), "--mode", "source"],
+        text=True,
+        capture_output=True,
+        check=False,
+        env={**__import__("os").environ, "SAGE_DATA_HOME": str(tmp_path / "localdata")},
+    )
+    payload = json.loads(result.stdout)
+    assert result.returncode == 0, payload.get("errors", [])
+
+
 def test_current_menu_does_not_contain_legacy_resource_mapping_surface(package_root: Path) -> None:
     """Verify the old resource chooser cannot reappear through a duplicate current entry point."""
     text = (package_root / "system" / "src" / "sage" / "menu.py").read_text(encoding="utf-8")

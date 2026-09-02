@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import shutil
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -58,7 +59,10 @@ def capture_wip_snapshot(
             f"Snapshot settings resolve to {config.root}, not requested SAGE root {root}.",
             code="SNAPSHOT_WORKSPACE_MISMATCH",
         )
-    project = config.project(project_id)
+    # Inventory records remain role-neutral and disabled until a Job binds them.
+    # Snapshot capture is itself that governed WIP binding, so compile an enabled
+    # view without rewriting the operator-owned Project record.
+    project = replace(config.project(project_id), enabled=True)
     compiled = compile_project(config, project)
     status = str(compiled.get("status", ""))
     if status not in READY_PROJECT_STATES:
@@ -82,7 +86,7 @@ def capture_wip_snapshot(
     receipt: dict[str, Any] = {
         "schema_version": "1.0",
         "project_id": project_id,
-        "snapshot_date": imported.astimezone().strftime("%Y%m%d"),
+        "snapshot_date": imported.astimezone(timezone.utc).strftime("%Y%m%d"),
         "imported_utc": imported_utc.isoformat(),
         "content_fingerprint": project_validation_fingerprint(compiled),
         "resource_sha256": str(compiled.get("resource_sha256", "")),
