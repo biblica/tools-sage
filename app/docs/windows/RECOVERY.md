@@ -16,7 +16,7 @@ If Python environment repair succeeds but Codex installation fails, rerun `\.\sa
 
 ## Recovery menus
 
-Open **BIC > Recovery and diagnostics**, **RTC > Recovery and diagnostics**, or **STC > Recovery and diagnostics** for recovery that belongs to a Job. Open **SAGE Maintenance > System recovery and diagnostics** for global state, configuration, and diagnostic actions. TUI recovery writes are deferred to `0.02beta`; use the classic governed action throughout `0.01beta2`.
+Open **BIC > Recovery and diagnostics**, **RTC > Recovery and diagnostics**, or **STC > Recovery and diagnostics** for recovery that belongs to a Job. Open **SAGE Maintenance > System actions** for global state, configuration, and diagnostic actions. TUI recovery writes are deferred to `0.02beta`; use the classic governed action throughout `0.01beta2`.
 
 The workflow recovery menus can recover/reset the active Job and its Run. System recovery can:
 
@@ -27,7 +27,7 @@ The workflow recovery menus can recover/reset the active Job and its Run. System
 
 **Reset SAGE to out-of-box state** is the destructive installation-wide reset. It removes all local Projects, Jobs, Runs, reports, caches, custom profiles, Operator settings, and generated workspace data; preserves the managed localdata runtime and packaged SAGE Core resources; writes `localdata/.system/state/out-of-box-reset.json`; then exits so the next launch begins first-use Setup. It requires both a negative-default confirmation and the exact text `RESET SAGE`.
 
-**SAGE Maintenance > Wipe all Job data** is narrower. It requires `WIPE JOB DATA` and removes all BIC/RTC/STC and legacy SAW Jobs, Runs, tasks, reports, exports, histories, pointers, locks, and transactions. It preserves the managed environment and dependencies, Project Inventory and Paratext mappings, resources, indexes, and configuration. Its receipt is `localdata\.system\state\job-data-wipe.json`.
+**SAGE Maintenance > System actions > Wipe all Job data** is narrower. It requires `WIPE JOB DATA` and removes all BIC/RTC/STC and legacy SAW Jobs, Runs, tasks, reports, exports, histories, pointers, locks, and transactions. It preserves the managed environment and dependencies, Project Inventory and Paratext mappings, resources, indexes, and configuration. Its receipt is `localdata\.system\state\job-data-wipe.json`.
 
 Do not manually edit task manifests, ACT files, transaction journals, or `.sage` controller state.
 

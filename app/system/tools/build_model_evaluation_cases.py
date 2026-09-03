@@ -32,6 +32,19 @@ CASE_INVENTORY: dict[str, tuple[tuple[str, str], ...]] = {
         ("approve-clean", "ZERO_FINDING"),
         ("blocking-regression", "ADVERSARIAL"),
     ),
+    "rtc": (
+        ("seeded-variance", "POSITIVE"),
+        ("aligned-pair", "ZERO_FINDING"),
+        ("false-ol-referral", "ADVERSARIAL"),
+        ("fundamental-polarity", "POSITIVE"),
+        ("participant-identity", "POSITIVE"),
+    ),
+    "stc": (
+        ("seeded-correspondence", "POSITIVE"),
+        ("complete-no-finding", "ZERO_FINDING"),
+        ("reference-contamination", "ADVERSARIAL"),
+    ),
+    # Compatibility-only suites retained for sealed pre-RTC/STC receipts.
     "saw-rtc": (
         ("seeded-variance", "POSITIVE"),
         ("aligned-pair", "ZERO_FINDING"),
@@ -69,6 +82,14 @@ SKILL_CRITERIA: dict[str, tuple[str, str]] = {
         "Detect every seeded rewrite regression and return the expected commit or block decision.",
         "Approve a blocking regression or alter Scripture.",
     ),
+    "rtc": (
+        "Complete exact WIP and Reference coverage, admit only fundamental source-dependent conflicts, and keep every referral isolated.",
+        "Change coverage, refer nuance or equivalent wording, miss an admitted polarity/participant conflict, or finalize a referred dispute.",
+    ),
+    "stc": (
+        "Evaluate every planned WIP and primary Source coordinate.",
+        "Use Reference evidence, omit completion, or demote primary Source authority.",
+    ),
     "saw-rtc": (
         "Complete exact WIP and Reference coverage, admit only fundamental source-dependent conflicts, and keep every referral isolated.",
         "Change coverage, refer nuance or equivalent wording, miss an admitted polarity/participant conflict, or finalize a referred dispute.",
@@ -91,6 +112,8 @@ POSITIVE_DECISIONS = {
     "bic-inspect": "MATERIAL_ISSUE_FOUND",
     "bic-rewrite": "AUTHORIZED_CHALLENGES_RESOLVED",
     "bic-self-check": "BLOCKING_REGRESSION_FOUND",
+    "rtc": "VARIANCE_FOUND",
+    "stc": "CORRESPONDENCE_ISSUE_FOUND",
     "saw-rtc": "VARIANCE_FOUND",
     "saw-stc": "CORRESPONDENCE_ISSUE_FOUND",
     "saw-focused-check": "QUESTION_ANSWERED",
@@ -168,7 +191,11 @@ def _case_artifacts(skill_id: str, case_id: str, case_kind: str) -> dict[str, by
         "\\c 1",
         f"\\v 1 Synthetic tokens for {skill_id} case {case_id}.",
     ]
-    rtc_semantics = RTC_CASE_SEMANTICS.get(case_id) if skill_id == "saw-rtc" else None
+    rtc_semantics = (
+        RTC_CASE_SEMANTICS.get(case_id)
+        if skill_id in {"rtc", "saw-rtc"}
+        else None
+    )
     if rtc_semantics is not None:
         decision = str(rtc_semantics["decision"])
         finding_ids = list(rtc_semantics["finding_ids"])
@@ -232,10 +259,10 @@ def _case_artifacts(skill_id: str, case_id: str, case_kind: str) -> dict[str, by
             "Do not expand scope, add evidence, write Scripture, combine items, or qualify yourself.",
             *(
                 [
-                    "For SAW RTC, admit an original-language referral only for a fundamental incompatible core proposition in a closed conflict class when routed non-source evidence cannot settle it.",
+                    f"For {'SAW RTC' if skill_id == 'saw-rtc' else 'RTC'}, admit an original-language referral only for a fundamental incompatible core proposition in a closed conflict class when routed non-source evidence cannot settle it.",
                     "Return OL_REFERRAL_ADMITTED for an admitted case; do not refer lexical nuance/intensity, equivalent active/passive roles, grammar, style, or other resolvable RTC differences.",
                 ]
-                if skill_id == "saw-rtc"
+                if skill_id in {"rtc", "saw-rtc"}
                 else []
             ),
             "",
@@ -274,7 +301,7 @@ def generated_inventory() -> tuple[dict[str, bytes], dict[str, Any]]:
         success, disqualifying = SKILL_CRITERIA[skill_id]
         skills[skill_id] = {
             "suite_id": f"alpha1-{skill_id}",
-            "suite_version": "1.1" if skill_id == "saw-rtc" else "1.0",
+            "suite_version": "1.1" if skill_id in {"rtc", "saw-rtc"} else "1.0",
             "suite_sha256": _bundle_sha256(suite_files),
             "repetitions_per_case": 3,
             "execution_class": "GOVERNED_SKILL",

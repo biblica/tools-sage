@@ -41,6 +41,7 @@ SCHEMA_OWNERS: dict[str, str] = {
     "project-scope.schema.yml": "system/src/sage/registry.py",
     "resource-rights.schema.yml": "system/src/sage/resource_rights.py",
     "run.schema.yml": "system/src/sage/jobs.py",
+    "rtc-findings.schema.yml": "system/src/sage/findings.py",
     "saw-findings.schema.yml": "system/src/sage/findings.py",
     "semantic-export-manifest.schema.yml": "system/src/sage/semantic/lift.py",
     "semantic-import-manifest.schema.yml": "system/src/sage/semantic/importers.py",
@@ -315,7 +316,7 @@ def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> l
     errors.extend(_validate_structure_instance(structure_schema, structure, "structure-planning.yml"))
 
     workflow_schema = schemas["workflow-profile.schema.yml"]
-    for workflow in ("bic", "saw"):
+    for workflow in ("bic", "rtc", "stc", "saw"):
         path = root / f"system/config/workflows/{workflow}/profile.yml"
         errors.extend(_validate_required_shape(workflow_schema, _load_data(path), str(path.relative_to(root))))
 

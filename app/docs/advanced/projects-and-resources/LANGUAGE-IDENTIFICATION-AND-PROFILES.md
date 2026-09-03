@@ -30,4 +30,4 @@ Beta keeps these concepts distinct in catalog/provenance metadata:
 
 `Scripture Project -> Language Profile -> role-specific Grammar Profile -> Job binding -> Run`
 
-Project addition establishes/selects the regional Language Profile namespace. A new Language Profile may validly have zero Grammar Profile variants and therefore show `INCOMPLETE`. Grammar Profile setup is deferred until a BIC/SAW Job role actually requires one.
+Project addition establishes/selects the regional Language Profile namespace. A new Language Profile may validly have zero Grammar Profile variants and therefore show `INCOMPLETE`. Grammar Profile setup is deferred until a BIC/RTC/STC Job role actually requires one.

@@ -470,47 +470,167 @@ def test_snapshot_refresh_retains_the_wip_project_import_date(make_workspace) ->
     assert "WIP snapshot refreshed: 20260829" in output.getvalue()
 
 
-def test_replacing_wip_uses_the_replacement_project_import_date(
+@pytest.mark.parametrize(
+    ("tool", "job_id", "bindings"),
+    (
+        ("rtc", "RTC-usWIP_20260829", {"wip": "usWIP", "reference": "usNIVv2"}),
+        ("stc", "STC-usWIP_20260829", {"wip": "usWIP"}),
+    ),
+)
+def test_analysis_manage_job_exposes_delete_but_no_binding_replacement(
     make_workspace,
-    monkeypatch,
+    tool,
+    job_id,
+    bindings,
 ) -> None:
-    """Catch replacement Jobs using replacement time instead of the new Project's import date."""
+    """RTC/STC Job bindings remain fixed throughout the Job lifetime."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     _register_fixture_project(root, "usWIP")
-    _register_fixture_project(
-        root,
-        "usNIRVv2",
-        imported_at=datetime(2026, 8, 31, 9, 0, tzinfo=timezone.utc),
-    )
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
-        tool="stc",
-        job_id="STC-usWIP_20260829",
-        display_name="Replacement import date",
-        bindings={"wip": "usWIP"},
+        tool=tool,
+        job_id=job_id,
+        display_name="Immutable menu fixture",
+        bindings=bindings,
         imported_at=IMPORT_TIME,
     )
-    replacement_project = load_ecosystem(root / "ecosystem.yml").project("usNIRVv2")
     output = io.StringIO()
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput([""]), output=output),
+        io=MenuIO(input_func=ScriptedInput(["a"]), output=output),
         skip_setup=True,
         dry_run_provider=True,
     )
-    monkeypatch.setattr(
-        center,
-        "choose_or_add_resource",
-        lambda *_args, **_kwargs: replacement_project,
+
+    center._job_settings_menu(job)
+
+    rendered = output.getvalue()
+    assert "6. Delete JOB" in rendered
+    assert "Replace WIP Project" not in rendered
+    assert "Update REFERENCE Project" not in rendered
+
+
+@pytest.mark.parametrize(
+    ("report_answer", "reports_remain"),
+    (("n", True), ("y", False)),
+)
+def test_manage_job_delete_prompts_separately_for_published_reports(
+    make_workspace,
+    report_answer,
+    reports_remain,
+) -> None:
+    """Deleting a Job preserves reports by default and never touches its Projects."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    _register_fixture_project(root, "usWIP")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="stc",
+        job_id="STC-usWIP_20260829",
+        display_name="Delete prompt fixture",
+        bindings={"wip": "usWIP"},
+        imported_at=IMPORT_TIME,
+    )
+    store.set_active_job("stc", job.job_id)
+    store.create_run(job, operation="stc", scope="MAT 1")
+    report_root = storage_layout(root).reports_root / job.job_id
+    published_report = report_root / "MAT" / "001" / "STC_ACTION-REPORT.md"
+    published_report.parent.mkdir(parents=True)
+    published_report.write_text("# Published report\n", encoding="utf-8")
+    wip_project = storage_layout(root).projects_root / "usWIP"
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(
+            input_func=ScriptedInput(["6", report_answer, "y"]),
+            output=output,
+        ),
+        skip_setup=True,
+        dry_run_provider=True,
     )
 
-    replacement = center._replace_analysis_wip(job)
+    deleted = center._job_settings_menu(job)
 
-    assert replacement is not None
-    assert replacement.job_id == "STC-usNIRVv2_20260831"
-    assert replacement.wip_snapshot is not None
-    assert replacement.wip_snapshot["snapshot_date"] == "20260831"
+    assert deleted is True
+    assert not job.root.exists()
+    assert report_root.exists() is reports_remain
+    assert wip_project.is_dir()
+    rendered = output.getvalue()
+    assert "Published report files:       1" in rendered
+    assert "SAGE Projects and Paratext Project files will NOT be deleted or modified." in rendered
+    assert "Deleted Job: STC-usWIP_20260829" in rendered
+
+
+def test_manage_job_delete_defaults_preserve_everything_on_final_cancellation(
+    make_workspace,
+) -> None:
+    """Blank answers preserve reports and cancel the final destructive action."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    _register_fixture_project(root, "usWIP")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="stc",
+        job_id="STC-usWIP_20260829",
+        display_name="Delete cancellation fixture",
+        bindings={"wip": "usWIP"},
+        imported_at=IMPORT_TIME,
+    )
+    report_root = storage_layout(root).reports_root / job.job_id
+    published_report = report_root / "MAT" / "001" / "STC_ACTION-REPORT.md"
+    published_report.parent.mkdir(parents=True)
+    published_report.write_text("# Published report\n", encoding="utf-8")
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(
+            input_func=ScriptedInput(["6", "", "", "a"]),
+            output=output,
+        ),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    deleted = center._job_settings_menu(job)
+
+    assert deleted is False
+    assert job.root.is_dir()
+    assert published_report.is_file()
+    assert "Published reports:            PRESERVE" in output.getvalue()
+    assert "Delete Job cancelled. No Job or report data was changed." in output.getvalue()
+
+
+def test_delete_from_open_analysis_job_returns_to_parent_without_reloading_it(
+    make_workspace,
+) -> None:
+    """The open RTC/STC Job screen must not reload a Job after deleting it."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    _register_fixture_project(root, "usWIP")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="stc",
+        job_id="STC-usWIP_20260829",
+        display_name="Open Job deletion fixture",
+        bindings={"wip": "usWIP"},
+        imported_at=IMPORT_TIME,
+    )
+    store.set_active_job("stc", job.job_id)
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(
+            input_func=ScriptedInput(["3", "6", "y"]),
+            output=io.StringIO(),
+        ),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    center.analysis_job_menu(job)
+
+    assert not job.root.exists()
+    assert store.active_jobs()["stc"] is None
 
 
 def _rtc_run_with_import_dates(root):

@@ -69,7 +69,7 @@ def test_stc_shortcut_uses_registered_project_import_date(
 
     task = create_act_task(
         load_ecosystem(root / "ecosystem.yml"),
-        workflow="saw",
+        workflow="stc",
         operation="stc",
         output_project_id="usWIP",
         contemporary_source_id=None,
@@ -95,7 +95,7 @@ def test_stc_shortcut_blocks_project_without_sage_import_date(
     with pytest.raises(ValidationError) as exc_info:
         create_act_task(
             load_ecosystem(root / "ecosystem.yml"),
-            workflow="saw",
+            workflow="stc",
             operation="stc",
             output_project_id="usWIP",
             contemporary_source_id=None,
@@ -156,7 +156,7 @@ def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, mak
 
     task = create_act_task(
         load_ecosystem(root / "ecosystem.yml"),
-        workflow="saw",
+        workflow="stc",
         operation="stc",
         output_project_id="usWIP",
         contemporary_source_id=None,
@@ -164,7 +164,7 @@ def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, mak
     )
 
     manifest = json.loads(Path(task["manifest_path"]).read_text(encoding="utf-8"))
-    assert manifest["skill_id"] == "saw-stc"
+    assert manifest["skill_id"] == "stc"
     reads = {Path(item["path"]).name: item["evidence_class"] for item in manifest["allowed_reads"]}
     assert reads == {
         "wip.sfm": "SUBJECT_TEXT",
@@ -213,7 +213,7 @@ def test_stc_task_reports_empty_primary_ol_coordinate_without_aborting(
 
     task = create_act_task(
         load_ecosystem(root / "ecosystem.yml"),
-        workflow="saw",
+        workflow="stc",
         operation="stc",
         output_project_id="usWIP",
         contemporary_source_id=None,
@@ -280,7 +280,7 @@ def test_stc_task_accepts_governed_authority_profile_from_external_ol_root(
 
     task = create_act_task(
         load_ecosystem(root / "ecosystem.yml"),
-        workflow="saw",
+        workflow="stc",
         operation="stc",
         output_project_id="usWIP",
         contemporary_source_id=None,
@@ -307,7 +307,7 @@ def test_stc_submission_uses_stc_grammar_and_writes_standalone_canonical_artifac
     config = load_ecosystem(root / "ecosystem.yml")
     task = create_act_task(
         config,
-        workflow="saw",
+        workflow="stc",
         operation="stc",
         output_project_id="usWIP",
         contemporary_source_id=None,

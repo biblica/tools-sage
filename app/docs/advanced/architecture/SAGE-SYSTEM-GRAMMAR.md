@@ -61,13 +61,16 @@ completed schema, menu, runtime, catalog, and validation adjustment.
   or item, render it as `PROJECT`, `JOB`, `RUN`, or `TASK` (including plurals). Keep a
   sentence-initial entity in sentence case, so the standalone Scripture book name `Job` is never
   rewritten as a SAGE `JOB`. This display convention does not change prose, schema fields, paths,
-  or identifiers.
+  or identifiers. Examples: `Project information`, `Add STC JOB <WIP PROJECT>`, `Refresh PROJECT`,
+  `Jobs using this PROJECT`, and `Remove PROJECT from SAGE`.
 - Product: `SAGE` — Scripture Analysis and Generation Engine.
 - Release: use `SAGE v0.01beta2` for the exact product version and `current Beta group testing` in general prose. State `pre-release; fresh exact-source qualification required before the first RC; public-production readiness not claimed` in current entry-point, release, status, packaging, and testing material. Historical documents may retain their original release label when clearly identified as historical.
 - Version progression: progress from `v0.01beta2` through later `v0.01betaN` builds as required, then qualified candidates beginning at `v0.01rc1`. Reserve `v0.01` for the approved release. Do not describe Beta builds as release candidates.
 - Feature maturity: use machine state `EXPERIMENTAL_UNSTABLE` and exact display label `EXPERIMENTAL / UNSTABLE` for incomplete, non-authoritative features that may change incompatibly. Feature maturity is independent of the product phase and does not advance automatically with Alpha, Beta, RC, or release promotion. The v0.01beta2 Textual TUI has this classification; the classic menu and scriptable CLI remain authoritative.
 - Workflow: `BIC` — Bible Index & Context.
-- Workflow: `SAW` — Scripture Analysis Workbench.
+- Workflow: `RTC` — Reference Text Comparison.
+- Workflow: `STC` — Source Text Correspondence.
+- Legacy workflow identifier: `RTC/STC` is compatibility-only for sealed Jobs created before RTC/STC became independent workflows; never use it for a new Job, Run, task, report, menu, prompt, or Skill.
 - Execution mode: `SAGE_GOVERNED_TASK_V1`.
 - Evidence boundary: use `LOCAL EVIDENCE BOUNDARY` for the closed Job/task evidence perimeter.
 - Content authority term: use `AUTHORIZED CONTENT EVIDENCE` for SAGE-local evidence that may support content judgments within its exact Job role and scope.
@@ -78,10 +81,35 @@ completed schema, menu, runtime, catalog, and validation adjustment.
 - Human role: `Operator`.
 - Formal role identifiers: backticked uppercase, for example `CONTENT_SOURCE`.
 - BIC prose roles: uppercase `SOURCE`, `DONOR`, and `TARGET` when naming the three authority roles. `REFERENCE` is prohibited for the BIC donor.
-- SAW machine/procedure roles: uppercase `WIP` and `REFERENCE` identify the translation under analysis and the configured LWC Reference Project comparison. In Operator-facing final reports, resolve these role identifiers to the configured Project display names. Do not call the Reference Project a benchmark.
+- RTC machine/procedure roles: uppercase `WIP` and `REFERENCE` identify the translation under analysis and its immutable LWC Reference Project comparison. STC uses `WIP` and exactly one testament-appropriate primary `ORIGINAL_LANGUAGE_GREEK` or `ORIGINAL_LANGUAGE_HEBREW`; STC never uses `REFERENCE`. In Operator-facing final reports, resolve role identifiers to configured Project display names. Do not call the Reference Project a benchmark.
 - Original language: use `original-language` adjectivally; introduce `OL` only after the full term.
 - Task controls: `ACT.md` and `task-manifest.json`.
-- Project context: every governed analytical task belongs to one persistent Job and one bounded Run built from SAGE Projects. Direct commands and natural-language routing must not create Job-less or Run-less BIC/SAW tasks.
+- Project context: every governed analytical task belongs to one persistent Job and one bounded Run built from SAGE Projects. Direct commands and natural-language routing must not create Job-less or Run-less BIC/RTC/STC tasks.
+- RTC/STC Run-scope grammar: one Run may contain one or more ordered, non-overlapping portions from
+  exactly one canonical book. Separate portions with semicolons; after the first portion, the book is
+  inherited when the next term begins with a chapter number. Thus `1CH 5-6; 24` canonicalizes to
+  `1CH 5-6; 1CH 24` and reviews chapters 5, 6, and 24 without widening through chapters 7-23. Each
+  portion is planned independently into immutable Review portions. Mixed-book and overlapping
+  selections are invalid. Commas do not separate Run portions.
+- Project book-scope grammar: onboarding accepts case-insensitive presets `OT`, `NT`, and `FB`, an
+  individual canonical USFM book ID, an inclusive canonical USFM range, or a comma/whitespace union
+  of those terms. Formally, `scope := term (separator term)*` and
+  `term := OT | NT | FB | USFM_ID | USFM_ID-USFM_ID`. `NT, PSA` and `LUK-ACT` are valid; a reversed
+  canonical range or an unknown USFM ID is invalid. `canons.xml` provides the proposal when
+  available, detected Scripture provides the fallback proposal, and the Operator-confirmed scope is
+  authoritative thereafter. Canonical files outside that scope remain fingerprinted inventory but
+  are excluded from USJ compilation and do not block workspace initialization.
+- Project-maintenance verbs: `Refresh PROJECT` rereads catalog/Paratext-derived facts while
+  preserving the confirmed Project scope and import date. `Validate PROJECT` evaluates readiness
+  without silently widening scope. `Remove PROJECT from SAGE` always requires negative-default
+  confirmation; when Jobs bind the Project, the confirmation must name the dependent Jobs and the
+  removal includes those Jobs and their Job-local data. Paratext files and root-level published
+  reports remain unchanged.
+- RTC/STC Job-maintenance verbs: `Refresh WIP snapshot from PROJECT source` rereads only the same
+  immutable WIP binding. Use a new Job for a different WIP or RTC REFERENCE Project. `Delete JOB`
+  removes all Job work and controller state after negative-default confirmation; separately
+  published reports require an independent opt-in deletion decision and are preserved by default.
+  SAGE Projects and Paratext files remain unchanged.
 - Reporting-language settings: `ecosystem.yml` owns the global Operator language (default `en`) used as the creation default and its `approved`, `candidates`, and `pilot_only` policy lists. Normal menus expose only approved languages and candidates. An advanced Operator must manually add a `pilot_only` tag to `candidates` before controlled evaluation. Each Job stores one required primary and may store one optional secondary reporting language in `job.yml`. ACTs bind only the primary for canonical narrative; secondary rendering is downstream and adds model usage, compilation time, and human-review effort. A SAGE Project never stores report-language settings.
 - Job report ownership: use `Job report catalog` for the canonical machine record under
   `jobs/<tool>/<job-id>/report_data/`. Use `Operator reports catalog` for polished output under
@@ -90,10 +118,10 @@ completed schema, menu, runtime, catalog, and validation adjustment.
   finalized result sets. Equivalent findings may be deduplicated. Shared coordinates/categories do
   not prove contradiction; only explicit conflict lineage triggers `HUMAN_REVIEW_REQUIRED`.
 - Run report provenance: Run directories retain tasks, validation receipts, stage aggregates, and machine plans. They do not own the final Job report catalog.
-- Report-ownership wording: for final BIC/SAW workflow outputs, do not say `Project report`,
+- Report-ownership wording: for final BIC/RTC/STC workflow outputs, do not say `Project report`,
   `Project reports folder`, `Project-owned report`, or `Run report folder`. Use `global Operator
   language`, `Job secondary reporting language`, `Job report data`, and `Operator reports catalog`.
-- Model-facing task resource identity: use `resource_bindings` with canonical BIC `SOURCE`/`DONOR`/`TARGET` or SAW `WIP`/`REFERENCE` roles. Internal projection fields `output_project` and `contemporary_source` may appear in task packets, but `resource_bindings` and the owning Job define authority semantics.
+- Model-facing task resource identity: use `resource_bindings` with canonical BIC `SOURCE`/`DONOR`/`TARGET`, RTC `WIP`/`REFERENCE`, or STC `WIP`/testament-appropriate primary-OL roles. Internal projection fields `output_project` and `contemporary_source` may appear in task packets, but `resource_bindings` and the owning Job define authority semantics.
 - BIC operator wording: one bound `SOURCE` resource, one bound `DONOR` resource, and one bound `TARGET` resource per BIC Job. TARGET storage location is not a second TARGET.
 - Machine cardinality vocabulary: use only `exactly_one`, `zero_or_one`, `one_or_more`, `zero_or_more`, and `exactly_one_of` for schema cardinality. Do not use `exact`, `single`, `required`, or prose `one` as machine cardinality substitutes.
 - BIC machine cardinality: `SOURCE=exactly_one`, `DONOR=exactly_one`, `TARGET=exactly_one`; TARGET storage is `exactly_one_of(SAGE_INTERNAL, PARATEXT_PROJECT)`.
@@ -102,18 +130,17 @@ completed schema, menu, runtime, catalog, and validation adjustment.
 - Qualification-language wording: the current Scripture test languages are Indonesian (`id`), Ukrainian (`uk`), and Persian (`fa`). A test-language designation records qualification scope; it does not mean that a Project, grammar profile, or localization catalog is bundled, configured, approved, or active. The vanilla package contains a regional review-required WIP starter library keyed by canonical BCP 47 regional tags; imported Projects must confirm a regional identity before operational profile binding. Keep Scripture test-language scope separate from Operator/report-language policy; `id` participates in both for different reasons, while `uk` and `fa` are not thereby Operator-language candidates.
 - Interface-language wording: use `interface localization source` for the Setup-owned terminal labels and prompts governed by `system/config/localization/menu-localization.json`. The current interface set is `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`; every governed entry contains all six renderings. `ecosystem.yml > interface.language` selects the workstation interface locale. Menu behavior is keyed by invariant semantic controls, never by localized labels. Do not call this source a Scripture grammar profile or a Job reporting profile.
 - Versification wording: Operator prose says `resolved effective VRS`; machine cardinality is `exactly_one` effective VRS per governed resource/Run context after resolution.
-- SAW Operator check vocabulary: use **Reference Text Comparison (RTC)**, **Source Text Correspondence (STC)**, **Targeted Check**, and **Original-Language Review** as the four public operation names, in that order.
+- Analysis workflow vocabulary: use **Reference Text Comparison (RTC)** and **Source Text Correspondence (STC)** as independent canonical workflows.
   - **Reference Text Comparison (RTC)** is the broad systematic WIP+REFERENCE operation. The machine operation is `rtc`. RTC contains conditional `STRUCTURAL_ADJUDICATION`, required `REFERENCE_TEXT_COMPARISON`, and conditional `SELECTIVE_OL_ADJUDICATION` model stages around deterministic preflight/finalization. Ordinary RTC stages do not receive OL Scripture. Only when `source_text_drift_adjudication` is `ENABLED` may a material WIP-versus-REFERENCE source-provenance conflict be repackaged as a separate bounded OL adjudication.
   - **Source Text Correspondence (STC)** is the independent WIP-to-original-language correspondence operation. The machine operation is `stc`. NT routes WIP plus the configured PRIMARY GRK authority; OT routes WIP plus the configured PRIMARY HEB authority. STC does not consume REFERENCE Scripture or RTC findings and completes independently.
-  - **Targeted Check** is one explicitly bounded WIP+REFERENCE question that does not receive OL Scripture. The current machine operation remains `focused` for compatibility; do not use `Focused Check` as the canonical beta Operator label. If the bounded question requires direct Greek/Hebrew adjudication, route it as Original-Language Review instead.
-  - **Original-Language Review** is one tightly bounded question requiring direct configured Greek/Hebrew evidence, normally one verse or short verse range. It is not a general commentary or unrestricted OL study. The current machine operation remains `ol`.
-  - Selection rule: broad WIP+REFERENCE review -> RTC; systematic WIP-to-OL correspondence -> STC; one bounded non-OL question -> Targeted Check; one bounded question requiring direct OL evidence -> Original-Language Review.
-- SAW note output: use `Operator note text` or `plain-text issue blocks`; never describe SAGE as creating Paratext Notes XML.
+  - Retired umbrella-only `focused` and `ol` operations remain readable only in sealed legacy Jobs; they are not new-job menu choices.
+  - Selection rule: WIP+REFERENCE review -> RTC; systematic WIP-to-primary-OL correspondence -> STC.
+- RTC/STC note output: use `Operator note text` or `plain-text issue blocks`; never describe SAGE as creating Paratext Notes XML.
 
-- Classic interactive-screen grammar: enclose every major menu title with the complete double-line set `╔═╗ / ║ / ╚═╝`. Render minor section headings with a `> ` prefix followed by an unindented, full-width `─` underline. Enclose the global A-F footer with the complete single-line set `┌─┐ / │ / └─┘`. Leave one blank line before and after each block. Indent footer keys with two spaces (`  A.`, `  D.`), matching the numeric-choice field. Put primary/commit actions before configurable options. Use fixed-width label columns instead of literal tab characters. Optional free-text/path prompts that accept cancellation must say `[Enter to cancel]` and must treat empty input as Back/cancel, not as an error.
+- Classic interactive-screen grammar: enclose every major menu title with the complete double-line set `╔═╗ / ║ / ╚═╝`. Render minor section headings with a `> ` prefix followed by an unindented, full-width `─` underline. Enclose the global A-F footer with the complete single-line set `┌─┐ / │ / └─┘`. Leave one blank line before and after each block. Indent footer keys with two spaces (`  A.`, `  D.`), matching the numeric-choice field. Put primary/commit actions before configurable options. Use fixed-width label columns instead of literal tab characters. Every title, menu item, header, and information row must fit the active viewport width; wrap long values with a hanging indent under their value column. Expand input tabs before width calculation and never emit a literal tab for alignment. Optional free-text/path prompts that accept cancellation must say `[Enter to cancel]` and must treat empty input as Back/cancel, not as an error.
 - Compact-list grammar: primary Operator lists show only differentiating fields. Repeated role/status/path metadata belongs in a selected-item detail view. Grammar-profile candidate lists should expose script compactly, for example `fa-IR [Arab]`.
-- SAW execution-feedback grammar: print `Review range` for the immutable Run scope and `Review portion n/N` for the approved partition. A structural/source case prints `Structural check i/I` or `Source check i/I` beneath its parent portion. Never replace the approved denominator with a global machine task count such as `work unit 20/97`. Provider receipts, ACT paths, task IDs, and aggregate paths remain in governed records/diagnostics.
-- Bilingual SAW finding grammar: render `Issue` immediately followed by `Proposed action` for the primary Job language, then render `Issue` immediately followed by `Proposed action` for the secondary assistive language. Do not separate Issue blocks from their same-language actions.
+- RTC/STC execution-feedback grammar: print `Review range` once, then one replaceable live progress row in a terminal. Captured/non-interactive output emits one milestone per stage, not one permanent line per portion. Never stack repeated `Review portion` lines or replace the approved denominator with a global machine task count. Provider receipts, ACT paths, task IDs, and aggregate paths remain in governed records/diagnostics.
+- Bilingual RTC/STC finding grammar: render `Issue` immediately followed by `Proposed action` for the primary Job language, then render `Issue` immediately followed by `Proposed action` for the secondary assistive language. Do not separate Issue blocks from their same-language actions.
 - Scripture format: `USFM`.
 - Versification: define `VRS` at first use for a general audience.
 - Natural-language interface: `natural-language request`, `interpretation`, `canonical command`, and `advisory-only`.
@@ -130,7 +157,7 @@ Every model-facing SAGE analytical transaction, including any limited request, m
 
 ## Universal review-item SFM sizing rule
 
-The deterministic general SFM slicer is the single Scripture sizing authority for BIC and SAW operations. The sizing unit is one actual model review item or analysis route. Only the SFM content actually routed to that item contributes to its token and hard-byte limits. Controller objects, transaction metadata, prompts, output schemas, profiles, IDs, hashes, diagnostics, USJ projections, and other orchestration material contribute zero to Scripture slicing. Their serialized transport size may be retained as telemetry but cannot alter work-unit boundaries.
+The deterministic general SFM slicer is the single Scripture sizing authority for BIC, RTC, and STC operations. The sizing unit is one actual model review item or analysis route. Only the SFM content actually routed to that item contributes to its token and hard-byte limits. Controller objects, transaction metadata, prompts, output schemas, profiles, IDs, hashes, diagnostics, USJ projections, and other orchestration material contribute zero to Scripture slicing. Their serialized transport size may be retained as telemetry but cannot alter work-unit boundaries.
 
 RTC retains its WIP soft-target behavior, but its required comparison route hard guard is measured from routed WIP+REFERENCE SFM. STC measures routed WIP+PRIMARY-OL SFM. BIC measures the SFM routed to each stage; REWRITE and SELF-CHECK inherit approved INSPECT scope instead of independently widening it. Conditional OL stages are separate review items with separate routed-SFM budgets.
 
@@ -183,7 +210,7 @@ Projects must have a confirmed regional Language Profile before SAGE registratio
 
 ### Beta report/storage grammar
 
-Processing and evidence granularity may be smaller than a chapter; Operator report granularity is one chapter. Use `<BOOK>_<CCC>_<REPORT-ID>_ACTION-REPORT.md` and `<BOOK>_<CCC>_<REPORT-ID>_OPERATOR-NOTE.txt`, with a three-digit chapter even for single-chapter books. `<REPORT-ID>` is the uppercase stabilized SAW report identity: `RTC` or `STC`. The Markdown report is canonical; TXT is a deterministic non-AI rendering of that finalized Markdown. Root `reports/` contains Operator deliverables only. Technical execution data belongs to `diagnostics/`, machine aggregation to `report_data/`, and block evidence to `tasks/`.
+Processing and evidence granularity may be smaller than a chapter; Operator report granularity is one chapter. Use `<BOOK>_<CCC>_<REPORT-ID>_ACTION-REPORT.md` and `<BOOK>_<CCC>_<REPORT-ID>_OPERATOR-NOTE.txt`, with a three-digit chapter even for single-chapter books. `<REPORT-ID>` is the uppercase canonical workflow identity: `RTC` or `STC`. The Markdown report is canonical; TXT is a deterministic non-AI rendering of that finalized Markdown. Root `reports/` contains Operator deliverables only. Technical execution data belongs to `diagnostics/`, machine aggregation to `report_data/`, and block evidence to `tasks/`.
 
 Operator-facing report prose resolves internal `WIP` and `REFERENCE` roles to configured Project display names. Original-language drift adjudication likewise reports `<project-name> CLOSER TO SOURCE`, `BOTH DEFENSIBLE`, or `INCONCLUSIVE`; it must not expose bare role labels as the decision.
 
@@ -217,7 +244,7 @@ Reference Text Comparison (RTC) has four independently toggled checks: structure
 - Use the canonical pattern `sage [global options] <domain> <action> [options]`.
 - Place `--settings`, `--json`, `--no-prompt`, and the mutually exclusive `--quiet`, `--verbose`, or `--debug` option before the domain.
 - Use `self_check` only as the canonical `sage task create` operation value; use `self-check` for the BIC shortcut and prose headings.
-- Use `--id` for transaction recovery and `--selector` for BIC-local generation verification. Automatic BIC-to-SAW generation handoff is not a current SAGE workflow concept.
+- Use `--id` for transaction recovery and `--selector` for BIC-local generation verification. Automatic BIC-to-RTC/STC generation handoff is not a current SAGE workflow concept.
 - Use uppercase underscore placeholders consistently, for example `FILE.yml`, `TASK_ID`, `TRANSACTION_ID`, `REVIEW_ID`, and `GRAMMAR_REVIEW_ID`.
 - Do not mix hyphenated and underscored placeholders for the same value.
 - Show only commands supported by the current parser or clearly label a command as proposed or historical.
@@ -234,7 +261,7 @@ Use the separator required by the interface layer; do not standardize every iden
 - Use JSON for governed facts, registries, pins, manifests, indexes, receipts, findings, and generated state; use YAML for editable configuration, policy, workflow, grammar/profile guidance, and current SAGE schema specifications.
 - Use `snake_case` for SAGE-owned YAML and JSON fields unless an external standard requires another form.
 - Use uppercase underscore placeholders, for example `TASK_ID`, `REVIEW_ID`, and `GRAMMAR_REVIEW_ID`.
-- For SAGE-owned **composite human-visible identifiers**, use `_` between hierarchy levels and `-` inside one level. Do not repeat an already implied workflow prefix in child components. Example: `SAW_PAPCV-A3A03DAC_RTC-PH-99846F75_0001`, not `SAW-SAW-PAPCV-A3A03DAC-SAW-RTC-PH-99846F75-0001`.
+- For SAGE-owned **composite human-visible identifiers**, use `_` between hierarchy levels and `-` inside one level. Do not repeat an already implied workflow prefix in child components. Example: `RTC-PAPCV_20260901-001_RTC-PH-99846F75_0001`.
 - Preserve SAGE Project IDs, language tags, USFM book codes, status values, external filenames, and historical identifiers exactly. Examples include `idKKHv0`, `ukrNPUv0`, `3JN`, `FINALIZED`, and `normalized-findings.json`.
 - Never change `_` to `-`, or `-` to `_`, inside a literal command value, schema field, path, project ID, status, or filename merely for visual consistency.
 
@@ -286,8 +313,8 @@ Files named `ORIGINAL-*`, promotion reports, historical conversion inputs, and d
 - **CANONICAL VRS**: `org.vrs`, the canonical coordinate mapping target.
 - **DEFAULT PROJECT VRS**: `eng.vrs`, the English/KJV-style numbering assumed when a translation Project states no other configured base VRS.
 - **DECLARED PROJECT VRS**: a configured base/custom VRS explicitly supplied by Project metadata or approved by the operator; it overrides the default.
-- **SAW VRS ADVISORY**: a coordinate discrepancy that is invalid under the effective Project VRS but specifically valid/explained under the default Project VRS. It is reported and retained but does not block SAW execution.
+- **RTC/STC VRS ADVISORY**: a coordinate discrepancy that is invalid under the effective Project VRS but specifically valid/explained under the default Project VRS. It is reported and retained but never blocks RTC/STC execution.
 - A genuine coordinate omission under the default Project VRS is not an advisory and may still block.
 ## Beta path normalization
 
-- Generated path grammar: never emit identical adjacent directory segments. For polished SAW output, use `localdata/reports/<job-id>/<BOOK>/` for a whole-book scope; add a distinct scope directory only when it contributes additional coordinates. The same non-duplication rule applies to Job `report_data/`.
+- Generated path grammar: never emit identical adjacent directory segments. For polished RTC/STC output, use `localdata/reports/<job-id>/<BOOK>/` for a whole-book scope; add a distinct scope directory only when it contributes additional coordinates. The same non-duplication rule applies to Job `report_data/`.

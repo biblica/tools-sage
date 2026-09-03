@@ -5,7 +5,7 @@ required:
   versification: [canonical_file, base_files, custom_file_default]
   language_profiles: mapping_keyed_by_canonical_language_tag
   projects: mapping
-  workflows: [bic, saw]
+  workflows: [bic, rtc, stc]
   human_output: [operator_language, operator_language_policy, logs_and_reports, translation_challenges, machine_records]
 optional:
   versification: [default_file]
@@ -44,6 +44,8 @@ constraints:
   project_code_type_does_not_imply_workflow_role: true
   iteration_and_scripture_scope_are_independent: true
   evaluation_execution: sequential_single_output_project_tasks
+  legacy_workflow_compatibility:
+    saw: sealed_existing_jobs_read_only
 
 human_output_contract:
   operator_language:

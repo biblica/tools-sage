@@ -358,10 +358,11 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
             )
         )
 
-    saw_rtc = _phrase_score(
+    rtc_score = _phrase_score(
         text,
         (
             ("run rtc", 1.0),
+            ("reference text comparison", 1.0),
             ("quality assurance", 1.0),
             ("rtc", 0.94),
             ("review translation", 0.78),
@@ -370,13 +371,15 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
             ("audit", 0.62),
         ),
     )
-    saw_focused = _phrase_score(
+    stc_score = _phrase_score(
         text,
-        (("focused check", 1.0), ("specific check", 0.92), ("check only", 0.86)),
-    )
-    saw_ol = _phrase_score(
-        text,
-        (("original language", 1.0), ("ol review", 1.0), ("greek", 0.78), ("hebrew", 0.78)),
+        (
+            ("run stc", 1.0),
+            ("source text correspondence", 1.0),
+            ("original language", 0.9),
+            ("greek", 0.78),
+            ("hebrew", 0.78),
+        ),
     )
     bic_inspect = _phrase_score(
         text,
@@ -400,10 +403,10 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
         bic_inspect += 0.08
         bic_rewrite += 0.08
         bic_self += 0.08
-    if _contains_phrase(text, "saw") or "npu" in text or "tmn" in text:
-        saw_rtc += 0.08
-        saw_focused += 0.08
-        saw_ol += 0.08
+    if _contains_phrase(text, "rtc") or "npu" in text or "tmn" in text:
+        rtc_score += 0.08
+    if _contains_phrase(text, "stc"):
+        stc_score += 0.08
     if "from" in text and " to " in f" {text} ":
         bic_inspect += 0.08
         bic_rewrite += 0.06
@@ -411,54 +414,36 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
         bic_inspect += 0.12
     if _contains_phrase(text, "rewrite"):
         bic_inspect -= 0.18
-    if saw_focused > 0:
-        saw_rtc -= 0.16
-    if saw_ol > 0:
-        saw_rtc -= 0.18
+    if stc_score > 0:
+        rtc_score -= 0.18
 
     add(
-        "saw.rtc",
-        "SAW Reference Text Comparison (RTC)",
-        ("task", "create", "--workflow", "saw", "--operation", "rtc"),
-        saw_rtc,
+        "rtc.compare",
+        "Reference Text Comparison (RTC)",
+        ("task", "create", "--workflow", "rtc", "--operation", "rtc"),
+        rtc_score,
         read_only=False,
         state_changing=True,
-        workflow="saw",
+        workflow="rtc",
         operation="rtc",
-        group="saw",
+        group="rtc",
         explanation="Create a bounded read-only Reference Text Comparison (RTC) ACT task; task state and reports are written.",
         needs_scope=True,
         needs_projects=True,
     )
     add(
-        "saw.focused",
-        "SAW Targeted Check",
-        ("task", "create", "--workflow", "saw", "--operation", "focused"),
-        saw_focused,
+        "stc.correspondence",
+        "Source Text Correspondence (STC)",
+        ("task", "create", "--workflow", "stc", "--operation", "stc"),
+        stc_score,
         read_only=False,
         state_changing=True,
-        workflow="saw",
-        operation="focused",
-        group="saw",
-        explanation="Create one bounded SAW Targeted Check with an explicit question.",
+        workflow="stc",
+        operation="stc",
+        group="stc",
+        explanation="Create a bounded read-only Source Text Correspondence (STC) ACT task against the testament-correct primary authority.",
         needs_scope=True,
         needs_projects=True,
-        needs_focus=True,
-    )
-    add(
-        "saw.ol",
-        "SAW Original-Language Review",
-        ("task", "create", "--workflow", "saw", "--operation", "ol"),
-        saw_ol,
-        read_only=False,
-        state_changing=True,
-        workflow="saw",
-        operation="ol",
-        group="saw",
-        explanation="Create one tightly bounded original-language review with one explicit question.",
-        needs_scope=True,
-        needs_projects=True,
-        needs_focus=True,
     )
     add(
         "bic.inspect",
@@ -517,17 +502,29 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
                 group="status",
                 explanation="Report BIC readiness and restrictions without changing project state.",
             )
-        elif _contains_phrase(text, "saw"):
+        elif _contains_phrase(text, "rtc"):
             add(
-                "workflow.status.saw",
-                "SAW workflow status",
-                ("workflow", "status", "--workflow", "saw"),
+                "workflow.status.rtc",
+                "RTC workflow status",
+                ("workflow", "status", "--workflow", "rtc"),
                 status_score + 0.04,
                 read_only=True,
                 state_changing=False,
-                workflow="saw",
+                workflow="rtc",
                 group="status",
-                explanation="Report SAW readiness and restrictions without changing project state.",
+                explanation="Report RTC readiness and restrictions without changing Project state.",
+            )
+        elif _contains_phrase(text, "stc"):
+            add(
+                "workflow.status.stc",
+                "STC workflow status",
+                ("workflow", "status", "--workflow", "stc"),
+                status_score + 0.04,
+                read_only=True,
+                state_changing=False,
+                workflow="stc",
+                group="status",
+                explanation="Report STC readiness and restrictions without changing Project state.",
             )
         else:
             add(
@@ -654,7 +651,7 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
     add(
         "transaction.list",
         "List incomplete transactions",
-        ("transaction", "list", "--workflow", "bic" if "bic" in text else "saw"),
+        ("transaction", "list", "--workflow", "bic" if "bic" in text else "stc" if "stc" in text else "rtc"),
         transaction_list,
         read_only=True,
         state_changing=False,
@@ -665,7 +662,7 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
     add(
         "transaction.recover",
         "Recover transaction",
-        ("transaction", "recover", "--workflow", "bic" if "bic" in text else "saw"),
+        ("transaction", "recover", "--workflow", "bic" if "bic" in text else "stc" if "stc" in text else "rtc"),
         transaction_recover,
         read_only=False,
         state_changing=True,
@@ -687,13 +684,13 @@ def _intent_candidates(request: str) -> list[IntentCandidate]:
     aggregate_score = _phrase_score(text, (("aggregate work units", 1.0), ("aggregate plan", 0.94)))
     add(
         "task.aggregate",
-        "Aggregate SAW work units",
+        "Aggregate analysis work units",
         ("task", "aggregate"),
         aggregate_score,
         read_only=False,
         state_changing=True,
         group="task",
-        explanation="Aggregate finalized SAW work units through their governed partition plan.",
+        explanation="Aggregate finalized RTC/STC work units through their governed partition plan.",
     )
 
     return candidates
@@ -725,20 +722,20 @@ def _resolve_task_proposal(
     contemporary_source: str | None = None
     lexical_donor: str | None = None
     project_roles = _project_roles(config, projects.mentioned)
-    bindings = _workflow_defaults(config, candidate.workflow or "saw")
+    bindings = _workflow_defaults(config, candidate.workflow or "rtc")
 
-    if candidate.workflow == "saw":
+    if candidate.workflow in {"rtc", "stc"}:
         for project_id in projects.mentioned:
             roles = set(project_roles.get(project_id, ()))
             if output_project is None and "WIP" in roles:
                 output_project = project_id
-            if contemporary_source is None and "REFERENCE" in roles:
+            if candidate.workflow == "rtc" and contemporary_source is None and "REFERENCE" in roles:
                 contemporary_source = project_id
         if output_project is None:
             output_project = bindings.get("WIP")
             if output_project:
                 defaults_used.append("output_project")
-        if contemporary_source is None:
+        if candidate.workflow == "rtc" and contemporary_source is None:
             contemporary_source = bindings.get("REFERENCE")
             if contemporary_source:
                 defaults_used.append("contemporary_source")
@@ -770,7 +767,7 @@ def _resolve_task_proposal(
         missing.append("output_project")
     if contemporary_source:
         argv.extend((("--source" if candidate.workflow == "bic" else "--reference"), contemporary_source))
-    else:
+    elif candidate.workflow != "stc":
         missing.append("contemporary_source")
     if candidate.workflow == "bic":
         if lexical_donor:
@@ -856,9 +853,8 @@ def related_operations() -> list[dict[str, str]]:
         {"command_id": "bic.inspect", "label": "BIC INSPECT - analyze a bounded source scope"},
         {"command_id": "bic.rewrite", "label": "BIC REWRITE - generate a candidate after review"},
         {"command_id": "bic.self_check", "label": "BIC SELF-CHECK - validate and commit a rewrite"},
-        {"command_id": "saw.rtc", "label": "SAW Reference Text Comparison (RTC) - review a bounded WIP scope"},
-        {"command_id": "saw.focused", "label": "SAW Targeted Check - answer one bounded question"},
-        {"command_id": "saw.ol", "label": "SAW OL Review - inspect one original-language question"},
+        {"command_id": "rtc.compare", "label": "Reference Text Comparison (RTC) - compare a bounded WIP scope with its Reference Project"},
+        {"command_id": "stc.correspondence", "label": "Source Text Correspondence (STC) - compare a bounded WIP scope with primary source text"},
         {"command_id": "project.init", "label": "Guided INIT - review recoverable settings"},
         {"command_id": "workspace.status", "label": "Workspace status - read current governed state"},
     ]

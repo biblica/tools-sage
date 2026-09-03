@@ -1151,6 +1151,89 @@ def test_operator_approved_saw_preview_is_the_runtime_partition_plan(package_roo
     assert [item["review_portion_total"] for item in manifests] == [2, 2]
 
 
+def test_discontinuous_rtc_run_executes_only_its_approved_portions(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A separated same-book Run preserves its exact planned chapters into ACT tasks."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=1)
+    scripture = (
+        "\\id MAT Fixture\n\\c 1\n\\p\n\\v 1 Chapter one.\n"
+        "\\c 3\n\\p\n\\v 1 Chapter three.\n"
+    )
+    for project in storage_layout(root).projects_root.iterdir():
+        path = project / "41MAT.SFM"
+        if path.is_file():
+            path.write_text(scripture, encoding="utf-8")
+    for name in ("eng.vrs", "org.vrs"):
+        (root / "system" / "resources" / "scripture" / name).write_text(
+            "MAT 1:1 3:1\n",
+            encoding="utf-8",
+        )
+    _initialize(package_root, root)
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1; MAT 3")
+    runtime_settings = store.ensure_runtime_files(job)
+    preview_path = run.root / "plans" / "PREVIEW.json"
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(package_root / "system" / "src")
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "sage.cli",
+            "--settings",
+            str(runtime_settings),
+            "--json",
+            "workflow",
+            "plan",
+            "--workflow",
+            "saw",
+            "--operation",
+            "rtc",
+            "--scope",
+            run.scope,
+            "--output",
+            str(preview_path),
+        ],
+        text=True,
+        capture_output=True,
+        env=env,
+        check=False,
+        timeout=40,
+    )
+    assert result.returncode == 0, result.stderr + result.stdout
+    approved = json.loads(result.stdout)
+    approved.update({
+        "approval_status": "OPERATOR_APPROVED",
+        "approved_job_id": job.job_id,
+        "approved_run_id": run.run_id,
+    })
+    approved_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
+    approved_path.write_text(json.dumps(approved), encoding="utf-8")
+    store.update_run(run, approved_work_plan_path=str(approved_path))
+
+    composite = create_act_task(
+        load_ecosystem(store.ensure_runtime_files(job)),
+        workflow="saw",
+        operation="rtc",
+        output_project_id=job.bindings["wip"],
+        contemporary_source_id=job.bindings["reference"],
+        scope_value=run.scope,
+        job_id=job.job_id,
+        run_id=run.run_id,
+    )
+
+    stage = json.loads(Path(composite["stages"][0]["plan_path"]).read_text(encoding="utf-8"))
+    assert [unit["scope"] for unit in stage["work_units"]] == ["MAT 1:1", "MAT 3:1"]
+    assert [
+        json.loads(Path(unit["manifest_path"]).read_text(encoding="utf-8"))["expected_references"]
+        for unit in stage["work_units"]
+    ] == [["MAT 1:1"], ["MAT 3:1"]]
+
+
 def test_partitioned_rtc_aggregate_preserves_source_text_issues(
     package_root: Path,
     make_workspace,
@@ -1684,6 +1767,101 @@ def test_structural_stage_covers_only_candidate_coordinates(package_root: Path, 
     assert manifest["scope"] == "MAT 1:1-3"
     assert manifest["expected_references"] == ["MAT 1:2", "MAT 1:3"]
     assert manifest["structural_candidate_ids"] == ["VRS-001"]
+
+
+def test_vrs_candidate_crossing_approved_portions_is_reported_without_blocking(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A VRS range may be reported across RTC portions without joining their boundaries."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=6)
+    projects_root = storage_layout(root).projects_root
+    (projects_root / "usWIP" / "custom.vrs").write_text(
+        "#! &MAT 1:2-5 = MAT 1:2\n",
+        encoding="utf-8",
+    )
+    settings = root / "ecosystem.yml"
+    settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
+    settings.write_text(yaml.safe_dump(settings_data, sort_keys=False), encoding="utf-8")
+    _initialize(package_root, root)
+
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-6")
+    config = load_ecosystem(store.ensure_runtime_files(job))
+    compiled = compile_project_scope(
+        config,
+        config.project(job.bindings["wip"]),
+        parse_scope(run.scope),
+    )
+    approved = {
+        "schema_version": "1.2",
+        "plan_id": "SAW-RTC-MAT-VRS-REPORT-ONLY",
+        "plan_fingerprint": "v" * 64,
+        "workflow_id": "saw",
+        "operation": "rtc",
+        "operator_scope": run.scope,
+        "project_id": job.bindings["wip"],
+        "approval_status": "OPERATOR_APPROVED",
+        "approved_job_id": job.job_id,
+        "approved_run_id": run.run_id,
+        "shared_hashes": {
+            "resource_sha256": compiled["resource_sha256"],
+            "compiled_files_sha256": compiled["compiled_files_sha256"],
+            "effective_vrs_sha256": compiled["effective_vrs"]["effective_sha256"],
+            "structure_policy_sha256": compiled["structure_policy"]["effective_sha256"],
+        },
+        "units": [
+            {
+                "unit_id": "SAW-RTC-MAT-VRS-REPORT-ONLY-U001",
+                "primary_scope": "MAT 1:1-3",
+                "primary_references": ["MAT 1:1", "MAT 1:2", "MAT 1:3"],
+                "context_before": [],
+                "context_after": [],
+            },
+            {
+                "unit_id": "SAW-RTC-MAT-VRS-REPORT-ONLY-U002",
+                "primary_scope": "MAT 1:4-6",
+                "primary_references": ["MAT 1:4", "MAT 1:5", "MAT 1:6"],
+                "context_before": [],
+                "context_after": [],
+            },
+        ],
+    }
+    approved_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
+    approved_path.write_text(json.dumps(approved), encoding="utf-8")
+    store.update_run(run, approved_work_plan_path=str(approved_path))
+
+    result = create_act_task(
+        config,
+        workflow="saw",
+        operation="rtc",
+        output_project_id=job.bindings["wip"],
+        contemporary_source_id=job.bindings["reference"],
+        scope_value=run.scope,
+        job_id=job.job_id,
+        run_id=run.run_id,
+    )
+
+    assert result["current_stage"] == "STRUCTURAL_ADJUDICATION"
+    assert result["stages"][0]["kind"] == "PARTITIONED_PLAN"
+    manifests = [
+        json.loads(Path(path).read_text(encoding="utf-8"))
+        for path in result["task_manifests"]
+    ]
+    assert [manifest["expected_references"] for manifest in manifests] == [
+        ["MAT 1:2", "MAT 1:3"],
+        ["MAT 1:4", "MAT 1:5"],
+    ]
+    assert [manifest["parent_review_portion_id"] for manifest in manifests] == [
+        "SAW-RTC-MAT-VRS-REPORT-ONLY-U001",
+        "SAW-RTC-MAT-VRS-REPORT-ONLY-U002",
+    ]
+    act_text = (Path(result["task_manifests"][0]).parent / "ACT.md").read_text(
+        encoding="utf-8"
+    )
+    assert "never block RTC or make a review portion indivisible" in act_text
 
 
 def test_current_contract_surfaces_have_no_removed_workflow_vocabulary(package_root: Path) -> None:

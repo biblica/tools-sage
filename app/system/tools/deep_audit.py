@@ -68,6 +68,15 @@ BUNDLED_OL_ROOTS = {
 }
 TEXT_SUFFIXES = {".md", ".txt", ".yml", ".yaml", ".json", ".py", ".sh", ".ps1", ".cmd"}
 CURRENT_DOCS = {"README.md", "docs/OPERATOR-GUIDE.md"}
+CURRENT_ANALYSIS_IDENTITY_FILES = {
+    "system/config/DEVELOPMENT-STATUS.md",
+    "system/config/NEXT-DEVELOPMENT-WORK.md",
+    "system/config/localization/README.md",
+    "system/config/project-management/RELEASE-CLEANUP.md",
+    "system/config/project-management/TODO.md",
+}
+CURRENT_ANALYSIS_SKILLS = {"bic-inspect", "bic-rewrite", "bic-self-check", "rtc", "stc"}
+RETIRED_ANALYSIS_IDENTITY_RE = re.compile(r"\bSAW(?:_|\b)")
 US_SPELLING = {
     r"\banalyse\b": "analyze",
     r"\banalysed\b": "analyzed",
@@ -249,6 +258,25 @@ def check_target_text_vocabulary(path: Path, rel: str, errors: list[str]) -> Non
         errors.append(
             f"Prohibited target-text action vocabulary in {rel}: {', '.join(matches)}"
         )
+
+
+def check_retired_analysis_identity(path: Path, rel: str, errors: list[str]) -> None:
+    """Reject the retired umbrella identity from current operating and Skill material."""
+    parts = Path(rel).parts
+    current_skill = (
+        len(parts) >= 4
+        and parts[:2] == ("system", "skills")
+        and parts[2] in CURRENT_ANALYSIS_SKILLS
+        and not path.name.startswith(("ORIGINAL-", "LEGACY-"))
+    )
+    if rel not in CURRENT_ANALYSIS_IDENTITY_FILES and not current_skill:
+        return
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return
+    if RETIRED_ANALYSIS_IDENTITY_RE.search(rel) or RETIRED_ANALYSIS_IDENTITY_RE.search(text):
+        errors.append(f"Retired SAW identity in current operating material: {rel}")
 
 
 def check_bic_protected_rewrite_contract(root: Path, errors: list[str]) -> None:
@@ -513,8 +541,8 @@ def parse_skill_frontmatter(path: Path) -> dict[str, Any]:
 def check_all_skills(root: Path, errors: list[str], counts: dict[str, int]) -> None:
     """Validate every provider-neutral routed Skill and its active references."""
     paths = sorted((root / "system" / "skills").glob("*/SKILL.md"))
-    if len(paths) != 7:
-        errors.append(f"Expected 7 governed analytical Skill files, found {len(paths)}")
+    if len(paths) != 9:
+        errors.append(f"Expected 9 governed analytical Skill files, found {len(paths)}")
     forbidden_context = {
         "Cline": "provider-specific Cline instruction",
         "SWITCH TO ACT MODE": "obsolete mode-switch instruction",
@@ -555,6 +583,7 @@ def check_all_skills(root: Path, errors: list[str], counts: dict[str, int]) -> N
                 for item in sorted(reference_root.iterdir())
                 if item.is_file()
                 and not item.name.startswith("ORIGINAL-")
+                and not item.name.startswith("LEGACY-")
                 and item.name != "RUN-RTC.md"
             )
         routed_text = "\n".join(item.read_text(encoding="utf-8") for item in candidates)
@@ -584,7 +613,7 @@ def check_documentation_contracts(root: Path, errors: list[str]) -> None:
         "docs/windows/RECOVERY.md",
         "docs/macos-linux/ERRORS.md",
         "docs/windows/ERRORS.md",
-        "docs/SAW-CHEAT-SHEET.md",
+        "docs/RTC-STC-CHEAT-SHEET.md",
     }
     for rel in sorted(required):
         if not (root / rel).is_file():
@@ -772,6 +801,8 @@ def check_skill_registry(root: Path, errors: list[str], counts: dict[str, int]) 
         ("bic", "inspect"),
         ("bic", "rewrite"),
         ("bic", "self_check"),
+        ("rtc", "rtc"),
+        ("stc", "stc"),
         ("saw", "rtc"),
         ("saw", "stc"),
         ("saw", "focused"),
@@ -1031,6 +1062,7 @@ def audit(root: Path, mode: str) -> dict[str, Any]:
             errors.append(f"Forbidden artifact file: {rel}")
         if path.suffix.lower() in TEXT_SUFFIXES or path.name in {"sage", "sage-python", "bic", "saw"}:
             check_target_text_vocabulary(path, rel, errors)
+            check_retired_analysis_identity(path, rel, errors)
             try:
                 text = path.read_text(encoding="utf-8")
             except UnicodeDecodeError as exc:

@@ -1,6 +1,6 @@
 # Scripture Project Operator Cheat Sheet — v0.01beta2
 
-Every menu, including Manage Jobs, Scripture Projects, BIC, SAW, and SAGE
+Every menu, including Manage Jobs, Scripture Projects, BIC, RTC/STC, and SAGE
 Maintenance, ends with the same navigation block:
 
 ```text
@@ -46,6 +46,10 @@ The onboarding scope accepts `OT`, `NT`, `FB`, individual USFM IDs, ranges such 
 
 Successful addition records the immutable full UTC import timestamp and displays its stable `YYYYMMDD` **Imported to SAGE** date. Project validation, rescanning, and remapping preserve it. Removing and later re-adding a Project creates a new import date.
 
+On the Project action screen, **Refresh Project** rereads Paratext/catalog facts while preserving the
+confirmed scope and import date. **Validate Project** evaluates readiness separately; it does not
+silently expand the scope to detected out-of-scope files.
+
 ## Base VRS
 
 The Base VRS root defaults to the Paratext Projects root. An explicit Base VRS override survives later Paratext-root changes. Clear the override to return to the default.
@@ -77,7 +81,7 @@ Role selectors show only SAGE Projects and report each Project's SAGE import dat
 
 ## Scope and preview
 
-Runs use **CHOOSE SCRIPTURE SCOPE**. Choose a Book plus a range, choose direct entry, or type the scope at the choice prompt. `GEN` means the whole book; `GEN 1` means the whole chapter; `GEN 1:1-10` means the verse range. Before Run creation SAGE shows **REVIEW WORK BEFORE RUNNING** with bounded sections and estimated tokens. Choose **Run**, **Change scope**, or **Back**.
+Runs use **CHOOSE SCRIPTURE SCOPE**. Choose a Book plus a range, choose direct entry, or type the scope at the choice prompt. `GEN` means the whole book; `GEN 1` means the whole chapter; `GEN 1:1-10` means the verse range. RTC/STC also accept semicolon-separated portions from the same book: `1CH 5-6; 24` runs chapters 5, 6, and 24 without including the chapters between them. Before Run creation SAGE shows **REVIEW WORK BEFORE RUNNING** with bounded sections and estimated tokens. Choose **Run**, **Change scope**, or **Back**.
 
 ## Job report batching
 
@@ -89,7 +93,7 @@ and batches the approved findings into the owning Job's main report catalog:
 localdata/reports/<job-id>/<BOOK>/
 ```
 
-For SAW Reference Text Comparison (RTC), Operator reports are chapter-scoped with an explicit three-digit chapter component:
+For Reference Text Comparison (RTC), Operator reports are chapter-scoped with an explicit three-digit chapter component:
 
 ```text
 GEN/GEN_001_RTC_ACTION-REPORT.md
@@ -98,15 +102,25 @@ GEN/GEN_001_RTC_OPERATOR-NOTE.txt
 
 Single-chapter books still use chapter `001`, for example `PHM_001_STC_ACTION-REPORT.md`. The current report ID is `RTC` or `STC`. Block-level evidence remains under the governed Run task tree.
 
-The final report is Job-owned, not Run-owned and not Project-owned. The `<job-id>` path segment identifies the Job, not a Project. Each Job owns one required primary reporting language; the global Operator language is only the default captured for a new Job. Normal menus expose only `approved` languages and configured `candidates`; an advanced Operator must add a `pilot_only` tag to `human_output.operator_language_policy.candidates` by hand before evaluation. The Job may add an optional secondary reporting language; SAGE recommends the SAW WIP language or BIC TARGET language and also offers another language or none. In every bilingual report, the primary rendering governs interpretation and the secondary is an assistive, lower-confidence downstream translation that must be checked against the primary before action. A secondary rendering adds model usage and report compilation time and requires more human review than a single-language report. Canonical machine evidence remains authoritative. A finalized chapter report is the current canonical Operator projection for that Job/book/chapter. Governed Run/task evidence preserves historical execution identity; Operator filenames do not encode Run date/serial. SAGE prints the exact final report paths at completion. It never writes reports into a Paratext Project folder.
+The final report is Job-owned, not Run-owned and not Project-owned. The `<job-id>` path segment identifies the Job, not a Project. Each Job owns one required primary reporting language; the global Operator language is only the default captured for a new Job. Normal menus expose only `approved` languages and configured `candidates`; an advanced Operator must add a `pilot_only` tag to `human_output.operator_language_policy.candidates` by hand before evaluation. The Job may add an optional secondary reporting language; SAGE recommends the RTC/STC WIP language or BIC TARGET language and also offers another language or none. In every bilingual report, the primary rendering governs interpretation and the secondary is an assistive, lower-confidence downstream translation that must be checked against the primary before action. A secondary rendering adds model usage and report compilation time and requires more human review than a single-language report. Canonical machine evidence remains authoritative. A finalized chapter report is the current canonical Operator projection for that Job/book/chapter. Governed Run/task evidence preserves historical execution identity; Operator filenames do not encode Run date/serial. SAGE prints the exact final report paths at completion. It never writes reports into a Paratext Project folder.
 
 ## Safe removal
 
-**Scripture Projects > Remove Project from SAGE** is the direct removal path. The same action remains available from an individual Project's detail screen. It removes SAGE inventory and mapping state only; it never deletes or changes the Paratext Project. SAGE blocks removal while any active or archived Job still binds the Project.
+**Scripture Projects > Remove Project from SAGE** is the direct removal path. The same action remains
+available from an individual Project's detail screen. For a Job-bound Project, SAGE lists all affected
+active and archived Jobs and requires explicit negative-default confirmation before it removes those
+Jobs, their Job-local data, and the Project's SAGE inventory/mapping. Declining changes nothing.
+Paratext Projects, Scripture files, and root-level published reports remain unchanged.
 
-**Remove Job** deletes the Job directory, including its Runs and Job-local report data. Published
-files in the root Operator reports catalog are separate and remain available. Removal does not
-delete or modify SAGE Projects or Paratext files.
+For RTC and STC, **Manage Job > Delete Job** deletes every Job-owned working artifact: Runs, tasks,
+plans, snapshots, compiled USJ packets, diagnostics, caches, and controller runtime/state. If
+published files exist under `localdata/reports/<job-id>/`, SAGE separately asks whether to delete
+them; the safe default preserves them. A final negative-default confirmation shows the complete
+scope. Deletion never modifies SAGE Projects or Paratext files.
+
+RTC and STC WIP/REFERENCE Project bindings are immutable for the Job lifetime. Refreshing the WIP
+snapshot rereads the same bound Project. To use a different WIP or REFERENCE Project, create a new
+Job.
 
 ## Original-language resources
 

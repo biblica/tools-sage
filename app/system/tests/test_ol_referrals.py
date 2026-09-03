@@ -71,6 +71,18 @@ def test_normalize_referral_admission_rejects_missing_fields(field: str) -> None
     assert caught.value.code == "SAW_OL_REFERRAL_FIELDS_MISSING"
 
 
+def test_current_rtc_referral_errors_use_the_rtc_namespace() -> None:
+    """Current RTC validation must never expose a retired workflow error code."""
+    request = _admission()
+    del request["source_dependency"]
+
+    with pytest.raises(ValidationError) as caught:
+        normalize_referral_admission(request, index=1, workflow="rtc")
+
+    assert caught.value.code == "RTC_OL_REFERRAL_FIELDS_MISSING"
+    assert "SAW" not in caught.value.message
+
+
 def test_normalize_referral_admission_rejects_open_ended_class() -> None:
     """Verify that an unlisted conflict class cannot open a source referral."""
     with pytest.raises(ValidationError) as caught:

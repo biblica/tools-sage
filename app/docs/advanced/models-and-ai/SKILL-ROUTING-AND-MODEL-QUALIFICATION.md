@@ -7,15 +7,15 @@ It replaces the normal Operator-owned global model/reasoning choice with determi
 routing by registered analytical Skill. It also retains one guarded global override for controlled
 diagnostics and Beta testing.
 
-The design applies to all seven registered analytical Skills:
+The design applies to the five current analytical Skills and two compatibility-only legacy Skills:
 
 - `bic-inspect`
 - `bic-rewrite`
 - `bic-self-check`
-- `saw-rtc`
-- `saw-stc`
-- `saw-focused-check`
-- `saw-original-language-review`
+- `rtc`
+- `stc`
+- `saw-focused-check` (legacy sealed Jobs only)
+- `saw-original-language-review` (legacy sealed Jobs only)
 
 Controller-only planning, validation, aggregation, report composition, and finalization remain
 deterministic Python work. They are not model Skills and do not receive model routes.
@@ -47,7 +47,7 @@ work units are never combined merely to reduce calls. Original-language adjudica
 one item per evaluation, and secondary-language report rendering remains exactly one reported item
 per evaluation. SAGE does not reuse provider conversation state.
 
-The current Ollama capability remains `ASSISTIVE_ONLY`; it cannot execute BIC/SAW analytical Skills.
+The current Ollama capability remains `ASSISTIVE_ONLY`; it cannot execute BIC/RTC/STC analytical Skills.
 A future local model can become a governed route only through the same adapter, authorization, and
 per-Skill qualification process as a hosted provider.
 
@@ -146,8 +146,8 @@ The Alpha1 success boundaries are:
 | `bic-inspect` | Identify every seeded material issue with the expected evidence and severity relationship | Rewrite TARGET, invent evidence, or miss a seeded blocking issue |
 | `bic-rewrite` | Resolve every authorized challenge while preserving protected Scripture, markers, and unrelated text | Unauthorized scope change, unresolved approved challenge, or new seeded regression |
 | `bic-self-check` | Detect every seeded rewrite regression and return the expected commit/block decision | Approve a seeded blocking regression or alter Scripture |
-| `saw-rtc` | Complete exact WIP/REFERENCE coverage, report seeded variances, and defer only qualifying source-text disputes | Missing/extra coverage, ordinary issue wrongly sent to OL, or source-text dispute finalized without required adjudication |
-| `saw-stc` | Evaluate every planned WIP/primary-SOURCE coordinate and return the expected correspondence result | Use a REFERENCE dependency, omit analytical completion, or treat non-primary evidence as SOURCE authority |
+| `rtc` | Complete exact WIP/REFERENCE coverage, report seeded variances, and defer only qualifying source-text disputes | Missing/extra coverage, ordinary issue wrongly sent to OL, or source-text dispute finalized without required adjudication |
+| `stc` | Evaluate every planned WIP/primary-SOURCE coordinate and return the expected correspondence result | Use a REFERENCE dependency, omit analytical completion, or treat non-primary evidence as SOURCE authority |
 | `saw-focused-check` | Answer only the sealed focused question with the expected bounded evidence | Expand the question/scope, use OL Scripture, or perform general RTC |
 | `saw-original-language-review` | Resolve exactly one sealed OL item against the correct GRK/HEB authority and expected semantic decision | Combine items, use the wrong testament authority, or import unrelated context into the decision |
 
@@ -259,11 +259,11 @@ action restores `AUTOMATIC` routing.
 
 ## Operator displays
 
-The SAW Job menu must not place one model in the Job title because different Skills can use different
+An RTC or STC Job menu must not place one model in the Job title because different Skills can use different
 routes. Its idle state shows current recommendations:
 
 ```text
-SAW JOB - SAW_ukrNPUv1-usNASB
+RTC JOB - RTC-ukrNPUv1_20260901
 ------------------------------------------------------------------------
 WIP                          ukrNPUv1
 REFERENCE                    usNASB
@@ -272,7 +272,6 @@ AI Routing                   AUTOMATIC
 
 SKILL       PROVIDER   MODEL          REASONING   STATUS
 RTC         CODEX      gpt-5.6-sol    medium      RECOMMENDED
-STC         CODEX      gpt-5.6-sol    high        RECOMMENDED
 ```
 
 The actual native labels come from current qualification evidence; the example does not prescribe
@@ -280,7 +279,7 @@ those particular routes. During an active Run, the menu adds the route for the c
 an unresolved route as a current recommendation:
 
 ```text
-Active Run                   SAW_ukrNPUv1-usNASB-20260829-001
+Active Run                   RTC-ukrNPUv1_20260901-001
 Current Skill                RTC
 Execution Route              CODEX | gpt-5.6-sol | medium
 Routing Mode                 AUTOMATIC
@@ -362,7 +361,7 @@ confirm them:
   blocked;
 - the advanced global override is audited and fails closed per Skill;
 - task execution receipts record exact automatic or override routing evidence;
-- SAW and BIC Job menus, status surfaces, and final reports display truthful route metadata;
+- RTC/STC and BIC Job menus, status surfaces, and final reports display truthful route metadata;
 - legacy local settings migrate without changing historical receipts;
 - schemas, package validation, deep audit, complete automated tests, and native platform acceptance
   pass from one frozen exact source hash.

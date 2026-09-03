@@ -37,19 +37,27 @@ canonical_resource_bindings:
     TARGET: exactly_one
     ORIGINAL_LANGUAGE_GREEK: zero_or_one
     ORIGINAL_LANGUAGE_HEBREW: zero_or_one
-  saw_job:
+  rtc_job:
     WIP: exactly_one
     REFERENCE: exactly_one
     ORIGINAL_LANGUAGE_GREEK: zero_or_one
     ORIGINAL_LANGUAGE_HEBREW: zero_or_one
-  saw_task_by_operation:
+  stc_job:
+    WIP: exactly_one
+    PRIMARY_ORIGINAL_LANGUAGE: exactly_one_testament_appropriate
+  legacy_saw_job:
+    WIP: exactly_one
+    REFERENCE: exactly_one
+    ORIGINAL_LANGUAGE_GREEK: zero_or_one
+    ORIGINAL_LANGUAGE_HEBREW: zero_or_one
+  analysis_task_by_operation:
     rtc: [WIP, REFERENCE]
     stc: [WIP, exactly_one_testament_appropriate_PRIMARY_OL]
-    focused: [WIP, REFERENCE]
-    ol: [WIP, REFERENCE, exactly_one_testament_appropriate_PRIMARY_OL]
+    legacy_focused: [WIP, REFERENCE]
+    legacy_ol: [WIP, REFERENCE, exactly_one_testament_appropriate_PRIMARY_OL]
 resource_projection_fields:
-  output_project: BIC_TARGET_or_SAW_WIP
-  contemporary_source: BIC_SOURCE_or_SAW_REFERENCE
+  output_project: BIC_TARGET_or_RTC_WIP_or_STC_WIP
+  contemporary_source: BIC_SOURCE_or_RTC_REFERENCE_or_STC_PRIMARY_OL
   rule: canonical_resource_bindings_are_authoritative_for_model_and_project_role_semantics
 project_context:
   job_id: required_for_all_governed_tasks
@@ -60,10 +68,10 @@ controls:
   execution_mode: SAGE_GOVERNED_TASK_V1
   output_project_projection:
     cardinality: exactly_one
-    object: BIC_TARGET_or_SAW_WIP
+    object: BIC_TARGET_or_RTC_WIP_or_STC_WIP
   contemporary_source_projection:
     cardinality: exactly_one
-    object: BIC_SOURCE_or_SAW_REFERENCE
+    object: BIC_SOURCE_or_RTC_REFERENCE_or_STC_PRIMARY_OL
   original_language_sources:
     cardinality: exactly_one
     object: applicable_bound_ol_resource

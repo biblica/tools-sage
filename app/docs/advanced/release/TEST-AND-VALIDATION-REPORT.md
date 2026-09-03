@@ -23,15 +23,15 @@ The release process uses one frozen governed source hash and requires all of the
 
 ## Current automated evidence
 
-Working-source validation on 2026-08-31 collected **887 outcomes**. The direct managed-runtime suite
-recorded **885 passed**, **2 skipped**, and **0 failed/error outcomes** under
-SAGE-managed CPython 3.12.14. The two skips are guarded optional Textual interaction cases;
-non-Textual TUI service/state coverage remains active.
+Working-source validation on 2026-09-03 collected **1,015 outcomes**. The direct managed-runtime
+suite recorded **1,015 passed**, **0 skipped**, and **0 failed/error outcomes** under SAGE-managed
+CPython 3.12.14. TUI service/state coverage remains active while workflow-changing TUI development
+is paused until `0.02beta`.
 
-Schema validation covers **42 schemas / 42 IDs / 42 owner mappings** and reports PASS with no
+Schema validation covers **43 schemas / 43 IDs / 43 owner mappings** and reports PASS with no
 warnings/errors. Package validation reports READY with no warnings/errors. Source deep audit covers
-620 governed files and **3,049 / 3,049 documented Python procedures** and reports PASS with no
-warnings/errors. Sealed model-evaluation regeneration verifies **7 Skills / 23 cases / 93 files**.
+684 governed files and **3,284 / 3,284 documented Python procedures** and reports PASS with no
+warnings/errors. Sealed model-evaluation regeneration verifies **9 Skills / 31 cases / 125 files**.
 
 This is development evidence, not a production-release claim. Formal exact-source hardening receipts
 remain machine-local evidence and must be regenerated after any governed-source change. Deterministic
@@ -45,7 +45,7 @@ migration, an audited exact-route override, sealed synthetic qualification cases
 receipts, receipt-bound report provenance, provider-native automatic qualification progression, and
 provider-only UI/CLI controls. Focused deterministic
 tests have exercised resolver and policy contracts, settings/override state, evaluation reconciliation,
-runtime pre-handoff rejection, per-item secondary rendering, BIC/SAW report propagation, localization,
+runtime pre-handoff rejection, per-item secondary rendering, BIC/RTC/STC report propagation, localization,
 and menu/command surfaces using fake provider responses only.
 
 No unit, schema, package, or hardening command is permitted to run a live provider qualification.

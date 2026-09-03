@@ -13,7 +13,7 @@ immutable reference snapshots
         v
 review state + current local indexes
         |
-        +--> BIC / SAW evidence packets
+        +--> BIC / RTC/STC evidence packets
         |
         +--> explicit FLEx LIFT view
         |
@@ -58,7 +58,7 @@ A stronger SAGE state is applied separately:
 ./system/bin/sage rwc index build --language KKH
 ```
 
-This separation prevents an import source from silently conferring translation authority. Multiple sense reviews may be batched while imports/authorities remain unchanged; BIC, SAW, and export remain blocked until the index is rebuilt.
+This separation prevents an import source from silently conferring translation authority. Multiple sense reviews may be batched while imports/authorities remain unchanged; BIC, RTC/STC, and export remain blocked until the index is rebuilt.
 
 ## Explicit export views
 

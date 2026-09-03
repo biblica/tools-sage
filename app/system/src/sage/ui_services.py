@@ -27,7 +27,7 @@ from .registry import load_ecosystem
 from .storage import storage_layout
 from .state import ecosystem_state_path, read_state
 from .standard import load_standard
-from .workflow_identity import OPERATOR_WORKFLOWS
+from .workflow_identity import OPERATOR_WORKFLOWS, analysis_reason_code
 
 _RUNTIME_COMPATIBILITY_WORKFLOWS = (*OPERATOR_WORKFLOWS, "saw")
 
@@ -119,8 +119,8 @@ def context_help_lines(title: str) -> tuple[str, ...]:
         )
     if "SAW" in key:
         return (
-            "SAW operates through governed Jobs and Runs using WIP and REFERENCE bindings.",
-            "Status shows the active task and current AI configuration without leaving the current view.",
+            "Legacy analysis Jobs remain readable for compatibility; create new work under RTC or STC.",
+            "This compatibility view does not define the current workflow identity.",
         )
     return (
         "A Back returns one view; B Main Menu returns home; C exits SAGE.",
@@ -363,7 +363,7 @@ class OperatorUIService:
         return results
 
     def workflow_setup_status(self, tool: str, initialization: dict[str, Any]) -> str:
-        """Return one concise independent setup status for BIC or SAW."""
+        """Return one concise independent setup status for a governed workflow."""
         active_id = self.store.active_jobs().get(tool)
         job = self.store.active_job(tool)
         if job is None:
@@ -575,6 +575,13 @@ class OperatorUIService:
     def run_progress_snapshot(self, job: Any, run: Any) -> dict[str, Any]:
         """Return one canonical sequential Run progress snapshot derived from governed ACT manifests."""
         policy = dict(getattr(job, "progress_quantifier", {}) or {})
+        job_tool = str(getattr(job, "tool", "")).strip().lower()
+        stored_reason = getattr(run, "result_reason", None)
+        reason_code = (
+            analysis_reason_code(str(stored_reason), job_tool)
+            if stored_reason and job_tool in {"rtc", "stc"}
+            else stored_reason
+        )
         progress = quantify_run(
             root=self.root,
             task_manifests=getattr(run, "task_manifests", ()),
@@ -582,7 +589,7 @@ class OperatorUIService:
             current_stage=str(getattr(run, "current_stage", "")),
             basis=str(policy.get("basis") or "ROUTED_SFM_ESTIMATED_TOKENS"),
             result=getattr(run, "result", None),
-            reason_code=getattr(run, "result_reason", None),
+            reason_code=reason_code,
         ).to_dict()
         progress["job_id"] = getattr(job, "job_id", None)
         progress["run_id"] = getattr(run, "run_id", None)

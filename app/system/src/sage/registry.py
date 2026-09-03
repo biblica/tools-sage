@@ -30,7 +30,9 @@ from .original_language_resources import apply_original_language_resources
 SUPPORTED_SCHEMA = "0.04"
 PROJECT_FORMATS = {"USFM"}
 PROJECT_KINDS = {"SCRIPTURE", "GENERATED_SCRIPTURE"}
-WORKFLOW_IDS = {"bic", "saw"}
+CURRENT_WORKFLOW_IDS = {"bic", "rtc", "stc"}
+LEGACY_WORKFLOW_IDS = {"saw"}
+WORKFLOW_IDS = CURRENT_WORKFLOW_IDS | LEGACY_WORKFLOW_IDS
 PROFILE_ROLES = PROJECT_ROLE_VALUES | {"TARGET"}
 CONTENT_STATES = {"LOCKED", "UNDER_REVIEW"}
 VARIANT_ID_RE = re.compile(r"^[a-z][a-z0-9-]*$")
@@ -152,7 +154,7 @@ class EvaluationSetSpec:
 
 @dataclass(frozen=True)
 class WorkflowSpec:
-    """One independently governed BIC or SAW workflow profile."""
+    """One independently governed current or explicitly legacy workflow profile."""
 
     workflow_id: str
     profile_path: Path
@@ -512,7 +514,7 @@ def _parse_projects(
         roles = normalize_roles(roles_raw, f"projects.{project_id}.scope.roles")
         if "GENERATED_TARGET" in roles and "WIP" in roles:
             raise ConfigurationError(
-                f"Project {project_id} cannot be both BIC GENERATED_TARGET and SAW WIP; "
+                f"Project {project_id} cannot be both BIC GENERATED_TARGET and analysis WIP; "
                 "configure independent workflow resources even when they map to the same external folder"
             )
         scope = ProjectScopeSpec(
@@ -740,7 +742,7 @@ def _parse_workflows(data: dict[str, Any], root: Path) -> dict[str, WorkflowSpec
                 else None
             ),
         )
-    missing = WORKFLOW_IDS - set(result)
+    missing = CURRENT_WORKFLOW_IDS - set(result)
     if missing:
         raise ConfigurationError(f"Missing workflow configuration: {', '.join(sorted(missing))}")
     return result

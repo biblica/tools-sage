@@ -26,9 +26,22 @@ The audit carries a stable structural SHA-256. Apply refuses a stale audit if th
 - New Runs do not create empty `decisions/` or `findings/` directories.
 - Legacy technical `reports/` migrate to `diagnostics/` with hash verification; obsolete polished Run-local reports are quarantined under `localdata/.system/diagnostics/legacy-reports/` and never republished automatically.
 
+## Delete one RTC/STC Job
+
+Use **Manage Job > Delete Job**. WIP and RTC REFERENCE bindings are immutable; selecting a different
+Project requires a new Job, while **Refresh WIP snapshot from Project source** remains available for
+the same binding.
+
+Deletion removes the Job directory and hidden controller directory, including all Runs, tasks,
+plans, snapshots, compiled USJ packets, diagnostics, caches, locks, transactions, and active/last
+Run pointers owned by that Job. When `localdata/reports/<job-id>/` contains published reports, SAGE
+asks separately whether to remove them and defaults to preserving them. The final deletion prompt
+defaults to no and restates the selected scope. SAGE Projects and external Paratext files are never
+deleted or modified by this action.
+
 ## Wipe all Job data
 
-**SAGE Maintenance > Wipe all Job data** requires exact `WIPE JOB DATA`. It removes all
+**SAGE Maintenance > System actions > Wipe all Job data** requires exact `WIPE JOB DATA`. It removes all
 BIC/RTC/STC and legacy SAW Jobs, Runs, tasks, reports, exports, histories, pointers,
 controller state, locks, and transactions. It preserves Project Inventory, external Paratext
 locations, resource mappings and selections, language/grammar/AI configuration, indexes,

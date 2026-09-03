@@ -43,18 +43,18 @@ def run_cli(
     )
 
 
-def test_rtc_request_maps_to_registered_saw_command(make_workspace) -> None:
-    """Verify that RTC request maps to registered SAW command."""
+def test_rtc_request_maps_to_registered_rtc_command(make_workspace) -> None:
+    """Verify that an RTC request maps to the registered canonical RTC command."""
     root = make_workspace(configured=True)
     config = load_ecosystem(root / "ecosystem.yml")
     result = interpret_request("Run RTC on Amos for WIP", config)
     top = result["most_likely_command"]
     assert result["status"] == "INTERPRETATION_REQUIRED"
-    assert top["command_id"] == "saw.rtc"
+    assert top["command_id"] == "rtc.compare"
     assert top["output_project"] == "usWIP"
     assert top["contemporary_source"] == "usNIVv2"
     assert top["scope"] == "AMO"
-    assert top["canonical_command"].startswith("./system/bin/sage task create --workflow saw")
+    assert top["canonical_command"].startswith("./system/bin/sage task create --workflow rtc")
     assert result["operator_choices"][1] == "Execute the suggested command"
     assert result["execution_policy"]["freestyle_project_execution_permitted"] is False
 
@@ -74,6 +74,22 @@ def test_unknown_book_is_corrected_inside_command_proposal(package_root: Path) -
         }
     ]
     assert "--scope 'JHN 10-11'" in top["canonical_command"]
+
+
+def test_stc_request_maps_to_registered_stc_command(make_workspace) -> None:
+    """An STC request must use the canonical STC identity and omit Reference input."""
+    root = make_workspace(configured=True)
+    config = load_ecosystem(root / "ecosystem.yml")
+
+    top = interpret_request("Run STC on Amos for WIP", config)["most_likely_command"]
+
+    assert top["command_id"] == "stc.correspondence"
+    assert top["workflow"] == "stc"
+    assert top["operation"] == "stc"
+    assert top["output_project"] == "usWIP"
+    assert top["contemporary_source"] is None
+    assert "--workflow stc --operation stc" in top["canonical_command"]
+    assert "--reference" not in top["canonical_command"]
 
 
 def test_bic_request_uses_source_donor_target_vocabulary(make_workspace) -> None:
@@ -98,7 +114,7 @@ def test_ambiguous_bic_request_returns_ranked_existing_commands(make_workspace) 
     result = interpret_request("Review 3 John from KKH to BOL", config)
     command_ids = [item["command_id"] for item in result["command_proposals"]]
     assert command_ids[0] == "bic.inspect"
-    assert "saw.rtc" in command_ids
+    assert "rtc.compare" in command_ids
     assert result["exact_match"] is False
     assert result["operator_choices"][1] == "Execute the suggested command"
 
@@ -134,7 +150,7 @@ def test_noninteractive_request_returns_interpretation_and_audit_log(
     assert result.returncode == 0, result.stderr
     payload = json.loads(result.stdout)
     assert payload["decision"] == "INTERPRETATION_REQUIRED"
-    assert payload["most_likely_command"]["command_id"] == "saw.rtc"
+    assert payload["most_likely_command"]["command_id"] == "rtc.compare"
     assert payload["most_likely_command"]["scope"] == "MAT"
     log = Path(payload["request_log"])
     assert log.is_file()
@@ -179,4 +195,4 @@ def test_advisory_mode_never_executes_project_command(package_root: Path, make_w
     payload = json.loads(result.stdout)
     assert payload["decision"] == "ADVISORY_ONLY"
     assert payload["project_execution"] is False
-    assert not (storage_layout(root).workflow_root / "saw" / "output").exists()
+    assert not (storage_layout(root).workflow_root / "rtc" / "output").exists()

@@ -1,6 +1,6 @@
 # RWC and Semantic Domain Indexes
 
-SAGE `0.01beta2` uses one governed SAGE-local semantic-index layer shared by BIC and SAW. RWC means **Rapid Word Correction**.
+SAGE `0.01beta2` uses one governed SAGE-local semantic-index layer shared by BIC and RTC/STC. RWC means **Rapid Word Correction**.
 
 ## Non-negotiable boundaries
 
@@ -39,7 +39,7 @@ Inspect exact local senses before review when needed:
 ./system/bin/sage rwc lookup --language KKH --form FORM
 ```
 
-Review-state changes make the generated index **STALE** for BIC, SAW, and export. Multiple senses may be reviewed against the same unchanged import/authority snapshot before one rebuild; `rwc lookup` overlays pending review states locally. Rebuild once the review batch is complete:
+Review-state changes make the generated index **STALE** for BIC, RTC/STC, and export. Multiple senses may be reviewed against the same unchanged import/authority snapshot before one rebuild; `rwc lookup` overlays pending review states locally. Rebuild once the review batch is complete:
 
 ```sh
 ./system/bin/sage rwc index build --language KKH
@@ -92,7 +92,7 @@ Every index build records a fingerprint of:
 ./system/bin/sage rwc status --language KKH
 ```
 
-A bound BIC/SAW project may not consume a `STALE` or `INVALID` semantic index. FLEx/Combine export also fails closed until the index is rebuilt.
+A bound BIC/RTC/STC project may not consume a `STALE` or `INVALID` semantic index. FLEx/Combine export also fails closed until the index is rebuilt.
 
 ## Core local indexes
 
@@ -128,9 +128,9 @@ Where a Scripture resource has an explicit semantic binding, BIC locally assembl
 
 The model may reason only from the routed local evidence. General linguistic competence can help parse and express that evidence, but model recall cannot supply contextual meaning, lexical meaning, Scripture content, or semantic equivalence. SEMDOM, frequency, seed evidence, or imported FLEx entries cannot themselves authorize a translation choice.
 
-## SAW use
+## RTC/STC use
 
-SAW may use local semantic signals to identify places worth interrogation. Multiple indexed senses, semantic dispersion, or stable-identity conflicts are **TRIAGE_ONLY**. A SAW finding still requires verification in the bounded Scripture evidence and follows the configured contemporary-reference/original-language authority rules.
+RTC/STC may use local semantic signals to identify places worth interrogation. Multiple indexed senses, semantic dispersion, or stable-identity conflicts are **TRIAGE_ONLY**. A RTC/STC finding still requires verification in the bounded Scripture evidence and follows the configured contemporary-reference/original-language authority rules.
 
 ## Advanced source selection
 

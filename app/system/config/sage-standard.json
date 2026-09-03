@@ -138,9 +138,17 @@
       "label": "BIC",
       "definition": "Bible Index & Context"
     },
+    "rtc": {
+      "label": "RTC",
+      "definition": "Reference Text Comparison"
+    },
+    "stc": {
+      "label": "STC",
+      "definition": "Source Text Correspondence"
+    },
     "saw": {
       "label": "SAW",
-      "definition": "Scripture Analysis Workbench"
+      "definition": "Legacy compatibility identity for sealed pre-RTC/STC analysis Jobs"
     },
     "operator": {
       "label": "Operator",
@@ -152,7 +160,7 @@
     },
     "job": {
       "label": "Job",
-      "definition": "Persistent governed BIC or SAW binding of SAGE Projects and workflow roles."
+      "definition": "Persistent governed BIC, RTC, or STC binding of SAGE Projects and workflow roles."
     },
     "run": {
       "label": "Run",
@@ -206,13 +214,17 @@
       "label": "BIC TARGET",
       "definition": "The generated-project write destination; formal binding GENERATED_TARGET. Existing target Scripture is not BIC input evidence."
     },
-    "saw_wip": {
-      "label": "SAW WIP",
-      "definition": "The work-in-progress translation being analyzed by SAW; formal binding `WIP`."
+    "rtc_wip": {
+      "label": "RTC WIP",
+      "definition": "The immutable work-in-progress translation compared by RTC; formal binding WIP."
     },
-    "saw_reference": {
-      "label": "SAW REFERENCE",
-      "definition": "The configured LWC Reference Project comparison used by SAW; formal binding `REFERENCE`."
+    "rtc_reference": {
+      "label": "RTC REFERENCE",
+      "definition": "The immutable Reference Project compared with the RTC WIP; formal binding REFERENCE."
+    },
+    "stc_wip": {
+      "label": "STC WIP",
+      "definition": "The immutable work-in-progress translation checked for correspondence with the testament-correct primary source text; formal binding WIP."
     },
     "pass": {
       "label": "pass",
@@ -240,7 +252,7 @@
     },
     "finding": {
       "label": "finding",
-      "definition": "Supported RTC conclusion, primarily used by SAW."
+      "definition": "Supported RTC or STC conclusion derived from routed governed evidence."
     },
     "challenge": {
       "label": "challenge",
@@ -304,7 +316,7 @@
     "Do not call the BIC lexical donor a REFERENCE; use DONOR or LEXICAL_DONOR.",
     "Do not route existing BIC GENERATED_TARGET Scripture as INSPECT or REWRITE evidence.",
     "Do not expose BIC DONOR verse sequence or passage wording to the model; route only derived lexical evidence.",
-    "Do not describe SAW as a generic LRL checker; its primary object is an LWC work-in-progress translation."
+    "Do not use the retired analysis identity for new RTC or STC Jobs, Runs, tasks, reports, or errors."
   ],
   "boundaries": {
     "one_ecosystem": true,
@@ -313,8 +325,8 @@
     "separate_workflow_locks": true,
     "separate_workflow_outputs": true,
     "shared_writable_target_folder": false,
-    "saw_target_write_permission": false,
-    "direct_saw_to_bic_memory_write": false,
+    "rtc_stc_scripture_write_permission": false,
+    "direct_rtc_stc_to_bic_memory_write": false,
     "custom_vrs_centralization": false
   }
 }

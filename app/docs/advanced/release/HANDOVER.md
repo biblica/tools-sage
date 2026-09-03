@@ -6,11 +6,11 @@
 - Status: **Beta; pre-release; not an RC and not FINAL.**
 - Prior-release promotion-baseline qualification is historical reference evidence only.
 - The version reset and subsequent governed edits invalidate earlier qualification receipts. Fresh exact-source qualification is required before the first real RC.
-- Current implementation carries section-preferred SAW slicing that coalesces adjacent fitting sections, with bounded lookahead and balanced oversized-section partitioning; scope-projected predecessor/selective-OL evidence; chapter-first report compilation; actual WIP/Reference Project names in reports; three-column numeric menu alignment; provider-only Configure AI; exact per-Skill route qualification/resolution; and explicit connection testing.
+- Current implementation carries section-preferred RTC/STC slicing that coalesces adjacent fitting sections, with bounded lookahead and balanced oversized-section partitioning; scope-projected predecessor/selective-OL evidence; chapter-first report compilation; actual bound Project names in reports; three-column numeric menu alignment; provider-only Configure AI; exact per-Skill route qualification/resolution; and explicit connection testing.
 - Release feature classification: the Textual TUI is `EXPERIMENTAL_UNSTABLE`, displayed exactly as `EXPERIMENTAL / UNSTABLE`; it remains non-authoritative independently of the product's Alpha/Beta/RC phase. Its current preview is frozen for the remainder of `0.01beta2`, and further workflow functionality is deferred to `0.02beta`.
 - Current UI presentation contract: `docs/advanced/maintenance/UI-PRESENTATION.md`.
-- New RTC composites enforce `SAW_OL_REFERRAL_ADMISSION_V1`: only closed-class fundamental meaning conflicts unresolved by routed non-source evidence can become source referrals. Each admitted referral is isolated, while legacy sealed tasks remain resumable under their original contract.
-- SAW execution progress now keeps `Review range` and the approved `Review portion n/N` stable; structural and source checks use local counters under their parent portion rather than replacing the approved denominator with internal work-unit totals.
+- New RTC composites enforce `RTC_OL_REFERRAL_ADMISSION_V1`: only closed-class fundamental meaning conflicts unresolved by routed non-source evidence can become source referrals. Each admitted referral is isolated, while legacy sealed tasks remain resumable under their original contract.
+- RTC/STC execution progress keeps `Review range` stable and renders one replaceable live progress row; captured output emits one milestone per stage, never a stacked line per portion.
 - The provider-neutral per-Skill routing implementation now includes one audited manual override plus automatic/data and automatic/no-data substates. In every release state, true no-data always uses Codex native Medium as `PROVISIONAL_UNQUALIFIED`; current positive data selects the qualified route; adverse/stale data blocks. Conditional receipt provenance and pre-`Working` RTC/STC route preflight are implemented. Fresh exact-source final hardening and Operator acceptance remain outstanding.
 - Machine-local runtime state, caches, `localdata/.system/runtime/python`, `runtime/venv`, and `host-capability.json` must not ship in the vanilla Core distribution.
 
@@ -27,7 +27,7 @@ Any governed source or test change after qualification begins invalidates all re
 
 ## Operator-testing focus
 
-- Validate section-preferred SAW Reference Text Comparison (RTC) slicing on real books, especially adjacent short sections and oversized sections.
+- Validate section-preferred Reference Text Comparison (RTC) slicing on real books, especially adjacent short sections and oversized sections.
 - Validate on real multilingual RTC material that lexical intensity and equivalent participant roles remain RTC, while genuine polarity and participant-identity conflicts produce exactly one isolated source task and retain the stable parent review-portion display.
 - Validate later RTC stages remain bounded to each child scope and do not inherit unrelated whole-book evidence.
 - Validate chapter-scoped final reports contain only that chapter's findings/evidence and use actual configured Project names.

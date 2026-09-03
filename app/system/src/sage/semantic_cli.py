@@ -187,14 +187,14 @@ def command_rwc_review_set(args: argparse.Namespace) -> int:
         reviewer=args.reviewer,
         note=args.note,
     )
-    result["next_action"] = f"Rebuild {args.language} indexes before BIC, SAW, or export."
+    result["next_action"] = f"Rebuild {args.language} indexes before BIC, RTC, STC, or export."
     return _emit(args, "SAGE SEMANTIC EVIDENCE REVIEW", result)
 
 
 def command_rwc_review_clear(args: argparse.Namespace) -> int:
     """Clear one explicit review state and return to imported evidence status."""
     result = clear_review_state(_config(args), language=args.language, sense_id=args.sense_id)
-    result["next_action"] = f"Rebuild {args.language} indexes before BIC, SAW, or export."
+    result["next_action"] = f"Rebuild {args.language} indexes before BIC, RTC, STC, or export."
     return _emit(args, "SAGE SEMANTIC REVIEW CLEAR", result)
 
 

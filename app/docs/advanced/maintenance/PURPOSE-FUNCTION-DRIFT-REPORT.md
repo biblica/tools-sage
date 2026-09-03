@@ -4,7 +4,7 @@
 
 - The SAGE system grammar uses U.S. English (`en-US`).
 - The system/interface language is workstation-level and does not own Job report language.
-- Every Scripture Project used by BIC or SAW is accessed through one Job binding and the
+- Every Scripture Project used by BIC or RTC/STC is accessed through one Job binding and the
   role-specific grammar profile selected by that Job.
 - Every Job-produced human output is governed by that Job's required primary reporting language
   and optional secondary reporting language.
@@ -20,13 +20,13 @@
 
 | Surface | Current function | Assessment |
 | --- | --- | --- |
-| Menus | The Main Menu, BIC/SAW Job menus, Job settings, Reports, and recovery are deterministic controller surfaces. Menu strings are hard-coded in English. | Functionally coherent, but the documentation overstates the current interface-language coverage. |
-| Project access | A Job binds every BIC `SOURCE`/`DONOR`/`TARGET` or SAW `WIP`/`REFERENCE` resource and selects role-compatible grammar profiles. | Aligned with the required Job authority. |
+| Menus | The Main Menu, BIC/RTC/STC Job menus, Job settings, Reports, and recovery are deterministic controller surfaces. Menu strings are hard-coded in English. | Functionally coherent, but the documentation overstates the current interface-language coverage. |
+| Project access | A Job binds every BIC `SOURCE`/`DONOR`/`TARGET` or RTC/STC `WIP`/`REFERENCE` resource and selects role-compatible grammar profiles. | Aligned with the required Job authority. |
 | Job reporting | `job.yml` stores required `reporting.primary_language` and optional `secondary_language`; the global Operator language is only the new-Job default. | Aligned with Job authority. |
 | English identity | Reports use canonical `en`; workstation interface localization independently distinguishes `en-US` and `en-GB`. | Aligned with the separate report/interface contracts. |
-| Skills | Six analytical Skills map one-to-one to BIC/SAW operations and are routed into sealed ACT tasks. Consolidation is deterministic Python and is not registered or routed as an AI Skill. | Aligned; the analytical/controller distinction is explicit. |
+| Skills | Six analytical Skills map one-to-one to BIC/RTC/STC operations and are routed into sealed ACT tasks. Consolidation is deterministic Python and is not registered or routed as an AI Skill. | Aligned; the analytical/controller distinction is explicit. |
 | Generated prompts | ACT prompts carry the owning Job, Run, role bindings, selected Skill, grammar evidence, scope, exact output allowlist, and explicit Job-owned narrative language. | Aligned; interface and optional secondary language are excluded from canonical narrative authority. |
-| Reports | Canonical Job data and root-level polished reports are separated. Published reports remain after Job-directory removal. | Storage is aligned after correcting removal and path documentation. |
+| Reports | Canonical Job data and root-level polished reports are separated. RTC/STC Job deletion asks independently whether published reports should be removed and preserves them by default. | Storage and deletion scope are aligned. |
 
 ## Simple corrections completed
 
@@ -34,9 +34,9 @@
   editorial standard without changing Scripture Project grammar identity.
 - Corrected **Scan Paratext Projects**, the vocabulary-only BIC `DONOR` description, and the
   duplicated report path example.
-- Clarified guided **Manage Jobs** versus the Main Menu's BIC/SAW Job surfaces.
-- Clarified that **Remove Job** removes the Job directory but leaves separately published root
-  reports in place.
+- Clarified guided **Manage Jobs** versus the Main Menu's BIC/RTC/STC Job surfaces.
+- Clarified that RTC/STC **Delete Job** removes all Job work/controller state and deletes separately
+  published reports only after an independent opt-in choice.
 - Corrected the generated Job README description of Job-local diagnostics, exports, and root-level
   polished reports.
 - Kept the changelog compact, version-grouped, and bullet-only.

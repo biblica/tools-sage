@@ -89,7 +89,7 @@ check_policy:
         mode: NORMAL
     original_language:
       source_text_drift_adjudication: PROHIBITED
-      # New RTC tasks seal SAW_OL_REFERRAL_ADMISSION_V1 in their manifests.
+      # Sealed legacy RTC tasks retain SAW_OL_REFERRAL_ADMISSION_V1.
       # The runtime admits only closed-class, fundamental, unresolved source conflicts
       # and creates exactly one isolated selective task per admitted request.
 
@@ -152,5 +152,5 @@ process:
     it routes OT only to Job-bound Hebrew and NT only to Job-bound Greek. It remains distinct
     from standalone Original-Language Review, which requires an explicit bounded question and
     performs the detailed OL check.
-  - SAW final note material is plain Operator text; SAGE never creates or modifies
+  - Legacy analysis final note material is plain Operator text; SAGE never creates or modifies
     Paratext Notes XML.

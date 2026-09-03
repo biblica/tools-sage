@@ -18,6 +18,14 @@ EXPECTED_CASES = {
     "bic-inspect": ["seeded-material-issue", "clean-source", "forged-evidence"],
     "bic-rewrite": ["authorized-challenges", "no-change-required", "scope-expansion"],
     "bic-self-check": ["detect-regression", "approve-clean", "blocking-regression"],
+    "rtc": [
+        "seeded-variance",
+        "aligned-pair",
+        "false-ol-referral",
+        "fundamental-polarity",
+        "participant-identity",
+    ],
+    "stc": ["seeded-correspondence", "complete-no-finding", "reference-contamination"],
     "saw-rtc": [
         "seeded-variance",
         "aligned-pair",
@@ -84,8 +92,8 @@ def test_case_builder_verifies_the_committed_sealed_bundles(package_root: Path) 
     assert result.returncode == 0, result.stdout + result.stderr
     payload = json.loads(result.stdout)
     assert payload["status"] == "PASS"
-    assert payload["skill_count"] == 7
-    assert payload["case_count"] == 23
+    assert payload["skill_count"] == 9
+    assert payload["case_count"] == 31
 
 
 class PassingTransport:

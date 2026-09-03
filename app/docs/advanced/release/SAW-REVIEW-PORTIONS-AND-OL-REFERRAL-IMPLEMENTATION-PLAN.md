@@ -1,5 +1,7 @@
 # SAW Review Portions and OL Referral Admission Implementation Plan
 
+> Historical record: this plan preserves the pre-RTC names used during implementation. It is not current operator guidance; `SAW` names below identify sealed legacy contracts only.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Give SAW a stable review-range/portion/check progress hierarchy and admit selective OL referrals only through the approved structured, fail-closed fundamental-conflict contract.
@@ -240,7 +242,7 @@ git commit -m "feat: propagate SAW OL referral provenance"
 **Interfaces:**
 - Produces on approved units: `review_portion_id`, `review_portion_index`, `review_portion_total`
 - Produces on stage cases: `parent_review_portion_id`, `stage_case_index`, `stage_case_total`
-- Produces: `SAW_STAGE_CASE_PORTION_MISMATCH` when a case crosses approved portions
+- Produces: `SAW_STAGE_CASE_PORTION_MISMATCH` when an indivisible stage case crosses approved portions; report-only VRS candidates are projected atomically into separate contained structural cases
 - Removes default Operator wording: `Working on SAW work unit n/m`
 
 - [x] **Step 1: Write failing planner and UI tests**
@@ -254,7 +256,7 @@ assert "Source check:     2/5" in rendered
 assert "work unit 20/97" not in rendered.casefold()
 ```
 
-Also test that a stage case spanning two approved portion inventories raises `SAW_STAGE_CASE_PORTION_MISMATCH` before execution.
+Also test that an indivisible stage case spanning two approved portion inventories raises `SAW_STAGE_CASE_PORTION_MISMATCH` before execution. VRS-only structural candidates are not indivisible cases and must be projected into each affected portion without blocking.
 
 - [x] **Step 2: Run progress tests and confirm RED**
 

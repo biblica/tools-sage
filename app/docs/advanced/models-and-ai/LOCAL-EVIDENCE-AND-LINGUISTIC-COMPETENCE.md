@@ -49,7 +49,7 @@ Every file exposed to a model task has one explicit `evidence_class`. Unclassifi
 - BIC memory may become content-bearing derived evidence only when it originates in same-Job INSPECT, retains verified SOURCE-resource fingerprints, and is explicitly approved for use.
 - Generic lexicon imports are reviewable governance records only and cannot be promoted into BIC content evidence.
 
-## SAW authority
+## RTC/STC authority
 
 - `WIP`: subject under analysis, never its own comparison authority.
 - `REFERENCE`: authorized LWC comparison/content authority.

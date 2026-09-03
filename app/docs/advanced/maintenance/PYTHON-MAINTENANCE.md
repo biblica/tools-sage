@@ -51,7 +51,7 @@ Avoid comments such as `increment the counter`, `open the file`, or `return the 
 - Do not duplicate canonical command grammar in a workflow module when the CLI parser already owns it.
 - Do not bypass typed SAGE errors with generic exceptions merely to shorten code.
 - Keep natural-language routing proposal-only; canonical parsing and controllers remain authoritative.
-- Keep BIC and SAW operation boundaries visible in both names and comments.
+- Keep BIC and RTC/STC operation boundaries visible in both names and comments.
 
 ## Operator-facing strings
 

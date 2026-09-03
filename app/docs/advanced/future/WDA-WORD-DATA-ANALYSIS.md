@@ -2,7 +2,7 @@
 
 Status: **PARKED / NOT IMPLEMENTED**.
 
-WDA is a proposed third SAGE tool for lexical and semantic-data analysis. It is deliberately separate from SAW.
+WDA is a proposed third SAGE tool for lexical and semantic-data analysis. It is deliberately separate from RTC/STC.
 
 ## Proposed purpose
 
@@ -15,13 +15,13 @@ Typical future questions include lexical coverage gaps, semantic dispersion, cro
 WDA outputs would be evidence and hypotheses only. A WDA result would not by itself be:
 
 - a BIC translation decision;
-- a SAW finding;
+- a RTC/STC finding;
 - approved terminology;
 - an approved FLEx sense; or
 - translation authority.
 
 ## Architectural direction
 
-A future WDA data layer may become the conceptual owner of shared lexical/semantic indexes. BIC and SAW would consume controlled projections appropriate to their own authority models. This direction is not implemented in the current Alpha and must not be simulated by expanding SAW.
+A future WDA data layer may become the conceptual owner of shared lexical/semantic indexes. BIC and RTC/STC would consume controlled projections appropriate to their own authority models. This direction is not implemented in the current Alpha and must not be simulated by expanding RTC/STC.
 
 Most WDA computation should remain local/deterministic; AI would be reserved for bounded linguistic interpretation of ambiguous patterns.

@@ -17,12 +17,12 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 - Scripture Project administration and workflow role assignment are separate concerns.
 - **Scripture Projects** manages the Paratext Project Catalog and SAGE Project Inventory. It scans, adds, validates, configures, and safely removes Projects.
 - **BIC/RTC/STC Job setup** assigns only already-added SAGE Projects to workflow-valid roles. BIC uses SOURCE / DONOR / TARGET, RTC uses WIP / REFERENCE, and STC uses WIP only. A selector can temporarily route to **Add another Project to SAGE**, then returns to the selector.
-- BIC, RTC, and STC have independent persistent Jobs and bounded Runs. Jobs can be added, selected, archived, validated, and removed.
-- Scripture scope supports guided Book/range entry and direct expert scope entry. A deterministic work/token preview is shown before Run creation.
+- BIC, RTC, and STC have independent persistent Jobs and bounded Runs. Jobs can be added, selected, archived, validated, and removed. RTC/STC WIP and REFERENCE bindings are immutable for the Job lifetime; a different Project requires a new Job.
+- Scripture scope supports guided Book/range entry and direct expert scope entry. RTC/STC accept ordered, non-overlapping semicolon-separated portions from one book (for example `1CH 5-6; 24`) and plan each portion independently in one Run. A deterministic work/token preview is shown before Run creation.
 - Initial/Quick Paratext scans are tree-only marker discovery and do not open Project files; Full rescans perform detailed whole-root validation. Long full scans expose a rotating status line and progress count.
 - The two-row global footer is `A Back / B Main Menu / C Exit`, then `D Language / E Help / F Status`; Help/Status return to the invoking menu.
 - Status-surface parity is hardened: Textual F-Status, classic-menu F-Status, and top-level local `sage status` consume the same canonical sequential Run quantifier; interactive Status shows the 10-cell bar plus activity/run/task detail, and CLI JSON exposes the same `job_progress` object.
-- Run planning, governed task preparation/execution/submission, continuation, and aggregation expose rotating status lines; composite SAW stages also show current/total work-unit progress.
+- Run planning, governed task preparation/execution/submission, continuation, and aggregation expose one viewport-bounded status row that redraws in place and erases before permanent output; composite RTC stages also show current/total work-unit progress. Redirected output retains one static message per operation.
 
 ## Project and language state
 
@@ -50,9 +50,12 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 - Every task read is classified as content, lexical, project-index, derived, structural, subject text, linguistic-competence rules, or process control. Missing/unrecognized classification fails closed.
 - The model's only permitted external competence is orthography, morphology, grammar, and syntax; it may not introduce unsupported propositions, lexical meanings, Scripture content, translation equivalents, interpretations, or cultural/historical claims.
 - BIC: exactly one SOURCE, DONOR, TARGET; TARGET is the only possible ordinary external Scripture writer and only through governed write boundaries.
-- SAW: exactly one WIP and authorized REFERENCE; external Scripture remains read-only.
-- Active Job runtime validation is isolated by tool. Inactive empty workflow templates do not invalidate the active BIC/SAW Job.
-- Removing a Job deletes only Job-owned state. Removing a Project from SAGE deletes only SAGE inventory state and is blocked while any Job still uses it.
+- RTC: exactly one WIP and authorized REFERENCE; external Scripture remains read-only. STC: exactly one WIP plus canon-routed PRIMARY OL authority and no REFERENCE Project.
+- Active Job runtime validation is isolated by tool. Inactive empty workflow templates do not invalidate the active BIC, RTC, or STC Job.
+- RTC/STC **Delete Job** removes all Job-owned work/controller state and optionally its separately published reports after an independent default-preserve prompt; it never modifies SAGE Projects or Paratext files. Removing a Project from SAGE uses negative-default
+  confirmation; if Jobs bind it, SAGE lists them and requires explicit cascade confirmation before
+  removing those Jobs, their Job-local data, and the Project inventory/mapping. Paratext files and
+  root-level published reports remain unchanged.
 - Governed `@GRK` / `@HEB` aliases are separate from the ordinary SAGE Project Inventory and support explicit bundled, recognized Paratext, or local source selection.
 - Reporting uses a required Job-owned primary language and an optional Job-owned secondary language. The global Operator language is snapshotted only as the default when a Job is created; Projects never own reporting settings. Every narrative-generating ACT binds the primary language explicitly. When secondary report rendering is requested, that separate bounded translation request carries complete governed primary and secondary LANGUAGE_PROFILE objects; interface-language state remains outside analytical requests.
 
@@ -62,12 +65,13 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 - Startup also records machine-local host capability in `localdata/.system/state/host-capability.json`: available RAM `< 4 GiB` or logical CPU threads `< 8` selects `BASIC`; detection failure also selects `BASIC`; hosts meeting at least 4 GiB and 8 logical CPUs select `STANDARD`; hosts meeting both `>= 16 GiB` available RAM and `>= 16` logical CPUs select `ADVANCED`. BASIC caps release hardening at 2 workers, STANDARD at 4, and ADVANCED at 6. `SAGE_HARDENING_WORKERS` may reduce concurrency but cannot raise it above the setup-selected host-profile ceiling. The receipt is runtime state and never ships in the vanilla distribution.
 - `localdata/.system/runtime/python/` and `venv/` are created/repaired deterministically outside Core and are intentionally absent from the source ZIP; startup prints the exact SAGE root, localdata root, and managed runtime path.
 - CODEX is the only enabled automated provider; SAGE reuses persistent ChatGPT-managed Codex CLI authentication.
-- The post-baseline development extension retains Ollama administration behind the existing `admin_assistant_enabled` compatibility switch. Administrative explanations and executive summaries are now deterministic Python renderings; Ollama cannot execute governed BIC/SAW tasks or trigger primary-provider fallback.
+- The post-baseline development extension retains Ollama administration behind the existing `admin_assistant_enabled` compatibility switch. Administrative explanations and executive summaries are now deterministic Python renderings; Ollama cannot execute governed BIC/RTC/STC tasks or trigger primary-provider fallback.
 - Local AI enablement is independent of Job configuration. Existing and new secondary-language Jobs do not block basic Local AI or primary-language work; only a Job's Hosted-AI-dependent secondary rendering is rejected while Local AI is enabled, leaving the governing primary report available.
 - Capability-specific administrative transforms accept typed facts only and render in Python. Raw Scripture/USFM/USJ, Greek/Hebrew Scripture, ACT/Skill bodies, filesystem paths, credentials, and unwhitelisted fields are rejected. Optional report summaries are written separately after canonical publication and carry source SHA plus a non-authoritative label.
 - Normal startup and AI Setup perform a non-generative readiness check and report provider, selected model, and effective reasoning level. Only the explicit **Check LLM connection** action performs a minimal model-generation test. Failed AI readiness blocks normal Main Menu entry.
 - No OpenAI API-key/direct-API/fallback path exists.
-- SAW pre-run resource preflight is work-unit scoped: bound WIP/REFERENCE defects are reported with exact section, code, reference, and message before a Run is persisted. Explicit defects in other books are out-of-scope; unlocated parser/file failures remain conservatively blocking.
+- RTC/STC pre-run resource preflight is work-unit scoped: bound resource defects are reported with exact section, code, reference, and message before a Run is persisted. Explicit defects in other books are out-of-scope; unlocated parser/file failures remain conservatively blocking.
+- RTC treats VRS mappings and versification-coordinate differences as non-blocking structural evidence. They remain visible in structural adjudication and final Action Reports even when one mapping crosses approved review portions; only actual multi-coordinate WIP/REFERENCE source records constrain RTC boundaries.
 
 ## Pre-release data policy
 
@@ -84,7 +88,7 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 
 ## Schema and release-gate state
 
-- `system/tools/validate_schemas.py` validates all 36 shipped schema contracts, unique IDs, duplicate keys, owner mappings, and applicable source instances, including `OL_AUTHORITY_PROFILE`.
+- `system/tools/validate_schemas.py` validates all 43 shipped schema contracts, unique IDs, duplicate keys, owner mappings, and applicable source instances, including `OL_AUTHORITY_PROFILE`.
 - `validate_package.py` requires every shipped schema, including evaluation-set and resource-rights contracts.
 - Focused Beta validation is required after the version change. Clean source-package and deep-audit claims are deferred to `MS-BETA2-QUALIFY`.
 - U.S. English is canonical for current system/operator prose; localized `en-GB` remains governed only in the interface localization source.

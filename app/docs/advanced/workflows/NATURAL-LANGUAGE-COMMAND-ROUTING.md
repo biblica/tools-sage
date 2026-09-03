@@ -66,7 +66,7 @@ run rtc jun 10-11
 Proposed interpretation:
 
 ```text
-Workflow: SAW
+Workflow: RTC
 Operation: RTC
 Scope correction: JUN → JHN
 WIP: ukrNPUv0
@@ -76,7 +76,7 @@ Authorized REFERENCE: usNIVv2
 Canonical command:
 
 ```bash
-./system/bin/sage task create --workflow saw --operation rtc \
+./system/bin/sage task create --workflow rtc --operation rtc \
   --wip ukrNPUv0 \
   --reference usNIVv2 \
   --scope "JHN 10-11"
@@ -95,7 +95,7 @@ Review 3 John from KKH to BOL.
 SAGE may rank:
 
   1. BIC INSPECT — `idKKHv0` SOURCE + configured DONOR -> `usBOLx1` TARGET, scope `3JN`.
-  2. SAW Reference Text Comparison (RTC) — review an independently configured SAW WIP project, scope `3JN`.
+  2. Reference Text Comparison (RTC) — review an independently configured RTC WIP Project, scope `3JN`.
 
 SAGE must not silently decide that “review” means either source inspection or target RTC.
 

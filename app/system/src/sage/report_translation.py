@@ -57,7 +57,14 @@ def _rendering_path(root: Path, report_path: Path) -> Path:
     try:
         relative = resolved_report.relative_to(layout.reports_root)
         job_id, book = relative.parts[0], relative.parts[1]
-        destination = layout.jobs_root / "saw" / job_id / "report_data" / book
+        owners = [
+            layout.jobs_root / tool / job_id
+            for tool in ("rtc", "stc", "saw")
+            if (layout.jobs_root / tool / job_id / "job.yml").is_file()
+        ]
+        if len(owners) != 1:
+            raise ValueError("Report Job owner is ambiguous or missing")
+        destination = owners[0] / "report_data" / book
     except (ValueError, IndexError):
         destination = layout.diagnostics_root / "report-renderings"
     destination.mkdir(parents=True, exist_ok=True)
@@ -335,7 +342,7 @@ def _resolved_rendering_route(
     return executor, route
 
 
-def ensure_secondary_saw_report_rendering(
+def ensure_secondary_analysis_report_rendering(
     root: Path,
     report_path: Path,
     document: Mapping[str, Any],
@@ -556,3 +563,7 @@ def ensure_secondary_saw_report_rendering(
         atomic_write_json(cache_path, degraded)
         result["report_renderings"] = degraded
         return result
+
+
+# Compatibility alias for integrations that predate canonical RTC/STC identity.
+ensure_secondary_saw_report_rendering = ensure_secondary_analysis_report_rendering

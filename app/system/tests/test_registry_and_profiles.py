@@ -22,6 +22,15 @@ def test_default_package_static_validation_passes(package_root: Path) -> None:
     assert result["errors"] == []
 
 
+def test_current_registry_exposes_canonical_rtc_and_stc_profiles(package_root: Path) -> None:
+    """New analysis Jobs resolve canonical profiles instead of the legacy adapter."""
+    config = load_ecosystem(package_root / "ecosystem.yml")
+
+    assert {"bic", "rtc", "stc"}.issubset(config.workflows)
+    assert load_workflow_profile(config, config.workflow("rtc")).workflow_id == "rtc"
+    assert load_workflow_profile(config, config.workflow("stc")).workflow_id == "stc"
+
+
 def test_projects_resolve_relative_to_projects_root(make_workspace) -> None:
     """Verify that projects resolve relative to projects root."""
     root = make_workspace()
@@ -63,7 +72,7 @@ def test_saw_cannot_receive_project_write_permission(make_workspace) -> None:
     config = load_ecosystem(root / "ecosystem.yml")
     result = validate_static_ecosystem(config, load_standard(root))
     assert result["status"] == "BLOCKED"
-    assert any("SAW must not" in item for item in result["errors"])
+    assert any("Legacy analysis must not" in item for item in result["errors"])
 
 
 def test_bic_can_write_only_bic_generated_project(make_workspace) -> None:

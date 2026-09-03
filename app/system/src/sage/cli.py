@@ -17,7 +17,7 @@ import yaml
 
 from .atomic import atomic_write_json, atomic_write_text
 from .act_tasks import (
-    SAW_CHECK_TYPES,
+    LEGACY_TARGETED_CHECK_TYPES,
     _one_book_file,
     aggregate_act_plan,
     create_act_task,
@@ -82,11 +82,10 @@ from .profiles import WorkflowProfile, load_workflow_profile
 from .rtc_planner import (
     RTC_HANDOFF_CONTRACT_VERSION,
     RTC_PLANNER_VERSION,
-    RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+    rtc_prompt_schema_projection_version,
     package_summary,
     plan_rtc_work_units,
     rtc_slicing_policy,
-    vrs_source_equivalence_spans,
 )
 from .guided_input import (
     GuidedArgumentParser,
@@ -104,6 +103,8 @@ from .references import (
     BOOK_ALIASES,
     BOOK_LABELS,
     BOOK_ORDER,
+    analysis_scope_portions,
+    parse_analysis_scope,
     parse_scope,
     replace_scope_book,
     resolve_book,
@@ -113,7 +114,7 @@ from .registry import EcosystemConfig, load_ecosystem
 from .reset_state import reset_project_state
 from .runtime_paths import workflow_memory_root
 from .stage_reset import STAGES, reset_workflow_stage
-from .plan_continuation import continue_saw_plan
+from .plan_continuation import continue_analysis_plan
 from .resource_mounts import (
     clear_base_vrs_root,
     load_resource_mount_state,
@@ -153,9 +154,11 @@ from .vocabulary import CANONICAL_TARGET_TEXT_OPERATION, require_canonical_opera
 
 
 SAFE_ID_RE = re.compile(r"[^A-Za-z0-9._-]+")
-PRIMARY_ROLE = {"bic": "CONTENT_SOURCE", "saw": "WIP"}
+PRIMARY_ROLE = {"bic": "CONTENT_SOURCE", "rtc": "WIP", "stc": "WIP", "saw": "WIP"}
 ALLOWED_OPERATIONS = {
     "bic": {"inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check"},
+    "rtc": {"rtc"},
+    "stc": {"stc"},
     "saw": {"rtc", "stc", "focused", "ol"},
 }
 SHORTCUT_COMMANDS: dict[str, dict[str, tuple[str, ...]]] = {
@@ -206,7 +209,7 @@ def _guide_payload(topic: str) -> dict[str, Any]:
             "steps": [
                 f"Run `{launcher}`.",
                 "If prerequisites or setup are incomplete, follow the recommended setup action.",
-                "If unfinished work exists, choose Resume; otherwise select a new BIC or SAW task.",
+                "If unfinished work exists, choose Resume; otherwise select a new BIC, RTC, or STC task.",
             ],
         },
         "setup": {
@@ -229,9 +232,9 @@ def _guide_payload(topic: str) -> dict[str, Any]:
         },
         "task": {
             "title": "SAGE TASK",
-            "summary": "Use the BIC/SAW menus for normal work; direct task commands remain available for advanced use.",
+            "summary": "Use the BIC, RTC, or STC menus for normal work; direct task commands remain available for advanced use.",
             "steps": [
-                f"Run `{launcher}` and select BIC or SAW.",
+                f"Run `{launcher}` and select BIC, RTC, or STC.",
                 "Create or resume one bounded run.",
                 "SAGE continues through the recorded checkpoint-aware state machine.",
             ],
@@ -240,7 +243,7 @@ def _guide_payload(topic: str) -> dict[str, Any]:
             "title": "SAGE RECOVERY",
             "summary": "Use recorded controller state; never patch generated task controls manually.",
             "steps": [
-                f"Run `{launcher}` and open BIC/SAW Recovery and diagnostics, or SAGE Maintenance for system recovery.",
+                f"Run `{launcher}` and open the workflow Recovery and diagnostics menu, or SAGE Maintenance for system recovery.",
                 f"Run `{launcher} workspace doctor` for direct diagnostics when needed.",
                 f"Read docs/{platform_docs}/RECOVERY.md or ERRORS.md only when guided recovery is insufficient.",
             ],
@@ -399,7 +402,7 @@ def command_overview(args: argparse.Namespace) -> int:
     print(f"Development status: {standard.release_status} - {readiness}")
     print(f"Setup: {result['setup']}")
     print(f"Workspace: {result['workspace']}")
-    for tool in ("bic", "saw"):
+    for tool in ("bic", "rtc", "stc"):
         job_id = result["active_jobs"].get(tool)
         display = (
             f"STALE POINTER - {job_id} (Job manifest missing)"
@@ -715,8 +718,14 @@ def _resolve_scope_input(args: argparse.Namespace, field: str = "scope") -> None
     if not isinstance(value, str) or not value.strip():
         return
     original = value.strip()
+    parse_requested_scope = (
+        parse_analysis_scope
+        if getattr(args, "workflow_id", None) in {"rtc", "stc", "saw"}
+        and str(getattr(args, "operation", "")).strip().lower() in {"rtc", "stc"}
+        else parse_scope
+    )
     try:
-        scope = parse_scope(original)
+        scope = parse_requested_scope(original)
         setattr(args, field, scope.label())
         return
     except ValidationError as first_error:
@@ -738,7 +747,7 @@ def _resolve_scope_input(args: argparse.Namespace, field: str = "scope") -> None
             )
             candidate = replace_scope_book(original, corrected_book)
             try:
-                scope = parse_scope(candidate)
+                scope = parse_requested_scope(candidate)
             except ValidationError as exc:
                 if not _interactive(args):
                     raise InputRequiredError(
@@ -760,7 +769,7 @@ def _resolve_scope_input(args: argparse.Namespace, field: str = "scope") -> None
                     received=candidate,
                     suggestions=(),
                 )
-                scope = parse_scope(candidate)
+                scope = parse_requested_scope(candidate)
             setattr(args, field, scope.label())
             _record_correction(
                 args,
@@ -781,7 +790,8 @@ def _resolve_scope_input(args: argparse.Namespace, field: str = "scope") -> None
                 suggestions=[],
                 next_action=(
                     "Use BOOK, BOOK CHAPTER, BOOK CHAPTER-CHAPTER, "
-                    "BOOK CHAPTER:VERSE, or a bounded verse range."
+                    "BOOK CHAPTER:VERSE, a bounded verse range, or same-book "
+                    "semicolon-separated portions for RTC/STC."
                 ),
             ) from first_error
         corrected = prompt_for_value(
@@ -790,7 +800,7 @@ def _resolve_scope_input(args: argparse.Namespace, field: str = "scope") -> None
             suggestions=(),
         )
         try:
-            scope = parse_scope(corrected)
+            scope = parse_requested_scope(corrected)
         except ValidationError as exc:
             raise InputRequiredError(
                 str(exc),
@@ -1163,7 +1173,7 @@ def _resolve_required_focus(args: argparse.Namespace) -> None:
         return
     if not _interactive(args):
         raise InputRequiredError(
-            f"SAW {operation} requires one bounded focus question",
+            f"Legacy analysis operation {operation} requires one bounded focus question",
             code="FOCUS_REQUIRED",
             received=focus,
             suggestions=[],
@@ -1273,7 +1283,7 @@ def _resolve_transaction_input(args: argparse.Namespace, config: EcosystemConfig
 
 
 def _resolve_shortcut_input(args: argparse.Namespace) -> None:
-    """Resolve a BIC or SAW shortcut action before canonical command expansion."""
+    """Resolve a BIC or sealed legacy-analysis shortcut before command expansion."""
     workflow = getattr(args, "workflow_id", None)
     command = getattr(args, "shortcut_command", None)
     if not workflow or command is None:
@@ -2213,7 +2223,7 @@ def command_act_create(args: argparse.Namespace) -> int:
             print(f"Work units: {len(result['work_units'])}")
             print(f"Plan file: {result['plan_path']}")
         elif result.get("status") == "COMPOSITE":
-            print("SAGE SAW Reference Text Comparison (RTC) COMPOSITE PLAN")
+            print("SAGE Reference Text Comparison (RTC) COMPOSITE PLAN")
             print(f"Plan: {result['plan_id']}")
             print(f"Scope: {result['requested_scope']}")
             print(f"Current stage: {result['current_stage']}")
@@ -2319,7 +2329,7 @@ def command_act_submit(args: argparse.Namespace) -> int:
 
 
 def command_act_aggregate(args: argparse.Namespace) -> int:
-    """Aggregate a `FINALIZED` SAW work-unit plan."""
+    """Aggregate one `FINALIZED` RTC/STC or sealed legacy work-unit plan."""
     config, _ = _load(args)
     plan_path = Path(args.plan)
     if not plan_path.is_absolute():
@@ -2339,16 +2349,16 @@ def command_act_aggregate(args: argparse.Namespace) -> int:
 
 
 def command_act_continue(args: argparse.Namespace) -> int:
-    """Return the next governed sequential SAW work unit or aggregation action."""
+    """Return the next governed sequential analysis unit or aggregation action."""
     config, _ = _load(args)
     plan_path = Path(args.plan)
     if not plan_path.is_absolute():
         plan_path = config.root / plan_path
-    result = continue_saw_plan(config, plan_path)
+    result = continue_analysis_plan(config, plan_path)
     if args.json:
         _print_json(result)
     else:
-        print("SAGE SAW PLAN CONTINUATION")
+        print("SAGE ANALYSIS PLAN CONTINUATION")
         print(f"Plan: {result['plan_id']}")
         print(f"Status: {result['status']}")
         if result["status"] == "NEXT_WORK_UNIT":
@@ -2794,7 +2804,7 @@ def command_reset_state(args: argparse.Namespace) -> int:
 
 
 def command_evaluation_plan(args: argparse.Namespace) -> int:
-    """Create a sequential queue of one-project SAW ACT commands."""
+    """Create a sequential queue of one-project legacy analysis ACT commands."""
     config, _ = _load(args)
     try:
         evaluation = config.evaluation_sets[args.set_id]
@@ -2803,7 +2813,7 @@ def command_evaluation_plan(args: argparse.Namespace) -> int:
     scope = parse_scope(args.scope)
     focus = args.focus.strip() if isinstance(args.focus, str) and args.focus.strip() else None
     if args.operation in {"focused", "ol"} and not focus:
-        raise ValidationError(f"SAW {args.operation} evaluation requires --focus")
+        raise ValidationError(f"Legacy analysis operation {args.operation} requires --focus")
     if args.operation == "rtc" and focus:
         raise ValidationError("--focus is valid only for focused or ol evaluation")
     entries: list[dict[str, Any]] = []
@@ -3003,6 +3013,8 @@ def command_initialize(args: argparse.Namespace) -> int:
             ready_statuses = {"READY", "READY_WITH_WARNINGS"}
             required_roles = {
                 "bic": {"CONTENT_SOURCE", "LEXICAL_DONOR", "GENERATED_TARGET"},
+                "rtc": {"WIP", "REFERENCE"},
+                "stc": {"WIP"},
                 "saw": {"WIP", "REFERENCE"},
             }
             for workflow_id, item in workflows.items():
@@ -3364,7 +3376,7 @@ def command_workflow_status(args: argparse.Namespace) -> int:
 
 
 def command_plan(args: argparse.Namespace) -> int:
-    """Build a bounded auditable plan without running BIC or SAW analysis."""
+    """Build a bounded auditable plan without running workflow analysis."""
     # Keep planning read-only and retain exact project and scope provenance for every proposed action.
     config, standard = _load(args)
     workflow = config.workflow(args.workflow_id)
@@ -3391,7 +3403,12 @@ def command_plan(args: argparse.Namespace) -> int:
         )
     selected_role = role if project_id == default_project else matching_roles[0]
     project = config.project(project_id)
-    scope = parse_scope(args.scope)
+    scope = (
+        parse_analysis_scope(args.scope)
+        if profile.workflow_id in {"rtc", "stc", "saw"} and operation in {"rtc", "stc"}
+        else parse_scope(args.scope)
+    )
+    scope_portions = analysis_scope_portions(scope)
     result = compile_project_scope(config, project, scope)
     if result.get("status") not in {"READY", "READY_WITH_WARNINGS"}:
         raise ValidationError(
@@ -3411,11 +3428,12 @@ def command_plan(args: argparse.Namespace) -> int:
     stc_authority_family_id: str | None = None
     stc_ol_project_id: str | None = None
     stc_ol_result: dict[str, Any] | None = None
+    all_stc_ol_records = ()
     stc_ol_records = ()
     effective_policy = policy
-    if profile.workflow_id == "saw" and operation == "rtc":
+    if profile.workflow_id in {"rtc", "saw"} and operation == "rtc":
         if selected_role != "WIP":
-            raise ValidationError("SAW RTC planning must use the bound WIP as its slicing stream")
+            raise ValidationError("RTC planning must use the bound WIP as its slicing stream")
         rtc_sizing = profile.require_rtc_sizing()
         active_provider = str(load_llm_settings(config.root).get("selected_provider") or "")
         rtc_sizing.validate_active_provider(active_provider)
@@ -3427,16 +3445,20 @@ def command_plan(args: argparse.Namespace) -> int:
             raise ValidationError(
                 f"REFERENCE project {reference_project_id} is not ready for RTC package "
                 f"planning in {scope.label()}: {reference_result.get('status')}",
-                code="SAW_RTC_REFERENCE_NOT_READY",
+                code=(
+                    "SAW_RTC_REFERENCE_NOT_READY"
+                    if profile.workflow_id == "saw"
+                    else "RTC_REFERENCE_NOT_READY"
+                ),
             )
         reference_records = records_from_project_result(
             reference_project_id,
             reference_result,
             resource_role="REFERENCE",
         )
-    elif profile.workflow_id == "saw" and operation == "stc":
+    elif profile.workflow_id in {"stc", "saw"} and operation == "stc":
         if selected_role != "WIP":
-            raise ValidationError("SAW STC planning must use the bound WIP as its slicing stream")
+            raise ValidationError("STC planning must use the bound WIP as its slicing stream")
         stc_authority_family_id = stc_authority_family(scope.book)
         ol_binding = (
             "ORIGINAL_LANGUAGE_GREEK"
@@ -3446,7 +3468,7 @@ def command_plan(args: argparse.Namespace) -> int:
         stc_ol_project_id = str(profile.bindings.get(ol_binding) or "")
         if not stc_ol_project_id:
             raise ValidationError(
-                f"SAW STC requires the applicable {ol_binding} binding",
+                f"STC requires the applicable {ol_binding} binding",
                 code="STC_OL_AUTHORITY_MISSING",
             )
         stc_ol_project = config.project(stc_ol_project_id)
@@ -3462,7 +3484,11 @@ def command_plan(args: argparse.Namespace) -> int:
             stc_ol_result,
             resource_role=stc_authority_family_id,
         )
-        stc_ol_records = select_records_for_scope(all_stc_ol_records, scope)
+        stc_ol_records = tuple(
+            record
+            for record in all_stc_ol_records
+            if any(scope.contains(ref) for ref in record.refs)
+        )
     contracts = _grammar_contracts(config, profile)
     evidence_contracts = {
         contract_role: {
@@ -3527,7 +3553,9 @@ def command_plan(args: argparse.Namespace) -> int:
                 "rtc_sizing": rtc_sizing.to_dict(),
                 "rtc_planner_version": RTC_PLANNER_VERSION,
                 "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
-                "prompt_schema_projection_version": RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+                "prompt_schema_projection_version": rtc_prompt_schema_projection_version(
+                    profile.workflow_id
+                ),
             }
             if rtc_sizing is not None
             else {}
@@ -3596,31 +3624,38 @@ def command_plan(args: argparse.Namespace) -> int:
     rtc_packages: tuple[dict[str, Any], ...] = ()
     stc_packages: tuple[dict[str, Any], ...] = ()
     if rtc_sizing is not None:
-        units, rtc_packages, effective_policy = plan_rtc_work_units(
-            selected,
-            policy,
-            rtc_sizing,
-            unit_prefix=plan_id,
-            shared=shared,
-            wip_context_pool=all_records,
-            reference_records=reference_records,
-            wip_equivalence_spans=vrs_source_equivalence_spans(
-                dict(result.get("effective_vrs") or {}),
-                requested_book=scope.book,
-            ),
-            reference_equivalence_spans=vrs_source_equivalence_spans(
-                dict((reference_result or {}).get("effective_vrs") or {}),
-                requested_book=scope.book,
-            ),
-        )
+        planned_units = []
+        planned_packages: list[dict[str, Any]] = []
+        for portion_index, portion in enumerate(scope_portions, start=1):
+            portion_units, portion_packages, effective_policy = plan_rtc_work_units(
+                select_records_for_scope(all_records, portion),
+                policy,
+                rtc_sizing,
+                unit_prefix=f"{plan_id}-P{portion_index:03d}",
+                shared=shared,
+                wip_context_pool=all_records,
+                reference_records=reference_records,
+                workflow=profile.workflow_id,
+            )
+            planned_units.extend(portion_units)
+            planned_packages.extend(portion_packages)
+        units = tuple(planned_units)
+        rtc_packages = tuple(planned_packages)
     elif stc_ol_result is not None:
-        units = plan_stc_work_units(
-            selected,
-            stc_ol_records,
-            policy,
-            unit_prefix=plan_id,
-            context_pool=all_records,
-        )
+        planned_units = []
+        for portion_index, portion in enumerate(scope_portions, start=1):
+            planned_units.extend(plan_stc_work_units(
+                select_records_for_scope(all_records, portion),
+                tuple(
+                    record
+                    for record in all_stc_ol_records
+                    if any(portion.contains(ref) for ref in record.refs)
+                ),
+                policy,
+                unit_prefix=f"{plan_id}-P{portion_index:03d}",
+                context_pool=all_records,
+            ))
+        units = tuple(planned_units)
         stc_packages = stc_package_measurements(units, stc_ol_records)
     else:
         units = plan_sfm_work_units(
@@ -3653,7 +3688,9 @@ def command_plan(args: argparse.Namespace) -> int:
             "rtc_planner": {
                 "version": RTC_PLANNER_VERSION,
                 "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
-                "prompt_schema_projection_version": RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+                "prompt_schema_projection_version": rtc_prompt_schema_projection_version(
+                    profile.workflow_id
+                ),
                 "slicing_stream": "WIP",
                 "boundary_streams": ["WIP", "REFERENCE"],
                 "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
@@ -3997,7 +4034,7 @@ def command_doctor(args: argparse.Namespace) -> int:
 
 
 def command_shortcut(args: argparse.Namespace) -> int:
-    """Route BIC/SAW convenience commands through the canonical guided parser."""
+    """Route BIC and sealed legacy convenience commands through the guided parser."""
     mapped = SHORTCUT_COMMANDS[args.workflow_id][args.shortcut_command]
     remainder = list(args.arguments or [])
     if remainder and remainder[0] == "--":
@@ -4369,7 +4406,7 @@ def _transaction_recover(args: argparse.Namespace) -> int:
 
 def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
     """Register the shared canonical arguments for immutable ACT task creation."""
-    parser.add_argument("--workflow", dest="workflow_id", choices=("bic", "saw"), required=True)
+    parser.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "saw"), required=True)
     parser.add_argument(
         "--operation",
         choices=("inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check", "rtc", "stc", "focused", "ol"),
@@ -4380,7 +4417,7 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
         "--output-project", "--target", "--wip",
         dest="output_project",
         required=True,
-        help="BIC TARGET write destination or SAW WIP translation",
+        help="BIC TARGET write destination or RTC/STC WIP translation",
     )
     parser.add_argument(
         "--contemporary-source", "--source", "--reference",
@@ -4392,13 +4429,20 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
         dest="lexical_donor",
         help="BIC DONOR project; vocabulary evidence only. Defaults to the active BIC workflow binding.",
     )
-    parser.add_argument("--scope", required=True, help='One bounded Scripture scope, for example "PHP 1:1-11"')
-    parser.add_argument("--focus", help="One bounded question; required for SAW focused and ol operations")
+    parser.add_argument(
+        "--scope",
+        required=True,
+        help=(
+            'One bounded Scripture scope, for example "PHP 1:1-11"; RTC/STC also '
+            'accept same-book portions such as "1CH 5-6; 24"'
+        ),
+    )
+    parser.add_argument("--focus", help="One bounded question; required for legacy focused and ol operations")
     parser.add_argument(
         "--type",
         dest="check_type",
-        choices=tuple(sorted(SAW_CHECK_TYPES)),
-        help="Optional SAW Targeted Check type; defaults to CUSTOM_BOUNDED_CHECK",
+        choices=tuple(sorted(LEGACY_TARGETED_CHECK_TYPES)),
+        help="Optional legacy Targeted Check type; defaults to CUSTOM_BOUNDED_CHECK",
     )
     parser.add_argument(
         "--predecessor-task",
@@ -4411,7 +4455,7 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--job-id",
         dest="job_id",
-        help="Persistent BIC/SAW Job identity owning this task",
+        help="Persistent BIC, RTC, STC, or sealed legacy Job identity owning this task",
     )
     parser.add_argument(
         "--run-id",
@@ -4421,8 +4465,8 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
 
 
 def _add_plan_arguments(parser: argparse.ArgumentParser) -> None:
-    """Register the shared planning arguments used by BIC and SAW convenience commands."""
-    parser.add_argument("--workflow", dest="workflow_id", choices=("bic", "saw"), required=True)
+    """Register shared BIC, RTC, STC, and sealed legacy planning arguments."""
+    parser.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "saw"), required=True)
     parser.add_argument("--operation", required=True)
     parser.add_argument("--scope", required=True)
     parser.add_argument("--project")
@@ -4485,7 +4529,7 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
 
     menu = subparsers.add_parser(
         "menu",
-        help="Open the menu-driven Control Center for Job-scoped BIC and SAW work",
+        help="Open the menu-driven Control Center for Job-scoped BIC, RTC, and STC work",
     )
     menu.add_argument("--script", help="Read deterministic menu responses from one text file")
     setup_mode = menu.add_mutually_exclusive_group()
@@ -4670,14 +4714,14 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     task_submit = task_actions.add_parser("submit", help="Validate and finalize one completed ACT task")
     task_submit.add_argument("--task", required=True, help="task-manifest.json path")
     task_submit.set_defaults(handler=command_act_submit)
-    task_aggregate = task_actions.add_parser("aggregate", help="Aggregate `FINALIZED` SAW work units")
-    task_aggregate.add_argument("--plan", required=True, help="PARTITIONED SAW plan JSON path")
+    task_aggregate = task_actions.add_parser("aggregate", help="Aggregate `FINALIZED` analysis work units")
+    task_aggregate.add_argument("--plan", required=True, help="PARTITIONED RTC/STC or sealed legacy plan JSON path")
     task_aggregate.set_defaults(handler=command_act_aggregate)
     task_continue = task_actions.add_parser(
         "continue",
-        help="Return the next sequential SAW work unit or aggregation action",
+        help="Return the next sequential analysis work unit or aggregation action",
     )
-    task_continue.add_argument("--plan", required=True, help="PARTITIONED SAW plan JSON path")
+    task_continue.add_argument("--plan", required=True, help="PARTITIONED RTC/STC or sealed legacy plan JSON path")
     task_continue.set_defaults(handler=command_act_continue)
 
     memory = subparsers.add_parser("memory", help="Review and govern individual BIC memory records")
@@ -4791,16 +4835,16 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     evaluation_plan.add_argument("--scope", required=True)
     evaluation_plan.add_argument("--operation", choices=("rtc", "stc", "focused", "ol"), default="rtc")
     evaluation_plan.add_argument("--focus", help="One bounded question; required for focused and ol queues")
-    evaluation_plan.add_argument("--type", dest="check_type", choices=tuple(sorted(SAW_CHECK_TYPES)))
+    evaluation_plan.add_argument("--type", dest="check_type", choices=tuple(sorted(LEGACY_TARGETED_CHECK_TYPES)))
     evaluation_plan.set_defaults(handler=command_evaluation_plan)
 
     transaction = subparsers.add_parser("transaction", help="List or recover journaled workflow transactions")
     transaction_actions = transaction.add_subparsers(dest="transaction_command", required=True)
     transaction_list = transaction_actions.add_parser("list", help="List incomplete transactions")
-    transaction_list.add_argument("--workflow", dest="workflow_id", choices=("bic", "saw"), required=True)
+    transaction_list.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "saw"), required=True)
     transaction_list.set_defaults(handler=_transaction_list)
     transaction_recover = transaction_actions.add_parser("recover", help="Rollback one incomplete transaction")
-    transaction_recover.add_argument("--workflow", dest="workflow_id", choices=("bic", "saw"), required=True)
+    transaction_recover.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "saw"), required=True)
     transaction_recover.add_argument("--id", dest="transaction_id", required=True)
     transaction_recover.set_defaults(handler=_transaction_recover)
 
@@ -4850,14 +4894,14 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     workflow = subparsers.add_parser("workflow", help="Inspect or plan one independent workflow")
     workflow_actions = workflow.add_subparsers(dest="workflow_command", required=True)
     workflow_status = workflow_actions.add_parser("status", help="Show one workflow's qualification and resource state")
-    workflow_status.add_argument("--workflow", dest="workflow_id", choices=("bic", "saw"), required=True)
+    workflow_status.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "saw"), required=True)
     workflow_status.set_defaults(handler=command_workflow_status)
     workflow_plan = workflow_actions.add_parser("plan", help="Build bounded section-preferred work units without analysis")
     _add_plan_arguments(workflow_plan)
     workflow_plan.set_defaults(handler=command_plan)
     workflow_reset = workflow_actions.add_parser(
         "reset-stage",
-        help="Reset generated state for exactly one BIC or SAW stage",
+        help="Reset generated state for exactly one governed workflow stage",
     )
     workflow_reset.add_argument("--workflow", dest="workflow_id", choices=tuple(sorted(STAGES)), required=True)
     workflow_reset.add_argument(

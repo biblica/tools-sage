@@ -5,7 +5,7 @@
 
 ## Purpose
 
-SAGE must let an Operator begin governed BIC/SAW work when no current model-qualification data
+SAGE must let an Operator begin governed BIC/RTC/STC work when no current model-qualification data
 exists. In that exact state, deterministic Python always selects provider-native `medium` for the
 current Codex provider and labels the route `PROVISIONAL_UNQUALIFIED`. When current exact
 qualification data becomes available, automatic routing uses that data instead.
@@ -114,5 +114,5 @@ Automatic/data may display `RECOMMENDED`; a manual route displays routing/select
 - The audited exact Operator override remains the highest-precedence route state.
 - Failed, unreliable, stale, unavailable, hidden, and prohibited candidates cannot trigger fallback.
 - Receipts and reports use conditional, truthful provenance.
-- Route blocks occur before visible SAW work and before task mutation.
+- Route blocks occur before visible governed work and before task mutation.
 - A preserved blocked Run can be dry-run and resumed without creating a replacement Run or task.

@@ -20,13 +20,18 @@ controls:
   schema_version: '1.0'
   job_id:
     BIC: BIC_<SOURCE>-<DONOR>-<TARGET>
-    SAW: SAW_<WIP>-<REFERENCE>
+    RTC: RTC_<WIP>-<REFERENCE>
+    STC: STC_<WIP>
+    LEGACY_SAW: SAW_<WIP>-<REFERENCE>
     separators:
     - underscore
     - hyphen
     project_codes_preserved: true
   tool:
   - bic
+  - rtc
+  - stc
+  # Compatibility-only reader for sealed Jobs created before RTC/STC.
   - saw
   status:
   - ACTIVE
@@ -42,7 +47,17 @@ controls:
       generated_target: exactly_one
       original_language_greek: zero_or_one
       original_language_hebrew: zero_or_one
-    saw:
+    rtc:
+      wip: exactly_one
+      reference: exactly_one
+      original_language_greek: zero_or_one
+      original_language_hebrew: zero_or_one
+    stc:
+      wip: exactly_one
+      original_language_greek: zero_or_one
+      original_language_hebrew: zero_or_one
+      testament_appropriate_primary_original_language: exactly_one_at_execution
+    legacy_saw:
       wip: exactly_one
       reference: exactly_one
       original_language_greek: zero_or_one
@@ -81,7 +96,7 @@ controls:
   runtime_files: derived_not_authoritative
   bic_memory_boundary: job_local
   bic_generation_boundary: job_local
-  bic_saw_interface: prohibited
+  bic_analysis_interface: prohibited
   bic_cardinality:
     SOURCE: exactly_one
     DONOR: exactly_one
@@ -97,7 +112,9 @@ controls:
   grammar_profile_selection:
     BIC_SOURCE_GRAMMAR: exactly_one_active
     BIC_TARGET_GRAMMAR: exactly_one_active
-    SAW_WIP_GRAMMAR: exactly_one_active
+    RTC_WIP_GRAMMAR: exactly_one_active
+    STC_WIP_GRAMMAR: exactly_one_active
+    LEGACY_SAW_WIP_GRAMMAR: exactly_one_active_for_sealed_legacy_job
   effective_vrs:
     cardinality: exactly_one
     after_resolution: true

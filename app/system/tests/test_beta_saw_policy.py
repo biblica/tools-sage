@@ -13,7 +13,7 @@ from sage.language_identification import (
     resolve_country,
     resolve_country_input,
 )
-from sage.saw_policy import (
+from sage.rtc_policy import (
     default_rtc_policy,
     should_elevate,
     validate_rtc_policy,
@@ -56,7 +56,7 @@ def test_beta_run_policy_snapshot_is_immutable(tmp_path: Path) -> None:
     changed["usfm_contexts"]["add"] = "NORMAL"
     with pytest.raises(ValidationError) as caught:
         write_run_policy_snapshot(tmp_path, changed)
-    assert caught.value.code == "SAW_POLICY_IMMUTABLE"
+    assert caught.value.code == "RTC_POLICY_IMMUTABLE"
 
 
 def test_beta_language_evidence_reads_all_ldml_and_requires_country_choice_when_multiple(tmp_path: Path) -> None:

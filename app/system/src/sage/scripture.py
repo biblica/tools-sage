@@ -16,7 +16,7 @@ from .sections import section_index_from_usj
 from .structure_policy import load_structure_policy
 from .usj import USJ_COMPILER, compile_usfm_file, parse_usj_units
 from .vrs import VerseRef, VersificationSchema, load_project_vrs, parse_vrs_file
-from .references import BOOK_ORDER, ScriptureScope
+from .references import AnalysisScope, BOOK_ORDER, ScriptureScope, analysis_scope_portions
 
 USFM_SUFFIXES = {".sfm"}
 BOOK_ID_BYTES_RE = re.compile(rb"(?m)^\\id[ \t]+([A-Za-z0-9]{3})(?:[ \t\r]|$)")
@@ -88,7 +88,7 @@ def is_default_vrs_compatible_issue(
 
     SAGE's canonical VRS (org.vrs) is the mapping target, not the default numbering
     assumed for an undeclared translation Project.  A coordinate discrepancy is
-    advisory for SAW only when the same coordinate state is valid under the
+    advisory for read-only analysis only when the same coordinate state is valid under the
     configured default VRS.  Genuine missing Scripture under the default remains
     blocking.
     """
@@ -596,7 +596,7 @@ _SCOPE_REFERENCE_RE = re.compile(
 )
 
 
-def _issue_intersects_scope(issue: dict[str, str], scope: "ScriptureScope") -> bool:
+def _issue_intersects_scope(issue: dict[str, str], scope: AnalysisScope) -> bool:
     """Return whether one validation issue can affect the requested scope.
 
     Prefer the most specific canonical Scripture coordinate present anywhere in the
@@ -634,10 +634,13 @@ def _issue_intersects_scope(issue: dict[str, str], scope: "ScriptureScope") -> b
         if chapter is None:
             return True
         if start is None:
-            if scope.start_chapter is None:
-                return True
-            end_chapter = scope.end_chapter or scope.start_chapter
-            if scope.start_chapter <= chapter <= end_chapter:
+            if any(
+                portion.start_chapter is None
+                or portion.start_chapter
+                <= chapter
+                <= (portion.end_chapter or portion.start_chapter)
+                for portion in analysis_scope_portions(scope)
+            ):
                 return True
             continue
         assert end is not None
@@ -649,9 +652,9 @@ def _issue_intersects_scope(issue: dict[str, str], scope: "ScriptureScope") -> b
 def compile_project_scope(
     config: EcosystemConfig,
     project: ProjectSpec,
-    scope: "ScriptureScope",
+    scope: AnalysisScope,
 ) -> dict[str, Any]:
-    """Compile one requested book and calculate readiness for the exact scope.
+    """Compile one requested book and calculate readiness for the exact scope selection.
 
     Project-wide defects outside the requested scope remain reported in the last
     initialization state, but do not prevent a bounded task from starting.

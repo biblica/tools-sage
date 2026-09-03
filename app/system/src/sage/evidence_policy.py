@@ -88,7 +88,7 @@ def validate_read_class(value: object) -> str:
 def task_evidence_policy(workflow: str) -> dict[str, Any]:
     """Return the immutable evidence/competence contract embedded in each governed task."""
     normalized = workflow.strip().lower()
-    if normalized not in {"bic", "saw"}:
+    if normalized not in {"bic", "rtc", "stc", "saw"}:
         raise ValidationError(f"Unsupported evidence-policy workflow: {workflow}")
     authority = (
         {

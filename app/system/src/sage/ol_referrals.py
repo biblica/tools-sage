@@ -11,6 +11,24 @@ from sage.hashing import sha256_bytes
 
 
 OL_REFERRAL_CONTRACT_V1 = "SAW_OL_REFERRAL_ADMISSION_V1"
+RTC_OL_REFERRAL_CONTRACT_V1 = "RTC_OL_REFERRAL_ADMISSION_V1"
+OL_REFERRAL_CONTRACTS_V1 = frozenset(
+    {OL_REFERRAL_CONTRACT_V1, RTC_OL_REFERRAL_CONTRACT_V1}
+)
+
+
+def ol_referral_contract(workflow: str) -> str:
+    """Return canonical identity for new RTC work and legacy identity for sealed SAW."""
+    return (
+        OL_REFERRAL_CONTRACT_V1
+        if str(workflow).strip().lower() == "saw"
+        else RTC_OL_REFERRAL_CONTRACT_V1
+    )
+
+
+def is_ol_referral_contract(value: object) -> bool:
+    """Accept current RTC and sealed legacy referral contracts."""
+    return str(value or "").strip().upper() in OL_REFERRAL_CONTRACTS_V1
 OL_REFERRAL_CONFLICT_CLASSES = frozenset(
     {
         "NEGATION_OR_POLARITY_CONFLICT",
@@ -39,8 +57,13 @@ def normalize_referral_admission(
     request: Mapping[str, Any],
     *,
     index: int,
+    workflow: str = "saw",
 ) -> dict[str, str]:
-    """Validate and normalize one closed-contract referral admission."""
+    """Validate one referral and preserve codes only for sealed legacy work."""
+    def code(suffix: str) -> str:
+        """Return the error-code namespace appropriate to the persisted workflow."""
+        prefix = "SAW" if str(workflow).strip().lower() == "saw" else "RTC"
+        return f"{prefix}_{suffix}"
     missing = [
         field
         for field in _ADMISSION_FIELDS
@@ -49,7 +72,7 @@ def normalize_referral_admission(
     if missing:
         raise ValidationError(
             f"OL review request {index} is missing admission fields: {', '.join(missing)}",
-            code="SAW_OL_REFERRAL_FIELDS_MISSING",
+            code=code("OL_REFERRAL_FIELDS_MISSING"),
         )
 
     normalized = {field: request[field].strip() for field in _ADMISSION_FIELDS}
@@ -59,19 +82,19 @@ def normalize_referral_admission(
     if normalized["conflict_class"] not in OL_REFERRAL_CONFLICT_CLASSES:
         raise ValidationError(
             f"OL review request {index} uses an unsupported conflict class",
-            code="SAW_OL_REFERRAL_CLASS_INVALID",
+            code=code("OL_REFERRAL_CLASS_INVALID"),
         )
     if normalized["source_dependency"] != OL_REFERRAL_SOURCE_DEPENDENCY:
         raise ValidationError(
             f"OL review request {index} is not unresolved without original-language evidence",
-            code="SAW_OL_REFERRAL_ADMISSION_INVALID",
+            code=code("OL_REFERRAL_ADMISSION_INVALID"),
         )
     if _normalized_text(normalized["wip_proposition"]) == _normalized_text(
         normalized["reference_proposition"]
     ):
         raise ValidationError(
             f"OL review request {index} states equivalent WIP and REFERENCE propositions",
-            code="SAW_OL_REFERRAL_ADMISSION_INVALID",
+            code=code("OL_REFERRAL_ADMISSION_INVALID"),
         )
     return normalized
 

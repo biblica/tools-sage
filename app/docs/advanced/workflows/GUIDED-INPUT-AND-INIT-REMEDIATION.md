@@ -86,7 +86,7 @@ Guided resolution applies to:
 - evaluation-set IDs;
 - task, plan, predecessor, and governed-path selections;
 - transaction IDs and generation selectors;
-- required SAW focus questions;
+- required RTC/STC focus questions;
 - governed grammar-review decision IDs;
 - selected INIT settings and automatic resolutions;
 - stale effective-configuration sidecars;
@@ -142,7 +142,7 @@ A supplied ID records provisional use. It does not promote the profile to `ACTIV
 
 If an analytical task is requested before initialization, or after source/effective settings changed, interactive SAGE offers to run `workspace initialize` immediately. Non-interactive mode returns `WORKSPACE_INITIALIZATION_INPUT_REQUIRED`.
 
-For a menu-owned BIC or SAW Run, readiness is checked against that active Job's runtime settings and Job-local initialization receipt. A root-workspace receipt is used only for direct root CLI/API compatibility when no Job-local receipt exists.
+For a menu-owned BIC or RTC/STC Run, readiness is checked against that active Job's runtime settings and Job-local initialization receipt. A root-workspace receipt is used only for direct root CLI/API compatibility when no Job-local receipt exists.
 
 Task-triggered INIT reviews unresolved automatic settings only for the projects selected by that exact task. Unrelated project settings remain visible in ecosystem reports but are not presented as required input for the task. A direct `workspace initialize` or `project init` may review the complete configured ecosystem.
 

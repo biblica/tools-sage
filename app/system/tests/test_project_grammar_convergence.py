@@ -417,5 +417,5 @@ def test_composite_rtc_meaning_to_selective_ol_to_final_text(package_root: Path,
     repaired = continue_saw_plan(config, plan_path)
     repaired_text = Path(repaired["report_path"]).read_text(encoding="utf-8")
     assert repaired_text != "stale collision\n"
-    assert repaired_text.startswith("# Reference Text Comparison (RTC) — SAW Action Report\n")
+    assert repaired_text.startswith("# Reference Text Comparison (RTC) — Legacy Analysis Action Report\n")
     assert "- Scope: `MAT 1`" in repaired_text

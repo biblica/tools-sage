@@ -10,7 +10,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [TUI](TUI.md) — frozen experimental/unstable v0.01beta2 preview and the workflow-functionality backlog deferred to v0.02beta.
 - [Scripture Project Operator Cheat Sheet](PROJECT-OPERATOR-CHEAT-SHEET.md) — discovery, Add-to-SAGE, Project maintenance, Job-owned reports, reporting languages, and original-language resources.
 - [BIC Cheat Sheet](BIC-CHEAT-SHEET.md) — BIC Job, Run, task, state, and recovery quick reference.
-- [SAW Cheat Sheet](SAW-CHEAT-SHEET.md) — SAW RTC, STC, Targeted Check, Original-Language Review, finalization, and read-only boundaries.
+- [RTC/STC Cheat Sheet](RTC-STC-CHEAT-SHEET.md) — canonical RTC/STC Job setup, authority, finalization, and read-only boundaries.
 - [Good Practice](GOOD-PRACTICE.md) — safe operating and source-maintenance habits.
 - [Known Limitations](KNOWN-LIMITATIONS.md) — explicit functional and platform limits.
 - [Windows Cheat Sheet](windows/CHEAT-SHEET.md), [Recovery](windows/RECOVERY.md), and [Errors](windows/ERRORS.md).
@@ -31,8 +31,8 @@ in the `docs/` root. Technical and governance material is grouped under
 
 ## Advanced: workflow and execution governance
 
-- [BIC and SAW Authority Boundaries](advanced/workflows/BIC-SAW-AUTHORITY-BOUNDARIES.md) — independent workflows, role authority, and write limits.
-- [Full Process Flow](advanced/workflows/FULL-PROCESS-FLOW.md) — ordered BIC/SAW controller flows and state transitions.
+- [BIC, RTC, and STC Authority Boundaries](advanced/workflows/BIC-RTC-STC-AUTHORITY-BOUNDARIES.md) — independent workflows, role authority, and write limits.
+- [Full Process Flow](advanced/workflows/FULL-PROCESS-FLOW.md) — ordered BIC/RTC/STC controller flows and state transitions.
 - [REWRITE Lexical Risk and Bounded OL Flow](advanced/workflows/REWRITE-LEXICAL-RISK-AND-OL.md) — lexical burden, semantic risk, and conditional original-language checks.
 - [BIC Target Generations](advanced/workflows/TARGET-GENERATIONS.md) — immutable TARGET generations and verification.
 - [Structure and Work-Unit Planning](advanced/workflows/STRUCTURE-PLANNING.md) — deterministic segmentation and bounded work planning.
@@ -41,7 +41,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Execution Blocks, Retries, and Reports](advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md) — interruption and recovery behavior.
 - [Job Storage Maintenance](advanced/workflows/JOB-STORAGE-MAINTENANCE.md) — Job-owned storage maintenance.
 - [Natural-Language Command Routing](advanced/workflows/NATURAL-LANGUAGE-COMMAND-ROUTING.md) — advisory interpretation and canonical-command confirmation.
-- [SAW Operator Modes](advanced/workflows/SAW-OPERATOR-MODES.md) and [SAW Check Policy](advanced/workflows/SAW-CHECK-POLICY.md).
+- [RTC/STC Operator Workflows](advanced/workflows/RTC-STC-OPERATOR-MODES.md) and [RTC Check Policy](advanced/workflows/RTC-CHECK-POLICY.md).
 
 ## Advanced: models and AI
 
@@ -70,8 +70,8 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Administrative AI Routing Design](advanced/release/ADMINISTRATIVE-AI-ROUTING-DESIGN.md) — deterministic-first administration, Local AI preference, hosted fallback consent, and low/Instant restrictions.
 - [Provisional Medium Skill Routing Design](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-DESIGN.md) — universal no-data Medium fallback, qualification precedence, truthful receipts, and early route preflight.
 - [Provisional Medium Skill Routing Implementation Plan](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-IMPLEMENTATION-PLAN.md) — test-first resolver, preference, receipt, preflight, documentation, and hardening sequence.
-- [SAW Review Portions and OL Referral Admission Design](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-DESIGN.md) — stable review-range progress and fail-closed fundamental-conflict admission for selective OL checks.
-- [SAW Review Portions and OL Referral Admission Implementation Plan](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-IMPLEMENTATION-PLAN.md) — test-first contract, versioning, provenance, progress, qualification, and Alpha release sequence.
+- [Legacy Review Portions and OL Referral Admission Design](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-DESIGN.md) — historical design record for the pre-RTC identity.
+- [Legacy Review Portions and OL Referral Admission Implementation Plan](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-IMPLEMENTATION-PLAN.md) — historical implementation record for the pre-RTC identity.
 - [Vanilla Installation Manifest](advanced/release/VANILLA-INSTALL-MANIFEST.md) — complete clean package inventory.
 
 ## Advanced: future, non-current designs

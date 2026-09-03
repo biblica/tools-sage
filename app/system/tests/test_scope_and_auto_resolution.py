@@ -80,6 +80,58 @@ def test_project_book_scope_accepts_presets_unions_and_usfm_ranges() -> None:
     assert parse_project_book_scope(format_project_book_scope(combined)) == combined
 
 
+@pytest.mark.parametrize(
+    "value",
+    (
+        "1CH 5:1; 1CH 5:7-8; 1CH 6:3",
+        "1CH 5:1; 5:7-8; 6:3",
+    ),
+)
+def test_scope_set_accepts_repeated_or_inherited_numbered_book(value: str) -> None:
+    """A numbered book code must not be mistaken for a chapter-only continuation."""
+    from sage.references import parse_scope_set
+
+    assert [scope.label() for scope in parse_scope_set(value)] == [
+        "1CH 5:1",
+        "1CH 5:7-8",
+        "1CH 6:3",
+    ]
+
+
+def test_analysis_scope_normalizes_discontinuous_chapters_in_one_book() -> None:
+    """RTC/STC Run scope shorthand becomes one canonical same-book selection."""
+    from sage.references import analysis_scope_portions, parse_analysis_scope
+
+    scope = parse_analysis_scope("1ch 5-6; 24")
+
+    assert scope.label() == "1CH 5-6; 1CH 24"
+    assert [portion.label() for portion in analysis_scope_portions(scope)] == [
+        "1CH 5-6",
+        "1CH 24",
+    ]
+
+
+@pytest.mark.parametrize("value", ("MAT 1-2; 2", "MAT 1; MRK 1"))
+def test_analysis_scope_rejects_overlap_or_mixed_books(value: str) -> None:
+    """One governed analysis Run cannot duplicate coverage or cross book authority."""
+    from sage.errors import ValidationError
+    from sage.references import parse_analysis_scope
+
+    with pytest.raises(ValidationError):
+        parse_analysis_scope(value)
+
+
+def test_child_scope_cannot_bridge_across_discontinuous_run_gap() -> None:
+    """A child task must fit one selected portion, not merely share both endpoints."""
+    from sage.act_tasks import _scope_is_contained
+    from sage.references import parse_analysis_scope, parse_scope
+
+    parent = parse_analysis_scope("MAT 1; 3")
+
+    assert _scope_is_contained(parent, parse_scope("MAT 1:1")) is True
+    assert _scope_is_contained(parent, parse_scope("MAT 1:1-3:1")) is False
+
+
 @pytest.mark.parametrize("value", ["ACT-LUK", "MAT-XYZ", "XYZ", "-"])
 def test_project_book_scope_rejects_invalid_or_reversed_ranges(value: str) -> None:
     """Invalid USFM IDs and reverse canonical ranges receive an input error."""

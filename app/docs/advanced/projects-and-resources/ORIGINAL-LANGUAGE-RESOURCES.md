@@ -82,4 +82,4 @@ The operator can configure Greek or Hebrew separately, validate both, or restore
 
 ## Authority boundary
 
-OL resources are always externally read-only. They never gain BIC TARGET write capability, and Project-code naming never assigns a workflow role. Conditional BIC/SAW OL routing remains governed by the workflow's existing evidence and material-risk rules. Only the two governed bundled directories are permitted to contain Scripture inside a clean SAGE distribution; Job, Project, and operator Scripture remains local workspace data.
+OL resources are always externally read-only. They never gain BIC TARGET write capability, and Project-code naming never assigns a workflow role. Conditional BIC/RTC/STC OL routing remains governed by the workflow's existing evidence and material-risk rules. Only the two governed bundled directories are permitted to contain Scripture inside a clean SAGE distribution; Job, Project, and operator Scripture remains local workspace data.

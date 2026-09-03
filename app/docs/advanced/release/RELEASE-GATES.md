@@ -27,10 +27,10 @@ A package may include handover data only after all applicable gates pass.
 
 ## Analytical governance
 
-- all seven registered analytical Skill files have valid frontmatter and internally consistent identifiers; deterministic controller functions such as consolidation are not registered as AI Skills;
+- all nine registered analytical Skill files have valid frontmatter and internally consistent identifiers; deterministic controller functions such as consolidation are not registered as AI Skills;
 - every controller/model operation has one execution-owner classification; Python-owned work has no
   model route or LLM token policy;
-- all seven Skills have explicit sealed evaluation inventories and three repetitions per case; RTC includes five cases for its source-referral semantic boundaries, and every case remains one review item; inventories and hashes regenerate deterministically without provider calls;
+- all nine Skills have explicit sealed evaluation inventories and three repetitions per case; RTC includes five cases for its source-referral semantic boundaries, and every case remains one review item; inventories and hashes regenerate deterministically without provider calls;
 - operational tasks accept only exact `RECOMMENDED`/`QUALIFIED` routes bound to current model
   capability, Skill, suite, and policy hashes; stale/unavailable/override-mismatched routes fail before
   evidence transmission;
@@ -38,10 +38,10 @@ A package may include handover data only after all applicable gates pass.
   seed promotion, and repeated whenever a bound identity/hash changes;
 - execution receipts, Job/Run displays, and reports preserve actual route provenance; one-item source
   adjudication and secondary-render isolation tests pass;
-- all seven registered Skill bindings and their original/adapted hashes verify;
+- all nine registered Skill bindings and their original/adapted hashes verify;
 - routed Skill references contain only current paths, commands, filenames, and workflow claims;
 - ACT mutation, traversal, output grammar, bounded scope, scope-aware readiness, review evidence, and resubmission regressions pass;
-- BIC and SAW process-flow tests pass;
+- BIC, RTC, and STC process-flow tests pass;
 - only the SFM Scripture streams routed to that review item contribute to governed token/hard-byte sizing; prompt, schema, profile, controller, provenance, diagnostic, and transport material cannot alter slicing or hard-budget decisions;
 - command, help, cheat-sheet, and documentation consistency tests pass;
 - local documentation links resolve.

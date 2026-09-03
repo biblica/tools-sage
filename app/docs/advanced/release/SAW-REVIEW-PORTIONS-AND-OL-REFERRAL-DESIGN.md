@@ -1,5 +1,7 @@
 # SAW review portions and OL referral admission design
 
+> Historical record: this document preserves the pre-RTC workflow identity used when the design was implemented. Current operator and runtime terminology is RTC/STC; `SAW` names below refer only to sealed legacy artifacts.
+
 Status: implemented and regression-verified on `alpha/0.02alpha1`; Operator field acceptance remains pending.
 
 ## Purpose
@@ -39,14 +41,14 @@ The following boundaries are distinct:
 
 | Boundary | Meaning | Stability | Operator label |
 |---|---|---|---|
-| Run scope | The single contiguous Scripture scope entered and parsed for the Run | Immutable for the Run | `Review range` |
+| Run scope | One contiguous scope, or ordered non-overlapping semicolon-separated portions from one book | Immutable for the Run | `Review range` |
 | Approved plan unit | One deterministic scope-covering partition approved before Run creation | Immutable for the Run | `Review portion` |
 | Stage case | One structural, meaning, or selective-source task within a stage | May differ by stage | `<Stage> check` |
 | Machine work unit | Existing internal task/coverage identity | Stable machine contract | Not shown as the default Operator label |
 
-`parse_scope()` remains the processing-range parser. Discontiguous
-`parse_scope_set()` values remain report/finding citations and do not become
-multi-range Run input. After parsing, the controller expands the review range
+`parse_scope()` remains the contiguous processing-range parser.
+`parse_analysis_scope()` validates RTC/STC Run input and accepts same-book
+semicolon-separated portions such as `1CH 5-6; 24`. After parsing, the controller expands each portion
 to canonical atomic coordinates and partitions those coordinates into approved
 review portions exactly as it does now.
 
@@ -58,7 +60,11 @@ Approved-plan entries expose `review_portion_index` and
 `parent_review_portion_id`, `stage_case_index`, and `stage_case_total`. A stage
 case must be wholly contained in one approved review portion; otherwise the
 controller blocks with `SAW_STAGE_CASE_PORTION_MISMATCH` before model
-execution.
+execution. A VRS structural candidate is report-only metadata rather than one
+indivisible stage case: when its atomic coordinates cross approved portions,
+the controller projects those coordinates into separate contained structural
+cases under their existing parents. This never changes the approved RTC
+boundaries.
 
 Normal progress is nested:
 
@@ -267,6 +273,5 @@ active/passive equivalence, and ordinary grammar/style differences.
 
 - A second model call to approve each referral.
 - Arbitrary per-verse, per-portion, or per-Run referral caps.
-- Discontiguous Run-scope input.
 - Changes to original-language authority bindings.
 - Combining several admitted OL questions into one provider evaluation.

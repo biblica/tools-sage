@@ -14,6 +14,7 @@ from .errors import InputRequiredError, SageError
 from .hashing import sha256_bytes
 from .state import append_event
 from .storage import storage_layout
+from .workflow_identity import analysis_reason_code
 
 SCHEMA_VERSION = "1.0"
 DISPOSITIONS = (
@@ -378,11 +379,28 @@ def record_exception_event(
 ) -> dict[str, Any]:
     """Classify one SAGE exception and persist it at the narrowest known boundary."""
     disposition, boundary, retryability = classify_exception(exc, boundary_hint=boundary_hint)
+    normalized_workflow = str(workflow or "").strip().lower()
+
+    def current_text(value: str | None) -> str | None:
+        """Remove retired identity from newly persisted RTC/STC event prose."""
+        if value is None or normalized_workflow not in {"rtc", "stc"}:
+            return value
+        return (
+            value.replace("SAW RTC", "RTC")
+            .replace("SAW STC", "STC")
+            .replace("SAW", normalized_workflow.upper())
+        )
+
+    reason_code = (
+        analysis_reason_code(exc.code, normalized_workflow)
+        if normalized_workflow in {"rtc", "stc"}
+        else exc.code
+    )
     return record_execution_event(
         sage_root,
         disposition=disposition,
-        reason_code=exc.code,
-        message=exc.message,
+        reason_code=reason_code,
+        message=current_text(exc.message) or exc.message,
         blocks=boundary,
         retryability=retryability,
         workflow=workflow,
@@ -393,7 +411,7 @@ def record_exception_event(
         stage=stage,
         requested_scope=requested_scope or exc.affected_scope,
         work_unit_scope=work_unit_scope,
-        next_action=exc.next_action,
+        next_action=current_text(exc.next_action),
         details=exc.details,
         source_module=source_module,
         exception_class=type(exc).__name__,

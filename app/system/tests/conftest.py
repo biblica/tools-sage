@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 import shutil
 import sys
 from pathlib import Path
@@ -361,7 +362,40 @@ def make_workspace(tmp_path: Path):
             },
             "qualification_gates": ["fixture_gate"],
         }
+        rtc_profile = deepcopy(saw_profile)
+        rtc_profile["workflow"].update(
+            {
+                "id": "rtc",
+                "name": "Reference Text Comparison",
+                "purpose": "Read-only fixture RTC workflow.",
+            }
+        )
+        rtc_profile["evidence_policies"]["rtc"] = dict(DEFAULT_POLICY)
+        rtc_profile["process"]["rules"] = ["Fixture RTC contract."]
+        stc_profile = deepcopy(saw_profile)
+        stc_profile["workflow"].update(
+            {
+                "id": "stc",
+                "name": "Source Text Correspondence",
+                "purpose": "Read-only fixture STC workflow.",
+            }
+        )
+        stc_profile.pop("rtc_sizing", None)
+        stc_profile.pop("check_policy", None)
+        stc_profile["bindings"].pop("REFERENCE")
+        stc_profile["evidence_policies"] = {"default": dict(DEFAULT_POLICY), "stc": dict(DEFAULT_POLICY)}
+        stc_profile["process"] = {
+            "stages": [
+                "DETERMINISTIC_PREFLIGHT",
+                "SOURCE_TEXT_CORRESPONDENCE",
+                "COVERAGE_RECONCILIATION",
+                "DETERMINISTIC_FINALISATION",
+            ],
+            "rules": ["Fixture STC contract."],
+        }
         write_yaml(root / "system" / "config" / "workflows" / "bic" / "profile.yml", bic_profile)
+        write_yaml(root / "system" / "config" / "workflows" / "rtc" / "profile.yml", rtc_profile)
+        write_yaml(root / "system" / "config" / "workflows" / "stc" / "profile.yml", stc_profile)
         write_yaml(root / "system" / "config" / "workflows" / "saw" / "profile.yml", saw_profile)
 
         settings = {
@@ -413,6 +447,20 @@ def make_workspace(tmp_path: Path):
                     "transaction_root": "@system/workflows/bic/transactions",
                     "output_root": "@system/workflows/bic/output",
                     "publication_root": "@system/workflows/bic/output/published-targets",
+                },
+                "rtc": {
+                    "profile": "system/config/workflows/rtc/profile.yml",
+                    "state_root": "@system/workflows/rtc/state",
+                    "lock_root": "@system/workflows/rtc/locks",
+                    "transaction_root": "@system/workflows/rtc/transactions",
+                    "output_root": "@system/workflows/rtc/output",
+                },
+                "stc": {
+                    "profile": "system/config/workflows/stc/profile.yml",
+                    "state_root": "@system/workflows/stc/state",
+                    "lock_root": "@system/workflows/stc/locks",
+                    "transaction_root": "@system/workflows/stc/transactions",
+                    "output_root": "@system/workflows/stc/output",
                 },
                 "saw": {
                     "profile": "system/config/workflows/saw/profile.yml",

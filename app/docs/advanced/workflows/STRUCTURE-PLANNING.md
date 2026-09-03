@@ -19,15 +19,15 @@ Planning first identifies intact spans at governed section markers. For RTC, adj
 - chapter boundaries are weak fallbacks;
 - `\m` continues a preceding body block but can begin a new block after a header or poetry break;
 - `\s3` remains structural context but is not a split candidate;
-- WIP and REFERENCE verse bridges are indivisible source spans and may not be cut.
+- Actual multi-coordinate WIP and REFERENCE source records are indivisible verse-bridge spans and may not be cut.
 
 ## Evidence rules
 
 Each requested coordinate occurs in exactly one primary unit. Adjacent context may be supplied for interpretation but is marked context-only and is not an ordinary finding location. Plan identity includes resources, VRS, structure policy, grammar contracts, compiler version, operation, and scope.
 
-For RTC, the WIP stream supplies discourse/soft-target proposals, while the general slicer validates every proposed boundary against both active Scripture streams and local VRS equivalence spans. A boundary crossing either source is moved through the far edge and checked again until stable; the completed routed WIP+REFERENCE SFM is then remeasured. A hard-limit conflict blocks rather than splitting the protected span. STC additionally protects connected WIP-bridge and OL-correspondence spans and remeasures the complete WIP+PRIMARY-OL SFM route.
+For RTC, the WIP stream supplies discourse/soft-target proposals, while the general slicer validates every proposed boundary against actual multi-coordinate source records in both active Scripture streams. A boundary crossing an actual WIP or REFERENCE verse bridge is moved through the far edge and checked again until stable; the completed routed WIP+REFERENCE SFM is then remeasured. A genuine source-record bridge that exceeds the hard limit blocks rather than being split. VRS mapping ranges are structural metadata, never boundary constraints: coordinate differences are retained as advisories or structural candidates, may cross approved review portions, and are reported without blocking RTC. STC additionally protects connected WIP-bridge and OL-correspondence spans and remeasures the complete WIP+PRIMARY-OL SFM route.
 
-At SAW execution and finalization time, SAGE expands approved ranged labels and current WIP records
+At RTC/STC execution and finalization time, SAGE expands approved ranged labels and current WIP records
 to the same atomic coordinate inventory. Raw bridge labels remain source metadata;
 `primary_coverage_atoms` are the immutable ownership keys. Existing partition plans created before
 that field was introduced are expanded deterministically during aggregation, so a valid completed
@@ -35,9 +35,9 @@ Run can retry finalization without weakening exact coverage reconciliation.
 
 Plans and packets remain inside the owning workflow output root and outside immutable publication folders.
 
-## Normal SAW discourse units
+## Normal RTC/STC discourse units
 
-The deterministic discourse layer sits inside a section-preferred planner. SAW `REFERENCE_TEXT_COMPARISON` targets about 6,000 estimated WIP tokens, searches for clean section/stanza/paragraph boundaries across the preferred 5,000–7,000 range, and hard-stops the original WIP packet below 8,000. Complete protected discourse units remain intact when they fit; oversized units are divided at balanced natural boundaries rather than greedily filling one packet and leaving a tiny tail. The Reference Project is then correlated to the exact same Scripture range. Focused SAW review remains capped at two intact units and standalone OL Review at one; BIC INSPECT remains governed by its own profile.
+The deterministic discourse layer sits inside a section-preferred planner. RTC/STC `REFERENCE_TEXT_COMPARISON` targets about 6,000 estimated WIP tokens, searches for clean section/stanza/paragraph boundaries across the preferred 5,000–7,000 range, and hard-stops the original WIP packet below 8,000. Complete protected discourse units remain intact when they fit; oversized units are divided at balanced natural boundaries rather than greedily filling one packet and leaving a tiny tail. The Reference Project is then correlated to the exact same Scripture range. Focused RTC/STC review remains capped at two intact units and standalone OL Review at one; BIC INSPECT remains governed by its own profile.
 
 - **Prose:** each ordinary body paragraph is one discourse unit.
 - **Lists:** `\lh` breaks/heads list flow; each `\li1` starts a major unit; following subordinate `\li2+` paragraphs remain in that `\li1` unit; the next `\li1` starts another unit; `\lf` breaks/ends list flow.

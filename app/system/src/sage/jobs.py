@@ -42,9 +42,8 @@ from .workflow_identity import (
     runtime_workflow_id,
 )
 
-# Compatibility export used by the existing SAW menu until the primary-flow menu
-# switches to OPERATOR_WORKFLOWS. Persistence already understands RTC and STC.
-TOOL_IDS = ("bic", "saw")
+# Current runtime workflows plus the read-only legacy analysis adapter.
+TOOL_IDS = ("bic", "rtc", "stc", "saw")
 PERSISTED_JOB_TOOLS = SUPPORTED_JOB_TOOLS
 JOB_SCHEMA_VERSION = "1.0"
 RUN_SCHEMA_VERSION = "1.0"
@@ -210,12 +209,12 @@ def default_job_name(
     return f"SAW_{output}-{source}"
 
 
-def _validate_saw_role_separation(job_id: str, bindings: dict[str, str]) -> None:
+def _validate_analysis_role_separation(job_id: str, bindings: dict[str, str]) -> None:
     """Reject one Project serving contradictory WIP and REFERENCE roles."""
     if bindings["wip"] != bindings["reference"]:
         return
     project_id = bindings["wip"]
-    workflow = "RTC" if job_id.startswith("RTC-") else "SAW"
+    workflow = "RTC" if job_id.startswith("RTC-") else "legacy analysis"
     raise ValidationError(
         f"{workflow} Job {job_id} is invalid: WIP and REFERENCE both bind {project_id}; "
         "the two roles must use different Projects and require different runtime content states.",
@@ -434,7 +433,7 @@ class JobStore:
                 )
         elif job_tool in {"saw", "rtc"}:
             try:
-                _validate_saw_role_separation(manifest_job_id, bindings)
+                _validate_analysis_role_separation(manifest_job_id, bindings)
             except ValidationError as exc:
                 raise ConfigurationError(
                     exc.message,
@@ -810,7 +809,7 @@ class JobStore:
                     code="PROJECT_BINDING_MISMATCH",
                 )
         elif normalized_tool in {"saw", "rtc"}:
-            _validate_saw_role_separation(normalized_id, bindings)
+            _validate_analysis_role_separation(normalized_id, bindings)
         canonical_profiles = self._validate_project_bindings(
             tool=normalized_tool,
             job_id=normalized_id,
@@ -919,39 +918,25 @@ class JobStore:
                 raise ValidationError("Job display name cannot be blank")
             raw["display_name"] = normalized_name
         if bindings is not None:
-            if project.tool not in ANALYSIS_WORKFLOWS:
+            if project.tool in ANALYSIS_WORKFLOWS:
                 raise ValidationError(
-                    "Binding changes are supported here only for RTC and STC Jobs",
+                    f"{project.tool.upper()} Project bindings are immutable for the Job lifetime",
+                    code="JOB_BINDINGS_IMMUTABLE",
+                    next_action=(
+                        "Create a new Job to use a different WIP or REFERENCE Project. "
+                        "Refresh the WIP snapshot only when the bound WIP Project itself was reimported."
+                    ),
+                    details={
+                        "job_id": project.job_id,
+                        "current_bindings": dict(project.bindings),
+                        "requested_bindings": dict(bindings),
+                    },
+                )
+            else:
+                raise ValidationError(
+                    "Job Project bindings cannot be revised through this operation",
                     code="JOB_BINDING_REVISION_UNSUPPORTED",
                 )
-            required, optional = _binding_contract(project.tool)
-            supplied_keys = set(bindings)
-            missing = sorted(required - supplied_keys)
-            extra = sorted(supplied_keys - (required | optional))
-            if missing:
-                raise ValidationError(
-                    f"Job is missing required bindings: {', '.join(missing)}",
-                    code="PROJECT_BINDING_MISMATCH",
-                )
-            if extra:
-                raise ValidationError(
-                    f"Job has unsupported bindings: {', '.join(extra)}",
-                    code="PROJECT_BINDING_MISMATCH",
-                )
-            if bindings["wip"] != project.bindings["wip"]:
-                raise ValidationError(
-                    "Changing the WIP Project requires a new snapshot-dated Job",
-                    code="JOB_WIP_CHANGE_REQUIRES_NEW_JOB",
-                )
-            if project.tool == "rtc":
-                _validate_saw_role_separation(project.job_id, bindings)
-            raw["bindings"] = dict(bindings)
-            raw["profiles"] = self._validate_project_bindings(
-                tool=project.tool,
-                job_id=project.job_id,
-                bindings=dict(bindings),
-                profiles=None,
-            )
         if defaults is not None:
             raw["defaults"] = dict(defaults)
         if reporting is not None:
@@ -1139,8 +1124,8 @@ class JobStore:
                 if temporary_root.exists():
                     shutil.rmtree(temporary_root)
 
-    def remove_job(self, project: Job) -> None:
-        """Remove one Job directory without touching Projects or root-level published reports."""
+    def remove_job(self, project: Job, *, remove_reports: bool = False) -> None:
+        """Remove all Job-owned work and optionally its separately published reports."""
         current = self.load_job(project.job_id, tool=project.tool)
         if self.active_jobs().get(current.tool) == current.job_id:
             self.set_active_job(current.tool, None)
@@ -1157,6 +1142,10 @@ class JobStore:
         inactive = self.controller_jobs_root / "inactive" / current.tool / current.job_id
         if inactive.exists():
             shutil.rmtree(inactive)
+        if remove_reports:
+            published_reports = self.storage.reports_root / current.job_id
+            if published_reports.exists():
+                shutil.rmtree(published_reports)
 
     @staticmethod
     def _exportable_project_files(project: Job, destination: Path) -> list[Path]:
@@ -1344,7 +1333,7 @@ class JobStore:
             permissions["may_write_projects"] = [project.bindings["generated_target"]]
             project_profile["permissions"] = permissions
         else:
-            permissions = dict(require_mapping(project_profile.get("permissions", {}), "SAW permissions"))
+            permissions = dict(require_mapping(project_profile.get("permissions", {}), "analysis permissions"))
             permissions["may_write_projects"] = []
             project_profile["permissions"] = permissions
         atomic_write_text(project.runtime_profile_path, _safe_yaml(project_profile))
@@ -1361,7 +1350,7 @@ class JobStore:
 
         registered = require_mapping(raw.get("projects", {}), "projects")
         bound_ids = set(role_bindings.values())
-        # BIC and SAW projects are independent; enable only this project's bound resources.
+        # Each workflow is isolated; enable only this Job's bound resources.
         required_resource_ids = bound_ids
         projects_root = self.storage.projects_root
         custom_default = str(
@@ -1411,7 +1400,7 @@ class JobStore:
                 item["kind"] = "SCRIPTURE"
                 item["content_state"] = "UNDER_REVIEW"
                 item.pop("producer", None)
-                item["consumers"] = ["saw"]
+                item["consumers"] = [project.tool]
             else:
                 item["kind"] = "SCRIPTURE"
                 item["content_state"] = "LOCKED"
@@ -1434,6 +1423,8 @@ class JobStore:
 
         workflow_data = require_mapping(raw.get("workflows"), "workflows")
         for workflow_id in TOOL_IDS:
+            if workflow_id not in workflow_data:
+                continue
             entry = dict(require_mapping(workflow_data.get(workflow_id), f"workflows.{workflow_id}"))
             if workflow_id == project.runtime_tool:
                 controller_token = f"@system/jobs/{project.tool}/{project.job_id}"
@@ -1930,14 +1921,15 @@ class JobStore:
             )
         )
 
+        # Retain deterministic legacy fixtures for sealed pre-RTC/STC Jobs only.
         saw_profile = self._base_profile("saw", config.raw)
-        saw_bindings = require_mapping(saw_profile.get("bindings"), "SAW bindings")
+        saw_bindings = require_mapping(saw_profile.get("bindings"), "legacy analysis bindings")
         greek = str(saw_bindings["ORIGINAL_LANGUAGE_GREEK"]) if saw_bindings.get("ORIGINAL_LANGUAGE_GREEK") else None
         hebrew = str(saw_bindings["ORIGINAL_LANGUAGE_HEBREW"]) if saw_bindings.get("ORIGINAL_LANGUAGE_HEBREW") else None
         pairs: list[tuple[str, str]] = [
             (
-                require_string(saw_bindings.get("WIP"), "SAW WIP"),
-                require_string(saw_bindings.get("REFERENCE"), "SAW REFERENCE"),
+                require_string(saw_bindings.get("WIP"), "legacy analysis WIP"),
+                require_string(saw_bindings.get("REFERENCE"), "legacy analysis REFERENCE"),
             )
         ]
         for evaluation_set in config.evaluation_sets.values():

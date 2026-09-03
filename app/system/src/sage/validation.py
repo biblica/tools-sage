@@ -35,7 +35,7 @@ REQUIRED_PACKAGE_PATHS = {
     "docs/advanced/architecture/ARCHITECTURE.md",
     "docs/advanced/future/RESOURCE-HUB.md",
     "docs/advanced/architecture/STORAGE-AND-CORE-BOUNDARY.md",
-    "docs/SAW-CHEAT-SHEET.md",
+    "docs/RTC-STC-CHEAT-SHEET.md",
     "docs/advanced/architecture/PROJECT-TREE.md",
     "docs/advanced/architecture/FILE-NAMING-AND-SERIALIZATION.md",
     "docs/advanced/projects-and-resources/PROJECT-CATALOG-AND-MAINTENANCE.md",
@@ -56,7 +56,7 @@ REQUIRED_PACKAGE_PATHS = {
     "docs/advanced/projects-and-resources/FLEX-COMBINE-INTERCHANGE.md",
     "docs/advanced/architecture/CARDINALITY-AND-BINDING-GRAMMAR.md",
     "docs/advanced/maintenance/HARDENING-AND-CONTEXT-REFINEMENT.md",
-    "docs/advanced/workflows/BIC-SAW-AUTHORITY-BOUNDARIES.md",
+    "docs/advanced/workflows/BIC-RTC-STC-AUTHORITY-BOUNDARIES.md",
     "docs/advanced/future/WDA-WORD-DATA-ANALYSIS.md",
     "docs/advanced/future/BASE-TARGET-REVISION-WORKFLOW.md",
     "docs/advanced/release/RELEASE-NOTES.md",
@@ -115,6 +115,8 @@ REQUIRED_PACKAGE_PATHS = {
     "system/skills/bic-self-check/SKILL.md",
     "system/skills/saw-rtc/SKILL.md",
     "system/skills/saw-stc/SKILL.md",
+    "system/skills/rtc/SKILL.md",
+    "system/skills/stc/SKILL.md",
     "system/skills/saw-focused-check/SKILL.md",
     "system/skills/saw-ol-review/SKILL.md",
     "system/src/sage/consolidation.py",
@@ -144,6 +146,7 @@ REQUIRED_PACKAGE_PATHS = {
     "system/config/schemas/bic-inspect-submission.schema.yml",
     "system/config/schemas/bic-grammar-assessment.schema.yml",
     "system/config/schemas/saw-findings.schema.yml",
+    "system/config/schemas/rtc-findings.schema.yml",
     "system/config/schemas/skill-registry.schema.yml",
     "system/config/schemas/generated-target-manifest.schema.yml",
     "system/config/schemas/project-inventory.schema.yml",
@@ -315,8 +318,9 @@ def validate_static_ecosystem(
                     f"{workflow_id.upper()} required bindings are disabled: "
                     + ", ".join(disabled_bindings)
                 )
-        if workflow_id == "saw" and profile.may_write_projects:
-            errors.append("SAW must not have permission to write any Scripture project")
+        if workflow_id in {"rtc", "stc", "saw"} and profile.may_write_projects:
+            identity = workflow_id.upper() if workflow_id != "saw" else "Legacy analysis"
+            errors.append(f"{identity} must not have permission to write any Scripture project")
         if workflow.publication_root is not None:
             if _is_inside(workflow.publication_root, config.projects_root):
                 errors.append(

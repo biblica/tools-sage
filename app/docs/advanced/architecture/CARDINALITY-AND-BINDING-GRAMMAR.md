@@ -2,7 +2,7 @@
 
 Version: `0.01beta2`
 
-SAGE separates machine cardinality from Operator-facing binding language. It does not change BIC authority, protected linguistic policy, SAW independence, or bounded TARGET storage semantics.
+SAGE separates machine cardinality from Operator-facing binding language. It does not change BIC authority, protected linguistic policy, RTC/STC independence, or bounded TARGET storage semantics.
 
 ## Machine cardinality
 

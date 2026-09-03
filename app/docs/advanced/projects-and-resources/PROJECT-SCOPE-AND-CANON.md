@@ -27,7 +27,7 @@ After import, the declared scope remains the authority boundary. A canonical `.S
 
 ## Job roles
 
-Roles are assigned by a Job binding, not inferred from or persisted as intrinsic Project roles. SAW binds `WIP` and `REFERENCE`; BIC binds `CONTENT_SOURCE`, `LEXICAL_DONOR`, and `GENERATED_TARGET`. Optional applicable `ORIGINAL_LANGUAGE_GREEK` / `ORIGINAL_LANGUAGE_HEBREW` bindings are also Job-scoped.
+Roles are assigned by a Job binding, not inferred from or persisted as intrinsic Project roles. RTC/STC binds `WIP` and `REFERENCE`; BIC binds `CONTENT_SOURCE`, `LEXICAL_DONOR`, and `GENERATED_TARGET`. Optional applicable `ORIGINAL_LANGUAGE_GREEK` / `ORIGINAL_LANGUAGE_HEBREW` bindings are also Job-scoped.
 
 The same SAGE Project may serve more than one permitted purpose in different Jobs without duplicate SAGE Project entries.
 

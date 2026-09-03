@@ -1,5 +1,7 @@
 # SAW workflow
 
+> Legacy compatibility profile only. New work uses the independent `rtc` or `stc` workflow; this profile remains readable solely for sealed pre-migration Jobs.
+
 SAW hosts four independent analysis operations over one bounded WIP. RTC/Targeted Check use the authorized REFERENCE; STC uses the testament-appropriate PRIMARY original-language authority and does not consume REFERENCE evidence; Original-Language Review uses the bounded evidence declared by its operation contract. The Job may bind one configured Greek resource and/or one configured Hebrew resource; machine governance treats those bindings as OL authority families.
 
 ```text

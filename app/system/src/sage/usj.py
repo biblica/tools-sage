@@ -1,4 +1,4 @@
-"""Strict USFM-to-USJ compiler shared by BIC and SAW."""
+"""Strict USFM-to-USJ compiler shared by BIC, RTC, STC, and legacy analysis."""
 
 from __future__ import annotations
 

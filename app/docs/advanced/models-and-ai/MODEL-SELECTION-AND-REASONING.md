@@ -8,7 +8,7 @@ controls.
 | Provider | Adapter/configuration | v0.01beta2 governed execution |
 |---|---|---|
 | Codex | Implemented | Exact qualified routes, plus truthful Medium fallback in every true no-data state |
-| Ollama | Optional local admin assistant | Disabled for BIC/SAW |
+| Ollama | Optional local admin assistant | Disabled for BIC/RTC/STC |
 | Grok | Future adapter slot | Not implemented |
 | Gemini | Future adapter slot | Not implemented |
 
@@ -73,16 +73,16 @@ validators passing is `QUALIFIED`.
 ./system/bin/sage model refresh --provider codex
 ./system/bin/sage model list --provider codex
 ./system/bin/sage model routes
-./system/bin/sage model recommend --skill saw-rtc
-./system/bin/sage model evaluate --skill saw-rtc --provider codex --model MODEL_ID
+./system/bin/sage model recommend --skill rtc
+./system/bin/sage model evaluate --skill rtc --provider codex --model MODEL_ID
 ./system/bin/sage model evaluate --all-skills --provider codex --all-models
-./system/bin/sage model evaluate --skill saw-rtc --provider codex --model MODEL_ID --comparison
+./system/bin/sage model evaluate --skill rtc --provider codex --model MODEL_ID --comparison
 ./system/bin/sage model test --provider codex
 ```
 
 Evaluation uses only packaged synthetic cases. For every selected model/Skill, SAGE tests the
 provider's advertised reasoning settings in provider order and stops at the first `QUALIFIED`
-setting. Most tested settings perform nine isolated attempts. SAW RTC performs fifteen because its five-case suite adds fundamental polarity and participant-identity referral boundaries. `--comparison` explicitly continues through every advertised setting. A provider without a
+setting. Most tested settings perform nine isolated attempts. RTC performs fifteen because its five-case suite adds fundamental polarity and participant-identity referral boundaries. `--comparison` explicitly continues through every advertised setting. A provider without a
 reasoning control is evaluated once as `provider-default`.
 
 Evaluation must not use Operator Jobs, Projects, reports, or Scripture. It is an explicit maintainer
@@ -156,7 +156,7 @@ recommendation.
 ## Local admin assistant
 
 **Configure Local AI** manages the optional Ollama assistant on this workstation. It is
-`ASSISTIVE_ONLY`, non-authoritative, safely omittable, evidence-restricted, and cannot execute BIC/SAW
+`ASSISTIVE_ONLY`, non-authoritative, safely omittable, evidence-restricted, and cannot execute BIC/RTC/STC
 analytical Skills or mutate canonical Job/Run/Project state.
 
 The supported local model and runtime controls remain defined by the governed Ollama policy. A future

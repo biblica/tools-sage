@@ -27,7 +27,7 @@ from .hashing import sha256_bytes, sha256_file
 from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
 from .model_policy import cache_provider_catalog
-from .ol_referrals import OL_REFERRAL_CONFLICT_CLASSES, OL_REFERRAL_CONTRACT_V1
+from .ol_referrals import OL_REFERRAL_CONFLICT_CLASSES, is_ol_referral_contract
 from .profiles import load_workflow_profile
 from .routing_override import resolve_routing_mode
 from .sfm_slicer import measure_sfm_text
@@ -36,6 +36,7 @@ from .registry import EcosystemConfig
 from .storage import StorageError, declare_governed_path, resolve_declared_path
 from .stc import STC_FINDING_CATEGORIES
 from .vrs import VerseRef
+from .workflow_identity import is_analysis_workflow, legacy_saw_workflow
 
 EXECUTION_MODE = "SAGE_GOVERNED_TASK_V1"
 SCRIPTURE_PROJECTION = "SAGE_SCRIPTURE_SLICE_V1"
@@ -184,8 +185,20 @@ def _task_manifest_path(config: EcosystemConfig, value: Path) -> Path:
     return path
 
 
-def _saw_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
-    """Build a stage-specific semantic SAW provider schema with deterministic boilerplate omitted."""
+def _analysis_identity(manifest: dict[str, Any]) -> str:
+    """Return the current workflow label or an explicit legacy compatibility label."""
+    workflow = str(manifest.get("workflow") or "").strip().lower()
+    return "legacy analysis" if legacy_saw_workflow(workflow) else workflow.upper()
+
+
+def _analysis_error_code(manifest: dict[str, Any], current: str, legacy: str) -> str:
+    """Keep sealed legacy error codes without leaking them into current workflows."""
+    workflow = str(manifest.get("workflow") or "").strip().lower()
+    return legacy if legacy_saw_workflow(workflow) else current
+
+
+def _analysis_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
+    """Build a stage-specific semantic analysis schema without controller boilerplate."""
     if str(manifest.get("operation") or "").lower() == "stc":
         return _stc_findings_file_schema(manifest)
     narrative_tag = _narrative_language_tag(manifest)
@@ -284,7 +297,7 @@ def _saw_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
             "evidence_ids": evidence_array,
         },
     }
-    if manifest.get("ol_referral_contract") == OL_REFERRAL_CONTRACT_V1:
+    if is_ol_referral_contract(manifest.get("ol_referral_contract")):
         ol_request["required"].extend(
             [
                 "conflict_class",
@@ -409,19 +422,20 @@ def _saw_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _materialize_saw_findings(
+def _materialize_analysis_findings(
     manifest: dict[str, Any], semantic: dict[str, Any]
 ) -> dict[str, Any]:
-    """Inject deterministic SAW identity, coverage, receipts, and empty stage ledgers locally."""
+    """Inject deterministic analysis identity, coverage, receipts, and stage ledgers."""
+    identity = _analysis_identity(manifest)
     summary = str(semantic.get("review_summary", "")).strip()
     if not summary:
         raise ValidationError(
-            "SAW semantic result requires a non-empty review_summary",
+            f"{identity} semantic result requires a non-empty review_summary",
             code="LLM_PROVIDER_RESPONSE_INVALID",
         )
     if len(summary) > 4000:
         raise ValidationError(
-            "SAW semantic review_summary exceeds 4000 characters",
+            f"{identity} semantic review_summary exceeds 4000 characters",
             code="LLM_PROVIDER_RESPONSE_INVALID",
         )
     operation = str(manifest.get("operation", ""))
@@ -444,15 +458,19 @@ def _materialize_saw_findings(
     findings = semantic.get("findings", [])
     if stage != "SELECTIVE_OL_ADJUDICATION" and not isinstance(findings, list):
         raise ValidationError(
-            "SAW semantic result findings must be a list",
+            f"{identity} semantic result findings must be a list",
             code="LLM_PROVIDER_RESPONSE_INVALID",
         )
     review = dict(manifest.get("review_requirements") or {})
     work_unit_ids = [str(value) for value in review.get("expected_work_unit_ids", [])]
     if len(work_unit_ids) != 1:
         raise ValidationError(
-            "One sealed SAW provider task must correspond to exactly one work unit",
-            code="LLM_SAW_WORK_UNIT_LAYOUT_INVALID",
+            f"One sealed {identity} provider task must correspond to exactly one work unit",
+            code=_analysis_error_code(
+                manifest,
+                "LLM_ANALYSIS_WORK_UNIT_LAYOUT_INVALID",
+                "LLM_SAW_WORK_UNIT_LAYOUT_INVALID",
+            ),
         )
     expected_references = [str(value) for value in manifest.get("expected_references", [])]
     required_checks = [str(value).upper() for value in review.get("required_checks", [])]
@@ -464,7 +482,7 @@ def _materialize_saw_findings(
     resolutions = semantic.get("ol_resolutions", [])
     if not isinstance(resolutions, list):
         raise ValidationError(
-            "SAW semantic ol_resolutions must be a list",
+            f"{identity} semantic ol_resolutions must be a list",
             code="LLM_PROVIDER_RESPONSE_INVALID",
         )
     if stage == "SELECTIVE_OL_ADJUDICATION":
@@ -484,13 +502,15 @@ def _materialize_saw_findings(
         if len(ol_roles) != 1 or not {"WIP", "REFERENCE", ol_roles[0]}.issubset(allowed):
             raise ValidationError(
                 "Selective OL task has an inconsistent routed evidence contract",
-                code="SAW_TASK_CONTRACT_INVALID",
+                code=_analysis_error_code(
+                    manifest, "RTC_TASK_CONTRACT_INVALID", "SAW_TASK_CONTRACT_INVALID"
+                ),
             )
         findings = []
         for index, item in enumerate(resolutions, start=1):
             if not isinstance(item, dict):
                 raise ValidationError(
-                    f"SAW semantic ol_resolutions[{index}] must be an object",
+                    f"{identity} semantic ol_resolutions[{index}] must be an object",
                     code="LLM_PROVIDER_RESPONSE_INVALID",
                 )
             if str(item.get("outcome") or "").upper() != "FINDING":
@@ -548,27 +568,31 @@ def _materialize_saw_findings(
     }
 
 
+# Compatibility alias for callers that predate canonical RTC/STC identity.
+_materialize_saw_findings = _materialize_analysis_findings
+
+
 def _materialize_provider_files(
     manifest: dict[str, Any], files: dict[str, str]
 ) -> dict[str, str]:
     """Expand compact provider results to canonical governed file formats before materialisation."""
-    if manifest.get("workflow") != "saw" or "output/findings.json" not in files:
+    if not is_analysis_workflow(str(manifest.get("workflow") or "")) or "output/findings.json" not in files:
         return files
     try:
         semantic = json.loads(files["output/findings.json"])
     except json.JSONDecodeError as exc:
         raise ValidationError(
-            f"SAW semantic provider result is not valid JSON: {exc}",
+            f"{_analysis_identity(manifest)} semantic provider result is not valid JSON: {exc}",
             code="LLM_PROVIDER_RESPONSE_INVALID",
         ) from exc
     if not isinstance(semantic, dict):
         raise ValidationError(
-            "SAW semantic provider result must be an object",
+            f"{_analysis_identity(manifest)} semantic provider result must be an object",
             code="LLM_PROVIDER_RESPONSE_INVALID",
         )
     materialized = dict(files)
     materialized["output/findings.json"] = json.dumps(
-        _materialize_saw_findings(manifest, semantic),
+        _materialize_analysis_findings(manifest, semantic),
         ensure_ascii=False,
         indent=2,
     ) + "\n"
@@ -677,8 +701,8 @@ def _clear_language_mismatch(values: list[str], expected_tag: str) -> tuple[str,
 def _validate_provider_narrative_language(
     manifest: dict[str, Any], files: dict[str, str]
 ) -> None:
-    """Reject only clear SAW narrative-language violations before writing canonical output."""
-    if manifest.get("workflow") != "saw" or "output/findings.json" not in files:
+    """Reject clear analysis narrative-language violations before canonical output."""
+    if not is_analysis_workflow(str(manifest.get("workflow") or "")) or "output/findings.json" not in files:
         return
     try:
         semantic = json.loads(files["output/findings.json"])
@@ -814,8 +838,8 @@ def _output_schema(manifest: dict[str, Any]) -> dict[str, Any]:
         raise ValidationError("Task allowed_writes must be a non-empty string list", code="LLM_TASK_WRITE_INVALID")
     properties = {
         item: (
-            _saw_findings_file_schema(manifest)
-            if manifest.get("workflow") == "saw" and item == "output/findings.json"
+            _analysis_findings_file_schema(manifest)
+            if is_analysis_workflow(str(manifest.get("workflow") or "")) and item == "output/findings.json"
             else {
                 "type": "string",
                 "description": (
@@ -896,7 +920,7 @@ def _prompt(
         [
             "=== END AUTHORIZED READS ===",
             "",
-            "Controller-supplied assignment (only the response-envelope task_id is copied; SAGE materializes SAW identity, coverage, checks, and receipts):",
+            "Controller-supplied assignment (only the response-envelope task_id is copied; SAGE materializes analysis identity, coverage, checks, and receipts):",
             json.dumps(
                 {
                     "task_id": manifest.get("task_id"),
@@ -1650,7 +1674,7 @@ def _enforce_routed_sfm_budget(
         )
     result = {**measurement, "policy": policy.to_dict()}
     if (
-        workflow == "saw"
+        workflow in {"rtc", "saw"}
         and operation == "rtc"
         and str(manifest.get("rtc_stage") or "") == "REFERENCE_TEXT_COMPARISON"
     ):
@@ -1658,7 +1682,11 @@ def _enforce_routed_sfm_budget(
         sizing.validate_active_provider(
             str(load_llm_settings(config.root).get("selected_provider") or "")
         )
-        sizing.enforce_route(measurement, scope=str(manifest.get("scope") or ""))
+        sizing.enforce_route(
+            measurement,
+            scope=str(manifest.get("scope") or ""),
+            workflow=str(manifest.get("workflow") or "rtc"),
+        )
         result["rtc_sizing"] = sizing.to_dict()
     return result
 

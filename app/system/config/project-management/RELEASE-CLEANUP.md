@@ -100,7 +100,7 @@ Promotion sequence: `v0.01beta2` → later `v0.01betaN` as required → `v0.01rc
 - [ ] Complete the release milestone's required Windows acceptance.
 - [ ] Complete the release milestone's required macOS acceptance.
 - [ ] Complete the release milestone's required Linux acceptance.
-- [ ] Complete the required real Operator BIC/SAW acceptance scopes.
+- [ ] Complete the required real Operator BIC, RTC, and STC acceptance scopes.
 - [ ] Record unresolved linguistic approval, corpus authority, redistribution rights, and platform
   limits without reclassifying them as passed technical gates.
 - [ ] Confirm the handover manifest covers every included file and preserves required POSIX modes.

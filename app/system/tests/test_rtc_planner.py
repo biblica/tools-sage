@@ -4,14 +4,14 @@ import pytest
 
 from sage.errors import EvidenceLimitError, ValidationError
 from sage.evidence import EvidencePolicy, RTCSizingPolicy
-from sage.rtc_planner import plan_rtc_work_units, vrs_source_equivalence_spans
+from sage.rtc_planner import plan_rtc_work_units
 from sage.work_units import EvidenceRecord
 
 
-def _record(verse: int, text: str, *, role: str) -> EvidenceRecord:
+def _record(verse: int, text: str, *, role: str, book: str = "MAT") -> EvidenceRecord:
     """Build one synthetic discourse-classified Scripture evidence record."""
     return EvidenceRecord(
-        book="MAT",
+        book=book,
         chapter=1,
         verse_start=verse,
         verse_end=verse,
@@ -53,29 +53,26 @@ def _sizing() -> RTCSizingPolicy:
     })
 
 
-def test_vrs_equivalence_spans_ignore_books_outside_requested_scope() -> None:
-    """A JHN RTC plan must not parse an unrelated BAR mapping from the base VRS."""
-    effective_vrs = {
-        "mappings": [
-            {"local": "BAR 6:1-73", "canonical": "LJE 1:1-73"},
-            {"local": "JHN 1:1-2", "canonical": "JHN 1:1-2"},
-        ]
-    }
-
-    spans = vrs_source_equivalence_spans(
-        effective_vrs,
-        requested_book="JHN",
-    )
-
-    assert [[ref.label() for ref in span] for span in spans] == [
-        ["JHN 1:1", "JHN 1:2"]
-    ]
-
-
 def test_rtc_planning_requires_a_canonical_66_book_paratext_id() -> None:
     """Extended-canon Paratext IDs cannot become governed RTC work scopes."""
     with pytest.raises(ValidationError) as caught:
-        vrs_source_equivalence_spans({}, requested_book="BAR")
+        plan_rtc_work_units(
+            (_record(1, "w", role="WIP", book="BAR"),),
+            EvidencePolicy(
+                target_estimated_tokens=100,
+                hard_estimated_tokens=32000,
+                hard_serialized_bytes=224000,
+                minimum_target_tokens=1,
+                maximum_primary_verse_units=220,
+                context_before_verses=0,
+                context_after_verses=0,
+            ),
+            _sizing(),
+            unit_prefix="SAW-RTC-BAR",
+            shared={},
+            wip_context_pool=(_record(1, "w", role="WIP", book="BAR"),),
+            reference_records=(),
+        )
 
     assert caught.value.code == "RTC_CANONICAL_BOOK_ID_REQUIRED"
     assert "three-character Paratext/USFM book ID" in caught.value.message

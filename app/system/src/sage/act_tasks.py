@@ -21,7 +21,7 @@ from .act_outputs import (
     validate_bic_inspect_output,
     validate_bic_usfm_output,
     validate_grammar_assessment,
-    validate_saw_findings,
+    validate_analysis_findings,
 )
 from .atomic import atomic_write_bytes, atomic_write_json, atomic_write_text
 from .rewrite_risk import (
@@ -67,11 +67,18 @@ from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
 from .linguistic_profiles import complete_language_profile_contract
 from .original_language_resources import OL_AUTHORITY_PROFILE_FILE
-from .ol_referrals import OL_REFERRAL_CONTRACT_V1
+from .ol_referrals import (
+    is_ol_referral_contract,
+    ol_referral_contract,
+)
 from .references import (
+    AnalysisScope,
     ScriptureScope,
+    ScriptureScopeSet,
+    analysis_scope_portions,
     atomic_reference_labels,
     expand_reference_atoms,
+    parse_analysis_scope,
     parse_scope,
     parse_scope_set,
 )
@@ -92,17 +99,22 @@ from .stc_reporting import publish_stc_reports
 from .rtc_planner import (
     RTC_HANDOFF_CONTRACT_VERSION,
     RTC_PLANNER_VERSION,
-    RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+    rtc_prompt_schema_projection_version,
     rtc_slicing_policy,
 )
 from .scripture import compile_project_scope, discover_book_ids
-from .saw_policy import load_run_policy_snapshot
-from .semantic.diagnostics import saw_signals_from_scope_evidence
+from .rtc_policy import load_run_policy_snapshot
+from .semantic.diagnostics import analysis_signals_from_scope_evidence
 from .semantic.evidence import scope_evidence_for_project
 from .state import ecosystem_state_path, read_state, utc_now
 from .transactions import FileTransaction, incomplete_transactions
 from .jobs import JobStore, default_job_name
-from .workflow_identity import canonical_analysis_job_id
+from .workflow_identity import (
+    analysis_reason_code,
+    canonical_analysis_job_id,
+    is_analysis_workflow,
+    legacy_saw_workflow,
+)
 from .project_inventory import registered_project_records, require_project_imported_at
 from .usj import compile_usfm_file, compile_usfm_text, parse_usj_units
 from .vrs import VerseRef, load_project_vrs, resolve_project_vrs_paths
@@ -121,17 +133,33 @@ from .source_coverage import (
 
 ACT_OPERATIONS = {
     "bic": {"inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check"},
+    "rtc": {"rtc"},
+    "stc": {"stc"},
     "saw": {"rtc", "stc", "focused", "ol"},
 }
 CONTEMPORARY_ROLES = {"REFERENCE"}
+
+
+def _analysis_identity(workflow: str) -> str:
+    """Return a current workflow label or an explicit legacy compatibility label."""
+    return "legacy analysis" if legacy_saw_workflow(workflow) else workflow.upper()
+
+
+def _analysis_code(workflow: str, legacy_code: str) -> str:
+    """Preserve stored legacy codes while emitting canonical current-workflow codes."""
+    return (
+        legacy_code
+        if legacy_saw_workflow(workflow)
+        else analysis_reason_code(legacy_code, workflow)
+    )
 READY_RESOURCE_STATES = {"READY", "READY_WITH_WARNINGS"}
-SAW_RTC_STAGES = {
+RTC_STAGES = {
     "STRUCTURAL_ADJUDICATION",
     "REFERENCE_TEXT_COMPARISON",
     "SELECTIVE_OL_ADJUDICATION",
 }
 
-SAW_CHECK_TYPES = {
+LEGACY_TARGETED_CHECK_TYPES = {
     "DIVINE_NAME_MARKUP",
     "DIVINE_NAME_CORRELATION",
     "VERSE_BRIDGE_MAPPING",
@@ -309,6 +337,7 @@ def load_skill_registry(root: Path) -> dict[tuple[str, str], SkillBinding]:
                 item for item in sorted(reference_root.iterdir())
                 if item.is_file()
                 and not item.name.upper().startswith("ORIGINAL-")
+                and not item.name.upper().startswith("LEGACY-")
                 and item.name.upper() != "RUN-RTC.MD"
             )
         forbidden_contracts = {
@@ -357,6 +386,7 @@ def _skill_files(skill: SkillBinding) -> list[Path]:
             path for path in sorted(references.iterdir())
             if path.is_file()
             and not path.name.upper().startswith("ORIGINAL-")
+            and not path.name.upper().startswith("LEGACY-")
             and path.name.upper() != "RUN-RTC.MD"
         )
     return files
@@ -448,7 +478,7 @@ def _load_bic_protected_verb_selection_contract(config: EcosystemConfig) -> dict
         "canonical_file": canonical_value,
     }
 
-def _assert_project_scope(project: ProjectSpec, scope: ScriptureScope, label: str) -> None:
+def _assert_project_scope(project: ProjectSpec, scope: AnalysisScope, label: str) -> None:
     """Require the selected project to declare the requested book in its effective scope."""
     books = set(resolve_expected_books(project.scope))
     if scope.book not in books:
@@ -479,7 +509,7 @@ def _one_book_file(project: ProjectSpec, book: str, *, optional: bool = False) -
 
 def _select_ol_project(
     config: EcosystemConfig,
-    scope: ScriptureScope,
+    scope: AnalysisScope,
     *,
     required: bool,
     workflow: str,
@@ -528,7 +558,7 @@ def _load_owning_job(
     job_id: str,
     runtime_workflow: str,
 ):
-    """Resolve an operator Job through its internal BIC/SAW runtime adapter."""
+    """Resolve an Operator Job through its governed runtime adapter."""
     job = JobStore(config.root, config.settings_path).load_job(job_id)
     if job.runtime_tool != runtime_workflow:
         raise ValidationError(
@@ -543,7 +573,7 @@ def _validate_task_projects(
     workflow: str,
     output_project_id: str,
     contemporary_source_id: str,
-    scope: ScriptureScope,
+    scope: AnalysisScope,
     *,
     operation: str | None = None,
     job_id: str | None = None,
@@ -552,8 +582,8 @@ def _validate_task_projects(
     """Validate required projects and resolve optional passage-relevant OL evidence."""
     output = config.project(output_project_id)
     source = config.project(contemporary_source_id)
-    output_label = "BIC TARGET" if workflow == "bic" else "SAW WIP"
-    source_label = "BIC SOURCE" if workflow == "bic" else "SAW REFERENCE"
+    output_label = "BIC TARGET" if workflow == "bic" else f"{workflow.upper()} WIP"
+    source_label = "BIC SOURCE" if workflow == "bic" else f"{workflow.upper()} REFERENCE"
     _assert_enabled(output, output_label)
     _assert_enabled(source, source_label)
     _assert_project_scope(output, scope, output_label)
@@ -571,15 +601,15 @@ def _validate_task_projects(
             raise ValidationError(f"BIC source {source.project_id} lacks CONTENT_SOURCE role")
     else:
         if "WIP" not in output.scope.roles:
-            raise ValidationError(f"SAW output {output.project_id} lacks WIP role")
+            raise ValidationError(f"{workflow.upper()} output {output.project_id} lacks WIP role")
         if "REFERENCE" not in source.scope.roles:
-            raise ValidationError(f"SAW REFERENCE {source.project_id} lacks REFERENCE role")
+            raise ValidationError(f"{workflow.upper()} REFERENCE {source.project_id} lacks REFERENCE role")
         if output.content_state != "UNDER_REVIEW":
-            raise ValidationError(f"SAW WIP {output.project_id} must be UNDER_REVIEW")
+            raise ValidationError(f"{workflow.upper()} WIP {output.project_id} must be UNDER_REVIEW")
     ol_role, ol_project = _select_ol_project(
         config,
         scope,
-        required=(workflow == "saw" and (operation == "ol" or rtc_stage == "SELECTIVE_OL_ADJUDICATION")),
+        required=(is_analysis_workflow(workflow) and (operation == "ol" or rtc_stage == "SELECTIVE_OL_ADJUDICATION")),
         workflow=workflow,
         job_id=job_id,
     )
@@ -621,7 +651,7 @@ def _assert_initialized_and_ready(
     config: EcosystemConfig,
     workflow: str,
     projects: Iterable[tuple[str, ProjectSpec]],
-    scope: ScriptureScope,
+    scope: AnalysisScope,
 ) -> dict[str, Any]:
     """Require fresh initialization and exact-scope resource readiness."""
     # Readiness belongs to the exact effective settings used to create the ACT. A Job
@@ -744,12 +774,14 @@ def _assert_initialized_and_ready(
         compiled[project.project_id] = result
     return compiled
 
-def _scope_is_contained(parent: ScriptureScope, child: ScriptureScope) -> bool:
+def _scope_is_contained(parent: AnalysisScope, child: ScriptureScope) -> bool:
     """Return whether one governed child work-unit scope is contained by its Run scope."""
+    if isinstance(parent, ScriptureScopeSet):
+        return any(_scope_is_contained(portion, child) for portion in parent.portions)
     if child.book != parent.book:
         return False
     if child.start_chapter is None:
-        return parent.start_chapter is None
+        return isinstance(parent, ScriptureScope) and parent.start_chapter is None
     if child.start_verse is None:
         end_chapter = child.end_chapter or child.start_chapter
         return all(
@@ -774,18 +806,18 @@ def _ensure_task_context(
     output_project_id: str,
     contemporary_source_id: str | None,
     lexical_donor_id: str | None,
-    scope: ScriptureScope,
+    scope: AnalysisScope,
     focus: str | None,
     check_type: str | None,
     job_id: str | None,
     run_id: str | None,
     allow_run_subscope: bool = False,
 ) -> tuple[str, str, str | None]:
-    """Require one persisted Job and Run for every governed BIC/SAW task."""
+    """Require one persisted Job and Run for every governed task."""
     if bool(job_id) != bool(run_id):
         raise ValidationError("job_id and run_id must be supplied together")
     source_id = str(contemporary_source_id or "").strip() or None
-    if source_id is None and not (workflow == "saw" and operation == "stc"):
+    if source_id is None and not (is_analysis_workflow(workflow) and operation == "stc"):
         raise ValidationError(
             f"{workflow.upper()} {operation.upper()} requires a source/reference Project"
         )
@@ -869,7 +901,7 @@ def _ensure_task_context(
                 continue
             if candidate.operation != run_operation or candidate.scope != scope.label():
                 continue
-            if workflow == "saw" and (candidate.focus != focus or candidate.check_type != check_type):
+            if is_analysis_workflow(workflow) and (candidate.focus != focus or candidate.check_type != check_type):
                 continue
             reusable = candidate
             break
@@ -887,7 +919,7 @@ def _ensure_task_context(
     if job.status != "ACTIVE":
         raise ValidationError(f"Job {job.job_id} is not ACTIVE")
     if run.scope != scope.label():
-        run_scope = parse_scope(run.scope)
+        run_scope = parse_analysis_scope(run.scope)
         if not (allow_run_subscope and _scope_is_contained(run_scope, scope)):
             raise ValidationError("Task scope does not match the owning Run scope")
     if workflow == "bic":
@@ -903,15 +935,15 @@ def _ensure_task_context(
     else:
         if run.operation != operation:
             raise ValidationError(
-                f"SAW task operation {operation} does not match Run operation {run.operation}"
+                f"{_analysis_identity(workflow)} task operation {operation} does not match Run operation {run.operation}"
             )
         expected = {"wip": output_project_id}
         if operation != "stc":
             expected["reference"] = source_id
         if run.focus != focus:
-            raise ValidationError("SAW task focus does not match the owning Run")
+            raise ValidationError("Analysis task focus does not match the owning Run")
         if run.check_type != check_type:
-            raise ValidationError("SAW task check type does not match the owning Run")
+            raise ValidationError("Analysis task check type does not match the owning Run")
     mismatches = {
         key: {"job": job.bindings.get(key), "task": value}
         for key, value in expected.items()
@@ -948,8 +980,8 @@ def validate_act_request_readiness(
         else None
     )
     readiness_projects: list[tuple[str, ProjectSpec]] = [
-        (("BIC TARGET" if workflow == "bic" else "SAW WIP"), output),
-        (("BIC SOURCE" if workflow == "bic" else "SAW REFERENCE"), source),
+        (("BIC TARGET" if workflow == "bic" else f"{_analysis_identity(workflow)} WIP"), output),
+        (("BIC SOURCE" if workflow == "bic" else f"{_analysis_identity(workflow)} comparison source"), source),
     ]
     if donor is not None:
         readiness_projects.append(("BIC DONOR", donor))
@@ -1489,9 +1521,9 @@ def _write_vrs_evidence(
 def _structural_candidates(
     config: EcosystemConfig,
     project: ProjectSpec,
-    scope: ScriptureScope,
+    scope: AnalysisScope,
 ) -> list[dict[str, Any]]:
-    """Derive structural RTC candidates that require explicit SAW adjudication."""
+    """Derive structural RTC candidates that require explicit adjudication."""
     schema = load_project_vrs(config, project)
     candidates: list[dict[str, Any]] = []
     for mapping in schema.mappings:
@@ -1524,9 +1556,10 @@ def _structural_candidates(
     return candidates
 
 
-def _write_saw_preflight(
+def _write_analysis_preflight(
     config: EcosystemConfig,
     packet_root: Path,
+    workflow: str,
     output: ProjectSpec,
     source: ProjectSpec,
     ol_project: ProjectSpec | None,
@@ -1534,7 +1567,7 @@ def _write_saw_preflight(
     scope: ScriptureScope,
     packet_records: dict[str, Any],
 ) -> tuple[list[Path], dict[str, Any]]:
-    """Write the deterministic SAW preflight packet, coverage target, and structural candidates."""
+    """Write deterministic RTC/legacy preflight evidence and coverage targets."""
     vrs_inputs, _ = _write_vrs_evidence(
         config, packet_root, output, source, ol_project, scope
     )
@@ -1589,7 +1622,9 @@ def _write_saw_preflight(
             ),
         ],
     }
-    preflight_path = packet_root / "saw-preflight.json"
+    preflight_path = packet_root / (
+        "saw-preflight.json" if workflow == "saw" else f"{workflow}-preflight.json"
+    )
     atomic_write_json(preflight_path, preflight)
     return [preflight_path, *vrs_inputs], preflight
 
@@ -1811,16 +1846,16 @@ def _enforce_rtc_sizing(
 ) -> None:
     """Apply component-aware RTC limits to the exact task-creation projection."""
     if (
-        workflow != "saw"
+        workflow not in {"rtc", "saw"}
         or operation != "rtc"
         or rtc_stage != "REFERENCE_TEXT_COMPARISON"
     ):
         return
-    sizing = load_workflow_profile(config, config.workflow("saw")).require_rtc_sizing()
+    sizing = load_workflow_profile(config, config.workflow(workflow)).require_rtc_sizing()
     sizing.validate_active_provider(
         str(load_llm_settings(config.root).get("selected_provider") or "")
     )
-    sizing.enforce_route(measurement, scope=scope.label())
+    sizing.enforce_route(measurement, scope=scope.label(), workflow=workflow)
 
 
 def _required_review_checks(
@@ -1829,7 +1864,7 @@ def _required_review_checks(
     rtc_stage: str | None = None,
     rtc_policy: Mapping[str, Any] | None = None,
 ) -> list[str]:
-    """Return exact review checks for one SAW task or composite-RTC stage."""
+    """Return exact review checks for one analysis task or composite RTC stage."""
     if operation == "rtc":
         if rtc_stage == "STRUCTURAL_ADJUDICATION":
             return ["STRUCTURAL_ADJUDICATION"]
@@ -1882,40 +1917,42 @@ def _scope_intersects(scope: ScriptureScope, reference: str) -> bool:
     return False
 
 
-def _approved_saw_rtc_work_plan(
+def _approved_rtc_work_plan(
     config: EcosystemConfig,
     *,
+    workflow: str,
     job_id: str,
     run_id: str,
     output_project_id: str,
-    scope: ScriptureScope,
+    scope: AnalysisScope,
 ) -> dict[str, Any] | None:
-    """Load and revalidate the Operator-approved SAW work-unit plan for one Run."""
+    """Load and revalidate the Operator-approved RTC work-unit plan for one Run."""
+    identity = _analysis_identity(workflow)
     store = JobStore(config.root, config.settings_path)
-    job = _load_owning_job(config, job_id, "saw")
+    job = _load_owning_job(config, job_id, workflow)
     run = store.load_run(job, run_id)
     if not run.approved_work_plan_path:
         return None
     plan_path = resolve_persisted_path(
-        config.root, run.approved_work_plan_path, "approved SAW work plan"
+        config.root, run.approved_work_plan_path, "approved RTC work plan"
     )
     try:
         plan_path.relative_to(run.root.resolve())
     except ValueError as exc:
         raise ValidationError(
-            "Approved SAW work plan is outside its owning Run",
-            code="SAW_APPROVED_PLAN_INVALID",
+            f"Approved {identity} work plan is outside its owning Run",
+            code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
         ) from exc
     if not plan_path.is_file():
         raise ValidationError(
-            "Approved SAW work plan is missing",
-            code="SAW_APPROVED_PLAN_STALE",
+            f"Approved {identity} work plan is missing",
+            code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
             affected_scope=scope.label(),
-            next_action="Rebuild and approve the affected SAW Run plan.",
+            next_action=f"Rebuild and approve the affected {identity} Run plan.",
         )
     plan = load_json(plan_path)
     expected_identity = {
-        "workflow_id": "saw",
+        "workflow_id": workflow,
         "operation": "rtc",
         "operator_scope": scope.label(),
         "project_id": output_project_id,
@@ -1926,16 +1963,16 @@ def _approved_saw_rtc_work_plan(
     for key, expected in expected_identity.items():
         if str(plan.get(key) or "") != expected:
             raise ValidationError(
-                f"Approved SAW work plan {key} does not match its Run",
-                code="SAW_APPROVED_PLAN_INVALID",
+                f"Approved {identity} work plan {key} does not match its Run",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
                 affected_scope=scope.label(),
-                next_action="Rebuild and approve the affected SAW Run plan.",
+                next_action=f"Rebuild and approve the affected {identity} Run plan.",
             )
     units = plan.get("units")
     if not isinstance(units, list) or not units or any(not isinstance(item, dict) for item in units):
         raise ValidationError(
-            "Approved SAW work plan has no valid work-unit inventory",
-            code="SAW_APPROVED_PLAN_INVALID",
+            f"Approved {identity} work plan has no valid work-unit inventory",
+            code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
             affected_scope=scope.label(),
         )
 
@@ -1945,8 +1982,8 @@ def _approved_saw_rtc_work_plan(
     compiled = compile_project_scope(config, output, scope)
     if compiled.get("status") not in READY_RESOURCE_STATES:
         raise ValidationError(
-            "SAW WIP is no longer ready for the approved work plan",
-            code="SAW_APPROVED_PLAN_STALE",
+            f"{identity} WIP is no longer ready for the approved work plan",
+            code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
             affected_scope=scope.label(),
             next_action="Correct the WIP resource, then rebuild and approve the Run plan.",
         )
@@ -1967,23 +2004,23 @@ def _approved_saw_rtc_work_plan(
     ]
     if changed:
         raise ValidationError(
-            "SAW WIP changed after work-unit approval: " + ", ".join(changed),
-            code="SAW_APPROVED_PLAN_STALE",
+            f"{identity} WIP changed after work-unit approval: " + ", ".join(changed),
+            code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
             affected_scope=scope.label(),
-            next_action="Rebuild and approve the affected SAW Run plan.",
+            next_action=f"Rebuild and approve the affected {identity} Run plan.",
         )
 
     rtc_plan_schema = str(plan.get("schema_version") or "") in {"1.3", "1.4"}
     rtc_sizing_contract = None
     if rtc_plan_schema:
-        profile = load_workflow_profile(config, config.workflow("saw"))
+        profile = load_workflow_profile(config, config.workflow(workflow))
         reference_project_id = str(plan.get("reference_project_id") or "")
         if reference_project_id != str(profile.bindings.get("REFERENCE") or ""):
             raise ValidationError(
-                "SAW REFERENCE binding changed after work-unit approval",
-                code="SAW_APPROVED_PLAN_STALE",
+                f"{identity} REFERENCE binding changed after work-unit approval",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
                 affected_scope=scope.label(),
-                next_action="Rebuild and approve the affected SAW Run plan.",
+                next_action=f"Rebuild and approve the affected {identity} Run plan.",
             )
         sizing = profile.require_rtc_sizing()
         rtc_sizing_contract = sizing
@@ -1992,32 +2029,32 @@ def _approved_saw_rtc_work_plan(
         )
         if dict(plan.get("rtc_sizing") or {}) != sizing.to_dict():
             raise ValidationError(
-                "SAW RTC sizing policy changed after work-unit approval",
-                code="SAW_APPROVED_PLAN_STALE",
+                f"{identity} RTC sizing policy changed after work-unit approval",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
                 affected_scope=scope.label(),
-                next_action="Rebuild and approve the affected SAW Run plan.",
+                next_action=f"Rebuild and approve the affected {identity} Run plan.",
             )
         expected_planner = {
             "version": RTC_PLANNER_VERSION,
             "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
-            "prompt_schema_projection_version": RTC_PROMPT_SCHEMA_PROJECTION_VERSION,
+            "prompt_schema_projection_version": rtc_prompt_schema_projection_version(workflow),
             "slicing_stream": "WIP",
             "boundary_streams": ["WIP", "REFERENCE"],
             "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
         }
         if dict(plan.get("rtc_planner") or {}) != expected_planner:
             raise ValidationError(
-                "SAW RTC planner/prompt/schema contract changed after work-unit approval",
-                code="SAW_APPROVED_PLAN_STALE",
+                f"{identity} RTC planner/prompt/schema contract changed after work-unit approval",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
                 affected_scope=scope.label(),
-                next_action="Rebuild and approve the affected SAW Run plan.",
+                next_action=f"Rebuild and approve the affected {identity} Run plan.",
             )
         reference = config.project(reference_project_id)
         reference_compiled = compile_project_scope(config, reference, scope)
         if reference_compiled.get("status") not in READY_RESOURCE_STATES:
             raise ValidationError(
-                "SAW REFERENCE is no longer ready for the approved work plan",
-                code="SAW_APPROVED_PLAN_STALE",
+                f"{identity} REFERENCE is no longer ready for the approved work plan",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
                 affected_scope=scope.label(),
                 next_action="Correct the REFERENCE resource, then rebuild and approve the Run plan.",
             )
@@ -2043,11 +2080,11 @@ def _approved_saw_rtc_work_plan(
         ]
         if missing_reference_hashes or changed_reference_hashes:
             raise ValidationError(
-                "SAW REFERENCE or its planning contract changed after work-unit approval: "
+                f"{identity} REFERENCE or its planning contract changed after work-unit approval: "
                 + ", ".join(sorted(set(missing_reference_hashes + changed_reference_hashes))),
-                code="SAW_APPROVED_PLAN_STALE",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
                 affected_scope=scope.label(),
-                next_action="Rebuild and approve the affected SAW Run plan.",
+                next_action=f"Rebuild and approve the affected {identity} Run plan.",
             )
 
     records = records_from_project_result(
@@ -2065,18 +2102,18 @@ def _approved_saw_rtc_work_plan(
         refs = [str(value) for value in unit.get("primary_references", [])]
         if not unit_id or unit_id in seen_unit_ids or not primary_scope or not refs:
             raise ValidationError(
-                f"Approved SAW work unit {index} has an invalid identity or primary inventory",
-                code="SAW_APPROVED_PLAN_INVALID",
+                f"Approved {identity} work unit {index} has an invalid identity or primary inventory",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
                 affected_scope=scope.label(),
             )
         if rtc_plan_schema:
             package = unit.get("rtc_package")
             if not isinstance(package, Mapping) or rtc_sizing_contract is None:
                 raise ValidationError(
-                    f"Approved SAW work unit {unit_id} lacks its RTC package projection",
-                    code="SAW_APPROVED_PLAN_INVALID",
+                    f"Approved {identity} work unit {unit_id} lacks its RTC package projection",
+                    code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
                     affected_scope=primary_scope,
-                    next_action="Rebuild and approve the affected SAW Run plan.",
+                    next_action=f"Rebuild and approve the affected {identity} Run plan.",
                 )
             try:
                 wip_tokens = int(dict(package.get("wip") or {})["estimated_tokens"])
@@ -2084,8 +2121,8 @@ def _approved_saw_rtc_work_plan(
                 route_bytes = int(dict(package.get("route") or {})["serialized_bytes"])
             except (KeyError, TypeError, ValueError) as exc:
                 raise ValidationError(
-                    f"Approved SAW work unit {unit_id} has an invalid RTC package projection",
-                    code="SAW_APPROVED_PLAN_INVALID",
+                    f"Approved {identity} work unit {unit_id} has an invalid RTC package projection",
+                    code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
                     affected_scope=primary_scope,
                 ) from exc
             if (
@@ -2094,10 +2131,10 @@ def _approved_saw_rtc_work_plan(
                 or route_bytes > rtc_sizing_contract.route_hard_serialized_bytes
             ):
                 raise ValidationError(
-                    f"Approved SAW work unit {unit_id} no longer fits RTC sizing limits",
-                    code="SAW_APPROVED_PLAN_STALE",
+                    f"Approved {identity} work unit {unit_id} no longer fits RTC sizing limits",
+                    code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
                     affected_scope=primary_scope,
-                    next_action="Rebuild and approve the affected SAW Run plan.",
+                    next_action=f"Rebuild and approve the affected {identity} Run plan.",
                 )
         seen_unit_ids.add(unit_id)
         parsed_unit = parse_scope(primary_scope)
@@ -2105,8 +2142,8 @@ def _approved_saw_rtc_work_plan(
             unit_refs = list(expand_reference_atoms(refs))
         except ValidationError as exc:
             raise ValidationError(
-                f"Approved SAW work unit {unit_id} has an invalid primary inventory",
-                code="SAW_APPROVED_PLAN_INVALID",
+                f"Approved {identity} work unit {unit_id} has an invalid primary inventory",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
                 affected_scope=primary_scope,
             ) from exc
         refs_inside_unit = all(parsed_unit.contains(ref) for ref in unit_refs)
@@ -2116,14 +2153,14 @@ def _approved_saw_rtc_work_plan(
                 str(value) for value in declared_atoms
             ) != tuple(ref.label() for ref in unit_refs):
                 raise ValidationError(
-                    f"Approved SAW work unit {unit_id} has inconsistent canonical coverage atoms",
-                    code="SAW_APPROVED_PLAN_INVALID",
+                    f"Approved {identity} work unit {unit_id} has inconsistent canonical coverage atoms",
+                    code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
                     affected_scope=primary_scope,
                 )
         if parsed_unit.book != scope.book or not refs_inside_unit:
             raise ValidationError(
-                f"Approved SAW work unit {unit_id} has references outside {primary_scope}",
-                code="SAW_APPROVED_PLAN_INVALID",
+                f"Approved {identity} work unit {unit_id} has references outside {primary_scope}",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
                 affected_scope=primary_scope,
             )
         observed_refs.extend(unit_refs)
@@ -2131,10 +2168,10 @@ def _approved_saw_rtc_work_plan(
         expected_set = set(expected_refs)
         observed_set = set(observed_refs)
         raise ValidationError(
-            "Approved SAW work units no longer reconcile exact WIP coordinates",
-            code="SAW_APPROVED_PLAN_STALE",
+            f"Approved {identity} work units no longer reconcile exact WIP coordinates",
+            code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
             affected_scope=scope.label(),
-            next_action="Rebuild and approve the affected SAW Run plan.",
+            next_action=f"Rebuild and approve the affected {identity} Run plan.",
             details={
                 "missing_coordinates": [
                     ref.label() for ref in sorted(expected_set - observed_set)
@@ -2159,13 +2196,14 @@ def _approved_saw_rtc_work_plan(
 
 def _rollback_unregistered_stage_tasks(
     config: EcosystemConfig,
+    workflow_id: str,
     run_id: str,
     tasks: Sequence[Mapping[str, Any]],
 ) -> None:
     """Remove only child tasks created by an RTC stage that failed before publication."""
     import shutil
 
-    workflow = config.workflow("saw")
+    workflow = config.workflow(workflow_id)
     expected_task_parent = task_container(workflow, run_id).resolve()
     expected_control_parent = (workflow.state_root / "act-tasks").resolve()
     for task in reversed(tasks):
@@ -2175,12 +2213,12 @@ def _rollback_unregistered_stage_tasks(
         if task_root.parent != expected_task_parent:
             raise ValidationError(
                 "Refusing to roll back an RTC stage task outside its current Run",
-                code="SAW_TASK_ROLLBACK_BOUNDARY_VIOLATION",
+                code=_analysis_code(workflow_id, "SAW_TASK_ROLLBACK_BOUNDARY_VIOLATION"),
             )
         if control_path.parent != expected_control_parent:
             raise ValidationError(
-                "Refusing to roll back an RTC stage control outside SAW state",
-                code="SAW_TASK_ROLLBACK_BOUNDARY_VIOLATION",
+                "Refusing to roll back an RTC stage control outside its governed state",
+                code=_analysis_code(workflow_id, "SAW_TASK_ROLLBACK_BOUNDARY_VIOLATION"),
             )
         if control_path.is_file():
             try:
@@ -2201,13 +2239,14 @@ def _rollback_unregistered_stage_tasks(
             shutil.rmtree(task_root)
 
 
-def _create_approved_saw_rtc_stage(
+def _create_approved_rtc_stage(
     config: EcosystemConfig,
     *,
+    workflow: str,
     approved_plan: Mapping[str, Any],
     output_project_id: str,
     contemporary_source_id: str,
-    scope: ScriptureScope,
+    scope: AnalysisScope,
     grammar_override_id: str | None,
     parent_plan_id: str,
     job_id: str,
@@ -2217,13 +2256,16 @@ def _create_approved_saw_rtc_stage(
     ol_referral_contract: str | None,
     rtc_stage_references: Sequence[str] = (),
 ) -> dict[str, Any]:
-    """Create the exact approved work units for a partitionable SAW RTC stage."""
+    """Create the exact approved work units for a partitionable RTC stage."""
     units = [dict(item) for item in approved_plan.get("units", [])]
     references_by_portion: dict[str, list[str]] = {}
-    # Stage references are grouped only after each complete case has been proven to
-    # belong to one approved parent; meaning stages retain every approved portion.
+    # Structural evidence is report-only and may cross approved RTC boundaries.
+    # Route each atomic coordinate to its existing parent; meaning stages retain
+    # every approved portion and source-record bridges were protected at planning.
     for reference in rtc_stage_references:
-        progress = _review_portion_for_reference(units, str(reference))
+        progress = _review_portion_for_reference(
+            units, str(reference), workflow=workflow
+        )
         references_by_portion.setdefault(progress["review_portion_id"], []).append(
             str(reference)
         )
@@ -2248,7 +2290,7 @@ def _create_approved_saw_rtc_stage(
         try:
             child = create_act_task(
                 config,
-                workflow="saw",
+                workflow=workflow,
                 operation="rtc",
                 output_project_id=output_project_id,
                 contemporary_source_id=contemporary_source_id,
@@ -2278,27 +2320,27 @@ def _create_approved_saw_rtc_stage(
                 context_after_references=[str(value) for value in unit.get("context_after", [])],
             )
         except EvidenceLimitError as exc:
-            _rollback_unregistered_stage_tasks(config, run_id, created_tasks)
+            _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
             raise ValidationError(
-                "Approved SAW RTC work-unit boundaries no longer fit the exact provider handoff",
-                code="SAW_APPROVED_PLAN_STALE",
+                f"Approved {_analysis_identity(workflow)} RTC work-unit boundaries no longer fit the exact provider handoff",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
                 affected_scope=str(unit.get("primary_scope") or scope.label()),
-                next_action="Rebuild and approve the affected SAW Run plan; boundaries will not change silently.",
+                next_action=f"Rebuild and approve the affected {_analysis_identity(workflow)} Run plan; boundaries will not change silently.",
                 details={"limit_error": exc.to_dict()},
             ) from exc
         except Exception:
-            _rollback_unregistered_stage_tasks(config, run_id, created_tasks)
+            _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
             raise
         created_tasks.append(child)
         child_manifest = load_json(Path(str(child["manifest_path"])))
         child_atoms = list(child_manifest.get("expected_references", []))
         if child_atoms != unit_atoms:
-            _rollback_unregistered_stage_tasks(config, run_id, created_tasks)
+            _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
             raise ValidationError(
-                "Approved SAW RTC work-unit atoms differ from the generated sealed task",
-                code="SAW_APPROVED_PLAN_STALE",
+                f"Approved {_analysis_identity(workflow)} RTC work-unit atoms differ from the generated sealed task",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
                 affected_scope=str(unit.get("primary_scope") or scope.label()),
-                next_action="Rebuild and approve the affected SAW Run plan.",
+                next_action=f"Rebuild and approve the affected {_analysis_identity(workflow)} Run plan.",
                 details={
                     "unit_id": str(unit.get("unit_id") or ""),
                     "planned_atoms": unit_atoms,
@@ -2347,7 +2389,7 @@ def _create_approved_saw_rtc_stage(
         "schema_version": "1.0",
         "status": "PARTITIONED",
         "plan_id": stage_plan_id,
-        "workflow": "saw",
+        "workflow": workflow,
         "operation": "rtc",
         "rtc_stage": rtc_stage,
         "ol_referral_contract": ol_referral_contract,
@@ -2366,11 +2408,11 @@ def _create_approved_saw_rtc_stage(
         "work_units": children,
         "created_utc": utc_now(),
     }
-    plan_path = plan_container(config.workflow("saw"), run_id) / f"{stage_plan_id}.json"
+    plan_path = plan_container(config.workflow(workflow), run_id) / f"{stage_plan_id}.json"
     try:
         atomic_write_json(plan_path, plan)
     except Exception:
-        _rollback_unregistered_stage_tasks(config, run_id, created_tasks)
+        _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
         raise
     return {**plan, "plan_path": str(plan_path)}
 
@@ -2470,6 +2512,8 @@ def _scope_contains_scope(container: ScriptureScope, candidate: ScriptureScope) 
 def _review_portion_for_reference(
     review_portions: Sequence[Mapping[str, Any]],
     target_reference: str,
+    *,
+    workflow: str = "saw",
 ) -> dict[str, Any]:
     """Resolve one stage case to exactly one immutable review portion."""
     case_atoms = tuple(expand_reference_atoms(target_reference))
@@ -2489,7 +2533,7 @@ def _review_portion_for_reference(
     if len(matches) != 1:
         raise ValidationError(
             "Stage case must belong wholly to exactly one approved review portion",
-            code="SAW_STAGE_CASE_PORTION_MISMATCH",
+            code=_analysis_code(workflow, "SAW_STAGE_CASE_PORTION_MISMATCH"),
             affected_scope=target_reference,
             details={
                 "matching_review_portion_ids": [
@@ -2539,12 +2583,12 @@ def _partition_selective_ol_cases(
     if not requests or any(not value for value in request_ids):
         raise ValidationError(
             "Selective OL adjudication requires a nonempty inherited request inventory",
-            code="SAW_OL_REQUEST_INVENTORY_INVALID",
+            code=_analysis_code(workflow, "SAW_OL_REQUEST_INVENTORY_INVALID"),
         )
     if request_ids != declared_ids or len(request_ids) != len(set(request_ids)):
         raise ValidationError(
             "Selective OL request identities must be exact, ordered, and run-unique",
-            code="SAW_OL_REQUEST_INVENTORY_INVALID",
+            code=_analysis_code(workflow, "SAW_OL_REQUEST_INVENTORY_INVALID"),
         )
 
     parent_totals: dict[str, int] = {}
@@ -2558,13 +2602,13 @@ def _partition_selective_ol_cases(
         except (KeyError, TypeError, ValueError) as exc:
             raise ValidationError(
                 "Selective OL request lacks inherited review-portion progress",
-                code="SAW_STAGE_CASE_PORTION_MISMATCH",
+                code=_analysis_code(workflow, "SAW_STAGE_CASE_PORTION_MISMATCH"),
             ) from exc
         portion_scope = str(request.get("review_portion_scope") or "").strip()
         if not parent_id or portion_id != parent_id or not portion_scope:
             raise ValidationError(
                 "Selective OL request has inconsistent review-portion provenance",
-                code="SAW_STAGE_CASE_PORTION_MISMATCH",
+                code=_analysis_code(workflow, "SAW_STAGE_CASE_PORTION_MISMATCH"),
             )
         progress_rows.append(
             {
@@ -2595,7 +2639,7 @@ def _partition_selective_ol_cases(
         if not atoms or any(not scope.contains(ref) for ref in atoms):
             raise ValidationError(
                 f"Selective OL request {request_ids[index - 1]} is outside the parent scope",
-                code="SAW_OL_REQUEST_INVENTORY_INVALID",
+                code=_analysis_code(workflow, "SAW_OL_REQUEST_INVENTORY_INVALID"),
                 affected_scope=scope.label(),
             )
         case_scope = _scope_for_case_atoms(atoms)
@@ -2645,7 +2689,7 @@ def _partition_selective_ol_cases(
         if child_atoms != atom_labels or child_request_ids != [request_ids[index - 1]]:
             raise ValidationError(
                 "Selective OL case task differs from its one-request controller plan",
-                code="SAW_OL_CASE_ISOLATION_INVALID",
+                code=_analysis_code(workflow, "SAW_OL_CASE_ISOLATION_INVALID"),
                 affected_scope=case_scope.label(),
                 details={
                     "unit_id": unit_id,
@@ -2763,11 +2807,11 @@ def _partition_act_request(
         )
     profile = load_workflow_profile(config, config.workflow(workflow))
     policy = profile.evidence_policy(operation)
-    record_project_id = output_project_id_for_records if workflow == "saw" else source_project_id
+    record_project_id = output_project_id_for_records if is_analysis_workflow(workflow) else source_project_id
     records = records_from_project_result(
         record_project_id,
         compiled[record_project_id],
-        resource_role="WIP" if workflow == "saw" else "CONTENT_SOURCE",
+        resource_role="WIP" if is_analysis_workflow(workflow) else "CONTENT_SOURCE",
     )
     selected = select_records_for_scope(records, scope)
     stage_spans = tuple(
@@ -2783,16 +2827,16 @@ def _partition_act_request(
         if not selected:
             raise ValidationError(
                 "Composite RTC stage references do not intersect the partition scope",
-                code="SAW_RTC_STAGE_COVERAGE_INVALID",
+                code=_analysis_code(workflow, "SAW_RTC_STAGE_COVERAGE_INVALID"),
                 affected_scope=scope.label(),
             )
     derived = _partition_evidence_policy(workflow, operation, policy)
-    if workflow == "saw" and operation == "rtc" and rtc_stage == "REFERENCE_TEXT_COMPARISON":
+    if workflow in {"rtc", "saw"} and operation == "rtc" and rtc_stage == "REFERENCE_TEXT_COMPARISON":
         derived = rtc_slicing_policy(policy, profile.require_rtc_sizing())
     plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
-    primary_stream_id = "WIP" if workflow == "saw" else "CONTENT_SOURCE"
+    primary_stream_id = "WIP" if is_analysis_workflow(workflow) else "CONTENT_SOURCE"
     route_streams = [SfmStream(primary_stream_id, tuple(records))]
-    if workflow == "saw" and operation in {"rtc", "focused", "ol"}:
+    if is_analysis_workflow(workflow) and operation in {"rtc", "focused", "ol"}:
         reference_records = records_from_project_result(
             source_project_id,
             compiled[source_project_id],
@@ -2803,12 +2847,12 @@ def _partition_act_request(
             tuple(reference_records),
             require_primary_coverage=not (operation == "rtc"),
         ))
-    if workflow == "saw" and operation == "ol":
-        bound = _load_owning_job(config, str(job_id), "saw")
+    if is_analysis_workflow(workflow) and operation == "ol":
+        bound = _load_owning_job(config, str(job_id), workflow)
         family = "GREEK" if stc_authority_family(scope.book) == "GRK" else "HEBREW"
         ol_project_id = str(bound.bindings.get(f"original_language_{family.lower()}") or "")
         if not ol_project_id or ol_project_id not in compiled:
-            raise ValidationError("SAW OL review lacks the testament-appropriate governed OL authority")
+            raise ValidationError("Original-Language Review lacks the testament-appropriate governed authority")
         ol_records = records_from_project_result(
             ol_project_id, compiled[ol_project_id], resource_role=f"ORIGINAL_LANGUAGE_{family}"
         )
@@ -2877,8 +2921,8 @@ def _partition_act_request(
         planned_atoms = [ref.label() for ref in sorted(unit.primary_refs)]
         if child_atoms != planned_atoms:
             raise ValidationError(
-                "Partitioned SAW work-unit atoms differ from the generated sealed task",
-                code="SAW_RTC_STAGE_COVERAGE_INVALID",
+                f"Partitioned {_analysis_identity(workflow)} work-unit atoms differ from the generated sealed task",
+                code=_analysis_code(workflow, "SAW_RTC_STAGE_COVERAGE_INVALID"),
                 affected_scope=unit_scope,
                 next_action="Restart the affected Run with current settings; coverage boundaries will not change silently.",
                 details={
@@ -2943,28 +2987,31 @@ def _stage_record(result: Mapping[str, Any], stage: str) -> dict[str, Any]:
     }
 
 
-def _create_saw_rtc_composite(
+def _create_rtc_composite(
     config: EcosystemConfig,
     *,
+    workflow: str,
     output_project_id: str,
     contemporary_source_id: str,
-    scope: ScriptureScope,
+    scope: AnalysisScope,
     grammar_override_id: str | None,
     job_id: str,
     run_id: str,
     auto_partition: bool,
 ) -> dict[str, Any]:
-    """Create the first governed stage of one composite SAW RTC Run."""
+    """Create the first governed stage of one composite RTC Run."""
     output = config.project(output_project_id)
     job_store = JobStore(config.root, config.settings_path)
-    owning_job = _load_owning_job(config, job_id, "saw")
+    owning_job = _load_owning_job(config, job_id, workflow)
     run = job_store.load_run(owning_job, run_id)
     rtc_policy = load_run_policy_snapshot(
         run.root,
-        profile_path=config.root / "system" / "config" / "workflows" / "saw" / "profile.yml",
+        profile_path=config.workflow(workflow).profile_path,
+        workflow=workflow,
     )
-    approved_work_plan = _approved_saw_rtc_work_plan(
+    approved_work_plan = _approved_rtc_work_plan(
         config,
+        workflow=workflow,
         job_id=job_id,
         run_id=run_id,
         output_project_id=output_project_id,
@@ -2986,7 +3033,7 @@ def _create_saw_rtc_composite(
             separators=(",", ":"),
         ).encode("utf-8")
     )
-    plan_id = f"SAW-RTC-{scope.book}-{plan_seed[:10].upper()}"
+    plan_id = f"RTC-{scope.book}-{plan_seed[:10].upper()}"
     # The approved inventory is copied into lightweight progress provenance; the
     # signed/approved source plan itself is never rewritten by stage creation.
     review_portions = (
@@ -3019,27 +3066,10 @@ def _create_saw_rtc_composite(
         if first_stage == "STRUCTURAL_ADJUDICATION"
         else []
     )
-    if first_stage == "STRUCTURAL_ADJUDICATION" and approved_work_plan is not None:
-        approved_units = [dict(item) for item in approved_work_plan.get("units", [])]
-        for candidate in candidates:
-            parent_ids = {
-                _review_portion_for_reference(approved_units, str(reference))[
-                    "review_portion_id"
-                ]
-                for reference in candidate.get("references", [])
-            }
-            if len(parent_ids) != 1:
-                raise ValidationError(
-                    "Structural case crosses approved review portions",
-                    code="SAW_STAGE_CASE_PORTION_MISMATCH",
-                    affected_scope="; ".join(
-                        str(value) for value in candidate.get("references", [])
-                    ),
-                    details={"candidate_id": candidate.get("candidate_id")},
-                )
-    if first_stage == "STRUCTURAL_ADJUDICATION" and approved_work_plan is not None:
-        result = _create_approved_saw_rtc_stage(
+    if approved_work_plan is not None:
+        result = _create_approved_rtc_stage(
             config,
+            workflow=workflow,
             approved_plan=approved_work_plan,
             output_project_id=output_project_id,
             contemporary_source_id=contemporary_source_id,
@@ -3050,13 +3080,20 @@ def _create_saw_rtc_composite(
             run_id=run_id,
             rtc_stage=first_stage,
             rtc_predecessor_files=(),
-            ol_referral_contract=OL_REFERRAL_CONTRACT_V1,
+            ol_referral_contract=ol_referral_contract(workflow),
             rtc_stage_references=stage_references,
         )
     else:
+        if isinstance(scope, ScriptureScopeSet):
+            raise ValidationError(
+                "A discontinuous RTC Run requires its approved work-unit plan",
+                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
+                affected_scope=scope.label(),
+                next_action="Build and approve the RTC Run plan, then retry task creation.",
+            )
         result = create_act_task(
             config,
-            workflow="saw",
+            workflow=workflow,
             operation="rtc",
             output_project_id=output_project_id,
             contemporary_source_id=contemporary_source_id,
@@ -3068,15 +3105,15 @@ def _create_saw_rtc_composite(
             run_id=run_id,
             rtc_stage=first_stage,
             rtc_stage_references=stage_references,
-            ol_referral_contract=OL_REFERRAL_CONTRACT_V1,
+            ol_referral_contract=ol_referral_contract(workflow),
         )
     stage = _stage_record(result, first_stage)
     plan = {
         "schema_version": "1.0",
-        "plan_type": "SAW_RTC_COMPOSITE",
+        "plan_type": "SAW_RTC_COMPOSITE" if workflow == "saw" else "RTC_COMPOSITE",
         "status": "COMPOSITE_IN_PROGRESS",
         "plan_id": plan_id,
-        "workflow": "saw",
+        "workflow": workflow,
         "operation": "rtc",
         "job_id": job_id,
         "run_id": run_id,
@@ -3086,7 +3123,7 @@ def _create_saw_rtc_composite(
         "grammar_override_id": grammar_override_id,
         "structural_stage_required": bool(candidates and structure_enabled),
         "rtc_policy": rtc_policy,
-        "ol_referral_contract": OL_REFERRAL_CONTRACT_V1,
+        "ol_referral_contract": ol_referral_contract(workflow),
         "review_portions": review_portions,
         "approved_work_plan_path": (
             approved_work_plan.get("approved_manifest_path")
@@ -3101,7 +3138,7 @@ def _create_saw_rtc_composite(
         "stages": [stage],
         "created_utc": utc_now(),
     }
-    plan_root = plan_container(config.workflow("saw"), run_id)
+    plan_root = plan_container(config.workflow(workflow), run_id)
     plan_path = plan_root / f"{plan_id}.json"
     atomic_write_json(plan_path, plan)
     response = {
@@ -3234,11 +3271,12 @@ def _copy_ol_authority_profile(
     }
 
 
-def _create_saw_stc_task(
+def _create_stc_task(
     config: EcosystemConfig,
     *,
+    workflow: str,
     output_project_id: str,
-    scope: ScriptureScope,
+    scope: AnalysisScope,
     contemporary_source_id: str | None,
     grammar_override_id: str | None,
     auto_partition: bool,
@@ -3255,11 +3293,11 @@ def _create_saw_stc_task(
     if grammar_override_id:
         raise ValidationError("STC does not accept ad-hoc grammar-profile overrides; recreate the Job profile binding instead")
     output = config.project(output_project_id)
-    _assert_enabled(output, "SAW WIP")
-    _assert_project_scope(output, scope, "SAW WIP")
+    _assert_enabled(output, "STC WIP")
+    _assert_project_scope(output, scope, "STC WIP")
     if "WIP" not in output.scope.roles or output.content_state != "UNDER_REVIEW":
-        raise ValidationError(f"SAW STC requires an UNDER_REVIEW WIP project: {output.project_id}")
-    ol_role, ol_project = _select_ol_project(config, scope, required=True, workflow="saw", job_id=job_id)
+        raise ValidationError(f"STC requires an UNDER_REVIEW WIP Project: {output.project_id}")
+    ol_role, ol_project = _select_ol_project(config, scope, required=True, workflow=workflow, job_id=job_id)
     assert ol_project is not None
     family = stc_authority_family(scope.book)
     expected_role = "ORIGINAL_LANGUAGE_GREEK" if family == "GRK" else "ORIGINAL_LANGUAGE_HEBREW"
@@ -3267,37 +3305,41 @@ def _create_saw_stc_task(
         raise ValidationError("STC testament routing differs from the selected primary OL authority", code="STC_OL_AUTHORITY_MISMATCH")
     compiled = _assert_initialized_and_ready(
         config,
-        "saw",
-        [("SAW WIP", output), ("Original-language", ol_project)],
+        workflow,
+        [("STC WIP", output), ("Original-language", ol_project)],
         scope,
     )
     wip_records_all = records_from_project_result(output.project_id, compiled[output.project_id], resource_role="WIP")
     ol_records_all = records_from_project_result(ol_project.project_id, compiled[ol_project.project_id], resource_role=family)
-    selected_wip = select_records_for_scope(wip_records_all, scope)
-    selected_ol = tuple(
-        record for record in ol_records_all
-        if any(scope.contains(ref) for ref in record.refs)
-    )
-    policy = load_workflow_profile(config, config.workflow("saw")).evidence_policy("stc")
-    units = plan_stc_work_units(
-        selected_wip,
-        selected_ol,
-        policy,
-        unit_prefix=parent_plan_id or f"SAW-STC-{scope.book}",
-        context_pool=wip_records_all,
+    policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy("stc")
+    units = tuple(
+        unit
+        for portion_index, portion in enumerate(analysis_scope_portions(scope), start=1)
+        for unit in plan_stc_work_units(
+            select_records_for_scope(wip_records_all, portion),
+            tuple(
+                record
+                for record in ol_records_all
+                if any(portion.contains(ref) for ref in record.refs)
+            ),
+            policy,
+            unit_prefix=(parent_plan_id or f"STC-{scope.book}")
+            + f"-P{portion_index:03d}",
+            context_pool=wip_records_all,
+        )
     )
     if auto_partition and work_unit_id is None and len(units) > 1:
         seed = sha256_bytes(json.dumps({
             "job_id": job_id, "run_id": run_id, "scope": scope.label(),
             "wip": output.project_id, "ol": ol_project.project_id, "family": family,
         }, sort_keys=True, separators=(",", ":")).encode("utf-8"))
-        plan_id = f"SAW-STC-{scope.book}-{seed[:10].upper()}"
+        plan_id = f"STC-{scope.book}-{seed[:10].upper()}"
         children: list[dict[str, Any]] = []
         for unit in units:
             item = unit.to_dict()
             child = create_act_task(
                 config,
-                workflow="saw",
+                workflow=workflow,
                 operation="stc",
                 output_project_id=output.project_id,
                 contemporary_source_id=contemporary_source_id,
@@ -3321,13 +3363,13 @@ def _create_saw_stc_task(
         expected = [ref.label() for ref in sorted({ref for unit in units for ref in unit.primary_refs})]
         plan = {
             "schema_version": "1.0", "status": "PARTITIONED", "plan_id": plan_id,
-            "workflow": "saw", "operation": "stc", "job_id": job_id, "run_id": run_id,
+            "workflow": workflow, "operation": "stc", "job_id": job_id, "run_id": run_id,
             "requested_scope": scope.label(), "output_project": output.project_id,
             "contemporary_source": None, "primary_ol_authority": ol_project.project_id,
             "authority_family": family, "authority_role": "PRIMARY",
             "expected_references": expected, "work_units": children,
         }
-        plan_path = plan_container(config.workflow("saw"), run_id) / f"{plan_id}.json"
+        plan_path = plan_container(config.workflow(workflow), run_id) / f"{plan_id}.json"
         atomic_write_json(plan_path, plan)
         return {**plan, "plan_path": str(plan_path), "task_manifests": [row["manifest_path"] for row in children]}
 
@@ -3340,9 +3382,9 @@ def _create_saw_stc_task(
         "wip": output.project_id, "ol": ol_project.project_id, "family": family,
         "work_unit_id": work_unit_id, "context": list(all_context),
     }, sort_keys=True, separators=(",", ":")).encode("utf-8"))
-    base_task_id = f"saw-stc-{scope.book.lower()}-{seed[:12]}"
+    base_task_id = f"stc-{scope.book.lower()}-{seed[:12]}"
     task_id = base_task_id
-    active_root = task_container(config.workflow("saw"), run_id)
+    active_root = task_container(config.workflow(workflow), run_id)
     sequence = 1
     while (active_root / task_id).exists():
         sequence += 1
@@ -3383,7 +3425,7 @@ def _create_saw_stc_task(
                 f"STC WIP {output.project_id} has no canonical LANGUAGE_PROFILE",
                 code="LINGUISTIC_PROFILE_MISSING",
             )
-        bound_job = _load_owning_job(config, job_id, "saw")
+        bound_job = _load_owning_job(config, job_id, workflow)
         report_grammar_path, report_profile = _write_report_language_contract(
             config,
             bound_job.primary_report_language,
@@ -3396,7 +3438,8 @@ def _create_saw_stc_task(
         ol_profile_path = packet_root / "ol-authority-profile.yml"
         ol_profile = _copy_ol_authority_profile(ol_project, family, ol_profile_path)
         ol_profile["path"] = _relative(config.root, ol_profile_path)
-        skill = load_skill_registry(config.root)[("saw", "stc")]
+        skill_registry = load_skill_registry(config.root)
+        skill = skill_registry.get((workflow, "stc")) or skill_registry[("saw", "stc")]
         skill_files = [{"path": _relative(config.root, item), "sha256": sha256_file(item)} for item in _skill_files(skill)]
         allowed_reads = [
             {"path": _relative(config.root, wip_path), "sha256": sha256_file(wip_path), "evidence_class": SUBJECT_TEXT},
@@ -3411,7 +3454,7 @@ def _create_saw_stc_task(
                 "evidence_class": LINGUISTIC_COMPETENCE_RULES,
             })
         governance_inputs = [
-            {"path": _relative(config.root, config.workflow("saw").profile_path), "sha256": sha256_file(config.workflow("saw").profile_path), "evidence_class": PROCESS_CONTROL},
+            {"path": _relative(config.root, config.workflow(workflow).profile_path), "sha256": sha256_file(config.workflow(workflow).profile_path), "evidence_class": PROCESS_CONTROL},
             *[{"path": item["path"], "sha256": item["sha256"], "evidence_class": PROCESS_CONTROL} for item in skill_files],
         ]
         narrative_language = _narrative_language_contract(config)
@@ -3446,7 +3489,7 @@ def _create_saw_stc_task(
         ]
         identity = {
             "schema_version": "2.4", "execution_mode": "SAGE_GOVERNED_TASK_V1",
-            "workflow": "saw", "operation": "stc", "rtc_stage": None,
+            "workflow": workflow, "operation": "stc", "rtc_stage": None,
             "skill_id": skill.skill_id,
             "job_id": job_id, "run_id": run_id,
             "resource_bindings": resource_bindings, "resource_display_names": resource_bindings,
@@ -3473,13 +3516,13 @@ def _create_saw_stc_task(
             },
             "source_grammar": None,
             "linguistic_profile_bindings": linguistic_profile_bindings,
-            "evidence_policy": task_evidence_policy("saw"),
+            "evidence_policy": task_evidence_policy(workflow),
             "packets": {"wip": wip_packet, "original_language": {**ol_packet, "evidence_id": expected_role}},
             "structural_issues": source_issue_rows,
             "source_text_issues": source_issue_rows,
             "preflight": None,
             "resource_fingerprints": {
-                "settings": sha256_file(config.settings_path), "workflow_profile": sha256_file(config.workflow("saw").profile_path),
+                "settings": sha256_file(config.settings_path), "workflow_profile": sha256_file(config.workflow(workflow).profile_path),
                 "skill_entrypoint": sha256_file(skill.path),
                 f"project.{output.project_id}": project_fingerprints[output.project_id],
                 f"project.{ol_project.project_id}": project_fingerprints[ol_project.project_id],
@@ -3542,9 +3585,9 @@ def _create_saw_stc_task(
         ])
         atomic_write_json(manifest_path, manifest)
         atomic_write_text(act_path, act_text)
-        control_path = config.workflow("saw").state_root / "act-tasks" / f"{task_id}.json"
+        control_path = config.workflow(workflow).state_root / "act-tasks" / f"{task_id}.json"
         control = {
-            "schema_version": "2.0", "task_id": task_id, "workflow": "saw", "operation": "stc",
+            "schema_version": "2.0", "task_id": task_id, "workflow": workflow, "operation": "stc",
             "job_id": job_id, "run_id": run_id, "task_root": _relative(config.root, task_root),
             "manifest_path": _relative(config.root, manifest_path), "manifest_sha256": sha256_file(manifest_path),
             "act_path": _relative(config.root, act_path), "act_sha256": sha256_file(act_path),
@@ -3609,34 +3652,38 @@ def create_act_task(
     if workflow not in ACT_OPERATIONS or operation not in ACT_OPERATIONS[workflow]:
         raise ValidationError(f"Unsupported ACT operation: {workflow}/{operation}")
     if ol_referral_contract is not None and (
-        workflow != "saw"
+        workflow not in {"rtc", "saw"}
         or operation != "rtc"
-        or ol_referral_contract != OL_REFERRAL_CONTRACT_V1
+        or not is_ol_referral_contract(ol_referral_contract)
     ):
         raise ValidationError(
-            "Unsupported SAW OL referral contract",
-            code="SAW_TASK_CONTRACT_INVALID",
+            f"Unsupported {_analysis_identity(workflow)} OL referral contract",
+            code=_analysis_code(workflow, "SAW_TASK_CONTRACT_INVALID"),
         )
     if rtc_stage is not None:
         rtc_stage = rtc_stage.strip().upper()
-        if workflow != "saw" or operation != "rtc" or rtc_stage not in SAW_RTC_STAGES:
-            raise ValidationError(f"Unsupported internal SAW RTC stage: {rtc_stage}")
+        if workflow not in {"rtc", "saw"} or operation != "rtc" or rtc_stage not in RTC_STAGES:
+            raise ValidationError(f"Unsupported internal RTC stage: {rtc_stage}")
     focus = focus.strip() if isinstance(focus, str) and focus.strip() else None
     if focus and ("\n" in focus or len(focus) > 600):
         raise ValidationError("--focus must be one bounded single-line question of at most 600 characters")
     if operation in {"focused", "ol"} and not focus:
-        raise ValidationError(f"SAW {operation} requires --focus with one bounded question")
+        raise ValidationError(f"{_analysis_identity(workflow)} {operation} requires --focus with one bounded question")
     if operation not in {"focused", "ol"} and focus:
         raise ValidationError(f"--focus is not valid for {workflow}/{operation}")
     normalized_check_type = check_type.strip().upper() if isinstance(check_type, str) and check_type.strip() else None
     if operation == "focused":
         normalized_check_type = normalized_check_type or "CUSTOM_BOUNDED_CHECK"
-        if normalized_check_type not in SAW_CHECK_TYPES:
-            raise ValidationError(f"Unsupported SAW Targeted Check type: {normalized_check_type}")
+        if normalized_check_type not in LEGACY_TARGETED_CHECK_TYPES:
+            raise ValidationError(f"Unsupported Targeted Check type: {normalized_check_type}")
     elif normalized_check_type:
-        raise ValidationError("--type is valid only for SAW Targeted Checks")
+        raise ValidationError("--type is valid only for legacy Targeted Checks")
 
-    scope = parse_scope(scope_value)
+    scope = (
+        parse_analysis_scope(scope_value)
+        if is_analysis_workflow(workflow) and operation in {"rtc", "stc"}
+        else parse_scope(scope_value)
+    )
     portion_values = (
         review_portion_id,
         review_portion_index,
@@ -3647,19 +3694,19 @@ def create_act_task(
         if any(value is None for value in portion_values):
             raise ValidationError(
                 "Review-portion progress metadata must be complete",
-                code="SAW_TASK_CONTRACT_INVALID",
+                code=_analysis_code(workflow, "SAW_TASK_CONTRACT_INVALID"),
             )
         assert review_portion_index is not None and review_portion_total is not None
         if review_portion_index < 1 or review_portion_total < review_portion_index:
             raise ValidationError(
                 "Review-portion progress indices are invalid",
-                code="SAW_TASK_CONTRACT_INVALID",
+                code=_analysis_code(workflow, "SAW_TASK_CONTRACT_INVALID"),
             )
         portion_scope = parse_scope(str(review_portion_scope))
         if not _scope_contains_scope(portion_scope, scope):
             raise ValidationError(
                 "Task scope crosses its declared review portion",
-                code="SAW_STAGE_CASE_PORTION_MISMATCH",
+                code=_analysis_code(workflow, "SAW_STAGE_CASE_PORTION_MISMATCH"),
                 affected_scope=scope.label(),
             )
     stage_values = (parent_review_portion_id, stage_case_index, stage_case_total)
@@ -3667,18 +3714,18 @@ def create_act_task(
         if any(value is None for value in stage_values) or review_portion_id is None:
             raise ValidationError(
                 "Stage-case progress metadata must include its review portion",
-                code="SAW_TASK_CONTRACT_INVALID",
+                code=_analysis_code(workflow, "SAW_TASK_CONTRACT_INVALID"),
             )
         assert stage_case_index is not None and stage_case_total is not None
         if stage_case_index < 1 or stage_case_total < stage_case_index:
             raise ValidationError(
                 "Stage-case progress indices are invalid",
-                code="SAW_TASK_CONTRACT_INVALID",
+                code=_analysis_code(workflow, "SAW_TASK_CONTRACT_INVALID"),
             )
         if parent_review_portion_id != review_portion_id:
             raise ValidationError(
                 "Stage case parent differs from its review portion",
-                code="SAW_STAGE_CASE_PORTION_MISMATCH",
+                code=_analysis_code(workflow, "SAW_STAGE_CASE_PORTION_MISMATCH"),
                 affected_scope=scope.label(),
             )
     parsed_context_before = tuple(
@@ -3695,9 +3742,9 @@ def create_act_task(
     context_after = tuple(value.label() for value in parsed_context_after)
     context_references = (*context_before, *context_after)
     if context_references:
-        if workflow != "saw" or not parent_plan_id or not work_unit_id:
+        if not is_analysis_workflow(workflow) or not parent_plan_id or not work_unit_id:
             raise ValidationError(
-                "Context-only references are reserved for controller-generated SAW work units"
+                "Context-only references are reserved for controller-generated analysis work units"
             )
         parsed_context = (*parsed_context_before, *parsed_context_after)
         if any(value.book != scope.book for value in parsed_context):
@@ -3739,9 +3786,10 @@ def create_act_task(
     job_store = JobStore(config.root, config.settings_path)
     owning_job = _load_owning_job(config, job_id, workflow)
     config = load_ecosystem(job_store.ensure_runtime_files(owning_job))
-    if workflow == "saw" and operation == "stc":
-        return _create_saw_stc_task(
+    if is_analysis_workflow(workflow) and operation == "stc":
+        return _create_stc_task(
             config,
+            workflow=workflow,
             output_project_id=output_project_id,
             scope=scope,
             contemporary_source_id=contemporary_source_id,
@@ -3755,15 +3803,17 @@ def create_act_task(
             context_after=context_after,
         )
     rtc_policy: dict[str, Any] | None = None
-    if workflow == "saw" and operation == "rtc":
+    if workflow in {"rtc", "saw"} and operation == "rtc":
         run = job_store.load_run(owning_job, run_id)
         rtc_policy = load_run_policy_snapshot(
             run.root,
-            profile_path=config.root / "system" / "config" / "workflows" / "saw" / "profile.yml",
+            profile_path=config.workflow(workflow).profile_path,
+            workflow=workflow,
         )
-    if workflow == "saw" and operation == "rtc" and rtc_stage is None:
-        return _create_saw_rtc_composite(
+    if workflow in {"rtc", "saw"} and operation == "rtc" and rtc_stage is None:
+        return _create_rtc_composite(
             config,
+            workflow=workflow,
             output_project_id=output_project_id,
             contemporary_source_id=contemporary_source_id,
             scope=scope,
@@ -3794,13 +3844,13 @@ def create_act_task(
         else None
     )
     lexical_donor_id = lexical_donor.project_id if lexical_donor is not None else None
-    route_ol = workflow == "saw" and (
+    route_ol = is_analysis_workflow(workflow) and (
         operation == "ol" or (operation == "rtc" and rtc_stage == "SELECTIVE_OL_ADJUDICATION")
     )
     conditional_ol = workflow == "bic" and operation == "rewrite" and ol_project is not None
     readiness_projects: list[tuple[str, ProjectSpec]] = [
-        (("BIC TARGET" if workflow == "bic" else "SAW WIP"), output),
-        (("BIC SOURCE" if workflow == "bic" else "SAW REFERENCE"), source),
+        (("BIC TARGET" if workflow == "bic" else f"{_analysis_identity(workflow)} WIP"), output),
+        (("BIC SOURCE" if workflow == "bic" else f"{_analysis_identity(workflow)} comparison source"), source),
     ]
     if lexical_donor is not None:
         readiness_projects.append(("BIC DONOR", lexical_donor))
@@ -3814,22 +3864,24 @@ def create_act_task(
         scope,
     )
     if (
-        workflow == "saw"
+        workflow in {"rtc", "saw"}
         and operation == "rtc"
         and rtc_stage == "REFERENCE_TEXT_COMPARISON"
         and auto_partition
         and work_unit_id is None
     ):
-        approved_work_plan = _approved_saw_rtc_work_plan(
+        approved_work_plan = _approved_rtc_work_plan(
             config,
+            workflow=workflow,
             job_id=job_id,
             run_id=run_id,
             output_project_id=output.project_id,
             scope=scope,
         )
         if approved_work_plan is not None:
-            return _create_approved_saw_rtc_stage(
+            return _create_approved_rtc_stage(
                 config,
+                workflow=workflow,
                 approved_plan=approved_work_plan,
                 output_project_id=output.project_id,
                 contemporary_source_id=source.project_id,
@@ -3846,7 +3898,7 @@ def create_act_task(
     # verse-chopping rule. Protected paragraphs/lists/poetry units remain indivisible
     # and every child continues to receive the configured adjacent context evidence.
     focus_partition_eligible = (
-        (workflow == "saw" and (
+        (is_analysis_workflow(workflow) and (
             operation in {"focused", "ol"}
             or (operation == "rtc" and rtc_stage == "REFERENCE_TEXT_COMPARISON")
         ))
@@ -3855,11 +3907,11 @@ def create_act_task(
     if auto_partition and focus_partition_eligible:
         focus_policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy(operation)
         if focus_policy.maximum_primary_discourse_units > 0:
-            record_project_id = output.project_id if workflow == "saw" else source.project_id
+            record_project_id = output.project_id if is_analysis_workflow(workflow) else source.project_id
             focus_records = records_from_project_result(
                 record_project_id,
                 compiled[record_project_id],
-                resource_role="WIP" if workflow == "saw" else "CONTENT_SOURCE",
+                resource_role="WIP" if is_analysis_workflow(workflow) else "CONTENT_SOURCE",
             )
             focus_selected = select_records_for_scope(focus_records, scope)
             discourse_ids = {
@@ -3950,7 +4002,7 @@ def create_act_task(
     )
     output_file = (
         _one_book_file(output, scope.book)
-        if workflow == "saw"
+        if is_analysis_workflow(workflow)
         else None
     )
     source_file = _one_book_file(source, scope.book)
@@ -4049,7 +4101,7 @@ def create_act_task(
         json.dumps(pre_identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     )
     if (
-        workflow == "saw"
+        workflow in {"rtc", "saw"}
         and operation == "rtc"
         and rtc_stage == "SELECTIVE_OL_ADJUDICATION"
         and auto_partition
@@ -4105,14 +4157,14 @@ def create_act_task(
                 stage_reference_values,
                 contemporary_packet,
                 parent_scope=scope,
-                allow_empty=workflow == "saw" and operation == "rtc",
+                allow_empty=workflow in {"rtc", "saw"} and operation == "rtc",
             )
-            if workflow == "saw" and operation == "rtc" and stage_reference_values
+            if workflow in {"rtc", "saw"} and operation == "rtc" and stage_reference_values
             else _write_scope_usj_packet(
                 source_file,
                 scope,
                 contemporary_packet,
-                allow_empty=workflow == "saw" and operation == "rtc",
+                allow_empty=workflow in {"rtc", "saw"} and operation == "rtc",
             )
         )
         packet_records["contemporary_source"]["evidence_id"] = "SOURCE" if workflow == "bic" else "REFERENCE"
@@ -4129,7 +4181,7 @@ def create_act_task(
                 context_references,
                 context_reference_packet,
                 parent_scope=scope,
-                allow_empty=workflow == "saw" and operation == "rtc",
+                allow_empty=workflow in {"rtc", "saw"} and operation == "rtc",
             )
             context_reference_model_packet = packet_root / "context-reference.sfm"
             atomic_write_text(context_reference_model_packet, context_reference_semantic_usfm)
@@ -4159,11 +4211,11 @@ def create_act_task(
                 _write_reference_inventory_usj_packet(
                     ol_file, stage_reference_values, ol_packet, parent_scope=scope
                 )
-                if workflow == "saw" and operation == "rtc" and stage_reference_values
+                if workflow in {"rtc", "saw"} and operation == "rtc" and stage_reference_values
                 else _write_scope_usj_packet(ol_file, scope, ol_packet)
             )
             packet_records["original_language"]["evidence_id"] = (
-                ol_role if workflow == "saw" and route_ol else "ORIGINAL_LANGUAGE"
+                ol_role if is_analysis_workflow(workflow) and route_ol else "ORIGINAL_LANGUAGE"
             )
             packet_records["original_language"]["routing"] = (
                 "DIRECT" if route_ol else "CONDITIONAL_MATERIAL_RISK"
@@ -4259,12 +4311,12 @@ def create_act_task(
                 _write_reference_inventory_usj_packet(
                     output_file, stage_reference_values, target_packet, parent_scope=scope
                 )
-                if workflow == "saw" and operation == "rtc" and stage_reference_values
+                if workflow in {"rtc", "saw"} and operation == "rtc" and stage_reference_values
                 else _write_scope_usj_packet(output_file, scope, target_packet)
             )
             packet_records["output_project"]["evidence_id"] = "WIP"
-        elif workflow == "saw":
-            raise ValidationError("SAW WIP has no bounded Scripture input")
+        elif is_analysis_workflow(workflow):
+            raise ValidationError(f"{workflow.upper()} WIP has no bounded Scripture input")
         if target_semantic_usfm is not None:
             target_model_packet = packet_root / ("staged-target.sfm" if predecessor else "wip.sfm")
             atomic_write_text(target_model_packet, target_semantic_usfm)
@@ -4275,7 +4327,7 @@ def create_act_task(
         context_wip_model_packet: Path | None = None
         if context_references:
             if output_file is None:
-                raise ValidationError("SAW context routing requires a WIP Scripture file")
+                raise ValidationError("Analysis context routing requires a WIP Scripture file")
             context_wip_packet = packet_root / "context-wip.usj.json"
             packet_records["context_output_project"], context_wip_semantic_usfm = _write_reference_inventory_usj_packet(
                 output_file,
@@ -4299,7 +4351,7 @@ def create_act_task(
         semantic_sources = [
             ("source" if workflow == "bic" else "reference", source, contemporary_semantic_usfm)
         ]
-        if workflow == "saw" and target_semantic_usfm is not None:
+        if is_analysis_workflow(workflow) and target_semantic_usfm is not None:
             semantic_sources.append(("wip", output, target_semantic_usfm))
         if route_ol and ol_semantic_usfm is not None and ol_project is not None:
             semantic_sources.append(("original-language", ol_project, ol_semantic_usfm))
@@ -4316,9 +4368,10 @@ def create_act_task(
             semantic_packets.append(semantic_path)
             semantic_packet_values[semantic_label] = semantic_packet
 
-        if workflow == "saw" and "wip" in semantic_packet_values:
-            semantic_signals = saw_signals_from_scope_evidence(semantic_packet_values["wip"])
-            semantic_signal_path = packet_root / "semantic-saw-signals.json"
+        if is_analysis_workflow(workflow) and "wip" in semantic_packet_values:
+            semantic_signals = analysis_signals_from_scope_evidence(semantic_packet_values["wip"])
+            signal_name = "semantic-saw-signals.json" if workflow == "saw" else f"semantic-{workflow}-signals.json"
+            semantic_signal_path = packet_root / signal_name
             atomic_write_json(semantic_signal_path, semantic_signals)
             semantic_packets.append(semantic_signal_path)
 
@@ -4343,7 +4396,7 @@ def create_act_task(
         donor_profile = None
         report_grammar_path: Path | None = None
         report_profile = None
-        if workflow == "saw":
+        if is_analysis_workflow(workflow):
             target_grammar_path, target_profile = _write_bound_grammar_contract(
                 config, owning_job.profiles.get("target_grammar", ""), packet_root, "wip"
             )
@@ -4430,9 +4483,9 @@ def create_act_task(
 
         preflight: dict[str, Any] | None = None
         extra_inputs: list[Path]
-        if workflow == "saw":
-            extra_inputs, preflight = _write_saw_preflight(
-                config, packet_root, output, source, ol_project if route_ol else None,
+        if is_analysis_workflow(workflow):
+            extra_inputs, preflight = _write_analysis_preflight(
+                config, packet_root, workflow, output, source, ol_project if route_ol else None,
                 ol_role, scope, packet_records
             )
         else:
@@ -4468,50 +4521,50 @@ def create_act_task(
                 else:
                     source_path = source_path.resolve()
                 allowed_parent = (
-                    task_is_governed(config.workflow("saw"), source_path.parent.parent)
-                    or plan_is_governed(config.workflow("saw"), source_path)
-                    or plan_is_governed(config.workflow("saw"), source_path.parent)
+                    task_is_governed(config.workflow(workflow), source_path.parent.parent)
+                    or plan_is_governed(config.workflow(workflow), source_path)
+                    or plan_is_governed(config.workflow(workflow), source_path.parent)
                 )
                 if not allowed_parent or not source_path.is_file():
-                    raise ValidationError("SAW RTC predecessor evidence is not governed or is missing")
+                    raise ValidationError("RTC predecessor evidence is not governed or is missing")
                 try:
                     predecessor_document = json.loads(source_path.read_text(encoding="utf-8"))
                 except (OSError, json.JSONDecodeError) as exc:
-                    raise ValidationError("SAW RTC predecessor evidence must be a governed JSON result") from exc
+                    raise ValidationError("RTC predecessor evidence must be a governed JSON result") from exc
                 if not isinstance(predecessor_document, dict):
-                    raise ValidationError("SAW RTC predecessor evidence must be a JSON object")
+                    raise ValidationError("RTC predecessor evidence must be a JSON object")
                 if str(predecessor_document.get("job_id", "")) != job_id:
                     raise ValidationError(
-                        "SAW RTC predecessor belongs to a different Job",
-                        code="SAW_PREDECESSOR_JOB_MISMATCH",
+                        "RTC predecessor belongs to a different Job",
+                        code=_analysis_code(workflow, "SAW_PREDECESSOR_JOB_MISMATCH"),
                     )
                 if str(predecessor_document.get("run_id", "")) != run_id:
                     raise ValidationError(
-                        "SAW RTC predecessor belongs to a different Run",
-                        code="SAW_PREDECESSOR_RUN_MISMATCH",
+                        "RTC predecessor belongs to a different Run",
+                        code=_analysis_code(workflow, "SAW_PREDECESSOR_RUN_MISMATCH"),
                     )
                 if str(predecessor_document.get("output_project", "")) != output.project_id:
                     raise ValidationError(
-                        "SAW RTC predecessor WIP resource does not match this task",
-                        code="SAW_PREDECESSOR_RESOURCE_MISMATCH",
+                        "RTC predecessor WIP resource does not match this task",
+                        code=_analysis_code(workflow, "SAW_PREDECESSOR_RESOURCE_MISMATCH"),
                     )
                 if str(predecessor_document.get("contemporary_source", "")) != source.project_id:
                     raise ValidationError(
-                        "SAW RTC predecessor REFERENCE resource does not match this task",
-                        code="SAW_PREDECESSOR_RESOURCE_MISMATCH",
+                        "RTC predecessor REFERENCE resource does not match this task",
+                        code=_analysis_code(workflow, "SAW_PREDECESSOR_RESOURCE_MISMATCH"),
                     )
                 predecessor_fingerprints = predecessor_document.get("resource_fingerprints")
                 if not isinstance(predecessor_fingerprints, dict):
                     raise ValidationError(
-                        "SAW RTC predecessor lacks governed resource fingerprints",
-                        code="SAW_PREDECESSOR_FINGERPRINT_MISSING",
+                        "RTC predecessor lacks governed resource fingerprints",
+                        code=_analysis_code(workflow, "SAW_PREDECESSOR_FINGERPRINT_MISSING"),
                     )
                 for project_id in (output.project_id, source.project_id):
                     key = f"project.{project_id}"
                     if str(predecessor_fingerprints.get(key, "")) != str(project_fingerprints.get(project_id, "")):
                         raise ValidationError(
-                            f"SAW RTC predecessor resource fingerprint changed: {project_id}",
-                            code="SAW_PREDECESSOR_FINGERPRINT_MISMATCH",
+                            f"RTC predecessor resource fingerprint changed: {project_id}",
+                            code=_analysis_code(workflow, "SAW_PREDECESSOR_FINGERPRINT_MISMATCH"),
                         )
                 destination = packet_root / f"rtc-predecessor-{index}.json"
                 scoped_predecessor = _scope_project_predecessor(predecessor_document, scope)
@@ -4536,8 +4589,9 @@ def create_act_task(
             *skill_read_paths,
             *rtc_controller_predecessor_packets,
         ]
-        if workflow == "saw":
-            process_paths.append(config.root / "system" / "config" / "schemas" / "saw-findings.schema.yml")
+        if is_analysis_workflow(workflow):
+            schema_name = "saw-findings.schema.yml" if workflow == "saw" else "rtc-findings.schema.yml"
+            process_paths.append(config.root / "system" / "config" / "schemas" / schema_name)
         if protected_verb_selection_contract is not None:
             process_paths.append(config.root / protected_verb_selection_contract["canonical_file"])
 
@@ -4662,7 +4716,7 @@ def create_act_task(
         target_rule_ids = [row["rule_id"] for row in target_profile.checks] if target_profile else []
         expected_references = (
             list(packet_records["output_project"]["atomic_references"])
-            if workflow == "saw"
+            if is_analysis_workflow(workflow)
             else list(packet_records["contemporary_source"]["atomic_references"])
         )
         source_issue_rows = (
@@ -4683,13 +4737,13 @@ def create_act_task(
                 wip_project_id=output.project_id,
                 scope=scope.label(),
             ))
-            if workflow == "saw" and operation == "rtc"
+            if workflow in {"rtc", "saw"} and operation == "rtc"
             else []
         )
         structural_candidate_ids = [
             row["candidate_id"] for row in (preflight or {}).get("structural_candidates", [])
         ]
-        if workflow == "saw" and operation == "rtc" and rtc_stage != "STRUCTURAL_ADJUDICATION":
+        if workflow in {"rtc", "saw"} and operation == "rtc" and rtc_stage != "STRUCTURAL_ADJUDICATION":
             structural_candidate_ids = []
         default_evidence_ids = (
             [
@@ -4848,7 +4902,7 @@ def create_act_task(
                 "sha256": sha256_file(path),
             })
 
-        if workflow == "saw":
+        if is_analysis_workflow(workflow):
             bind_profile("WIP", target_profile, target_grammar_path)
             bind_profile("REFERENCE", source_profile, source_grammar_path)
         else:
@@ -4898,7 +4952,7 @@ def create_act_task(
             "rtc_expected_ol_request_ids": [str(value).upper() for value in expected_ol_request_ids],
             "rtc_expected_ol_requests": [dict(value) for value in expected_ol_requests],
             "rtc_stage_references": list(stage_reference_values),
-            "rtc_policy": rtc_policy if workflow == "saw" and operation == "rtc" else None,
+            "rtc_policy": rtc_policy if workflow in {"rtc", "saw"} and operation == "rtc" else None,
             "parent_plan_id": parent_plan_id,
             "work_unit_id": work_unit_id or task_id,
             "ol_referral_contract": ol_referral_contract,
@@ -4923,7 +4977,7 @@ def create_act_task(
                     "expected_ol_requests": [dict(value) for value in expected_ol_requests],
                     "stage_references": list(stage_reference_values),
                 }
-                if workflow == "saw"
+                if is_analysis_workflow(workflow)
                 else None
             ),
             "human_memory_review": human_review_receipt,
@@ -5061,6 +5115,8 @@ def create_act_task(
                 else "BOUNDED_USFM_AND_GRAMMAR_ASSESSMENT_2.0"
                 if workflow == "bic"
                 else "SAW_FINDINGS_2.0"
+                if workflow == "saw"
+                else f"{workflow.upper()}_FINDINGS_2.0"
             ),
             "predecessor": (
                 {
@@ -5131,7 +5187,7 @@ def create_act_task(
                 else ["- Original-language source: `NOT_ROUTED_FOR_THIS_OPERATION`"]
             ),
             f"- Run scope: `{scope.label()}`",
-            *( [f"- Stage references: `{', '.join(expected_references)}`"] if workflow == "saw" and operation == "rtc" and rtc_stage in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"} else [f"- Scope: `{scope.label()}`"] ),
+            *( [f"- Stage references: `{', '.join(expected_references)}`"] if workflow in {"rtc", "saw"} and operation == "rtc" and rtc_stage in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"} else [f"- Scope: `{scope.label()}`"] ),
             *(
                 [
                     f"- Context before (context-only): `{', '.join(context_before) or 'NONE'}`",
@@ -5203,7 +5259,7 @@ def create_act_task(
                 act_lines.extend([
                     "1. Adjudicate only the supplied deterministic structural candidates.",
                     "2. Do not perform the translation-and-meaning review in this stage.",
-                    "3. Ordinary VRS mappings are not findings unless the bounded evidence proves a real issue.",
+                    "3. VRS mappings and coordinate differences are report-only structural evidence: they never block RTC or make a review portion indivisible. Ordinary mappings are not findings unless the bounded evidence proves a real structural difference.",
                     "4. Do not request or use original-language Scripture in this stage.",
                 ])
             elif rtc_stage == "REFERENCE_TEXT_COMPARISON":
@@ -5218,10 +5274,10 @@ def create_act_task(
                         "ol_review_requests; assess only from the authorized non-OL evidence "
                         "routed to this stage."
                     )
-                elif ol_referral_contract == OL_REFERRAL_CONTRACT_V1:
+                elif is_ol_referral_contract(ol_referral_contract):
                     referral_instruction = (
                         "7. Automatic WIP-Reference source adjudication is ENABLED under "
-                        "SAW_OL_REFERRAL_ADMISSION_V1. Emit an ol_review_requests entry if and "
+                        f"{ol_referral_contract}. Emit an ol_review_requests entry if and "
                         "only if every admission rule passes: (1) the difference changes the "
                         "core proposition; (2) WIP and REFERENCE communicate incompatible "
                         "meanings; (3) conflict_class is exactly one of "
@@ -5350,16 +5406,16 @@ def create_act_task(
                 "- Do not construct task identity, stage, scope, coverage, check inventories, receipts, fingerprints, or final ledgers; SAGE injects and validates them deterministically.",
                 "- Semantically adjudicate every structural candidate ID assigned by the manifest.",
                 "- Grammar findings must cite project-grammar rule IDs.",
-                "- SAW is read-only for Scripture projects.",
+                f"- {workflow.upper()} is read-only for Scripture projects.",
             ])
         act_lines.extend(
             [
                 "",
-                "## Controller submission" if workflow == "saw" else "## Submit",
+                "## Controller submission" if is_analysis_workflow(workflow) else "## Submit",
                 "",
                 *(
                     ["This is a controller/operator step, not part of the model response.", ""]
-                    if workflow == "saw"
+                    if is_analysis_workflow(workflow)
                     else []
                 ),
                 f"macOS/Linux: `{submit_posix}`",
@@ -5392,7 +5448,7 @@ def create_act_task(
 
         def partition_after_evidence_limit(error: EvidenceLimitError) -> dict[str, Any]:
             """Route either task-creation budget checkpoint through the same fallback."""
-            if auto_partition and (workflow == "saw" or operation == "inspect"):
+            if auto_partition and (is_analysis_workflow(workflow) or operation == "inspect"):
                 import shutil
                 shutil.rmtree(task_root, ignore_errors=True)
                 return _partition_act_request(
@@ -5682,6 +5738,7 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
     result = {
         "schema_version": "1.0",
         "status": "FINALIZED",
+        "workflow": str(plan.get("workflow") or "stc").lower(),
         "operation": "stc",
         "plan_id": plan["plan_id"],
         "job_id": plan.get("job_id"),
@@ -5712,17 +5769,20 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
 
 
 def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any]:
-    """Aggregate validated SAW work units with exact plan-level coverage."""
+    """Aggregate validated analysis work units with exact plan-level coverage."""
     # Maintenance invariant: aggregate only same-Job/same-Run work with stable WIP/REFERENCE fingerprints.
     path = plan_path.expanduser().resolve()
-    if not plan_is_governed(config.workflow("saw"), path):
-        raise ValidationError("SAW aggregate plan must be inside the governed plans directory")
     try:
         plan = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValidationError(f"Invalid ACT aggregate plan: {exc}") from exc
-    if plan.get("workflow") != "saw" or plan.get("status") != "PARTITIONED":
-        raise ValidationError("Only PARTITIONED SAW plans can be aggregated")
+    workflow = str(plan.get("workflow") or "").strip().lower()
+    if not is_analysis_workflow(workflow):
+        raise ValidationError("Only RTC/STC or sealed legacy SAW plans can be aggregated")
+    if not plan_is_governed(config.workflow(workflow), path):
+        raise ValidationError("Analysis aggregate plan must be inside its governed plans directory")
+    if plan.get("status") != "PARTITIONED":
+        raise ValidationError("Only PARTITIONED analysis plans can be aggregated")
     if str(plan.get("operation") or "").lower() == "stc":
         return _aggregate_stc_plan(config, path, plan)
     raw_expected = [str(value) for value in plan.get("expected_references", [])]
@@ -5770,7 +5830,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         if task_id:
             seen_task_ids.add(task_id)
         manifest_path = resolve_persisted_path(
-            config.root, str(unit.get("manifest_path", "")), "SAW work-unit manifest"
+            config.root, str(unit.get("manifest_path", "")), "analysis work-unit manifest"
         )
         manifest = load_json(manifest_path)
         unit_ol_request_ids = unit.get("ol_request_ids")
@@ -5880,7 +5940,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             normalized_for_globalization,
             unit_id=unit_id or str(submission.get("task_id") or "UNIT"),
             run_id=str(plan.get("run_id") or plan.get("plan_id") or "RUN"),
-            prefix="SAW",
+            prefix=workflow.upper(),
         )
         result_atoms = list(atomic_reference_labels(
             str(value)
@@ -5994,7 +6054,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         ):
             raise ValidationError(
                 "Selective OL work units do not reconcile one resolution per isolated request",
-                code="SAW_OL_CASE_ISOLATION_INVALID",
+                code=_analysis_code(workflow, "SAW_OL_CASE_ISOLATION_INVALID"),
                 details={
                     "planned_request_ids": planned_ol_request_ids,
                     "resolved_request_ids": resolved_request_ids,
@@ -6004,6 +6064,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
     aggregate = {
         "schema_version": "1.0",
         "status": "FINALIZED",
+        "workflow": workflow,
         "plan_id": plan["plan_id"],
         "job_id": plan["job_id"],
         "run_id": plan["run_id"],
@@ -6044,7 +6105,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
     atomic_write_json(aggregate_path, aggregate)
     report_path = path.with_name(f"{plan['plan_id']}-aggregate.md")
     aggregate_lines = [
-        f"# SAW Aggregate: {plan['plan_id']}",
+        f"# {workflow.upper()} Aggregate: {plan['plan_id']}",
         "",
         f"- Status: `FINALIZED`",
         f"- Scope: `{plan['requested_scope']}`",
@@ -6440,7 +6501,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 final_status = "STAGED_VALIDATED_WITH_CHALLENGES"
             else:
                 final_status = "STAGED_VALIDATED"
-    elif workflow == "saw" and operation == "stc":
+    elif is_analysis_workflow(workflow) and operation == "stc":
         sources = [
             dict(item)
             for item in raw.get("original_language_sources", [])
@@ -6553,12 +6614,12 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             ):
                 raise ValidationError(
                     "Selective OL task evidence identity does not match its routed testament resource",
-                    code="SAW_TASK_CONTRACT_INVALID",
+                    code=_analysis_code(workflow, "SAW_TASK_CONTRACT_INVALID"),
                     affected_scope=str(raw.get("scope") or ""),
                     next_action="Rebuild the affected selective OL stage from its inherited request ledger.",
                 )
         try:
-            normalized = validate_saw_findings(
+            normalized = validate_analysis_findings(
                 output_paths["output/findings.json"],
                 task_id=task_id,
                 operation=operation,
@@ -6583,19 +6644,24 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                     if raw.get("ol_referral_contract")
                     else None
                 ),
+                workflow=workflow,
             )
         except ValidationError as exc:
             if exc.code != "VALIDATION_ERROR":
                 raise
             raise ValidationError(
                 exc.message,
-                code="SAW_OUTPUT_INVALID",
+                code=_analysis_code(workflow, "SAW_OUTPUT_INVALID"),
                 affected_scope=exc.affected_scope or str(raw.get("scope") or ""),
                 next_action="Retry the same sealed task with corrected provider output.",
                 details=exc.details,
             ) from exc
         validation_details = {
-            "format": "SAW_FINDINGS_2.0",
+            "format": (
+                "SAW_FINDINGS_2.0"
+                if legacy_saw_workflow(workflow)
+                else f"{workflow.upper()}_FINDINGS_2.0"
+            ),
             "stage": normalized["stage"],
             "finding_count": normalized["finding_count"],
             "coverage_count": len(normalized["coverage"]["reviewed_references"]),
