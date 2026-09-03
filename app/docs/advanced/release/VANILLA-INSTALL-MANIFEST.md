@@ -98,10 +98,12 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/plans`
 - `docs/superpowers/plans/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
 - `docs/superpowers/plans/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS.md`
+- `docs/superpowers/plans/2026-09-03-BIC-RTC-STC-VERSIFICATION-REPORTING.md`
 - `docs/superpowers/plans/2026-09-03-RTC-STC-CANONICAL-IDENTITY.md`
 - `docs/superpowers/specs`
 - `docs/superpowers/specs/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
 - `docs/superpowers/specs/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS-DESIGN.md`
+- `docs/superpowers/specs/2026-09-03-BIC-RTC-STC-VERSIFICATION-REPORTING-DESIGN.md`
 - `docs/superpowers/specs/2026-09-03-RTC-STC-CANONICAL-IDENTITY-DESIGN.md`
 - `docs/macos-linux`
 - `docs/macos-linux/CHEAT-SHEET.md`
