@@ -1,6 +1,15 @@
 # Scripture resources
 
-The clean SAGE build contains shared `eng.vrs` and `org.vrs` files plus the governed bundled `@GRK` and `@HEB` resources under `original-language/`. Ordinary translation Project folders do not belong here; they remain in Paratext/PTLite or in `localdata/work/projects/` when SAGE owns the storage.
+The clean SAGE build contains the shared standard `org.vrs`, `eng.vrs`, `lxx.vrs`,
+`vul.vrs`, `rsc.vrs`, and `rso.vrs` files plus the governed bundled `@GRK` and
+`@HEB` resources under `original-language/`. Ordinary translation Project folders
+do not belong here; they remain in Paratext/PTLite or in
+`localdata/work/projects/` when SAGE owns the storage.
+
+The standard VRS files are pinned to the SIL `libpalaso` source revision recorded
+in `standard-vrs-provenance.json`. Their MIT license is retained in
+`standard-vrs.LICENSE.txt`. SAGE does not download or update these schemas at
+runtime.
 
 Add ordinary Projects through the SAGE Project Inventory. During `sage project init`, SAGE compiles the selected Project language profile, Job-assigned roles, content state, scope, canon, observed coverage, and complete VRS filenames for Operator review. SAGE never infers Project authority from a folder name.
 

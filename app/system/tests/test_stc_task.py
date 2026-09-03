@@ -151,6 +151,11 @@ def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, mak
     root = make_workspace(qualification_status="VALIDATED")
     _install_fixture_ol_profile(root, package_root, "GRK")
     _initialize(package_root, root)
+    update_project_record(
+        root,
+        "usWIP",
+        {"display_name": "English Working Translation"},
+    )
     reference_file = root.parent / "localdata/work/projects/usNIVv2/41MAT.SFM"
     reference_file.unlink()
 
@@ -174,6 +179,10 @@ def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, mak
     }
     assert manifest["resource_bindings"] == {
         "WIP": "usWIP",
+        "ORIGINAL_LANGUAGE_GREEK": "GRK",
+    }
+    assert manifest["resource_display_names"] == {
+        "WIP": "English Working Translation",
         "ORIGINAL_LANGUAGE_GREEK": "GRK",
     }
     assert manifest["contemporary_source"] is None

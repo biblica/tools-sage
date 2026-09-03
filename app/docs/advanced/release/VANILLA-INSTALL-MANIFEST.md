@@ -433,6 +433,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/resources/scripture`
 - `system/resources/scripture/README.md`
 - `system/resources/scripture/eng.vrs`
+- `system/resources/scripture/lxx.vrs`
 - `system/resources/scripture/org.vrs`
 - `system/resources/scripture/original-language`
 - `system/resources/scripture/original-language/README.md`
@@ -513,6 +514,11 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/resources/scripture/original-language/heb/README.md`
 - `system/resources/scripture/original-language/heb/Settings.xml`
 - `system/resources/scripture/original-language/heb/authority-profile.yml`
+- `system/resources/scripture/rsc.vrs`
+- `system/resources/scripture/rso.vrs`
+- `system/resources/scripture/standard-vrs-provenance.json`
+- `system/resources/scripture/standard-vrs.LICENSE.txt`
+- `system/resources/scripture/vul.vrs`
 - `system/skills`
 - `system/skills/bic-inspect`
 - `system/skills/bic-inspect/SKILL.md`
@@ -678,6 +684,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/profiles.py`
 - `system/src/sage/progress.py`
 - `system/src/sage/project_codes.py`
+- `system/src/sage/project_context.py`
 - `system/src/sage/project_inventory.py`
 - `system/src/sage/references.py`
 - `system/src/sage/registry.py`
@@ -730,8 +737,10 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/usfm_stream.py`
 - `system/src/sage/usj.py`
 - `system/src/sage/validation.py`
+- `system/src/sage/verse_alignment.py`
 - `system/src/sage/vocabulary.py`
 - `system/src/sage/vrs.py`
+- `system/src/sage/versification_service.py`
 - `system/src/sage/workflow_identity.py`
 - `system/src/sage/work_units.py`
 - `system/tests`
@@ -783,6 +792,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_primary_analysis_jobs.py`
 - `system/tests/test_primary_workflow_menus.py`
 - `system/tests/test_project_codes.py`
+- `system/tests/test_project_context.py`
 - `system/tests/test_project_grammar_convergence.py`
 - `system/tests/test_project_import_dates.py`
 - `system/tests/test_project_inventory_and_job_isolation.py`
@@ -809,6 +819,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_stc.py`
 - `system/tests/test_stc_registration.py`
 - `system/tests/test_stc_task.py`
+- `system/tests/test_standard_vrs_resources.py`
 - `system/tests/test_storage_layout.py`
 - `system/tests/test_storage_rtc_boundaries.py`
 - `system/tests/test_structural_issues.py`
@@ -816,7 +827,9 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_tui_services.py`
 - `system/tests/test_tui_textual.py`
 - `system/tests/test_usj_and_scripture.py`
+- `system/tests/test_verse_alignment.py`
 - `system/tests/test_vrs.py`
+- `system/tests/test_versification_service.py`
 - `system/tests/test_windows_portability.py`
 - `system/tools`
 - `system/tools/CLONE-AND-INSTALL.md`
