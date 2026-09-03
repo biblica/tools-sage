@@ -84,6 +84,11 @@ from .references import (
 )
 from .profiles import load_workflow_profile
 from .platform_commands import render_sage_command
+from .project_context import (
+    identity_bindings,
+    identity_display_names,
+    resolve_project_identities,
+)
 from .registry import EcosystemConfig, ProjectSpec, load_ecosystem
 from .runtime_paths import (
     plan_container,
@@ -115,9 +120,10 @@ from .workflow_identity import (
     is_analysis_workflow,
     legacy_saw_workflow,
 )
-from .project_inventory import registered_project_records, require_project_imported_at
+from .project_inventory import require_project_imported_at
 from .usj import compile_usfm_file, compile_usfm_text, parse_usj_units
-from .vrs import VerseRef, load_project_vrs, resolve_project_vrs_paths
+from .vrs import VerseRef, resolve_project_vrs_paths
+from .versification_service import VersificationService
 from .vocabulary import (
     CANONICAL_TARGET_TEXT_OPERATION,
     require_canonical_operation_set,
@@ -1449,10 +1455,12 @@ def _vrs_record(
     config: EcosystemConfig,
     project: ProjectSpec,
     scope: ScriptureScope,
+    *,
+    service: VersificationService,
 ) -> dict[str, Any]:
     """Return compact, scope-bounded VRS evidence and provenance."""
     base_path, custom_path = resolve_project_vrs_paths(config, project)
-    schema = load_project_vrs(config, project)
+    schema = service.project_schema(project)
     relevant_mappings = []
     for mapping in schema.mappings:
         local_refs = mapping.local.refs()
@@ -1507,12 +1515,15 @@ def _write_vrs_evidence(
     scope: ScriptureScope,
 ) -> tuple[list[Path], dict[str, Any]]:
     """Write only the bounded versification evidence needed to interpret the task scope."""
+    service = VersificationService(config)
     resources: dict[str, Any] = {
-        "output_project": _vrs_record(config, output, scope),
-        "contemporary_source": _vrs_record(config, source, scope),
+        "output_project": _vrs_record(config, output, scope, service=service),
+        "contemporary_source": _vrs_record(config, source, scope, service=service),
     }
     if ol_project is not None:
-        resources["original_language"] = _vrs_record(config, ol_project, scope)
+        resources["original_language"] = _vrs_record(
+            config, ol_project, scope, service=service
+        )
     packet = {"schema_version": "1.1", "scope": scope.label(), "resources": resources}
     path = packet_root / "vrs-evidence.json"
     atomic_write_json(path, packet)
@@ -1524,7 +1535,7 @@ def _structural_candidates(
     scope: AnalysisScope,
 ) -> list[dict[str, Any]]:
     """Derive structural RTC candidates that require explicit adjudication."""
-    schema = load_project_vrs(config, project)
+    schema = VersificationService(config).project_schema(project)
     candidates: list[dict[str, Any]] = []
     for mapping in schema.mappings:
         local_refs = mapping.local.refs()
@@ -3477,10 +3488,17 @@ def _create_stc_task(
         ]
         narrative_language = _narrative_language_contract(config)
         ol_binding_key = expected_role
-        resource_bindings = {"WIP": output.project_id, ol_binding_key: ol_project.project_id}
+        project_identities = resolve_project_identities(
+            config.root,
+            {"WIP": output.project_id, ol_binding_key: ol_project.project_id},
+            config.projects,
+            compiled,
+        )
+        resource_bindings = identity_bindings(project_identities)
+        resource_display_names = identity_display_names(project_identities)
         project_fingerprints = {
-            output.project_id: project_validation_fingerprint(compiled[output.project_id]),
-            ol_project.project_id: project_validation_fingerprint(compiled[ol_project.project_id]),
+            identity.project_id: identity.content_fingerprint
+            for identity in project_identities.values()
         }
         route_bytes = int(wip_packet["serialized_bytes"]) + int(ol_packet["serialized_bytes"])
         route_tokens = int(wip_packet["estimated_tokens"]) + int(ol_packet["estimated_tokens"])
@@ -3510,7 +3528,8 @@ def _create_stc_task(
             "workflow": workflow, "operation": "stc", "rtc_stage": None,
             "skill_id": skill.skill_id,
             "job_id": job_id, "run_id": run_id,
-            "resource_bindings": resource_bindings, "resource_display_names": resource_bindings,
+            "resource_bindings": resource_bindings,
+            "resource_display_names": resource_display_names,
             "output_project": output.project_id, "output_content_state": output.content_state,
             "contemporary_source": None, "primary_ol_authority": ol_project.project_id,
             "original_language_sources": [{
@@ -4525,7 +4544,12 @@ def create_act_task(
                     "schema_version": "1.0",
                     "scope": scope.label(),
                     "routing": "CONDITIONAL_MATERIAL_RISK",
-                    "original_language": _vrs_record(config, ol_project, scope),
+                    "original_language": _vrs_record(
+                        config,
+                        ol_project,
+                        scope,
+                        service=VersificationService(config),
+                    ),
                 },
             )
             conditional_paths.append(conditional_vrs_path)
@@ -4896,11 +4920,14 @@ def create_act_task(
             canonical_resource_bindings["ORIGINAL_LANGUAGE_GREEK"] = bound_project.bindings["original_language_greek"]
         if bound_project.bindings.get("original_language_hebrew"):
             canonical_resource_bindings["ORIGINAL_LANGUAGE_HEBREW"] = bound_project.bindings["original_language_hebrew"]
-        inventory = registered_project_records(config.root)
-        resource_display_names = {
-            role: str(inventory.get(project_id, {}).get("display_name") or project_id)
-            for role, project_id in canonical_resource_bindings.items()
-        }
+        project_identities = resolve_project_identities(
+            config.root,
+            canonical_resource_bindings,
+            config.projects,
+            compiled,
+        )
+        canonical_resource_bindings = identity_bindings(project_identities)
+        resource_display_names = identity_display_names(project_identities)
         linguistic_profile_bindings: list[dict[str, Any]] = []
 
         def bind_profile(stream_id: str, profile: GrammarProfile | None, path: Path | None) -> None:

@@ -63,6 +63,10 @@ versification:
   base_files:
   - eng.vrs
   - org.vrs
+  - lxx.vrs
+  - vul.vrs
+  - rsc.vrs
+  - rso.vrs
   custom_file_default: custom.vrs
 language_profiles:
   en-US:

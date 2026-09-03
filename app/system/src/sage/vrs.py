@@ -86,6 +86,8 @@ class VersificationSchema:
     exclusions: set[VerseRef]
     mappings: list[VerseMapping]
     source_files: list[dict[str, str]]
+    verse_segments: dict[VerseRef, tuple[str, ...]]
+    chapter_ends: dict[str, int]
 
     def chapter_limit(self, book: str, chapter: int) -> int | None:
         """Return the local maximum verse number for a chapter when defined."""
@@ -173,6 +175,11 @@ class VersificationSchema:
                 for item in self.mappings
             ],
         }
+        if self.verse_segments:
+            content["verse_segments"] = {
+                ref.label(): list(segments)
+                for ref, segments in sorted(self.verse_segments.items())
+            }
         payload = json.dumps(
             content,
             ensure_ascii=False,
@@ -184,7 +191,10 @@ class VersificationSchema:
 
 _REF_RE = re.compile(r"^([1-4]?[A-Z0-9]{2,3})\s+(\d+):(\d+)(?:[A-Z])?(?:-(\d+)(?:[A-Z])?)?$")
 _CHAPTER_TOKEN_RE = re.compile(r"^(\d+):(\d+)$")
-_EXCLUSION_RE = re.compile(r"^#!\s*-\s*([1-4]?[A-Z0-9]{2,3})\s+(\d+):(\d+)(?:-(\d+))?\s*$")
+_EXCLUSION_RE = re.compile(r"^-\s*([1-4]?[A-Z0-9]{2,3})\s+(\d+):(\d+)(?:-(\d+))?\s*$")
+_SEGMENT_RE = re.compile(
+    r"^\*\s*([1-4]?[A-Z0-9]{2,3})\s+(\d+):(\d+)\s*,\s*(.+?)\s*$"
+)
 
 
 def _strict_text(path: Path) -> str:
@@ -219,7 +229,7 @@ def parse_vrs_file(
     canonical_id: str,
     source_label: str | None = None,
 ) -> VersificationSchema:
-    """Parse supported chapter definitions, exclusions, and mappings.
+    """Parse Paratext chapter definitions, exclusions, segments, and mappings.
 
     ``source_label`` is a stable logical identifier used in provenance. Absolute
     filesystem paths are deliberately excluded so effective VRS hashes remain
@@ -231,16 +241,12 @@ def parse_vrs_file(
     chapter_max: dict[str, dict[int, int]] = {}
     exclusions: set[VerseRef] = set()
     mappings: list[VerseMapping] = []
+    verse_segments: dict[VerseRef, tuple[str, ...]] = {}
+    chapter_ends: dict[str, int] = {}
     errors: list[str] = []
     for line_number, raw_line in enumerate(_strict_text(path).splitlines(), start=1):
         line = raw_line.strip()
         if not line:
-            continue
-        exclusion = _EXCLUSION_RE.fullmatch(line)
-        if exclusion:
-            book, chapter, start, end = exclusion.groups()
-            for verse in range(int(start), int(end or start) + 1):
-                exclusions.add(VerseRef(book, int(chapter), verse))
             continue
         if line.startswith("#!"):
             line = line[2:].lstrip()
@@ -249,16 +255,65 @@ def parse_vrs_file(
         line = _strip_inline_comment(line)
         if not line:
             continue
+        exclusion = _EXCLUSION_RE.fullmatch(line.upper())
+        if exclusion:
+            book, chapter, start, end = exclusion.groups()
+            for verse in range(int(start), int(end or start) + 1):
+                exclusions.add(VerseRef(book, int(chapter), verse))
+            continue
+        segment = _SEGMENT_RE.fullmatch(line.upper())
+        if segment:
+            book, chapter, verse, raw_segments = segment.groups()
+            parsed_segments: list[str] = []
+            nonempty_seen = False
+            for raw_segment in raw_segments.split(","):
+                value = raw_segment.strip().lower()
+                if not value:
+                    continue
+                if value == "-":
+                    if nonempty_seen:
+                        errors.append(
+                            f"line {line_number}: unmarked segment '-' must precede named segments"
+                        )
+                        parsed_segments = []
+                        break
+                    parsed_segments.append("")
+                else:
+                    nonempty_seen = True
+                    parsed_segments.append(value)
+            if parsed_segments == [""]:
+                errors.append(f"line {line_number}: no verse segments are defined")
+            elif parsed_segments:
+                verse_segments[VerseRef(book, int(chapter), int(verse))] = tuple(
+                    parsed_segments
+                )
+            continue
+        if line.startswith("*"):
+            errors.append(f"line {line_number}: invalid verse segment declaration: {raw_line}")
+            continue
         if "=" in line:
             continuation = line.startswith("&")
             if continuation:
                 line = line[1:].lstrip()
             left, right = (part.strip() for part in line.split("=", 1))
             try:
+                local = _parse_span(left)
+                canonical = _parse_span(right)
+                # SIL's legacy parser treats a descending ordinary range as its
+                # start coordinate only. The pinned Vulgate schema contains one
+                # historical instance (DAG 3:52-23), so normalize it here rather
+                # than accepting a schema that later fails during expansion.
+                if not continuation and local.end.verse < local.start.verse:
+                    local = RefSpan(local.start, local.start)
+                    canonical = RefSpan(canonical.start, canonical.start)
+                if continuation and len(local.refs()) != 1 and len(canonical.refs()) != 1:
+                    raise VersificationError(
+                        "invalid '&' mapping: exactly one side must contain one verse"
+                    )
                 mappings.append(
                     VerseMapping(
-                        local=_parse_span(left),
-                        canonical=_parse_span(right),
+                        local=local,
+                        canonical=canonical,
                         source=logical_source,
                         line_number=line_number,
                         continuation=continuation,
@@ -273,13 +328,24 @@ def parse_vrs_file(
         if not book or not tokens:
             errors.append(f"line {line_number}: invalid chapter definition: {raw_line}")
             continue
+        last_chapter = 0
         for token in tokens:
+            if token.upper() == "END":
+                chapter_ends[book] = last_chapter
+                chapters = chapter_max.setdefault(book, {})
+                chapter_max[book] = {
+                    chapter: maximum
+                    for chapter, maximum in chapters.items()
+                    if chapter <= last_chapter
+                }
+                break
             match = _CHAPTER_TOKEN_RE.fullmatch(token)
             if not match:
                 errors.append(f"line {line_number}: invalid chapter token {token!r}")
                 continue
             chapter, maximum = int(match.group(1)), int(match.group(2))
             chapter_max.setdefault(book, {})[chapter] = maximum
+            last_chapter = chapter
     if errors:
         raise VersificationError(f"{path}: " + "; ".join(errors[:20]))
     return VersificationSchema(
@@ -289,6 +355,8 @@ def parse_vrs_file(
         exclusions=exclusions,
         mappings=mappings,
         source_files=[{"path": logical_source, "sha256": sha256_file(path)}],
+        verse_segments=verse_segments,
+        chapter_ends=chapter_ends,
     )
 
 
@@ -303,10 +371,19 @@ def compose_vrs(
     exclusions = set(base.exclusions)
     mappings = list(base.mappings)
     sources = list(base.source_files)
+    verse_segments = dict(base.verse_segments)
     if custom is not None:
+        for book, last_chapter in custom.chapter_ends.items():
+            chapters = chapter_max.get(book, {})
+            chapter_max[book] = {
+                chapter: maximum
+                for chapter, maximum in chapters.items()
+                if chapter <= last_chapter
+            }
         for book, chapters in custom.chapter_max.items():
             chapter_max.setdefault(book, {}).update(chapters)
         exclusions.update(custom.exclusions)
+        verse_segments.update(custom.verse_segments)
         custom_keys = {item.local_key() for item in custom.mappings}
         mappings = [item for item in mappings if item.local_key() not in custom_keys]
         mappings.extend(custom.mappings)
@@ -318,6 +395,8 @@ def compose_vrs(
         exclusions=exclusions,
         mappings=mappings,
         source_files=sources,
+        verse_segments=verse_segments,
+        chapter_ends={},
     )
 
 

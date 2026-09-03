@@ -217,7 +217,7 @@ def _local_refs(value: str, schema: VersificationSchema) -> frozenset[VerseRef]:
         for chapter, maximum in sorted(chapters.items()):
             for verse in range(1, maximum + 1):
                 ref = VerseRef(scope.book, chapter, verse)
-                if scope.contains(ref):
+                if scope.contains(ref) and ref not in schema.exclusions:
                     refs.add(ref)
     if not refs:
         raise ValidationError(

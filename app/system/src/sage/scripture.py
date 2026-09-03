@@ -15,7 +15,8 @@ from .registry import EcosystemConfig, ProjectSpec
 from .sections import section_index_from_usj
 from .structure_policy import load_structure_policy
 from .usj import USJ_COMPILER, compile_usfm_file, parse_usj_units
-from .vrs import VerseRef, VersificationSchema, load_project_vrs, parse_vrs_file
+from .vrs import VerseRef, VersificationSchema
+from .versification_service import VersificationService
 from .references import AnalysisScope, BOOK_ORDER, ScriptureScope, analysis_scope_portions
 
 USFM_SUFFIXES = {".sfm"}
@@ -99,12 +100,7 @@ def is_default_vrs_compatible_issue(
     default_path = config.base_vrs_files.get(default_name.casefold())
     if default_path is None or not default_path.is_file():
         return False
-    default_schema = parse_vrs_file(
-        default_path,
-        schema_id=default_name,
-        canonical_id=config.canonical_versification,
-        source_label=f"base:{default_path.name}",
-    )
+    default_schema = VersificationService(config).base_schema(default_name)
     reference = str(issue.get("reference") or "").strip().upper()
     match = re.fullmatch(r"([1-4]?[A-Z0-9]{2,3})\s+(\d+)(?::(\d+))?", reference)
     if not match:
@@ -437,7 +433,7 @@ def compile_project(
             "files": [],
         }
 
-    schema = load_project_vrs(config, project)
+    schema = VersificationService(config).project_schema(project)
     structure_policy = load_structure_policy(config.root)
     file_results: list[dict[str, Any]] = []
     project_issues: list[dict[str, str]] = []
