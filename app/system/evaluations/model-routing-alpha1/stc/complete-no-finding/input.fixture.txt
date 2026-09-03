@@ -1,0 +1,4 @@
+\id MAT SAGE synthetic evaluation data
+\c 1
+\v 1 Synthetic tokens for stc case complete-no-finding.
+\rem CONTROL evidence is internally aligned and requires no finding.

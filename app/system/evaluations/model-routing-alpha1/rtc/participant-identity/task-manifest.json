@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "participant-identity",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "4163a195d9d995fc8c543601a8a5be6fe2e08e425592cf74959fdaf596a11923",
+  "input_sha256": "0c95a651148c44a1a88a1924279e75be36dc6c6dabf33768097e769e7f7235f8",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-PARTICIPANT-IDENTITY"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "rtc",
+  "task_id": "EVAL-RTC-PARTICIPANT-IDENTITY"
+}

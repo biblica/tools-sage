@@ -1,0 +1,3 @@
+interface:
+  display_name: "STC"
+  short_description: "Check bounded WIP against primary GRK or HEB evidence."

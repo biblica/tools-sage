@@ -1,0 +1,66 @@
+workflow:
+  id: stc
+  name: Source Text Correspondence
+  purpose: Read-only correspondence review of one WIP Scripture Project against the testament-correct primary original-language authority.
+  qualification_status: VALIDATED
+  baseline_version: A0002-r6
+  execution_model: SAGE_GOVERNED_TASK_V1
+bindings: {}
+evidence_policies:
+  default:
+    target_estimated_tokens: 12000
+    hard_estimated_tokens: 18000
+    hard_serialized_bytes: 126000
+    minimum_target_tokens: 3500
+    maximum_primary_verse_units: 120
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+  stc:
+    target_estimated_tokens: 12000
+    hard_estimated_tokens: 18000
+    hard_serialized_bytes: 126000
+    minimum_target_tokens: 3500
+    maximum_primary_verse_units: 120
+    maximum_primary_discourse_units: 0
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+permissions:
+  may_write_projects: []
+  may_write_target: false
+  may_write_reference: false
+  may_write_original_language: false
+  may_write_bic_memory: false
+state_model:
+  operation_states:
+  - NOT_RUN
+  - READY
+  - IN_PROGRESS
+  - COMPLETE
+  - STALE
+  - BLOCKED
+  - ERROR
+  - ABANDONED
+qualification_gates:
+- operation_skills_registered_and_hashed
+- provider_neutral_governed_task_contracts
+- fresh_initialization_and_resource_readiness
+- exact_wip_binding
+- testament_correct_original_language_authority
+- immutable_task_manifest_and_act_prompt
+- bounded_hashed_read_allowlist
+- exact_traversal_safe_write_allowlist
+- complete_coordinate_coverage
+- schema_validated_findings_and_deterministic_reports
+process:
+  stages:
+  - DETERMINISTIC_PREFLIGHT
+  - SOURCE_TEXT_CORRESPONDENCE
+  - COVERAGE_RECONCILIATION
+  - DETERMINISTIC_FINALISATION
+  rules:
+  - Each task compares one WIP translation directly with the testament-correct GRK or HEB authority.
+  - The Reference Project is not an STC input.
+  - Every expected WIP coordinate is reconciled.
+  - Scripture Projects remain read-only; findings and reports are generated deterministically.

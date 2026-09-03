@@ -1,0 +1,3 @@
+interface:
+  display_name: "RTC"
+  short_description: "Compare bounded WIP with its Reference Project."

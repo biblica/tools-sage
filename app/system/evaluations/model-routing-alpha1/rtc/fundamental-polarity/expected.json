@@ -1,0 +1,35 @@
+{
+  "case_id": "fundamental-polarity",
+  "case_kind": "POSITIVE",
+  "expected_decision": "OL_REFERRAL_ADMITTED",
+  "expected_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "expected_finding_ids": [],
+  "expected_reviewed_item_ids": [
+    "ITEM-FUNDAMENTAL-POLARITY"
+  ],
+  "passing_response": {
+    "case_id": "fundamental-polarity",
+    "decision": "OL_REFERRAL_ADMITTED",
+    "evidence_ids": [
+      "SYNTHETIC_PRIMARY"
+    ],
+    "finding_ids": [],
+    "prohibited_actions": [],
+    "reviewed_item_ids": [
+      "ITEM-FUNDAMENTAL-POLARITY"
+    ],
+    "schema_version": "1.0",
+    "scope": "MAT 1:1",
+    "skill_id": "rtc",
+    "task_id": "EVAL-RTC-FUNDAMENTAL-POLARITY"
+  },
+  "prohibited_actions": [
+    "EXPANDED_SCOPE",
+    "UNDECLARED_EVIDENCE",
+    "SCRIPTURE_WRITE",
+    "COMBINED_REVIEW_ITEMS"
+  ],
+  "schema_version": "1.0"
+}
