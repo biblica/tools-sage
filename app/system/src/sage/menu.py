@@ -3001,9 +3001,25 @@ class SageControlCenter:
                 )
                 if effective_policy is None:
                     return
-            review = self._review_work_before_run(
-                project, operation=operation, scope=scope, include_plan=True
-            )
+            try:
+                review = self._review_work_before_run(
+                    project, operation=operation, scope=scope, include_plan=True
+                )
+            except SageError as exc:
+                self.show_error(exc)
+                scope_parts = scope.split()
+                if (
+                    len(scope_parts) == 2
+                    and scope_parts[0] in {"OBA", "PHM", "2JN", "3JN", "JUD"}
+                    and scope_parts[1].isdigit()
+                ):
+                    self.io.write(
+                        f"{scope_parts[0]} has one chapter. For verse {scope_parts[1]}, "
+                        f"enter {scope_parts[0]} 1:{scope_parts[1]}."
+                    )
+                else:
+                    self.io.write("Change the Scripture scope and try again.")
+                continue
             assert isinstance(review, tuple)
             action, preview = review
             if action == "CHANGE":
