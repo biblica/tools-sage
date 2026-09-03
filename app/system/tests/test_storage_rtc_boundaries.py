@@ -1773,11 +1773,11 @@ def test_vrs_candidate_crossing_approved_portions_is_reported_without_blocking(
     package_root: Path,
     make_workspace,
 ) -> None:
-    """A VRS range may be reported across RTC portions without joining their boundaries."""
+    """VRS metadata outside WIP evidence cannot block or join RTC portions."""
     root = make_workspace(qualification_status="VALIDATED", verse_max=6)
     projects_root = storage_layout(root).projects_root
     (projects_root / "usWIP" / "custom.vrs").write_text(
-        "#! &MAT 1:2-5 = MAT 1:2\n",
+        "#! &MAT 1:0-5 = MAT 1:1\n",
         encoding="utf-8",
     )
     settings = root / "ecosystem.yml"
@@ -1788,7 +1788,7 @@ def test_vrs_candidate_crossing_approved_portions_is_reported_without_blocking(
 
     store = JobStore(root, root / "ecosystem.yml")
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
-    run = store.create_run(job, operation="rtc", scope="MAT 1:1-6")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
     config = load_ecosystem(store.ensure_runtime_files(job))
     compiled = compile_project_scope(
         config,
@@ -1851,7 +1851,7 @@ def test_vrs_candidate_crossing_approved_portions_is_reported_without_blocking(
         for path in result["task_manifests"]
     ]
     assert [manifest["expected_references"] for manifest in manifests] == [
-        ["MAT 1:2", "MAT 1:3"],
+        ["MAT 1:1", "MAT 1:2", "MAT 1:3"],
         ["MAT 1:4", "MAT 1:5"],
     ]
     assert [manifest["parent_review_portion_id"] for manifest in manifests] == [

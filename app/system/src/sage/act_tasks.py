@@ -3066,6 +3066,24 @@ def _create_rtc_composite(
         if first_stage == "STRUCTURAL_ADJUDICATION"
         else []
     )
+    if approved_work_plan is not None and stage_references:
+        approved_atoms = {
+            atom
+            for unit in approved_work_plan.get("units", [])
+            for value in (
+                unit.get("primary_coverage_atoms")
+                or unit.get("primary_references")
+                or []
+            )
+            for atom in expand_reference_atoms(str(value))
+        }
+        stage_references = [
+            value
+            for value in stage_references
+            if tuple(expand_reference_atoms(value))[0] in approved_atoms
+        ]
+        if first_stage == "STRUCTURAL_ADJUDICATION" and not stage_references:
+            first_stage = "REFERENCE_TEXT_COMPARISON"
     if approved_work_plan is not None:
         result = _create_approved_rtc_stage(
             config,

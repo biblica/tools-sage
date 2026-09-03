@@ -220,6 +220,49 @@ def test_scope_menu_blank_range_selects_entire_chosen_book(make_workspace, monke
     assert "Range is required." not in rendered
 
 
+def test_invalid_analysis_scope_evidence_returns_to_scope_entry(
+    make_workspace,
+    monkeypatch,
+) -> None:
+    """A syntactically valid range without evidence must not unwind the SAGE menu."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    center = _center(root, [])
+    scopes = iter(("JUD 20", None))
+    selections: list[str | None] = []
+
+    def select_scope(_job, *, primary_binding):
+        """Return the invalid scope once, then simulate leaving scope selection."""
+        assert primary_binding == "wip"
+        value = next(scopes)
+        selections.append(value)
+        return value
+
+    monkeypatch.setattr(center, "ensure_initialized", lambda _job: None)
+    monkeypatch.setattr(center, "_select_scripture_scope", select_scope)
+    monkeypatch.setattr(center, "_rtc_policy_menu", lambda _scope, **_kwargs: {})
+    monkeypatch.setattr(
+        center,
+        "_review_work_before_run",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            ValidationError("Scope has no evidence records: JUD 20")
+        ),
+    )
+    monkeypatch.setattr(
+        center.store,
+        "create_run",
+        lambda *_args, **_kwargs: pytest.fail("invalid scope must not create a Run"),
+    )
+
+    center.start_saw_run(job, "rtc")
+
+    assert selections == ["JUD 20", None]
+    rendered = center.io.output.getvalue()
+    assert "Scope has no evidence records: JUD 20" in rendered
+    assert "JUD 1:20" in rendered
+
+
 def test_saw_composite_creation_reports_plan_without_requiring_act_path(
     make_workspace,
     monkeypatch,
