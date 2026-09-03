@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "seeded-variance",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "78d4300f99475f30a2e682ef6ca59d470f03b0b64711b3767d5bffa7b5b051aa",
+  "input_sha256": "b8119a16bbbb232a1025997ca22f25dfd7e7599c9fa84b6742f3195b740c43ef",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-SEEDED-VARIANCE"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "rtc",
+  "task_id": "EVAL-RTC-SEEDED-VARIANCE"
+}

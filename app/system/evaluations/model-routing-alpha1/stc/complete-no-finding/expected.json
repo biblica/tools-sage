@@ -1,0 +1,35 @@
+{
+  "case_id": "complete-no-finding",
+  "case_kind": "ZERO_FINDING",
+  "expected_decision": "NO_FINDING",
+  "expected_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "expected_finding_ids": [],
+  "expected_reviewed_item_ids": [
+    "ITEM-COMPLETE-NO-FINDING"
+  ],
+  "passing_response": {
+    "case_id": "complete-no-finding",
+    "decision": "NO_FINDING",
+    "evidence_ids": [
+      "SYNTHETIC_PRIMARY"
+    ],
+    "finding_ids": [],
+    "prohibited_actions": [],
+    "reviewed_item_ids": [
+      "ITEM-COMPLETE-NO-FINDING"
+    ],
+    "schema_version": "1.0",
+    "scope": "MAT 1:1",
+    "skill_id": "stc",
+    "task_id": "EVAL-STC-COMPLETE-NO-FINDING"
+  },
+  "prohibited_actions": [
+    "EXPANDED_SCOPE",
+    "UNDECLARED_EVIDENCE",
+    "SCRIPTURE_WRITE",
+    "COMBINED_REVIEW_ITEMS"
+  ],
+  "schema_version": "1.0"
+}

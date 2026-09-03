@@ -1,0 +1,105 @@
+workflow:
+  id: rtc
+  name: Reference Text Comparison
+  purpose: Read-only comparison of one WIP Scripture Project against one immutable Reference Project.
+  qualification_status: VALIDATED
+  baseline_version: A0002-r6
+  execution_model: SAGE_GOVERNED_TASK_V1
+bindings: {}
+rtc_sizing:
+  provider: codex
+  estimator: SAGE_MULTILINGUAL_HEURISTIC_1
+  wip_target_min_tokens: 6000
+  wip_target_max_tokens: 7000
+  wip_hard_exclusive_tokens: 8000
+  route_hard_max_tokens: 32000
+  route_hard_serialized_bytes: 224000
+evidence_policies:
+  default:
+    target_estimated_tokens: 18000
+    hard_estimated_tokens: 28000
+    hard_serialized_bytes: 196000
+    minimum_target_tokens: 6000
+    maximum_primary_verse_units: 220
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+  rtc:
+    target_estimated_tokens: 28000
+    hard_estimated_tokens: 32000
+    hard_serialized_bytes: 224000
+    minimum_target_tokens: 6000
+    maximum_primary_verse_units: 220
+    maximum_primary_discourse_units: 0
+    preferred_primary_discourse_units: 4
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+check_policy:
+  version: "1.0"
+  rtc:
+    checks:
+      structure_completeness: true
+      translation_meaning: true
+      language_readability: true
+      consistency: true
+    usfm_contexts:
+      add:
+        markers: [add]
+        mode: MATERIAL_ONLY
+      nd:
+        markers: [nd]
+        mode: MATERIAL_ONLY
+      f:
+        markers: [f]
+        mode: STRUCTURE_ONLY
+      x:
+        markers: [x]
+        mode: NORMAL
+    original_language:
+      source_text_drift_adjudication: PROHIBITED
+permissions:
+  may_write_projects: []
+  may_write_target: false
+  may_write_reference: false
+  may_write_original_language: false
+  may_write_bic_memory: false
+state_model:
+  operation_states:
+  - NOT_RUN
+  - READY
+  - IN_PROGRESS
+  - COMPLETE
+  - STALE
+  - BLOCKED
+  - ERROR
+  - ABANDONED
+qualification_gates:
+- operation_skills_registered_and_hashed
+- source_prompt_traceability_validated
+- provider_neutral_governed_task_contracts
+- fresh_initialization_and_resource_readiness
+- exact_wip_and_reference_bindings
+- project_bound_original_language_only
+- immutable_task_manifest_and_act_prompt
+- bounded_hashed_read_allowlist
+- exact_traversal_safe_write_allowlist
+- deterministic_preflight_and_vrs_evidence
+- structural_candidate_reconciliation
+- complete_coordinate_coverage
+- schema_validated_findings_and_deterministic_reports
+process:
+  stages:
+  - DETERMINISTIC_PREFLIGHT
+  - STRUCTURAL_ADJUDICATION
+  - REFERENCE_TEXT_COMPARISON
+  - SELECTIVE_OL_ADJUDICATION
+  - COVERAGE_RECONCILIATION
+  - DETERMINISTIC_FINALISATION
+  rules:
+  - Each task compares one WIP translation against one authorized REFERENCE.
+  - Every expected coordinate and structural candidate is reconciled.
+  - Scripture Projects remain read-only; findings and reports are generated deterministically.
+  - Structural and meaning stages do not route original-language Scripture.
+  - Versification mappings are non-blocking structural evidence and are reported when materially different.
+  - Final note material is plain Operator text; SAGE never creates or modifies Paratext Notes XML.
