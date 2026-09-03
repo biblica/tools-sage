@@ -176,6 +176,6 @@ The migration is accepted when all of the following are true:
 
 - Rewriting or resigning existing sealed task manifests
 - Renaming historical release documents or original source prompts
-- Re-enabling paused TUI workflow actions before 0.02beta
+- Re-enabling the paused future TUI workflow actions
 - Changing RTC/STC evidence policy, versification behavior, bridge handling, or
   analytical conclusions
