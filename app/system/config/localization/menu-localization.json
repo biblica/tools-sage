@@ -15,7 +15,7 @@
       "Every entry must contain all six locales.",
       "en-US is the canonical source wording used for runtime lookup.",
       "Use sentence case for menu headings and items; render mid-sentence governed entities as PROJECT, JOB, RUN, or TASK and reserve other uppercase forms for governed protocol tokens.",
-      "Keep SAGE identifiers such as BIC, SAW, Job, Run, Project, TARGET, SOURCE, DONOR, WIP, REFERENCE, ACT, RWC, SEMDOM, FLEx, Combine, and Codex unchanged unless system grammar changes them."
+      "Keep SAGE identifiers such as BIC, legacy analysis, TARGET, SOURCE, DONOR, WIP, REFERENCE, ACT, RWC, SEMDOM, FLEx, Combine, and Codex unchanged unless system grammar changes them; keep sentence-initial Project, Job, Run, or Task natural because the renderer uppercases those governed entities only when they occur later in a menu sentence."
     ]
   },
   "strings": {
@@ -140,12 +140,12 @@
       "pt-BR": "Adicionar provedor"
     },
     "menu.add.saw.job.wip.reference": {
-      "en-US": "Add SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
-      "en-GB": "Add SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
-      "id": "tambahkan SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
-      "fr": "ajouter un SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
-      "ru": "добавить SAW JOB <WIP PROJECT, REFERENCE PROJECT>",
-      "pt-BR": "adicionar SAW JOB <WIP PROJECT, REFERENCE PROJECT>"
+      "en-US": "Add legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "en-GB": "Add legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "id": "tambahkan legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "fr": "ajouter un legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "ru": "добавить legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>",
+      "pt-BR": "adicionar legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>"
     },
     "menu.add.rtc.job.wip.project.reference.project": {
       "en-US": "Add RTC Job <WIP PROJECT, REFERENCE PROJECT>",
@@ -644,12 +644,12 @@
       "pt-BR": "escolher Job ativo"
     },
     "menu.choose.active.saw.job": {
-      "en-US": "Choose active SAW Job",
-      "en-GB": "Choose active SAW Job",
-      "id": "pilih SAW Job aktif",
-      "fr": "choisir le SAW Job actif",
-      "ru": "выбрать активный SAW Job",
-      "pt-BR": "escolher SAW Job ativo"
+      "en-US": "Choose active legacy analysis Job",
+      "en-GB": "Choose active legacy analysis Job",
+      "id": "pilih legacy analysis Job aktif",
+      "fr": "choisir le legacy analysis Job actif",
+      "ru": "выбрать активный legacy analysis Job",
+      "pt-BR": "escolher legacy analysis Job ativo"
     },
     "menu.choose.another.iso.language.code": {
       "en-US": "Choose another ISO language code",
@@ -724,12 +724,12 @@
       "pt-BR": "limpar seleção do Run ativo"
     },
     "menu.clear.active.saw.job": {
-      "en-US": "Clear active SAW Job",
-      "en-GB": "Clear active SAW Job",
-      "id": "hapus SAW Job aktif",
-      "fr": "effacer le SAW Job actif",
-      "ru": "очистить активный SAW Job",
-      "pt-BR": "limpar SAW Job ativo"
+      "en-US": "Clear active legacy analysis Job",
+      "en-GB": "Clear active legacy analysis Job",
+      "id": "hapus legacy analysis Job aktif",
+      "fr": "effacer le legacy analysis Job actif",
+      "ru": "очистить активный legacy analysis Job",
+      "pt-BR": "limpar legacy analysis Job ativo"
     },
     "menu.clear.filters": {
       "en-US": "Clear filters",
@@ -940,12 +940,12 @@
       "pt-BR": "criar BIC Job"
     },
     "menu.create.a.saw.job": {
-      "en-US": "Create a SAW Job",
-      "en-GB": "Create a SAW Job",
-      "id": "buat SAW Job",
-      "fr": "créer un SAW Job",
-      "ru": "создать SAW Job",
-      "pt-BR": "criar SAW Job"
+      "en-US": "Create a legacy analysis Job",
+      "en-GB": "Create a legacy analysis Job",
+      "id": "buat legacy analysis Job",
+      "fr": "créer un legacy analysis Job",
+      "ru": "создать legacy analysis Job",
+      "pt-BR": "criar legacy analysis Job"
     },
     "menu.create.job": {
       "en-US": "Create Job",
@@ -954,6 +954,14 @@
       "fr": "créer un Job",
       "ru": "создать Job",
       "pt-BR": "criar Job"
+    },
+    "menu.delete.job": {
+      "en-US": "Delete Job",
+      "en-GB": "Delete Job",
+      "id": "Hapus Job",
+      "fr": "Supprimer le Job",
+      "ru": "Удалить Job",
+      "pt-BR": "Excluir Job"
     },
     "menu.derive.from.an.existing.profile": {
       "en-US": "Derive from an existing profile",
@@ -1556,12 +1564,12 @@
       "pt-BR": "Gerenciar Projects das Escrituras SAGE"
     },
     "menu.manage.saw.jobs": {
-      "en-US": "Manage SAW Jobs",
-      "en-GB": "Manage SAW Jobs",
-      "id": "Kelola SAW Jobs",
-      "fr": "Gérer les Jobs SAW",
-      "ru": "Управлять SAW Jobs",
-      "pt-BR": "Gerenciar Jobs SAW"
+      "en-US": "Manage legacy analysis Jobs",
+      "en-GB": "Manage legacy analysis Jobs",
+      "id": "Kelola legacy analysis Jobs",
+      "fr": "Gérer les Jobs legacy analysis",
+      "ru": "Управлять legacy analysis Jobs",
+      "pt-BR": "Gerenciar Jobs legacy analysis"
     },
     "menu.manage.source.data": {
       "en-US": "Manage source data",
@@ -1644,12 +1652,12 @@
       "pt-BR": "abrir Run ativo"
     },
     "menu.open.active.saw.job": {
-      "en-US": "Open active SAW Job",
-      "en-GB": "Open active SAW Job",
-      "id": "Buka SAW Job aktif",
-      "fr": "Ouvrir le SAW Job actif",
-      "ru": "Открыть активный SAW Job",
-      "pt-BR": "Abrir SAW Job ativo"
+      "en-US": "Open active LEGACY ANALYSIS Job",
+      "en-GB": "Open active LEGACY ANALYSIS Job",
+      "id": "Buka legacy analysis Job aktif",
+      "fr": "Ouvrir le legacy analysis Job actif",
+      "ru": "Открыть активный legacy analysis Job",
+      "pt-BR": "Abrir legacy analysis Job ativo"
     },
     "menu.open.another.run": {
       "en-US": "Open another Run",
@@ -1666,14 +1674,6 @@
       "fr": "Ouvrir le profil de langue",
       "ru": "Открыть языковой профиль",
       "pt-BR": "Abrir perfil de idioma"
-    },
-    "menu.open.system.information": {
-      "en-US": "System information, recovery and diagnostics",
-      "en-GB": "System information, recovery and diagnostics",
-      "id": "Informasi, pemulihan, dan diagnostik sistem",
-      "fr": "Informations, récupération et diagnostics du système",
-      "ru": "Сведения, восстановление и диагностика системы",
-      "pt-BR": "Informações, recuperação e diagnósticos do sistema"
     },
     "menu.openai.and.chatgpt": {
       "en-US": "OpenAI and ChatGPT",
@@ -1988,12 +1988,12 @@
       "pt-BR": "recuperar BIC Job ativo"
     },
     "menu.recover.active.saw.job": {
-      "en-US": "Recover active SAW Job",
-      "en-GB": "Recover active SAW Job",
-      "id": "pulihkan SAW Job aktif",
-      "fr": "récupérer le SAW Job actif",
-      "ru": "восстановить активный SAW Job",
-      "pt-BR": "recuperar SAW Job ativo"
+      "en-US": "Recover active legacy analysis Job",
+      "en-GB": "Recover active legacy analysis Job",
+      "id": "pulihkan legacy analysis Job aktif",
+      "fr": "récupérer le legacy analysis Job actif",
+      "ru": "восстановить активный legacy analysis Job",
+      "pt-BR": "recuperar legacy analysis Job ativo"
     },
     "menu.recover.one.transaction": {
       "en-US": "Recover one transaction",
@@ -2026,14 +2026,6 @@
       "fr": "Récupération et diagnostics",
       "ru": "Восстановление и диагностика",
       "pt-BR": "Recuperação e diagnósticos"
-    },
-    "menu.system.recovery.and.diagnostics": {
-      "en-US": "System recovery and diagnostics",
-      "en-GB": "System recovery and diagnostics",
-      "id": "Pemulihan dan diagnostik sistem",
-      "fr": "Récupération et diagnostics du système",
-      "ru": "Восстановление и диагностика системы",
-      "pt-BR": "Recuperação e diagnósticos do sistema"
     },
     "menu.reset.sage.to.out.of.box.state": {
       "en-US": "Reset SAGE to out-of-box state",
@@ -2108,12 +2100,12 @@
       "pt-BR": "Armazenamento de Jobs BIC"
     },
     "menu.saw.job.storage": {
-      "en-US": "SAW Job storage",
-      "en-GB": "SAW Job storage",
-      "id": "Penyimpanan Job SAW",
-      "fr": "Stockage des Jobs SAW",
-      "ru": "Хранилище Job SAW",
-      "pt-BR": "Armazenamento de Jobs SAW"
+      "en-US": "LEGACY ANALYSIS Job storage",
+      "en-GB": "LEGACY ANALYSIS Job storage",
+      "id": "Penyimpanan Job legacy analysis",
+      "fr": "Stockage des Jobs legacy analysis",
+      "ru": "Хранилище Job legacy analysis",
+      "pt-BR": "Armazenamento de Jobs legacy analysis"
     },
     "menu.recovery.guides": {
       "en-US": "Recovery guides",
@@ -2130,6 +2122,14 @@
       "fr": "références et ressources",
       "ru": "ссылки и ресурсы",
       "pt-BR": "referências e recursos"
+    },
+    "menu.refresh.project": {
+      "en-US": "Refresh Project",
+      "en-GB": "Refresh Project",
+      "id": "Perbarui Project",
+      "fr": "Actualiser le Project",
+      "ru": "Обновить Project",
+      "pt-BR": "Atualizar Project"
     },
     "menu.reinitialize.job": {
       "en-US": "Reinitialize Job",
@@ -2492,76 +2492,76 @@
       "pt-BR": "Projects das Escrituras SAGE"
     },
     "menu.saw": {
-      "en-US": "SAW",
-      "en-GB": "SAW",
-      "id": "SAW",
-      "fr": "SAW",
-      "ru": "SAW",
-      "pt-BR": "SAW"
+      "en-US": "LEGACY ANALYSIS",
+      "en-GB": "LEGACY ANALYSIS",
+      "id": "legacy analysis",
+      "fr": "legacy analysis",
+      "ru": "legacy analysis",
+      "pt-BR": "legacy analysis"
     },
     "menu.saw.checks": {
-      "en-US": "SAW checks",
-      "en-GB": "SAW checks",
-      "id": "Pemeriksaan SAW",
-      "fr": "Contrôles SAW",
-      "ru": "Проверки SAW",
-      "pt-BR": "Verificações SAW"
+      "en-US": "LEGACY ANALYSIS CHECKS",
+      "en-GB": "LEGACY ANALYSIS CHECKS",
+      "id": "Pemeriksaan legacy analysis",
+      "fr": "Contrôles legacy analysis",
+      "ru": "Проверки legacy analysis",
+      "pt-BR": "Verificações legacy analysis"
     },
     "menu.saw.focused.check": {
-      "en-US": "SAW Targeted Check",
-      "en-GB": "SAW Targeted Check",
-      "id": "Pemeriksaan Terarah SAW",
-      "fr": "Contrôle ciblé SAW",
-      "ru": "Целевая проверка SAW",
-      "pt-BR": "Verificação direcionada SAW"
+      "en-US": "legacy analysis Targeted Check",
+      "en-GB": "legacy analysis Targeted Check",
+      "id": "Pemeriksaan Terarah legacy analysis",
+      "fr": "Contrôle ciblé legacy analysis",
+      "ru": "Целевая проверка legacy analysis",
+      "pt-BR": "Verificação direcionada legacy analysis"
     },
     "menu.saw.job": {
-      "en-US": "SAW Job",
-      "en-GB": "SAW Job",
-      "id": "SAW Job",
-      "fr": "Job SAW",
-      "ru": "Job SAW",
-      "pt-BR": "Job SAW"
+      "en-US": "legacy analysis Job",
+      "en-GB": "legacy analysis Job",
+      "id": "legacy analysis Job",
+      "fr": "Job legacy analysis",
+      "ru": "Job legacy analysis",
+      "pt-BR": "Job legacy analysis"
     },
     "menu.saw.jobs": {
-      "en-US": "SAW Jobs",
-      "en-GB": "SAW Jobs",
-      "id": "SAW Jobs",
-      "fr": "Jobs SAW",
-      "ru": "Jobs SAW",
-      "pt-BR": "Jobs SAW"
+      "en-US": "legacy analysis Jobs",
+      "en-GB": "legacy analysis Jobs",
+      "id": "legacy analysis Jobs",
+      "fr": "Jobs legacy analysis",
+      "ru": "Jobs legacy analysis",
+      "pt-BR": "Jobs legacy analysis"
     },
     "menu.saw.normal.rtc": {
-      "en-US": "SAW Reference Text Comparison (RTC)",
-      "en-GB": "SAW Reference Text Comparison (RTC)",
-      "id": "RTC Standar SAW",
-      "fr": "RTC standard SAW",
-      "ru": "Стандартная RTC SAW",
-      "pt-BR": "RTC padrão SAW"
+      "en-US": "legacy analysis Reference Text Comparison (RTC)",
+      "en-GB": "legacy analysis Reference Text Comparison (RTC)",
+      "id": "RTC Standar legacy analysis",
+      "fr": "RTC standard legacy analysis",
+      "ru": "Стандартная RTC legacy analysis",
+      "pt-BR": "RTC padrão legacy analysis"
     },
     "menu.saw.original.language.review": {
-      "en-US": "SAW Original-Language Review",
-      "en-GB": "SAW Original-Language Review",
-      "id": "Tinjauan bahasa asli SAW",
-      "fr": "Révision SAW en langue originale",
-      "ru": "Проверка SAW по языку оригинала",
-      "pt-BR": "Revisão SAW no idioma original"
+      "en-US": "legacy analysis Original-Language Review",
+      "en-GB": "legacy analysis Original-Language Review",
+      "id": "Tinjauan bahasa asli legacy analysis",
+      "fr": "Révision legacy analysis en langue originale",
+      "ru": "Проверка legacy analysis по языку оригинала",
+      "pt-BR": "Revisão legacy analysis no idioma original"
     },
     "menu.saw.reports.and.history": {
-      "en-US": "SAW reports and history",
-      "en-GB": "SAW reports and history",
-      "id": "laporan dan riwayat SAW",
-      "fr": "rapports et historique SAW",
-      "ru": "отчёты и история SAW",
-      "pt-BR": "relatórios e histórico SAW"
+      "en-US": "legacy analysis reports and history",
+      "en-GB": "legacy analysis reports and history",
+      "id": "laporan dan riwayat legacy analysis",
+      "fr": "rapports et historique legacy analysis",
+      "ru": "отчёты и история legacy analysis",
+      "pt-BR": "relatórios e histórico legacy analysis"
     },
     "menu.saw.task": {
-      "en-US": "SAW Task",
-      "en-GB": "SAW Task",
-      "id": "tugas SAW",
-      "fr": "tâche SAW",
-      "ru": "задача SAW",
-      "pt-BR": "tarefa SAW"
+      "en-US": "legacy analysis Task",
+      "en-GB": "legacy analysis Task",
+      "id": "tugas legacy analysis",
+      "fr": "tâche legacy analysis",
+      "ru": "задача legacy analysis",
+      "pt-BR": "tarefa legacy analysis"
     },
     "menu.scan.paratext.projects": {
       "en-US": "Scan Paratext Projects",
@@ -2716,20 +2716,20 @@
       "pt-BR": "escolher SAGE Project"
     },
     "menu.choose.saw.reference": {
-      "en-US": "CHOOSE SAW <REFERENCE>",
-      "en-GB": "CHOOSE SAW <REFERENCE>",
-      "id": "PILIH SAW <REFERENCE>",
-      "fr": "CHOISIR SAW <REFERENCE>",
-      "ru": "ВЫБРАТЬ SAW <REFERENCE>",
-      "pt-BR": "ESCOLHER SAW <REFERENCE>"
+      "en-US": "CHOOSE LEGACY ANALYSIS <REFERENCE>",
+      "en-GB": "CHOOSE LEGACY ANALYSIS <REFERENCE>",
+      "id": "PILIH legacy analysis <REFERENCE>",
+      "fr": "CHOISIR legacy analysis <REFERENCE>",
+      "ru": "ВЫБРАТЬ legacy analysis <REFERENCE>",
+      "pt-BR": "ESCOLHER legacy analysis <REFERENCE>"
     },
     "menu.choose.saw.wip": {
-      "en-US": "CHOOSE SAW <WIP>",
-      "en-GB": "CHOOSE SAW <WIP>",
-      "id": "PILIH SAW <WIP>",
-      "fr": "CHOISIR SAW <WIP>",
-      "ru": "ВЫБРАТЬ SAW <WIP>",
-      "pt-BR": "ESCOLHER SAW <WIP>"
+      "en-US": "CHOOSE LEGACY ANALYSIS <WIP>",
+      "en-GB": "CHOOSE LEGACY ANALYSIS <WIP>",
+      "id": "PILIH legacy analysis <WIP>",
+      "fr": "CHOISIR legacy analysis <WIP>",
+      "ru": "ВЫБРАТЬ legacy analysis <WIP>",
+      "pt-BR": "ESCOLHER legacy analysis <WIP>"
     },
     "menu.choose.scripture.scope": {
       "en-US": "CHOOSE SCRIPTURE SCOPE",
@@ -3188,12 +3188,12 @@
       "pt-BR": "Versificação"
     },
     "menu.wip.saw.review": {
-      "en-US": "WIP / SAW review",
-      "en-GB": "WIP / SAW review",
-      "id": "WIP / tinjauan SAW",
-      "fr": "WIP / révision SAW",
-      "ru": "WIP / проверка SAW",
-      "pt-BR": "WIP / revisão SAW"
+      "en-US": "WIP / RTC or STC review",
+      "en-GB": "WIP / RTC or STC review",
+      "id": "WIP / tinjauan legacy analysis",
+      "fr": "WIP / révision legacy analysis",
+      "ru": "WIP / проверка legacy analysis",
+      "pt-BR": "WIP / revisão legacy analysis"
     },
     "menu.advanced.routing.override": {
       "en-US": "Advanced routing override",
@@ -3260,12 +3260,12 @@
       "pt-BR": "Executar correspondência do texto-fonte (STC)"
     },
     "menu.saw.source.text.correspondence.stc": {
-      "en-US": "SAW Source Text Correspondence (STC)",
-      "en-GB": "SAW Source Text Correspondence (STC)",
-      "id": "Korespondensi Teks Sumber SAW (STC)",
-      "fr": "Correspondance du texte source SAW (STC)",
-      "ru": "Соответствие исходному тексту SAW (STC)",
-      "pt-BR": "Correspondência do texto-fonte SAW (STC)"
+      "en-US": "legacy analysis Source Text Correspondence (STC)",
+      "en-GB": "legacy analysis Source Text Correspondence (STC)",
+      "id": "Korespondensi Teks Sumber legacy analysis (STC)",
+      "fr": "Correspondance du texte source legacy analysis (STC)",
+      "ru": "Соответствие исходному тексту legacy analysis (STC)",
+      "pt-BR": "Correspondência do texto-fonte legacy analysis (STC)"
     },
     "menu.bible.index.and.context.bic": {
       "en-US": "Bible Index & Context (BIC)",

@@ -53,7 +53,8 @@ def test_machine_cardinality_vocabulary_is_explicit(package_root: Path) -> None:
     assert controls["original_language_bindings"]["HEB"] == "zero_or_one"
     assert controls["grammar_profile_selection"]["BIC_SOURCE_GRAMMAR"] == "exactly_one_active"
     assert controls["grammar_profile_selection"]["BIC_TARGET_GRAMMAR"] == "exactly_one_active"
-    assert controls["grammar_profile_selection"]["SAW_WIP_GRAMMAR"] == "exactly_one_active"
+    assert controls["grammar_profile_selection"]["RTC_WIP_GRAMMAR"] == "exactly_one_active"
+    assert controls["grammar_profile_selection"]["STC_WIP_GRAMMAR"] == "exactly_one_active"
     assert controls["effective_vrs"]["cardinality"] == "exactly_one"
     assert tool["cardinality_vocabulary"] == [
         "exactly_one", "zero_or_one", "one_or_more", "zero_or_more", "exactly_one_of"
@@ -192,8 +193,8 @@ def test_current_operator_surfaces_use_binding_not_schema_jargon(package_root: P
         "README.md", "docs/OPERATOR-GUIDE.md",
         "docs/macos-linux/CHEAT-SHEET.md", "docs/macos-linux/RECOVERY.md", "docs/macos-linux/ERRORS.md",
         "docs/windows/CHEAT-SHEET.md", "docs/windows/RECOVERY.md", "docs/windows/ERRORS.md",
-        "docs/BIC-CHEAT-SHEET.md", "docs/SAW-CHEAT-SHEET.md",
-        "docs/advanced/architecture/ARCHITECTURE.md", "docs/advanced/workflows/BIC-SAW-AUTHORITY-BOUNDARIES.md",
+        "docs/BIC-CHEAT-SHEET.md", "docs/RTC-STC-CHEAT-SHEET.md",
+        "docs/advanced/architecture/ARCHITECTURE.md", "docs/advanced/workflows/BIC-RTC-STC-AUTHORITY-BOUNDARIES.md",
         "system/config/workflows/bic/README.md", "system/config/workflows/saw/README.md",
     ]
     combined = "\n".join((package_root / rel).read_text(encoding="utf-8") for rel in current)

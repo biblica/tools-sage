@@ -5,6 +5,7 @@ from __future__ import annotations
 import io
 import json
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -181,6 +182,16 @@ def test_scope_menu_accepts_direct_chapter_or_book(make_workspace, entered, expe
     assert center._select_scripture_scope(job, primary_binding="wip") == expected
 
 
+def test_analysis_scope_menu_accepts_discontinuous_chapter_ranges(make_workspace) -> None:
+    """RTC/STC scope entry accepts same-book portions in one Run."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    center = _center(root, ["1ch 5-6; 24", "B"])
+
+    assert center._select_scripture_scope(job, primary_binding="wip") == "1CH 5-6; 1CH 24"
+
+
 def test_scope_menu_blank_selection_defaults_to_choose_book(make_workspace, monkeypatch) -> None:
     """Pressing Enter at scope selection defaults to the guided Choose Book path."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
@@ -283,6 +294,34 @@ def test_unexpected_run_continuation_error_is_bounded_at_menu_boundary(
     assert store.load_run(job, run.run_id).status == "NEW"
 
 
+def test_canonical_rtc_error_surface_does_not_expose_legacy_identity(make_workspace) -> None:
+    """Current RTC errors convert legacy internal codes without rewriting evidence."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="rtc",
+        job_id="RTC-usWIP_20260901",
+        display_name="RTC error surface",
+        bindings={"wip": "usWIP", "reference": "usNIVv2"},
+        imported_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
+    )
+    store.create_run(job, operation="rtc", scope="MAT 1")
+    center = _center(root, [""])
+
+    center.show_error(
+        ValidationError(
+            "SAW RTC cannot preserve the routed WIP+REFERENCE review item",
+            code="SAW_RTC_UNSPLITTABLE_BRIDGE",
+            next_action="Rebuild the affected SAW Run plan.",
+        )
+    )
+
+    rendered = center.io.output.getvalue()
+    assert "RTC cannot preserve" in rendered
+    assert "Reason code:   RTC_UNSPLITTABLE_BRIDGE" in rendered
+    assert "SAW" not in rendered
+
+
 def test_saw_continuation_displays_composite_unit_progress(make_workspace, monkeypatch) -> None:
     """A composite continuation names the next scope and its position before execution."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
@@ -311,7 +350,9 @@ def test_saw_continuation_displays_composite_unit_progress(make_workspace, monke
 
     center._continue_saw_plan(job, run)
 
-    assert "Review portion:   1/10 — MAT 1:1-2" in center.io.output.getvalue()
+    rendered = center.io.output.getvalue()
+    assert "RTC stage: Reference Text Comparison — portion 1/10" in rendered
+    assert "Review portion:" not in rendered
 
 
 def test_saw_route_block_propagates_before_visible_work_or_run_mutation(
@@ -428,8 +469,8 @@ def test_saw_plan_continuation_advances_all_submitted_units_without_menu_round_t
     assert actions == manifests
     rendered = center.io.output.getvalue()
     assert "Review range:     MAT 1" in rendered
-    assert "Review portion:   1/2 — MAT 1:1-12" in rendered
-    assert "Review portion:   2/2 — MAT 1:13-25" in rendered
+    assert rendered.count("RTC stage: Reference Text Comparison") == 1
+    assert "Review portion:" not in rendered
     assert "SAW work unit" not in rendered
     assert "SAW RUN COMPLETE" in rendered
     assert "Reference Text Comparison (RTC)" in rendered
@@ -480,8 +521,9 @@ def test_saw_source_check_progress_is_local_to_stable_review_portion(
 
     rendered = center.io.output.getvalue()
     assert "Review range:     JHN 1:1-21:25" in rendered
-    assert "Review portion:   4/19 — JHN 5:1-47" in rendered
-    assert "Source check:     2/5 — JHN 5:34" in rendered
+    assert "RTC stage: Selective Original-Language Adjudication — portion 4/19" in rendered
+    assert "Review portion:" not in rendered
+    assert "Source check:" not in rendered
     assert "work unit 20/97" not in rendered.casefold()
 
 
@@ -553,7 +595,8 @@ def test_stc_normal_run_hides_controller_chatter_behind_rtc_progress_template(
 
     rendered = center.io.output.getvalue()
     assert completed.status == "COMPLETE"
-    assert "Review portion:   1/1 — MAT 1" in rendered
+    assert "STC stage: Source Text Correspondence — portion 1/1" in rendered
+    assert "Review portion:" not in rendered
     assert "SAW RUN COMPLETE" in rendered
     for internal in (
         "Checking SAW resources for each planned section",
@@ -888,3 +931,31 @@ def test_working_spinner_is_visible_for_non_tty_output() -> None:
         pass
 
     assert "Working - checking language competency..." in output.getvalue()
+
+
+def test_interactive_status_updates_are_bounded_and_erased_without_stacking() -> None:
+    """Transient progress redraws one terminal row and leaves no status newline behind."""
+
+    class TTYBuffer(io.StringIO):
+        """Capture terminal control writes while advertising TTY behavior."""
+
+        def isatty(self) -> bool:
+            """Report an interactive output stream for transient-status testing."""
+            return True
+
+    output = TTYBuffer()
+    menu = MenuIO(output=output, viewport_columns=20)
+
+    menu.status("Preparing a very long governed operation |")
+    menu.status("Preparing a very long governed operation /")
+    menu.clear_status()
+    menu.write("Complete")
+
+    rendered = output.getvalue()
+    assert rendered.count("\n") == 1
+    assert rendered.endswith("Complete\n")
+    assert all(
+        len(segment) <= 19
+        for segment in rendered.split("\r")
+        if segment and "\n" not in segment
+    )

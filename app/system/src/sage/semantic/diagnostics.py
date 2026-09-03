@@ -1,4 +1,4 @@
-"""Deterministic semantic diagnostics used by BIC and SAW before AI analysis."""
+"""Deterministic semantic diagnostics used before governed AI analysis."""
 
 from __future__ import annotations
 
@@ -25,8 +25,8 @@ def semantic_dispersion(records: Iterable[dict[str, Any]]) -> list[dict[str, Any
     ]
 
 
-def saw_signals_from_scope_evidence(packet: dict[str, Any]) -> dict[str, Any]:
-    """Derive bounded semantic triage signals without creating SAW findings."""
+def analysis_signals_from_scope_evidence(packet: dict[str, Any]) -> dict[str, Any]:
+    """Derive bounded semantic triage signals without creating analysis findings."""
     signals: list[dict[str, Any]] = []
     for match in packet.get("matches", []) or []:
         if not isinstance(match, dict):
@@ -74,6 +74,10 @@ def saw_signals_from_scope_evidence(packet: dict[str, Any]) -> dict[str, Any]:
         "signals": signals,
         "authority_rule": (
             "Deterministic semantic-index signals are interrogation candidates only. "
-            "SAW must verify meaning in bounded evidence before creating a finding."
+            "The active workflow must verify meaning in bounded evidence before creating a finding."
         ),
     }
+
+
+# Compatibility alias for sealed integrations that imported the pre-RTC helper.
+saw_signals_from_scope_evidence = analysis_signals_from_scope_evidence

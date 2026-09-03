@@ -11,7 +11,7 @@ from openpyxl import Workbook
 from sage.storage import storage_layout
 from sage.hashing import sha256_file
 from sage.registry import load_ecosystem
-from sage.semantic.diagnostics import saw_signals_from_scope_evidence
+from sage.semantic.diagnostics import analysis_signals_from_scope_evidence
 from sage.semantic.evidence import scope_evidence_for_project
 from sage.semantic.indexes import semantic_status
 from sage.semantic.importers import (
@@ -210,7 +210,7 @@ def test_saw_semantic_signals_are_triage_only() -> None:
             }
         ],
     }
-    result = saw_signals_from_scope_evidence(packet)
+    result = analysis_signals_from_scope_evidence(packet)
     assert result["signal_count"] == 2
     assert {item["signal"] for item in result["signals"]} == {
         "MULTIPLE_INDEXED_SENSES",
@@ -343,7 +343,7 @@ def test_stable_lift_identity_reconciles_duplicates_but_preserves_conflicts(make
     assert coverage["reconciliation_conflicts"] == 1
     packet = scope_evidence_for_project(config, project_id="idKKHv0", text="meka")
     assert len(packet["matches"][0]["senses"]) == 3
-    signals = saw_signals_from_scope_evidence(packet)
+    signals = analysis_signals_from_scope_evidence(packet)
     assert any(item["signal"] == "INDEX_IDENTITY_CONFLICT" for item in signals["signals"])
 
 

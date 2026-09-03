@@ -68,7 +68,7 @@ Language aliases may be used where supported: `OPERATOR_LANGUAGE`, `SOURCE_LANGU
 
 ## Final report storage and batching
 
-Operator-facing SAW reports are chapter-scoped and published only under:
+Operator-facing RTC/STC reports are chapter-scoped and published only under:
 
 ```text
 localdata/reports/<job-id>/<BOOK>/
@@ -154,7 +154,7 @@ Command-line `--quiet`, `--verbose`, or `--debug` overrides the configured defau
 SAGE uses approved catalog text. When a configured rendering is unavailable, it displays the canonical wording and records the fallback. Missing localization never blocks execution and must not be filled with uncertain specialist terminology.
 ## Bilingual finding grouping
 
-When a SAW Action Report has a secondary rendering, keep each language's actionable prose together. Render the governing primary language first, then the secondary assistive rendering:
+When a RTC/STC Action Report has a secondary rendering, keep each language's actionable prose together. Render the governing primary language first, then the secondary assistive rendering:
 
 ```text
 **Issue — English**

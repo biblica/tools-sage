@@ -1,4 +1,4 @@
-"""Menu-driven SAGE Control Center for Job-scoped BIC and SAW operation."""
+"""Menu-driven SAGE Control Center for Job-scoped BIC, RTC, and STC operation."""
 
 from __future__ import annotations
 
@@ -10,8 +10,8 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
-from threading import Event, Thread
-from dataclasses import dataclass
+from threading import Event, Lock, Thread
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Iterable, Iterator, Sequence, TextIO
 
@@ -53,7 +53,7 @@ from .ollama_policy import (
 from .iso_languages import iso_language, regional_profile_candidates, preferred_operational_primary
 from .language_identification import resolve_country, resolve_country_input
 from .language_profiles import ensure_language_profile_namespace, language_profile_status
-from .saw_policy import default_rtc_policy, write_run_policy_snapshot
+from .rtc_policy import default_rtc_policy, write_run_policy_snapshot
 from .interface_localization import (
     InterfaceLocalizer,
     LANGUAGE_DISPLAY_NAMES,
@@ -62,7 +62,7 @@ from .interface_localization import (
 from .language_codes import canonical_language_tag, canonical_regional_language_tag, canonical_script_code
 from .model_service import ModelService
 from .executors.codex_cli import CodexCLIExecutor
-from .references import parse_scope
+from .references import parse_analysis_scope, parse_scope
 from .scripture import VERSIFICATION_ADVISORY_CODES, compile_project_scope, is_default_vrs_compatible_issue
 from .resource_mounts import (
     clear_base_vrs_root,
@@ -123,7 +123,11 @@ from .jobs import (
     Run as Run,
     default_job_name,
 )
-from .workflow_identity import OPERATOR_WORKFLOWS, canonical_analysis_job_id
+from .workflow_identity import (
+    OPERATOR_WORKFLOWS,
+    analysis_reason_code,
+    canonical_analysis_job_id,
+)
 from .project_inventory import (
     load_project_registry, project_import_date, registered_project_records, require_project_imported_at, unregister_project, update_project_record,
     summarize_scope, scope_testament,
@@ -158,12 +162,19 @@ class MenuIO:
     help_handler: Callable[[str], None] | None = None
     status_handler: Callable[[], None] | None = None
     viewport_columns: int | None = None
+    _status_width: int = field(default=0, init=False, repr=False)
+    _status_lock: Lock = field(default_factory=Lock, init=False, repr=False)
 
     def request_panel_reset(self) -> None:
         """Retain the menu-transition hook without clearing terminal history."""
+        self._prepare_panel_output()
 
     def _prepare_panel_output(self) -> None:
-        """Retain the output hook; classic menus form one continuous scrollback."""
+        """Erase transient status before writing permanent scrollback output."""
+        if not bool(getattr(self.output, "isatty", lambda: False)()):
+            return
+        with self._status_lock:
+            self._clear_status_locked()
 
     def display_columns(self) -> int:
         """Return the usable panel width without exceeding the active terminal viewport."""
@@ -183,6 +194,7 @@ class MenuIO:
 
     def _emit(self, value: str = "") -> None:
         """Write already-localized, already-fitted output without another formatting pass."""
+        self._prepare_panel_output()
         print(value, file=self.output)
 
     def _write_rendered(self, rendered: str) -> None:
@@ -309,14 +321,43 @@ class MenuIO:
         """Render one replaceable terminal status line without polluting redirected logs."""
         if not bool(getattr(self.output, "isatty", lambda: False)()):
             return
-        self._prepare_panel_output()
-        print(f"\r{value}", end="", file=self.output, flush=True)
+        flattened = " ".join(str(value).expandtabs(4).replace("\r", "\n").splitlines())
+        if not flattened:
+            self.clear_status()
+            return
+        # Keep the terminal's final cell unused so auto-wrap cannot create a
+        # second physical status row at the exact viewport boundary.
+        width = max(1, self.display_columns() - 1)
+        if display_width(flattened) > width:
+            available = max(1, width - display_width("…"))
+            cells = 0
+            bounded: list[str] = []
+            for character in flattened:
+                character_width = display_width(character)
+                if cells + character_width > available:
+                    break
+                bounded.append(character)
+                cells += character_width
+            flattened = "".join(bounded).rstrip() + "…"
+        current_width = display_width(flattened)
+        with self._status_lock:
+            padding = " " * max(0, self._status_width - current_width)
+            print(f"\r{flattened}{padding}", end="", file=self.output, flush=True)
+            self._status_width = current_width
+
+    def _clear_status_locked(self) -> None:
+        """Erase the active status row while the caller holds ``_status_lock``."""
+        if self._status_width <= 0:
+            return
+        print(f"\r{' ' * self._status_width}\r", end="", file=self.output, flush=True)
+        self._status_width = 0
 
     def clear_status(self) -> None:
-        """Finish the current replaceable status line when interactive status is visible."""
+        """Erase the current replaceable status without adding a scrollback line."""
         if not bool(getattr(self.output, "isatty", lambda: False)()):
             return
-        print(file=self.output, flush=True)
+        with self._status_lock:
+            self._clear_status_locked()
 
     @contextmanager
     def working(self, label: str = "Working", *, ellipsis: bool = True) -> Iterator[None]:
@@ -328,17 +369,17 @@ class MenuIO:
             self.write(f"{rendered}{suffix}")
             yield
             return
-        self._prepare_panel_output()
         stop = Event()
         spinner = "|/-\\"
 
         def animate() -> None:
             """Advance the terminal spinner until the bounded work completes."""
             index = 0
-            while not stop.wait(0.12):
+            while not stop.is_set():
                 marker = spinner[index % len(spinner)]
-                print(f"\r{rendered}{suffix}      {marker}", end="", file=self.output, flush=True)
+                self.status(f"{rendered}{suffix}      {marker}")
                 index += 1
+                stop.wait(0.12)
 
         worker = Thread(target=animate, name="sage-working-spinner", daemon=True)
         worker.start()
@@ -347,7 +388,7 @@ class MenuIO:
         finally:
             stop.set()
             worker.join(timeout=0.5)
-            print(f"\r{' ' * (len(rendered) + len(suffix) + 8)}\r", end="", file=self.output, flush=True)
+            self.clear_status()
 
     def read(self, prompt: str) -> str:
         """Read one operator response and convert closed input into a governed cancellation."""
@@ -533,7 +574,7 @@ def _relative(root: Path, path: Path) -> str:
 
 
 class SageControlCenter:
-    """Operate BIC and SAW from one deterministic terminal menu."""
+    """Operate BIC, RTC, and STC from one deterministic terminal menu."""
 
     def __init__(
         self,
@@ -562,7 +603,7 @@ class SageControlCenter:
         self.ui_service = OperatorUIService(
             root=self.root, settings_path=self.store.settings_path, runtime_status=self.runtime_status
         )
-        # A successful Codex sampling probe is cached briefly so partitioned SAW/BIC
+        # A successful Codex sampling probe is cached briefly so partitioned analysis/BIC
         # work does not spend one extra model request on every work unit.  Login and
         # catalog readiness alone do not prove the WebSocket sampling channel works.
         self._codex_transport_verified_until = 0.0
@@ -720,7 +761,7 @@ class SageControlCenter:
         if stale_pointers:
             self.io.write(f"{'Reason code':<25}ACTIVE_JOB_POINTER_STALE")
             self.io.write(
-                f"{'Next action':<25}Open SAGE Maintenance > System recovery and diagnostics > "
+                f"{'Next action':<25}Open SAGE Maintenance > System actions > "
                 "Clear active Job and Run selections."
             )
         elif not ai.get("ready"):
@@ -857,7 +898,7 @@ class SageControlCenter:
         return self.ui_service.projects_root_status()
 
     def _setup_workflow_status(self, tool: str, init_results: dict[str, Any]) -> str:
-        """Return one concise independent setup status for BIC or SAW."""
+        """Return one concise independent setup status for a canonical workflow."""
         return self.ui_service.workflow_setup_status(tool, init_results)
 
     def _setup_live_initialisation_results(
@@ -1214,8 +1255,7 @@ class SageControlCenter:
                     ("3", "Configure paths and storage"),
                     ("4", "Run system checks"),
                     ("5", "Resource Status Report"),
-                    ("6", "Wipe all Job data"),
-                    ("7", "System information, recovery and diagnostics"),
+                    ("6", "System actions"),
                     ("B", "Back"), ("H", "Main menu"), ("X", "Exit SAGE"),
                 ),
             )
@@ -1228,9 +1268,8 @@ class SageControlCenter:
                 elif choice == "3": self.paths_and_workspace_menu()
                 elif choice == "4": self.system_diagnostics_menu()
                 elif choice == "5": self._show_resource_status_report()
-                elif choice == "6": self._wipe_all_job_data_menu()
-                elif choice == "7":
-                    self.system_recovery_menu()
+                elif choice == "6":
+                    self.system_actions_menu()
             except SageError as exc:
                 self.show_error(exc)
 
@@ -1589,10 +1628,11 @@ class SageControlCenter:
         """Maintain one workflow's Jobs and audit shared legacy storage safely."""
         if tool not in (*OPERATOR_WORKFLOWS, "saw"):
             raise ConfigurationError(f"Unsupported Job-storage workflow: {tool}")
+        tool_label = "LEGACY ANALYSIS" if tool == "saw" else tool.upper()
         audit_path = storage_layout(self.root).diagnostics_root / "job-layout" / "JOB-LAYOUT-AUDIT.json"
         while True:
             choice = self.io.choose(
-                f"{tool.upper()} JOB STORAGE",
+                f"{tool_label} JOB STORAGE",
                 (
                     ("1", "Rebuild Job configuration"),
                     ("2", "Audit Job folders"),
@@ -1607,7 +1647,7 @@ class SageControlCenter:
             if choice == "1":
                 jobs = self.store.discover(tool)
                 if not jobs:
-                    self.io.write(f"No {tool.upper()} Jobs found.")
+                    self.io.write(f"No {tool_label} Jobs found.")
                 for job in jobs:
                     self.store.write_runtime_files(job)
                     self.io.write(f"Rebuilt: {job.job_id}")
@@ -2100,8 +2140,8 @@ class SageControlCenter:
             try:
                 routes = service.skill_routes()
                 allowed_skills = {
-                    "rtc": {"saw-rtc"},
-                    "stc": {"saw-stc"},
+                    "rtc": {"rtc"},
+                    "stc": {"stc"},
                 }.get(tool)
                 rows = [
                     dict(row)
@@ -2118,6 +2158,8 @@ class SageControlCenter:
         self.io.write(f"{'SKILL':<12}{'PROVIDER':<12}{'MODEL':<22}{'REASONING':<14}STATUS")
         self.io.write("-" * 72)
         labels = {
+            "rtc": "RTC",
+            "stc": "STC",
             "saw-rtc": "RTC",
             "saw-stc": "STC",
             "saw-focused-check": "TARGETED",
@@ -2257,6 +2299,7 @@ class SageControlCenter:
 
     def choose_job(self, tool: str) -> Job | None:
         """Implement `choose project` in the deterministic terminal control flow."""
+        tool_label = "LEGACY ANALYSIS" if tool == "saw" else tool.upper()
         report = self.store.discover_report(tool)
         entries: list[tuple[str, Job | JobLoadIssue]] = [
             (job.job_id, job) for job in report.jobs
@@ -2265,7 +2308,7 @@ class SageControlCenter:
         ]
         entries.sort(key=lambda item: item[0].casefold())
         if not entries:
-            self.io.write(f"No {tool.upper()} Jobs exist. Open {tool.upper()} from the Main Menu to create one.")
+            self.io.write(f"No {tool_label} Jobs exist. Open {tool_label} from the Main Menu to create one.")
             self.io.pause()
             return None
         options = [
@@ -2277,7 +2320,7 @@ class SageControlCenter:
             for index, (_job_id, item) in enumerate(entries, 1)
         ]
         options.append(("B", "Back"))
-        choice = self.io.choose(f"{self.localizer.text('Choose active Job')} [{tool.upper()}]", options)
+        choice = self.io.choose(f"{self.localizer.text('Choose active Job')} [{tool_label}]", options)
         if choice == "B":
             return None
         selected = entries[int(choice) - 1][1]
@@ -2288,7 +2331,7 @@ class SageControlCenter:
         else:
             project = selected
         self.store.set_active_job(tool, project.job_id)
-        self.io.write(f"Active {tool.upper()} job: {project.display_name}")
+        self.io.write(f"Active {tool_label} job: {project.display_name}")
         return project
 
     @staticmethod
@@ -2652,7 +2695,8 @@ class SageControlCenter:
                 elif choice == "2":
                     self.runs_menu(project)
                 elif choice == "3":
-                    self._job_settings_menu(project)
+                    if self._job_settings_menu(project):
+                        return
                 elif choice == "4":
                     self.reports_menu(project)
                 elif choice == "5":
@@ -2665,14 +2709,15 @@ class SageControlCenter:
                 elif choice == "3":
                     self.runs_menu(project)
                 elif choice == "4":
-                    self._job_settings_menu(project)
+                    if self._job_settings_menu(project):
+                        return
                 elif choice == "5":
                     self.reports_menu(project)
                 elif choice == "6":
                     self.recovery_menu(project)
 
     def saw_menu(self) -> None:
-        """Choose/setup one SAW Job; checks are run only from the selected Job screen."""
+        """Open sealed legacy analysis Jobs through the compatibility-only menu."""
         while True:
             report = self.store.discover_report("saw", include_archived=True)
             active_id = self.store.active_jobs().get("saw")
@@ -2687,10 +2732,10 @@ class SageControlCenter:
                     f"REFERENCE                    {active.bindings.get('reference') if active else 'CHECK REQUIRED'}",
                 ])
                 options = (
-                    ("1", "Open active SAW Job"),
-                    ("2", "Choose active SAW Job"),
-                    ("3", "Add SAW JOB <WIP PROJECT, REFERENCE PROJECT>"),
-                    ("4", "Manage SAW Jobs"),
+                    ("1", "Open active legacy analysis Job"),
+                    ("2", "Choose active legacy analysis Job"),
+                    ("3", "Add legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>"),
+                    ("4", "Manage legacy analysis Jobs"),
                     ("5", "Reports and history"),
                     ("6", "Recovery and diagnostics"),
                     ("7", "Maintain Job storage"),
@@ -2698,15 +2743,15 @@ class SageControlCenter:
                 )
             else:
                 options = (
-                    ("1", "Choose active SAW Job"),
-                    ("2", "Add SAW JOB <WIP PROJECT, REFERENCE PROJECT>"),
-                    ("3", "Manage SAW Jobs"),
+                    ("1", "Choose active legacy analysis Job"),
+                    ("2", "Add legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>"),
+                    ("3", "Manage legacy analysis Jobs"),
                     ("4", "Reports and history"),
                     ("5", "Recovery and diagnostics"),
                     ("6", "Maintain Job storage"),
                     ("B", "Back"),
                 )
-            choice = self.io.choose("SAW", options, context=tuple(context))
+            choice = self.io.choose("LEGACY ANALYSIS", options, context=tuple(context))
             if choice == "B":
                 return
             if active is not None or active_issue is not None:
@@ -2762,12 +2807,12 @@ class SageControlCenter:
                     self.job_storage_maintenance_menu("saw")
 
     def _saw_job_menu(self, project: Job) -> None:
-        """Run checks on one selected SAW Job; Back returns to SAW setup/choice."""
+        """Run checks on one selected sealed legacy Job."""
         while True:
             project = self.store.active_job("saw") or project
             run = self.store.active_run(project)
             self.io.write()
-            self.io.write(f"SAW JOB - {project.job_id}")
+            self.io.write(f"LEGACY ANALYSIS JOB - {project.job_id}")
             self.io.write("-" * 72)
             self.io.write(f"WIP                          {project.bindings.get('wip')}")
             self.io.write(f"REFERENCE                    {project.bindings.get('reference')}")
@@ -2802,7 +2847,7 @@ class SageControlCenter:
                     ("B", "Back"),
                 )
             choice = self.io.choose(
-                "SAW CHECKS",
+                "LEGACY ANALYSIS CHECKS",
                 options,
                 blank_before=("5",) if run is None else ("6",),
             )
@@ -2841,9 +2886,11 @@ class SageControlCenter:
             str(operation).lower(), str(operation).upper()
         )
 
-    def _rtc_policy_menu(self, scope: str) -> dict[str, Any] | None:
+    def _rtc_policy_menu(self, scope: str, *, workflow: str = "rtc") -> dict[str, Any] | None:
         """Let the Operator tune RTC checks/policies before the Run snapshot is sealed."""
-        profile_path = self.root / "system" / "config" / "workflows" / "saw" / "profile.yml"
+        profile_path = (
+            self.root / "system" / "config" / "workflows" / workflow / "profile.yml"
+        )
         defaults = default_rtc_policy(profile_path)
         policy = {
             "policy_version": defaults["policy_version"],
@@ -2928,7 +2975,7 @@ class SageControlCenter:
             self.io.write("Invalid choice. Choose one listed option.")
 
     def start_saw_run(self, project: Job, operation: str) -> None:
-        """Choose scope, preview bounded work, then create one SAW Run."""
+        """Choose scope, preview bounded work, then create one analysis Run."""
         focus = None
         check_type = None
         if operation in {"focused", "ol"}:
@@ -2948,7 +2995,10 @@ class SageControlCenter:
                 return
             effective_policy = None
             if operation == "rtc":
-                effective_policy = self._rtc_policy_menu(scope)
+                effective_policy = self._rtc_policy_menu(
+                    scope,
+                    workflow=project.runtime_tool,
+                )
                 if effective_policy is None:
                     return
             review = self._review_work_before_run(
@@ -2992,7 +3042,11 @@ class SageControlCenter:
                 approved_work_plan_path=str(approved_plan_path),
             )
             if operation == "rtc" and effective_policy is not None:
-                write_run_policy_snapshot(run.root, effective_policy)
+                write_run_policy_snapshot(
+                    run.root,
+                    effective_policy,
+                    workflow=project.runtime_tool,
+                )
             self._persist_saw_vrs_advisories(
                 run,
                 list(getattr(self, "_pending_saw_vrs_advisories", []) or []),
@@ -3002,21 +3056,24 @@ class SageControlCenter:
 
     def _select_scripture_scope(self, project: Job, *, primary_binding: str) -> str | None:
         """Offer guided book/range selection while retaining expert direct scope entry."""
+        parse_selected_scope = (
+            parse_analysis_scope if project.tool in {"rtc", "stc", "saw"} else parse_scope
+        )
         while True:
             choice = self.io.choose(
                 "CHOOSE SCRIPTURE SCOPE",
                 (("1", "Choose book"), ("2", "Enter complete scope directly"), ("B", "Back")),
                 prompt="Choose or enter scope [1]: ",
                 allow_blank=True,
-                direct_validator=lambda value: parse_scope(value).label(),
+                direct_validator=lambda value: parse_selected_scope(value).label(),
             )
             if choice == "":
                 choice = "1"
             if choice == "B": return None
             if choice == "2":
                 return self.io.text(
-                    "Scope (book = whole book; book chapter = whole chapter; example LUK 1:1-10)",
-                    validator=lambda value: parse_scope(value).label(),
+                    "Scope (book/chapter/range; separate RTC/STC portions with semicolons, for example 1CH 5-6; 24)",
+                    validator=lambda value: parse_selected_scope(value).label(),
                 )
             if choice != "1":
                 return choice
@@ -3036,11 +3093,11 @@ class SageControlCenter:
             self.io.write()
             self.io.write(f"SCRIPTURE SCOPE - {book}")
             self.io.write("-" * 72)
-            self.io.write("Range examples: [blank] whole book; 1 chapter 1; 1-3 chapters 1-3; 1:1-10 verses; 1:1-2:20 cross-chapter")
+            self.io.write("Range examples: [blank] whole book; 1 chapter 1; 1-3 chapters 1-3; 1:1-10 verses; 1:1-2:20 cross-chapter; 5-6; 24 separate RTC/STC portions")
             value = self.io.text("Range", default="", required=False)
             scope = book if not value.strip() else f"{book} {value.strip()}"
             try:
-                return parse_scope(scope).label()
+                return parse_selected_scope(scope).label()
             except SageError as exc:
                 self.show_error(exc)
 
@@ -3054,7 +3111,7 @@ class SageControlCenter:
     ) -> str | tuple[str, dict[str, Any]]:
         """Build the deterministic work-unit/token plan and return the operator action.
 
-        SAW uses the optional returned plan for exact work-unit resource preflight before
+        RTC/STC use the optional returned plan for exact work-unit resource preflight before
         a Run is persisted. Existing callers retain the historical string-only result.
         """
         output = f"plans/pre-run-{project.tool}-{project.job_id}.manifest.json"
@@ -3077,8 +3134,8 @@ class SageControlCenter:
         self.io.write()
         self.io.write("REVIEW WORK BEFORE RUNNING")
         self.io.write("-" * 72)
-        rtc_preview = project.runtime_tool == "saw" and operation.strip().lower() == "rtc"
-        stc_preview = project.runtime_tool == "saw" and operation.strip().lower() == "stc"
+        rtc_preview = project.runtime_tool in {"rtc", "saw"} and operation.strip().lower() == "rtc"
+        stc_preview = project.runtime_tool in {"stc", "saw"} and operation.strip().lower() == "stc"
         operation_label = (
             "Reference Text Comparison (RTC)"
             if rtc_preview
@@ -3096,14 +3153,14 @@ class SageControlCenter:
         ):
             raise ValidationError(
                 "RTC preview is missing governed WIP/REF/ROUTE package measurements",
-                code="SAW_RTC_PREVIEW_INVALID",
+                code="SAW_RTC_PREVIEW_INVALID" if project.tool == "saw" else "RTC_PREVIEW_INVALID",
             )
         if stc_preview and (
             not units or any(not isinstance(unit.get("stc_package"), dict) for unit in units)
         ):
             raise ValidationError(
                 "STC preview is missing governed WIP/SRC/ROUTE package measurements",
-                code="SAW_STC_PREVIEW_INVALID",
+                code="SAW_STC_PREVIEW_INVALID" if project.tool == "saw" else "STC_PREVIEW_INVALID",
             )
         if rtc_preview:
             self.io.write()
@@ -3166,14 +3223,15 @@ class SageControlCenter:
         *,
         require_original_language: bool = False,
     ) -> dict[str, list[dict[str, str]]]:
-        """Return blocking resource defects and non-blocking VRS advisories per SAW work unit."""
+        """Return blocking resource defects and non-blocking VRS advisories per work unit."""
         runtime_settings = self.store.ensure_runtime_files(project)
         config = load_ecosystem(runtime_settings)
         operation = str(preview.get("operation") or "").strip().lower()
-        base_bindings = [("SAW WIP", str(project.bindings.get("wip") or ""))]
+        workflow_label = project.tool.upper()
+        base_bindings = [(f"{workflow_label} WIP", str(project.bindings.get("wip") or ""))]
         if operation != "stc":
             base_bindings.append(
-                ("SAW REFERENCE", str(project.bindings.get("reference") or ""))
+                (f"{workflow_label} REFERENCE", str(project.bindings.get("reference") or ""))
             )
         units = list(preview.get("units") or [])
         blockers: list[dict[str, str]] = []
@@ -3192,17 +3250,17 @@ class SageControlCenter:
                         ol_label = "GRK"
                         ol_project_id = "GRK"
                     else:
-                        ol_label = "SAW OL GREEK"
+                        ol_label = f"{project.tool.upper()} OL GREEK"
                         ol_project_id = str(project.bindings.get("original_language_greek") or "")
                 elif parsed_scope.book in OT_39:
                     if project.tool in {"rtc", "stc"}:
                         ol_label = "HEB"
                         ol_project_id = "HEB"
                     else:
-                        ol_label = "SAW OL HEBREW"
+                        ol_label = f"{project.tool.upper()} OL HEBREW"
                         ol_project_id = str(project.bindings.get("original_language_hebrew") or "")
                 else:
-                    ol_label = "SAW OL"
+                    ol_label = f"{project.tool.upper()} OL"
                     ol_project_id = ""
                 if not ol_project_id:
                     row = {
@@ -3275,11 +3333,11 @@ class SageControlCenter:
         project: Job,
         preview: dict[str, Any],
     ) -> list[dict[str, str]]:
-        """Compatibility helper returning only defects that must block SAW execution."""
+        """Compatibility helper returning only defects that must block analysis execution."""
         return self._saw_preview_findings(project, preview)["blockers"]
 
     def _persist_saw_vrs_advisories(self, run: Run, advisories: list[dict[str, str]]) -> None:
-        """Persist preflight VRS differences so the final SAW report retains them."""
+        """Persist preflight VRS differences so the final analysis report retains them."""
         if not advisories:
             return
         atomic_write_json(
@@ -3304,7 +3362,7 @@ class SageControlCenter:
         """Block real resource defects while reporting default-VRS-compatible differences."""
         while True:
             findings = self._run_with_status(
-                "Checking SAW resources for each planned section...",
+                f"Checking {project.tool.upper()} resources for each planned section...",
                 lambda: self._saw_preview_findings(
                     project,
                     preview,
@@ -3324,10 +3382,10 @@ class SageControlCenter:
                     "READY_WITH_STRUCTURE_PROBLEMS" if advisories else "READY"
                 )
             self.io.write()
-            self.io.write("SAW RESOURCE PREFLIGHT BLOCKED")
+            self.io.write(f"{project.tool.upper()} RESOURCE PREFLIGHT BLOCKED")
             self.io.write("-" * 72)
             self.io.write(
-                "Only sections with non-versification resource defects are blocked. No SAW Run has been created yet."
+                f"Only sections with non-versification resource defects are blocked. No {project.tool.upper()} Run has been created yet."
             )
             for index, row in enumerate(blockers[:20], 1):
                 self.io.write_menu_item(
@@ -3633,7 +3691,7 @@ class SageControlCenter:
 
     @staticmethod
     def _saw_task_scope_label(manifest: dict[str, Any], run: Run) -> str:
-        """Return the exact stage boundary represented by one SAW task."""
+        """Return the exact stage boundary represented by one analysis task."""
         if str(manifest.get("rtc_stage") or "") in {
             "STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"
         }:
@@ -3882,10 +3940,10 @@ class SageControlCenter:
         return run
 
     def _preflight_saw_route(self, run: Run) -> dict[str, Any] | None:
-        """Resolve the exact current SAW route before task creation or visible work."""
+        """Resolve the exact current analysis route before task creation or visible work."""
         skill_ids = {
-            "rtc": "saw-rtc",
-            "stc": "saw-stc",
+            "rtc": "rtc" if run.tool == "rtc" else "saw-rtc",
+            "stc": "stc" if run.tool == "stc" else "saw-stc",
             "focused": "saw-focused-check",
             "ol": "saw-original-language-review",
         }
@@ -3902,6 +3960,8 @@ class SageControlCenter:
         route: dict[str, Any] | None = None,
     ) -> None:
         """Render the shared STC/RTC Run header before live work-unit progress."""
+        self._analysis_progress_operation = run.operation
+        self._analysis_progress_stage_key = None
         route_text = "AUTOMATIC Skill routing (resolved per task)"
         route = route or self._active_run_route_row(run)
         if route is not None:
@@ -3915,7 +3975,7 @@ class SageControlCenter:
         self.io.write()
         comparison_project = project.contemporary_source
         if run.operation == "stc":
-            book = parse_scope(run.scope).book
+            book = parse_analysis_scope(run.scope).book
             comparison_project = str(
                 project.bindings.get(
                     "original_language_greek" if book in NT_27 else "original_language_hebrew"
@@ -3943,30 +4003,42 @@ class SageControlCenter:
         stage_case_index: int | None = None,
         stage_case_total: int | None = None,
     ) -> Iterator[None]:
-        """Render stable review-portion progress and suppress nested admin chatter."""
+        """Render one stage-aware live row without logging every review portion."""
         previous = getattr(self, "_compact_saw_progress", False)
         self._compact_saw_progress = True
         portion_index = review_portion_index or index
         portion_total = review_portion_total or total
         portion_scope = str(review_portion_scope or scope)
-        stage_label = {
-            "STRUCTURAL_ADJUDICATION": "Structural check:",
-            "SELECTIVE_OL_ADJUDICATION": "Source check:",
-        }.get(str(composite_stage or "").upper())
-        if stage_label:
-            self.io.write(
-                f"{'Review portion:':<18}{portion_index}/{portion_total} — {portion_scope}"
-            )
-            status_text = (
-                f"{stage_label:<18}{stage_case_index or index}/"
-                f"{stage_case_total or total} — {scope}"
-            )
-        else:
-            status_text = (
-                f"{'Review portion:':<18}{portion_index}/{portion_total} — {portion_scope}"
-            )
+        operation = str(getattr(self, "_analysis_progress_operation", "rtc")).lower()
+        stage_key = str(composite_stage or "").upper() or (
+            "SOURCE_TEXT_CORRESPONDENCE" if operation == "stc" else "REVIEW"
+        )
+        stage_name = {
+            "STRUCTURAL_ADJUDICATION": "Structural Adjudication",
+            "REFERENCE_TEXT_COMPARISON": "Reference Text Comparison",
+            "SELECTIVE_OL_ADJUDICATION": "Selective Original-Language Adjudication",
+            "SOURCE_TEXT_CORRESPONDENCE": "Source Text Correspondence",
+            "REVIEW": "Review",
+        }.get(stage_key, stage_key.replace("_", " ").title())
+        workflow_label = "STC" if operation == "stc" else "RTC"
+        status_text = (
+            f"{workflow_label} | {stage_name} | portion "
+            f"{portion_index}/{portion_total} — {portion_scope}"
+        )
+        if stage_case_index is not None and stage_case_total is not None:
+            status_text += f" | case {stage_case_index}/{stage_case_total} — {scope}"
         try:
-            with self.io.working(status_text, ellipsis=False):
+            is_tty = bool(getattr(self.io.output, "isatty", lambda: False)())
+            if is_tty:
+                with self.io.working(status_text, ellipsis=False):
+                    yield
+            else:
+                if getattr(self, "_analysis_progress_stage_key", None) != stage_key:
+                    self.io.write(
+                        f"{workflow_label} stage: {stage_name} — portion "
+                        f"{portion_index}/{portion_total} — {portion_scope}"
+                    )
+                    self._analysis_progress_stage_key = stage_key
                 yield
         finally:
             self._compact_saw_progress = previous
@@ -4072,11 +4144,15 @@ class SageControlCenter:
                 act_path = result.get("act_path")
                 if not act_path:
                     raise ValidationError(
-                        "SAW task creation returned neither a governed task nor a recognized plan",
-                        code="SAW_TASK_RESULT_INVALID",
+                        f"{project.tool.upper()} task creation returned neither a governed task nor a recognized plan",
+                        code=(
+                            "SAW_TASK_RESULT_INVALID"
+                            if project.tool == "saw"
+                            else f"{project.tool.upper()}_TASK_RESULT_INVALID"
+                        ),
                     )
                 if not standard_run_ui:
-                    self.io.write(f"Created SAW ACT: {act_path}")
+                    self.io.write(f"Created {project.tool.upper()} ACT: {act_path}")
             if run.plan_path:
                 return self._continue_saw_plan(project, run)
             path = self._manifest_path(run.task_manifests[-1])
@@ -4103,7 +4179,7 @@ class SageControlCenter:
                         report_directory=str(publication.get("report_directory") or ""),
                     )
                 else:
-                    self.io.write("SAW Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
+                    self.io.write(f"{project.tool.upper()} Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
                 self.io.pause()
             return run
         if run.plan_path:
@@ -4133,18 +4209,18 @@ class SageControlCenter:
                 report_directory=str(publication.get("report_directory") or ""),
             )
         else:
-            self.io.write("SAW Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
+            self.io.write(f"{project.tool.upper()} Run complete. Governed findings remain with the Job; open Reports from the Main Menu.")
         self.io.pause()
         return run
 
     def _continue_saw_plan(self, project: Job, run: Run) -> Run:
-        """Advance a SAW plan with one compact live work-unit progress line."""
+        """Advance an analysis plan with one compact live work-unit progress line."""
         route = self._preflight_saw_route(run)
         self._write_saw_run_header(project, run, route=route)
         while True:
             result = self.controller(project, ["task", "continue", "--plan", str(run.plan_path)])
             if not isinstance(result, dict):
-                raise ValidationError("SAW continuation returned no structured result")
+                raise ValidationError(f"{project.tool.upper()} continuation returned no structured result")
             status = str(result.get("status"))
             if status == "NEXT_WORK_UNIT":
                 next_unit = dict(result["next_unit"])
@@ -4190,7 +4266,7 @@ class SageControlCenter:
                 aggregate_plan = str(result.get("aggregate_plan_path") or run.plan_path)
                 self._compact_saw_progress = True
                 try:
-                    with self.io.working("Aggregating SAW results", ellipsis=False):
+                    with self.io.working(f"Aggregating {project.tool.upper()} results", ellipsis=False):
                         aggregate = self.controller(project, ["task", "aggregate", "--plan", aggregate_plan])
                 finally:
                     self._compact_saw_progress = False
@@ -4226,7 +4302,7 @@ class SageControlCenter:
                 )
                 self.io.pause()
                 return run
-            raise ValidationError(f"Unsupported SAW continuation status: {status}")
+            raise ValidationError(f"Unsupported {project.tool.upper()} continuation status: {status}")
 
     # ---------- Run dashboard/history ----------
 
@@ -4810,7 +4886,7 @@ class SageControlCenter:
 
     def batch_menu(self, project: Job) -> None:
         """Implement `batch menu` in the deterministic terminal control flow."""
-        self.io.write("Batch queues remain global definitions in ecosystem.yml, but each task executes in its selected SAW project.")
+        self.io.write("Legacy batch queues remain global definitions in ecosystem.yml; each task executes in its selected legacy analysis Job.")
         config = load_ecosystem(project.runtime_settings_path)
         if config.evaluation_sets:
             for set_id, value in config.evaluation_sets.items():
@@ -4821,15 +4897,67 @@ class SageControlCenter:
 
     # ---------- Job management ----------
 
+    def _delete_job(self, target: Job) -> bool:
+        """Confirm and delete one Job, with an independent published-report choice."""
+        runs = self.store.list_runs(target)
+        report_root = storage_layout(self.root).reports_root / target.job_id
+        report_files = (
+            [path for path in report_root.rglob("*") if path.is_file()]
+            if report_root.is_dir()
+            else []
+        )
+        self.io.write()
+        self.io.write(f"DELETE JOB - {target.job_id}")
+        self.io.write("-" * 72)
+        self.io.write(f"Runs in this Job:             {len(runs)}")
+        self.io.write(f"Published report files:       {len(report_files)}")
+        self.io.write(
+            "Job work to delete:           Runs, tasks, plans, snapshots, compiled USJ, "
+            "diagnostics, caches, and controller runtime/state"
+        )
+        self.io.write(
+            "SAGE Projects and Paratext Project files will NOT be deleted or modified."
+        )
+
+        remove_reports = False
+        if report_files:
+            remove_reports = self.io.confirm(
+                "Delete the published reports for this Job too?",
+                default=False,
+            )
+        report_disposition = (
+            "DELETE"
+            if remove_reports
+            else "PRESERVE"
+            if report_files
+            else "NONE"
+        )
+        self.io.write(f"Published reports:            {report_disposition}")
+        if not self.io.confirm(
+            f"Permanently delete Job {target.job_id} with the scope shown above?",
+            default=False,
+        ):
+            self.io.write("Delete Job cancelled. No Job or report data was changed.")
+            self.io.pause()
+            return False
+
+        self.store.remove_job(target, remove_reports=remove_reports)
+        self.io.write(f"Deleted Job: {target.job_id}")
+        if report_files and not remove_reports:
+            self.io.write(f"Published reports preserved: {operator_path(self.root, report_root)}")
+        self.io.pause()
+        return True
+
     def job_management_menu(self, tool: str) -> None:
         """List Jobs, choose the active Job, or open it for governed work."""
+        tool_label = "LEGACY ANALYSIS" if tool == "saw" else tool.upper()
         while True:
             report = self.store.discover_report(tool, include_archived=True)
             jobs = report.jobs
             active_id = self.store.active_jobs().get(tool)
             active, active_issue = self._active_job_from_report(report, active_id)
             self.io.write()
-            self.io.write(f"{tool.upper()} JOBS")
+            self.io.write(f"{tool_label} JOBS")
             self.io.write("-" * 72)
             entries: list[Job | JobLoadIssue] = [*jobs, *report.issues]
             entries.sort(key=lambda item: item.job_id.casefold())
@@ -4850,13 +4978,15 @@ class SageControlCenter:
                         marker = ""
                     self.io.write(f"  - {job.job_id} - {job.display_name}{marker}")
             else:
-                self.io.write(f"No {tool.upper()} Jobs exist.")
-            open_label = f"Open active {tool.upper()} Job"
+                self.io.write(f"No {tool_label} Jobs exist.")
+            open_label = f"Open active {tool_label} Job"
             choice = self.io.choose(
-                f"{tool.upper()} - {self.localizer.text('Job management')}",
+                f"{tool_label} - {self.localizer.text('Job management')}",
                 (("1", open_label), ("2", "Choose active Job"), ("3", "Add Job"),
                  ("4", "Job settings"), ("5", "Validate Job"),
-                 ("6", "Archive Job"), ("7", "Remove Job"), ("B", "Back")),
+                 ("6", "Archive Job"),
+                 ("7", "Delete Job" if tool in {"rtc", "stc"} else "Remove Job"),
+                 ("B", "Back")),
             )
             if choice == "B": return
             if choice == "1":
@@ -4871,7 +5001,7 @@ class SageControlCenter:
                         else:
                             self._bic_job_menu(repaired)
                 elif active is None:
-                    self.io.write(f"No active {tool.upper()} Job. Choose or add one first.")
+                    self.io.write(f"No active {tool_label} Job. Choose or add one first.")
                     self.io.pause()
                 elif tool == "saw":
                     self._saw_job_menu(active)
@@ -4890,12 +5020,16 @@ class SageControlCenter:
             if choice == "7":
                 candidates = self.store.discover(tool, include_archived=True)
                 if not candidates:
-                    self.io.write(f"No {tool.upper()} Jobs exist.")
+                    self.io.write(f"No {tool_label} Jobs exist.")
                     self.io.pause()
                     continue
-                selected = self.io.choose("REMOVE JOB", [(str(i), f"{job.job_id}: {job.display_name}") for i, job in enumerate(candidates, 1)] + [("B", "Back")])
+                removal_title = "DELETE JOB" if tool in {"rtc", "stc"} else "REMOVE JOB"
+                selected = self.io.choose(removal_title, [(str(i), f"{job.job_id}: {job.display_name}") for i, job in enumerate(candidates, 1)] + [("B", "Back")])
                 if selected == "B": continue
                 target = candidates[int(selected) - 1]
+                if tool in {"rtc", "stc"}:
+                    self._delete_job(target)
+                    continue
                 runs = self.store.list_runs(target)
                 self.io.write()
                 self.io.write(f"REMOVE JOB - {target.job_id}")
@@ -4912,7 +5046,7 @@ class SageControlCenter:
                 if active_issue is not None:
                     self._present_job_action_needed(active_issue, offer_onboarding=True)
                 else:
-                    self.io.write(f"No active {tool.upper()} Job. Choose or add one first.")
+                    self.io.write(f"No active {tool_label} Job. Choose or add one first.")
                     self.io.pause()
                 continue
             if choice == "4":
@@ -4981,8 +5115,8 @@ class SageControlCenter:
                 continue
             return True, requested
 
-    def _job_settings_menu(self, project: Job) -> None:
-        """Manage Job bindings, snapshot, reporting languages, and manifest."""
+    def _job_settings_menu(self, project: Job) -> bool:
+        """Manage Job snapshot/reporting settings, or delete the Job."""
         while True:
             project = self.store.load_job(project.job_id, tool=project.tool)
             primary = project.primary_report_language
@@ -5015,22 +5149,20 @@ class SageControlCenter:
                 ("3", "Set primary reporting language"),
                 ("4", "Show Job manifest"),
             ]
-            # Analysis Jobs expose snapshot and binding maintenance while BIC keeps
-            # its existing reporting-only management surface.
+            # Analysis Jobs expose snapshot refresh and deletion while Project
+            # bindings remain immutable for the Job lifetime.
             if project.tool in {"rtc", "stc"}:
                 options.extend([
                     ("5", "Refresh WIP snapshot from Project source"),
-                    ("6", "Replace WIP Project"),
+                    ("6", "Delete Job"),
                 ])
-                if project.tool == "rtc":
-                    options.append(("7", "Update REFERENCE Project"))
             options.append(("B", "Back"))
             choice = self.io.choose(
                 "Manage Job",
                 tuple(options),
             )
             if choice == "B":
-                return
+                return False
             if choice == "5" and project.tool in {"rtc", "stc"}:
                 try:
                     project = self.store.refresh_job_snapshot(
@@ -5047,29 +5179,8 @@ class SageControlCenter:
                 self.io.pause()
                 continue
             if choice == "6" and project.tool in {"rtc", "stc"}:
-                replacement = self._replace_analysis_wip(project)
-                if replacement is not None:
-                    project = replacement
-                continue
-            if choice == "7" and project.tool == "rtc":
-                reference = self.choose_or_add_resource(
-                    "CHOOSE RTC <REFERENCE>",
-                    "REFERENCE",
-                )
-                if reference is None:
-                    continue
-                try:
-                    project = self.store.revise_job(
-                        project,
-                        bindings={
-                            "wip": project.bindings["wip"],
-                            "reference": reference.project_id,
-                        },
-                    )
-                    self.io.write(f"RTC REFERENCE Project updated: {reference.project_id}")
-                except SageError as exc:
-                    self.show_error(exc)
-                self.io.pause()
+                if self._delete_job(project):
+                    return True
                 continue
             if choice == "4":
                 self.io.write(project.manifest_path.read_text(encoding="utf-8"))
@@ -5141,73 +5252,6 @@ class SageControlCenter:
         """Return an audited Project import timestamp required by RTC/STC snapshots."""
         return require_project_imported_at(self.root, project_id)
 
-    def _replace_analysis_wip(self, project: Job) -> Job | None:
-        """Create a new snapshot-dated Job for a replacement WIP Project."""
-        replacement_wip = self.choose_or_add_resource(
-            f"CHOOSE {project.tool.upper()} <WIP>",
-            "WIP",
-        )
-        if replacement_wip is None:
-            return None
-        if replacement_wip.project_id == project.bindings["wip"]:
-            self.io.write("The selected WIP Project is already bound to this Job.")
-            self.io.pause()
-            return project
-        open_runs = [
-            run.run_id
-            for run in self.store.list_runs(project)
-            if run.status not in RUN_CLOSED_STATUSES
-        ]
-        if open_runs:
-            self.show_error(
-                ValidationError(
-                    "Changing WIP Project is unavailable while a non-closed Run exists",
-                    code="JOB_WIP_CHANGE_RUN_OPEN",
-                    details={"run_ids": open_runs},
-                )
-            )
-            self.io.pause()
-            return project
-        try:
-            imported_at = self._required_project_imported_at(
-                replacement_wip.project_id
-            )
-        except SageError as exc:
-            self.show_error(exc)
-            self.io.pause()
-            return project
-        bindings = {"wip": replacement_wip.project_id}
-        if project.tool == "rtc":
-            bindings["reference"] = project.bindings["reference"]
-        job_id = canonical_analysis_job_id(
-            project.tool,
-            replacement_wip.project_id,
-            imported_at.strftime("%Y%m%d"),
-        )
-        try:
-            replacement = self.store.create_job(
-                tool=project.tool,
-                job_id=job_id,
-                display_name=project.display_name,
-                bindings=bindings,
-                defaults=dict(project.defaults),
-                primary_report_language=project.primary_report_language,
-                secondary_report_language=project.secondary_report_language,
-                imported_at=imported_at,
-            )
-            self.store.revise_job(project, status="ARCHIVED")
-            old_snapshot = project.root / "snapshot"
-            if old_snapshot.exists():
-                shutil.rmtree(old_snapshot)
-            self.store.set_active_job(project.tool, replacement.job_id)
-            self.io.write(f"Created and selected replacement Job: {replacement.job_id}")
-            self.io.pause()
-            return replacement
-        except SageError as exc:
-            self.show_error(exc)
-            self.io.pause()
-            return project
-
     def create_job_wizard(self, tool: str) -> Job | None:
         """Create one Job by assigning roles to Projects already in the SAGE Project Inventory."""
         # The wizard deliberately resolves every binding before it asks JobStore to persist anything.
@@ -5230,10 +5274,10 @@ class SageControlCenter:
             defaults = {"publication_enabled": True}
             imported_at = None
         elif tool == "saw":
-            output = self.choose_or_add_resource("CHOOSE SAW <WIP>", "WIP")
+            output = self.choose_or_add_resource("CHOOSE LEGACY ANALYSIS <WIP>", "WIP")
             if not output:
                 return None
-            source = self.choose_or_add_resource("CHOOSE SAW <REFERENCE>", "REFERENCE")
+            source = self.choose_or_add_resource("CHOOSE LEGACY ANALYSIS <REFERENCE>", "REFERENCE")
             if not source:
                 return None
             job_id = default_job_name("saw", output.project_id, source.project_id)
@@ -5754,7 +5798,7 @@ class SageControlCenter:
         if not normalized_role:
             selected = self.io.choose(
                 "PROFILE ROLE",
-                (("1", "WIP / SAW review"), ("2", "CONTENT_SOURCE / BIC source"), ("3", "TARGET / generated target"), ("B", "Back")),
+                (("1", "WIP / RTC or STC review"), ("2", "CONTENT_SOURCE / BIC source"), ("3", "TARGET / generated target"), ("B", "Back")),
             )
             if selected == "B":
                 return False
@@ -6157,18 +6201,19 @@ class SageControlCenter:
         """Show the small fallback documentation set retained for support and recovery."""
         self._show_support_docs()
 
-    def system_recovery_menu(self) -> None:
-        """Expose system recovery without mixing in workflow Job recovery actions."""
+    def system_actions_menu(self) -> None:
+        """Expose installation-wide actions without mixing in workflow Job recovery."""
         while True:
             from . import __version__
             config = load_ecosystem(self.store.settings_path)
             choice = self.io.choose(
-                "SYSTEM RECOVERY AND DIAGNOSTICS",
+                "SYSTEM ACTIONS",
                 (
                     ("1", "Export global diagnostics"),
                     ("2", "Clear active Job and Run selections"),
                     ("3", "Recovery guides"),
-                    ("4", "Reset SAGE to out-of-box state"),
+                    ("4", "Wipe all Job data"),
+                    ("5", "Reset SAGE to out-of-box state"),
                     ("B", "Back"),
                 ),
                 context=(
@@ -6210,6 +6255,8 @@ class SageControlCenter:
             elif choice == "3":
                 self._show_support_docs()
             elif choice == "4":
+                self._wipe_all_job_data_menu()
+            elif choice == "5":
                 self.io.write()
                 self.io.write("OUT-OF-BOX RESET")
                 self.io.write("=" * 72)
@@ -6751,7 +6798,7 @@ class SageControlCenter:
 
     def _project_purposes(self, project_id: str) -> tuple[str, ...]:
         """Return Job IDs and bindings that currently use one SAGE Project."""
-        labels = {"content_source":"BIC SOURCE", "lexical_donor":"BIC DONOR", "generated_target":"BIC TARGET", "wip":"SAW WIP", "reference":"SAW REFERENCE", "original_language_greek":"OL GRK", "original_language_hebrew":"OL HEB"}
+        labels = {"content_source":"BIC SOURCE", "lexical_donor":"BIC DONOR", "generated_target":"BIC TARGET", "wip":"RTC/STC WIP", "reference":"RTC REFERENCE", "original_language_greek":"OL GRK", "original_language_hebrew":"OL HEB"}
         values: set[str] = set()
         for job in self._jobs_using_project(project_id):
             for key, value in job.bindings.items():
@@ -7084,7 +7131,7 @@ class SageControlCenter:
         self.io.write()
         self.io.write(f"REMOVE PROJECT FROM SAGE - {project_id}")
         self.io.write("-"*72)
-        self.io.write(f"This removes {project_id} from SAGE only.")
+        self.io.write(f"This removes PROJECT {project_id} inventory and mapping from SAGE.")
         self.io.write("The Paratext Project and its Scripture files will NOT be deleted or modified.")
         if purposes:
             self.io.write("Jobs currently using this Project:")
@@ -7113,7 +7160,8 @@ class SageControlCenter:
         self.io.write()
         self.io.write("REMOVE PROJECT FROM SAGE")
         self.io.write("-" * 72)
-        self.io.write("This removes SAGE inventory and mapping state only.")
+        self.io.write("This removes the selected PROJECT inventory and mapping from SAGE.")
+        self.io.write("Bound SAGE JOBS are listed and require explicit confirmation before removal.")
         self.io.write("Paratext Project folders and Scripture files are never deleted or modified.")
         if not project_ids:
             self.io.write("No Projects have been added to SAGE yet.")
@@ -7447,7 +7495,7 @@ class SageControlCenter:
             self.io.write()
             self.io.write("ADD PROJECTS TO SAGE")
             self.io.write("-"*72)
-            self.io.write("Choose Paratext Projects that SAGE should make available to BIC and SAW.")
+            self.io.write("Choose Paratext Projects that SAGE should make available to BIC, RTC, and STC.")
             self.io.write(f"Paratext root:    {catalogue.get('projects_root')}")
             self.io.write(
                 f"Catalog:          {summary.get('discovered', summary['projects'])} discovered; "
@@ -7691,7 +7739,7 @@ class SageControlCenter:
                     self.io.pause()
 
     def resource_menu(self) -> None:
-        """System-level Project administration; Job roles are assigned only inside BIC/SAW."""
+        """System-level Project administration; Job roles are assigned inside BIC/RTC/STC."""
         while True:
             primary = load_resource_mount_state(self.root).get("projects_root")
             choice=self.io.choose("SCRIPTURE PROJECTS", (
@@ -7873,7 +7921,7 @@ class SageControlCenter:
         sense_id = self.io.text("Sense ID")
         if choice == "3":
             self.io.write(json.dumps(clear_review_state(config, language=language, sense_id=sense_id), indent=2))
-            self.io.write("Index state is now STALE; rebuild before BIC, SAW, or export.")
+            self.io.write("Index state is now STALE; rebuild before BIC, RTC, STC, or export.")
             return
         status_choice = self.io.choose(
             "Reviewed status",
@@ -7891,7 +7939,7 @@ class SageControlCenter:
             note=note,
         )
         self.io.write(json.dumps(result, ensure_ascii=False, indent=2))
-        self.io.write("Index state is now STALE; rebuild before BIC, SAW, or export.")
+        self.io.write("Index state is now STALE; rebuild before BIC, RTC, STC, or export.")
 
     def _rwc_build_validate(self) -> None:
         """Show freshness and rebuild one local semantic namespace when requested."""
@@ -8023,13 +8071,36 @@ class SageControlCenter:
 
     def show_error(self, exc: SageError) -> None:
         """Render an actionable operator error: event, impact, and next action."""
+        operation: str | None = None
+        if exc.code.startswith("SAW_RTC_"):
+            operation = "rtc"
+        elif exc.code.startswith("SAW_STC_"):
+            operation = "stc"
+        elif exc.code.startswith("SAW_"):
+            last = self.store.last_run()
+            if last is not None and last[0].tool in {"rtc", "stc"}:
+                operation = last[0].tool
+
+        def current_text(value: str | None) -> str | None:
+            """Convert retired identity only on a known current RTC/STC surface."""
+            if value is None or operation is None:
+                return value
+            return (
+                value.replace("SAW RTC", "RTC")
+                .replace("SAW STC", "STC")
+                .replace("SAW", operation.upper())
+            )
+
+        message = current_text(exc.message) or exc.message
+        reason_code = analysis_reason_code(exc.code, operation) if operation else exc.code
+        next_action = current_text(exc.next_action)
         self.io.write("SAGE ERROR")
         self.io.write("-" * 72)
-        self.io.write(f"What happened: {operator_text(self.root, exc.message)}")
-        self.io.write(f"Reason code:   {exc.code}")
+        self.io.write(f"What happened: {operator_text(self.root, message)}")
+        self.io.write(f"Reason code:   {reason_code}")
         self.io.write("Why it matters: The requested action did not complete; existing governed Project and Job data was not silently changed.")
-        if exc.next_action:
-            self.io.write(f"Next action:   {operator_text(self.root, exc.next_action)}")
+        if next_action:
+            self.io.write(f"Next action:   {operator_text(self.root, next_action)}")
         else:
             self.io.write("Next action:   Review the details above, correct the indicated configuration or input, and retry.")
         self.io.pause()

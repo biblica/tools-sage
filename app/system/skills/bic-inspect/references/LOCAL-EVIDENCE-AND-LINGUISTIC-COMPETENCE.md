@@ -49,12 +49,12 @@ Every file exposed to a model task has one explicit `evidence_class`. Unclassifi
 - BIC memory may become content-bearing derived evidence only when it originates in same-Job INSPECT, retains verified SOURCE-resource fingerprints, and is explicitly approved for use.
 - Generic lexicon imports are reviewable governance records only and cannot be promoted into BIC content evidence.
 
-## SAW authority
+## RTC/STC authority
 
 - `WIP`: subject under analysis, never its own comparison authority.
-- `REFERENCE`: authorized LWC comparison/content authority.
-- Original-language content is conditional bounded evidence only when the configured local GRK/HEB resource is explicitly routed.
-- RTC predecessor material must preserve same-Job, same-Run, WIP, and REFERENCE lineage.
+- `REFERENCE`: authorized LWC comparison/content authority for RTC only; STC never uses it.
+- PRIMARY original-language content is STC correspondence authority. In RTC it is conditional bounded evidence only when the configured local GRK/HEB resource is explicitly routed.
+- RTC predecessor material must preserve same-Job, same-Run, WIP, and REFERENCE lineage; STC material must preserve its WIP and PRIMARY OL lineage.
 
 ## Project indexes
 

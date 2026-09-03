@@ -67,14 +67,14 @@ def test_job_wipe_does_not_follow_symlinked_job_target(make_workspace, tmp_path)
     assert not link.exists()
 
 
-def test_maintenance_exposes_resource_report_and_job_wipe(make_workspace) -> None:
-    """Maintenance advertises both read-only inspection and bounded Job cleanup."""
+def test_maintenance_routes_job_wipe_through_system_actions(make_workspace) -> None:
+    """Maintenance keeps bounded Job cleanup inside the System actions submenu."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["B"]), output=output),
+        io=MenuIO(input_func=ScriptedInput(["a"]), output=output),
         skip_setup=True,
         dry_run_provider=True,
     )
@@ -82,7 +82,28 @@ def test_maintenance_exposes_resource_report_and_job_wipe(make_workspace) -> Non
     center.system_configuration_menu()
     rendered = output.getvalue()
     assert "Resource Status Report" in rendered
-    assert "Wipe all JOB data" in rendered
+    assert "6. System actions" in rendered
+    assert "Wipe all JOB data" not in rendered
+
+
+def test_system_actions_exposes_bounded_job_wipe(make_workspace) -> None:
+    """System actions places Job-data wipe before the stronger out-of-box reset."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["a"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    center.system_actions_menu()
+    rendered = output.getvalue()
+    assert "║ System actions" in rendered
+    assert "4. Wipe all JOB data" in rendered
+    assert "5. Reset SAGE to out-of-box state" in rendered
+    assert rendered.index("Wipe all JOB data") < rendered.index("Reset SAGE to out-of-box state")
 
 
 def test_menu_job_wipe_requires_exact_confirmation(make_workspace) -> None:

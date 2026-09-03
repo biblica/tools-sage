@@ -83,20 +83,20 @@ Example:
 
 | Layer | Value |
 |---|---|
-| Workflow | `SAW` |
-| Compact Run key | `PAPCV-A3A03DAC` |
+| Workflow | `RTC` |
+| Canonical Job/Run key | `RTC-faPCBv3_20260902-001` |
 | Compact unit/stage key | `RTC-PH-99846F75` |
 | Item sequence | `0001` |
-| Canonical ITEM code | `SAW_PAPCV-A3A03DAC_RTC-PH-99846F75_0001` |
+| Canonical ITEM code | `RTC-faPCBv3_20260902-001_RTC-PH-99846F75_0001` |
 | LLM-local handle retained as | `submitted_id: F001` |
 
-Do not generate `SAW-SAW-...-SAW-RTC...`. Run and unit identifiers may already contain the
+Do not repeat `RTC` or `STC` in adjacent identifier segments. Run and unit identifiers may already contain the
 workflow token for their own namespace; the ITEM assembler removes that redundant top-level
 prefix before composing the final global code.
 
-## SAW report identity
+## RTC/STC report identity
 
-Operator-facing SAW filenames include the operation ID before the artifact type so RTC and STC
+Operator-facing RTC/STC filenames include the operation ID before the artifact type so RTC and STC
 outputs are immediately distinguishable:
 
 | Operation | Example |

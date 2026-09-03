@@ -144,6 +144,29 @@ class ScriptureScope:
         return start <= (ref.chapter, ref.verse) <= end
 
 
+@dataclass(frozen=True)
+class ScriptureScopeSet:
+    """One ordered, non-overlapping set of scopes within a single Scripture book."""
+
+    portions: tuple[ScriptureScope, ...]
+
+    @property
+    def book(self) -> str:
+        """Return the one canonical book shared by every selected portion."""
+        return self.portions[0].book
+
+    def label(self) -> str:
+        """Return the canonical operator-facing selection label."""
+        return "; ".join(portion.label() for portion in self.portions)
+
+    def contains(self, ref: VerseRef) -> bool:
+        """Return whether any selected portion contains the supplied reference."""
+        return any(portion.contains(ref) for portion in self.portions)
+
+
+AnalysisScope = ScriptureScope | ScriptureScopeSet
+
+
 _SCOPE_RE = re.compile(
     r"^(?P<book>.+?)"
     r"(?:\s+(?P<chapter>\d+)"
@@ -209,8 +232,9 @@ def parse_scope_set(value: str) -> tuple[ScriptureScope, ...]:
 
     Each portion is a normal SAGE Scripture scope. The canonical book may be
     repeated for every portion (preferred) or omitted after the first portion
-    when the continuation begins with a chapter number. This helper is for
-    reporting/citation sets; processing scopes remain single contiguous scopes.
+    when the continuation begins with a chapter number. Finding citations use
+    this directly; RTC/STC Run input adds same-book/non-overlap validation through
+    :func:`parse_analysis_scope`.
     """
     cleaned = str(value).strip()
     if not cleaned:
@@ -222,7 +246,10 @@ def parse_scope_set(value: str) -> tuple[ScriptureScope, ...]:
     inherited_book: str | None = None
     for part in raw_parts:
         candidate = part
-        if inherited_book is not None and re.match(r"^\d", candidate):
+        if inherited_book is not None and re.fullmatch(
+            r"\d+(?:-\d+|:\d+(?:-(?:\d+:)?\d+)?)?",
+            candidate,
+        ):
             candidate = f"{inherited_book} {candidate}"
         scope = parse_scope(candidate)
         if inherited_book is None:
@@ -234,6 +261,51 @@ def parse_scope_set(value: str) -> tuple[ScriptureScope, ...]:
 def normalize_scope_set(value: str) -> str:
     """Return a canonical display string for a semicolon-separated reference set."""
     return "; ".join(scope.label() for scope in parse_scope_set(value))
+
+
+def _scope_bounds(scope: ScriptureScope) -> tuple[tuple[int, int], tuple[int, int]]:
+    """Return inclusive sortable bounds for overlap validation."""
+    if scope.start_chapter is None:
+        return (0, 0), (10**9, 10**9)
+    start_verse = scope.start_verse if scope.start_verse is not None else 0
+    end_chapter = scope.end_chapter or scope.start_chapter
+    end_verse = scope.end_verse if scope.start_verse is not None else 10**9
+    return (scope.start_chapter, start_verse), (end_chapter, end_verse)
+
+
+def parse_analysis_scope(value: str) -> AnalysisScope:
+    """Parse a contiguous scope or a same-book RTC/STC Run scope selection.
+
+    Semicolons select independent portions for one Run. Numeric portions after
+    the first inherit its book, so ``1CH 5-6; 24`` is canonicalized as
+    ``1CH 5-6; 1CH 24``. Portions are ordered and may not overlap, preventing a
+    coordinate from being reviewed twice under one governed Run.
+    """
+    portions = parse_scope_set(value)
+    books = {portion.book for portion in portions}
+    if len(books) != 1:
+        raise ValidationError(
+            "RTC/STC Run scope portions must remain within one Scripture book"
+        )
+    ordered = tuple(sorted(portions, key=lambda portion: _scope_bounds(portion)[0]))
+    previous_end: tuple[int, int] | None = None
+    for portion in ordered:
+        start, end = _scope_bounds(portion)
+        if previous_end is not None and start <= previous_end:
+            raise ValidationError(
+                f"RTC/STC Run scope portions overlap: {value!r}"
+            )
+        previous_end = end
+    if len(ordered) == 1:
+        return ordered[0]
+    return ScriptureScopeSet(ordered)
+
+
+def analysis_scope_portions(scope: AnalysisScope) -> tuple[ScriptureScope, ...]:
+    """Return the independently planned portions of one analysis scope."""
+    if isinstance(scope, ScriptureScopeSet):
+        return scope.portions
+    return (scope,)
 
 
 def expand_reference_atoms(values: str | Iterable[str]) -> tuple[VerseRef, ...]:

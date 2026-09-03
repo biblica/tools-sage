@@ -28,6 +28,8 @@ COMMON_STATES = {
 TARGET_PROFILE_BINDINGS = {"GENERATED_TARGET", "WIP"}
 REQUIRED_LANGUAGE_PROFILE_ROLES = {
     "bic": {"CONTENT_SOURCE", "GENERATED_TARGET"},
+    "rtc": {"WIP"},
+    "stc": {"WIP"},
     "saw": {"WIP"},
 }
 
@@ -38,6 +40,20 @@ EXPECTED_PROCESS_STAGES = {
         "STRUCTURAL_ADJUDICATION",
         "REFERENCE_TEXT_COMPARISON",
         "SELECTIVE_OL_ADJUDICATION",
+        "COVERAGE_RECONCILIATION",
+        "DETERMINISTIC_FINALISATION",
+    ],
+    "rtc": [
+        "DETERMINISTIC_PREFLIGHT",
+        "STRUCTURAL_ADJUDICATION",
+        "REFERENCE_TEXT_COMPARISON",
+        "SELECTIVE_OL_ADJUDICATION",
+        "COVERAGE_RECONCILIATION",
+        "DETERMINISTIC_FINALISATION",
+    ],
+    "stc": [
+        "DETERMINISTIC_PREFLIGHT",
+        "SOURCE_TEXT_CORRESPONDENCE",
         "COVERAGE_RECONCILIATION",
         "DETERMINISTIC_FINALISATION",
     ],
@@ -118,9 +134,9 @@ class WorkflowProfile:
         return EvidencePolicy()
 
     def require_rtc_sizing(self) -> RTCSizingPolicy:
-        """Return the validated SAW RTC sizing policy or fail closed."""
-        if self.workflow_id != "saw" or self.rtc_sizing is None:
-            raise ConfigurationError("SAW workflow profile requires a valid rtc_sizing contract")
+        """Return the validated RTC sizing policy or fail closed."""
+        if self.workflow_id not in {"rtc", "saw"} or self.rtc_sizing is None:
+            raise ConfigurationError("RTC workflow profile requires a valid rtc_sizing contract")
         return self.rtc_sizing
 
 
@@ -171,6 +187,8 @@ def _parse_bindings(
     )
     required_roles = {
         "bic": {"CONTENT_SOURCE", "LEXICAL_DONOR", "GENERATED_TARGET"},
+        "rtc": {"WIP", "REFERENCE"},
+        "stc": {"WIP"},
         "saw": {"WIP"} if runtime_tool == "stc" else {"WIP", "REFERENCE"},
     }[workflow_id]
     optional_roles = {"ORIGINAL_LANGUAGE_GREEK", "ORIGINAL_LANGUAGE_HEBREW"}
@@ -320,8 +338,15 @@ def load_workflow_profile(config: EcosystemConfig, workflow: WorkflowSpec) -> Wo
             f"{workflow.workflow_id}.permissions.may_write_projects must be a list"
         )
     may_write_projects = tuple(item.strip() for item in writable)
-    if workflow.workflow_id == "saw" and may_write_projects:
-        raise ConfigurationError("SAW must not have permission to write any Scripture project")
+    if workflow.workflow_id in {"rtc", "stc", "saw"} and may_write_projects:
+        identity = (
+            "Legacy analysis"
+            if workflow.workflow_id == "saw"
+            else workflow.workflow_id.upper()
+        )
+        raise ConfigurationError(
+            f"{identity} must not have permission to write any Scripture Project"
+        )
     for project_id in may_write_projects:
         if project_id not in config.projects:
             raise ConfigurationError(
@@ -341,7 +366,7 @@ def load_workflow_profile(config: EcosystemConfig, workflow: WorkflowSpec) -> Wo
         raise ConfigurationError("BIC publication_root is required when it may write generated projects")
     rtc_sizing = (
         RTCSizingPolicy.from_mapping(raw.get("rtc_sizing"))
-        if workflow.workflow_id == "saw"
+        if workflow.workflow_id in {"rtc", "saw"}
         else None
     )
     return WorkflowProfile(

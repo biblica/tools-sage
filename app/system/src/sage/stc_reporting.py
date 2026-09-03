@@ -18,7 +18,7 @@ from .human_output import (
     render_report_language_authority,
     report_language_authority,
 )
-from .references import parse_scope
+from .references import parse_analysis_scope, parse_scope
 from .registry import EcosystemConfig
 from .jobs import JobStore
 from .report_authority import (
@@ -29,7 +29,7 @@ from .report_authority import (
     chapter_report_path,
     write_job_summary,
 )
-from .report_translation import ensure_secondary_saw_report_rendering
+from .report_translation import ensure_secondary_analysis_report_rendering
 from .storage import resolve_persisted_path, storage_layout
 from .source_coverage import source_comparison_status, unique_source_text_issues
 
@@ -228,7 +228,7 @@ def publish_stc_reports(
     documents = [dict(row) for row in results]
     if not documents or any(str(row.get("operation") or "").lower() != "stc" for row in documents):
         raise ValidationError("STC report publication requires finalized STC result documents")
-    parsed_scope = parse_scope(requested_scope)
+    parsed_scope = parse_analysis_scope(requested_scope)
     book = parsed_scope.book
     identities = {
         (
@@ -247,7 +247,7 @@ def publish_stc_reports(
         raise ValidationError("STC report identity differs from its governed publication request")
     store = JobStore(config.root, config.settings_path)
     job = store.load_job(job_id)
-    if job.runtime_tool != "saw" or job.bindings.get("wip") != output_project:
+    if job.runtime_tool not in {"stc", "saw"} or job.bindings.get("wip") != output_project:
         raise ValidationError("STC report identity differs from its owning Job")
     run = store.load_run(job, run_id)
     if run.operation != "stc":
@@ -359,7 +359,7 @@ def publish_stc_reports(
         data_path = chapter_data_path(job, run, book, chapter)
         report_path.parent.mkdir(parents=True, exist_ok=True)
         data_path.parent.mkdir(parents=True, exist_ok=True)
-        document = ensure_secondary_saw_report_rendering(config.root, report_path, document)
+        document = ensure_secondary_analysis_report_rendering(config.root, report_path, document)
         markdown = _stc_report_markdown(document)
         atomic_write_text(report_path, markdown)
         atomic_write_text(note_path, render_plain_text_from_markdown(markdown))

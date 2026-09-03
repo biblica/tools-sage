@@ -111,7 +111,7 @@ class RTCSizingPolicy:
     def from_mapping(cls, value: Mapping[str, Any] | None) -> "RTCSizingPolicy":
         """Load the SFM-only RTC policy and reject contradictory limits up front."""
         if not isinstance(value, Mapping):
-            raise ConfigurationError("SAW rtc_sizing must be a mapping")
+            raise ConfigurationError("RTC sizing must be a mapping")
         text_fields = ("provider", "estimator")
         integer_fields = (
             "wip_target_min_tokens",
@@ -123,19 +123,19 @@ class RTCSizingPolicy:
         missing = [name for name in (*text_fields, *integer_fields) if name not in value]
         if missing:
             raise ConfigurationError(
-                "SAW rtc_sizing is missing required parameters: " + ", ".join(missing)
+                "RTC sizing is missing required parameters: " + ", ".join(missing)
             )
         text: dict[str, str] = {}
         for name in text_fields:
             raw = value.get(name)
             if not isinstance(raw, str) or not raw.strip():
-                raise ConfigurationError(f"SAW rtc_sizing.{name} must be a nonempty string")
+                raise ConfigurationError(f"RTC sizing field {name} must be a nonempty string")
             text[name] = raw.strip().lower() if name == "provider" else raw.strip()
         integers: dict[str, int] = {}
         for name in integer_fields:
             raw = value.get(name)
             if not isinstance(raw, int) or isinstance(raw, bool) or raw <= 0:
-                raise ConfigurationError(f"SAW rtc_sizing.{name} must be a positive integer")
+                raise ConfigurationError(f"RTC sizing field {name} must be a positive integer")
             integers[name] = raw
         policy = cls(**text, **integers)
         failures: list[str] = []
@@ -146,7 +146,7 @@ class RTCSizingPolicy:
         if policy.wip_hard_exclusive_tokens > policy.route_hard_max_tokens:
             failures.append("WIP hard maximum exceeds the routed-SFM review-item maximum")
         if failures:
-            raise ConfigurationError("Invalid SAW rtc_sizing: " + "; ".join(failures))
+            raise ConfigurationError("Invalid RTC sizing: " + "; ".join(failures))
         return policy
 
     def to_dict(self) -> dict[str, Any]:
@@ -158,11 +158,17 @@ class RTCSizingPolicy:
         active = provider.strip().lower()
         if active != self.provider:
             raise ConfigurationError(
-                f"SAW rtc_sizing is governed for provider {self.provider}, but the active "
+                f"RTC sizing is governed for provider {self.provider}, but the active "
                 f"workflow provider is {active or 'not configured'}"
             )
 
-    def enforce_route(self, measurement: Mapping[str, Any], *, scope: str) -> None:
+    def enforce_route(
+        self,
+        measurement: Mapping[str, Any],
+        *,
+        scope: str,
+        workflow: str = "rtc",
+    ) -> None:
         """Enforce RTC WIP and combined WIP+Reference limits from routed SFM only."""
         projection = measurement.get("evidence_projection")
         by_class = projection.get("by_evidence_class", {}) if isinstance(projection, Mapping) else {}
@@ -180,9 +186,11 @@ class RTCSizingPolicy:
         if route_bytes > self.route_hard_serialized_bytes:
             failures.append(f"routed SFM bytes {route_bytes} > {self.route_hard_serialized_bytes}")
         if failures:
+            legacy = str(workflow).strip().lower() == "saw"
+            identity = "Legacy RTC" if legacy else "RTC"
             raise EvidenceLimitError(
-                "SAW RTC routed-SFM review item exceeds governed sizing limits: " + "; ".join(failures),
-                code="SAW_RTC_ROUTE_LIMIT_EXCEEDED",
+                f"{identity} routed-SFM review item exceeds governed sizing limits: " + "; ".join(failures),
+                code="SAW_RTC_ROUTE_LIMIT_EXCEEDED" if legacy else "RTC_ROUTE_LIMIT_EXCEEDED",
                 affected_scope=scope,
                 next_action="Reslice the WIP at a legal discourse boundary and rebuild the RTC review item.",
                 details={"routed_sfm": dict(measurement), "rtc_sizing": self.to_dict()},

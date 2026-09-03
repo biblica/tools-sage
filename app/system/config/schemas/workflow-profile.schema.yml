@@ -31,14 +31,22 @@ required_bindings:
   - CONTENT_SOURCE
   - LEXICAL_DONOR
   - GENERATED_TARGET
-  saw:
+  rtc:
+  - WIP
+  - REFERENCE
+  stc:
+  - WIP
+  - TESTAMENT_APPROPRIATE_PRIMARY_ORIGINAL_LANGUAGE
+  legacy_saw:
   - WIP
   - REFERENCE
 execution_contract:
   mode: SAGE_GOVERNED_TASK_V1
   canonical_resource_bindings:
     bic: SOURCE_DONOR_TARGET
-    saw: WIP_REFERENCE
+    rtc: WIP_REFERENCE
+    stc: WIP_PRIMARY_ORIGINAL_LANGUAGE
+    saw: LEGACY_WIP_REFERENCE
   resource_projection_fields:
     output_project: TARGET_or_WIP
     contemporary_source: SOURCE_or_REFERENCE
@@ -61,11 +69,16 @@ process_contracts:
   - REWRITE
   - SELF_CHECK
   - TRANSACTIONAL_COMMIT
-  saw:
+  rtc:
   - DETERMINISTIC_PREFLIGHT
   - STRUCTURAL_ADJUDICATION
   - REFERENCE_TEXT_COMPARISON
   - SELECTIVE_OL_ADJUDICATION
+  - COVERAGE_RECONCILIATION
+  - DETERMINISTIC_FINALISATION
+  stc:
+  - DETERMINISTIC_PREFLIGHT
+  - SOURCE_TEXT_CORRESPONDENCE
   - COVERAGE_RECONCILIATION
   - DETERMINISTIC_FINALISATION
 human_review_attention:
@@ -74,14 +87,16 @@ human_review_attention:
   urgency_3: log_and_continue
   urgency_4: critical_report_and_continue_without_operator_input
 independence_contract:
-  bic_to_saw_handoff: prohibited
+  bic_to_analysis_handoff: prohibited
   target_to_wip_role_conversion: prohibited
   shared_run_lifecycle: prohibited
 external_access_contract:
-  saw_external_writes: prohibited
+  rtc_external_writes: prohibited
+  stc_external_writes: prohibited
+  legacy_saw_external_writes: prohibited
   bic_target_external_write: optional_SFM_only
   all_external_vrs_writes: prohibited
-saw_rtc_composite:
+rtc_composite:
   public_operation: rtc
   stages:
   - DETERMINISTIC_PREFLIGHT
@@ -92,7 +107,7 @@ saw_rtc_composite:
   stage_isolation: one_model_stage_per_governed_task
   focused_and_ol: remain_separate_bounded_operations
   sizing_contract:
-    profile_field: rtc_sizing_required_for_saw_only
+    profile_field: rtc_sizing_required_for_rtc_only
     slicing_stream: WIP
     boundary_streams: [WIP, REFERENCE]
     reference_range: exact_primary_wip_range
@@ -105,9 +120,18 @@ optional_bindings:
   bic:
     ORIGINAL_LANGUAGE_GREEK: zero_or_one
     ORIGINAL_LANGUAGE_HEBREW: zero_or_one
-  saw:
+  rtc:
     ORIGINAL_LANGUAGE_GREEK: zero_or_one
     ORIGINAL_LANGUAGE_HEBREW: zero_or_one
+  stc:
+    ORIGINAL_LANGUAGE_GREEK: zero_or_one
+    ORIGINAL_LANGUAGE_HEBREW: zero_or_one
+  legacy_saw:
+    ORIGINAL_LANGUAGE_GREEK: zero_or_one
+    ORIGINAL_LANGUAGE_HEBREW: zero_or_one
+legacy_compatibility:
+  workflow_id: saw
+  status: sealed_existing_jobs_read_only
 cardinality_vocabulary:
 - exactly_one
 - zero_or_one

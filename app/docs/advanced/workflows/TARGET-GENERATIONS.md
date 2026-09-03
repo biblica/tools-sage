@@ -1,6 +1,6 @@
 # BIC target generations
 
-Target generations are **BIC-local immutable publication history**. They are not a SAW handoff mechanism and are not required for SAW configuration.
+Target generations are **BIC-local immutable publication history**. They are not a RTC/STC handoff mechanism and are not required for RTC/STC configuration.
 
 After a governed SELF-CHECK commit, an Operator may publish/verify a BIC generation for audit/history:
 

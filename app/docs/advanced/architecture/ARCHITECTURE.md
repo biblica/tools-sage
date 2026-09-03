@@ -6,7 +6,7 @@
 Operator
   -> SAGE CLI / Control Center
   -> SAGE Project Inventory
-  -> BIC / SAW Job
+  -> BIC / RTC / STC Job
   -> deterministic parsers + VRS + semantic indexes
   -> Run + immutable governed task + hashes
   -> provider registry + build policy
@@ -47,7 +47,7 @@ The same contract applies on Windows, macOS, and Linux.
 ## 2. Project, Job, Run, Task
 
 - **Project**: one Scripture/Paratext/PTLite Project identity available to SAGE. Adding a Project to SAGE is role-neutral.
-- **Job**: one persistent BIC or SAW binding of SAGE Projects. Workflow roles are assigned here.
+- **Job**: one persistent BIC, RTC, or STC binding of SAGE Projects. Workflow roles are assigned here.
 - **Run**: one bounded operation and Scripture scope under one Job.
 - **Task**: one immutable governed AI work unit inside one Run.
 
@@ -55,23 +55,25 @@ Canonical Job names are binding-derived and are also safe directory names:
 
 ```text
 BIC_<SOURCE>-<DONOR>-<TARGET>
-SAW_<WIP>-<REFERENCE>
+RTC-<WIP>_<WIP-IMPORT-DATE>
+STC-<WIP>_<WIP-IMPORT-DATE>
 ```
 
 ## 3. Independent workflows
 
 ```text
 BIC: SOURCE + DONOR -> TARGET
-SAW: WIP + REFERENCE (+ OL) -> findings
+RTC: WIP + REFERENCE -> findings
+STC: WIP + PRIMARY GRK/HEB -> findings
 ```
 
-BIC and SAW have no direct interface, automatic handoff, role conversion, or shared Run lifecycle. They share controller infrastructure and may independently bind the same SAGE Project where policy permits.
+BIC, RTC, and STC have no direct interface, automatic handoff, role conversion, or shared Run lifecycle. They share controller infrastructure and may independently bind the same SAGE Project where policy permits.
 
 ## 4. Provider layer
 
 Adapters live under `system/src/sage/executors/`. `system/src/sage/build_policy.py` determines which implemented adapters may execute in the current release.
 
-v0.01beta2 enables Codex only for governed BIC/SAW execution. Ollama is also a
+v0.01beta2 enables Codex only for governed BIC/RTC/STC execution. Ollama is also a
 host-local runtime for the optional capability-restricted admin assistant; that
 path cannot acquire workflow execution authority. Future providers can be added
 behind the same abstraction. No OpenAI API-key path exists.
@@ -95,7 +97,7 @@ READ_WRITE_TARGET
 
 `.VRS` is always read-only. SOURCE, DONOR, REFERENCE, WIP and original-language bindings are always externally read-only. Other Paratext/PTLite files are outside the SAGE external-file boundary.
 
-Scripture files remain UTF-8 USFM/SFM at rest and their exact bytes remain the source-of-record provenance. Every bounded Scripture comparison input—BIC SOURCE, staged TARGET candidate, SAW REFERENCE, WIP, context, and routed GRK/HEB—is compiled deterministically to full governed USJ. At provider serialization, `SAGE_SCRIPTURE_SLICE_V1` projects that same bounded USJ to exact `content` plus scope/book/source-hash metadata and omits duplicated parser/verse-record internals. Generated BIC candidates and governed Paratext write-back remain USFM. No Scripture wording is summarized by the projection.
+Scripture files remain UTF-8 USFM/SFM at rest and their exact bytes remain the source-of-record provenance. Every bounded Scripture comparison input—BIC SOURCE, staged TARGET candidate, RTC REFERENCE, RTC/STC WIP, context, and routed GRK/HEB—is compiled deterministically to full governed USJ. At provider serialization, `SAGE_SCRIPTURE_SLICE_V1` projects that same bounded USJ to exact `content` plus scope/book/source-hash metadata and omits duplicated parser/verse-record internals. Generated BIC candidates and governed Paratext write-back remain USFM. No Scripture wording is summarized by the projection.
 
 Base VRS resolution prefers the matching project-local `.VRS`, then the separately configured base VRS root. SAGE fails closed if required versification cannot be resolved. Descriptive `custom.vrs` comment metadata is reported only when actually present and is never promoted into executable authority.
 
@@ -121,9 +123,9 @@ Each BIC Job has exactly one bound SOURCE resource, one bound DONOR resource, an
 
 Conditional OL remains governed by the protected REWRITE policy. If REWRITE uses it, SELF-CHECK inherits byte-identical OL evidence from the predecessor; otherwise SELF-CHECK receives none.
 
-## 8. SAW read-only analysis
+## 8. RTC/STC read-only analysis
 
-SAW WIP uses lifecycle `UNDER_REVIEW`, but lifecycle does not grant write permission. SAW compiles bounded WIP and REFERENCE evidence, local triage, findings, and reports without modifying external Scripture. Reference Text Comparison (RTC) is: deterministic preflight/structural triage -> conditional structural adjudication -> required Reference Text Comparison (RTC) -> conditional selective OL adjudication -> deterministic merge/coverage/finalization. OL is resolved from the configured SAW Job binding, never a global role scan. STC is an independent WIP-to-primary-OL correspondence operation with no REFERENCE dependency; Targeted Check and standalone Original-Language Review remain separate bounded operations. SAW emits plain Operator note text and never Paratext Notes XML.
+RTC/STC WIP uses lifecycle `UNDER_REVIEW`, but lifecycle does not grant write permission. RTC compiles bounded WIP+REFERENCE evidence; STC compiles bounded WIP+testament-appropriate primary-OL evidence. RTC performs deterministic preflight/structural triage, conditional structural adjudication, required reference-text comparison, conditional selective OL adjudication, and deterministic merge/coverage/finalization. STC has no REFERENCE dependency and completes through its own correspondence and coverage stages. Both emit plain Operator note text and never Paratext Notes XML.
 
 ## 9. Provider-neutral task boundary
 
@@ -133,9 +135,9 @@ The task boundary also enforces the canonical **LOCAL EVIDENCE BOUNDARY**. Every
 
 Model recall/pretraining, external Scripture/translations/lexicons/commentary, web/search, and unstated facts are prohibited as task evidence. The only external model capability admitted by the contract is **GENERAL LINGUISTIC COMPETENCE** in orthography, morphology, grammar, and syntax. It may parse, validate, transform, or express locally supported material but may not introduce propositions, lexical meanings, translation equivalents, Scripture content, interpretation, or cultural/historical claims.
 
-Derived evidence is not a new authority class: it inherits the authority and restrictions of its provenance. SAW predecessor packets additionally bind to the same Job, Run, WIP, REFERENCE, and WIP/REFERENCE fingerprints. BIC memory routed into later tasks must originate from governed INSPECT evidence for the same Job; generic lexicon imports remain reviewable data but cannot be promoted into Job content evidence.
+Derived evidence is not a new authority class: it inherits the authority and restrictions of its provenance. RTC predecessor packets bind to the same Job, Run, WIP, REFERENCE, and WIP/REFERENCE fingerprints; STC packets bind WIP and the selected primary-OL authority. BIC memory routed into later tasks must originate from governed INSPECT evidence for the same Job; generic lexicon imports remain reviewable data but cannot be promoted into Job content evidence.
 
-SAW response contracts are stage-specific and semantic-only at the provider boundary; SAGE locally injects deterministic identity, coordinate coverage, task fingerprints, work-unit receipts, and required checks before canonical findings validation. BIC conditional OL uses a separate one-challenge/one-verse micro-contract and locally merges any bounded verse delta into the existing rewrite, so conditional adjudication never regenerates the complete REWRITE output set. Exact prompt/schema size and raw-versus-projected evidence savings are recorded per phase in the execution receipt.
+RTC/STC response contracts are stage-specific and semantic-only at the provider boundary; SAGE locally injects deterministic identity, coordinate coverage, task fingerprints, work-unit receipts, and required checks before canonical findings validation. BIC conditional OL uses a separate one-challenge/one-verse micro-contract and locally merges any bounded verse delta into the existing rewrite, so conditional adjudication never regenerates the complete REWRITE output set. Exact prompt/schema size and raw-versus-projected evidence savings are recorded per phase in the execution receipt.
 
 ## 10. State and transaction ownership
 

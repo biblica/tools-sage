@@ -2,6 +2,36 @@
 
 This is an append-only implementation ledger. New entries go first. Historical version detail from
 before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/release/RELEASE-NOTES.md`.
+Entries before the canonical RTC/STC migration retain former identifiers only as historical records;
+they do not define current workflows, menus, reports, Skills, or artifact names.
+
+### IMP-20260903-003 — RTC/STC canonical identity and progress convergence
+
+- **Version:** `0.01beta2`
+- **Milestone:** `MS-BETA2-QUALIFY`
+- **Implemented:** Made Reference Text Comparison (RTC) and Source Text Correspondence (STC) the owning identities for new Jobs, Runs, plans, ACT tasks, findings, events, diagnostics, model routes, reports, Skills, menus, and current documentation. Sealed pre-migration data remains readable through explicitly labeled legacy compatibility. Current progress renders as one live bounded row, and redirected output emits one milestone per stage without accumulated review-portion lines.
+- **Verification:** Current-artifact, menu/error/report, Skill-routing, scope, bridge, legacy-read, package, schema, and source-audit regressions cover the identity boundary. The source audit now rejects reintroduction of the retired umbrella identity in current operating and Skill material.
+
+### IMP-20260903-002 — Immutable RTC/STC bindings and complete Job deletion
+
+- **Version:** `0.01beta2`
+- **Milestone:** `MS-BETA2-QUALIFY`
+- **Implemented:** Removed WIP replacement and RTC REFERENCE update from **Manage Job**. RTC/STC Project bindings are now rejected as immutable by Job persistence. Added **Delete Job** with a complete Job-work/controller-state scope, a separate default-preserve decision for published `reports/<job-id>/`, a final negative-default confirmation, and guaranteed preservation of SAGE Projects and Paratext files. Interactive busy/progress indicators now redraw in one bounded row and erase without adding scrollback lines.
+- **Verification:** Storage and menu regressions cover RTC/STC binding immutability, complete Run/task/compiled-USJ/controller deletion, both published-report dispositions, Project preservation, and bounded non-stacking terminal status output.
+
+### IMP-20260903-001 — Numbered-book RTC citation parsing corrected
+
+- **Version:** `0.01beta2`
+- **Milestone:** `MS-BETA2-QUALIFY`
+- **Implemented:** Corrected semicolon-separated Scripture reference parsing so a repeated numeric USFM book code such as `1CH` is parsed as the next explicit book reference rather than mistaken for a chapter-only continuation. Both `1CH 5:1; 1CH 5:7-8` and the shorthand `1CH 5:1; 5:7-8` now normalize correctly.
+- **Verification:** A numbered-book scope-set regression passes, and the exact archived RTC output previously rejected with `Unknown Scripture book: '1CH 1CH'` now validates all three findings against its unchanged sealed task manifest.
+
+### IMP-20260902-001 — RTC versification differences made report-only
+
+- **Version:** `0.01beta2`
+- **Milestone:** `MS-BETA2-QUALIFY`
+- **Implemented:** RTC planner V4 now distinguishes actual multi-coordinate WIP/REFERENCE source records from VRS mapping ranges. Actual source bridges remain indivisible; VRS ranges no longer join work-unit boundaries or raise an unsplittable-bridge error. Structural candidates that cross approved review portions are projected into each affected portion and remain visible to the governed structural stage and final Action Report.
+- **Verification:** Planner and CLI regressions prove VRS ranges do not block slicing while genuine source bridges remain protected; composite-stage coverage proves one VRS candidate can cross two approved portions without losing exact structural coordinates. Full managed-runtime and release-gate verification remains required before promotion.
 
 ### IMP-20260831-001 — Cross-chapter RTC staging restored
 
@@ -85,11 +115,13 @@ before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/re
 - **Version:** `0.01beta`
 - **Milestone:** `MS-BETA-UX`
 - **Implemented:** Promoted **Remove Project from SAGE** to the primary Scripture Projects menu while
-  retaining the Project-detail action. The direct selector removes only SAGE inventory and mapping
-  state, preserves the Paratext/PTLite folder and Scripture files, and blocks removal while an active
-  or archived Job still binds the Project.
+  retaining the Project-detail action. The direct selector uses negative-default confirmation. When
+  active or archived Jobs bind the Project, it lists them and requires explicit cascade confirmation
+  before removing those Jobs, their Job-local data, and the Project inventory/mapping. It preserves
+  the Paratext/PTLite folder, Scripture files, and root-level published reports.
 - **Verification:** Menu regressions prove the action is directly visible, unbound removal preserves
-  the Scripture file while clearing SAGE state, and a Job-bound Project and mapping remain intact.
+  Scripture while clearing SAGE state, bound cascade removal requires explicit confirmation, and
+  cancellation preserves the Project, mapping, and Jobs.
 
 ### IMP-20260826-020 — Self-contained governed Python bootstrap
 

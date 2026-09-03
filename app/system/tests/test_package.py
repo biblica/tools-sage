@@ -222,6 +222,41 @@ def test_source_audit_rejects_stale_compact_prerelease_labels(package_root: Path
     assert any("Previous pre-release reference" in error for error in payload.get("errors", [])), payload.get("errors", [])
 
 
+def test_source_audit_rejects_retired_saw_identity_in_current_skill(
+    package_root: Path, tmp_path: Path
+) -> None:
+    """A current Skill packet cannot reintroduce the retired analysis umbrella identity."""
+    import json
+    import shutil
+    import subprocess
+    import sys
+
+    copy = tmp_path / "SAGE"
+    shutil.copytree(package_root, copy)
+    current_reference = (
+        copy
+        / "system"
+        / "skills"
+        / "bic-inspect"
+        / "references"
+        / "PROJECT-GRAMMAR-AND-RTC-STC.md"
+    )
+    current_reference.write_text(
+        current_reference.read_text(encoding="utf-8") + "\nSAW is the current analysis workflow.\n",
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, str(copy / "system" / "tools" / "deep_audit.py"), str(copy), "--mode", "source"],
+        text=True,
+        capture_output=True,
+        check=False,
+        env={**__import__("os").environ, "SAGE_DATA_HOME": str(tmp_path / "localdata")},
+    )
+    payload = json.loads(result.stdout)
+    assert result.returncode != 0
+    assert any("Retired SAW identity" in error for error in payload.get("errors", [])), payload.get("errors", [])
+
+
 def test_source_audit_allows_explicit_historical_alpha_lineage_in_beta_handover(
     package_root: Path, tmp_path: Path
 ) -> None:

@@ -378,7 +378,7 @@ def build_semantic_indexes(config: EcosystemConfig, *, language: str) -> dict[st
             "input_descriptor": input_descriptor,
             "rules": [
                 "Generated semantic indexes are valid only for the exact active import/authority/review fingerprint.",
-                "Stale indexes must not feed BIC, SAW, or LIFT export.",
+                "Stale indexes must not feed BIC, RTC, STC, legacy analysis, or LIFT export.",
             ],
         },
     )

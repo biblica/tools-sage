@@ -8,12 +8,12 @@
 - Unified BIC/RTC/STC review sizing under routed-SFM-only deterministic slicing.
 - Added universal governed linguistic-profile routing for bounded model-facing requests, including historical GRK/HEB authority profiles.
 - Added setup-selected ADVANCED host capability at >=16 GiB available RAM and >=16 logical CPUs with a hardening ceiling of 6 workers; BASIC/STANDARD remain capped at 2/4.
-- Updated SAW operator order to RTC -> STC -> Targeted Check -> Original-Language Review.
+- Promoted RTC and STC to independent primary workflows; Targeted Check and standalone Original-Language Review remain parked compatibility paths.
 - Replaced normal global model/reasoning selection with provider-only Setup and exact per-Skill
   provider/model/native-reasoning routing.
 - Added deterministic execution-owner policy, sealed 3-case × 3-repetition qualification suites for
   all seven Skills, audited global route override receipts, and fail-closed route reconciliation.
-- Added exact execution-route provenance to task receipts, BIC/SAW aggregation, Job/Run displays, and
+- Added exact execution-route provenance to task receipts, BIC/RTC/STC aggregation, Job/Run displays, and
   final reports while keeping deterministic report composition outside LLM token accounting.
 - Enforced one provider request per original-language adjudication item and per secondary-language
   report item.
@@ -21,6 +21,22 @@
   the immutable plan's exact atoms; structural-stage atoms now retain canonical numeric Scripture
   order. Unpublished multi-child stage creation rolls back its newly created task/control records if
   a later child fails.
+- Corrected RTC planning so VRS mapping ranges remain non-blocking structural evidence instead of
+  being treated as indivisible source bridges. Structural candidates may cross approved review
+  portions and are routed to each affected portion for Action Report adjudication; actual WIP and
+  REFERENCE source-record bridges remain protected.
+- Fixed semicolon-separated RTC finding citations for numbered books such as `1CH`: repeated full
+  book references and inherited chapter-only continuations now normalize without duplicating the
+  book code, so valid provider output can be retried without changing the sealed task.
+- Added discontinuous same-book RTC/STC Run scopes. An entry such as `1CH 5-6; 24` now canonicalizes
+  to `1CH 5-6; 1CH 24`; planning and task creation preserve the gap as separate immutable Review
+  portions instead of widening it or treating `1CH 5-6;` as a book name.
+- Made RTC/STC WIP and REFERENCE Project bindings immutable for each Job. Their **Manage Job** menu
+  now offers **Delete Job**, which removes all Job work/controller state, separately asks whether
+  published reports should also be removed (default preserve), and never changes Projects or
+  Paratext files.
+- Changed interactive busy/progress indicators to one viewport-bounded row that redraws in place
+  and erases before the final result; redirected output retains one static message per operation.
 
 ## 0.01beta
 
@@ -35,8 +51,10 @@
 - Added hidden `.system` roots for configuration overlays, state, indexes, caches, locks, transactions, logs, diagnostics, temporary data, workflows, Job controller state, and managed runtime.
 - Made Core `ecosystem.yml` immutable during normal operation; mutable interface/operator settings now use local overlays.
 - Redirected Project imports and parsed Styleguide/source material into project-owned localdata paths.
-- Added a direct **Remove Project from SAGE** action that clears only SAGE inventory/mapping state,
-  preserves Paratext files, and blocks removal while an active or archived Job still binds the Project.
+- Added a direct **Remove Project from SAGE** action with negative-default confirmation. Bound active
+  and archived Jobs are listed and require explicit cascade confirmation before SAGE removes those
+  Jobs, their Job-local data, and the Project inventory/mapping. Paratext files and root-level
+  published reports remain unchanged.
 - Removed legacy in-Core `workspace_data`, top-level Job/report state, and bundled `.venv` from the distribution contract.
 
 ### Deterministic runtime/bootstrap
@@ -73,11 +91,11 @@
 
 ### Workflow/operator continuity
 
-- Retained role-neutral SAGE Project inventory with Job-scoped BIC/SAW authority.
+- Retained role-neutral SAGE Project inventory with Job-scoped BIC/RTC/STC authority.
 - Added governed Source Text Correspondence (STC) as an independent WIP-to-PRIMARY-OL review (NT -> GRK, OT -> HEB), alongside retained RTC, Targeted Check, and Original-Language Review operations.
 - Unified BIC/RTC/STC Scripture sizing under routed-SFM-only deterministic planning; controller JSON, prompts, schemas, linguistic profiles, and provider transport overhead no longer affect Scripture slicing or token limits.
 - Added complete model-facing LANGUAGE_PROFILE / source-bound OL_AUTHORITY_PROFILE routing, including explicit Ancient/NT Greek and Biblical/Ancient Hebrew register protection.
-- Corrected approved SAW-plan reconciliation so an unchanged verse bridge is compared by its exact
+- Corrected approved RTC-plan reconciliation so an unchanged verse bridge is compared by its exact
   atomic coordinates instead of being falsely reported as stale because its display label is ranged.
 - Retained cross-platform Codex/Ollama administration boundaries and extended setup-selected host capability to BASIC (2 workers), STANDARD (4), and ADVANCED (6; requires at least 16 GiB available RAM and 16 logical CPUs).
 - Retained the classic terminal menu and scriptable CLI as authoritative Beta interfaces; Textual remains experimental/unstable.

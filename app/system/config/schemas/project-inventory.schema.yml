@@ -10,11 +10,16 @@ controls:
     discovery_source: localdata/.system/state/paratext-project-catalog.json
     discovery_gate: valid_settings.xml
     declared_books_from: operator_confirmed_scope_with_canons.xml_proposal_when_available
+    declared_scope_grammar: [OT, NT, FB, USFM_ID, inclusive_canonical_USFM_ID_range, union]
     actual_scripture_from: readable_top_level_SFM_id_markers
     vrs_only_folder_is_project: false
     scope_derived_from_discovered_books: proposed_when_canons.xml_is_unavailable
     workflow_role_inferred_from_project_code: false
     original_language_aliases_are_separate: true
+    out_of_scope_scripture:
+      retained_in_resource_fingerprint: true
+      compiled_to_usj: false
+      blocks_workspace_initialization: false
   project_record:
     required: [project_id, display_name, language, format, kind, content_state, scope, detected_books, scope_summary, versification, code_metadata, validation_status]
     optional:
@@ -27,3 +32,11 @@ controls:
     stored_separately: localdata/.system/state/resource-mounts.json
     maximum_capability: [READ_ONLY_SCRIPTURE, READ_WRITE_SCRIPTURE]
     effective_target_write: assigned_only_in_BIC_job_runtime
+  maintenance:
+    refresh: reread_derived_catalog_facts_preserve_confirmed_scope_and_import_date
+    validate: evaluate_readiness_without_widening_confirmed_scope
+    removal:
+      confirmation_default: false
+      bound_jobs: list_and_remove_only_after_explicit_cascade_confirmation
+      removes: [project_inventory, project_mapping, bound_jobs, bound_job_local_data]
+      preserves: [paratext_project, scripture_files, root_level_published_reports]

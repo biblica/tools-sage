@@ -418,6 +418,32 @@ def test_action_report_renders_nonblocking_versification_advisories() -> None:
     assert "usNASB" in report
 
 
+def test_current_rtc_action_report_has_no_legacy_identity() -> None:
+    """Canonical RTC reports convert current headings, advisories, and reason codes."""
+    document = {
+        "task_id": "RTC-DAN-001",
+        "workflow": "rtc",
+        "operation": "rtc",
+        "stage": "COMPOSITE_FINALIZED",
+        "scope": "DAN 3:30-4:1",
+        "coverage": {"status": "COMPLETE", "reviewed_references": ["DAN 3:30"]},
+        "findings": [],
+        "versification_advisories": [{"reference": "DAN 3:31", "code": "EXPECTED_COORDINATE_MISSING"}],
+        "execution_events": [{
+            "event_id": "E1",
+            "disposition": "RETRY_REQUIRED",
+            "reason_code": "SAW_OUTPUT_INVALID",
+            "retryability": "RETRY_SAME_UNIT",
+            "message": "Provider output was invalid.",
+        }],
+    }
+    report = render_action_report(document)
+    assert report.startswith("# Reference Text Comparison (RTC) — RTC Action Report\n")
+    assert "RTC_OUTPUT_INVALID" in report
+    assert "did not block RTC execution" in report
+    assert "SAW" not in report
+
+
 def test_action_report_renders_nonblocking_source_text_issues() -> None:
     """RTC reports source-coordinate gaps as text issues without hiding WIP coverage."""
     document = {

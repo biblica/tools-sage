@@ -37,6 +37,30 @@
       "qualification_status": "VALIDATED",
       "transformation_summary": "Aligned to current SAGE SOURCE/DONOR/TARGET authority boundaries, unified Project/Job/Run governance, local-first semantic evidence, protected BIC 4 policy, and deterministic submission validation, closed local-evidence boundary, and general-linguistic-competence limit."
     },
+    "rtc": {
+      "workflow": "rtc",
+      "operation": "rtc",
+      "file": "system/skills/rtc/SKILL.md",
+      "source_system": "Legacy analysis source material",
+      "source_version": "A0002-r6",
+      "original_file": "system/skills/rtc/references/LEGACY-WORKFLOW-PROMPT.md",
+      "original_sha256": "c7728b5a2daeb3a0d3f914e5b9fce1bb9ea6ea4b52e085890c1cba456a08717c",
+      "adapted_sha256": "b9c974f739e3d845574867a61ae18cfd5fd43f8ccd601ea4679b85c4d34a0ba1",
+      "qualification_status": "VALIDATED",
+      "transformation_summary": "Canonical Reference Text Comparison routing with legacy source traceability."
+    },
+    "stc": {
+      "workflow": "stc",
+      "operation": "stc",
+      "file": "system/skills/stc/SKILL.md",
+      "source_system": "SAGE STC Planning Handover",
+      "source_version": "2026-08-28",
+      "original_file": "system/skills/stc/references/LEGACY-PLANNING-HANDOVER.md",
+      "original_sha256": "01d2b68198e98d43932516379e35431c322a4b5907d2791cce7cad655e8a745e",
+      "adapted_sha256": "58aa61faf69bb7bc47f0230cf95a7b61633d3c604f5d0aeb6d48c8fe6aa84b3a",
+      "qualification_status": "VALIDATED",
+      "transformation_summary": "Canonical Source Text Correspondence routing with legacy source traceability."
+    },
     "saw-rtc": {
       "workflow": "saw",
       "operation": "rtc",
@@ -45,9 +69,9 @@
       "source_version": "A0002-r6",
       "original_file": "system/skills/saw-rtc/references/ORIGINAL-WORKFLOW-PROMPT.md",
       "original_sha256": "c7728b5a2daeb3a0d3f914e5b9fce1bb9ea6ea4b52e085890c1cba456a08717c",
-      "adapted_sha256": "f9909a7ae085e731869393be242c5bb54c86171b56e01625e946ad6196c71819",
+      "adapted_sha256": "ddf4baa01045f6f04b41de3175bcb68494ee88b5cc8f4898371f4730be27e0e6",
       "qualification_status": "VALIDATED",
-      "transformation_summary": "Beta Reference Text Comparison (RTC) terminology, primary verse-bridge mapping/content checks, bounded selective-OL authority, local-first evidence, and deterministic submission validation."
+      "transformation_summary": "Beta Reference Text Comparison (RTC) terminology, non-blocking VRS structural reporting, primary source-record verse-bridge mapping/content checks, bounded selective-OL authority, local-first evidence, and deterministic submission validation."
     },
     "saw-focused-check": {
       "workflow": "saw",

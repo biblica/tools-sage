@@ -64,7 +64,7 @@ Stdout/stderr are file-backed for governed execution instead of inherited pipes.
 - Menu/controller bridge: `sys.executable -m sage.cli` with list argv, controlled `PYTHONPATH`, no shell.
 - Runtime bootstrap: Python/venv/pip calls use list argv and explicit working roots.
 - Clone/install tooling: Git/Python/pip use list argv and checked return codes.
-- Ollama administration is independent from Codex and remains assistive-only; it is not a governed BIC/SAW fallback.
+- Ollama administration is independent from Codex and remains assistive-only; it is not a governed BIC/RTC/STC fallback.
 - Deep-audit Windows launcher checks use `cmd.exe /d /c <launcher> --help` only in qualification tooling.
 
 ## Beta acceptance requirements

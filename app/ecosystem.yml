@@ -197,6 +197,20 @@ workflows:
     transaction_root: "@system/workflows/bic/transactions"
     output_root: "@system/workflows/bic/output"
     publication_root: "@system/workflows/bic/output/published-targets"
+  rtc:
+    profile: system/config/workflows/rtc/profile.yml
+    state_root: "@system/workflows/rtc/state"
+    lock_root: "@system/workflows/rtc/locks"
+    transaction_root: "@system/workflows/rtc/transactions"
+    output_root: "@system/workflows/rtc/output"
+  stc:
+    profile: system/config/workflows/stc/profile.yml
+    state_root: "@system/workflows/stc/state"
+    lock_root: "@system/workflows/stc/locks"
+    transaction_root: "@system/workflows/stc/transactions"
+    output_root: "@system/workflows/stc/output"
+  # Read-only compatibility profile for sealed Jobs created before RTC/STC
+  # became independent canonical workflows.
   saw:
     profile: system/config/workflows/saw/profile.yml
     state_root: "@system/workflows/saw/state"

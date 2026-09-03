@@ -4,7 +4,7 @@
 
 **Goal:** Make every release state execute governed Skills through a truthful Medium provisional route when, and only when, no current qualification evidence exists, while preserving qualified-route precedence and adverse/stale evidence blocking.
 
-**Architecture:** Extend the deterministic Python route resolver with an explicit no-data state and a release-state-independent policy branch. Keep exact qualification and manual override logic separate from provisional routing. Project the selected basis into CLI/menu displays, execution receipts, reports, and a pre-`Working` SAW preflight so `CONTINUE RUN` can retry the same sealed task.
+**Architecture:** Extend the deterministic Python route resolver with an explicit no-data state and a release-state-independent policy branch. Keep exact qualification and manual override logic separate from provisional routing. Project the selected basis into CLI/menu displays, execution receipts, reports, and a pre-`Working` RTC/STC preflight so `CONTINUE RUN` can retry the same sealed task.
 
 **Tech stack:** Python 3.12, YAML/JSON policy schemas, pytest, existing SAGE model-service, skill-routing, LLM-task, ACT-output, CLI, and menu modules.
 
@@ -96,7 +96,7 @@
 4. Confirm reports expose the exact provisional status and do not invent qualification evidence.
 5. Run the focused tests until green.
 
-## Task 5: Resolve before visible SAW work and preserve retry
+## Task 5: Resolve before visible RTC/STC work and preserve retry
 
 **Files:**
 
@@ -107,7 +107,7 @@
 1. Add failing tests that route resolution and its display occur before `Working on ...`, and that a blocked sealed task is retried without changing Run or task identity.
 2. Add a read-only route preflight immediately before task creation/continuation and visible work status. Keep just-in-time resolution inside execution as the final authority check.
 3. Reuse the preflight result for the header/display, but never trust it as a substitute for attempt-time validation.
-4. Run the focused SAW tests until green.
+4. Run the focused RTC/STC tests until green.
 
 ## Task 6: Update Operator and release documentation
 
@@ -125,7 +125,7 @@
 
 ## Task 7: Harden, validate the preserved JOS Run, and commit
 
-1. Run all focused policy, resolver, settings, receipt, CLI/menu, and SAW tests.
+1. Run all focused policy, resolver, settings, receipt, CLI/menu, and RTC/STC tests.
 2. Run package/schema validation and the complete test suite with bytecode and cache generation disabled.
 3. Dry-run route resolution against the preserved JOS RTC task manifest. Verify it selects Codex Medium provisionally and does not create an attempt, receipt, task, or replacement Run.
 4. Inspect the existing JOS Run/task identity before and after the dry run to confirm immutability.

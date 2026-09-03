@@ -15,7 +15,7 @@ from .human_output import catalogue_text, render_report_language_authority
 from .iso_languages import iso_language
 from .language_identification import resolve_country
 from .ol_referrals import (
-    OL_REFERRAL_CONTRACT_V1,
+    is_ol_referral_contract,
     normalize_referral_admission,
     referral_conflict_key,
 )
@@ -30,6 +30,7 @@ from .references import (
 )
 from .usj import compile_usfm_file, parse_usj_units
 from .vrs import VerseRef
+from .workflow_identity import analysis_reason_code, legacy_saw_workflow
 
 _MARKER_RE = re.compile(r"\\(\+?[A-Za-z0-9][A-Za-z0-9-]*)(\*)?")
 _FINDING_ID_RE = re.compile(r"^[A-Z0-9][A-Z0-9._-]{2,63}$")
@@ -511,13 +512,13 @@ def _atomic_reference_labels(value: str) -> set[str]:
     return set(atomic_reference_labels(value))
 
 def _normalised_stage(operation: str, rtc_stage: str | None = None) -> str:
-    """Return the exact stage required by one SAW operation or composite RTC subtask."""
+    """Return the exact stage required by one analysis operation or RTC subtask."""
     if operation == "rtc":
         return rtc_stage or "REFERENCE_TEXT_COMPARISON"
     return {"focused": "FOCUSED_CHECK", "ol": "FOCUSED_OL"}[operation]
 
 
-def validate_saw_findings(
+def validate_analysis_findings(
     path: Path,
     *,
     task_id: str,
@@ -537,22 +538,27 @@ def validate_saw_findings(
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
     narrative_language: str | None = None,
     ol_referral_contract: str | None = None,
+    workflow: str = "saw",
 ) -> dict[str, Any]:
-    """Validate staged SAW findings, complete coverage, and bounded focus answers."""
+    """Validate staged analysis findings, complete coverage, and bounded answers."""
+    identity = "SAW" if legacy_saw_workflow(workflow) else workflow.upper()
+    reason_code = lambda code: (
+        code if legacy_saw_workflow(workflow) else analysis_reason_code(code, workflow)
+    )
     # Validation order is deliberate: scope and schema checks precede evidence and coverage acceptance.
-    document = load_json_object(path, "SAW findings")
+    document = load_json_object(path, f"{identity} findings")
     if document.get("schema_version") != "2.0":
-        raise ValidationError("SAW findings schema_version must be '2.0'")
+        raise ValidationError(f"{identity} findings schema_version must be '2.0'")
     if narrative_language is not None:
         contract = document.get("narrative_language")
         if not isinstance(contract, Mapping):
-            raise ValidationError("SAW findings narrative_language contract is missing")
+            raise ValidationError(f"{identity} findings narrative_language contract is missing")
         if contract != {
             "tag": narrative_language,
             "authority": "CANONICAL_REPORT_NARRATIVE",
         }:
             raise ValidationError(
-                "SAW findings narrative_language does not match the ACT task"
+                f"{identity} findings narrative_language does not match the ACT task"
             )
     expected_identity = {
         "task_id": task_id,
@@ -564,33 +570,33 @@ def validate_saw_findings(
         actual = str(document.get(key, "")).lower() if key == "operation" else document.get(key)
         expected_value = value.lower() if key == "operation" else value
         if actual != expected_value:
-            raise ValidationError(f"SAW findings {key} does not match the ACT task")
+            raise ValidationError(f"{identity} findings {key} does not match the ACT task")
     if operation in {"focused", "ol"}:
         if not focus:
-            raise ValidationError(f"SAW {operation} task requires one bounded focus question")
+            raise ValidationError(f"{identity} {operation} task requires one bounded focus question")
         if document.get("focus") != focus:
-            raise ValidationError("SAW findings focus does not match the ACT task")
-        _require_string(document.get("answer"), "SAW bounded answer")
+            raise ValidationError(f"{identity} findings focus does not match the ACT task")
+        _require_string(document.get("answer"), f"{identity} bounded answer")
     elif document.get("focus") not in (None, ""):
-        raise ValidationError("SAW Reference Text Comparison (RTC) findings must not introduce a focus question")
+        raise ValidationError("RTC findings must not introduce a focus question")
     if document.get("check_type") != check_type:
-        raise ValidationError("SAW findings check_type does not match the ACT task")
+        raise ValidationError(f"{identity} findings check_type does not match the ACT task")
 
-    coverage = _require_mapping(document.get("coverage"), "SAW findings coverage")
+    coverage = _require_mapping(document.get("coverage"), f"{identity} findings coverage")
     if str(coverage.get("status", "")).upper() != "COMPLETE":
-        raise ValidationError("SAW findings coverage.status must be COMPLETE")
+        raise ValidationError(f"{identity} findings coverage.status must be COMPLETE")
     reviewed = _string_list(
         coverage.get("reviewed_references"),
-        "SAW findings coverage.reviewed_references",
+        f"{identity} findings coverage.reviewed_references",
         allow_empty=False,
     )
     if set(reviewed) != set(expected_references) or len(reviewed) != len(expected_references):
-        raise ValidationError("SAW findings coverage does not reconcile the exact bounded coordinates")
+        raise ValidationError(f"{identity} findings coverage does not reconcile the exact bounded coordinates")
 
     raw_receipts = document.get("review_receipts")
     if not isinstance(raw_receipts, list) or not raw_receipts:
         raise ValidationError(
-            "SAW review receipts are required; coordinate coverage alone is not review evidence",
+            f"{identity} review receipts are required; coordinate coverage alone is not review evidence",
             code="RTC_REVIEW_EVIDENCE_MISSING",
             affected_scope=scope_value,
         )
@@ -603,11 +609,11 @@ def validate_saw_findings(
         receipt = _require_mapping(raw_receipt, f"review_receipts[{index}]")
         receipt_id = _require_string(receipt.get("receipt_id"), f"review_receipts[{index}].receipt_id", maximum=100)
         if receipt_id in seen_receipt_ids:
-            raise ValidationError(f"Duplicate SAW review receipt_id: {receipt_id}")
+            raise ValidationError(f"Duplicate {identity} review receipt_id: {receipt_id}")
         seen_receipt_ids.add(receipt_id)
         unit_id = _require_string(receipt.get("work_unit_id"), f"review_receipts[{index}].work_unit_id", maximum=160)
         if unit_id in seen_unit_ids:
-            raise ValidationError(f"Duplicate SAW work_unit_id receipt: {unit_id}")
+            raise ValidationError(f"Duplicate {identity} work_unit_id receipt: {unit_id}")
         seen_unit_ids.add(unit_id)
         refs = _string_list(receipt.get("reviewed_references"), f"review_receipts[{index}].reviewed_references", allow_empty=False)
         checks = {value.upper() for value in _string_list(receipt.get("checks_performed"), f"review_receipts[{index}].checks_performed", allow_empty=False)}
@@ -631,20 +637,20 @@ def validate_saw_findings(
         })
     if len(receipt_refs) != len(set(receipt_refs)) or set(receipt_refs) != set(expected_references):
         raise ValidationError(
-            "SAW review receipts do not provide exact, non-overlapping evidence coverage",
+            f"{identity} review receipts do not provide exact, non-overlapping evidence coverage",
             code="RTC_REVIEW_EVIDENCE_INCOMPLETE",
             affected_scope=scope_value,
         )
     if expected_work_unit_ids and seen_unit_ids != set(expected_work_unit_ids):
         raise ValidationError(
-            "SAW review receipts do not reconcile the exact work-unit inventory",
+            f"{identity} review receipts do not reconcile the exact work-unit inventory",
             code="RTC_REVIEW_EVIDENCE_INCOMPLETE",
             affected_scope=scope_value,
         )
 
     raw_adjudications = document.get("structural_adjudications", [])
     if not isinstance(raw_adjudications, list):
-        raise ValidationError("SAW structural_adjudications must be a list")
+        raise ValidationError(f"{identity} structural_adjudications must be a list")
     adjudications: dict[str, dict[str, Any]] = {}
     for index, raw in enumerate(raw_adjudications, start=1):
         row = _require_mapping(raw, f"structural_adjudications[{index}]")
@@ -682,20 +688,20 @@ def validate_saw_findings(
             ),
         }
     if set(adjudications) != set(structural_candidate_ids):
-        raise ValidationError("SAW structural adjudications do not reconcile the exact candidate inventory")
+        raise ValidationError(f"{identity} structural adjudications do not reconcile the exact candidate inventory")
 
     ol_review_requests: list[dict[str, Any]] = []
     raw_requests = document.get("ol_review_requests", [])
     if not isinstance(raw_requests, list) or any(not isinstance(item, dict) for item in raw_requests):
-        raise ValidationError("SAW ol_review_requests must be a list of objects")
+        raise ValidationError(f"{identity} ol_review_requests must be a list of objects")
     if operation == "rtc" and _normalised_stage(operation, rtc_stage) == "REFERENCE_TEXT_COMPARISON":
         seen_request_ids: set[str] = set()
         seen_deferred_ids: set[str] = set()
         seen_conflict_keys: set[str] = set()
-        strict_referrals = ol_referral_contract == OL_REFERRAL_CONTRACT_V1
+        strict_referrals = is_ol_referral_contract(ol_referral_contract)
         for index, request in enumerate(raw_requests, start=1):
             admission = (
-                normalize_referral_admission(request, index=index)
+                normalize_referral_admission(request, index=index, workflow=workflow)
                 if strict_referrals
                 else {}
             )
@@ -708,7 +714,7 @@ def validate_saw_findings(
                 raise ValidationError(
                     f"ol_review_requests[{index}].target_reference is outside the task scope",
                     code=(
-                        "SAW_OL_REFERRAL_SCOPE_INVALID"
+                        reason_code("SAW_OL_REFERRAL_SCOPE_INVALID")
                         if strict_referrals
                         else "VALIDATION_ERROR"
                     ),
@@ -718,7 +724,7 @@ def validate_saw_findings(
                 raise ValidationError(
                     f"ol_review_requests[{index}] cites evidence not routed to the task",
                     code=(
-                        "SAW_OL_REFERRAL_EVIDENCE_INVALID"
+                        reason_code("SAW_OL_REFERRAL_EVIDENCE_INVALID")
                         if strict_referrals
                         else "VALIDATION_ERROR"
                     ),
@@ -741,7 +747,7 @@ def validate_saw_findings(
                 if conflict_key in seen_conflict_keys:
                     raise ValidationError(
                         f"ol_review_requests[{index}] duplicates an admitted semantic conflict",
-                        code="SAW_OL_REFERRAL_DUPLICATE",
+                        code=reason_code("SAW_OL_REFERRAL_DUPLICATE"),
                     )
                 seen_conflict_keys.add(conflict_key)
             normalized_request = {
@@ -757,7 +763,7 @@ def validate_saw_findings(
                 normalized_request["conflict_key"] = conflict_key
             ol_review_requests.append(normalized_request)
     elif raw_requests:
-        raise ValidationError("OL review requests may be emitted only by the SAW Reference Text Comparison (RTC) meaning stage")
+        raise ValidationError("OL review requests may be emitted only by the RTC meaning stage")
 
     expected_request_map = {
         str(item.get("request_id", "")).upper(): dict(item) for item in expected_ol_requests
@@ -767,7 +773,7 @@ def validate_saw_findings(
         raise ValidationError("Selective OL request metadata does not match the expected request-ID inventory")
     raw_resolutions = document.get("ol_resolutions", [])
     if not isinstance(raw_resolutions, list) or any(not isinstance(item, dict) for item in raw_resolutions):
-        raise ValidationError("SAW ol_resolutions must be a list of objects")
+        raise ValidationError(f"{identity} ol_resolutions must be a list of objects")
     ol_resolutions: list[dict[str, Any]] = []
     seen_resolution_ids: set[str] = set()
     for index, raw_resolution in enumerate(raw_resolutions, start=1):
@@ -830,9 +836,9 @@ def validate_saw_findings(
         })
     if expected_request_set:
         if seen_resolution_ids != expected_request_set:
-            raise ValidationError("SAW Reference Text Comparison (RTC) OL stage does not reconcile the exact requested OL issue inventory")
+            raise ValidationError("RTC OL stage does not reconcile the exact requested OL issue inventory")
     elif ol_resolutions:
-        raise ValidationError("ol_resolutions are valid only for a requested SAW Reference Text Comparison (RTC) OL stage")
+        raise ValidationError("ol_resolutions are valid only for a requested RTC OL stage")
     resolved_ol_request_ids = [row["request_id"] for row in ol_resolutions]
     declared_resolved = [value.upper() for value in _string_list(document.get("resolved_ol_request_ids", []), "resolved_ol_request_ids", allow_empty=True)]
     if declared_resolved and declared_resolved != resolved_ol_request_ids:
@@ -841,7 +847,7 @@ def validate_saw_findings(
 
     findings = document.get("findings")
     if not isinstance(findings, list):
-        raise ValidationError("SAW findings must contain a findings list")
+        raise ValidationError(f"{identity} findings must contain a findings list")
     parent_scope = parse_scope(scope_value)
     allowed_grammar_rules = set(grammar_rule_ids)
     allowed_evidence = set(allowed_evidence_ids)
@@ -853,7 +859,7 @@ def validate_saw_findings(
             row.get("finding_id"), f"findings[{index}].finding_id"
         )
         if finding_id in seen_ids:
-            raise ValidationError(f"Duplicate SAW finding_id: {finding_id}")
+            raise ValidationError(f"Duplicate {identity} finding_id: {finding_id}")
         seen_ids.add(finding_id)
         reference = normalize_scope_set(_require_string(
             row.get("target_reference"),
@@ -939,8 +945,8 @@ def validate_saw_findings(
                 "Meaning-stage findings cannot simultaneously be final findings and deferred OL issues: "
                 + ", ".join(sorted(overlap)),
                 code=(
-                    "SAW_OL_REFERRAL_FINDING_OVERLAP"
-                    if ol_referral_contract == OL_REFERRAL_CONTRACT_V1
+                    reason_code("SAW_OL_REFERRAL_FINDING_OVERLAP")
+                    if is_ol_referral_contract(ol_referral_contract)
                     else "VALIDATION_ERROR"
                 ),
             )
@@ -987,6 +993,10 @@ def validate_saw_findings(
         "findings": normalised,
         "finding_count": len(normalised),
     }
+
+
+# Compatibility alias for sealed integrations using the pre-RTC function name.
+validate_saw_findings = validate_analysis_findings
 
 
 def validate_bic_inspect_output(
@@ -1039,7 +1049,7 @@ def _report_label(document: Mapping[str, Any], key: str) -> str:
 
 
 def _operator_project_ids(document: Mapping[str, Any]) -> tuple[str, str]:
-    """Return actual SAW Project IDs for the subject and Reference Project."""
+    """Return actual analysis Project IDs for the subject and comparison source."""
     bindings = document.get("resource_bindings")
     if isinstance(bindings, Mapping):
         wip = str(bindings.get("WIP") or "").strip()
@@ -1065,11 +1075,18 @@ def _operator_project_names(document: Mapping[str, Any]) -> tuple[str, str]:
 
 
 def _operator_project_text(value: Any, document: Mapping[str, Any]) -> str:
-    """Replace internal SAW role labels with configured Project names in general report prose."""
+    """Replace internal role labels and retired identity on current report surfaces."""
     text = str(value or "")
     wip, reference = _operator_project_names(document)
     text = re.sub(r"\bWIP\b", wip, text)
     text = re.sub(r"\bREFERENCE\b", reference, text)
+    workflow = str(document.get("workflow") or "").strip().lower()
+    if workflow in {"rtc", "stc"}:
+        text = (
+            text.replace("SAW RTC", "RTC")
+            .replace("SAW STC", "STC")
+            .replace("SAW", workflow.upper())
+        )
     return text
 
 
@@ -1093,7 +1110,7 @@ def operator_finding_text(
     document: Mapping[str, Any],
     finding: Mapping[str, Any],
 ) -> str:
-    """Resolve bare SAW authority terms to compact Project or GRK/HEB OL identities."""
+    """Resolve bare analysis authority terms to compact Project or OL identities."""
     text = str(value or "")
     wip_id, reference_id = _operator_project_ids(document)
     evidence_ids = [str(item) for item in finding.get("evidence_ids", [])]
@@ -1107,7 +1124,7 @@ def operator_finding_text(
 
 
 def _operator_evidence_labels(row: Mapping[str, Any], document: Mapping[str, Any]) -> list[str]:
-    """Resolve SAW evidence roles to compact Project IDs or routed OL labels."""
+    """Resolve analysis evidence roles to compact Project IDs or routed OL labels."""
     wip_id, reference_id = _operator_project_ids(document)
     evidence_ids = [str(value) for value in row.get("evidence_ids", [])]
     ol_label = _operator_ol_label(document, evidence_ids)
@@ -1186,7 +1203,7 @@ def render_plain_text_from_markdown(markdown: str) -> str:
 
 
 def render_action_report(document: Mapping[str, Any]) -> str:
-    """Render deterministic Operator-facing SAW Markdown with per-language issue/action grouping."""
+    """Render deterministic analysis Markdown with per-language issue/action grouping."""
     # Receipt-backed route metadata and assistive translations are projections;
     # neither may alter the canonical finding inventory rendered below.
     primary, secondary = _report_languages(document)
@@ -1205,8 +1222,15 @@ def render_action_report(document: Mapping[str, Any]) -> str:
         if isinstance(raw_events, Mapping):
             rendering_event_rows = raw_events
     wip, reference = _operator_project_names(document)
-    report_title = _report_label(document, "report.saw_action_report")
-    if str(document.get("operation") or "").strip().lower() == "rtc":
+    operation = str(document.get("operation") or "").strip().lower()
+    workflow = str(document.get("workflow") or "").strip().lower()
+    report_key = (
+        f"report.{operation}_action_report"
+        if workflow in {"rtc", "stc"} and operation in {"rtc", "stc"}
+        else "report.saw_action_report"
+    )
+    report_title = _report_label(document, report_key)
+    if operation == "rtc":
         report_title = f"Reference Text Comparison (RTC) — {report_title}"
     source_issues = [
         dict(row)
@@ -1257,7 +1281,7 @@ def render_action_report(document: Mapping[str, Any]) -> str:
             lines.extend([
                 f"### {row.get('disposition', 'ERROR')} — {scope}",
                 "",
-                f"- Reason: `{row.get('reason_code', 'SAGE_ERROR')}`; Retryability: `{row.get('retryability', 'UNKNOWN')}`",
+                f"- Reason: `{analysis_reason_code(str(row.get('reason_code', 'SAGE_ERROR')), operation) if workflow in {'rtc', 'stc'} else row.get('reason_code', 'SAGE_ERROR')}`; Retryability: `{row.get('retryability', 'UNKNOWN')}`",
                 "",
                 f"**Message — {primary_name}**",
                 "",
@@ -1273,11 +1297,15 @@ def render_action_report(document: Mapping[str, Any]) -> str:
             lines.extend(["---", ""])
     vrs_advisories = [dict(row) for row in document.get("versification_advisories", []) if isinstance(row, Mapping)]
     if vrs_advisories:
-        lines.extend(["", "## Versification advisories", "", "These coordinate differences did not block SAW execution.", ""])
+        workflow_name = workflow.upper() if workflow in {"rtc", "stc"} else "SAW"
+        lines.extend(["", "## Versification advisories", "", f"These coordinate differences did not block {workflow_name} execution.", ""])
         for row in vrs_advisories:
             coordinate = row.get("reference") or row.get("scope") or ""
+            advisory_code = str(row.get("code", "VRS_ADVISORY"))
+            if workflow in {"rtc", "stc"}:
+                advisory_code = analysis_reason_code(advisory_code, operation)
             lines.append(
-                f"- `{coordinate}` | `{row.get('project_id', '')}` | `{row.get('code', 'VRS_ADVISORY')}` — {row.get('message', '')}"
+                f"- `{coordinate}` | `{row.get('project_id', '')}` | `{advisory_code}` — {_operator_project_text(row.get('message', ''), document)}"
             )
     if source_issues:
         lines.extend([
@@ -1288,9 +1316,12 @@ def render_action_report(document: Mapping[str, Any]) -> str:
             "",
         ])
         for row in source_issues:
+            issue_code = str(row.get("code", "SOURCE_TEXT_ISSUE"))
+            if workflow in {"rtc", "stc"}:
+                issue_code = analysis_reason_code(issue_code, operation)
             lines.append(
                 f"- `{row.get('reference', '')}` | `{row.get('source_project_id', '')}` | "
-                f"`{row.get('code', 'SOURCE_TEXT_ISSUE')}` — {row.get('message', '')}"
+                f"`{issue_code}` — {_operator_project_text(row.get('message', ''), document)}"
             )
     lines.extend(["", "## " + _report_label(document, "report.actionable_findings"), ""])
     findings = sorted(

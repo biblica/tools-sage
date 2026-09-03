@@ -134,7 +134,8 @@ def test_direct_remove_project_action_preserves_paratext_files(make_workspace) -
     assert project_id not in load_resource_mounts(root)
     assert scripture.read_text(encoding="utf-8").startswith("\\id MAT")
     rendered = output.getvalue()
-    assert "This removes SAGE inventory and mapping state only." in rendered
+    assert "This removes the selected PROJECT inventory and mapping from SAGE." in rendered
+    assert "Bound SAGE JOBS are listed and require explicit confirmation before removal." in rendered
     assert "Paratext Project folders and Scripture files are never deleted or modified." in rendered
     assert f"Removed {project_id} from SAGE. Paratext files were unchanged." in rendered
 
@@ -172,7 +173,7 @@ def test_direct_remove_project_action_can_remove_job_bound_project(make_workspac
     assert project_path.is_dir()
     rendered = output.getvalue()
     assert "Jobs currently using this Project:" in rendered
-    assert "SAW WIP" in rendered
+    assert "RTC/STC WIP" in rendered
     assert "Removing this PROJECT also removes the listed SAGE JOBS and their JOB-local data." in rendered
     assert f"Removed {project_id} from SAGE." in rendered
 
@@ -262,8 +263,8 @@ def test_bic_and_saw_active_jobs_are_independent(make_workspace) -> None:
     store.set_active_job("bic", None)
     after = store.active_jobs()
 
-    assert before == {"bic": bic.job_id, "saw": saw.job_id}
-    assert after == {"bic": None, "saw": saw.job_id}
+    assert before == {"bic": bic.job_id, "rtc": None, "stc": None, "saw": saw.job_id}
+    assert after == {"bic": None, "rtc": None, "stc": None, "saw": saw.job_id}
 
 
 def test_runtime_roots_are_job_scoped(make_workspace) -> None:
@@ -449,7 +450,7 @@ def test_global_footer_is_rendered_for_main_bic_and_saw(make_workspace) -> None:
 
     rendered = output.getvalue()
     assert "BIC JOBS" in rendered
-    assert "SAW" in rendered
+    assert "LEGACY ANALYSIS" in rendered
     assert rendered.count("A. Back   B. Main menu   C. Exit SAGE") == 2
     assert rendered.count("D. Language   E. Help   F. Status") == 2
 
@@ -494,9 +495,9 @@ def test_job_management_can_open_the_active_saw_job(make_workspace) -> None:
     center.job_management_menu("saw")
 
     rendered = output.getvalue()
-    assert "Open active SAW JOB" in rendered
+    assert "Open active LEGACY ANALYSIS JOB" in rendered
     assert f"{saw.job_id} - {saw.display_name} [ACTIVE]" in rendered
-    assert f"SAW JOB - {saw.job_id}" in rendered
+    assert f"LEGACY ANALYSIS JOB - {saw.job_id}" in rendered
     assert "Run Reference Text Comparison (RTC)" in rendered
 
 
@@ -812,14 +813,14 @@ def test_saw_flow_selects_job_then_exposes_checks_and_back_is_hierarchical(make_
     center.saw_menu()
 
     rendered = output.getvalue()
-    assert "SAW" in rendered
-    assert "Choose active JOB [SAW]" in rendered
-    assert f"SAW JOB - {saw.job_id}" in rendered
+    assert "LEGACY ANALYSIS" in rendered
+    assert "Choose active JOB [LEGACY ANALYSIS]" in rendered
+    assert f"LEGACY ANALYSIS JOB - {saw.job_id}" in rendered
     assert "Active Run                   NONE" in rendered
     assert "Run Reference Text Comparison (RTC)" in rendered
     assert "Run Targeted Check" in rendered
     assert "Run Original-Language Review" in rendered
-    assert "SAW RUN OPTIONS" not in rendered
+    assert "LEGACY ANALYSIS RUN OPTIONS" not in rendered
     assert rendered.count("A. Back") >= 2
 
 
@@ -1081,28 +1082,30 @@ def test_reports_and_recovery_are_owned_by_workflow_or_sage_maintenance(make_wor
     center.io.input_func = ScriptedInput(["a"])
     assert center.system_configuration_menu() == "BACK"
     center.io.input_func = ScriptedInput(["a"])
-    center.system_recovery_menu()
+    center.system_actions_menu()
 
     rendered = output.getvalue()
     assert rendered.count("Reports and history") >= 2
     assert rendered.count("Recovery and diagnostics") >= 2
     assert rendered.count("Maintain JOB storage") == 2
     assert "SAGE Maintenance" in rendered
-    assert "System information, recovery and diagnostics" in rendered
+    assert "6. System actions" in rendered
+    assert "System information, recovery and diagnostics" not in rendered
+    assert "Wipe all JOB data" in rendered
     assert "Change interface language" not in rendered
     assert "Open system information" not in rendered
     assert "System information" in rendered
     assert "System actions" in rendered
     assert "Reset SAGE to out-of-box state" in rendered
-    assert rendered.index("║ System recovery and diagnostics") < rendered.index("\nSystem information\n")
+    assert rendered.index("║ System actions") < rendered.index("\nSystem information\n")
     assert rendered.index("\nSystem information\n") < rendered.index("> System actions")
     assert "SAGE data folders" in rendered
     assert "Project inventory" in rendered
     assert "Resource mappings" in rendered
     assert "Show SAGE data folders" not in rendered
     assert rendered.index("System information") < rendered.index("SAGE data folders")
-    assert rendered.index("SAGE data folders") < rendered.index("System actions")
-    assert rendered.index("System actions") < rendered.index("1. Export global diagnostics")
+    assert rendered.index("SAGE data folders") < rendered.index("> System actions")
+    assert rendered.index("> System actions") < rendered.index("1. Export global diagnostics")
     assert "\n> System actions\n" + "─" * 72 + "\n\n" in rendered
 
 
@@ -1130,11 +1133,11 @@ def test_workflow_storage_rebuilds_job_configuration_without_project_attribute_c
         assert f"Rebuilt: {job.job_id}" in rendered
         assert job.runtime_settings_path.is_file()
     assert "BIC JOB storage" in rendered
-    assert "SAW JOB storage" in rendered
+    assert "LEGACY ANALYSIS JOB storage" in rendered
 
 
-def test_system_recovery_excludes_job_configuration_rebuild(make_workspace) -> None:
-    """Keep Job configuration under BIC/SAW storage maintenance, not system recovery."""
+def test_system_actions_exclude_job_configuration_rebuild(make_workspace) -> None:
+    """Keep Job configuration under BIC/SAW storage maintenance, not System actions."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
     center = SageControlCenter(
@@ -1145,7 +1148,7 @@ def test_system_recovery_excludes_job_configuration_rebuild(make_workspace) -> N
         dry_run_provider=True,
     )
 
-    center.system_recovery_menu()
+    center.system_actions_menu()
 
     assert "Rebuild Job configuration" not in output.getvalue()
 
@@ -1221,6 +1224,7 @@ def test_project_registration_accepts_scope_presets_unions_and_ranges(
     captured: dict[str, object] = {}
 
     def register(_settings_path, *, catalogue_row):
+        """Capture the normalized catalog row passed to Project registration."""
         captured.update(catalogue_row)
         return "idTEST"
 

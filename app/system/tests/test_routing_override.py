@@ -166,7 +166,7 @@ def test_setting_override_records_exact_route_and_skill_coverage(
 
     assert result["routing_mode"] == "GLOBAL_OVERRIDE"
     assert result["qualified_skill_count"] == 1
-    assert result["registered_skill_count"] == 7
+    assert result["registered_skill_count"] == 9
     assert result["qualified_skills"] == ["saw-rtc"]
     assert persisted["selection"] == selection
     receipt = json.loads(Path(result["receipt_path"]).read_text(encoding="utf-8"))

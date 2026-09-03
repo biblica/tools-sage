@@ -184,7 +184,7 @@ def test_guide_and_help_work_before_settings_resolution(package_root: Path) -> N
     assert "SAGE controller" in guide.stdout
     assert "Codex CLI" in guide.stdout
     assert "ChatGPT sign-in" in guide.stdout
-    assert "Use the BIC/SAW menus for normal work" in help_alias.stdout
+    assert "Use the BIC, RTC, or STC menus for normal work" in help_alias.stdout
     after = log_path.read_bytes() if log_path.is_file() else None
     assert after == before
 

@@ -12,7 +12,13 @@ from sage.act_outputs import (
 )
 from sage.errors import ValidationError
 from sage.hashing import sha256_file
-from sage.plan_continuation import _append_parts, _report_book_code, _report_scope_parts, _report_scope_slug
+from sage.plan_continuation import (
+    _append_parts,
+    _report_book_code,
+    _report_chapters,
+    _report_scope_parts,
+    _report_scope_slug,
+)
 
 
 @pytest.mark.parametrize(
@@ -43,6 +49,13 @@ def test_report_scope_slug_preserves_existing_coordinate_padding() -> None:
     assert _report_scope_slug("MAT 1:1-3") == "MAT-001-001-003"
     assert _report_scope_slug("MAT 1:1-2:3") == "MAT-001-001-002-003"
     assert _report_scope_slug("MAT 1-2") == "MAT-001-002"
+
+
+def test_discontinuous_run_scope_keeps_one_numbered_book_report_directory() -> None:
+    """Multi-portion Run metadata resolves one canonical Book and safe legacy slug."""
+    assert _report_book_code("1CH 5-6; 24") == "1CH"
+    assert _report_scope_slug("1CH 5-6; 24") == "1CH-005-006-AND-1CH-024"
+    assert _report_chapters({}, "1CH 5-6; 24") == [5, 6, 24]
 
 
 def test_whole_book_report_scope_does_not_repeat_book_directory() -> None:

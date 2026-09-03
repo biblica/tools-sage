@@ -2,7 +2,7 @@
 
 Version: `0.01beta2`
 
-`0.01beta2` includes the current hardening/refinement baseline. It preserves the established project-cardinality grammar, BIC/SAW authority boundaries, provider architecture, and byte-pinned protected BIC linguistic contracts while tightening bounded TARGET safety, routed-SFM review-item budgeting, canonical linguistic-profile handoff, OL micro-scoping, SAW discourse segmentation, history ordering, and release validation.
+`0.01beta2` includes the current hardening/refinement baseline. It preserves the established project-cardinality grammar, BIC/RTC/STC authority boundaries, provider architecture, and byte-pinned protected BIC linguistic contracts while tightening bounded TARGET safety, routed-SFM review-item budgeting, canonical linguistic-profile handoff, OL micro-scoping, RTC/STC discourse segmentation, history ordering, and release validation.
 
 ## Bounded TARGET safety
 
@@ -31,7 +31,7 @@ Conditional BIC OL clarification remains controller-derived and material-risk ga
 
 This transport refinement does not modify the protected rewrite-detail or protected verb-selection contracts.
 
-## SAW Reference Text Comparison (RTC) discourse units
+## RTC discourse units
 
 Reference Text Comparison (RTC) preserves deterministic discourse units while balancing the WIP stream around a 6,000-token soft target. Clean WIP boundaries are preferred between 5,000 and 7,000; adjacent units are not greedily packed beyond the 7,000 preferred ceiling, and no WIP slice may be planned at 8,000 tokens or above. The complete required WIP+REFERENCE review item has its own routed-SFM hard guard; prompt/schema/controller overhead is not part of that guard. Focused review uses at most two intact units and standalone Original-Language Review one. OL clarification triggered by RTC is a separate finding-scoped package, not an expansion of the parent RTC slice.
 

@@ -189,7 +189,7 @@ def test_saw_bilingual_report_generates_and_reuses_ukrainian_rendering(
     rendered = ensure_secondary_saw_report_rendering(sage_root, report_path, document)
     assert rendered["report_renderings"]["status"] == "AVAILABLE"
     report = render_action_report(rendered)
-    assert "SAW Action Report / Звіт SAW про необхідні дії" in report
+    assert "Legacy Analysis Action Report / Звіт застарілого аналізу про необхідні дії" in report
     assert "**Issue — English**" in report
     assert "temporary-residence qualification" in report
     assert "**Issue — Ukrainian**" in report

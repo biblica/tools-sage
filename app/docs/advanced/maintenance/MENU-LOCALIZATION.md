@@ -39,6 +39,17 @@ the three-column numeric choice field. Major menu headings use double-line boxes
 a `> `-prefixed label and unindented, full-width single-line underline. Every presentation block has one blank line
 before and after it.
 
+Canonical source labels use sentence case. After localization, the renderer marks a governed entity
+that occurs mid-sentence as `PROJECT`, `JOB`, `RUN`, or `TASK`; it leaves a sentence-initial entity in
+natural sentence case. Thus the sources `Add STC Job <WIP PROJECT>`, `Refresh Project`, and
+`Project information` render as `Add STC JOB <WIP PROJECT>`, `Refresh PROJECT`, and
+`Project information`. Other uppercase text is reserved for governed role/protocol tokens.
+
+Localization occurs before layout. The shared formatter then measures terminal display cells and
+fits every localized title, menu row, heading, and information block to the active viewport. Long
+menu labels use a hanging indent; long information values continue under the value column. Literal
+tabs are not an alignment mechanism.
+
 The editable localization source is documented in `system/config/localization/README.md`.
 
 ## Release rebuild task

@@ -41,6 +41,10 @@ governed_skills:
     execution_class: GOVERNED_SKILL
   bic-self-check:
     execution_class: GOVERNED_SKILL
+  rtc:
+    execution_class: GOVERNED_SKILL
+  stc:
+    execution_class: GOVERNED_SKILL
   saw-rtc:
     execution_class: GOVERNED_SKILL
   saw-stc:

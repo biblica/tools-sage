@@ -78,7 +78,7 @@ localdata/reports/<job-id>/GEN/001/<run-id>_GEN-001_OPERATOR-NOTE.txt
 
 The `<job-id>` segment is the owning Job ID, not a Project ID. The completion screen prints the exact paths. SAGE does not write reports into the mapped Paratext Project folder.
 
-Reportable versification or source-coordinate gaps finish as `COMPLETE_WITH_STRUCTURE_PROBLEMS`; they do not abort safe RTC/STC analysis. Use **SAGE Maintenance > Resource Status Report** to inspect resources. **Wipe all Job data** requires `WIPE JOB DATA` and preserves the managed environment, Projects, resources, indexes, and configuration.
+Reportable versification or source-coordinate gaps finish as `COMPLETE_WITH_STRUCTURE_PROBLEMS`; they do not abort safe RTC/STC analysis. Use **SAGE Maintenance > Resource Status Report** to inspect resources. **SAGE Maintenance > System actions > Wipe all Job data** requires `WIPE JOB DATA` and preserves the managed environment, Projects, resources, indexes, and configuration.
 
 ## Models
 

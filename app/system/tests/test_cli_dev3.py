@@ -117,6 +117,62 @@ def test_saw_plan_uses_independent_wip_without_bic_generation_pin(package_root: 
     assert package["route"]["estimated_tokens"] <= 32000
 
 
+def test_canonical_rtc_plan_uses_the_rtc_profile(package_root: Path, make_workspace) -> None:
+    """New RTC planning persists canonical workflow identity and package sizing."""
+    root = make_workspace(configured=True)
+    result = run_cli(
+        package_root, root, "--json", "workflow", "plan",
+        "--workflow", "rtc", "--operation", "rtc", "--scope", "MAT 1",
+    )
+    assert result.returncode == 0, result.stderr + result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["workflow_id"] == "rtc"
+    assert payload["plan_id"].startswith("RTC-RTC-")
+    assert payload["units"][0]["rtc_package"]["sizing_basis"] == "ROUTED_SFM_ONLY"
+
+
+def test_rtc_plan_does_not_treat_vrs_ranges_as_source_bridges(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A coordinate VRS range must not merge an otherwise sliceable RTC book."""
+    root = make_workspace(configured=True, verse_max=20)
+    base_vrs = root / "system/resources/scripture/eng.vrs"
+    base_vrs.write_text(
+        "MAT 1:20\nMAT 1:1-20 = MAT 1:1-20\n",
+        encoding="utf-8",
+    )
+    long_verses = ["\\id MAT Fixture", "\\c 1", "\\p"]
+    for verse in range(1, 21):
+        long_verses.append(f"\\v {verse} " + ("word " * 600))
+    scripture = "\n".join(long_verses) + "\n"
+    projects = root.parent / "localdata/work/projects"
+    for project_id in ("usWIP", "usNIVv2"):
+        (projects / project_id / "41MAT.SFM").write_text(scripture, encoding="utf-8")
+
+    result = run_cli(
+        package_root,
+        root,
+        "--json",
+        "workflow",
+        "plan",
+        "--workflow",
+        "saw",
+        "--operation",
+        "rtc",
+        "--scope",
+        "MAT 1",
+    )
+
+    assert result.returncode == 0, result.stderr + result.stdout
+    payload = json.loads(result.stdout)
+    assert len(payload["units"]) > 1
+    assert all(
+        unit["rtc_package"]["wip"]["estimated_tokens"] < 8000
+        for unit in payload["units"]
+    )
+
+
 def test_stc_plan_measures_wip_and_primary_source_as_one_route(
     package_root: Path,
     make_workspace,
@@ -140,6 +196,20 @@ def test_stc_plan_measures_wip_and_primary_source_as_one_route(
     assert package["route"]["estimated_tokens"] == (
         package["wip"]["estimated_tokens"] + package["ol"]["estimated_tokens"]
     )
+
+
+def test_canonical_stc_plan_uses_the_stc_profile(package_root: Path, make_workspace) -> None:
+    """New STC planning persists canonical workflow identity without Reference."""
+    root = make_workspace(configured=True)
+    result = run_cli(
+        package_root, root, "--json", "workflow", "plan",
+        "--workflow", "stc", "--operation", "stc", "--scope", "MAT 1",
+    )
+    assert result.returncode == 0, result.stderr + result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["workflow_id"] == "stc"
+    assert payload["plan_id"].startswith("STC-STC-")
+    assert payload["primary_ol_project_id"] == "GRK"
 
 
 def test_stc_submit_uses_primary_ol_project_for_operational_logging(
@@ -211,6 +281,49 @@ def test_chapter_plan_ignores_defects_in_other_chapters(package_root: Path, make
     payload = json.loads(result.stdout)
     assert payload["operator_scope"] == "MAT 1"
     assert payload["summary"]["primary_atomic_coordinates"] == 3
+
+
+def test_rtc_plan_keeps_discontinuous_scope_portions_separate(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """One RTC Run may select separated chapters without widening across the gap."""
+    root = make_workspace(configured=True, verse_max=1)
+    data_root = root.parent / "localdata" / "work" / "projects"
+    for project_id in ("usWIP", "usNIVv2"):
+        path = data_root / project_id / "41MAT.SFM"
+        path.write_text(
+            path.read_text(encoding="utf-8") + "\\c 3\n\\p\n\\v 1 Chapter three.\n",
+            encoding="utf-8",
+        )
+    for name in ("eng.vrs", "org.vrs"):
+        (root / "system" / "resources" / "scripture" / name).write_text(
+            "MAT 1:1 3:1\n",
+            encoding="utf-8",
+        )
+
+    result = run_cli(
+        package_root,
+        root,
+        "--json",
+        "workflow",
+        "plan",
+        "--workflow",
+        "saw",
+        "--operation",
+        "rtc",
+        "--scope",
+        "MAT 1; 3",
+    )
+
+    assert result.returncode == 0, result.stderr + result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["operator_scope"] == "MAT 1; MAT 3"
+    assert payload["summary"]["primary_atomic_coordinates"] == 2
+    assert [unit["primary_scope"] for unit in payload["units"]] == [
+        "MAT 1:1",
+        "MAT 3:1",
+    ]
 
 
 def test_scoped_saw_plan_preserves_wip_resource_identity(

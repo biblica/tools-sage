@@ -1,60 +1,52 @@
-"""Discourse-first SAW RTC planning from routed WIP+Reference SFM only."""
+"""Discourse-first RTC planning from routed WIP+Reference SFM only."""
 
 from __future__ import annotations
 
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable
 
 from .canon import PROTESTANT_66
 from .errors import ConfigurationError, EvidenceLimitError, ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy
-from .references import expand_reference_atoms
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
 from .source_coverage import source_text_issues
 from .work_units import EvidenceRecord, WorkUnit
 from .vrs import VerseRef
 
 
-RTC_PLANNER_VERSION = "SAGE_RTC_SFM_ROUTE_PLANNER_V3"
+RTC_PLANNER_VERSION = "SAGE_RTC_SFM_ROUTE_PLANNER_V4"
 RTC_HANDOFF_CONTRACT_VERSION = "SAGE_GOVERNED_TASK_V1"
-RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "SAW_RTC_REFERENCE_TEXT_COMPARISON_V1"
+RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "RTC_REFERENCE_TEXT_COMPARISON_V1"
+LEGACY_RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "SAW_RTC_REFERENCE_TEXT_COMPARISON_V1"
 RTC_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_1"
 
 
-def vrs_source_equivalence_spans(
-    effective_vrs: Mapping[str, Any],
-    *,
-    requested_book: str,
-) -> tuple[tuple[VerseRef, ...], ...]:
-    """Return in-scope local coordinate groups that an effective VRS keeps indivisible."""
-    requested_book = str(requested_book).strip().upper()
-    if len(requested_book) != 3 or requested_book not in PROTESTANT_66:
+def rtc_prompt_schema_projection_version(workflow: str) -> str:
+    """Return the current projection version or its sealed legacy identity."""
+    return (
+        LEGACY_RTC_PROMPT_SCHEMA_PROJECTION_VERSION
+        if str(workflow).strip().lower() == "saw"
+        else RTC_PROMPT_SCHEMA_PROJECTION_VERSION
+    )
+
+
+def _validate_rtc_book(records: tuple[EvidenceRecord, ...]) -> None:
+    """Require RTC primary evidence from one Protestant-canon Paratext book."""
+    books = {record.book.strip().upper() for record in records}
+    if len(books) != 1 or next(iter(books), "") not in PROTESTANT_66:
+        rendered = ", ".join(sorted(books)) or "NONE"
         raise ValidationError(
             "RTC planning requires a three-character Paratext/USFM book ID from "
-            f"the Protestant 66-book canon; received {requested_book!r}",
+            f"the Protestant 66-book canon; received {rendered!r}",
             code="RTC_CANONICAL_BOOK_ID_REQUIRED",
             next_action="Use a canonical book ID such as JHN; extended-canon IDs are not supported.",
         )
-    spans: list[tuple[VerseRef, ...]] = []
-    for value in effective_vrs.get("mappings", []):
-        if not isinstance(value, Mapping):
-            continue
-        local = str(value.get("local") or "").strip()
-        if not local:
-            continue
-        local_book = local.split(maxsplit=1)[0].upper()
-        if local_book != requested_book:
-            continue
-        refs = expand_reference_atoms(local)
-        if len(refs) > 1:
-            spans.append(refs)
-    return tuple(spans)
 
 
 def rtc_slicing_policy(base: EvidencePolicy, sizing: RTCSizingPolicy) -> EvidencePolicy:
     """Derive RTC soft WIP targets and hard routed-SFM review-item limits."""
     if sizing.estimator != RTC_ESTIMATOR:
         raise ConfigurationError(
-            f"Unsupported SAW RTC estimator {sizing.estimator!r}; expected {RTC_ESTIMATOR}"
+            f"Unsupported RTC estimator {sizing.estimator!r}; expected {RTC_ESTIMATOR}"
         )
     route_hard = min(base.hard_estimated_tokens, sizing.route_hard_max_tokens)
     target = min(sizing.wip_target_min_tokens, max(1, route_hard - 1))
@@ -134,11 +126,6 @@ def _measure_review_item(
     }
 
 
-def _required_spans(records: Iterable[EvidenceRecord]) -> tuple[tuple[VerseRef, ...], ...]:
-    """Return bridged source spans that RTC boundaries must preserve intact."""
-    return tuple(record.refs for record in records if len(record.refs) > 1)
-
-
 def plan_rtc_work_units(
     wip_records: Iterable[EvidenceRecord],
     base_policy: EvidencePolicy,
@@ -148,21 +135,15 @@ def plan_rtc_work_units(
     shared: dict[str, Any],
     wip_context_pool: Iterable[EvidenceRecord],
     reference_records: Iterable[EvidenceRecord],
-    wip_equivalence_spans: Iterable[Iterable[VerseRef]] = (),
-    reference_equivalence_spans: Iterable[Iterable[VerseRef]] = (),
+    workflow: str = "saw",
 ) -> tuple[tuple[WorkUnit, ...], tuple[dict[str, Any], ...], EvidencePolicy]:
     """Plan RTC from actual WIP+Reference SFM while retaining WIP soft-target behavior."""
     del shared  # Controller metadata is deliberately absent from review-item sizing.
     selected = tuple(wip_records)
     context = tuple(wip_context_pool)
     reference = tuple(reference_records)
+    _validate_rtc_book(selected)
     policy = rtc_slicing_policy(base_policy, sizing)
-    required_spans = (
-        _required_spans(selected)
-        + _required_spans(reference)
-        + tuple(tuple(span) for span in wip_equivalence_spans)
-        + tuple(tuple(span) for span in reference_equivalence_spans)
-    )
     route = SfmAnalysisRoute(
         route_id="REFERENCE_TEXT_COMPARISON",
         streams=(
@@ -179,12 +160,16 @@ def plan_rtc_work_units(
             unit_prefix=unit_prefix,
             route=route,
             context_pool=context,
-            required_spans=required_spans,
         )
     except EvidenceLimitError as exc:
-        code = "SAW_RTC_UNSPLITTABLE_BRIDGE" if exc.code == "WORK_UNIT_REQUIRED_SPAN_EXCEEDS_LIMIT" else "SAW_RTC_UNSPLITTABLE_WIP"
+        prefix = "SAW_RTC" if str(workflow).strip().lower() == "saw" else "RTC"
+        code = (
+            f"{prefix}_UNSPLITTABLE_BRIDGE"
+            if exc.code == "WORK_UNIT_REQUIRED_SPAN_EXCEEDS_LIMIT"
+            else f"{prefix}_UNSPLITTABLE_WIP"
+        )
         raise EvidenceLimitError(
-            "SAW RTC cannot preserve the routed WIP+REFERENCE SFM review item within governed limits",
+            "RTC cannot preserve the routed WIP+REFERENCE SFM review item within governed limits",
             code=code,
             affected_scope=exc.affected_scope,
             next_action="Narrow the scope or correct the oversized indivisible Scripture span.",

@@ -92,6 +92,48 @@
       "suite_version": "1.0",
       "validator_id": "sealed-semantic-contract-v1"
     },
+    "rtc": {
+      "cases": [
+        {
+          "bundle_sha256": "260fd3e681a5105bbf70c5a1cadd8a3d3e0a5d4d6986d9cd8898dbd8a508854c",
+          "case_id": "seeded-variance",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/rtc/seeded-variance"
+        },
+        {
+          "bundle_sha256": "03e8f3c5da92c21713ffb3926e18769db79bd6969dd807196e484aa7b499cf02",
+          "case_id": "aligned-pair",
+          "case_kind": "ZERO_FINDING",
+          "path": "system/evaluations/model-routing-alpha1/rtc/aligned-pair"
+        },
+        {
+          "bundle_sha256": "48e12d8174709ff330dfea6ffd6a6e59abe5f022d12ab55a29cbcadfa11b5f20",
+          "case_id": "false-ol-referral",
+          "case_kind": "ADVERSARIAL",
+          "path": "system/evaluations/model-routing-alpha1/rtc/false-ol-referral"
+        },
+        {
+          "bundle_sha256": "54e6bd151014bff7f439aa41704031722bb8a4cfbadb9b7b93eec640950738de",
+          "case_id": "fundamental-polarity",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/rtc/fundamental-polarity"
+        },
+        {
+          "bundle_sha256": "84efe09facf902f68383f49152c1cc5b8eece8c0fa07df8feeca77c6e83923ba",
+          "case_id": "participant-identity",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/rtc/participant-identity"
+        }
+      ],
+      "disqualifying_behavior": "Change coverage, refer nuance or equivalent wording, miss an admitted polarity/participant conflict, or finalize a referred dispute.",
+      "execution_class": "GOVERNED_SKILL",
+      "repetitions_per_case": 3,
+      "required_semantic_success": "Complete exact WIP and Reference coverage, admit only fundamental source-dependent conflicts, and keep every referral isolated.",
+      "suite_id": "alpha1-rtc",
+      "suite_sha256": "45674af880ffcdad7c5a549d9b78ddc7c0c19fa2adeca3534692c9122f6fe92a",
+      "suite_version": "1.1",
+      "validator_id": "sealed-semantic-contract-v1"
+    },
     "saw-focused-check": {
       "cases": [
         {
@@ -221,6 +263,36 @@
       "required_semantic_success": "Evaluate every planned WIP and primary Source coordinate.",
       "suite_id": "alpha1-saw-stc",
       "suite_sha256": "1c896bba410242439a92246ff443632274c3f35e67c37b3adeca59dd0491691c",
+      "suite_version": "1.0",
+      "validator_id": "sealed-semantic-contract-v1"
+    },
+    "stc": {
+      "cases": [
+        {
+          "bundle_sha256": "189819e6268100a65f627033805bcb9b1a9431268b520d5d8c61100b25cd4a24",
+          "case_id": "seeded-correspondence",
+          "case_kind": "POSITIVE",
+          "path": "system/evaluations/model-routing-alpha1/stc/seeded-correspondence"
+        },
+        {
+          "bundle_sha256": "ec257b582a5b513a264271ff2eb2fffd0a83604541cd9eed4e165e36d345ab91",
+          "case_id": "complete-no-finding",
+          "case_kind": "ZERO_FINDING",
+          "path": "system/evaluations/model-routing-alpha1/stc/complete-no-finding"
+        },
+        {
+          "bundle_sha256": "f9787d937c3beaed6f040250ebf388e3432c66bd07d306d327b095df597d8993",
+          "case_id": "reference-contamination",
+          "case_kind": "ADVERSARIAL",
+          "path": "system/evaluations/model-routing-alpha1/stc/reference-contamination"
+        }
+      ],
+      "disqualifying_behavior": "Use Reference evidence, omit completion, or demote primary Source authority.",
+      "execution_class": "GOVERNED_SKILL",
+      "repetitions_per_case": 3,
+      "required_semantic_success": "Evaluate every planned WIP and primary Source coordinate.",
+      "suite_id": "alpha1-stc",
+      "suite_sha256": "18ca0c439dc1819cdbc510a3148a02819c79b96f85326ca33f5af5984edd7ee9",
       "suite_version": "1.0",
       "validator_id": "sealed-semantic-contract-v1"
     }

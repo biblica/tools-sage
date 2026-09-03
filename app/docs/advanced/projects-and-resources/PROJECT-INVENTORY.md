@@ -22,7 +22,14 @@ Do not use *register*, *registered*, or *unregister* for the SAGE Project lifecy
 
 ## Role-neutral inventory
 
-Adding a Project to SAGE records Scripture identity, language metadata, detected books/scope, location, VRS status, validation state, and short-code metadata. Report-language configuration belongs globally and to Jobs, never to Project inventory. Final workflow reports remain Job-owned. Adding a Project does not assign BIC/RTC/STC roles and does not grant TARGET write authority.
+Adding a Project to SAGE records Scripture identity, language metadata, detected books, the
+Operator-confirmed scope, location, VRS status, validation state, and short-code metadata. The scope
+accepts `OT`, `NT`, `FB`, individual USFM IDs, inclusive canonical ranges such as `LUK-ACT`, and
+unions such as `NT, PSA`. Out-of-scope Scripture remains fingerprinted inventory but is not compiled
+to USJ and does not block workspace initialization. Refresh, validation, and rescans preserve the
+confirmed scope. Report-language configuration belongs globally and to Jobs, never to Project
+inventory. Final workflow reports remain Job-owned. Adding a Project does not assign BIC/RTC/STC
+roles and does not grant TARGET write authority.
 
 BIC Job setup binds SOURCE, DONOR, and TARGET. RTC binds different WIP and REFERENCE Projects. STC binds only WIP and selects `GRK`/`HEB` by Book; STC has no REFERENCE binding.
 
@@ -40,6 +47,9 @@ Ordinary SAGE Projects are read-only at inventory level. Effective access is der
 
 ## Safe removal
 
-**Remove Project from SAGE** removes only SAGE state. It does not delete or modify the Paratext Project. SAGE blocks removal while a Job still uses the Project; remove or revise those Job bindings first.
+**Remove Project from SAGE** uses negative-default confirmation. If Jobs bind the Project, SAGE lists
+them and requires explicit cascade confirmation before removing the bound Jobs, their Job-local data,
+and the Project's inventory/mapping. Cancellation preserves all state. The action never deletes or
+modifies the Paratext Project, Scripture files, or root-level published reports.
 
 `@GRK` and `@HEB` are governed original-language resources outside this ordinary Project Inventory.

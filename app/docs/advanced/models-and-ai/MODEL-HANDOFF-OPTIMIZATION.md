@@ -19,9 +19,9 @@ Model-facing Scripture is routed as bounded SFM. SAGE may compile USJ/structural
 
 Every routed natural-language stream also receives its complete canonical linguistic profile as a separate immutable model read. Project streams use `LANGUAGE_PROFILE`; GRK/HEB authorities use source-bound `OL_AUTHORITY_PROFILE`. Profiles are not Scripture evidence, are not sliced, and do not contribute to the SFM sizing budget.
 
-## 3. SAW semantic-only output
+## 3. RTC/STC semantic-only output
 
-SAW provider schemas are stage-specific. The model returns only semantic judgments relevant to that stage, such as findings, OL requests/resolutions, structural adjudications, and a concise review summary.
+RTC/STC provider schemas are stage-specific. The model returns only semantic judgments relevant to that stage, such as findings, OL requests/resolutions, structural adjudications, and a concise review summary.
 
 SAGE materializes deterministic fields locally before canonical validation, including:
 

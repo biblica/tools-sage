@@ -1,4 +1,4 @@
-"""Sequential SAW partition-plan continuation helper."""
+"""Sequential RTC/STC partition-plan continuation helpers."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ from .hashing import sha256_file
 from .human_output import report_language_authority
 from .consolidation import consolidate_result_documents
 from .registry import EcosystemConfig, load_ecosystem
-from .references import parse_scope
+from .references import analysis_scope_portions, parse_analysis_scope, parse_scope
 from .runtime_paths import plan_is_governed, task_is_governed
 from .jobs import JobStore
 from .report_authority import (
@@ -36,14 +36,28 @@ from .report_authority import (
 )
 from .platform_commands import render_sage_command
 from .local_assistive import maybe_write_report_executive_summary
-from .report_translation import ensure_secondary_saw_report_rendering
+from .report_translation import ensure_secondary_analysis_report_rendering
 from .execution_events import events_for_run
 from .source_coverage import source_comparison_status, unique_source_text_issues
+from .workflow_identity import analysis_reason_code, is_analysis_workflow, legacy_saw_workflow
+
+
+def _analysis_code(workflow: str, legacy_code: str) -> str:
+    """Preserve sealed legacy codes and canonicalize current RTC/STC codes."""
+    return (
+        legacy_code
+        if legacy_saw_workflow(workflow)
+        else analysis_reason_code(legacy_code, workflow)
+    )
 
 
 def _report_scope_slug(scope: str) -> str:
     """Render one canonical Scripture scope without altering numeric book codes."""
-    parsed = parse_scope(str(scope))
+    selected = parse_analysis_scope(str(scope))
+    portions = analysis_scope_portions(selected)
+    if len(portions) > 1:
+        return "-AND-".join(_report_scope_slug(portion.label()) for portion in portions)
+    parsed = portions[0]
     parts = [parsed.book]
     if parsed.start_chapter is None:
         return parsed.book
@@ -67,14 +81,14 @@ def _report_scope_slug(scope: str) -> str:
 
 def _report_book_code(scope: str) -> str:
     """Return the canonical uppercase book component used as a report subdirectory."""
-    return parse_scope(str(scope)).book
+    return parse_analysis_scope(str(scope)).book
 
 
 def _job_root_from_plan(plan_path: Path) -> Path:
     """Resolve the owning Job directory from a canonical Run plan path."""
     run_root = plan_path.parent.parent
     if plan_path.parent.name != "plans" or run_root.parent.name != "runs":
-        raise ValidationError("SAW report plan is not inside a canonical Job Run")
+        raise ValidationError("Analysis report plan is not inside a canonical Job Run")
     job_root = run_root.parent.parent
     if (
         job_root.parent.name not in {"rtc", "stc", "saw"}
@@ -95,7 +109,7 @@ def _job_reports_root(plan_path: Path) -> Path:
     job_root = _job_root_from_plan(plan_path)
     work_root = job_root.parent.parent.parent
     if work_root.name != "work":
-        raise ValidationError("SAW Job is not inside the canonical localdata work root")
+        raise ValidationError("Analysis Job is not inside the canonical localdata work root")
     data_root = work_root.parent
     return data_root / "reports" / job_root.name
 
@@ -176,7 +190,7 @@ def _reference_chapter(value: str) -> int | None:
 
 
 def _report_chapters(document: dict[str, Any], requested_scope: str) -> list[int]:
-    """Return the ordered chapter inventory represented by a finalized SAW result."""
+    """Return the ordered chapter inventory represented by a finalized analysis result."""
     chapters: set[int] = set()
     for value in list((document.get("coverage") or {}).get("reviewed_references", [])):
         chapter = _reference_chapter(str(value))
@@ -187,10 +201,12 @@ def _report_chapters(document: dict[str, Any], requested_scope: str) -> list[int
             chapter = _reference_chapter(str(row.get("target_reference") or ""))
             if chapter is not None:
                 chapters.add(chapter)
-    parsed = parse_scope(requested_scope)
-    if not chapters and parsed.start_chapter is not None:
-        end = parsed.end_chapter or parsed.start_chapter
-        chapters.update(range(parsed.start_chapter, end + 1))
+    parsed = parse_analysis_scope(requested_scope)
+    if not chapters:
+        for portion in analysis_scope_portions(parsed):
+            if portion.start_chapter is not None:
+                end = portion.end_chapter or portion.start_chapter
+                chapters.update(range(portion.start_chapter, end + 1))
     if not chapters:
         # Whole-book results should normally expose coordinate coverage. Keep a safe
         # single-chapter fallback for one-chapter books rather than omitting reports.
@@ -204,7 +220,7 @@ def _row_in_chapter(row: dict[str, Any], chapter: int, *, field: str = "target_r
 
 
 def _chapter_document(document: dict[str, Any], *, book: str, chapter: int) -> dict[str, Any]:
-    """Project one consolidated SAW document into one Operator-facing chapter document."""
+    """Project one consolidated analysis document into one Operator-facing chapter document."""
     result = dict(document)
     findings = [
         dict(row) for row in document.get("findings", [])
@@ -284,11 +300,11 @@ def _chapter_bundle_paths(
     chapter: int,
     report_id: str,
 ) -> tuple[Path, Path, Path]:
-    """Return chapter paths that expose the SAW report/operation identity."""
+    """Return chapter paths that expose the canonical report/operation identity."""
     job_root = _job_root_from_plan(plan_path)
     operation = str(report_id or "").strip().upper()
     if operation not in {"RTC", "STC"}:
-        raise ValidationError(f"Unsupported SAW report ID: {report_id!r}")
+        raise ValidationError(f"Unsupported analysis report ID: {report_id!r}")
     store = JobStore(config.root, config.settings_path)
     job = store.load_job(job_root.name)
     run_id = plan_path.parent.parent.name
@@ -373,7 +389,7 @@ def _write_chapter_report_bundles(
         )
         report_path.parent.mkdir(parents=True, exist_ok=True)
         data_path.parent.mkdir(parents=True, exist_ok=True)
-        chapter_doc = ensure_secondary_saw_report_rendering(config.root, report_path, chapter_doc)
+        chapter_doc = ensure_secondary_analysis_report_rendering(config.root, report_path, chapter_doc)
         markdown = render_action_report(chapter_doc)
         atomic_write_text(report_path, markdown)
         atomic_write_text(note_path, render_plain_text_from_markdown(markdown))
@@ -408,7 +424,7 @@ def _chapter_result_documents(
 ) -> tuple[list[dict[str, Any]], list[Path]]:
     """Load every finalized raw result for the same Job and Scripture book."""
     job_root = _job_root_from_plan(plan_path)
-    requested_book = parse_scope(scope).book
+    requested_book = parse_analysis_scope(scope).book
     rows: list[tuple[Path, dict[str, Any]]] = []
     current_resolved = current_path.resolve() if current_path is not None else None
     for candidate in sorted((job_root / "runs").glob("*/plans/*.json")):
@@ -416,12 +432,14 @@ def _chapter_result_documents(
             plan = _load_object(candidate, "finalized Job report plan")
         except ValidationError:
             continue
-        if plan.get("plan_type") != "SAW_RTC_COMPOSITE":
+        if plan.get("plan_type") not in {"RTC_COMPOSITE", "SAW_RTC_COMPOSITE"}:
             continue
         if plan.get("status") != "FINALIZED":
             continue
         try:
-            candidate_book = parse_scope(str(plan.get("requested_scope") or "")).book
+            candidate_book = parse_analysis_scope(
+                str(plan.get("requested_scope") or "")
+            ).book
         except ValidationError:
             continue
         if candidate_book != requested_book:
@@ -531,13 +549,14 @@ def _load_object(path: Path, label: str) -> dict[str, Any]:
 
 
 def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any]:
-    """Return the one next sequential SAW work unit, or the exact aggregation action."""
+    """Return the next sequential analysis work unit or aggregation action."""
     path = plan_path.expanduser().resolve()
-    if not plan_is_governed(config.workflow("saw"), path):
-        raise ValidationError("SAW continuation plan must be inside the governed plans directory")
-    plan = _load_object(path, "SAW continuation plan")
-    if plan.get("workflow") != "saw":
-        raise ValidationError("Only SAW plans can use the sequential continuation helper")
+    plan = _load_object(path, "analysis continuation plan")
+    workflow = str(plan.get("workflow") or "").strip().lower()
+    if not is_analysis_workflow(workflow):
+        raise ValidationError("Only RTC/STC or sealed legacy SAW plans can be continued")
+    if not plan_is_governed(config.workflow(workflow), path):
+        raise ValidationError("Analysis continuation plan must be inside its governed plans directory")
     if plan.get("status") == "FINALIZED":
         publication: dict[str, Any] = {}
         if str(plan.get("operation") or "").lower() == "stc":
@@ -555,20 +574,20 @@ def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict
             **publication,
         }
     if plan.get("status") != "PARTITIONED":
-        raise ValidationError("Only PARTITIONED or FINALIZED SAW plans can be continued")
+        raise ValidationError("Only PARTITIONED or FINALIZED analysis plans can be continued")
     units = plan.get("work_units")
     if not isinstance(units, list) or not units or any(not isinstance(unit, dict) for unit in units):
-        raise ValidationError("SAW plan work_units must be a nonempty list of objects")
+        raise ValidationError("Analysis plan work_units must be a nonempty list of objects")
 
     states: list[dict[str, Any]] = []
     first_unfinished: int | None = None
     finalized_after_gap: list[str] = []
     for index, unit in enumerate(units):
         manifest_path = resolve_persisted_path(
-            config.root, str(unit.get("manifest_path", "")), "SAW work-unit manifest"
+            config.root, str(unit.get("manifest_path", "")), "analysis work-unit manifest"
         )
-        if not task_is_governed(config.workflow("saw"), manifest_path.parent):
-            raise ValidationError("SAW work-unit manifest escapes the governed task root")
+        if not task_is_governed(config.workflow(workflow), manifest_path.parent):
+            raise ValidationError("Analysis work-unit manifest escapes the governed task root")
         submission_path = manifest_path.parent / "validation" / "submission.json"
         status = "CREATED"
         submission_sha256 = None
@@ -604,8 +623,8 @@ def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict
         states.append(state)
     if finalized_after_gap:
         raise ValidationError(
-            "SAW plan contains finalized work units after an unfinished predecessor",
-            code="SAW_SEQUENTIAL_ORDER_VIOLATION",
+            "Analysis plan contains finalized work units after an unfinished predecessor",
+            code=_analysis_code(workflow, "SAW_SEQUENTIAL_ORDER_VIOLATION"),
             next_action="Resolve the earliest unfinished unit before continuing later units.",
             details={"out_of_order_units": finalized_after_gap},
         )
@@ -694,7 +713,7 @@ def _composite_stage_result(config: EcosystemConfig, stage: dict[str, Any]) -> t
 
 
 def _run_versification_advisories(plan_path: Path) -> list[dict[str, Any]]:
-    """Load non-blocking SAW VRS advisories captured before Run creation."""
+    """Load non-blocking RTC VRS advisories captured before Run creation."""
     path = plan_path.parent.parent / "diagnostics" / "VERSIFICATION-ADVISORIES.json"
     if not path.is_file():
         return []
@@ -742,7 +761,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
             result,
             unit_id=f"{plan['plan_id']}-{stage.get('stage')}",
             run_id=str(plan.get("run_id") or plan.get("plan_id") or "RUN"),
-            prefix="SAW",
+            prefix=str(plan.get("workflow") or "rtc").upper(),
         )
         receipts.extend(globalized.get("review_receipts", []))
         adjudications.extend(globalized.get("structural_adjudications", []))
@@ -758,7 +777,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         "task_id": plan["plan_id"],
         "job_id": plan["job_id"],
         "run_id": plan["run_id"],
-        "workflow": "saw",
+        "workflow": str(plan.get("workflow") or "rtc").lower(),
         "operation": "rtc",
         "ol_referral_contract": plan.get("ol_referral_contract"),
         "review_portions": list(plan.get("review_portions") or []),
@@ -821,11 +840,11 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
     }
 
 
-def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str, Any]) -> dict[str, Any]:
+def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str, Any]) -> dict[str, Any]:
     """Advance one composite RTC plan by exactly one governed stage/action."""
     stages = plan.get("stages")
     if not isinstance(stages, list) or not stages or any(not isinstance(item, dict) for item in stages):
-        raise ValidationError("Composite SAW RTC plan has no valid stage inventory")
+        raise ValidationError("Composite RTC plan has no valid stage inventory")
     current = stages[-1]
     state, result_path, continuation = _composite_stage_result(config, current)
     if state != "FINALIZED":
@@ -840,14 +859,15 @@ def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[
         expected_ids: list[str] = []
         predecessor_files = [str(result_path)]
     elif stage_name == "REFERENCE_TEXT_COMPARISON":
-        meaning = _load_object(Path(str(result_path)), "SAW RTC meaning-stage result")
+        # Keep OL referrals attached to their immutable parent review portions.
+        meaning = _load_object(Path(str(result_path)), "RTC meaning-stage result")
         from .act_tasks import _review_portion_for_reference
 
         requests = globalize_ol_review_request_ids(
             list(meaning.get("ol_review_requests", [])),
             unit_id=f"{plan['plan_id']}-{stage_name}",
             run_id=str(plan.get("run_id") or plan["plan_id"]),
-            prefix="SAW",
+            prefix=str(plan.get("workflow") or "rtc").upper(),
         )
         review_portions = [
             dict(item)
@@ -867,6 +887,7 @@ def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[
             progress = _review_portion_for_reference(
                 review_portions,
                 str(request.get("target_reference") or ""),
+                workflow=str(plan.get("workflow") or "rtc"),
             )
             request.update(progress)
             request["parent_review_portion_id"] = progress["review_portion_id"]
@@ -878,7 +899,10 @@ def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[
         if requests and drift_state != "ENABLED":
             raise ValidationError(
                 "Reference Text Comparison (RTC) emitted original-language review requests while source-text drift adjudication is prohibited",
-                code="SAW_OL_REQUEST_PROHIBITED",
+                code=_analysis_code(
+                    str(plan.get("workflow") or "rtc"),
+                    "SAW_OL_REQUEST_PROHIBITED",
+                ),
                 next_action="Retry the same meaning-stage task; do not emit ol_review_requests unless the Run policy enables source-text drift adjudication.",
             )
         if not requests:
@@ -907,7 +931,7 @@ def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[
     from .act_tasks import _stage_record, create_act_task
     result = create_act_task(
         config,
-        workflow="saw",
+        workflow=str(plan.get("workflow") or "rtc").lower(),
         operation="rtc",
         output_project_id=str(plan["output_project"]),
         contemporary_source_id=str(plan["contemporary_source"]),
@@ -940,21 +964,22 @@ def _continue_saw_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[
     return {**new_continuation, "plan_id": plan.get("plan_id"), "plan_path": str(path), "composite_stage": next_stage}
 
 
-def continue_saw_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any]:
-    """Continue either a partitioned SAW plan or the staged composite RTC plan."""
+def continue_analysis_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any]:
+    """Continue a canonical RTC/STC plan or one sealed legacy SAW plan."""
     path = plan_path.expanduser().resolve()
-    plan = _load_object(path, "SAW continuation plan")
+    plan = _load_object(path, "analysis continuation plan")
     job_id = str(plan.get("job_id", "")).strip()
     if not job_id:
-        raise ValidationError("SAW continuation plan is missing canonical Job identity")
+        raise ValidationError("Analysis continuation plan is missing canonical Job identity")
     store = JobStore(config.root, config.settings_path)
     job = store.load_job(job_id)
-    if job.runtime_tool != "saw":
-        raise ValidationError("Analysis continuation Job does not use the SAW runtime adapter")
+    workflow = str(plan.get("workflow") or "").strip().lower()
+    if not is_analysis_workflow(job.runtime_tool) or workflow != job.runtime_tool:
+        raise ValidationError("Analysis continuation plan does not match its owning Job workflow")
     config = load_ecosystem(store.ensure_runtime_files(job))
-    if not plan_is_governed(config.workflow("saw"), path):
-        raise ValidationError("SAW continuation plan must be inside the governed plans directory")
-    if plan.get("plan_type") == "SAW_RTC_COMPOSITE":
+    if not plan_is_governed(config.workflow(workflow), path):
+        raise ValidationError("Analysis continuation plan must be inside the governed plans directory")
+    if plan.get("plan_type") in {"RTC_COMPOSITE", "SAW_RTC_COMPOSITE"}:
         if plan.get("status") == "FINALIZED":
             plan = _ensure_finalized_report_layout(config, path, plan)
             return {
@@ -967,5 +992,10 @@ def continue_saw_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any
                 "operator_note_text_path": plan.get("operator_note_text_path"),
                 "consolidated_data_path": plan.get("consolidated_data_path"),
             }
-        return _continue_saw_rtc_composite(config, path, plan)
+        return _continue_rtc_composite(config, path, plan)
     return _continue_partitioned_plan(config, path)
+
+
+def continue_saw_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, Any]:
+    """Compatibility alias for callers that predate canonical RTC/STC identity."""
+    return continue_analysis_plan(config, plan_path)

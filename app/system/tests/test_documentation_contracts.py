@@ -35,7 +35,7 @@ def frontmatter(path: Path) -> dict[str, str]:
 def test_all_skills_have_consistent_frontmatter() -> None:
     """Verify that all skills have consistent frontmatter."""
     paths = sorted(SKILLS.glob("*/SKILL.md"))
-    assert len(paths) == 7
+    assert len(paths) == 9
     for path in paths:
         data = frontmatter(path)
         assert set(data) == {"name", "description"}
@@ -51,7 +51,7 @@ def test_all_skills_have_consistent_frontmatter() -> None:
 def test_registered_skill_hashes_match_current_and_original_files() -> None:
     """Verify that registered skill hashes match current and original files."""
     document = json.loads((ROOT / "system" / "config" / "skills.json").read_text(encoding="utf-8"))
-    assert len(document["skills"]) == 7
+    assert len(document["skills"]) == 9
     for skill_id, item in document["skills"].items():
         assert skill_id
         assert sha256(ROOT / item["file"]) == item["adapted_sha256"]
@@ -88,6 +88,29 @@ def test_routed_skill_material_has_no_obsolete_operational_contracts() -> None:
         assert "Reference Text Comparison (RTC) uses OL" not in text
 
 
+def test_current_analysis_material_has_no_retired_saw_identity() -> None:
+    """Keep the retired umbrella identity out of current Skills and operating records."""
+    current_paths = [
+        ROOT / "system" / "config" / "DEVELOPMENT-STATUS.md",
+        ROOT / "system" / "config" / "NEXT-DEVELOPMENT-WORK.md",
+        ROOT / "system" / "config" / "localization" / "README.md",
+        ROOT / "system" / "config" / "project-management" / "RELEASE-CLEANUP.md",
+        ROOT / "system" / "config" / "project-management" / "TODO.md",
+    ]
+    for skill_id in ("bic-inspect", "bic-rewrite", "bic-self-check", "rtc", "stc"):
+        skill_root = SKILLS / skill_id
+        current_paths.extend(
+            path
+            for path in skill_root.rglob("*")
+            if path.is_file()
+            and not path.name.startswith("ORIGINAL-")
+            and not path.name.startswith("LEGACY-")
+        )
+    retired = re.compile(r"\bSAW(?:_|\b)")
+    for path in current_paths:
+        assert not retired.search(path.read_text(encoding="utf-8")), path.relative_to(ROOT)
+
+
 def test_documented_recovery_and_generation_flags_match_cli() -> None:
     """Verify that documented recovery and generation flags match CLI."""
     for platform in ("macos-linux", "windows"):
@@ -97,7 +120,7 @@ def test_documented_recovery_and_generation_flags_match_cli() -> None:
         assert "BIC > Recovery and diagnostics" in combined
         assert "RTC > Recovery and diagnostics" in combined
         assert "STC > Recovery and diagnostics" in combined
-        assert "SAGE Maintenance > System recovery and diagnostics" in combined
+        assert "SAGE Maintenance > System actions" in combined
         assert "--help" in combined
         assert "operator-cues.jsonl" in combined
         assert "generation pin [--consumer saw]" not in combined
@@ -229,7 +252,7 @@ def test_required_operator_help_set_exists_and_has_no_placeholders() -> None:
         "docs/advanced/maintenance/PURPOSE-FUNCTION-DRIFT-REPORT.md",
         "docs/advanced/maintenance/PYTHON-MAINTENANCE.md",
         "docs/BIC-CHEAT-SHEET.md",
-        "docs/SAW-CHEAT-SHEET.md",
+        "docs/RTC-STC-CHEAT-SHEET.md",
     }
     for relative in required:
         assert (ROOT / relative).is_file(), relative
@@ -246,7 +269,7 @@ def test_documentation_root_contains_only_simple_operator_material() -> None:
         "KNOWN-LIMITATIONS.md",
         "OPERATOR-GUIDE.md",
         "PROJECT-OPERATOR-CHEAT-SHEET.md",
-        "SAW-CHEAT-SHEET.md",
+        "RTC-STC-CHEAT-SHEET.md",
         "TUI.md",
     }
     assert {path.name for path in (ROOT / "docs" / "advanced").iterdir() if path.is_dir()} == {
@@ -488,7 +511,8 @@ def test_canonical_product_and_workflow_names_converge() -> None:
     expected = {
         "SAGE": "Scripture Analysis and Generation Engine",
         "BIC": "Bible Index & Context",
-        "SAW": "Scripture Analysis Workbench",
+        "RTC": "Reference Text Comparison",
+        "STC": "Source Text Correspondence",
     }
     grammar = (ROOT / "docs" / "advanced" / "architecture" / "SAGE-SYSTEM-GRAMMAR.md").read_text(encoding="utf-8")
     standard = json.loads(
@@ -514,7 +538,7 @@ def test_current_operating_material_uses_current_release_and_placeholder_style()
         ROOT / "docs" / "macos-linux" / "RECOVERY.md",
         ROOT / "docs" / "windows" / "RECOVERY.md",
         ROOT / "docs" / "BIC-CHEAT-SHEET.md",
-        ROOT / "docs" / "SAW-CHEAT-SHEET.md",
+        ROOT / "docs" / "RTC-STC-CHEAT-SHEET.md",
     ] + sorted(SKILLS.glob("*/SKILL.md"))
     current_version = (ROOT / "VERSION").read_text(encoding="utf-8").strip().casefold()
     current_rc = re.search(r"(?i)rc\d+(?:\.\d+)?", current_version)
@@ -602,14 +626,14 @@ def test_current_operator_navigation_and_tui_contracts_are_documented() -> None:
 def test_cheat_sheets_name_state_transitions_and_natural_language_boundary() -> None:
     """Verify that cheat sheets name state transitions and natural language boundary."""
     bic = (ROOT / "docs" / "BIC-CHEAT-SHEET.md").read_text(encoding="utf-8")
-    saw = (ROOT / "docs" / "SAW-CHEAT-SHEET.md").read_text(encoding="utf-8")
-    assert "Natural-language entry" in bic and "Natural-language entry" in saw
+    analysis = (ROOT / "docs" / "RTC-STC-CHEAT-SHEET.md").read_text(encoding="utf-8")
+    assert "Natural-language entry" in bic and "Natural-language entry" in analysis
     assert "STAGED_VALIDATED" in bic
     assert "journaled TARGET commit" in bic
-    assert "FINALIZED" in saw
-    assert "SAW never edits Scripture projects" in saw
+    assert "FINALIZED" in analysis
+    assert "RTC/STC never edit Scripture Projects" in analysis
     assert "INPUT_REQUIRED" in bic and "BLOCKED" in bic
-    assert "INPUT_REQUIRED" in saw and "BLOCKED" in saw
+    assert "INPUT_REQUIRED" in analysis and "BLOCKED" in analysis
     assert "BIC_TOOL_PROJECT_ID" not in bic
     assert "--job BIC_JOB_ID" in bic
 
@@ -620,11 +644,11 @@ def test_operator_docs_describe_exact_skill_routing_without_legacy_selection() -
         ROOT / "docs/advanced/models-and-ai/MODEL-SELECTION-AND-REASONING.md"
     ).read_text(encoding="utf-8")
     operator = (ROOT / "docs/OPERATOR-GUIDE.md").read_text(encoding="utf-8")
-    saw = (ROOT / "docs/SAW-CHEAT-SHEET.md").read_text(encoding="utf-8")
-    combined = "\n".join((model, operator, saw))
+    analysis = (ROOT / "docs/RTC-STC-CHEAT-SHEET.md").read_text(encoding="utf-8")
+    combined = "\n".join((model, operator, analysis))
     assert "provider-native reasoning" in combined
     assert "model routes" in model
-    assert "model recommend --skill saw-rtc" in model
+    assert "model recommend --skill rtc" in model
     assert "model override set" in model
     assert "one reported item per request" in model
     assert "report composition" in combined.casefold()
@@ -651,7 +675,7 @@ def test_representative_documented_commands_parse() -> None:
         ],
         [
             "--settings", "ecosystem.yml", "task", "create",
-            "--workflow", "saw", "--operation", "rtc",
+            "--workflow", "rtc", "--operation", "rtc",
             "--output-project", "ukrNPUv0", "--contemporary-source", "usNIVv2",
             "--scope", "AMO 1:1-9:15", "--grammar-override-id", "GRAMMAR_REVIEW_ID",
         ],
@@ -967,9 +991,9 @@ def test_provider_neutral_skills_keep_setup_and_task_surfaces_separate() -> None
 
 
 def test_release_gates_use_current_skill_count_and_routed_sfm_budget_authority() -> None:
-    """Keep release qualification aligned with seven Skills and routed-SFM-only sizing."""
+    """Keep release qualification aligned with nine Skills and routed-SFM-only sizing."""
     release_gates = (ROOT / "docs" / "advanced" / "release" / "RELEASE-GATES.md").read_text(encoding="utf-8")
-    assert "all seven registered analytical Skill files" in release_gates
+    assert "all nine registered analytical Skill files" in release_gates
     assert "all six registered analytical Skill files" not in release_gates
     assert "exact prompt plus output schema" not in release_gates
     assert "only the SFM Scripture streams routed to that review item" in release_gates

@@ -18,6 +18,7 @@ from sage.executors.http import validate_local_endpoint
 from sage.hashing import sha256_file
 from sage.llm_tasks import (
     _materialize_saw_findings,
+    _materialize_provider_files,
     _model_read_content,
     _output_schema,
     _parse_response,
@@ -713,12 +714,12 @@ def test_clear_spanish_saw_narrative_gets_one_english_correction_retry(
     assert findings["findings"][0]["issue"].startswith("The translation")
 
 
-def test_saw_provider_schema_requests_only_stage_semantics() -> None:
-    """SAW provider schema omits deterministic identity, coverage, and receipt boilerplate."""
+def test_rtc_provider_schema_requests_only_stage_semantics() -> None:
+    """RTC provider schema omits deterministic identity, coverage, and receipt boilerplate."""
     manifest = {
-        "task_id": "saw-rtc-mat-example",
+        "task_id": "rtc-mat-example",
         "task_fingerprint": "fingerprint",
-        "workflow": "saw",
+        "workflow": "rtc",
         "operation": "rtc",
         "rtc_stage": "REFERENCE_TEXT_COMPARISON",
         "scope": "MAT 1:1",
@@ -726,7 +727,7 @@ def test_saw_provider_schema_requests_only_stage_semantics() -> None:
         "check_type": None,
         "expected_references": ["MAT 1:1"],
         "review_requirements": {
-            "expected_work_unit_ids": ["SAW-RTC-U001"],
+            "expected_work_unit_ids": ["RTC-U001"],
             "required_checks": ["MEANING_EQUIVALENCE", "GRAMMAR"],
         },
         "allowed_writes": ["output/findings.json"],
@@ -814,8 +815,8 @@ def test_saw_v1_provider_schema_requires_closed_ol_referral_admission() -> None:
 def test_stc_provider_schema_uses_only_stc_semantics() -> None:
     """STC must not inherit RTC stages, categories, or conditional OL request fields."""
     manifest = {
-        "task_id": "saw-stc-phm-example",
-        "workflow": "saw",
+        "task_id": "stc-phm-example",
+        "workflow": "stc",
         "operation": "stc",
         "scope": "PHM",
         "allowed_writes": ["output/findings.json"],
@@ -839,6 +840,40 @@ def test_stc_provider_schema_uses_only_stc_semantics() -> None:
     }
     assert "issue" not in finding["properties"]
     assert "action_level" not in finding["properties"]
+
+
+def test_current_rtc_provider_semantics_are_materialized_canonically() -> None:
+    """Current RTC uses the compact schema and controller-owned output envelope."""
+    manifest = {
+        "task_id": "rtc-mat-example",
+        "task_fingerprint": "fingerprint",
+        "workflow": "rtc",
+        "operation": "rtc",
+        "rtc_stage": "REFERENCE_TEXT_COMPARISON",
+        "scope": "MAT 1:1",
+        "expected_references": ["MAT 1:1"],
+        "review_requirements": {
+            "expected_work_unit_ids": ["RTC-U001"],
+            "required_checks": ["MEANING_EQUIVALENCE"],
+        },
+        "narrative_language": {
+            "tag": "en",
+            "authority": "CANONICAL_REPORT_NARRATIVE",
+        },
+    }
+    files = {
+        "output/findings.json": json.dumps({
+            "review_summary": "Compared the routed WIP and Reference evidence.",
+            "findings": [],
+            "ol_review_requests": [],
+        })
+    }
+
+    document = json.loads(_materialize_provider_files(manifest, files)["output/findings.json"])
+
+    assert document["task_id"] == "rtc-mat-example"
+    assert document["review_receipts"][0]["work_unit_id"] == "RTC-U001"
+    assert "SAW" not in json.dumps(document)
 
 
 def test_stc_semantics_materialize_as_stc_submission_not_rtc_findings() -> None:

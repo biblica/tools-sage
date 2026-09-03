@@ -1,6 +1,6 @@
 # Local AI Assistive Mode
 
-SAGE retains the Local AI compatibility switch, but its administrative explanations and executive summaries are now deterministic controller functions. Ollama does not participate in those paths and never becomes a governed BIC/SAW provider.
+SAGE retains the Local AI compatibility switch, but its administrative explanations and executive summaries are now deterministic controller functions. Ollama does not participate in those paths and never becomes a governed BIC/RTC/STC provider.
 
 ## Authority and configuration
 
@@ -58,7 +58,7 @@ Classic and Textual status may render a deterministic assistive note from the sa
 
 ## Report summaries
 
-A canonical BIC/SAW report is written first and remains unchanged. When the compatibility switch is enabled, SAGE writes a separate deterministic `*_ASSISTIVE-SUMMARY.json` artifact carrying:
+A canonical BIC/RTC/STC report is written first and remains unchanged. When the compatibility switch is enabled, SAGE writes a separate deterministic `*_ASSISTIVE-SUMMARY.json` artifact carrying:
 
 - `NON_AUTHORITATIVE_ASSISTIVE` label;
 - source canonical-report SHA-256;

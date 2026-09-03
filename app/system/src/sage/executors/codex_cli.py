@@ -239,7 +239,7 @@ class CodexCLIExecutor:
         stderr_path = cwd / "codex-stderr.log"
         argv = self._command_argv(args)
         # Windows commonly defaults Python text pipes to a legacy code page such as
-        # cp1252.  SAW/BIC prompts can contain Scripture text in any Unicode script,
+        # cp1252. Workflow prompts can contain Scripture text in any Unicode script,
         # so validate and force UTF-8 before the child is created.  Without this, a
         # writer-thread UnicodeEncodeError can leave Codex alive waiting for stdin
         # until SAGE's outer timeout expires.

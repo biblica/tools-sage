@@ -12,7 +12,7 @@ should prefer a qualified Local AI route and use a qualified hosted administrati
 the Operator has explicitly enabled that fallback.
 
 This design refines the existing `local_assistive` boundary. It does not create a second workflow
-engine and does not weaken the governed BIC/SAW Skill boundary. It also formalizes the rule that
+engine and does not weaken the governed BIC/RTC/STC Skill boundary. It also formalizes the rule that
 latency-optimized **Instant** models or modes and provider-native **low** reasoning settings are
 administrative-only and can never execute a SAGE Job Skill.
 
@@ -23,7 +23,7 @@ administrative-only and can never execute a SAGE Job Skill.
    authority.
 3. Prefer qualified Local AI for eligible administrative assistance.
 4. Allow hosted administrative fallback only by explicit Operator opt-in.
-5. Prohibit every Instant model/mode and provider-native low reasoning setting from governed BIC/SAW
+5. Prohibit every Instant model/mode and provider-native low reasoning setting from governed BIC/RTC/STC
    execution.
 6. Reuse the provider-neutral catalog, qualification-evidence repository, and receipt architecture.
 7. Let normal Operators begin work within minutes without running a local model benchmark.
@@ -32,7 +32,7 @@ administrative-only and can never execute a SAGE Job Skill.
 
 ## Non-goals
 
-- No new BIC or SAW analytical Skill is introduced.
+- No new BIC, RTC, or STC analytical Skill is introduced.
 - No Local AI model is promoted to governed Scripture authority.
 - No universal LOW/MEDIUM/HIGH reasoning scale is invented.
 - No route is qualified by asking a model to rate itself.
@@ -50,7 +50,7 @@ workflow judgment, or change state.
 
 ### Governed Skill
 
-A registered BIC/SAW Skill whose model result is part of governed Job execution. It requires an exact
+A registered BIC/RTC/STC Skill whose model result is part of governed Job execution. It requires an exact
 qualified provider/model/capability/reasoning route and the full existing task, evidence, submission,
 and validation boundaries.
 
@@ -81,7 +81,7 @@ The current execution ownership classes remain the authority source:
 | `local_assistive` deterministic template | Non-authoritative presentation | Reproducible explanation or compact summary derived from typed facts |
 | Qualified Local AI administrative route | Non-authoritative presentation | Optional wording or summarization of the same typed facts |
 | Qualified hosted administrative route | Non-authoritative presentation | Explicitly enabled fallback wording or summarization |
-| `governed_skills` | Governed semantic execution | Exact qualified BIC/SAW Skill output subject to production validators |
+| `governed_skills` | Governed semantic execution | Exact qualified BIC/RTC/STC Skill output subject to production validators |
 
 Administrative AI cannot:
 

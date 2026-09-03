@@ -465,7 +465,7 @@ def test_registry_rejects_shared_bic_target_and_saw_wip_identity(make_workspace)
     data = yaml.safe_load(settings.read_text(encoding="utf-8"))
     data["projects"]["usBOLx1"]["scope"]["roles"].append("WIP")
     settings.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
-    with pytest.raises(ConfigurationError, match="cannot be both BIC GENERATED_TARGET and SAW WIP"):
+    with pytest.raises(ConfigurationError, match="cannot be both BIC GENERATED_TARGET and analysis WIP"):
         load_ecosystem(settings)
 
 

@@ -9,7 +9,7 @@ directory contains technical, governance, maintenance, and release material grou
   contracts.
 - [Projects and Resources](projects-and-resources/) — Project lifecycle, profiles, versification,
   original-language resources, rights, and lexical/semantic resources.
-- [Workflows](workflows/) — BIC/SAW execution, planning, remediation, recovery, and authority rules.
+- [Workflows](workflows/) — BIC/RTC/STC execution, planning, remediation, recovery, and authority rules.
 - [Models and AI](models-and-ai/) — provider selection, local AI, evidence boundaries, competency,
   and handoff optimization.
 - [Maintenance](maintenance/) — [Python maintenance](maintenance/PYTHON-MAINTENANCE.md), hardening,

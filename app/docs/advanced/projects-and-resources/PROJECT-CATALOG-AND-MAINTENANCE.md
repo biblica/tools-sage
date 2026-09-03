@@ -11,7 +11,7 @@ Paratext Project Catalog
   -> Discovered Project
 Add Project to SAGE
   -> SAGE Project Inventory
-Assign Project Role in BIC/SAW
+Assign Project Role in BIC/RTC/STC
   -> Job Binding
 Create Job
   -> Run
@@ -80,6 +80,13 @@ Standard USFM peripheral books (`FRT`, `INT`, `BAK`, `CNC`, `GLO`, `TDX`, `NDX`,
 
 Canonical Scripture files outside the imported Project's declared book scope are handled similarly: SAGE reports them as out-of-scope inventory and retains them in the resource fingerprint, but does not compile them to USJ or block workspace initialization. During onboarding, `canons.xml` supplies the default scope when available and detected Scripture supplies the fallback. The Operator confirms or replaces that proposal using `OT`, `NT`, `FB`, individual USFM IDs, inclusive ranges such as `LUK-ACT`, or unions such as `NT, PSA`.
 
+The formal input grammar is `scope := term (separator term)*`, where
+`term := OT | NT | FB | USFM_ID | USFM_ID-USFM_ID` and a separator is a comma or whitespace.
+Parsing is case-insensitive, ranges follow canonical book order and include both endpoints, and the
+stored result is normalized to canonical USFM order. Unknown IDs and reversed ranges are rejected.
+Refresh, validation, rescanning, and remapping preserve this confirmed scope instead of expanding it
+to every detected `.SFM` file.
+
 When `custom.vrs` names a configured base VRS that differs from the stored Project selection, **Validate active Job** presents the detected change for Operator approval before validation. It never silently changes the Project's versification settings.
 
 ## Scripture Projects menu
@@ -107,22 +114,35 @@ Paratext Projects root: <configured path> | NOT CONFIGURED
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-The long Paratext catalog appears only under **Add Projects to SAGE**, not inside BIC/SAW role selection.
+The long Paratext catalog appears only under **Add Projects to SAGE**, not inside BIC/RTC/STC role selection.
 
-A Project detail screen uses these sections:
+A Project detail screen uses the following action ledger:
 
 ```text
-# Details ______________________________________________________________
-# Project Settings _____________________________________________________
-# Maintenance __________________________________________________________
-# Advanced _____________________________________________________________
+  1. Project information
+  2. Scripture books
+  3. Versification
+  4. Project location
+  5. Refresh PROJECT
+  6. Validate PROJECT
+  7. Jobs using this PROJECT
+  8. Advanced settings
+  9. Remove PROJECT from SAGE
 ```
 
-**Remove Project from SAGE** is visible directly on this menu and remains available on each Project detail screen. It removes SAGE-owned inventory/mapping state only. It never deletes or modifies the Paratext Project or Scripture files. Removal is blocked while any Job, including an archived Job, still binds the Project.
+**Refresh Project** rereads Paratext/catalog facts while preserving the Operator-confirmed book
+scope and import date. **Validate Project** evaluates readiness separately and does not widen scope.
+
+**Remove Project from SAGE** is visible directly on the Scripture Projects menu and on each Project
+detail screen. An unbound Project removes its SAGE inventory and mapping after negative-default
+confirmation. When active or archived Jobs bind it, SAGE lists every affected Job and offers one
+explicit negative-default cascade confirmation; accepting removes those Jobs, their Job-local data,
+and the Project's SAGE inventory/mapping. Cancellation changes nothing. Paratext Projects, Scripture
+files, and root-level published reports are never deleted or modified by this action.
 
 ## Job roles
 
-BIC assigns SAGE Projects as SOURCE, DONOR, and TARGET. SAW assigns SAGE Projects as WIP and REFERENCE. One SAGE Project may be used by multiple Jobs in different permitted roles.
+BIC assigns SAGE Projects as SOURCE, DONOR, and TARGET. RTC/STC assigns SAGE Projects as WIP and REFERENCE. One SAGE Project may be used by multiple Jobs in different permitted roles.
 
 TARGET write authority is granted only by an explicitly authorized BIC TARGET Job binding. Project inventory membership itself does not grant write authority.
 

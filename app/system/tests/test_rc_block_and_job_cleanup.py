@@ -85,6 +85,29 @@ def test_execution_event_persists_sanitized_jsonl_and_markdown(tmp_path: Path) -
     assert "JUD 1-25" in report
 
 
+def test_current_rtc_event_persists_canonical_reason_and_prose(tmp_path: Path) -> None:
+    """New RTC diagnostics do not serialize the retired analysis identity."""
+    sage_root = tmp_path / "SAGE" / "app"
+    run = storage_layout(sage_root, create=True).jobs_root / "rtc" / "RTC-fixture" / "runs" / "RTC-fixture-001"
+    run.mkdir(parents=True)
+    event = record_exception_event(
+        sage_root,
+        ValidationError(
+            "SAW RTC provider output is invalid",
+            code="SAW_OUTPUT_INVALID",
+            next_action="Retry the same SAW RTC work unit.",
+        ),
+        workflow="rtc",
+        operation="rtc",
+        run_root=run,
+    )
+    assert event["reason_code"] == "RTC_OUTPUT_INVALID"
+    payload = (run / "diagnostics" / "EXECUTION-EVENTS.jsonl").read_text(encoding="utf-8")
+    report = (run / "diagnostics" / "BLOCK-REPORT.md").read_text(encoding="utf-8")
+    assert "SAW" not in payload
+    assert "SAW" not in report
+
+
 def test_rejected_task_output_is_archived_for_same_task_retry(tmp_path: Path) -> None:
     """Rejected provider output is evidence-preserved while the sealed task becomes retryable."""
     task = tmp_path / "task"

@@ -43,6 +43,14 @@ skill_routes:
     suite_id: alpha1-bic-self-check
     suite_sha256: d9407a651189b166a1a8fb4a2afc4e77110d5ea2f2da8df167fcf2b9c6824889
     execution_class: GOVERNED_SKILL
+  rtc:
+    suite_id: alpha1-rtc
+    suite_sha256: 45674af880ffcdad7c5a549d9b78ddc7c0c19fa2adeca3534692c9122f6fe92a
+    execution_class: GOVERNED_SKILL
+  stc:
+    suite_id: alpha1-stc
+    suite_sha256: 18ca0c439dc1819cdbc510a3148a02819c79b96f85326ca33f5af5984edd7ee9
+    execution_class: GOVERNED_SKILL
   saw-rtc:
     suite_id: alpha1-saw-rtc
     suite_sha256: 62a2721e373bbf84c020f1262eb8278c94df8f207cd131d94847555ba759432b

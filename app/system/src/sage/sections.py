@@ -147,7 +147,7 @@ def index_usfm_structure(
         active_discourse_unit_marker = ""
 
     def start_discourse_unit(kind: str, marker: str) -> None:
-        """Start one deterministic prose/list/poetry unit for bounded SAW RTC."""
+        """Start one deterministic prose/list/poetry unit for bounded RTC."""
         nonlocal discourse_sequence
         nonlocal active_discourse_unit_id
         nonlocal active_discourse_unit_kind

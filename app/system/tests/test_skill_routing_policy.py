@@ -22,6 +22,8 @@ REGISTERED_SKILLS = (
     "bic-inspect",
     "bic-rewrite",
     "bic-self-check",
+    "rtc",
+    "stc",
     "saw-rtc",
     "saw-stc",
     "saw-focused-check",

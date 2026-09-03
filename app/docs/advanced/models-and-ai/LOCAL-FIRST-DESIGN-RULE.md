@@ -19,4 +19,4 @@ Use AI for contextual sense judgment, semantic equivalence, candidate generation
 3. Only then create a governed AI task.
 4. If a non-semantic operation still requires AI, improve the local implementation rather than normalizing the AI dependency.
 
-This rule is independent of provider selection and applies to BIC, SAW, RWC indexing, and future tools that reuse the SAGE semantic-index engine.
+This rule is independent of provider selection and applies to BIC, RTC/STC, RWC indexing, and future tools that reuse the SAGE semantic-index engine.

@@ -1,4 +1,4 @@
-"""SAW finding identity, lookup, context, and VRS-aware reference controls."""
+"""Analysis finding identity, lookup, context, and VRS-aware reference controls."""
 
 from __future__ import annotations
 

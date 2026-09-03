@@ -8,7 +8,7 @@
 
 ## Path contract
 
-The shipped tree has no non-ASCII pathnames, no case-insensitive/Unicode-normalized path collisions, and no path component approaching common POSIX filesystem component limits. Runtime path construction uses `pathlib`; shell entrypoints quote their resolved SAGE root and forward arguments without word splitting. A root containing spaces was exercised through `./sage`, BIC, and SAW.
+The shipped tree has no non-ASCII pathnames, no case-insensitive/Unicode-normalized path collisions, and no path component approaching common POSIX filesystem component limits. Runtime path construction uses `pathlib`; shell entrypoints quote their resolved SAGE root and forward arguments without word splitting. A root containing spaces was exercised through `./sage`, BIC, and RTC/STC.
 
 ## POSIX launchers
 
@@ -53,4 +53,4 @@ Before production qualification, run on a physical/virtual macOS host:
 4. exercise a real Paratext Projects root and an external Project location;
 5. verify Codex ChatGPT login;
 6. verify Ollama detection/install/start/model status if that optional local assistant is enabled; and
-7. run one governed BIC and SAW cycle.
+7. run one governed BIC and RTC/STC cycle.

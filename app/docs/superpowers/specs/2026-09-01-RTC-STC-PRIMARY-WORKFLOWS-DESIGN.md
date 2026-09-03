@@ -117,6 +117,13 @@ When a refresh changes the snapshot date, SAGE keeps the same logical Job record
 
 Refreshing a Job replaces its current imported USJ and snapshot receipt only when no active Run depends on mutable Job data. Every created Run seals a copy or immutable receipt of its selected USJ scope, snapshot date, fingerprint, bindings, authorities, and resource fingerprints. Completed and in-progress Run evidence therefore remains stable after a later Job refresh.
 
+The WIP binding and, for RTC, the REFERENCE binding are immutable for the Job lifetime. Refreshing a
+WIP snapshot rereads only the same bound Project. Changing either binding requires a new Job.
+
+Deleting an RTC/STC Job removes all Job-owned work and controller state. Separately published
+`reports/<job-id>/` files have an independent prompt and are preserved by default. SAGE Projects and
+Paratext files remain untouched.
+
 ## Run identity
 
 Runs against the same Job snapshot receive a monotonically increasing, three-digit serial:

@@ -1,5 +1,7 @@
 # Skill-qualified model routing implementation plan
 
+> Historical implementation record: examples using `saw-*` identify the original sealed Skill suites. Current RTC/STC work routes through the canonical `rtc` and `stc` Skills; legacy suites remain readable for sealed Jobs.
+
 > **Required implementation skill:** Use `superpowers:test-driven-development` for every runtime change and `superpowers:verification-before-completion` before reporting any task complete.
 
 **Goal:** Replace global model/reasoning selection with provider-neutral, deterministic routing to an available route qualified for the exact registered Skill, while preserving Python ownership, item isolation, auditable overrides, truthful receipts, and Operator-visible execution metadata.
