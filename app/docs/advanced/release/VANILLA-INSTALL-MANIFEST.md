@@ -815,6 +815,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_scope_and_auto_resolution.py`
 - `system/tests/test_sections_and_work_units.py`
 - `system/tests/test_semantic_indexes.py`
+- `system/tests/test_sfm_alignment.py`
 - `system/tests/test_sfm_slicer.py`
 - `system/tests/test_stc.py`
 - `system/tests/test_stc_registration.py`
