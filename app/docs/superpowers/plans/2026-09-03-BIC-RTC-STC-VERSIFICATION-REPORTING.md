@@ -304,7 +304,7 @@ Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../loc
 
 Expected: PASS; standalone STC manifests contain inventory display names for WIP and GRK/HEB.
 
-- [ ] **Step 6: Commit Stage 1 identity work**
+- [x] **Step 6: Commit Stage 1 identity work**
 
 ```bash
 git add app/system/src/sage/project_context.py app/system/src/sage/act_tasks.py app/system/tests/test_project_context.py app/system/tests/test_stc_task.py app/system/tests/test_primary_analysis_jobs.py
@@ -456,7 +456,7 @@ Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../loc
 
 Expected: PASS for one-to-one, continuation, equivalence-group, exclusion, and deterministic-order fixtures.
 
-- [ ] **Step 7: Commit the alignment foundation**
+- [x] **Step 7: Commit the alignment foundation**
 
 ```bash
 git add app/system/src/sage/verse_alignment.py app/system/src/sage/findings.py app/system/tests/test_verse_alignment.py app/system/tests/test_findings_and_coverage.py app/system/tests/test_vrs.py
@@ -479,7 +479,7 @@ git commit -m "feat: index project verses by canonical coordinates"
 - Changes: `SfmAnalysisRoute` adds `primary_stream_id: str | None = None` and `primary_index: ProjectVerseIndex | None = None`
 - Preserves: routes with no indexes use current exact-local selection
 
-- [ ] **Step 1: Write a failing cross-VRS route-sizing test**
+- [x] **Step 1: Write a failing cross-VRS route-sizing test**
 
 ```python
 def test_sfm_route_measures_authority_record_selected_by_canonical_mapping(tmp_path) -> None:
@@ -493,22 +493,23 @@ def test_sfm_route_measures_authority_record_selected_by_canonical_mapping(tmp_p
         ),
     )
     units = plan_sfm_work_units(wip, policy(), unit_prefix="RTC-2CO", route=route)
-    assert units[0].measurement.estimated_tokens == measure_sfm_text(
-        render_sfm_slice(wip) + render_sfm_slice(reference)
-    ).estimated_tokens
+    assert units[0].measurement.estimated_tokens == (
+        measure_sfm_slice(wip).estimated_tokens
+        + measure_sfm_slice(reference).estimated_tokens
+    )
 ```
 
-- [ ] **Step 2: Write a failing projected source-bridge test**
+- [x] **Step 2: Write a failing projected source-bridge test**
 
 Create a REFERENCE bridge whose local coordinates map onto two WIP local atoms. Assert that the planner never separates those WIP atoms. Also assert that an equivalent range present only in VRS metadata does not protect a boundary.
 
-- [ ] **Step 3: Run the slicer tests and verify exact-local routing fails**
+- [x] **Step 3: Run the slicer tests and verify exact-local routing fails**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_sfm_alignment.py tests/test_hardening_and_segmentation.py`
 
 Expected: the cross-VRS Authority text is not selected and the projected bridge assertion fails.
 
-- [ ] **Step 4: Implement indexed stream selection**
+- [x] **Step 4: Implement indexed stream selection**
 
 For the declared primary stream, retain exact Primary local record selection. For every indexed Authority stream:
 
@@ -519,17 +520,17 @@ selected_primary = stream.verse_index.records_for_canonical(primary_canonical)
 
 Coverage checks compare canonical atoms. Context selection follows the same mapping. Legacy routes with missing `primary_index` or stream indexes execute the existing local intersection code.
 
-- [ ] **Step 5: Project actual Authority bridges to Primary local coordinates**
+- [x] **Step 5: Project actual Authority bridges to Primary local coordinates**
 
 Update `SfmAnalysisRoute.protected_spans()` to project only `record.refs` from actual multi-coordinate records through both indexes. Do not add `VersificationSchema.mappings` directly to `required_spans`.
 
-- [ ] **Step 6: Run all slicer/work-unit tests**
+- [x] **Step 6: Run all slicer/work-unit tests**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_sfm_alignment.py tests/test_hardening_and_segmentation.py tests/test_sections_and_work_units.py tests/test_rtc_planner.py tests/test_stc.py`
 
 Expected: PASS; unchanged exact-local tests prove the compatibility path remains intact.
 
-- [ ] **Step 7: Commit VRS-aware routing**
+- [x] **Step 7: Commit VRS-aware routing**
 
 ```bash
 git add app/system/src/sage/sfm_slicer.py app/system/tests/test_sfm_alignment.py app/system/tests/test_hardening_and_segmentation.py
