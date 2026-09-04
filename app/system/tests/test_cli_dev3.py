@@ -9,6 +9,8 @@ import sys
 from argparse import Namespace
 from pathlib import Path
 
+import yaml
+
 
 def run_cli(package_root: Path, workspace: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
     """Run the SAGE CLI in an isolated subprocess for this test."""
@@ -106,6 +108,8 @@ def test_saw_plan_uses_independent_wip_without_bic_generation_pin(package_root: 
     assert payload["project_id"] == "usWIP"
     assert payload["schema_version"] == "1.4"
     assert payload["rtc_planner"]["boundary_streams"] == ["WIP", "REFERENCE"]
+    assert payload["rtc_planner"]["version"] == "SAGE_RTC_SFM_ROUTE_PLANNER_V5"
+    assert payload["rtc_planner"]["reference_correlation"] == "CANONICAL_PROJECT_VRS"
     assert payload["reference_project_id"] == "usNIVv2"
     assert payload["shared_hashes"]["reference_resource_sha256"]
     package = payload["units"][0]["rtc_package"]
@@ -113,8 +117,52 @@ def test_saw_plan_uses_independent_wip_without_bic_generation_pin(package_root: 
         package["wip"]["estimated_tokens"] + package["ref"]["estimated_tokens"]
     )
     assert package["sizing_basis"] == "ROUTED_SFM_ONLY"
+    assert package["projection"] == "SAGE_RTC_SFM_ROUTE_PLANNER_V5"
+    assert package["alignment"]["canonical_atoms"]
     assert package["wip"]["estimated_tokens"] < 8000
     assert package["route"]["estimated_tokens"] <= 32000
+
+
+def test_rtc_plan_correlates_projects_through_their_effective_vrs(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """CLI planning must route a WIP-local label to the matching Reference-local label."""
+    root = make_workspace(configured=True, verse_max=3)
+    projects_root = root.parent / "localdata/work/projects"
+    (projects_root / "usWIP" / "custom.vrs").write_text(
+        "MAT 1:3 = MAT 1:2\n",
+        encoding="utf-8",
+    )
+    settings = root / "ecosystem.yml"
+    settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
+    settings.write_text(yaml.safe_dump(settings_data, sort_keys=False), encoding="utf-8")
+
+    result = run_cli(
+        package_root,
+        root,
+        "--json",
+        "workflow",
+        "plan",
+        "--workflow",
+        "rtc",
+        "--operation",
+        "rtc",
+        "--scope",
+        "MAT 1:3",
+    )
+
+    assert result.returncode == 0, result.stderr + result.stdout
+    package = json.loads(result.stdout)["units"][0]["rtc_package"]
+    assert package["source_spans"]["WIP"] == ["MAT 1:3"]
+    assert package["source_spans"]["REFERENCE"] == ["MAT 1:2"]
+    assert package["alignment"] == {
+        "primary_local_atoms": ["MAT 1:3"],
+        "canonical_atoms": ["MAT 1:2"],
+        "reference_local_spans": ["MAT 1:2"],
+        "missing_canonical_atoms": [],
+    }
 
 
 def test_canonical_rtc_plan_uses_the_rtc_profile(package_root: Path, make_workspace) -> None:

@@ -942,6 +942,9 @@ def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str,
         job_id=str(plan.get("job_id") or plan["job_id"]),
         run_id=str(plan.get("run_id") or plan["run_id"]),
         rtc_stage=next_stage,
+        rtc_planner_version=str(
+            plan.get("rtc_planner_version") or "SAGE_RTC_SFM_ROUTE_PLANNER_V4"
+        ),
         rtc_predecessor_files=predecessor_files,
         expected_ol_request_ids=expected_ids,
         expected_ol_requests=expected_requests,

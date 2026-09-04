@@ -9,11 +9,13 @@ from .errors import ConfigurationError, EvidenceLimitError, ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
 from .source_coverage import source_text_issues
+from .verse_alignment import ProjectVerseIndex
 from .work_units import EvidenceRecord, WorkUnit
 from .vrs import VerseRef
 
 
-RTC_PLANNER_VERSION = "SAGE_RTC_SFM_ROUTE_PLANNER_V4"
+RTC_PLANNER_VERSION = "SAGE_RTC_SFM_ROUTE_PLANNER_V5"
+LEGACY_RTC_PLANNER_VERSION = "SAGE_RTC_SFM_ROUTE_PLANNER_V4"
 RTC_HANDOFF_CONTRACT_VERSION = "SAGE_GOVERNED_TASK_V1"
 RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "RTC_REFERENCE_TEXT_COMPARISON_V1"
 LEGACY_RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "SAW_RTC_REFERENCE_TEXT_COMPARISON_V1"
@@ -89,23 +91,132 @@ def _unit_component(unit: WorkUnit, records: tuple[EvidenceRecord, ...]) -> tupl
     return _records_for_refs(records, refs)
 
 
+def _indexed_records_for_canonical(
+    records: tuple[EvidenceRecord, ...],
+    index: ProjectVerseIndex,
+    refs: frozenset[VerseRef],
+) -> tuple[EvidenceRecord, ...]:
+    """Select canonical matches without expanding beyond the routed record inventory."""
+    return tuple(
+        record
+        for record in index.records_for_canonical(refs)
+        if record in records
+    )
+
+
+def _rtc_planner_version(
+    requested: str | None,
+    wip_index: ProjectVerseIndex | None,
+    reference_index: ProjectVerseIndex | None,
+) -> str:
+    """Resolve current indexed planning or the exact sealed V4 compatibility path."""
+    version = str(requested or "").strip()
+    if not version:
+        version = (
+            RTC_PLANNER_VERSION
+            if wip_index is not None and reference_index is not None
+            else LEGACY_RTC_PLANNER_VERSION
+        )
+    if version not in {RTC_PLANNER_VERSION, LEGACY_RTC_PLANNER_VERSION}:
+        raise ValidationError(
+            f"Unsupported RTC planner version: {version}",
+            code="RTC_PLANNER_VERSION_UNSUPPORTED",
+        )
+    if version == RTC_PLANNER_VERSION and (
+        wip_index is None or reference_index is None
+    ):
+        raise ValidationError(
+            "RTC V5 planning requires WIP and REFERENCE Project verse indexes",
+            code="RTC_VRS_INDEX_REQUIRED",
+        )
+    return version
+
+
+def _canonical_source_text_issues(
+    unit: WorkUnit,
+    wip_index: ProjectVerseIndex,
+    missing_canonical: frozenset[VerseRef],
+) -> list[dict[str, Any]]:
+    """Attach canonical gaps to the corresponding WIP-local completion coordinates."""
+    missing_local: set[VerseRef] = set()
+    canonical_by_local: dict[VerseRef, set[VerseRef]] = {}
+    for record in unit.primary:
+        record_canonical = wip_index.canonical_refs_for_records((record,))
+        record_missing = record_canonical.intersection(missing_canonical)
+        if not record_missing:
+            continue
+        for local_ref in record.refs:
+            missing_local.add(local_ref)
+            canonical_by_local.setdefault(local_ref, set()).update(record_missing)
+    issues = list(source_text_issues(
+        missing_local,
+        (),
+        workflow="RTC",
+        source_stream="REFERENCE",
+        scope=str(unit.to_dict()["primary_scope"]),
+    ))
+    for issue in issues:
+        local_ref = next(
+            ref for ref in missing_local if ref.label() == issue["reference"]
+        )
+        issue["canonical_references"] = [
+            ref.label() for ref in sorted(canonical_by_local[local_ref])
+        ]
+    return issues
+
+
 def _measure_review_item(
     unit: WorkUnit,
     reference_records: tuple[EvidenceRecord, ...],
+    *,
+    planner_version: str,
+    wip_index: ProjectVerseIndex | None,
+    reference_index: ProjectVerseIndex | None,
 ) -> dict[str, Any]:
     """Persist WIP, Reference, and combined review-item SFM measurements for audit/UI."""
-    reference_primary = _records_for_refs(reference_records, unit.primary_refs)
-    covered = frozenset(ref for record in reference_primary for ref in record.refs)
     primary_scope = str(unit.to_dict()["primary_scope"])
     wip_records = tuple(sorted(
         (*unit.context_before, *unit.primary, *unit.context_after),
         key=lambda item: (item.chapter, item.verse_start, item.verse_end),
     ))
-    reference_slice = _unit_component(unit, reference_records)
+    if planner_version == RTC_PLANNER_VERSION:
+        assert wip_index is not None and reference_index is not None
+        primary_canonical = wip_index.canonical_refs_for_records(unit.primary)
+        routed_canonical = wip_index.canonical_refs_for_records(wip_records)
+        reference_primary = _indexed_records_for_canonical(
+            reference_records,
+            reference_index,
+            primary_canonical,
+        )
+        reference_slice = _indexed_records_for_canonical(
+            reference_records,
+            reference_index,
+            routed_canonical,
+        )
+        covered = reference_index.canonical_refs_for_records(reference_primary)
+        missing_canonical = primary_canonical.difference(covered)
+        issues = _canonical_source_text_issues(
+            unit,
+            wip_index,
+            missing_canonical,
+        )
+    else:
+        reference_primary = _records_for_refs(reference_records, unit.primary_refs)
+        reference_slice = _unit_component(unit, reference_records)
+        covered = frozenset(ref for record in reference_primary for ref in record.refs)
+        primary_canonical = frozenset(unit.primary_refs)
+        missing_canonical = primary_canonical.difference(covered)
+        issues = list(source_text_issues(
+            unit.primary_refs,
+            covered,
+            workflow="RTC",
+            source_stream="REFERENCE",
+            scope=primary_scope,
+        ))
     wip_measurement = measure_sfm_slice(wip_records)
     reference_measurement = measure_sfm_slice(reference_slice)
-    return {
-        "projection": RTC_PLANNER_VERSION,
+    package = {
+        "projection": planner_version,
         "sizing_basis": "ROUTED_SFM_ONLY",
         "analysis_route": "REFERENCE_TEXT_COMPARISON",
         "primary_coverage_atoms": [ref.label() for ref in sorted(unit.primary_refs)],
@@ -113,17 +224,21 @@ def _measure_review_item(
             "WIP": [record.reference for record in unit.primary],
             "REFERENCE": [record.reference for record in reference_primary],
         },
-        "source_text_issues": list(source_text_issues(
-            unit.primary_refs,
-            covered,
-            workflow="RTC",
-            source_stream="REFERENCE",
-            scope=primary_scope,
-        )),
+        "source_text_issues": issues,
         "wip": _component(wip_measurement),
         "ref": _component(reference_measurement),
         "route": _component(unit.measurement),
     }
+    if planner_version == RTC_PLANNER_VERSION:
+        package["alignment"] = {
+            "primary_local_atoms": [ref.label() for ref in sorted(unit.primary_refs)],
+            "canonical_atoms": [ref.label() for ref in sorted(primary_canonical)],
+            "reference_local_spans": [record.reference for record in reference_primary],
+            "missing_canonical_atoms": [
+                ref.label() for ref in sorted(missing_canonical)
+            ],
+        }
+    return package
 
 
 def plan_rtc_work_units(
@@ -135,23 +250,35 @@ def plan_rtc_work_units(
     shared: dict[str, Any],
     wip_context_pool: Iterable[EvidenceRecord],
     reference_records: Iterable[EvidenceRecord],
-    workflow: str = "saw",
+    wip_index: ProjectVerseIndex | None = None,
+    reference_index: ProjectVerseIndex | None = None,
+    workflow: str = "rtc",
+    planner_version: str | None = None,
 ) -> tuple[tuple[WorkUnit, ...], tuple[dict[str, Any], ...], EvidencePolicy]:
     """Plan RTC from actual WIP+Reference SFM while retaining WIP soft-target behavior."""
     del shared  # Controller metadata is deliberately absent from review-item sizing.
     selected = tuple(wip_records)
     context = tuple(wip_context_pool)
     reference = tuple(reference_records)
+    version = _rtc_planner_version(planner_version, wip_index, reference_index)
     _validate_rtc_book(selected)
     policy = rtc_slicing_policy(base_policy, sizing)
+    indexed = version == RTC_PLANNER_VERSION
     route = SfmAnalysisRoute(
         route_id="REFERENCE_TEXT_COMPARISON",
         streams=(
-            SfmStream("WIP", context),
-            SfmStream("REFERENCE", reference, require_primary_coverage=False),
+            SfmStream("WIP", context, verse_index=wip_index if indexed else None),
+            SfmStream(
+                "REFERENCE",
+                reference,
+                require_primary_coverage=False,
+                verse_index=reference_index if indexed else None,
+            ),
         ),
         target_stream_ids=("WIP",),
         stream_hard_token_limits=(("WIP", sizing.wip_hard_exclusive_tokens - 1),),
+        primary_stream_id="WIP" if indexed else None,
+        primary_index=wip_index if indexed else None,
     )
     try:
         units = plan_sfm_work_units(
@@ -175,7 +302,16 @@ def plan_rtc_work_units(
             next_action="Narrow the scope or correct the oversized indivisible Scripture span.",
             details=exc.details,
         ) from exc
-    packages = tuple(_measure_review_item(unit, reference) for unit in units)
+    packages = tuple(
+        _measure_review_item(
+            unit,
+            reference,
+            planner_version=version,
+            wip_index=wip_index,
+            reference_index=reference_index,
+        )
+        for unit in units
+    )
     return units, packages, policy
 
 

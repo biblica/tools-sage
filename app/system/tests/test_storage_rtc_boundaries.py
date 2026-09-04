@@ -29,6 +29,7 @@ from sage.registry import load_ecosystem
 from sage.references import parse_scope
 from sage.reset_state import reset_project_state
 from sage.resource_mounts import set_resource_mount
+from sage.rtc_planner import LEGACY_RTC_PLANNER_VERSION, RTC_PLANNER_VERSION
 from sage.scripture import compile_project_scope
 from sage.external_access import READ_WRITE_TARGET
 from sage.jobs import JobStore
@@ -49,6 +50,45 @@ def _initialize(package_root: Path, root: Path) -> None:
         timeout=40,
     )
     assert result.returncode == 0, result.stderr + result.stdout
+
+
+def _plan_json(
+    package_root: Path,
+    root: Path,
+    *,
+    workflow: str,
+    operation: str,
+    scope: str,
+) -> dict:
+    """Build one public CLI preview and return its JSON document."""
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(package_root / "system" / "src")
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "sage.cli",
+            "--settings",
+            str(root / "ecosystem.yml"),
+            "--json",
+            "workflow",
+            "plan",
+            "--workflow",
+            workflow,
+            "--operation",
+            operation,
+            "--scope",
+            scope,
+        ],
+        text=True,
+        capture_output=True,
+        env=env,
+        check=False,
+        timeout=40,
+    )
+    assert result.returncode == 0, result.stderr + result.stdout
+    return json.loads(result.stdout)
 
 
 def _write_two_chapter_mat_fixture(
@@ -1321,6 +1361,146 @@ def test_partitioned_rtc_aggregate_preserves_source_text_issues(
 
     assert aggregate["source_comparison_status"] == "COMPLETE_WITH_STRUCTURE_PROBLEMS"
     assert [row["reference"] for row in aggregate["source_text_issues"]] == ["MAT 1:2"]
+
+
+@pytest.mark.parametrize(
+    ("planner_version", "expected_reference", "unexpected_reference"),
+    (
+        (RTC_PLANNER_VERSION, "\\v 2 ", "\\v 3 "),
+        (LEGACY_RTC_PLANNER_VERSION, "\\v 3 ", "\\v 2 "),
+    ),
+)
+def test_rtc_task_routes_reference_by_its_persisted_planner_version(
+    package_root: Path,
+    make_workspace,
+    planner_version: str,
+    expected_reference: str,
+    unexpected_reference: str,
+) -> None:
+    """V5 uses canonical VRS correlation while a resumed V4 task stays exact-local."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=3)
+    projects_root = storage_layout(root).projects_root
+    (projects_root / "usWIP" / "custom.vrs").write_text(
+        "MAT 1:3 = MAT 1:2\n",
+        encoding="utf-8",
+    )
+    settings = root / "ecosystem.yml"
+    settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
+    settings.write_text(yaml.safe_dump(settings_data, sort_keys=False), encoding="utf-8")
+    _initialize(package_root, root)
+    store = JobStore(root, settings)
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:3")
+    config = load_ecosystem(store.ensure_runtime_files(job))
+
+    task = create_act_task(
+        config,
+        workflow="saw",
+        operation="rtc",
+        output_project_id=job.bindings["wip"],
+        contemporary_source_id=job.bindings["reference"],
+        scope_value=run.scope,
+        auto_partition=False,
+        parent_plan_id="RTC-MAT-PERSISTED-PLANNER",
+        work_unit_id="RTC-MAT-U001",
+        job_id=job.job_id,
+        run_id=run.run_id,
+        rtc_stage="REFERENCE_TEXT_COMPARISON",
+        rtc_planner_version=planner_version,
+    )
+
+    manifest_path = Path(task["manifest_path"])
+    reference_sfm = (manifest_path.parent / "packet" / "reference.sfm").read_text(
+        encoding="utf-8"
+    )
+    assert expected_reference in reference_sfm
+    assert unexpected_reference not in reference_sfm
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["rtc_planner_version"] == planner_version
+    if planner_version == RTC_PLANNER_VERSION:
+        assert manifest["rtc_alignment"]["canonical_atoms"] == ["MAT 1:2"]
+        assert manifest["rtc_alignment"]["reference_local_spans"] == ["MAT 1:2"]
+    else:
+        assert manifest["rtc_alignment"] is None
+
+
+@pytest.mark.parametrize(
+    ("planner_version", "expected_reference"),
+    (
+        (RTC_PLANNER_VERSION, "\\v 2 "),
+        (LEGACY_RTC_PLANNER_VERSION, "\\v 3 "),
+    ),
+)
+def test_approved_rtc_plan_resumes_under_its_frozen_planner_without_mutation(
+    package_root: Path,
+    make_workspace,
+    planner_version: str,
+    expected_reference: str,
+) -> None:
+    """Approval preserves both V5/V4 routing identity and the exact stored plan bytes."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=3)
+    projects_root = storage_layout(root).projects_root
+    (projects_root / "usWIP" / "custom.vrs").write_text(
+        "MAT 1:3 = MAT 1:2\n",
+        encoding="utf-8",
+    )
+    settings = root / "ecosystem.yml"
+    settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
+    settings.write_text(yaml.safe_dump(settings_data, sort_keys=False), encoding="utf-8")
+    _initialize(package_root, root)
+    store = JobStore(root, settings)
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:3")
+    approved = _plan_json(
+        package_root,
+        root,
+        workflow="saw",
+        operation="rtc",
+        scope=run.scope,
+    )
+    approved.update({
+        "approval_status": "OPERATOR_APPROVED",
+        "approved_job_id": job.job_id,
+        "approved_run_id": run.run_id,
+    })
+    if planner_version == LEGACY_RTC_PLANNER_VERSION:
+        approved["rtc_planner"].update({
+            "version": LEGACY_RTC_PLANNER_VERSION,
+            "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
+        })
+        for unit in approved["units"]:
+            package = unit["rtc_package"]
+            package["projection"] = LEGACY_RTC_PLANNER_VERSION
+            package["source_spans"]["REFERENCE"] = ["MAT 1:3"]
+            package.pop("alignment", None)
+    approved_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
+    approved_path.parent.mkdir(parents=True, exist_ok=True)
+    approved_path.write_text(json.dumps(approved, sort_keys=True), encoding="utf-8")
+    approved_bytes = approved_path.read_bytes()
+    store.update_run(run, approved_work_plan_path=str(approved_path))
+    config = load_ecosystem(store.ensure_runtime_files(job))
+
+    composite = create_act_task(
+        config,
+        workflow="saw",
+        operation="rtc",
+        output_project_id=job.bindings["wip"],
+        contemporary_source_id=job.bindings["reference"],
+        scope_value=run.scope,
+        job_id=job.job_id,
+        run_id=run.run_id,
+    )
+
+    manifest_path = Path(composite["manifest_path"])
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    reference_sfm = (manifest_path.parent / "packet" / "reference.sfm").read_text(
+        encoding="utf-8"
+    )
+    assert expected_reference in reference_sfm
+    assert manifest["rtc_planner_version"] == planner_version
+    assert approved_path.read_bytes() == approved_bytes
 
 
 def test_cross_chapter_approved_review_portion_creates_exact_rtc_task(
