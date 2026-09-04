@@ -16,6 +16,7 @@ from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm
 from .source_coverage import source_text_issues
 from .source_coverage import source_comparison_status, unique_source_text_issues
 from .structural_issues import normalize_structure_problem
+from .verse_alignment import ProjectVerseIndex
 from .work_units import EvidenceRecord, WorkUnit
 from .vrs import VerseRef
 
@@ -23,6 +24,8 @@ STC_FINDING_CATEGORIES = {"OMISSION", "ADDITION", "VARIATION", "CONSISTENCY"}
 STC_ANALYSIS_ROUTE = "STC_CORRESPONDENCE"
 STC_RESULT_VERSION = "1.0"
 STC_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_1"
+STC_PLANNER_VERSION = "SAGE_STC_SFM_ROUTE_PLANNER_V2"
+LEGACY_STC_PLANNER_VERSION = "SAGE_STC_SFM_ROUTE_PLANNER_V1"
 
 
 def stc_authority_family(book: str) -> str:
@@ -44,7 +47,10 @@ def plan_stc_work_units(
     policy: EvidencePolicy,
     *,
     unit_prefix: str,
+    wip_index: ProjectVerseIndex | None = None,
+    ol_index: ProjectVerseIndex | None = None,
     context_pool: Iterable[EvidenceRecord] | None = None,
+    planner_version: str | None = None,
 ) -> tuple[WorkUnit, ...]:
     """Plan bounded WIP+primary-OL work units with exact canonical coverage."""
     selected = tuple(wip_records)
@@ -52,12 +58,25 @@ def plan_stc_work_units(
         raise ValidationError("STC planning requires WIP Scripture records", code="STC_WIP_MISSING")
     ol = tuple(ol_records)
     family = stc_authority_family(selected[0].book)
+    version = _stc_planner_version(planner_version, wip_index, ol_index)
+    indexed = version == STC_PLANNER_VERSION
     route = SfmAnalysisRoute(
         route_id=STC_ANALYSIS_ROUTE,
         streams=(
-            SfmStream("WIP", tuple(context_pool) if context_pool is not None else selected),
-            SfmStream(f"{family}:PRIMARY", ol, require_primary_coverage=False),
+            SfmStream(
+                "WIP",
+                tuple(context_pool) if context_pool is not None else selected,
+                verse_index=wip_index if indexed else None,
+            ),
+            SfmStream(
+                f"{family}:PRIMARY",
+                ol,
+                require_primary_coverage=False,
+                verse_index=ol_index if indexed else None,
+            ),
         ),
+        primary_stream_id="WIP" if indexed else None,
+        primary_index=wip_index if indexed else None,
     )
     return plan_sfm_work_units(
         selected,
@@ -75,6 +94,77 @@ def _records_for_refs(
     return tuple(record for record in records if refs.intersection(record.refs))
 
 
+def _stc_planner_version(
+    requested: str | None,
+    wip_index: ProjectVerseIndex | None,
+    ol_index: ProjectVerseIndex | None,
+) -> str:
+    """Resolve indexed V2 planning or the exact sealed V1 compatibility path."""
+    version = str(requested or "").strip()
+    if not version:
+        version = (
+            STC_PLANNER_VERSION
+            if wip_index is not None and ol_index is not None
+            else LEGACY_STC_PLANNER_VERSION
+        )
+    if version not in {STC_PLANNER_VERSION, LEGACY_STC_PLANNER_VERSION}:
+        raise ValidationError(
+            f"Unsupported STC planner version: {version}",
+            code="STC_PLANNER_VERSION_UNSUPPORTED",
+        )
+    if version == STC_PLANNER_VERSION and (wip_index is None or ol_index is None):
+        raise ValidationError(
+            "STC V2 planning requires WIP and primary-OL Project verse indexes",
+            code="STC_VRS_INDEX_REQUIRED",
+        )
+    return version
+
+
+def _indexed_records_for_canonical(
+    records: tuple[EvidenceRecord, ...],
+    index: ProjectVerseIndex,
+    refs: frozenset[VerseRef],
+) -> tuple[EvidenceRecord, ...]:
+    """Select canonical matches without expanding beyond routed OL evidence."""
+    return tuple(record for record in index.records_for_canonical(refs) if record in records)
+
+
+def _canonical_source_text_issues(
+    unit: WorkUnit,
+    wip_index: ProjectVerseIndex,
+    missing_canonical: frozenset[VerseRef],
+    *,
+    authority_stream: str,
+) -> list[dict[str, Any]]:
+    """Attach missing canonical OL coverage to corresponding WIP-local coordinates."""
+    missing_local: set[VerseRef] = set()
+    canonical_by_local: dict[VerseRef, set[VerseRef]] = {}
+    for record in unit.primary:
+        record_missing = wip_index.canonical_refs_for_records((record,)).intersection(
+            missing_canonical
+        )
+        if not record_missing:
+            continue
+        for local_ref in record.refs:
+            missing_local.add(local_ref)
+            canonical_by_local.setdefault(local_ref, set()).update(record_missing)
+    issues = list(source_text_issues(
+        missing_local,
+        (),
+        workflow="STC",
+        source_stream=authority_stream,
+        scope=str(unit.to_dict()["primary_scope"]),
+    ))
+    for issue in issues:
+        local_ref = next(
+            ref for ref in missing_local if ref.label() == issue["reference"]
+        )
+        issue["canonical_references"] = [
+            ref.label() for ref in sorted(canonical_by_local[local_ref])
+        ]
+    return issues
+
+
 def _component(measurement: EvidenceMeasurement) -> dict[str, Any]:
     """Render one routed-SFM measurement component for STC audit and display."""
     return {
@@ -88,26 +178,59 @@ def _component(measurement: EvidenceMeasurement) -> dict[str, Any]:
 def stc_package_measurements(
     units: Iterable[WorkUnit],
     ol_records: Iterable[EvidenceRecord],
+    *,
+    wip_index: ProjectVerseIndex | None = None,
+    ol_index: ProjectVerseIndex | None = None,
+    planner_version: str | None = None,
 ) -> tuple[dict[str, Any], ...]:
     """Measure WIP, primary OL, and combined STC routed-SFM review items."""
     original_language = tuple(ol_records)
+    version = _stc_planner_version(planner_version, wip_index, ol_index)
     packages: list[dict[str, Any]] = []
     for unit in units:
         wip_slice = tuple(sorted(
             (*unit.context_before, *unit.primary, *unit.context_after),
             key=lambda item: (item.chapter, item.verse_start, item.verse_end),
         ))
-        ol_slice = _records_for_refs(original_language, unit.primary_refs)
-        covered = frozenset(ref for record in ol_slice for ref in record.refs)
+        family = stc_authority_family(unit.primary[0].book)
+        authority_stream = f"{family}:PRIMARY"
+        if version == STC_PLANNER_VERSION:
+            assert wip_index is not None and ol_index is not None
+            primary_canonical = wip_index.canonical_refs_for_records(unit.primary)
+            routed_canonical = wip_index.canonical_refs_for_records(wip_slice)
+            ol_primary = _indexed_records_for_canonical(
+                original_language,
+                ol_index,
+                primary_canonical,
+            )
+            ol_slice = _indexed_records_for_canonical(
+                original_language,
+                ol_index,
+                routed_canonical,
+            )
+            covered = ol_index.canonical_refs_for_records(ol_primary)
+            missing_canonical = primary_canonical.difference(covered)
+            issues = _canonical_source_text_issues(
+                unit,
+                wip_index,
+                missing_canonical,
+                authority_stream=authority_stream,
+            )
+        else:
+            ol_primary = _records_for_refs(original_language, unit.primary_refs)
+            ol_slice = ol_primary
+            covered = frozenset(ref for record in ol_primary for ref in record.refs)
+            primary_canonical = frozenset(unit.primary_refs)
+            missing_canonical = primary_canonical.difference(covered)
+            issues = list(source_text_issues(
+                unit.primary_refs,
+                covered,
+                workflow="STC",
+                source_stream=authority_stream,
+                scope=str(unit.to_dict()["primary_scope"]),
+            ))
         primary_scope = str(unit.to_dict()["primary_scope"])
-        issues = list(source_text_issues(
-            unit.primary_refs,
-            covered,
-            workflow="STC",
-            source_stream=f"{stc_authority_family(unit.primary[0].book)}:PRIMARY",
-            scope=primary_scope,
-        ))
-        packages.append({
+        package = {
             "sizing_basis": "ROUTED_SFM_ONLY",
             "analysis_route": STC_ANALYSIS_ROUTE,
             "primary_coverage_atoms": [ref.label() for ref in sorted(unit.primary_refs)],
@@ -116,7 +239,31 @@ def stc_package_measurements(
             "wip": _component(measure_sfm_slice(wip_slice)),
             "ol": _component(measure_sfm_slice(ol_slice)),
             "route": _component(unit.measurement),
-        })
+        }
+        if version == STC_PLANNER_VERSION:
+            package.update({
+                "projection": version,
+                "source_spans": {
+                    "WIP": [record.reference for record in unit.primary],
+                    authority_stream: [record.reference for record in ol_primary],
+                },
+                "alignment": {
+                    "primary_local_atoms": [
+                        ref.label() for ref in sorted(unit.primary_refs)
+                    ],
+                    "canonical_atoms": [
+                        ref.label() for ref in sorted(primary_canonical)
+                    ],
+                    "authority_stream": authority_stream,
+                    "authority_local_spans": [
+                        record.reference for record in ol_primary
+                    ],
+                    "missing_canonical_atoms": [
+                        ref.label() for ref in sorted(missing_canonical)
+                    ],
+                },
+            })
+        packages.append(package)
     return tuple(packages)
 
 

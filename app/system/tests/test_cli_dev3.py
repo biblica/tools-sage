@@ -238,12 +238,56 @@ def test_stc_plan_measures_wip_and_primary_source_as_one_route(
     assert payload["primary_ol_project_id"] == "GRK"
     assert payload["authority_family"] == "GRK"
     assert payload["analysis_route"] == "STC_CORRESPONDENCE"
+    assert payload["stc_planner_version"] == "SAGE_STC_SFM_ROUTE_PLANNER_V2"
+    assert payload["authority_correlation"] == "CANONICAL_PROJECT_VRS"
     assert payload["sizing_basis"] == "WIP_PLUS_PRIMARY_OL_ROUTED_SFM"
     assert payload["shared_hashes"]["primary_ol_resource_sha256"]
     package = payload["units"][0]["stc_package"]
     assert package["route"]["estimated_tokens"] == (
         package["wip"]["estimated_tokens"] + package["ol"]["estimated_tokens"]
     )
+    assert package["projection"] == "SAGE_STC_SFM_ROUTE_PLANNER_V2"
+    assert package["alignment"]["authority_stream"] == "GRK:PRIMARY"
+
+
+def test_stc_plan_correlates_wip_and_ol_through_their_effective_vrs(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """STC CLI planning must route a WIP-local label to its canonical OL evidence."""
+    root = make_workspace(configured=True, verse_max=3)
+    projects_root = root.parent / "localdata/work/projects"
+    (projects_root / "usWIP" / "custom.vrs").write_text(
+        "MAT 1:3 = MAT 1:2\n",
+        encoding="utf-8",
+    )
+    settings = root / "ecosystem.yml"
+    settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
+    settings.write_text(yaml.safe_dump(settings_data, sort_keys=False), encoding="utf-8")
+
+    result = run_cli(
+        package_root,
+        root,
+        "--json",
+        "workflow",
+        "plan",
+        "--workflow",
+        "stc",
+        "--operation",
+        "stc",
+        "--scope",
+        "MAT 1:3",
+    )
+
+    assert result.returncode == 0, result.stderr + result.stdout
+    package = json.loads(result.stdout)["units"][0]["stc_package"]
+    assert package["source_spans"] == {
+        "WIP": ["MAT 1:3"],
+        "GRK:PRIMARY": ["MAT 1:2"],
+    }
+    assert package["source_text_issues"] == []
+    assert package["alignment"]["canonical_atoms"] == ["MAT 1:2"]
 
 
 def test_canonical_stc_plan_uses_the_stc_profile(package_root: Path, make_workspace) -> None:

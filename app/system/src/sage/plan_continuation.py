@@ -39,6 +39,7 @@ from .local_assistive import maybe_write_report_executive_summary
 from .report_translation import ensure_secondary_analysis_report_rendering
 from .execution_events import events_for_run
 from .source_coverage import source_comparison_status, unique_source_text_issues
+from .stc import LEGACY_STC_PLANNER_VERSION, STC_PLANNER_VERSION
 from .workflow_identity import analysis_reason_code, is_analysis_workflow, legacy_saw_workflow
 
 
@@ -578,6 +579,19 @@ def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict
     units = plan.get("work_units")
     if not isinstance(units, list) or not units or any(not isinstance(unit, dict) for unit in units):
         raise ValidationError("Analysis plan work_units must be a nonempty list of objects")
+    stc_planner_version: str | None = None
+    if str(plan.get("operation") or "").lower() == "stc":
+        stc_planner_version = str(
+            plan.get("stc_planner_version") or LEGACY_STC_PLANNER_VERSION
+        )
+        if stc_planner_version not in {
+            STC_PLANNER_VERSION,
+            LEGACY_STC_PLANNER_VERSION,
+        }:
+            raise ValidationError(
+                f"Unsupported persisted STC planner version: {stc_planner_version}",
+                code="STC_PLANNER_VERSION_UNSUPPORTED",
+            )
 
     states: list[dict[str, Any]] = []
     first_unfinished: int | None = None
@@ -588,6 +602,20 @@ def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict
         )
         if not task_is_governed(config.workflow(workflow), manifest_path.parent):
             raise ValidationError("Analysis work-unit manifest escapes the governed task root")
+        if stc_planner_version is not None:
+            manifest_document = _load_object(
+                manifest_path,
+                f"STC work-unit manifest for {unit.get('unit_id')}",
+            )
+            manifest_version = str(
+                manifest_document.get("stc_planner_version")
+                or LEGACY_STC_PLANNER_VERSION
+            )
+            if manifest_version != stc_planner_version:
+                raise ValidationError(
+                    "STC work-unit planner version differs from its immutable plan",
+                    code="RESULT_COVERAGE_DRIFT",
+                )
         submission_path = manifest_path.parent / "validation" / "submission.json"
         status = "CREATED"
         submission_sha256 = None

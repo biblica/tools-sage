@@ -99,7 +99,14 @@ from .runtime_paths import (
     workflow_memory_root,
     workflow_for_task,
 )
-from .stc import plan_stc_work_units, stc_authority_family, validate_stc_submission, finalize_stc_run
+from .stc import (
+    LEGACY_STC_PLANNER_VERSION,
+    STC_PLANNER_VERSION,
+    finalize_stc_run,
+    plan_stc_work_units,
+    stc_authority_family,
+    validate_stc_submission,
+)
 from .stc_reporting import publish_stc_reports
 from .rtc_planner import (
     LEGACY_RTC_PLANNER_VERSION,
@@ -1330,33 +1337,16 @@ def _rtc_canonical_packet_route(
     )
     primary_alignment = align_records(selected_wip, wip_index, reference_index)
     context_alignment = align_records(context_wip, wip_index, reference_index)
-    canonical_by_local: dict[VerseRef, set[VerseRef]] = {}
-    missing_local: set[VerseRef] = set()
-    for record in selected_wip:
-        record_missing = wip_index.canonical_refs_for_records((record,)).intersection(
-            primary_alignment.missing_canonical_refs
-        )
-        if not record_missing:
-            continue
-        for local_ref in record.refs:
-            missing_local.add(local_ref)
-            canonical_by_local.setdefault(local_ref, set()).update(record_missing)
-    issues = list(source_text_issues(
-        missing_local,
-        (),
+    issues = _canonical_gap_source_issues(
+        selected_wip,
+        wip_index,
+        primary_alignment.missing_canonical_refs,
         workflow="RTC",
         source_stream="REFERENCE",
         source_project_id=reference.project_id,
         wip_project_id=output.project_id,
         scope=scope.label(),
-    ))
-    for issue in issues:
-        local_ref = next(
-            ref for ref in missing_local if ref.label() == issue["reference"]
-        )
-        issue["canonical_references"] = [
-            ref.label() for ref in sorted(canonical_by_local[local_ref])
-        ]
+    )
     return {
         "reference_references": [
             record.reference for record in primary_alignment.authority_records
@@ -1380,6 +1370,48 @@ def _rtc_canonical_packet_route(
         },
         "source_text_issues": issues,
     }
+
+
+def _canonical_gap_source_issues(
+    primary_records: Sequence[EvidenceRecord],
+    primary_index: ProjectVerseIndex,
+    missing_canonical: frozenset[VerseRef],
+    *,
+    workflow: str,
+    source_stream: str,
+    source_project_id: str,
+    wip_project_id: str,
+    scope: str,
+) -> list[dict[str, Any]]:
+    """Render canonical Authority gaps at their corresponding WIP-local coordinates."""
+    canonical_by_local: dict[VerseRef, set[VerseRef]] = {}
+    missing_local: set[VerseRef] = set()
+    for record in primary_records:
+        record_missing = primary_index.canonical_refs_for_records((record,)).intersection(
+            missing_canonical
+        )
+        if not record_missing:
+            continue
+        for local_ref in record.refs:
+            missing_local.add(local_ref)
+            canonical_by_local.setdefault(local_ref, set()).update(record_missing)
+    issues = list(source_text_issues(
+        missing_local,
+        (),
+        workflow=workflow,
+        source_stream=source_stream,
+        source_project_id=source_project_id,
+        wip_project_id=wip_project_id,
+        scope=scope,
+    ))
+    for issue in issues:
+        local_ref = next(
+            ref for ref in missing_local if ref.label() == issue["reference"]
+        )
+        issue["canonical_references"] = [
+            ref.label() for ref in sorted(canonical_by_local[local_ref])
+        ]
+    return issues
 
 def _bic_evidence_cohort(
     *,
@@ -3389,6 +3421,7 @@ def _bounded_sfm_packet(
     primary_scope: ScriptureScope,
     destination: Path,
     *,
+    primary_references: Sequence[str] | None = None,
     context_references: Sequence[str] = (),
     allow_empty: bool = False,
 ) -> dict[str, Any]:
@@ -3402,7 +3435,21 @@ def _bounded_sfm_packet(
     parser_errors = list(usj.get("sage", {}).get("errors", []))
     if parser_errors:
         raise ValidationError(f"STC input {source.name} has parser errors: {', '.join(parser_errors[:8])}")
-    requested = (primary_scope, *(parse_scope(value) for value in context_references))
+    requested_primary = (
+        tuple(
+            requested
+            for value in primary_references
+            for requested in parse_scope_set(value)
+        )
+        if primary_references is not None
+        else (primary_scope,)
+    )
+    requested_context = tuple(
+        requested
+        for value in context_references
+        for requested in parse_scope_set(value)
+    )
+    requested = (*requested_primary, *requested_context)
     selected: list[dict[str, Any]] = []
     refs: set[VerseRef] = set()
     for unit in parse_usj_units(usj):
@@ -3438,7 +3485,11 @@ def _bounded_sfm_packet(
         lines.extend(str(line) for line in raw_lines)
     bounded = "\n".join(lines).rstrip() + "\n"
     atomic_write_text(destination, bounded)
-    primary_atoms = [ref.label() for ref in sorted(refs) if primary_scope.contains(ref)]
+    primary_atoms = [
+        ref.label()
+        for ref in sorted(refs)
+        if any(requested.contains(ref) for requested in requested_primary)
+    ]
     return {
         "path": destination.name,
         "source_file": source.name,
@@ -3511,6 +3562,7 @@ def _create_stc_task(
     work_unit_id: str | None,
     job_id: str,
     run_id: str,
+    stc_planner_version: str,
     context_before: Sequence[str],
     context_after: Sequence[str],
 ) -> dict[str, Any]:
@@ -3538,21 +3590,42 @@ def _create_stc_task(
     )
     wip_records_all = records_from_project_result(output.project_id, compiled[output.project_id], resource_role="WIP")
     ol_records_all = records_from_project_result(ol_project.project_id, compiled[ol_project.project_id], resource_role=family)
+    wip_index: ProjectVerseIndex | None = None
+    ol_index: ProjectVerseIndex | None = None
+    if stc_planner_version == STC_PLANNER_VERSION:
+        service = VersificationService(config)
+        wip_index = ProjectVerseIndex.build(
+            output.project_id,
+            wip_records_all,
+            service.project_schema(output),
+        )
+        ol_index = ProjectVerseIndex.build(
+            ol_project.project_id,
+            ol_records_all,
+            service.project_schema(ol_project),
+        )
     policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy("stc")
     units = tuple(
         unit
         for portion_index, portion in enumerate(analysis_scope_portions(scope), start=1)
         for unit in plan_stc_work_units(
             select_records_for_scope(wip_records_all, portion),
-            tuple(
-                record
-                for record in ol_records_all
-                if any(portion.contains(ref) for ref in record.refs)
+            (
+                ol_records_all
+                if stc_planner_version == STC_PLANNER_VERSION
+                else tuple(
+                    record
+                    for record in ol_records_all
+                    if any(portion.contains(ref) for ref in record.refs)
+                )
             ),
             policy,
             unit_prefix=(parent_plan_id or f"STC-{scope.book}")
             + f"-P{portion_index:03d}",
+            wip_index=wip_index,
+            ol_index=ol_index,
             context_pool=wip_records_all,
+            planner_version=stc_planner_version,
         )
     )
     if auto_partition and work_unit_id is None and len(units) > 1:
@@ -3576,6 +3649,7 @@ def _create_stc_task(
                 work_unit_id=unit.unit_id,
                 job_id=job_id,
                 run_id=run_id,
+                stc_planner_version=stc_planner_version,
                 context_before_references=item["context_before"],
                 context_after_references=item["context_after"],
             )
@@ -3594,6 +3668,7 @@ def _create_stc_task(
             "requested_scope": scope.label(), "output_project": output.project_id,
             "contemporary_source": None, "primary_ol_authority": ol_project.project_id,
             "authority_family": family, "authority_role": "PRIMARY",
+            "stc_planner_version": stc_planner_version,
             "expected_references": expected, "work_units": children,
         }
         plan_path = plan_container(config.workflow(workflow), run_id) / f"{plan_id}.json"
@@ -3604,10 +3679,55 @@ def _create_stc_task(
     ol_file = _one_book_file(ol_project, scope.book)
     assert output_file is not None and ol_file is not None
     all_context = tuple(context_before) + tuple(context_after)
+    stc_alignment: dict[str, Any] | None = None
+    stc_source_issue_rows: list[dict[str, Any]] | None = None
+    ol_primary_references: list[str] | None = None
+    ol_context_references: list[str] = list(all_context)
+    if stc_planner_version == STC_PLANNER_VERSION:
+        assert wip_index is not None and ol_index is not None
+        primary_wip = select_records_for_scope(wip_records_all, scope)
+        context_wip = _records_intersecting_reference_values(
+            wip_records_all,
+            all_context,
+        )
+        primary_alignment = align_records(primary_wip, wip_index, ol_index)
+        context_alignment = align_records(context_wip, wip_index, ol_index)
+        authority_stream = f"{family}:PRIMARY"
+        ol_primary_references = [
+            record.reference for record in primary_alignment.authority_records
+        ]
+        ol_context_references = [
+            record.reference for record in context_alignment.authority_records
+        ]
+        stc_alignment = {
+            "primary_local_atoms": [
+                ref.label() for ref in sorted(primary_alignment.primary_local_refs)
+            ],
+            "canonical_atoms": [
+                ref.label() for ref in sorted(primary_alignment.canonical_refs)
+            ],
+            "authority_stream": authority_stream,
+            "authority_local_spans": ol_primary_references,
+            "missing_canonical_atoms": [
+                ref.label() for ref in sorted(primary_alignment.missing_canonical_refs)
+            ],
+        }
+        stc_source_issue_rows = _canonical_gap_source_issues(
+            primary_wip,
+            wip_index,
+            primary_alignment.missing_canonical_refs,
+            workflow="STC",
+            source_stream=authority_stream,
+            source_project_id=ol_project.project_id,
+            wip_project_id=output.project_id,
+            scope=scope.label(),
+        )
     seed = sha256_bytes(json.dumps({
         "job_id": job_id, "run_id": run_id, "scope": scope.label(),
         "wip": output.project_id, "ol": ol_project.project_id, "family": family,
         "work_unit_id": work_unit_id, "context": list(all_context),
+        "stc_planner_version": stc_planner_version,
+        "stc_alignment": stc_alignment,
     }, sort_keys=True, separators=(",", ":")).encode("utf-8"))
     base_task_id = f"stc-{scope.book.lower()}-{seed[:12]}"
     task_id = base_task_id
@@ -3629,23 +3749,28 @@ def _create_stc_task(
             ol_file,
             scope,
             ol_path,
-            context_references=all_context,
+            primary_references=ol_primary_references,
+            context_references=ol_context_references,
             allow_empty=True,
         )
         expected_references = list(wip_packet["primary_references"])
-        source_issue_rows = list(source_text_issues(
-            (ref for value in expected_references for ref in expand_reference_atoms(value)),
-            (
-                ref
-                for value in ol_packet["primary_references"]
-                for ref in expand_reference_atoms(str(value))
-            ),
-            workflow="STC",
-            source_stream=f"{family}:PRIMARY",
-            source_project_id=ol_project.project_id,
-            wip_project_id=output.project_id,
-            scope=scope.label(),
-        ))
+        source_issue_rows = (
+            stc_source_issue_rows
+            if stc_source_issue_rows is not None
+            else list(source_text_issues(
+                (ref for value in expected_references for ref in expand_reference_atoms(value)),
+                (
+                    ref
+                    for value in ol_packet["primary_references"]
+                    for ref in expand_reference_atoms(str(value))
+                ),
+                workflow="STC",
+                source_stream=f"{family}:PRIMARY",
+                source_project_id=ol_project.project_id,
+                wip_project_id=output.project_id,
+                scope=scope.label(),
+            ))
+        )
         target_grammar_path, target_profile = _write_grammar_contract(config, output, packet_root, "wip")
         if target_grammar_path is None or target_profile is None:
             raise ValidationError(
@@ -3724,6 +3849,8 @@ def _create_stc_task(
         identity = {
             "schema_version": "2.4", "execution_mode": "SAGE_GOVERNED_TASK_V1",
             "workflow": workflow, "operation": "stc", "rtc_stage": None,
+            "stc_planner_version": stc_planner_version,
+            "stc_alignment": stc_alignment,
             "skill_id": skill.skill_id,
             "job_id": job_id, "run_id": run_id,
             "resource_bindings": resource_bindings,
@@ -3859,6 +3986,7 @@ def create_act_task(
     run_id: str | None = None,
     rtc_stage: str | None = None,
     rtc_planner_version: str | None = None,
+    stc_planner_version: str | None = None,
     rtc_predecessor_files: Sequence[str] = (),
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
@@ -3915,6 +4043,21 @@ def create_act_task(
             )
     elif rtc_planner_version is not None:
         raise ValidationError("RTC planner version is valid only for an RTC task")
+    if is_analysis_workflow(workflow) and operation == "stc":
+        stc_planner_version = str(
+            stc_planner_version or STC_PLANNER_VERSION
+        ).strip()
+        if stc_planner_version not in {
+            STC_PLANNER_VERSION,
+            LEGACY_STC_PLANNER_VERSION,
+        }:
+            raise ValidationError(
+                f"Unsupported persisted STC planner version: {stc_planner_version}",
+                code="STC_PLANNER_VERSION_UNSUPPORTED",
+                next_action="Resume with a supported SAGE release or rebuild the STC Run plan.",
+            )
+    elif stc_planner_version is not None:
+        raise ValidationError("STC planner version is valid only for an STC task")
     focus = focus.strip() if isinstance(focus, str) and focus.strip() else None
     if focus and ("\n" in focus or len(focus) > 600):
         raise ValidationError("--focus must be one bounded single-line question of at most 600 characters")
@@ -4050,6 +4193,7 @@ def create_act_task(
             work_unit_id=work_unit_id,
             job_id=job_id,
             run_id=run_id,
+            stc_planner_version=stc_planner_version,
             context_before=context_before,
             context_after=context_after,
         )
@@ -5963,6 +6107,17 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
     family = str(plan.get("authority_family") or "").strip().upper()
     if not output_project or not ol_authority or family not in {"GRK", "HEB"}:
         raise ValidationError("STC aggregate plan lacks governed WIP/primary-OL identity", code="STC_WORK_UNIT_PLAN_INVALID")
+    stc_planner_version = str(
+        plan.get("stc_planner_version") or LEGACY_STC_PLANNER_VERSION
+    )
+    if stc_planner_version not in {
+        STC_PLANNER_VERSION,
+        LEGACY_STC_PLANNER_VERSION,
+    }:
+        raise ValidationError(
+            f"Unsupported persisted STC planner version: {stc_planner_version}",
+            code="STC_PLANNER_VERSION_UNSUPPORTED",
+        )
     expected_lineage_keys = {f"project.{output_project}", f"project.{ol_authority}"}
     planned_units: list[dict[str, Any]] = []
     accepted_results: list[dict[str, Any]] = []
@@ -5981,6 +6136,14 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
             seen_tasks.add(task_id)
         manifest_path = resolve_persisted_path(config.root, str(unit.get("manifest_path") or ""), "STC work-unit manifest")
         manifest = load_json(manifest_path)
+        manifest_planner_version = str(
+            manifest.get("stc_planner_version") or LEGACY_STC_PLANNER_VERSION
+        )
+        if manifest_planner_version != stc_planner_version:
+            raise ValidationError(
+                "STC work-unit planner version differs from its immutable plan",
+                code="RESULT_COVERAGE_DRIFT",
+            )
         planned_fingerprint = str(unit.get("task_fingerprint") or "")
         if planned_fingerprint and str(manifest.get("task_fingerprint") or "") != planned_fingerprint:
             raise ValidationError("STC work-unit task fingerprint differs from immutable plan", code="RESULT_COVERAGE_DRIFT")
@@ -6055,6 +6218,7 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         "output_project": output_project,
         "primary_ol_authority": ol_authority,
         "authority_family": family,
+        "stc_planner_version": stc_planner_version,
         "finding_count": sum(int(row.get("finding_count") or 0) for row in accepted_results),
         "source_comparison_status": source_comparison_status(source_issue_rows),
         "structural_issues": source_issue_rows,
@@ -6850,6 +7014,10 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "output_project": raw.get("output_project"),
                 "contemporary_source": None,
                 "primary_ol_authority": raw.get("primary_ol_authority"),
+                "stc_planner_version": (
+                    raw.get("stc_planner_version") or LEGACY_STC_PLANNER_VERSION
+                ),
+                "stc_alignment": raw.get("stc_alignment"),
                 "resource_bindings": raw.get("resource_bindings", {}),
                 "resource_display_names": raw.get("resource_display_names", {}),
                 "resource_fingerprints": raw.get("resource_fingerprints", {}),

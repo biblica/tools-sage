@@ -144,6 +144,7 @@ from .work_units import (
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, plan_sfm_work_units
 from .stc import (
     STC_ANALYSIS_ROUTE,
+    STC_PLANNER_VERSION,
     plan_stc_work_units,
     stc_authority_family,
     stc_package_measurements,
@@ -3433,7 +3434,8 @@ def command_plan(args: argparse.Namespace) -> int:
     stc_ol_project_id: str | None = None
     stc_ol_result: dict[str, Any] | None = None
     all_stc_ol_records = ()
-    stc_ol_records = ()
+    stc_wip_index: ProjectVerseIndex | None = None
+    stc_ol_index: ProjectVerseIndex | None = None
     effective_policy = policy
     if profile.workflow_id in {"rtc", "saw"} and operation == "rtc":
         if selected_role != "WIP":
@@ -3499,10 +3501,16 @@ def command_plan(args: argparse.Namespace) -> int:
             stc_ol_result,
             resource_role=stc_authority_family_id,
         )
-        stc_ol_records = tuple(
-            record
-            for record in all_stc_ol_records
-            if any(scope.contains(ref) for ref in record.refs)
+        versification_service = VersificationService(config)
+        stc_wip_index = ProjectVerseIndex.build(
+            project_id,
+            all_records,
+            versification_service.project_schema(project),
+        )
+        stc_ol_index = ProjectVerseIndex.build(
+            stc_ol_project_id,
+            all_stc_ol_records,
+            versification_service.project_schema(stc_ol_project),
         )
     contracts = _grammar_contracts(config, profile)
     evidence_contracts = {
@@ -3580,6 +3588,7 @@ def command_plan(args: argparse.Namespace) -> int:
                 "primary_ol_project_id": stc_ol_project_id,
                 "authority_family": stc_authority_family_id,
                 "analysis_route": STC_ANALYSIS_ROUTE,
+                "stc_planner_version": STC_PLANNER_VERSION,
             }
             if stc_ol_result is not None
             else {}
@@ -3664,17 +3673,22 @@ def command_plan(args: argparse.Namespace) -> int:
         for portion_index, portion in enumerate(scope_portions, start=1):
             planned_units.extend(plan_stc_work_units(
                 select_records_for_scope(all_records, portion),
-                tuple(
-                    record
-                    for record in all_stc_ol_records
-                    if any(portion.contains(ref) for ref in record.refs)
-                ),
+                all_stc_ol_records,
                 policy,
                 unit_prefix=f"{plan_id}-P{portion_index:03d}",
+                wip_index=stc_wip_index,
+                ol_index=stc_ol_index,
                 context_pool=all_records,
+                planner_version=STC_PLANNER_VERSION,
             ))
         units = tuple(planned_units)
-        stc_packages = stc_package_measurements(units, stc_ol_records)
+        stc_packages = stc_package_measurements(
+            units,
+            all_stc_ol_records,
+            wip_index=stc_wip_index,
+            ol_index=stc_ol_index,
+            planner_version=STC_PLANNER_VERSION,
+        )
     else:
         units = plan_sfm_work_units(
             selected,
@@ -3722,6 +3736,8 @@ def command_plan(args: argparse.Namespace) -> int:
             "primary_ol_project_id": stc_ol_project_id,
             "authority_family": stc_authority_family_id,
             "analysis_route": STC_ANALYSIS_ROUTE,
+            "stc_planner_version": STC_PLANNER_VERSION,
+            "authority_correlation": "CANONICAL_PROJECT_VRS",
             "sizing_basis": "WIP_PLUS_PRIMARY_OL_ROUTED_SFM",
         })
         for unit_document, package in zip(document["units"], stc_packages, strict=True):

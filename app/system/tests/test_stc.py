@@ -10,6 +10,8 @@ import yaml
 from sage.errors import EvidenceLimitError, ValidationError
 from sage.evidence import EvidencePolicy
 from sage.stc import (
+    LEGACY_STC_PLANNER_VERSION,
+    STC_PLANNER_VERSION,
     STC_FINDING_CATEGORIES,
     finalize_stc_run,
     plan_stc_work_units,
@@ -17,6 +19,8 @@ from sage.stc import (
     stc_package_measurements,
     validate_stc_submission,
 )
+from sage.verse_alignment import ProjectVerseIndex
+from sage.vrs import parse_vrs_file
 from sage.work_units import EvidenceRecord
 
 
@@ -50,6 +54,143 @@ def _policy(*, target: int = 100, hard: int = 140) -> EvidencePolicy:
     )
 
 
+def _schema(tmp_path, name: str, content: str):
+    """Parse one compact Project VRS fixture for STC correlation tests."""
+    path = tmp_path / name
+    path.write_text(content, encoding="utf-8")
+    return parse_vrs_file(path, schema_id=name, canonical_id="org.vrs")
+
+
+def test_stc_v2_correlates_ol_with_a_different_local_verse_label(tmp_path) -> None:
+    """Changing canonical routing back to local labels would drop the primary OL text."""
+    wip = (_record("JHN", 3, "wip", role="WIP"),)
+    ol = (_record("JHN", 2, "greek", role="GRK"),)
+    wip_index = ProjectVerseIndex.build(
+        "WIP",
+        wip,
+        _schema(tmp_path, "wip.vrs", "JHN 1:3\nJHN 1:3 = JHN 1:2\n"),
+    )
+    ol_index = ProjectVerseIndex.build(
+        "GRK",
+        ol,
+        _schema(tmp_path, "grk.vrs", "JHN 1:2\n"),
+    )
+
+    units = plan_stc_work_units(
+        wip,
+        ol,
+        _policy(),
+        unit_prefix="STC-JHN",
+        wip_index=wip_index,
+        ol_index=ol_index,
+        planner_version=STC_PLANNER_VERSION,
+    )
+    package = stc_package_measurements(
+        units,
+        ol,
+        wip_index=wip_index,
+        ol_index=ol_index,
+        planner_version=STC_PLANNER_VERSION,
+    )[0]
+
+    assert [ref.label() for ref in units[0].primary_refs] == ["JHN 1:3"]
+    assert package["projection"] == STC_PLANNER_VERSION
+    assert package["source_spans"] == {
+        "WIP": ["JHN 1:3"],
+        "GRK:PRIMARY": ["JHN 1:2"],
+    }
+    assert package["source_text_issues"] == []
+    assert package["alignment"] == {
+        "primary_local_atoms": ["JHN 1:3"],
+        "canonical_atoms": ["JHN 1:2"],
+        "authority_stream": "GRK:PRIMARY",
+        "authority_local_spans": ["JHN 1:2"],
+        "missing_canonical_atoms": [],
+    }
+
+
+def test_stc_v2_reports_a_canonical_gap_at_the_wip_local_coordinate(tmp_path) -> None:
+    """A missing OL canonical atom remains a report-only WIP-local structural issue."""
+    wip = (_record("JHN", 3, "wip", role="WIP"),)
+    ol = ()
+    wip_index = ProjectVerseIndex.build(
+        "WIP",
+        wip,
+        _schema(tmp_path, "gap-wip.vrs", "JHN 1:3\nJHN 1:3 = JHN 1:2\n"),
+    )
+    ol_index = ProjectVerseIndex.build(
+        "GRK",
+        ol,
+        _schema(tmp_path, "gap-grk.vrs", "JHN 1:2\n"),
+    )
+
+    units = plan_stc_work_units(
+        wip,
+        ol,
+        _policy(),
+        unit_prefix="STC-JHN-GAP",
+        wip_index=wip_index,
+        ol_index=ol_index,
+        planner_version=STC_PLANNER_VERSION,
+    )
+    package = stc_package_measurements(
+        units,
+        ol,
+        wip_index=wip_index,
+        ol_index=ol_index,
+        planner_version=STC_PLANNER_VERSION,
+    )[0]
+
+    issue = package["source_text_issues"][0]
+    assert issue["reference"] == "JHN 1:3"
+    assert issue["canonical_references"] == ["JHN 1:2"]
+    assert issue["status"] == "REPORT_ONLY"
+    assert package["alignment"]["missing_canonical_atoms"] == ["JHN 1:2"]
+
+
+def test_stc_v1_package_fixture_remains_byte_identical() -> None:
+    """Planner-less legacy STC packages keep their sealed exact-local serialization."""
+    wip = (_record("JHN", 1, "w", role="WIP"),)
+    ol = (_record("JHN", 1, "o", role="GRK"),)
+    units = plan_stc_work_units(
+        wip,
+        ol,
+        _policy(),
+        unit_prefix="STC-JHN-LEGACY",
+        planner_version=LEGACY_STC_PLANNER_VERSION,
+    )
+    packages = stc_package_measurements(
+        units,
+        ol,
+        planner_version=LEGACY_STC_PLANNER_VERSION,
+    )
+
+    assert json.dumps(packages, sort_keys=True, separators=(",", ":")).encode() == (
+        b'[{"analysis_route":"STC_CORRESPONDENCE","ol":{"basis":"ROUTED_SFM_ONLY",'
+        b'"estimated_tokens":10,"estimator":"SAGE_MULTILINGUAL_HEURISTIC_1",'
+        b'"serialized_bytes":20},"primary_coverage_atoms":["JHN 1:1"],"route":'
+        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":20,"estimator":'
+        b'"SAGE_MULTILINGUAL_HEURISTIC_1","serialized_bytes":40},"sizing_basis":'
+        b'"ROUTED_SFM_ONLY","source_text_issues":[],"structural_issues":[],"wip":'
+        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":10,"estimator":'
+        b'"SAGE_MULTILINGUAL_HEURISTIC_1","serialized_bytes":20}}]'
+    )
+
+
+def test_stc_rejects_an_unknown_future_planner_version() -> None:
+    """A persisted STC planner identity must never select an implicit fallback."""
+    wip = (_record("JHN", 1, "w", role="WIP"),)
+
+    with pytest.raises(ValidationError) as error:
+        plan_stc_work_units(
+            wip,
+            (),
+            _policy(),
+            unit_prefix="STC-JHN-FUTURE",
+            planner_version=f"{STC_PLANNER_VERSION}_FUTURE",
+        )
+
+    assert error.value.code == "STC_PLANNER_VERSION_UNSUPPORTED"
 def test_stc_routes_testament_to_primary_ol_family() -> None:
     """STC must choose GRK for NT and HEB for OT, never a translation reference."""
     assert stc_authority_family("JHN") == "GRK"
