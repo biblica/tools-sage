@@ -87,6 +87,8 @@ from .rtc_planner import (
     plan_rtc_work_units,
     rtc_slicing_policy,
 )
+from .verse_alignment import ProjectVerseIndex
+from .versification_service import VersificationService
 from .guided_input import (
     GuidedArgumentParser,
     Suggestion,
@@ -3425,6 +3427,8 @@ def command_plan(args: argparse.Namespace) -> int:
     reference_project_id: str | None = None
     reference_result: dict[str, Any] | None = None
     reference_records = ()
+    rtc_wip_index: ProjectVerseIndex | None = None
+    rtc_reference_index: ProjectVerseIndex | None = None
     stc_authority_family_id: str | None = None
     stc_ol_project_id: str | None = None
     stc_ol_result: dict[str, Any] | None = None
@@ -3455,6 +3459,17 @@ def command_plan(args: argparse.Namespace) -> int:
             reference_project_id,
             reference_result,
             resource_role="REFERENCE",
+        )
+        versification_service = VersificationService(config)
+        rtc_wip_index = ProjectVerseIndex.build(
+            project_id,
+            all_records,
+            versification_service.project_schema(project),
+        )
+        rtc_reference_index = ProjectVerseIndex.build(
+            reference_project_id,
+            reference_records,
+            versification_service.project_schema(reference_project),
         )
     elif profile.workflow_id in {"stc", "saw"} and operation == "stc":
         if selected_role != "WIP":
@@ -3635,7 +3650,10 @@ def command_plan(args: argparse.Namespace) -> int:
                 shared=shared,
                 wip_context_pool=all_records,
                 reference_records=reference_records,
+                wip_index=rtc_wip_index,
+                reference_index=rtc_reference_index,
                 workflow=profile.workflow_id,
+                planner_version=RTC_PLANNER_VERSION,
             )
             planned_units.extend(portion_units)
             planned_packages.extend(portion_packages)
@@ -3693,7 +3711,7 @@ def command_plan(args: argparse.Namespace) -> int:
                 ),
                 "slicing_stream": "WIP",
                 "boundary_streams": ["WIP", "REFERENCE"],
-                "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
+                "reference_correlation": "CANONICAL_PROJECT_VRS",
             },
         })
         for unit_document, package in zip(document["units"], rtc_packages, strict=True):

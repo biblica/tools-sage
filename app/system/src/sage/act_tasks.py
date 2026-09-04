@@ -102,11 +102,13 @@ from .runtime_paths import (
 from .stc import plan_stc_work_units, stc_authority_family, validate_stc_submission, finalize_stc_run
 from .stc_reporting import publish_stc_reports
 from .rtc_planner import (
+    LEGACY_RTC_PLANNER_VERSION,
     RTC_HANDOFF_CONTRACT_VERSION,
     RTC_PLANNER_VERSION,
     rtc_prompt_schema_projection_version,
     rtc_slicing_policy,
 )
+from .verse_alignment import ProjectVerseIndex, align_records
 from .scripture import compile_project_scope, discover_book_ids
 from .rtc_policy import load_run_policy_snapshot
 from .semantic.diagnostics import analysis_signals_from_scope_evidence
@@ -129,7 +131,7 @@ from .vocabulary import (
     require_canonical_operation_set,
     require_canonical_target_text_vocabulary,
 )
-from .work_units import records_from_project_result, select_records_for_scope
+from .work_units import EvidenceRecord, records_from_project_result, select_records_for_scope
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_text, plan_sfm_work_units
 from .source_coverage import (
     source_comparison_status,
@@ -1208,7 +1210,7 @@ def _write_reference_inventory_usj_packet(
     if parser_errors:
         raise ValidationError(f"Task input {source.name} has parser errors: {', '.join(parser_errors[:8])}")
     requested_scopes = [scope for value in reference_values for scope in parse_scope_set(value)]
-    if not requested_scopes:
+    if not requested_scopes and not allow_empty:
         raise ValidationError("Composite RTC stage reference inventory must not be empty")
     selected: list[dict[str, Any]] = []
     refs: set[VerseRef] = set()
@@ -1269,6 +1271,115 @@ def _write_reference_inventory_usj_packet(
         },
         bounded_usfm,
     )
+
+
+def _records_intersecting_reference_values(
+    records: Sequence[EvidenceRecord],
+    reference_values: Sequence[str],
+) -> tuple[EvidenceRecord, ...]:
+    """Select complete physical records intersecting an explicit local inventory."""
+    atoms = {
+        ref
+        for value in reference_values
+        if str(value).strip()
+        for ref in expand_reference_atoms(str(value))
+    }
+    return tuple(record for record in records if atoms.intersection(record.refs))
+
+
+def _rtc_canonical_packet_route(
+    config: EcosystemConfig,
+    *,
+    output: ProjectSpec,
+    reference: ProjectSpec,
+    compiled: Mapping[str, dict[str, Any]],
+    scope: ScriptureScope,
+    primary_reference_values: Sequence[str],
+    context_reference_values: Sequence[str],
+) -> dict[str, Any]:
+    """Resolve RTC WIP-local packet inventories through both effective Project VRSs."""
+    wip_records = records_from_project_result(
+        output.project_id,
+        compiled[output.project_id],
+        resource_role="WIP",
+    )
+    reference_records = records_from_project_result(
+        reference.project_id,
+        compiled[reference.project_id],
+        resource_role="REFERENCE",
+    )
+    selected_wip = (
+        _records_intersecting_reference_values(wip_records, primary_reference_values)
+        if primary_reference_values
+        else select_records_for_scope(wip_records, scope)
+    )
+    context_wip = _records_intersecting_reference_values(
+        wip_records,
+        context_reference_values,
+    )
+    service = VersificationService(config)
+    wip_index = ProjectVerseIndex.build(
+        output.project_id,
+        wip_records,
+        service.project_schema(output),
+    )
+    reference_index = ProjectVerseIndex.build(
+        reference.project_id,
+        reference_records,
+        service.project_schema(reference),
+    )
+    primary_alignment = align_records(selected_wip, wip_index, reference_index)
+    context_alignment = align_records(context_wip, wip_index, reference_index)
+    canonical_by_local: dict[VerseRef, set[VerseRef]] = {}
+    missing_local: set[VerseRef] = set()
+    for record in selected_wip:
+        record_missing = wip_index.canonical_refs_for_records((record,)).intersection(
+            primary_alignment.missing_canonical_refs
+        )
+        if not record_missing:
+            continue
+        for local_ref in record.refs:
+            missing_local.add(local_ref)
+            canonical_by_local.setdefault(local_ref, set()).update(record_missing)
+    issues = list(source_text_issues(
+        missing_local,
+        (),
+        workflow="RTC",
+        source_stream="REFERENCE",
+        source_project_id=reference.project_id,
+        wip_project_id=output.project_id,
+        scope=scope.label(),
+    ))
+    for issue in issues:
+        local_ref = next(
+            ref for ref in missing_local if ref.label() == issue["reference"]
+        )
+        issue["canonical_references"] = [
+            ref.label() for ref in sorted(canonical_by_local[local_ref])
+        ]
+    return {
+        "reference_references": [
+            record.reference for record in primary_alignment.authority_records
+        ],
+        "context_reference_references": [
+            record.reference for record in context_alignment.authority_records
+        ],
+        "alignment": {
+            "primary_local_atoms": [
+                ref.label() for ref in sorted(primary_alignment.primary_local_refs)
+            ],
+            "canonical_atoms": [
+                ref.label() for ref in sorted(primary_alignment.canonical_refs)
+            ],
+            "reference_local_spans": [
+                record.reference for record in primary_alignment.authority_records
+            ],
+            "missing_canonical_atoms": [
+                ref.label() for ref in sorted(primary_alignment.missing_canonical_refs)
+            ],
+        },
+        "source_text_issues": issues,
+    }
 
 def _bic_evidence_cohort(
     *,
@@ -2045,15 +2156,33 @@ def _approved_rtc_work_plan(
                 affected_scope=scope.label(),
                 next_action=f"Rebuild and approve the affected {identity} Run plan.",
             )
+        persisted_planner = dict(plan.get("rtc_planner") or {})
+        persisted_planner_version = str(
+            persisted_planner.get("version") or LEGACY_RTC_PLANNER_VERSION
+        )
+        if persisted_planner_version not in {
+            RTC_PLANNER_VERSION,
+            LEGACY_RTC_PLANNER_VERSION,
+        }:
+            raise ValidationError(
+                f"Unsupported persisted RTC planner version: {persisted_planner_version}",
+                code="RTC_PLANNER_VERSION_UNSUPPORTED",
+                affected_scope=scope.label(),
+                next_action="Resume with a supported SAGE release or rebuild and approve the Run plan.",
+            )
         expected_planner = {
-            "version": RTC_PLANNER_VERSION,
+            "version": persisted_planner_version,
             "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
             "prompt_schema_projection_version": rtc_prompt_schema_projection_version(workflow),
             "slicing_stream": "WIP",
             "boundary_streams": ["WIP", "REFERENCE"],
-            "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
+            "reference_correlation": (
+                "CANONICAL_PROJECT_VRS"
+                if persisted_planner_version == RTC_PLANNER_VERSION
+                else "EXACT_WIP_SCRIPTURE_RANGE"
+            ),
         }
-        if dict(plan.get("rtc_planner") or {}) != expected_planner:
+        if persisted_planner != expected_planner:
             raise ValidationError(
                 f"{identity} RTC planner/prompt/schema contract changed after work-unit approval",
                 code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
@@ -2136,6 +2265,26 @@ def _approved_rtc_work_plan(
                     code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
                     affected_scope=primary_scope,
                 ) from exc
+            if str(package.get("projection") or "") != persisted_planner_version:
+                raise ValidationError(
+                    f"Approved {identity} work unit {unit_id} uses a different RTC planner projection",
+                    code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
+                    affected_scope=primary_scope,
+                )
+            if persisted_planner_version == RTC_PLANNER_VERSION:
+                alignment = package.get("alignment")
+                required_alignment_keys = {
+                    "primary_local_atoms",
+                    "canonical_atoms",
+                    "reference_local_spans",
+                    "missing_canonical_atoms",
+                }
+                if not isinstance(alignment, Mapping) or set(alignment) != required_alignment_keys:
+                    raise ValidationError(
+                        f"Approved {identity} work unit {unit_id} lacks canonical RTC alignment metadata",
+                        code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
+                        affected_scope=primary_scope,
+                    )
             if (
                 wip_tokens >= rtc_sizing_contract.wip_hard_exclusive_tokens
                 or route_tokens > rtc_sizing_contract.route_hard_max_tokens
@@ -2269,6 +2418,10 @@ def _create_approved_rtc_stage(
 ) -> dict[str, Any]:
     """Create the exact approved work units for a partitionable RTC stage."""
     units = [dict(item) for item in approved_plan.get("units", [])]
+    rtc_planner_version = str(
+        dict(approved_plan.get("rtc_planner") or {}).get("version")
+        or LEGACY_RTC_PLANNER_VERSION
+    )
     references_by_portion: dict[str, list[str]] = {}
     # Structural evidence is report-only and may cross approved RTC boundaries.
     # Route each atomic coordinate to its existing parent; meaning stages retain
@@ -2313,6 +2466,7 @@ def _create_approved_rtc_stage(
                 job_id=job_id,
                 run_id=run_id,
                 rtc_stage=rtc_stage,
+                rtc_planner_version=rtc_planner_version,
                 rtc_predecessor_files=rtc_predecessor_files,
                 ol_referral_contract=ol_referral_contract,
                 review_portion_id=str(unit["review_portion_id"]),
@@ -2582,6 +2736,7 @@ def _partition_selective_ol_cases(
     plan_seed: str,
     job_id: str | None,
     run_id: str | None,
+    rtc_planner_version: str,
     rtc_predecessor_files: Sequence[str],
     expected_ol_request_ids: Sequence[str],
     expected_ol_requests: Sequence[Mapping[str, Any]],
@@ -2674,6 +2829,7 @@ def _partition_selective_ol_cases(
             job_id=job_id,
             run_id=run_id,
             rtc_stage="SELECTIVE_OL_ADJUDICATION",
+            rtc_planner_version=rtc_planner_version,
             rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=[request_ids[index - 1]],
             expected_ol_requests=[request],
@@ -2782,6 +2938,7 @@ def _partition_act_request(
     job_id: str | None,
     run_id: str | None,
     rtc_stage: str | None = None,
+    rtc_planner_version: str | None = None,
     rtc_predecessor_files: Sequence[str] = (),
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
@@ -2811,6 +2968,7 @@ def _partition_act_request(
             plan_seed=plan_seed,
             job_id=job_id,
             run_id=run_id,
+            rtc_planner_version=(rtc_planner_version or RTC_PLANNER_VERSION),
             rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=expected_ol_request_ids,
             expected_ol_requests=expected_ol_requests,
@@ -2846,17 +3004,44 @@ def _partition_act_request(
         derived = rtc_slicing_policy(policy, profile.require_rtc_sizing())
     plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
     primary_stream_id = "WIP" if is_analysis_workflow(workflow) else "CONTENT_SOURCE"
-    route_streams = [SfmStream(primary_stream_id, tuple(records))]
+    canonical_rtc_route = (
+        workflow in {"rtc", "saw"}
+        and operation == "rtc"
+        and rtc_planner_version == RTC_PLANNER_VERSION
+    )
+    primary_index: ProjectVerseIndex | None = None
+    reference_index: ProjectVerseIndex | None = None
+    if canonical_rtc_route:
+        service = VersificationService(config)
+        primary_index = ProjectVerseIndex.build(
+            record_project_id,
+            records,
+            service.project_schema(record_project_id),
+        )
+    route_streams = [
+        SfmStream(
+            primary_stream_id,
+            tuple(records),
+            verse_index=primary_index,
+        )
+    ]
     if is_analysis_workflow(workflow) and operation in {"rtc", "focused", "ol"}:
         reference_records = records_from_project_result(
             source_project_id,
             compiled[source_project_id],
             resource_role="REFERENCE",
         )
+        if canonical_rtc_route:
+            reference_index = ProjectVerseIndex.build(
+                source_project_id,
+                reference_records,
+                service.project_schema(source_project_id),
+            )
         route_streams.append(SfmStream(
             "REFERENCE",
             tuple(reference_records),
             require_primary_coverage=not (operation == "rtc"),
+            verse_index=reference_index,
         ))
     if is_analysis_workflow(workflow) and operation == "ol":
         bound = _load_owning_job(config, str(job_id), workflow)
@@ -2876,6 +3061,8 @@ def _partition_act_request(
             route_id=f"{workflow.upper()}_{operation.upper()}",
             streams=tuple(route_streams),
             target_stream_ids=(primary_stream_id,),
+            primary_stream_id=primary_stream_id if canonical_rtc_route else None,
+            primary_index=primary_index if canonical_rtc_route else None,
         ),
         context_pool=records,
         required_spans=stage_spans,
@@ -2917,6 +3104,7 @@ def _partition_act_request(
             job_id=job_id,
             run_id=run_id,
             rtc_stage=rtc_stage,
+            rtc_planner_version=rtc_planner_version,
             rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=child_expected_ids,
             expected_ol_requests=child_expected_ol_requests,
@@ -3028,6 +3216,14 @@ def _create_rtc_composite(
         output_project_id=output_project_id,
         scope=scope,
     )
+    rtc_planner_version = str(
+        dict((approved_work_plan or {}).get("rtc_planner") or {}).get("version")
+        or (
+            LEGACY_RTC_PLANNER_VERSION
+            if approved_work_plan is not None
+            else RTC_PLANNER_VERSION
+        )
+    )
     candidates = _structural_candidates(config, output, scope)
     structure_enabled = bool(dict(rtc_policy.get("checks") or {}).get("structure_completeness", True))
     first_stage = "STRUCTURAL_ADJUDICATION" if candidates and structure_enabled else "REFERENCE_TEXT_COMPARISON"
@@ -3133,6 +3329,7 @@ def _create_rtc_composite(
             job_id=job_id,
             run_id=run_id,
             rtc_stage=first_stage,
+            rtc_planner_version=rtc_planner_version,
             rtc_stage_references=stage_references,
             ol_referral_contract=ol_referral_contract(workflow),
         )
@@ -3152,6 +3349,7 @@ def _create_rtc_composite(
         "grammar_override_id": grammar_override_id,
         "structural_stage_required": bool(candidates and structure_enabled),
         "rtc_policy": rtc_policy,
+        "rtc_planner_version": rtc_planner_version,
         "ol_referral_contract": ol_referral_contract(workflow),
         "review_portions": review_portions,
         "approved_work_plan_path": (
@@ -3660,6 +3858,7 @@ def create_act_task(
     job_id: str | None = None,
     run_id: str | None = None,
     rtc_stage: str | None = None,
+    rtc_planner_version: str | None = None,
     rtc_predecessor_files: Sequence[str] = (),
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
@@ -3701,6 +3900,21 @@ def create_act_task(
         rtc_stage = rtc_stage.strip().upper()
         if workflow not in {"rtc", "saw"} or operation != "rtc" or rtc_stage not in RTC_STAGES:
             raise ValidationError(f"Unsupported internal RTC stage: {rtc_stage}")
+    if workflow in {"rtc", "saw"} and operation == "rtc":
+        rtc_planner_version = str(
+            rtc_planner_version or RTC_PLANNER_VERSION
+        ).strip()
+        if rtc_planner_version not in {
+            RTC_PLANNER_VERSION,
+            LEGACY_RTC_PLANNER_VERSION,
+        }:
+            raise ValidationError(
+                f"Unsupported persisted RTC planner version: {rtc_planner_version}",
+                code="RTC_PLANNER_VERSION_UNSUPPORTED",
+                next_action="Resume with a supported SAGE release or rebuild and approve the Run plan.",
+            )
+    elif rtc_planner_version is not None:
+        raise ValidationError("RTC planner version is valid only for an RTC task")
     focus = focus.strip() if isinstance(focus, str) and focus.strip() else None
     if focus and ("\n" in focus or len(focus) > 600):
         raise ValidationError("--focus must be one bounded single-line question of at most 600 characters")
@@ -3990,6 +4204,7 @@ def create_act_task(
                     job_id=job_id,
                     run_id=run_id,
                     rtc_stage=rtc_stage,
+                    rtc_planner_version=rtc_planner_version,
                     rtc_predecessor_files=rtc_predecessor_files,
                     expected_ol_request_ids=expected_ol_request_ids,
                     expected_ol_requests=expected_ol_requests,
@@ -4072,6 +4287,27 @@ def create_act_task(
                 scope.label(),
             )
 
+    stage_reference_values = [
+        str(value).strip()
+        for value in rtc_stage_references
+        if str(value).strip()
+    ]
+    rtc_packet_route: dict[str, Any] | None = None
+    if (
+        workflow in {"rtc", "saw"}
+        and operation == "rtc"
+        and rtc_planner_version == RTC_PLANNER_VERSION
+    ):
+        rtc_packet_route = _rtc_canonical_packet_route(
+            config,
+            output=output,
+            reference=source,
+            compiled=compiled,
+            scope=scope,
+            primary_reference_values=stage_reference_values,
+            context_reference_values=context_references,
+        )
+
     expected_outputs = _expected_outputs(workflow, operation)
     project_fingerprints: dict[str, str] = {}
     for project_id, result in compiled.items():
@@ -4096,6 +4332,12 @@ def create_act_task(
         "workflow": workflow,
         "operation": operation,
         "rtc_stage": rtc_stage,
+        "rtc_planner_version": rtc_planner_version,
+        "rtc_alignment": (
+            dict(rtc_packet_route["alignment"])
+            if rtc_packet_route is not None
+            else None
+        ),
         "job_id": job_id,
         "run_id": run_id,
         "output_project": output.project_id,
@@ -4163,6 +4405,7 @@ def create_act_task(
             job_id=job_id,
             run_id=run_id,
             rtc_stage=rtc_stage,
+            rtc_planner_version=rtc_planner_version,
             rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=expected_ol_request_ids,
             expected_ol_requests=expected_ol_requests,
@@ -4184,19 +4427,25 @@ def create_act_task(
 
     try:
         packet_records: dict[str, Any] = {}
-        stage_reference_values = [str(value).strip() for value in rtc_stage_references if str(value).strip()]
+        routed_reference_values = (
+            list(rtc_packet_route["reference_references"])
+            if rtc_packet_route is not None
+            else stage_reference_values
+        )
         contemporary_packet = packet_root / (
             "source.usj.json" if workflow == "bic" else "reference.usj.json"
         )
         packet_records["contemporary_source"], contemporary_semantic_usfm = (
             _write_reference_inventory_usj_packet(
                 source_file,
-                stage_reference_values,
+                routed_reference_values,
                 contemporary_packet,
                 parent_scope=scope,
                 allow_empty=workflow in {"rtc", "saw"} and operation == "rtc",
             )
-            if workflow in {"rtc", "saw"} and operation == "rtc" and stage_reference_values
+            if workflow in {"rtc", "saw"}
+            and operation == "rtc"
+            and (rtc_packet_route is not None or stage_reference_values)
             else _write_scope_usj_packet(
                 source_file,
                 scope,
@@ -4212,10 +4461,15 @@ def create_act_task(
         context_reference_packet: Path | None = None
         context_reference_model_packet: Path | None = None
         if context_references:
+            routed_context_reference_values = (
+                list(rtc_packet_route["context_reference_references"])
+                if rtc_packet_route is not None
+                else list(context_references)
+            )
             context_reference_packet = packet_root / "context-reference.usj.json"
             packet_records["context_contemporary_source"], context_reference_semantic_usfm = _write_reference_inventory_usj_packet(
                 source_file,
-                context_references,
+                routed_context_reference_values,
                 context_reference_packet,
                 parent_scope=scope,
                 allow_empty=workflow in {"rtc", "saw"} and operation == "rtc",
@@ -4762,7 +5016,9 @@ def create_act_task(
             else list(packet_records["contemporary_source"]["atomic_references"])
         )
         source_issue_rows = (
-            list(source_text_issues(
+            list(rtc_packet_route["source_text_issues"])
+            if rtc_packet_route is not None
+            else list(source_text_issues(
                 (
                     ref
                     for value in expected_references
@@ -4967,6 +5223,12 @@ def create_act_task(
             "operation": operation,
             "skill_id": skill.skill_id,
             "rtc_stage": rtc_stage,
+            "rtc_planner_version": rtc_planner_version,
+            "rtc_alignment": (
+                dict(rtc_packet_route["alignment"])
+                if rtc_packet_route is not None
+                else None
+            ),
             "job_id": job_id,
             "run_id": run_id,
             "resource_bindings": canonical_resource_bindings,
@@ -5515,6 +5777,7 @@ def create_act_task(
                     job_id=job_id,
                     run_id=run_id,
                     rtc_stage=rtc_stage,
+                    rtc_planner_version=rtc_planner_version,
                     rtc_predecessor_files=rtc_predecessor_files,
                     expected_ol_request_ids=expected_ol_request_ids,
                     expected_ol_requests=expected_ol_requests,
