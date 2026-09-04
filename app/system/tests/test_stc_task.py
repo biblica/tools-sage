@@ -11,11 +11,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
+import yaml
 
 from sage.act_tasks import create_act_task, submit_act_task
 from sage.errors import ValidationError
 from sage.external_access import READ_ONLY_SCRIPTURE
 from sage.jobs import JobStore
+from sage.plan_continuation import continue_analysis_plan
 from sage.project_inventory import (
     register_project,
     registered_project_records,
@@ -23,6 +25,7 @@ from sage.project_inventory import (
 )
 from sage.registry import load_ecosystem
 from sage.resource_mounts import set_resource_mount
+from sage.stc import LEGACY_STC_PLANNER_VERSION, STC_PLANNER_VERSION
 from sage.stc_reporting import _stc_report_markdown
 from sage.storage import storage_layout
 
@@ -201,6 +204,126 @@ def test_stc_task_routes_only_wip_ol_sfm_and_complete_profiles(package_root, mak
     assert "Authorized REFERENCE" not in act
     assert "Reference Project" not in act
     assert "- REFERENCE:" not in act
+
+
+@pytest.mark.parametrize(
+    ("planner_version", "expected_ol_reference", "unexpected_ol_reference"),
+    (
+        (STC_PLANNER_VERSION, "\\v 2 ", "\\v 3 "),
+        (LEGACY_STC_PLANNER_VERSION, "\\v 3 ", "\\v 2 "),
+    ),
+)
+def test_stc_task_routes_ol_by_its_persisted_planner_version(
+    package_root,
+    make_workspace,
+    planner_version: str,
+    expected_ol_reference: str,
+    unexpected_ol_reference: str,
+) -> None:
+    """V2 uses canonical OL correspondence while resumed V1 remains exact-local."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=3)
+    _install_fixture_ol_profile(root, package_root, "GRK")
+    projects_root = root.parent / "localdata/work/projects"
+    (projects_root / "usWIP" / "custom.vrs").write_text(
+        "MAT 1:3 = MAT 1:2\n",
+        encoding="utf-8",
+    )
+    settings = root / "ecosystem.yml"
+    settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
+    settings.write_text(yaml.safe_dump(settings_data, sort_keys=False), encoding="utf-8")
+    _initialize(package_root, root)
+
+    task = create_act_task(
+        load_ecosystem(settings),
+        workflow="stc",
+        operation="stc",
+        output_project_id="usWIP",
+        contemporary_source_id=None,
+        scope_value="MAT 1:3",
+        stc_planner_version=planner_version,
+    )
+
+    manifest_path = Path(task["manifest_path"])
+    ol_sfm = (manifest_path.parent / "packet" / "original-language.sfm").read_text(
+        encoding="utf-8"
+    )
+    assert expected_ol_reference in ol_sfm
+    assert unexpected_ol_reference not in ol_sfm
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["stc_planner_version"] == planner_version
+    if planner_version == STC_PLANNER_VERSION:
+        assert manifest["stc_alignment"] == {
+            "primary_local_atoms": ["MAT 1:3"],
+            "canonical_atoms": ["MAT 1:2"],
+            "authority_stream": "GRK:PRIMARY",
+            "authority_local_spans": ["MAT 1:2"],
+            "missing_canonical_atoms": [],
+        }
+    else:
+        assert manifest["stc_alignment"] is None
+
+
+def test_plannerless_stc_plan_resumes_without_mutation(
+    package_root,
+    make_workspace,
+) -> None:
+    """A frozen pre-V2 plan remains an exact-local, immutable continuation artifact."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=3)
+    _install_fixture_ol_profile(root, package_root, "GRK")
+    projects_root = root.parent / "localdata/work/projects"
+    (projects_root / "usWIP" / "custom.vrs").write_text(
+        "MAT 1:3 = MAT 1:2\n",
+        encoding="utf-8",
+    )
+    settings = root / "ecosystem.yml"
+    settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
+    settings.write_text(yaml.safe_dump(settings_data, sort_keys=False), encoding="utf-8")
+    _initialize(package_root, root)
+    config = load_ecosystem(settings)
+    task = create_act_task(
+        config,
+        workflow="stc",
+        operation="stc",
+        output_project_id="usWIP",
+        contemporary_source_id=None,
+        scope_value="MAT 1:3",
+        stc_planner_version=LEGACY_STC_PLANNER_VERSION,
+    )
+    store = JobStore(root, settings)
+    job = store.load_job(task["job_id"], tool="stc")
+    run = store.load_run(job, task["run_id"])
+    plan = {
+        "schema_version": "1.0",
+        "status": "PARTITIONED",
+        "plan_id": "STC-MAT-LEGACY",
+        "workflow": "stc",
+        "operation": "stc",
+        "job_id": job.job_id,
+        "run_id": run.run_id,
+        "work_units": [{
+            "unit_id": task["work_unit_id"],
+            "task_id": task["task_id"],
+            "scope": task["scope"],
+            "manifest_path": task["manifest_path"],
+        }],
+    }
+    plan_path = run.root / "plans" / "STC-MAT-LEGACY.json"
+    plan_path.parent.mkdir(parents=True, exist_ok=True)
+    plan_path.write_text(json.dumps(plan, sort_keys=True), encoding="utf-8")
+    plan_bytes = plan_path.read_bytes()
+
+    continuation = continue_analysis_plan(config, plan_path)
+
+    ol_sfm = (
+        Path(task["manifest_path"]).parent / "packet" / "original-language.sfm"
+    ).read_text(encoding="utf-8")
+    assert continuation["status"] == "NEXT_WORK_UNIT"
+    assert "\\v 3 " in ol_sfm
+    assert "\\v 2 " not in ol_sfm
+    assert "stc_planner_version" not in plan
+    assert plan_path.read_bytes() == plan_bytes
 
 
 def test_stc_task_reports_empty_primary_ol_coordinate_without_aborting(
