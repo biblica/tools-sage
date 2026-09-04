@@ -6107,6 +6107,7 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
     family = str(plan.get("authority_family") or "").strip().upper()
     if not output_project or not ol_authority or family not in {"GRK", "HEB"}:
         raise ValidationError("STC aggregate plan lacks governed WIP/primary-OL identity", code="STC_WORK_UNIT_PLAN_INVALID")
+    # Seal one planner lineage across every child before accepting terminal results.
     stc_planner_version = str(
         plan.get("stc_planner_version") or LEGACY_STC_PLANNER_VERSION
     )

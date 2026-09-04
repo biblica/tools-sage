@@ -579,6 +579,7 @@ def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict
     units = plan.get("work_units")
     if not isinstance(units, list) or not units or any(not isinstance(unit, dict) for unit in units):
         raise ValidationError("Analysis plan work_units must be a nonempty list of objects")
+    # A missing STC version identifies the frozen pre-V2 exact-local contract.
     stc_planner_version: str | None = None
     if str(plan.get("operation") or "").lower() == "stc":
         stc_planner_version = str(
