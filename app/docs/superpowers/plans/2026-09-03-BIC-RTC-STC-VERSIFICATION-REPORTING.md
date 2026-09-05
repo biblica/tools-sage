@@ -675,39 +675,39 @@ git commit -m "feat: correlate STC authority through canonical VRS"
 - Changes: `merge_bounded_usfm()` receives the sealed `target_scope`, never the SOURCE-local scope
 - Preserves: schema-2.4 BIC tasks without the new fields validate and merge with their sealed `expected_references`/`scope` behavior
 
-- [ ] **Step 1: Write a failing BIC one-to-one projection test**
+- [x] **Step 1: Write a failing BIC one-to-one projection test**
 
 Create a SOURCE local `2CO 13:14` mapped to canonical `13:13` and a TARGET whose local coordinate is `13:13`. Assert the task keeps SOURCE coverage `13:14`, expects TARGET output `13:13`, and routes any existing TARGET `13:13` text.
 
-- [ ] **Step 2: Write a failing ambiguous-projection safety test**
+- [x] **Step 2: Write a failing ambiguous-projection safety test**
 
 Use a SOURCE-to-TARGET equivalence group. Assert INSPECT can be created with a report-only alignment advisory, but REWRITE/SELF-CHECK fails with `BIC_TARGET_VRS_ALIGNMENT_REQUIRED` before task output or TARGET files are written.
 
-- [ ] **Step 3: Run BIC alignment tests and witness current same-scope behavior**
+- [x] **Step 3: Run BIC alignment tests and witness current same-scope behavior**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_bic_verse_alignment.py tests/test_hardening_and_segmentation.py tests/test_rc_block_and_job_cleanup.py`
 
 Expected: SOURCE references are currently reused as TARGET references and the ambiguity guard is absent.
 
-- [ ] **Step 4: Seal separate SOURCE and TARGET coverage**
+- [x] **Step 4: Seal separate SOURCE and TARGET coverage**
 
 Build SOURCE and TARGET indexes during BIC task creation. Persist the SOURCE-local work coverage separately from the projected TARGET-local expected output. Include both Project VRS hashes and the projection metadata in the task fingerprint.
 
-- [ ] **Step 5: Validate and merge only TARGET-local coordinates**
+- [x] **Step 5: Validate and merge only TARGET-local coordinates**
 
 Pass `expected_output_references` to `validate_bic_usfm_output()` and `target_scope` to `merge_bounded_usfm()`. Keep SOURCE-local scope for memory, findings, and content-provenance records. Reject non-contiguous or equivalence-group TARGET projections before creating a writable task.
 
-- [ ] **Step 6: Verify the transaction remains fail-before-write**
+- [x] **Step 6: Verify the transaction remains fail-before-write**
 
 In the ambiguity test, snapshot the TARGET bytes and transaction directory before the call. Assert both are unchanged afterward. Retain `FileTransaction` as the only TARGET commit mechanism.
 
-- [ ] **Step 7: Run the BIC suite**
+- [x] **Step 7: Run the BIC suite**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_bic_verse_alignment.py tests/test_hardening_and_segmentation.py tests/test_rc_block_and_job_cleanup.py tests/test_rewrite_risk.py tests/test_core_hardening.py`
 
 Expected: PASS; coordinate-precise projections commit only inside TARGET-local scope and ambiguous mappings leave all governed data untouched.
 
-- [ ] **Step 8: Commit BIC alignment**
+- [x] **Step 8: Commit BIC alignment**
 
 ```bash
 git add app/system/src/sage/act_tasks.py app/system/src/sage/act_outputs.py app/system/src/sage/bounded_target.py app/system/tests/test_bic_verse_alignment.py app/system/tests/test_hardening_and_segmentation.py app/system/tests/test_rc_block_and_job_cleanup.py

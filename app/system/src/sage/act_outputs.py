@@ -387,7 +387,7 @@ def validate_bic_usfm_output(
     source_marker_sequence: tuple[str, ...],
     marker_policy: str = "SEMANTIC_STRUCTURE_V1",
 ) -> dict[str, Any]:
-    """Require valid bounded USFM with exact coordinate and marker coverage."""
+    """Require bounded USFM with exact TARGET-local coordinate and marker coverage."""
     refs, _ = usfm_scope_refs(path, expected_book=expected_book)
     if refs != expected_references:
         missing = sorted(expected_references - refs)
@@ -397,7 +397,10 @@ def validate_bic_usfm_output(
             details.append("missing=" + ",".join(ref.label() for ref in missing[:10]))
         if outside:
             details.append("outside=" + ",".join(ref.label() for ref in outside[:10]))
-        raise ValidationError("USFM output does not match bounded scope: " + "; ".join(details))
+        raise ValidationError(
+            "USFM output does not match sealed TARGET-local output coverage: "
+            + "; ".join(details)
+        )
     text = path.read_text(encoding="utf-8-sig")
     actual_markers = marker_sequence(text)
     source_protected = tuple(
