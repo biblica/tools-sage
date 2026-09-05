@@ -34,7 +34,7 @@ from .bic_memory import (
     inspect_completion_and_review_status,
     submit_inspect_transactionally,
 )
-from .canon import NT_27, OT_39, resolve_expected_books
+from .canon import BOOK_ORDER, NT_27, OT_39, resolve_expected_books
 from .config import load_json, load_yaml, require_mapping, require_string
 from .errors import ConfigurationError, EvidenceLimitError, InputRequiredError, ValidationError
 from .evidence import EvidencePolicy
@@ -115,8 +115,8 @@ from .rtc_planner import (
     rtc_prompt_schema_projection_version,
     rtc_slicing_policy,
 )
-from .verse_alignment import ProjectVerseIndex, align_records
-from .scripture import compile_project_scope, discover_book_ids
+from .verse_alignment import ProjectVerseIndex, align_records, project_coordinates
+from .scripture import compile_project, compile_project_scope, discover_book_ids
 from .rtc_policy import load_run_policy_snapshot
 from .semantic.diagnostics import analysis_signals_from_scope_evidence
 from .semantic.evidence import scope_evidence_for_project
@@ -601,7 +601,8 @@ def _validate_task_projects(
     source_label = "BIC SOURCE" if workflow == "bic" else f"{workflow.upper()} REFERENCE"
     _assert_enabled(output, output_label)
     _assert_enabled(source, source_label)
-    _assert_project_scope(output, scope, output_label)
+    if workflow != "bic":
+        _assert_project_scope(output, scope, output_label)
     _assert_project_scope(source, scope, source_label)
     if output.project_id == source.project_id:
         raise ValidationError(f"{output_label} and {source_label} must be different projects")
@@ -995,14 +996,30 @@ def validate_act_request_readiness(
         else None
     )
     readiness_projects: list[tuple[str, ProjectSpec]] = [
-        (("BIC TARGET" if workflow == "bic" else f"{_analysis_identity(workflow)} WIP"), output),
-        (("BIC SOURCE" if workflow == "bic" else f"{_analysis_identity(workflow)} comparison source"), source),
+        (
+            "BIC SOURCE"
+            if workflow == "bic"
+            else f"{_analysis_identity(workflow)} comparison source",
+            source,
+        ),
     ]
+    if workflow != "bic":
+        readiness_projects.insert(0, (f"{_analysis_identity(workflow)} WIP", output))
     if donor is not None:
         readiness_projects.append(("BIC DONOR", donor))
-    compiled = _assert_initialized_and_ready(
-        config, workflow, readiness_projects, scope
-    )
+    if workflow == "bic":
+        compiled, bic_alignment = _prepare_bic_project_alignment(
+            config,
+            source=source,
+            target=output,
+            source_scope=scope,
+            source_readiness_projects=readiness_projects,
+        )
+    else:
+        compiled = _assert_initialized_and_ready(
+            config, workflow, readiness_projects, scope
+        )
+        bic_alignment = None
     return {
         "workflow": workflow,
         "output_project": output.project_id,
@@ -1014,6 +1031,9 @@ def validate_act_request_readiness(
             "availability": "AVAILABLE" if ol_project else "UNAVAILABLE_OPTIONAL",
         },
         "scope": scope.label(),
+        "target_scope": (
+            bic_alignment["target_scope"] if bic_alignment is not None else None
+        ),
         "project_statuses": {key: value.get("status") for key, value in compiled.items()},
     }
 
@@ -1372,6 +1392,261 @@ def _rtc_canonical_packet_route(
     }
 
 
+def _projected_scope_for_refs(
+    refs: Iterable[VerseRef],
+    *,
+    schema,
+) -> ScriptureScope | None:
+    """Return one exact contiguous TARGET-local scope, or ``None`` when unsafe."""
+    ordered = tuple(sorted(frozenset(refs)))
+    if not ordered or len({ref.book for ref in ordered}) != 1:
+        return None
+    for previous, current in zip(ordered, ordered[1:]):
+        if previous.book != current.book:
+            return None
+        if previous.chapter == current.chapter:
+            if current.verse != previous.verse + 1:
+                return None
+            continue
+        chapter_limit = schema.chapter_limit(previous.book, previous.chapter)
+        if (
+            current.chapter != previous.chapter + 1
+            or current.verse != 1
+            or chapter_limit != previous.verse
+        ):
+            return None
+    first = ordered[0]
+    last = ordered[-1]
+    return ScriptureScope(
+        book=first.book,
+        start_chapter=first.chapter,
+        start_verse=first.verse,
+        end_chapter=last.chapter,
+        end_verse=last.verse,
+    )
+
+
+def _scope_envelope_for_refs(refs: Iterable[VerseRef]) -> ScriptureScope | None:
+    """Return the narrowest one-book scope containing every projected coordinate."""
+    ordered = tuple(sorted(frozenset(refs)))
+    if not ordered or len({ref.book for ref in ordered}) != 1:
+        return None
+    first = ordered[0]
+    last = ordered[-1]
+    return ScriptureScope(
+        book=first.book,
+        start_chapter=first.chapter,
+        start_verse=first.verse,
+        end_chapter=last.chapter,
+        end_verse=last.verse,
+    )
+
+
+def _bic_canonical_projection(
+    config: EcosystemConfig,
+    *,
+    source: ProjectSpec,
+    target: ProjectSpec,
+    compiled: Mapping[str, dict[str, Any]],
+    scope: ScriptureScope,
+) -> dict[str, Any]:
+    """Project BIC SOURCE-local coverage into deterministic TARGET coordinates."""
+    source_records = records_from_project_result(
+        source.project_id,
+        compiled[source.project_id],
+        resource_role="CONTENT_SOURCE",
+    )
+    target_result = compiled.get(target.project_id)
+    target_records = (
+        records_from_project_result(
+            target.project_id,
+            dict(target_result),
+            resource_role="GENERATED_TARGET",
+        )
+        if target_result is not None
+        and str(target_result.get("status")) in READY_RESOURCE_STATES
+        else ()
+    )
+    selected_source = select_records_for_scope(source_records, scope)
+    service = VersificationService(config)
+    source_schema = service.project_schema(source)
+    target_schema = service.project_schema(target)
+    source_index = ProjectVerseIndex.build(
+        source.project_id,
+        source_records,
+        source_schema,
+    )
+    target_index = ProjectVerseIndex.build(
+        target.project_id,
+        target_records,
+        target_schema,
+    )
+    source_refs = frozenset(ref for record in selected_source for ref in record.refs)
+    projection = project_coordinates(source_refs, source_index, target_index)
+    target_scope = _projected_scope_for_refs(
+        projection.target_local_refs,
+        schema=target_schema,
+    )
+    target_shapes: list[list[int]] = []
+    record_shapes_are_precise = True
+    for record in selected_source:
+        record_projection = project_coordinates(record.refs, source_index, target_index)
+        record_scope = _projected_scope_for_refs(
+            record_projection.target_local_refs,
+            schema=target_schema,
+        )
+        if (
+            not record_projection.is_deterministic
+            or record_scope is None
+            or record_scope.start_chapter != record_scope.end_chapter
+        ):
+            record_shapes_are_precise = False
+            continue
+        assert record_scope.start_chapter is not None
+        assert record_scope.start_verse is not None
+        assert record_scope.end_verse is not None
+        target_shapes.append(
+            [
+                record_scope.start_chapter,
+                record_scope.start_verse,
+                record_scope.end_verse,
+            ]
+        )
+    target_existing_records = target_index.records_for_canonical(
+        projection.canonical_refs
+    )
+    target_existing_refs = frozenset(
+        ref for record in target_existing_records for ref in record.refs
+    )
+    # Protected marker validation is positional, so a moved chapter break must
+    # remain inspect-only even when every individual coordinate maps precisely.
+    source_breaks: list[int] = []
+    target_breaks: list[int] = []
+    previous_source_chapter: int | None = None
+    previous_target_chapter: int | None = None
+    if len(target_shapes) == len(selected_source):
+        for index, (record, target_shape) in enumerate(
+            zip(selected_source, target_shapes)
+        ):
+            if record.chapter != previous_source_chapter:
+                source_breaks.append(index)
+                previous_source_chapter = record.chapter
+            target_chapter = target_shape[0]
+            if target_chapter != previous_target_chapter:
+                target_breaks.append(index)
+                previous_target_chapter = target_chapter
+    chapter_topology_is_compatible = (
+        len(target_shapes) == len(selected_source)
+        and source_breaks == target_breaks
+    )
+    writable = (
+        projection.is_deterministic
+        and target_scope is not None
+        and record_shapes_are_precise
+        and len(target_shapes) == len(selected_source)
+        and chapter_topology_is_compatible
+    )
+    advisory = None
+    if not writable:
+        advisory = {
+            "code": "BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+            "classification": "STRUCTURE_ADVISORY",
+            "message": (
+                "BIC SOURCE coverage does not project to one coordinate-precise, "
+                "contiguous, marker-compatible TARGET-local span. INSPECT may "
+                "continue, but writable stages require human versification alignment."
+            ),
+            "next_stage_allowed": False,
+        }
+    return {
+        "primary_stream": "SOURCE",
+        "target_stream": "TARGET",
+        "source_primary_references": [ref.label() for ref in sorted(source_refs)],
+        "canonical_references": [
+            ref.label() for ref in sorted(projection.canonical_refs)
+        ],
+        "target_local_references": [
+            ref.label() for ref in sorted(projection.target_local_refs)
+        ],
+        "target_existing_references": [
+            ref.label() for ref in sorted(target_existing_refs)
+        ],
+        "target_shapes": target_shapes,
+        "chapter_topology": {
+            "source_break_before_record_indexes": source_breaks,
+            "target_break_before_record_indexes": target_breaks,
+            "is_compatible": chapter_topology_is_compatible,
+        },
+        "precision": projection.precision,
+        "is_deterministic": projection.is_deterministic,
+        "is_writable": writable,
+        "source_effective_vrs_sha256": service.effective_fingerprint(source),
+        "target_effective_vrs_sha256": service.effective_fingerprint(target),
+        "target_scope": target_scope.label() if target_scope is not None else None,
+        "advisory": advisory,
+    }
+
+
+def _prepare_bic_project_alignment(
+    config: EcosystemConfig,
+    *,
+    source: ProjectSpec,
+    target: ProjectSpec,
+    source_scope: ScriptureScope,
+    source_readiness_projects: Sequence[tuple[str, ProjectSpec]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Compile SOURCE-side inputs, project coordinates, then compile TARGET scope."""
+    compiled = _assert_initialized_and_ready(
+        config,
+        "bic",
+        source_readiness_projects,
+        source_scope,
+    )
+    provisional = _bic_canonical_projection(
+        config,
+        source=source,
+        target=target,
+        compiled=compiled,
+        scope=source_scope,
+    )
+    target_validation_scope = _scope_envelope_for_refs(
+        VerseRef(
+            value.split()[0],
+            int(value.split()[1].split(":")[0]),
+            int(value.split(":")[1]),
+        )
+        for value in provisional["target_local_references"]
+    )
+    if target_validation_scope is None:
+        # An inspect-only projection may have no one-book TARGET envelope. Compile
+        # the declared TARGET inventory for sealed identity/fingerprint purposes;
+        # the writable-stage guard below remains authoritative.
+        compiled[target.project_id] = compile_project(config, target)
+    else:
+        _assert_project_scope(target, target_validation_scope, "BIC TARGET")
+        compiled.update(
+            _assert_initialized_and_ready(
+                config,
+                "bic",
+                (("BIC TARGET", target),),
+                target_validation_scope,
+            )
+        )
+    alignment = _bic_canonical_projection(
+        config,
+        source=source,
+        target=target,
+        compiled=compiled,
+        scope=source_scope,
+    )
+    alignment["target_validation_scope"] = (
+        target_validation_scope.label()
+        if target_validation_scope is not None
+        else None
+    )
+    return compiled, alignment
+
+
 def _canonical_gap_source_issues(
     primary_records: Sequence[EvidenceRecord],
     primary_index: ProjectVerseIndex,
@@ -1656,11 +1931,19 @@ def _write_vrs_evidence(
     source: ProjectSpec,
     ol_project: ProjectSpec | None,
     scope: ScriptureScope,
+    *,
+    output_scope: ScriptureScope | None = None,
 ) -> tuple[list[Path], dict[str, Any]]:
     """Write only the bounded versification evidence needed to interpret the task scope."""
     service = VersificationService(config)
+    effective_output_scope = output_scope or scope
     resources: dict[str, Any] = {
-        "output_project": _vrs_record(config, output, scope, service=service),
+        "output_project": _vrs_record(
+            config,
+            output,
+            effective_output_scope,
+            service=service,
+        ),
         "contemporary_source": _vrs_record(config, source, scope, service=service),
     }
     if ol_project is not None:
@@ -1915,11 +2198,30 @@ def _load_predecessor(
 
 
 
-def _target_book_filename(project: ProjectSpec, source_file: Path, book: str) -> str:
+def _target_book_filename(project: ProjectSpec, book: str) -> str:
     """Generate a target-owned Paratext filename without inheriting source identity."""
-    match = re.match(r"^(?P<prefix>\d{2})?[A-Za-z0-9]{3}", source_file.stem)
-    prefix = match.group("prefix") if match else ""
-    return f"{prefix}{book}{project.project_id}.SFM"
+    book_number = BOOK_ORDER.get(book)
+    if book_number is None:
+        raise ValidationError(
+            f"BIC TARGET filename cannot resolve the canonical book number for {book}",
+            code="TARGET_BOOK_FILENAME_UNSUPPORTED",
+        )
+    conventions: set[tuple[str, str]] = set()
+    for path in sorted(discover_book_ids(project.path).values()):
+        match = re.match(r"^\d{2}[A-Za-z0-9]{3}(?P<suffix>.*)$", path.stem)
+        if match:
+            conventions.add((match.group("suffix"), path.suffix or ".SFM"))
+    if len(conventions) > 1:
+        raise ValidationError(
+            f"BIC TARGET project {project.project_id} has inconsistent Scripture filename conventions",
+            code="TARGET_BOOK_FILENAME_AMBIGUOUS",
+        )
+    suffix, extension = (
+        next(iter(conventions))
+        if conventions
+        else (project.project_id, ".SFM")
+    )
+    return f"{book_number:02d}{book}{suffix}{extension}"
 
 
 def _context_measurement(
@@ -4244,20 +4546,60 @@ def create_act_task(
     )
     conditional_ol = workflow == "bic" and operation == "rewrite" and ol_project is not None
     readiness_projects: list[tuple[str, ProjectSpec]] = [
-        (("BIC TARGET" if workflow == "bic" else f"{_analysis_identity(workflow)} WIP"), output),
-        (("BIC SOURCE" if workflow == "bic" else f"{_analysis_identity(workflow)} comparison source"), source),
+        (
+            "BIC SOURCE"
+            if workflow == "bic"
+            else f"{_analysis_identity(workflow)} comparison source",
+            source,
+        ),
     ]
+    if workflow != "bic":
+        readiness_projects.insert(0, (f"{_analysis_identity(workflow)} WIP", output))
     if lexical_donor is not None:
         readiness_projects.append(("BIC DONOR", lexical_donor))
     if route_ol:
         assert ol_project is not None
         readiness_projects.append(("Original-language", ol_project))
-    compiled = _assert_initialized_and_ready(
-        config,
-        workflow,
-        readiness_projects,
-        scope,
-    )
+    bic_alignment: dict[str, Any] | None = None
+    if workflow == "bic":
+        assert isinstance(scope, ScriptureScope)
+        compiled, bic_alignment = _prepare_bic_project_alignment(
+            config,
+            source=source,
+            target=output,
+            source_scope=scope,
+            source_readiness_projects=readiness_projects,
+        )
+        if operation in {CANONICAL_TARGET_TEXT_OPERATION, "self_check"} and bic_alignment[
+            "advisory"
+        ] is not None:
+            raise ValidationError(
+                str(bic_alignment["advisory"]["message"]),
+                code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+                affected_scope=scope.label(),
+                next_action=(
+                    "Correct or explicitly align the SOURCE and TARGET versification before "
+                    "creating a writable BIC task."
+                ),
+                details={
+                    "source_primary_references": bic_alignment[
+                        "source_primary_references"
+                    ],
+                    "canonical_references": bic_alignment["canonical_references"],
+                    "target_local_references": bic_alignment[
+                        "target_local_references"
+                    ],
+                    "precision": bic_alignment["precision"],
+                    "chapter_topology": bic_alignment["chapter_topology"],
+                },
+            )
+    else:
+        compiled = _assert_initialized_and_ready(
+            config,
+            workflow,
+            readiness_projects,
+            scope,
+        )
     if (
         workflow in {"rtc", "saw"}
         and operation == "rtc"
@@ -4423,12 +4765,22 @@ def create_act_task(
         assert ol_file is not None
 
     if workflow == "bic" and operation in {CANONICAL_TARGET_TEXT_OPERATION, "self_check"}:
-        target_file = _one_book_file(output, scope.book, optional=True)
+        assert bic_alignment is not None
+        target_scope_value = str(bic_alignment["target_scope"] or "")
+        if not target_scope_value:
+            raise ValidationError(
+                "BIC writable task has no deterministic TARGET-local scope",
+                code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+                affected_scope=scope.label(),
+            )
+        target_book = parse_scope(target_scope_value).book
+        target_file = _one_book_file(output, target_book, optional=True)
         if target_file is not None and target_file.is_file():
             preflight_bounded_target_commit(
                 target_file.read_text(encoding="utf-8"),
                 source_file.read_text(encoding="utf-8"),
-                scope.label(),
+                target_scope_value,
+                expected_shapes=bic_alignment["target_shapes"],
             )
 
     stage_reference_values = [
@@ -4482,6 +4834,7 @@ def create_act_task(
             if rtc_packet_route is not None
             else None
         ),
+        "bic_alignment": bic_alignment,
         "job_id": job_id,
         "run_id": run_id,
         "output_project": output.project_id,
@@ -4731,8 +5084,15 @@ def create_act_task(
         target_semantic_usfm: str | None = None
         if predecessor:
             target_packet = packet_root / "staged-target.usj.json"
+            predecessor_scope = (
+                parse_scope(str(bic_alignment["target_scope"]))
+                if workflow == "bic"
+                and bic_alignment is not None
+                and bic_alignment.get("target_scope")
+                else scope
+            )
             packet_records["output_project"], target_semantic_usfm = _write_scope_usj_packet(
-                predecessor["rewrite_path"], scope, target_packet
+                predecessor["rewrite_path"], predecessor_scope, target_packet
             )
             packet_records["output_project"].update(
                 {
@@ -4924,8 +5284,20 @@ def create_act_task(
                 ol_role, scope, packet_records
             )
         else:
+            target_vrs_scope = (
+                parse_scope(str(bic_alignment["target_validation_scope"]))
+                if bic_alignment is not None
+                and bic_alignment.get("target_validation_scope")
+                else scope
+            )
             extra_inputs, _ = _write_vrs_evidence(
-                config, packet_root, output, source, None, scope
+                config,
+                packet_root,
+                output,
+                source,
+                None,
+                scope,
+                output_scope=target_vrs_scope,
             )
 
         conditional_paths: list[Path] = []
@@ -5159,6 +5531,23 @@ def create_act_task(
             if is_analysis_workflow(workflow)
             else list(packet_records["contemporary_source"]["atomic_references"])
         )
+        bic_coordinate_fields: dict[str, Any] = {}
+        if workflow == "bic":
+            assert bic_alignment is not None
+            if expected_references != bic_alignment["source_primary_references"]:
+                raise ValidationError(
+                    "BIC SOURCE packet coverage differs from canonical alignment coverage",
+                    code="VERSE_ALIGNMENT_PROJECT_MISMATCH",
+                    affected_scope=scope.label(),
+                )
+            bic_coordinate_fields = {
+                "bic_alignment": bic_alignment,
+                "source_primary_references": list(expected_references),
+                "expected_output_references": list(
+                    bic_alignment["target_local_references"]
+                ),
+                "target_scope": bic_alignment["target_scope"],
+            }
         source_issue_rows = (
             list(rtc_packet_route["source_text_issues"])
             if rtc_packet_route is not None
@@ -5256,6 +5645,14 @@ def create_act_task(
             **(
                 {"packet.output_project": sha256_file(target_packet)}
                 if target_packet
+                else {}
+            ),
+            **(
+                {
+                    "vrs.SOURCE": bic_alignment["source_effective_vrs_sha256"],
+                    "vrs.TARGET": bic_alignment["target_effective_vrs_sha256"],
+                }
+                if bic_alignment is not None
                 else {}
             ),
         }
@@ -5373,6 +5770,7 @@ def create_act_task(
                 if rtc_packet_route is not None
                 else None
             ),
+            **bic_coordinate_fields,
             "job_id": job_id,
             "run_id": run_id,
             "resource_bindings": canonical_resource_bindings,
@@ -5641,6 +6039,15 @@ def create_act_task(
             *( [f"- Stage references: `{', '.join(expected_references)}`"] if workflow in {"rtc", "saw"} and operation == "rtc" and rtc_stage in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"} else [f"- Scope: `{scope.label()}`"] ),
             *(
                 [
+                    f"- SOURCE-local coverage: `{', '.join(identity['source_primary_references'])}`",
+                    f"- TARGET-local output scope: `{identity['target_scope'] or 'ALIGNMENT_REQUIRED'}`",
+                    f"- Expected TARGET-local output references: `{', '.join(identity['expected_output_references']) or 'ALIGNMENT_REQUIRED'}`",
+                ]
+                if workflow == "bic"
+                else []
+            ),
+            *(
+                [
                     f"- Context before (context-only): `{', '.join(context_before) or 'NONE'}`",
                     f"- Context after (context-only): `{', '.join(context_after) or 'NONE'}`",
                 ]
@@ -5662,6 +6069,15 @@ def create_act_task(
                 "Do not invent wording for source coordinates reported as absent; continue the run using only supplied evidence.",
                 *[f"- `{row['reference']}` — {row['message']}" for row in source_issue_rows],
             ])
+        if workflow == "bic" and bic_alignment is not None and bic_alignment["advisory"]:
+            act_lines.extend(
+                [
+                    "",
+                    "## TARGET versification advisory",
+                    "",
+                    str(bic_alignment["advisory"]["message"]),
+                ]
+            )
         if target_profile:
             act_lines.append(
                 f"- Selected project grammar profile: `{target_profile.language}/{target_profile.profile_id}` "
@@ -6813,15 +7229,27 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         }
         final_status = "COMMITTED"
     elif workflow == "bic":
+        target_reference_values = raw.get(
+            "expected_output_references",
+            raw["expected_references"],
+        )
+        if not isinstance(target_reference_values, list) or not target_reference_values:
+            raise ValidationError(
+                "BIC task has no sealed TARGET-local output references",
+                code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+                affected_scope=str(raw.get("scope") or ""),
+            )
+        target_scope_value = str(raw.get("target_scope") or raw["scope"])
+        target_scope = parse_scope(target_scope_value)
         expected_refs = {
             VerseRef(ref.split()[0], int(ref.split()[1].split(":")[0]), int(ref.split(":")[1]))
-            for ref in raw["expected_references"]
+            for ref in target_reference_values
         }
         expected_markers = tuple(raw["packets"]["contemporary_source"]["marker_sequence"])
         output_key = "output/rewrite.usfm" if operation == "rewrite" else "output/self-check.usfm"
         usfm_validation = validate_bic_usfm_output(
             output_paths[output_key],
-            expected_book=parse_scope(str(raw["scope"])).book,
+            expected_book=target_scope.book,
             expected_references=expected_refs,
             source_marker_sequence=expected_markers,
             marker_policy=str(raw.get("marker_policy") or "SEMANTIC_STRUCTURE_V1"),
@@ -6917,10 +7345,10 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             source_project = config.project(str(raw["contemporary_source"]))
             source_file = _one_book_file(source_project, parse_scope(str(raw["scope"])).book)
             assert source_file is not None
-            target_file = _one_book_file(project, parse_scope(str(raw["scope"])).book, optional=True)
+            target_file = _one_book_file(project, target_scope.book, optional=True)
             if target_file is None:
                 target_file = project.path / _target_book_filename(
-                    project, source_file, parse_scope(str(raw["scope"])).book
+                    project, target_scope.book
                 )
             if project.external:
                 if not project.external_writable_target:
@@ -6932,7 +7360,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             candidate_text = output_paths[output_key].read_text(encoding="utf-8")
             before_text = target_file.read_text(encoding="utf-8") if target_file.is_file() else ""
             after_text = (
-                merge_bounded_usfm(before_text, candidate_text, str(raw["scope"]))
+                merge_bounded_usfm(before_text, candidate_text, target_scope_value)
                 if before_text.strip()
                 else candidate_text
             )
@@ -6953,7 +7381,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             history = record_target_commit(
                 job_root=job.root,
                 target_file=target_file,
-                scope_value=str(raw["scope"]),
+                scope_value=target_scope_value,
                 before_text=before_text,
                 after_text=after_text,
                 transaction_id=transaction.transaction_id,
@@ -6965,7 +7393,8 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "transaction_id": transaction.transaction_id,
                 "target_file": str(target_file),
                 "target_sha256": sha256_file(target_file),
-                "bounded_scope": str(raw["scope"]),
+                "bounded_scope": target_scope_value,
+                "source_scope": str(raw["scope"]),
                 "history": history,
             }
             final_status = "COMMITTED"
