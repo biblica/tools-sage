@@ -1,4 +1,4 @@
-# BIC, RTC, and STC authority boundaries — v0.01beta2
+# BIC, RTC, and STC authority boundaries — v0.02b1
 
 BIC, RTC, and STC are independent canonical workflows. None creates, converts, or hands work directly to another.
 

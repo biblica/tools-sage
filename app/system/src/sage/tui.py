@@ -1,4 +1,4 @@
-"""Experimental, unstable Textual full-screen shell for the SAGE 0.01beta2 Beta line.
+"""Experimental, unstable Textual full-screen shell for the SAGE 0.02b1 Beta line.
 
 The first TUI slice is intentionally read-mostly. It establishes cross-platform
 keyboard/mouse navigation, view history, Help/Status overlays, language switching,
@@ -188,7 +188,7 @@ class SageTUIApp(App[None]):
     # Keep workflow-changing operations outside this shell until their service boundaries are shared.
 
     TITLE = "SAGE"
-    SUB_TITLE = "0.01beta2 Frozen TUI Preview — EXPERIMENTAL / UNSTABLE"
+    SUB_TITLE = "0.02b1 Frozen TUI Preview — EXPERIMENTAL / UNSTABLE"
     ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [
@@ -447,12 +447,12 @@ class SageTUIApp(App[None]):
         elif self.current_view in {"projects", "configure"}:
             note = (
                 "Native remediation is enabled for Projects-root setup, Quick Scan, and AI retest. "
-                "Other workflow-changing actions remain in the classic menu/CLI; TUI work resumes in 0.02beta."
+                "Other workflow-changing actions remain in the classic menu/CLI; TUI work resumes in a later release."
             )
         elif self.current_view == "main":
             note = (
                 "EXPERIMENTAL / UNSTABLE frozen preview: navigation/status/readiness are native here. "
-                "Workflow-changing actions remain in the classic menu/CLI until TUI work resumes in 0.02beta."
+                "Workflow-changing actions remain in the classic menu/CLI until TUI work resumes in a later release."
             )
         else:
             note = (

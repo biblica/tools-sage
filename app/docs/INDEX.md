@@ -1,4 +1,4 @@
-# SAGE Documentation Index — v0.01beta2
+# SAGE Documentation Index — v0.02b1
 
 Normal Operators should begin with [SAGE Help](OPERATOR-GUIDE.md). Short daily-use instructions stay
 in the `docs/` root. Technical and governance material is grouped under
@@ -7,7 +7,7 @@ in the `docs/` root. Technical and governance material is grouped under
 ## Operator guides
 
 - [SAGE Help](OPERATOR-GUIDE.md) — compact main-menu map, first-launch contract, reports, and fallback entry points.
-- [TUI](TUI.md) — frozen experimental/unstable v0.01beta2 preview and the workflow-functionality backlog deferred to v0.02beta.
+- [TUI](TUI.md) — frozen experimental/unstable v0.02b1 preview and the workflow-functionality backlog deferred to a later release.
 - [Scripture Project Operator Cheat Sheet](PROJECT-OPERATOR-CHEAT-SHEET.md) — discovery, Add-to-SAGE, Project maintenance, Job-owned reports, reporting languages, and original-language resources.
 - [BIC Cheat Sheet](BIC-CHEAT-SHEET.md) — BIC Job, Run, task, state, and recovery quick reference.
 - [RTC/STC Cheat Sheet](RTC-STC-CHEAT-SHEET.md) — canonical RTC/STC Job setup, authority, finalization, and read-only boundaries.

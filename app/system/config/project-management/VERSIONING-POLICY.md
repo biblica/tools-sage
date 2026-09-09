@@ -6,33 +6,27 @@ separate contracts and do not inherit the product version.
 
 ## Canonical identity
 
-- The root `VERSION` file is the canonical machine product version and never includes a leading
-  `v`.
-- Human-facing product labels, source-control tags, and release headings add the leading `v`.
-- Preserve the approved two-digit minor spelling. The current source identity is `0.01beta2`; the
-  human label is `v0.01beta2`.
-- Python packaging tools may normalize `0.01beta2` to the PEP 440 equivalent `0.1b2` in installed
-  distribution metadata. SAGE menus, reports, documentation, artifacts, and tags continue to use
-  the canonical SAGE spelling.
-
+- `app/VERSION` is the canonical machine product version and has no leading `v`.
+- The current source identity is `0.02b1`; human labels use `v0.02b1`.
+- Preserve the user-approved two-digit minor and short prerelease spelling. Python packaging may normalize `0.02b1` to `0.2b1`; SAGE labels retain the canonical spelling.
+- The user authorized consolidating the full `0.02a1` branch into `main` as `0.02b1` before NCA/SQS implementation continues.
 
 ## Current release line
 
-`0.01beta2` is the current mainline group-testing identity. It incorporates the approved work validated on the historical `alpha/0.02alpha1` branch while retaining the 0.01 product line. No `0.02alpha1` public release or immutable release tag was created.
+`0.02b1` is the first group-testing Beta of the 0.02 line. It includes the full development branch and retains `public_release_ready=false`. NCA runtime and SQS confidence checks remain future implementation work.
 
 ## Promotion sequence
 
 | Phase | Machine version | Human label | Release status | Public ready |
 |---|---|---|---|---|
-| Historical Beta baseline | `0.01beta` | `v0.01beta` | `BETA` | `false` |
-| Current Beta 2 | `0.01beta2` | `v0.01beta2` | `BETA` | `false` |
-| Later Beta builds | `0.01betaN` | `v0.01betaN` | `BETA` | `false` |
-| First qualified candidate | `0.01rc1` | `v0.01rc1` | `RELEASE_CANDIDATE` | `false` |
-| Later qualified candidates | `0.01rcN` | `v0.01rcN` | `RELEASE_CANDIDATE` | `false` |
-| Approved release | `0.01` | `v0.01` | `RELEASE` | Set `true` only after final approval |
+| Historical Beta baseline | `0.01beta2` | `v0.01beta2` | `BETA` | `false` |
+| Current Beta 1 | `0.02b1` | `v0.02b1` | `BETA` | `false` |
+| Later Beta builds | `0.02bN` | `v0.02bN` | `BETA` | `false` |
+| First qualified candidate | `0.02rc1` | `v0.02rc1` | `RELEASE_CANDIDATE` | `false` |
+| Later candidates | `0.02rcN` | `v0.02rcN` | `RELEASE_CANDIDATE` | `false` |
+| Approved release | `0.02` | `v0.02` | `RELEASE` | Set `true` only after final approval |
 
-Increment `N` for every new candidate source hash. Never reuse an RC number, move an existing tag,
-or describe a Beta build as an RC. Subsequent 0.01 phase promotion remains governed by Milestones, the changelog, and release notes.
+Increment candidate numbers for changed candidate source hashes. Do not reuse RC numbers or move immutable tags. Historical provenance remains unchanged; Job, Run and profile schema versions are independent of this release identity.
 
 ## Feature-maturity classifications
 
@@ -69,7 +63,7 @@ machine and human release definitions, and approval through the applicable miles
 8. Build and verify the distribution before creating the immutable source-control tag.
 
 Any governed source or test change invalidates the current receipts. Requalify the changed source
-and use the next RC number. Promotion to `v0.01` additionally requires explicit public-readiness
+and use the next RC number. Promotion to `v0.02` additionally requires explicit public-readiness
 approval; passing deterministic tests alone is insufficient.
 
 ## Required synchronized surfaces

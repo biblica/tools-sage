@@ -1,18 +1,18 @@
 # SAGE provider and Skill routing policy
 
-## v0.01beta2 execution policy
+## v0.02b1 execution policy
 
 Provider architecture, provider connection, and permission to execute a governed Skill are separate
 controls.
 
-| Provider | Adapter/configuration | v0.01beta2 governed execution |
+| Provider | Adapter/configuration | v0.02b1 governed execution |
 |---|---|---|
 | Codex | Implemented | Exact qualified routes, plus truthful Medium fallback in every true no-data state |
 | Ollama | Optional local admin assistant | Disabled for BIC/RTC/STC |
 | Grok | Future adapter slot | Not implemented |
 | Gemini | Future adapter slot | Not implemented |
 
-`build_policy.allowed_automated_providers` is effectively `[CODEX]` in v0.01beta2. A connected,
+`build_policy.allowed_automated_providers` is effectively `[CODEX]` in v0.02b1. A connected,
 available, or provisioned provider is not automatically qualified for a Skill.
 
 No OpenAI API-key, access-token, service-account, direct API, or API-fallback route is supported.

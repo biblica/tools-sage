@@ -16,7 +16,7 @@ If Python environment repair succeeds but Codex installation fails, rerun `\.\sa
 
 ## Recovery menus
 
-Open **BIC > Recovery and diagnostics**, **RTC > Recovery and diagnostics**, or **STC > Recovery and diagnostics** for recovery that belongs to a Job. Open **SAGE Maintenance > System actions** for global state, configuration, and diagnostic actions. TUI recovery writes are deferred to `0.02beta`; use the classic governed action throughout `0.01beta2`.
+Open **BIC > Recovery and diagnostics**, **RTC > Recovery and diagnostics**, or **STC > Recovery and diagnostics** for recovery that belongs to a Job. Open **SAGE Maintenance > System actions** for global state, configuration, and diagnostic actions. TUI recovery writes are deferred to a later release; use the classic governed action throughout `0.02b1`.
 
 The workflow recovery menus can recover/reset the active Job and its Run. System recovery can:
 

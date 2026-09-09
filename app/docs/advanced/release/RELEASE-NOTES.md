@@ -1,5 +1,18 @@
-# Release Notes - SAGE v0.01beta2
+# Release Notes - SAGE v0.02b1
 
+
+## 0.02b1 — 2026-09-09
+
+`0.02b1` consolidates the complete `0.02a1` development branch into `main` as the first Beta of the 0.02 line. It remains a pre-release build with `public_release_ready=false`.
+
+- Adds shared canonical versification projection and source attribution across BIC, RTC and STC, including BIC target-coordinate alignment and the standard VRS resource set.
+- Honors the Paratext Settings.xml filename template during Project import, discovery and snapshot capture; validates filename/book identity and records excluded working copies.
+- Accepts UTF-8 BOM book IDs and generates BIC target filenames from the same template, including Paratext New Testament numbering. Corrects bundled Hebrew Settings.xml metadata to match its shipped filenames.
+- Preserves scoped validation and disabled-Project behavior. Real faTMNv4 snapshot verification processed 66 books without changing its source files.
+- Includes finalized NCA reference audits, functional design, implementation plan and Number Style Profile questionnaire as planning documents. NCA runtime and SQS confidence checks are not implemented in this release.
+- Retains the existing classic menu/CLI authority and experimental Textual preview. No new TUI workflow parity is claimed.
+
+Automated qualification is recorded against the final staged source. Native-platform and live workflow acceptance remain separate from automated test success; no public-production readiness is claimed.
 
 ## 0.01beta2
 

@@ -1,8 +1,8 @@
-# Test and Validation Report - SAGE v0.01beta2
+# Test and Validation Report - SAGE v0.02b1
 
 ## Status
 
-`0.01beta2` is a pre-release group-testing build. Qualification applies only to the exact governed source used by the production release builder. Any source or governed-test change invalidates previous hardening receipts.
+`0.02b1` is a pre-release group-testing build. Qualification applies only to the exact governed source used by the production release builder. Any source or governed-test change invalidates previous hardening receipts.
 
 ## Current qualification model
 
@@ -21,12 +21,16 @@ The release process uses one frozen governed source hash and requires all of the
 - SHA-256 checksum and hardening sidecars;
 - clean extraction followed by schema/package/deep-audit verification.
 
-## Current automated evidence
+## Beta 1 checkpoint qualification
+
+The `0.02b1` checkpoint uses the full 1,103-test inventory and the schema, package and source-audit gates against a clean copy of the files intended for commit. Qualification includes canonical VRS alignment, Settings.xml filename selection, UTF-8 BOM handling, BIC target filename generation and all 39 bundled Hebrew books. Final command results and source checksums are recorded in machine-local diagnostics; they do not establish production-release or native-platform acceptance.
+
+## Earlier automated evidence — 2026-09-03
 
 Working-source validation on 2026-09-03 collected **1,015 outcomes**. The direct managed-runtime
 suite recorded **1,015 passed**, **0 skipped**, and **0 failed/error outcomes** under SAGE-managed
 CPython 3.12.14. TUI service/state coverage remains active while workflow-changing TUI development
-is paused until `0.02beta`.
+is paused until a later release.
 
 Schema validation covers **43 schemas / 43 IDs / 43 owner mappings** and reports PASS with no
 warnings/errors. Package validation reports READY with no warnings/errors. Source deep audit covers
@@ -98,7 +102,7 @@ Representative commands for the current qualification flow are:
 ./sage-python system/tools/hardening.py --shard-count 4 --shard-index 2 --output <receipt-2>
 ./sage-python system/tools/hardening.py --shard-count 4 --shard-index 3 --output <receipt-3>
 ./sage-python system/tools/hardening.py --combine <receipt-0> <receipt-1> <receipt-2> <receipt-3> --expected-source-sha256 <frozen-sha256> --output <combine-receipt>
-./sage-python system/tools/build_release.py --root . --hardening-receipt <combine-receipt> --output SAGE-v0.01beta2-Full-Distribution.zip
+./sage-python system/tools/build_release.py --root . --hardening-receipt <combine-receipt> --output SAGE-v0.02b1-Full-Distribution.zip
 ```
 
 The hardening receipt, checksum, and extracted-artifact verification are release evidence; historical or differently hashed receipts do not qualify the current source.
