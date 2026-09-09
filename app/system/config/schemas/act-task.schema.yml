@@ -45,6 +45,10 @@ canonical_resource_bindings:
   stc_job:
     WIP: exactly_one
     PRIMARY_ORIGINAL_LANGUAGE: exactly_one_testament_appropriate
+  nca_job:
+    WIP: exactly_one
+    NUMBERS_PACKAGE: exactly_one
+    NUMBER_STYLE: exactly_one
   legacy_saw_job:
     WIP: exactly_one
     REFERENCE: exactly_one
@@ -53,6 +57,7 @@ canonical_resource_bindings:
   analysis_task_by_operation:
     rtc: [WIP, REFERENCE]
     stc: [WIP, exactly_one_testament_appropriate_PRIMARY_OL]
+    nca: [WIP, NUMBERS_PACKAGE, NUMBER_STYLE]
     legacy_focused: [WIP, REFERENCE]
     legacy_ol: [WIP, REFERENCE, exactly_one_testament_appropriate_PRIMARY_OL]
 resource_projection_fields:
@@ -89,6 +94,8 @@ controls:
   external_content_knowledge: prohibited
   general_linguistic_competence: orthography_morphology_grammar_syntax_only
   write_allowlist: exact_fixed_output_paths
+  nca_write_allowlist: [output/model-evidence.json]
+  nca_coverage: expected_unit_ids_exactly_once
   task_manifest: immutable_and_hashed_outside_task_directory
   act_prompt: immutable_and_hashed_outside_task_directory
   task_fingerprint: recomputed_at_submission

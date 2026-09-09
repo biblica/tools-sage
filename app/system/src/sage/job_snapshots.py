@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import shutil
 from dataclasses import replace
 from datetime import datetime, timezone
@@ -16,6 +17,52 @@ from .registry import load_ecosystem
 from .scripture import compile_project
 
 READY_PROJECT_STATES = frozenset({"READY", "READY_WITH_WARNINGS"})
+
+
+def _snapshot_inventory(snapshot_root: Path) -> tuple[dict[str, str], str]:
+    """Hash every regular USJ file and return one canonical inventory identity."""
+    root = snapshot_root.resolve()
+    usj_root = root / "usj"
+    if not usj_root.is_dir() or usj_root.is_symlink():
+        raise ValidationError("WIP snapshot USJ evidence is missing", code="NCA_WIP_SNAPSHOT_STALE")
+    files: dict[str, str] = {}
+    for path in sorted(usj_root.rglob("*")):
+        if path.is_symlink() or not path.is_file():
+            raise ValidationError("WIP snapshot contains an unsafe entry", code="NCA_WIP_SNAPSHOT_STALE")
+        relative = path.relative_to(root).as_posix()
+        files[relative] = hashlib.sha256(path.read_bytes()).hexdigest()
+    if not files:
+        raise ValidationError("WIP snapshot contains no USJ evidence", code="NCA_WIP_SNAPSHOT_STALE")
+    payload = json.dumps(files, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return files, hashlib.sha256(payload).hexdigest()
+
+
+def verify_wip_snapshot(
+    snapshot_root: Path,
+    *,
+    require_file_inventory: bool = False,
+) -> dict[str, Any]:
+    """Verify receipt identity and every sealed USJ byte in one WIP snapshot."""
+    root = snapshot_root.resolve()
+    receipt_path = root / "SNAPSHOT.json"
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValidationError("WIP snapshot receipt is invalid", code="NCA_WIP_SNAPSHOT_STALE") from exc
+    if not isinstance(receipt, dict):
+        raise ValidationError("WIP snapshot receipt must be a mapping", code="NCA_WIP_SNAPSHOT_STALE")
+    files, inventory_sha256 = _snapshot_inventory(root)
+    recorded_files = receipt.get("files")
+    recorded_inventory = receipt.get("inventory_sha256")
+    if recorded_files is None and recorded_inventory is None and not require_file_inventory:
+        return receipt
+    if recorded_files != files or recorded_inventory != inventory_sha256:
+        raise ValidationError(
+            "WIP snapshot byte inventory differs from its sealed receipt",
+            code="NCA_WIP_SNAPSHOT_STALE",
+            details={"snapshot_root": str(root)},
+        )
+    return receipt
 
 
 def _normalized_import_time(imported_at: datetime | None) -> datetime:
@@ -115,6 +162,9 @@ def capture_wip_snapshot(
                     affected_scope=book,
                 )
             shutil.copy2(cache, usj_root / f"{book}.json")
+        files, inventory_sha256 = _snapshot_inventory(output)
+        receipt["files"] = files
+        receipt["inventory_sha256"] = inventory_sha256
         atomic_write_json(output / "SNAPSHOT.json", receipt)
     except Exception:
         if output.exists():
@@ -128,6 +178,7 @@ def seal_run_snapshot(
     destination: Path,
     *,
     run_id: str,
+    require_file_inventory: bool = False,
 ) -> dict[str, Any]:
     """Copy a Job's current WIP snapshot into Run-owned immutable evidence."""
     source = job_snapshot_root.resolve()
@@ -139,18 +190,7 @@ def seal_run_snapshot(
             f"Job WIP snapshot is incomplete: {source}",
             code="JOB_SNAPSHOT_INCOMPLETE",
         )
-    try:
-        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise ValidationError(
-            f"Job WIP snapshot receipt is invalid: {receipt_path}",
-            code="JOB_SNAPSHOT_RECEIPT_INVALID",
-        ) from exc
-    if not isinstance(receipt, dict):
-        raise ValidationError(
-            f"Job WIP snapshot receipt must be a mapping: {receipt_path}",
-            code="JOB_SNAPSHOT_RECEIPT_INVALID",
-        )
+    receipt = verify_wip_snapshot(source, require_file_inventory=require_file_inventory)
 
     sealed = dict(receipt)
     sealed["run_id"] = str(run_id)
@@ -159,6 +199,7 @@ def seal_run_snapshot(
     try:
         shutil.copytree(usj_root, output / "usj")
         atomic_write_json(output / "SNAPSHOT.json", sealed)
+        verify_wip_snapshot(output, require_file_inventory=require_file_inventory)
     except Exception:
         if output.exists():
             shutil.rmtree(output)

@@ -29,6 +29,12 @@ controls:
     legacy_job_basis_accepted: ACT_ESTIMATED_TOKENS
     visual_cells: 10
     concurrency: exactly_one_active_run
+    nca_basis: EXPECTED_NUMERIC_UNITS
+  nca:
+    operation: numbers
+    check_policy: required_immutable_check-policy.json
+    check_policy_sha256: required_controller_sidecar
+    sealed_inputs: [WIP_snapshot, numbers_package, number_style, model_route]
   active_task:
     identity_source: ACT_manifest_operation_and_skill
     active_phases: [PREPARING, RUNNING, VALIDATING, WRITING]

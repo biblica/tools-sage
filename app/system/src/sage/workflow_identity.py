@@ -6,10 +6,12 @@ import re
 
 from .errors import ValidationError
 
-OPERATOR_WORKFLOWS = ("bic", "rtc", "stc")
+OPERATOR_WORKFLOWS = ("bic", "rtc", "stc", "nca")
 ANALYSIS_WORKFLOWS = frozenset({"rtc", "stc"})
+SNAPSHOT_WIP_WORKFLOWS = frozenset({"rtc", "stc", "nca"})
+READ_ONLY_SCRIPTURE_WORKFLOWS = frozenset({"rtc", "stc", "nca", "saw"})
 LEGACY_ANALYSIS_WORKFLOW = "saw"
-SUPPORTED_JOB_TOOLS = ("bic", "rtc", "stc", "saw")
+SUPPORTED_JOB_TOOLS = ("bic", "rtc", "stc", "nca", "saw")
 
 _PROJECT_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 _SNAPSHOT_DATE_RE = re.compile(r"^[0-9]{8}$")
@@ -30,7 +32,7 @@ def validate_project_code(project_id: str) -> str:
 def runtime_workflow_id(tool: str) -> str:
     """Return the canonical runtime workflow for new work or one legacy Job."""
     value = str(tool).strip().lower()
-    if value in ANALYSIS_WORKFLOWS:
+    if value in ANALYSIS_WORKFLOWS or value == "nca":
         return value
     if value in {"bic", LEGACY_ANALYSIS_WORKFLOW}:
         return value
@@ -118,3 +120,16 @@ def canonical_analysis_job_id(tool: str, project_id: str, snapshot_date: str) ->
             next_action="Use the WIP import date in YYYYMMDD form.",
         )
     return f"{workflow.upper()}-{project}_{date}"
+
+
+def canonical_nca_job_id(project_id: str, snapshot_date: str) -> str:
+    """Build ``NCA-<Project>_<YYYYMMDD>`` from one WIP import snapshot."""
+    project = validate_project_code(project_id)
+    date = str(snapshot_date).strip()
+    if not _SNAPSHOT_DATE_RE.fullmatch(date):
+        raise ValidationError(
+            f"Invalid WIP snapshot date for Job identity: {snapshot_date!r}",
+            code="INVALID_WIP_SNAPSHOT_DATE",
+            next_action="Use the WIP import date in YYYYMMDD form.",
+        )
+    return f"NCA-{project}_{date}"

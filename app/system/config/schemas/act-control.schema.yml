@@ -13,9 +13,13 @@ required:
   - settings_sha256
   - allowed_writes
   - status
-status_values: [CREATED, COMMITTED, STAGED_VALIDATED, FINALIZED]
+status_values: [CREATED, COMMITTED, STAGED_VALIDATED, STAGED_VALIDATED_WITH_CHALLENGES, FINALIZED]
 controls:
   storage: workflow_state_root/act-tasks
   writable_by_model: false
   output_paths: output_directory_only_without_traversal
   transition: exactly_once_submission
+  nca:
+    workflow_operation: nca/numbers
+    output: output/model-evidence.json
+    final_result: validation/numbers-result.json

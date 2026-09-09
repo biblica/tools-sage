@@ -37,6 +37,8 @@ required_bindings:
   stc:
   - WIP
   - TESTAMENT_APPROPRIATE_PRIMARY_ORIGINAL_LANGUAGE
+  nca:
+  - WIP
   legacy_saw:
   - WIP
   - REFERENCE
@@ -46,6 +48,7 @@ execution_contract:
     bic: SOURCE_DONOR_TARGET
     rtc: WIP_REFERENCE
     stc: WIP_PRIMARY_ORIGINAL_LANGUAGE
+    nca: WIP_NUMBERS_PACKAGE_NUMBER_STYLE
     saw: LEGACY_WIP_REFERENCE
   resource_projection_fields:
     output_project: TARGET_or_WIP
@@ -81,6 +84,12 @@ process_contracts:
   - SOURCE_TEXT_CORRESPONDENCE
   - COVERAGE_RECONCILIATION
   - DETERMINISTIC_FINALISATION
+  nca:
+  - DETERMINISTIC_PREFLIGHT
+  - MODEL_INTERPRETATION
+  - NUMERIC_EVALUATION
+  - COVERAGE_RECONCILIATION
+  - DETERMINISTIC_FINALISATION
 human_review_attention:
   memory_review: optional_provenance
   grammar_profile_review: nonblocking_attention
@@ -93,6 +102,7 @@ independence_contract:
 external_access_contract:
   rtc_external_writes: prohibited
   stc_external_writes: prohibited
+  nca_external_writes: prohibited
   legacy_saw_external_writes: prohibited
   bic_target_external_write: optional_SFM_only
   all_external_vrs_writes: prohibited

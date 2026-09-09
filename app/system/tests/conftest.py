@@ -393,9 +393,34 @@ def make_workspace(tmp_path: Path):
             ],
             "rules": ["Fixture STC contract."],
         }
+        nca_profile = {
+            "workflow": {
+                "id": "nca",
+                "name": "Number Consistency & Accuracy",
+                "purpose": "Read-only fixture NCA workflow.",
+                "qualification_status": qualification_status,
+                "baseline_version": "0.02a2",
+                "execution_model": "SAGE_GOVERNED_TASK_V1",
+            },
+            "bindings": {"WIP": "usWIP"},
+            "evidence_policies": {"default": dict(DEFAULT_POLICY)},
+            "permissions": {"may_write_projects": []},
+            "process": {
+                "stages": [
+                    "DETERMINISTIC_PREFLIGHT",
+                    "MODEL_INTERPRETATION",
+                    "NUMERIC_EVALUATION",
+                    "COVERAGE_RECONCILIATION",
+                    "DETERMINISTIC_FINALISATION",
+                ],
+                "rules": ["Fixture NCA read-only numeric evidence contract."],
+            },
+            "qualification_gates": ["fixture_gate"],
+        }
         write_yaml(root / "system" / "config" / "workflows" / "bic" / "profile.yml", bic_profile)
         write_yaml(root / "system" / "config" / "workflows" / "rtc" / "profile.yml", rtc_profile)
         write_yaml(root / "system" / "config" / "workflows" / "stc" / "profile.yml", stc_profile)
+        write_yaml(root / "system" / "config" / "workflows" / "nca" / "profile.yml", nca_profile)
         write_yaml(root / "system" / "config" / "workflows" / "saw" / "profile.yml", saw_profile)
 
         settings = {
@@ -461,6 +486,13 @@ def make_workspace(tmp_path: Path):
                     "lock_root": "@system/workflows/stc/locks",
                     "transaction_root": "@system/workflows/stc/transactions",
                     "output_root": "@system/workflows/stc/output",
+                },
+                "nca": {
+                    "profile": "system/config/workflows/nca/profile.yml",
+                    "state_root": "@system/workflows/nca/state",
+                    "lock_root": "@system/workflows/nca/locks",
+                    "transaction_root": "@system/workflows/nca/transactions",
+                    "output_root": "@system/workflows/nca/output",
                 },
                 "saw": {
                     "profile": "system/config/workflows/saw/profile.yml",

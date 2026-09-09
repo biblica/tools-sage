@@ -1,0 +1,34 @@
+workflow:
+  id: nca
+  name: Number Consistency & Accuracy
+  purpose: Validate target numeric meaning and configured presentation without writing Scripture.
+  qualification_status: IN_PROGRESS
+  baseline_version: 0.02a2
+  execution_model: SAGE_GOVERNED_TASK_V1
+bindings:
+  WIP: null
+evidence_policies:
+  default:
+    target_estimated_tokens: 18000
+    hard_estimated_tokens: 28000
+    hard_serialized_bytes: 196000
+    minimum_target_tokens: 6000
+    maximum_primary_verse_units: 220
+    context_before_verses: 1
+    context_after_verses: 1
+    allow_cross_chapter_units: true
+permissions:
+  may_write_projects: []
+process:
+  stages:
+  - DETERMINISTIC_PREFLIGHT
+  - MODEL_INTERPRETATION
+  - NUMERIC_EVALUATION
+  - COVERAGE_RECONCILIATION
+  - DETERMINISTIC_FINALISATION
+  rules:
+  - Read only the sealed WIP snapshot and immutable Run evidence.
+  - Treat HEB or GRK operator values as Authority 1 and NIV as secondary evidence.
+  - Preserve insufficient evidence and incomplete coverage; never manufacture an all-clear.
+qualification_gates:
+- PENDING_FINAL_RUN

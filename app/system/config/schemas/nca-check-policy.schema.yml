@@ -1,0 +1,37 @@
+schema_id: sage-nca-check-policy-1.0
+required:
+- schema_version
+- checks
+- wip
+- reference_package
+- number_style
+- model_contract
+- model_route
+- sqs_checks_applied
+- capability_limitation_code
+controls:
+  schema_version: '1.0'
+  checks:
+    number_accuracy: exact_boolean
+    presentation_consistency: exact_boolean
+    footnote_review: exact_boolean
+    all_off: prohibited
+  wip:
+    source: sealed_Run_snapshot
+    fields: [project_id, language, script, content_fingerprint, inventory_sha256, files]
+  reference_package:
+    source: qualified_content_addressed_resource
+    fields: [package_id, sha256, parser_version, qualification_status, diagnostics, inventory_sha256, files]
+  number_style:
+    source: Run_owned_exact_copy
+    fields: [selector, sha256, profile_id, version, language, script]
+  model_contract:
+    fields: [skill_id, skill_sha256, prompt_task_contract_version, structured_response_schema_sha256]
+  model_route:
+    fields: [route_id, provider, model, reasoning_effort, capability_fingerprint, qualification_status, qualification_evidence_sha256, routing_policy_version]
+    live_reselection_on_resume: prohibited
+  sqs_checks_applied: false
+  capability_limitation_code: NCA_LLM_CAPABILITY_LIMITATION
+immutability:
+  hash_sidecar: check-policy.sha256
+  missing_snapshot_fallback: prohibited

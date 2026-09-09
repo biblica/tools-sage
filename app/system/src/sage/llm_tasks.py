@@ -1829,6 +1829,17 @@ def execute_task(
     if mode != EXECUTION_MODE:
         raise ValidationError(f"Unsupported task execution_mode: {mode}", code="LLM_TASK_MODE_UNSUPPORTED")
     workflow = str(manifest.get("workflow", "")).strip().lower()
+    if workflow == "nca" and str(manifest.get("operation", "")).strip().lower() == "numbers":
+        from .nca import execute_nca_task
+
+        return dict(
+            execute_nca_task(
+                config,
+                manifest_path,
+                timeout_seconds=timeout_seconds,
+                dry_run=dry_run,
+            )
+        )
     if manifest.get("evidence_policy") != task_evidence_policy(workflow):
         raise ValidationError(
             "Task evidence policy is missing or differs from the canonical local-evidence boundary",
