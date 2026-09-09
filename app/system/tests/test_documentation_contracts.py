@@ -995,6 +995,8 @@ def test_release_gates_use_current_skill_count_and_routed_sfm_budget_authority()
     """Keep release qualification aligned with ten Skills and routed-SFM-only sizing."""
     release_gates = (ROOT / "docs" / "advanced" / "release" / "RELEASE-GATES.md").read_text(encoding="utf-8")
     assert "all ten registered analytical Skill files" in release_gates
+    assert "all ten Skills have explicit sealed evaluation inventories" in release_gates
+    assert "all nine Skills" not in release_gates
     assert "all six registered analytical Skill files" not in release_gates
     assert "exact prompt plus output schema" not in release_gates
     assert "only the SFM Scripture streams routed to that review item" in release_gates
