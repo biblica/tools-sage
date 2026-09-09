@@ -1,18 +1,29 @@
 """RTC WIP slicing and complete correlated-package validation."""
 
+import json
+
 import pytest
 
 from sage.errors import EvidenceLimitError, ValidationError
 from sage.evidence import EvidencePolicy, RTCSizingPolicy
-from sage.rtc_planner import plan_rtc_work_units
+from sage.rtc_planner import RTC_PLANNER_VERSION, plan_rtc_work_units
+from sage.verse_alignment import ProjectVerseIndex
+from sage.vrs import parse_vrs_file
 from sage.work_units import EvidenceRecord
 
 
-def _record(verse: int, text: str, *, role: str, book: str = "MAT") -> EvidenceRecord:
+def _record(
+    verse: int,
+    text: str,
+    *,
+    role: str,
+    book: str = "MAT",
+    chapter: int = 1,
+) -> EvidenceRecord:
     """Build one synthetic discourse-classified Scripture evidence record."""
     return EvidenceRecord(
         book=book,
-        chapter=1,
+        chapter=chapter,
         verse_start=verse,
         verse_end=verse,
         payload={"body_text": text, "resource_role": role},
@@ -22,6 +33,13 @@ def _record(verse: int, text: str, *, role: str, book: str = "MAT") -> EvidenceR
         discourse_unit_kind="PARAGRAPH",
         discourse_unit_marker="p",
     )
+
+
+def _schema(tmp_path, name: str, content: str):
+    """Parse one compact Project VRS fixture for RTC correlation tests."""
+    path = tmp_path / name
+    path.write_text(content, encoding="utf-8")
+    return parse_vrs_file(path, schema_id=name, canonical_id="org.vrs")
 
 
 def _bridge_record(start: int, end: int, text: str, *, role: str) -> EvidenceRecord:
@@ -51,6 +69,165 @@ def _sizing() -> RTCSizingPolicy:
         "route_hard_max_tokens": 32000,
         "route_hard_serialized_bytes": 224000,
     })
+
+
+def test_rtc_v5_correlates_reference_with_a_different_local_verse_label(tmp_path) -> None:
+    """Changing canonical routing back to local-label matching would drop REFERENCE text."""
+    wip = (_record(14, "wip", role="WIP", book="2CO", chapter=13),)
+    reference = (_record(13, "reference", role="REFERENCE", book="2CO", chapter=13),)
+    wip_index = ProjectVerseIndex.build(
+        "WIP",
+        wip,
+        _schema(tmp_path, "wip.vrs", "2CO 13:14\n2CO 13:14 = 2CO 13:13\n"),
+    )
+    reference_index = ProjectVerseIndex.build(
+        "REFERENCE",
+        reference,
+        _schema(tmp_path, "reference.vrs", "2CO 13:13\n"),
+    )
+
+    units, packages, _ = plan_rtc_work_units(
+        wip,
+        EvidencePolicy(
+            target_estimated_tokens=100,
+            hard_estimated_tokens=32000,
+            hard_serialized_bytes=224000,
+            minimum_target_tokens=1,
+            maximum_primary_verse_units=220,
+            context_before_verses=0,
+            context_after_verses=0,
+        ),
+        _sizing(),
+        unit_prefix="RTC-2CO",
+        shared={},
+        wip_context_pool=wip,
+        reference_records=reference,
+        wip_index=wip_index,
+        reference_index=reference_index,
+        workflow="rtc",
+    )
+
+    assert [ref.label() for ref in units[0].primary_refs] == ["2CO 13:14"]
+    assert packages[0]["source_spans"]["REFERENCE"] == ["2CO 13:13"]
+    assert packages[0]["source_text_issues"] == []
+    assert packages[0]["alignment"] == {
+        "primary_local_atoms": ["2CO 13:14"],
+        "canonical_atoms": ["2CO 13:13"],
+        "reference_local_spans": ["2CO 13:13"],
+        "missing_canonical_atoms": [],
+    }
+
+
+def test_rtc_v5_reports_a_canonical_gap_at_the_wip_local_coordinate(tmp_path) -> None:
+    """Missing canonical Authority coverage must not become a false WIP-label mismatch."""
+    wip = (_record(14, "wip", role="WIP", book="2CO", chapter=13),)
+    reference = ()
+    wip_index = ProjectVerseIndex.build(
+        "WIP",
+        wip,
+        _schema(tmp_path, "gap-wip.vrs", "2CO 13:14\n2CO 13:14 = 2CO 13:13\n"),
+    )
+    reference_index = ProjectVerseIndex.build(
+        "REFERENCE",
+        reference,
+        _schema(tmp_path, "gap-reference.vrs", "2CO 13:13\n"),
+    )
+
+    _, packages, _ = plan_rtc_work_units(
+        wip,
+        EvidencePolicy(
+            target_estimated_tokens=100,
+            hard_estimated_tokens=32000,
+            hard_serialized_bytes=224000,
+            minimum_target_tokens=1,
+            maximum_primary_verse_units=220,
+            context_before_verses=0,
+            context_after_verses=0,
+        ),
+        _sizing(),
+        unit_prefix="RTC-2CO-GAP",
+        shared={},
+        wip_context_pool=wip,
+        reference_records=reference,
+        wip_index=wip_index,
+        reference_index=reference_index,
+        workflow="rtc",
+    )
+
+    issue = packages[0]["source_text_issues"][0]
+    assert issue["reference"] == "2CO 13:14"
+    assert issue["canonical_references"] == ["2CO 13:13"]
+    assert packages[0]["alignment"]["missing_canonical_atoms"] == ["2CO 13:13"]
+
+
+def test_rtc_rejects_an_unknown_future_planner_version() -> None:
+    """A persisted planner identity must never silently fall back to another algorithm."""
+    records = (_record(1, "wip", role="WIP"),)
+
+    with pytest.raises(ValidationError) as error:
+        plan_rtc_work_units(
+            records,
+            EvidencePolicy(
+                target_estimated_tokens=100,
+                hard_estimated_tokens=32000,
+                hard_serialized_bytes=224000,
+                minimum_target_tokens=1,
+                maximum_primary_verse_units=220,
+                context_before_verses=0,
+                context_after_verses=0,
+            ),
+            _sizing(),
+            unit_prefix="RTC-MAT",
+            shared={},
+            wip_context_pool=records,
+            reference_records=records,
+            planner_version=f"{RTC_PLANNER_VERSION}_FUTURE",
+        )
+
+    assert error.value.code == "RTC_PLANNER_VERSION_UNSUPPORTED"
+
+
+def test_rtc_v4_package_fixture_remains_byte_identical() -> None:
+    """Legacy planning must keep its exact-local V4 package serialization unchanged."""
+    wip = (_record(1, "w", role="WIP"),)
+    reference = (_record(1, "r", role="REFERENCE"),)
+    _, packages, _ = plan_rtc_work_units(
+        wip,
+        EvidencePolicy(
+            target_estimated_tokens=100,
+            hard_estimated_tokens=32000,
+            hard_serialized_bytes=224000,
+            minimum_target_tokens=1,
+            maximum_primary_verse_units=220,
+            context_before_verses=0,
+            context_after_verses=0,
+        ),
+        _sizing(),
+        unit_prefix="LEGACY",
+        shared={},
+        wip_context_pool=wip,
+        reference_records=reference,
+        workflow="rtc",
+    )
+
+    serialized = json.dumps(
+        packages,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    assert serialized == (
+        b'[{"analysis_route":"REFERENCE_TEXT_COMPARISON","primary_coverage_atoms":'
+        b'["MAT 1:1"],"projection":"SAGE_RTC_SFM_ROUTE_PLANNER_V4","ref":'
+        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":10,"estimator":'
+        b'"SAGE_MULTILINGUAL_HEURISTIC_1","serialized_bytes":20},"route":'
+        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":20,"estimator":'
+        b'"SAGE_MULTILINGUAL_HEURISTIC_1","serialized_bytes":40},"sizing_basis":'
+        b'"ROUTED_SFM_ONLY","source_spans":{"REFERENCE":["MAT 1:1"],"WIP":'
+        b'["MAT 1:1"]},"source_text_issues":[],"wip":{"basis":"ROUTED_SFM_ONLY",'
+        b'"estimated_tokens":10,"estimator":"SAGE_MULTILINGUAL_HEURISTIC_1",'
+        b'"serialized_bytes":20}}]'
+    )
 
 
 def test_rtc_planning_requires_a_canonical_66_book_paratext_id() -> None:
@@ -269,6 +446,7 @@ def test_bridge_integrity_blocks_when_far_edge_exceeds_hard_wip_limit() -> None:
             shared={},
             wip_context_pool=wip,
             reference_records=reference,
+            workflow="saw",
         )
 
     assert caught.value.code == "SAW_RTC_UNSPLITTABLE_BRIDGE"

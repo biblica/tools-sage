@@ -71,7 +71,10 @@ def capture_wip_snapshot(
             code="WIP_SNAPSHOT_IMPORT_FAILED",
             affected_scope=project_id,
             next_action="Correct the reported Project resource issues, then refresh the Job snapshot.",
-            details={"issues": list(compiled.get("issues", []))},
+            details={
+                "issues": list(compiled.get("issues", [])),
+                "filename_validation": dict(compiled.get("filename_validation", {})),
+            },
         )
 
     file_entries = list(compiled.get("files", []))
@@ -96,6 +99,7 @@ def capture_wip_snapshot(
         "source_location": str(project.path),
         "project_status": status,
         "warnings": list(compiled.get("warnings", [])),
+        "filename_validation": dict(compiled.get("filename_validation", {})),
     }
 
     try:

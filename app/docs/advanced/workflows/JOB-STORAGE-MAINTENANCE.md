@@ -1,6 +1,6 @@
 # Job storage maintenance
 
-SAGE v0.01beta2 removes unused legacy directory creation from new Jobs/Runs and provides evidence-preserving maintenance for existing trees.
+SAGE v0.02b1 removes unused legacy directory creation from new Jobs/Runs and provides evidence-preserving maintenance for existing trees.
 
 ## Current layout
 

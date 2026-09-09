@@ -1,4 +1,4 @@
-# SAGE v0.01beta2 - Implementation Report
+# SAGE v0.02b1 - Implementation Report
 
 **Development status:** Beta; pre-release group-testing baseline. Qualification is bound to the exact source hash used by the release builder.
 
@@ -52,4 +52,4 @@ BIC, RTC, and STC remain independent. BIC binds exactly one SOURCE, DONOR, and T
 
 ## Compatibility rule
 
-A narrow set of internal Python function names and machine keys retain legacy names where changing them would add unnecessary migration risk. They are compatibility implementation details only. Current operator-visible Project grammar uses the canonical v0.01beta2 terms.
+A narrow set of internal Python function names and machine keys retain legacy names where changing them would add unnecessary migration risk. They are compatibility implementation details only. Current operator-visible Project grammar uses the canonical v0.02b1 terms.

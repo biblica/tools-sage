@@ -190,13 +190,47 @@ def _scope_shape(text: str, scope: ScriptureScope) -> tuple[tuple[tuple[int, int
     return tuple(ranges), frozenset(chapters)
 
 
-def preflight_bounded_target_commit(target_text: str, source_text: str, scope_value: str) -> dict[str, Any]:
-    """Fail before provider execution when the existing TARGET cannot accept the bounded source verse shape."""
+def preflight_bounded_target_commit(
+    target_text: str,
+    source_text: str,
+    scope_value: str,
+    *,
+    expected_shapes: Iterable[Iterable[int]] | None = None,
+) -> dict[str, Any]:
+    """Fail before execution when TARGET cannot accept the projected verse shape."""
     scope = parse_scope(scope_value)
-    source_ranges, _ = _scope_shape(source_text, scope)
+    if expected_shapes is None:
+        source_ranges, _ = _scope_shape(source_text, scope)
+    else:
+        normalized_shapes: list[tuple[int, int, int]] = []
+        for raw_shape in expected_shapes:
+            values = tuple(int(value) for value in raw_shape)
+            if len(values) != 3:
+                raise ValidationError(
+                    "Projected BIC TARGET shape must contain chapter, start verse, and end verse",
+                    code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+                    details={"scope": scope.label()},
+                )
+            chapter, start, end = values
+            block = VerseBlock(chapter, start, end, ())
+            full, _ = _block_inside_scope(block, scope)
+            if start < 1 or end < start or not full:
+                raise ValidationError(
+                    "Projected BIC TARGET shape falls outside its sealed TARGET scope",
+                    code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+                    details={"scope": scope.label(), "shape": values},
+                )
+            normalized_shapes.append(values)
+        source_ranges = tuple(normalized_shapes)
+        if len(source_ranges) != len(set(source_ranges)):
+            raise ValidationError(
+                "Projected BIC TARGET shape contains duplicate verse blocks",
+                code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+                details={"scope": scope.label()},
+            )
     if not source_ranges:
         raise ValidationError(
-            f"BIC SOURCE contains no verse blocks for bounded scope {scope.label()}",
+            f"BIC has no projected TARGET verse blocks for bounded scope {scope.label()}",
             code="TARGET_SCOPE_SOURCE_EMPTY",
             details={"scope": scope.label()},
         )
@@ -216,7 +250,7 @@ def preflight_bounded_target_commit(target_text: str, source_text: str, scope_va
     incompatible_existing = sorted(target_set - source_set)
     if incompatible_existing:
         raise ValidationError(
-            "Existing TARGET verse/bridge shape differs from the BIC SOURCE inside the bounded scope",
+            "Existing TARGET verse/bridge shape differs from the projected BIC output inside the bounded scope",
             code="TARGET_SCOPE_VERSE_SHAPE_MISMATCH",
             details={"scope": scope.label(), "target_only_shapes": incompatible_existing, "source_shapes": list(source_ranges)},
         )

@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, Mapping
+from typing import Iterable
 
 from .errors import ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy, WORD_RE, estimate_tokens
+from .verse_alignment import ProjectVerseIndex
 from .vrs import VerseRef
 from .work_units import EvidenceRecord, WorkUnit, _plan_work_units_with_sizer
 
@@ -18,6 +19,7 @@ class SfmStream:
     stream_id: str
     records: tuple[EvidenceRecord, ...]
     require_primary_coverage: bool = True
+    verse_index: ProjectVerseIndex | None = None
 
 
 @dataclass(frozen=True)
@@ -28,15 +30,26 @@ class SfmAnalysisRoute:
     streams: tuple[SfmStream, ...]
     target_stream_ids: tuple[str, ...] = ()
     stream_hard_token_limits: tuple[tuple[str, int], ...] = ()
+    primary_stream_id: str | None = None
+    primary_index: ProjectVerseIndex | None = None
 
     def protected_spans(self) -> tuple[tuple[VerseRef, ...], ...]:
         """Return every multi-coordinate source span that a boundary may not bisect."""
-        return tuple(
-            record.refs
-            for stream in self.streams
-            for record in stream.records
-            if len(record.refs) > 1
-        )
+        spans: list[tuple[VerseRef, ...]] = []
+        for stream in self.streams:
+            for record in stream.records:
+                if len(record.refs) <= 1:
+                    continue
+                if self.primary_index is None or stream.verse_index is None:
+                    spans.append(record.refs)
+                    continue
+                canonical_refs = stream.verse_index.canonical_refs_for_records((record,))
+                primary_refs = self.primary_index.local_refs_for_canonical(
+                    canonical_refs,
+                    existing_only=True,
+                )
+                spans.append(tuple(sorted(primary_refs)))
+        return tuple(spans)
 
 
 def _record_sfm(record: EvidenceRecord) -> str:
@@ -82,13 +95,27 @@ def measure_sfm_slice(records: Iterable[EvidenceRecord]) -> EvidenceMeasurement:
 
 
 def _refs(records: Iterable[EvidenceRecord]) -> frozenset[VerseRef]:
-    """Return canonical coordinates covered by the supplied Scripture records."""
+    """Return Project-local coordinates covered by the supplied Scripture records."""
     return frozenset(ref for record in records for ref in record.refs)
 
 
 def _select_for_refs(records: tuple[EvidenceRecord, ...], refs: frozenset[VerseRef]) -> tuple[EvidenceRecord, ...]:
     """Select routed Scripture records intersecting the requested coordinate set."""
     return tuple(record for record in records if refs.intersection(record.refs))
+
+
+def _select_indexed_stream_records(
+    stream: SfmStream,
+    refs: frozenset[VerseRef],
+) -> tuple[EvidenceRecord, ...]:
+    """Select canonically matching records without expanding the declared stream."""
+    if stream.verse_index is None:
+        return ()
+    return tuple(
+        record
+        for record in stream.verse_index.records_for_canonical(refs)
+        if record in stream.records
+    )
 
 
 class _SfmSizer:
@@ -116,9 +143,8 @@ class _SfmSizer:
     ) -> tuple[EvidenceMeasurement, int]:
         """Measure routed SFM; ``unit_id`` is intentionally ignored for sizing."""
         primary = self._primary_records[start : end + 1]
-        primary_refs = _refs(primary)
-        context_refs = _refs((*before, *after))
-        return self._measure_streams(primary_refs, context_refs, stream_ids=None), sum(
+        context = (*before, *after)
+        return self._measure_streams(primary, context, stream_ids=None), sum(
             record.atomic_count for record in primary
         )
 
@@ -133,11 +159,11 @@ class _SfmSizer:
         if not self._route.target_stream_ids:
             measurement, _ = self.measure(start, end, before, after)
             return measurement.estimated_tokens
-        primary_refs = _refs(self._primary_records[start : end + 1])
-        context_refs = _refs((*before, *after))
+        primary = self._primary_records[start : end + 1]
+        context = (*before, *after)
         return self._measure_streams(
-            primary_refs,
-            context_refs,
+            primary,
+            context,
             stream_ids=frozenset(value.upper() for value in self._route.target_stream_ids),
         ).estimated_tokens
 
@@ -151,12 +177,12 @@ class _SfmSizer:
         """Enforce profile-specific per-stream hard guards without serializing metadata."""
         if not self._route.stream_hard_token_limits:
             return True
-        primary_refs = _refs(self._primary_records[start : end + 1])
-        context_refs = _refs((*before, *after))
+        primary = self._primary_records[start : end + 1]
+        context = (*before, *after)
         for stream_id, limit in self._route.stream_hard_token_limits:
             measurement = self._measure_streams(
-                primary_refs,
-                context_refs,
+                primary,
+                context,
                 stream_ids=frozenset({stream_id.upper()}),
             )
             if measurement.estimated_tokens > int(limit):
@@ -165,12 +191,19 @@ class _SfmSizer:
 
     def _measure_streams(
         self,
-        primary_refs: frozenset[VerseRef],
-        context_refs: frozenset[VerseRef],
+        primary: tuple[EvidenceRecord, ...],
+        context: tuple[EvidenceRecord, ...],
         *,
         stream_ids: frozenset[str] | None,
     ) -> EvidenceMeasurement:
         """Measure only selected SFM streams; route/controller labels are never serialized."""
+        primary_refs = _refs(primary)
+        context_refs = _refs(context)
+        primary_canonical: frozenset[VerseRef] | None = None
+        context_canonical: frozenset[VerseRef] | None = None
+        if self._route.primary_index is not None:
+            primary_canonical = self._route.primary_index.canonical_refs_for_records(primary)
+            context_canonical = self._route.primary_index.canonical_refs_for_records(context)
         byte_count = 0
         char_count = 0
         word_count = 0
@@ -178,20 +211,44 @@ class _SfmSizer:
         for stream in self._route.streams:
             if stream_ids is not None and stream.stream_id.upper() not in stream_ids:
                 continue
-            selected_primary = _select_for_refs(stream.records, primary_refs)
-            covered = _refs(selected_primary)
-            if stream.require_primary_coverage and not primary_refs.issubset(covered):
-                missing = sorted(primary_refs - covered)
+            # Authority streams correlate canonically; Primary and legacy streams retain local records.
+            indexed = (
+                primary_canonical is not None
+                and context_canonical is not None
+                and stream.verse_index is not None
+            )
+            is_primary_stream = (
+                self._route.primary_stream_id is not None
+                and stream.stream_id.upper() == self._route.primary_stream_id.upper()
+            )
+            if indexed and not is_primary_stream:
+                selected_primary = _select_indexed_stream_records(stream, primary_canonical)
+                selected = _select_indexed_stream_records(
+                    stream,
+                    primary_canonical.union(context_canonical)
+                )
+                covered = stream.verse_index.canonical_refs_for_records(selected_primary)
+                required = primary_canonical
+            else:
+                selected_primary = _select_for_refs(stream.records, primary_refs)
+                covered = (
+                    stream.verse_index.canonical_refs_for_records(selected_primary)
+                    if indexed
+                    else _refs(selected_primary)
+                )
+                required = primary_canonical if indexed else primary_refs
+                selected_context = _select_for_refs(stream.records, context_refs)
+                selected = tuple(sorted(
+                    (*selected_context, *selected_primary),
+                    key=lambda record: (record.chapter, record.verse_start, record.verse_end),
+                ))
+            if stream.require_primary_coverage and not required.issubset(covered):
+                missing = sorted(required - covered)
                 raise ValidationError(
                     f"SFM stream {stream.stream_id} does not exactly cover the planned primary range: "
                     f"missing={[ref.label() for ref in missing]}",
                     code="SFM_ROUTE_PRIMARY_COVERAGE_MISMATCH",
                 )
-            selected_context = _select_for_refs(stream.records, context_refs)
-            selected = tuple(sorted(
-                (*selected_context, *selected_primary),
-                key=lambda record: (record.chapter, record.verse_start, record.verse_end),
-            ))
             text = render_sfm_slice(selected)
             byte_count += len(text.encode("utf-8"))
             char_count += len(text)

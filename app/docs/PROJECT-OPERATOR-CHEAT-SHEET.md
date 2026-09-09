@@ -1,4 +1,4 @@
-# Scripture Project Operator Cheat Sheet — v0.01beta2
+# Scripture Project Operator Cheat Sheet — v0.02b1
 
 Every menu, including Manage Jobs, Scripture Projects, BIC, RTC/STC, and SAGE
 Maintenance, ends with the same navigation block:

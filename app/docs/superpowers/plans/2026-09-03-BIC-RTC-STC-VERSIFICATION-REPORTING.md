@@ -4,7 +4,7 @@
 
 **Goal:** Route BIC, RTC, and STC Scripture evidence through each Project's effective versification and produce human reports that name the actual configured Projects instead of exposing component-role placeholders.
 
-**Architecture:** Introduce immutable Project identity and canonical verse-index services, then teach the existing SFM slicer and workflow adapters to correlate exact Project-local records through canonical coordinates. Preserve Primary Project local coverage and exact SFM, retain versioned legacy local-number routing, and feed sealed Project display names to workflow-specific report renderers through one shared report context.
+**Architecture:** First complete the Paratext VRS grammar and import the pinned standard SIL schemas with exact provenance. Then introduce an internal versification facade, immutable Project identity, and canonical verse-index services; teach the existing SFM slicer and workflow adapters to correlate exact Project-local records through canonical coordinates. Preserve Primary Project local coverage and exact SFM, retain versioned legacy local-number routing, and feed sealed Project display names to workflow-specific report renderers through one shared report context.
 
 **Tech Stack:** Python 3.12, dataclasses, existing USJ/SFM and VRS models, JSON/YAML contracts, pytest, atomic file transactions, Markdown documentation.
 
@@ -13,6 +13,9 @@
 ## Global Constraints
 
 - `org.vrs` remains the canonical cross-Project mapping target.
+- Standard VRS assets are pinned, checksummed, licensed, and never downloaded at runtime.
+- `vrs.py` remains the pure low-level parser/model; workflows converge on one internal
+  versification facade instead of acquiring new direct parsing or projection logic.
 - Work-unit ownership and completion coverage remain in the Primary Project's local coordinates.
 - Routed Scripture text remains exact Project-local SFM; canonical coordinates are correlation metadata only.
 - RTC/STC versification and valid source-coverage differences remain report-only and never become VRS-driven bridge boundaries.
@@ -30,12 +33,154 @@
 
 | Stage | Deliverable | Gate before proceeding |
 | --- | --- | --- |
+| 0 | Paratext grammar compatibility and pinned standard VRS catalog | All six bundled standards parse; provenance and package gates pass |
+| 0.5 | Internal VRS API facade | Catalog, invalidation, projection, and migrated loading tests pass |
 | 1 | Shared Project identity and canonical verse index | Pure unit tests pass; no workflow behavior changes |
 | 2 | VRS-aware shared SFM routing | Existing exact-local slicer tests and new cross-VRS tests pass |
 | 3 | RTC and STC migration | Cross-VRS routing, source-gap, bridge, legacy-plan, and hard-limit tests pass |
 | 4 | BIC migration | Read-only alignment and fail-before-write/precise-write tests pass |
 | 5 | Project-specific reporting | BIC/RTC/STC golden reports contain names and no forbidden placeholders |
 | 6 | Packet modularization and complete validation | Full pytest, schemas, package validation, and documentation contracts pass |
+
+---
+
+## Stage 0 — Standard VRS compatibility and catalog
+
+### Task 0: Import and govern the standard SIL versification schemas
+
+**Files:**
+- Modify: `system/src/sage/vrs.py`
+- Modify: `system/tests/test_vrs.py`
+- Create: `system/tests/test_standard_vrs_resources.py`
+- Create: `system/resources/scripture/lxx.vrs`
+- Create: `system/resources/scripture/vul.vrs`
+- Create: `system/resources/scripture/rsc.vrs`
+- Create: `system/resources/scripture/rso.vrs`
+- Create: `system/resources/scripture/standard-vrs-provenance.json`
+- Create: `system/resources/scripture/standard-vrs.LICENSE.txt`
+- Modify: `system/resources/scripture/README.md`
+- Modify: `ecosystem.yml`
+- Modify: `system/src/sage/validation.py`
+- Modify: `system/tools/build_release.py`
+- Modify: `docs/advanced/projects-and-resources/VERSIFICATION.md`
+- Modify: `docs/advanced/release/VANILLA-INSTALL-MANIFEST.md`
+
+**Interfaces:**
+- Changes: `VersificationSchema` retains verse-segment and custom chapter-truncation metadata
+- Changes: `parse_vrs_file()` accepts plain and `#!` exclusions/segments and validates `&`
+- Preserves: existing `eng.vrs` and `org.vrs` bytes
+- Adds: six registered standard schemes with pinned, machine-readable provenance
+
+- [x] **Step 1: Write failing grammar tests**
+
+Cover plain and `#!` exclusions, plain and `#!` segment declarations, invalid
+many-to-many `&` mappings, and `END` truncation after base/custom composition.
+Expect failures against the current parser for each missing behavior.
+
+- [x] **Step 2: Write a failing standard-catalog integration test**
+
+Load `org`, `eng`, `lxx`, `vul`, `rsc`, and `rso` from the package resources. Assert
+literal pinned file hashes, representative chapter maxima, LXX exclusion/segment
+metadata, and successful parser completion. Verify that every configured base file
+is present directly under the shared VRS root.
+
+- [x] **Step 3: Run the tests and witness the compatibility failures**
+
+Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_vrs.py tests/test_standard_vrs_resources.py`
+
+Expected: FAIL because plain exclusions are misclassified, segment directives and
+`END` are unsupported, `&` does not enforce the Paratext rule, and four resources
+are absent.
+
+- [x] **Step 4: Implement the minimum parser/model compatibility**
+
+Preserve `-` as the unmarked initial segment in immutable tuple metadata. Merge
+custom segment declarations by reference. Record an `END` boundary during parsing
+and remove inherited chapters above that boundary during composition. Do not split
+USFM verse records based on segment metadata.
+
+- [x] **Step 5: Import the pinned resources and provenance**
+
+Copy the four missing `.vrs` files byte-for-byte from `sillsdev/libpalaso` commit
+`bb9d36de70ed7fd6c3e62f0c86c1001f0009eb50`. Record upstream/shipped SHA-256 values,
+source paths, source URL, commit, and MIT license for all six schemas. Keep the
+existing `eng.vrs` and `org.vrs` bytes unchanged.
+
+- [x] **Step 6: Register and package all six schemas**
+
+Add all filenames to `versification.base_files`, package validation, release
+allowlists, Scripture resource documentation, and the exact vanilla source-tree
+manifest.
+
+- [x] **Step 7: Run Stage 0 verification**
+
+Run the focused tests from Step 3, then schema validation, package validation,
+`git diff --check`, and the complete pytest suite. Proceed to Stage 1 only if every
+gate is green.
+
+---
+
+## Stage 0.5 — Internal versification API facade
+
+### Task 0.5: Establish the single workflow-facing VRS loading and projection API
+
+**Files:**
+- Create: `system/src/sage/versification_service.py`
+- Create: `system/tests/test_versification_service.py`
+- Modify: `system/src/sage/scripture.py`
+- Modify: `system/src/sage/validation.py`
+- Modify: `system/src/sage/act_tasks.py`
+- Modify: `docs/advanced/projects-and-resources/VERSIFICATION.md`
+- Modify: `docs/advanced/release/VANILLA-INSTALL-MANIFEST.md`
+
+**Interfaces:**
+- Produces: `VersificationCatalogEntry`
+- Produces: `ReferenceProjection`
+- Produces: `VersificationService.catalog()`
+- Produces: `VersificationService.base_schema(filename)`
+- Produces: `VersificationService.project_schema(project_or_id)`
+- Produces: `VersificationService.effective_fingerprint(project_or_id)`
+- Produces: `VersificationService.to_canonical(project_or_id, refs)`
+- Produces: `VersificationService.from_canonical(project_or_id, refs)`
+- Preserves: `vrs.py` as the low-level parser/model and all existing function APIs
+
+- [x] **Step 1: Write failing service contract tests**
+
+Use real temporary Projects and VRS files. Prove catalog role/provenance output,
+Project loading, deterministic projection, returned-schema isolation, and same-
+process invalidation when a custom VRS file changes. Do not mock parser calls or
+assert private cache mechanics.
+
+- [x] **Step 2: Run the service tests and witness the missing API**
+
+Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_versification_service.py`
+
+Expected: collection fails because `sage.versification_service` does not exist.
+
+- [x] **Step 3: Implement the facade and content-addressed cache**
+
+Read optional standard provenance without making it mandatory in synthetic or
+external VRS roots. Resolve Project files through the existing governed resolver.
+Key cached schemas by resolved paths and SHA-256 values, discard obsolete entries
+for the same Project, and return independent copies. Do not add a global singleton.
+
+- [x] **Step 4: Implement deterministic reference projection**
+
+Return sorted immutable reference tuples. Classify any one-to-many, many-to-one, or
+otherwise ambiguous mapping as `EQUIVALENCE_GROUP`; retain `COORDINATE` only when
+every input projects to one reversible coordinate.
+
+- [x] **Step 5: Migrate existing schema-loading consumers**
+
+Use the facade in Project compilation, default-VRS advisory checks, static ecosystem
+validation, VRS evidence creation, and structural-candidate generation. Keep direct
+`VerseRef`/`VersificationSchema` imports where they are type/model dependencies.
+
+- [x] **Step 6: Run the Stage 0.5 gate**
+
+Run the service, VRS, Scripture, static-validation, ACT-task, package, and schema
+tests; then run the complete pytest suite. Confirm existing effective VRS hashes and
+human/machine artifacts do not drift for schemas without segment metadata.
 
 ---
 
@@ -50,6 +195,7 @@
 - Modify: `system/src/sage/act_tasks.py:4865-4935`
 - Test: `system/tests/test_stc_task.py`
 - Test: `system/tests/test_primary_analysis_jobs.py`
+- Modify: `docs/advanced/release/VANILLA-INSTALL-MANIFEST.md`
 
 **Interfaces:**
 - Produces: `ProjectIdentity`
@@ -58,7 +204,7 @@
 - Produces: `identity_bindings(identities: Mapping[str, ProjectIdentity]) -> dict[str, str]`
 - Produces: `identity_display_names(identities: Mapping[str, ProjectIdentity]) -> dict[str, str]`
 
-- [ ] **Step 1: Write failing Project-identity tests**
+- [x] **Step 1: Write failing Project-identity tests**
 
 ```python
 def test_project_identity_resolves_inventory_name_and_import_date(make_workspace) -> None:
@@ -97,13 +243,13 @@ def test_missing_display_name_falls_back_to_project_id(make_workspace) -> None:
     assert identity.display_name == identity.project_id
 ```
 
-- [ ] **Step 2: Run the tests and verify the module is missing**
+- [x] **Step 2: Run the tests and verify the module is missing**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_project_context.py`
 
 Expected: FAIL during import because `sage.project_context` does not exist.
 
-- [ ] **Step 3: Implement the immutable identity model and resolver**
+- [x] **Step 3: Implement the immutable identity model and resolver**
 
 ```python
 @dataclass(frozen=True)
@@ -112,9 +258,9 @@ class ProjectIdentity:
     project_id: str
     display_name: str
     imported_date: str | None
-    content_fingerprint: str
-    vrs_schema_id: str
-    effective_vrs_sha256: str
+    content_fingerprint: str | None
+    vrs_schema_id: str | None
+    effective_vrs_sha256: str | None
 
 
 def resolve_project_identity(
@@ -137,9 +283,13 @@ def resolve_project_identity(
     )
 ```
 
-Validate uppercase non-empty roles and SHA-256 values. Return fresh dictionaries from projection helpers.
+Validate uppercase non-empty roles and every present SHA-256 value. A dormant Job
+binding that was not compiled for the current task retains sealed Project/name
+identity with `None` compilation provenance; do not compile or read unused content
+solely to populate identity. An allowed-empty `NOT_GENERATED` BIC TARGET follows
+the same destination-only rule. Return fresh dictionaries from projection helpers.
 
-- [ ] **Step 4: Replace both ACT task identity builders with the resolver**
+- [x] **Step 4: Replace both ACT task identity builders with the resolver**
 
 The standalone STC path must stop assigning `resource_display_names = resource_bindings`. Both generic and STC task builders must serialize:
 
@@ -148,13 +298,13 @@ The standalone STC path must stop assigning `resource_display_names = resource_b
 "resource_display_names": identity_display_names(project_identities),
 ```
 
-- [ ] **Step 5: Run focused identity and task tests**
+- [x] **Step 5: Run focused identity and task tests**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_project_context.py tests/test_stc_task.py tests/test_primary_analysis_jobs.py`
 
 Expected: PASS; standalone STC manifests contain inventory display names for WIP and GRK/HEB.
 
-- [ ] **Step 6: Commit Stage 1 identity work**
+- [x] **Step 6: Commit Stage 1 identity work**
 
 ```bash
 git add app/system/src/sage/project_context.py app/system/src/sage/act_tasks.py app/system/tests/test_project_context.py app/system/tests/test_stc_task.py app/system/tests/test_primary_analysis_jobs.py
@@ -169,6 +319,7 @@ git commit -m "refactor: centralize project task identity"
 - Modify: `system/src/sage/findings.py:212-226`
 - Test: `system/tests/test_findings_and_coverage.py`
 - Test: `system/tests/test_vrs.py`
+- Modify: `docs/advanced/release/VANILLA-INSTALL-MANIFEST.md`
 
 **Interfaces:**
 - Produces: `AlignedEvidenceRecord`
@@ -181,7 +332,7 @@ git commit -m "refactor: centralize project task identity"
 - Produces: `align_records(primary_records: Iterable[EvidenceRecord], primary_index: ProjectVerseIndex, authority_index: ProjectVerseIndex) -> AlignmentSelection`
 - Produces: `project_coordinates(primary_refs: Iterable[VerseRef], primary_index: ProjectVerseIndex, target_index: ProjectVerseIndex) -> CoordinateProjection`
 
-- [ ] **Step 1: Write failing one-to-one and many-to-one index tests**
+- [x] **Step 1: Write failing one-to-one and many-to-one index tests**
 
 ```python
 def test_index_selects_reference_local_record_through_canonical_coordinate(tmp_path) -> None:
@@ -222,7 +373,7 @@ def test_many_to_one_mapping_routes_all_local_primary_records(tmp_path) -> None:
     assert selection.mapping_precision == "EQUIVALENCE_GROUP"
 ```
 
-- [ ] **Step 2: Write failing exclusion and projection tests**
+- [x] **Step 2: Write failing exclusion and projection tests**
 
 ```python
 def test_excluded_coordinate_is_not_an_authorized_finding_reference(tmp_path) -> None:
@@ -261,13 +412,13 @@ def test_ambiguous_target_projection_is_explicit(tmp_path) -> None:
     assert projection.is_deterministic is False
 ```
 
-- [ ] **Step 3: Run the new tests and witness exact-local failure**
+- [x] **Step 3: Run the new tests and witness exact-local failure**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_verse_alignment.py tests/test_findings_and_coverage.py`
 
 Expected: FAIL because no verse index exists and `_local_refs()` currently includes VRS exclusions.
 
-- [ ] **Step 4: Implement immutable aligned records and indexes**
+- [x] **Step 4: Implement immutable aligned records and indexes**
 
 ```python
 @dataclass(frozen=True)
@@ -295,17 +446,17 @@ selection returns only actual records. Schema coordinate projection uses
 removes excluded local coordinates. Do not mutate `EvidenceRecord` or relabel its
 SFM.
 
-- [ ] **Step 5: Exclude VRS-excluded coordinates from finding expansion**
+- [x] **Step 5: Exclude VRS-excluded coordinates from finding expansion**
 
 Change `_local_refs()` so it skips `ref in schema.exclusions`. Preserve the existing error when the resulting citation is empty.
 
-- [ ] **Step 6: Run Stage 1 alignment tests**
+- [x] **Step 6: Run Stage 1 alignment tests**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_verse_alignment.py tests/test_findings_and_coverage.py tests/test_vrs.py`
 
 Expected: PASS for one-to-one, continuation, equivalence-group, exclusion, and deterministic-order fixtures.
 
-- [ ] **Step 7: Commit the alignment foundation**
+- [x] **Step 7: Commit the alignment foundation**
 
 ```bash
 git add app/system/src/sage/verse_alignment.py app/system/src/sage/findings.py app/system/tests/test_verse_alignment.py app/system/tests/test_findings_and_coverage.py app/system/tests/test_vrs.py
@@ -328,7 +479,7 @@ git commit -m "feat: index project verses by canonical coordinates"
 - Changes: `SfmAnalysisRoute` adds `primary_stream_id: str | None = None` and `primary_index: ProjectVerseIndex | None = None`
 - Preserves: routes with no indexes use current exact-local selection
 
-- [ ] **Step 1: Write a failing cross-VRS route-sizing test**
+- [x] **Step 1: Write a failing cross-VRS route-sizing test**
 
 ```python
 def test_sfm_route_measures_authority_record_selected_by_canonical_mapping(tmp_path) -> None:
@@ -342,22 +493,23 @@ def test_sfm_route_measures_authority_record_selected_by_canonical_mapping(tmp_p
         ),
     )
     units = plan_sfm_work_units(wip, policy(), unit_prefix="RTC-2CO", route=route)
-    assert units[0].measurement.estimated_tokens == measure_sfm_text(
-        render_sfm_slice(wip) + render_sfm_slice(reference)
-    ).estimated_tokens
+    assert units[0].measurement.estimated_tokens == (
+        measure_sfm_slice(wip).estimated_tokens
+        + measure_sfm_slice(reference).estimated_tokens
+    )
 ```
 
-- [ ] **Step 2: Write a failing projected source-bridge test**
+- [x] **Step 2: Write a failing projected source-bridge test**
 
 Create a REFERENCE bridge whose local coordinates map onto two WIP local atoms. Assert that the planner never separates those WIP atoms. Also assert that an equivalent range present only in VRS metadata does not protect a boundary.
 
-- [ ] **Step 3: Run the slicer tests and verify exact-local routing fails**
+- [x] **Step 3: Run the slicer tests and verify exact-local routing fails**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_sfm_alignment.py tests/test_hardening_and_segmentation.py`
 
 Expected: the cross-VRS Authority text is not selected and the projected bridge assertion fails.
 
-- [ ] **Step 4: Implement indexed stream selection**
+- [x] **Step 4: Implement indexed stream selection**
 
 For the declared primary stream, retain exact Primary local record selection. For every indexed Authority stream:
 
@@ -368,17 +520,17 @@ selected_primary = stream.verse_index.records_for_canonical(primary_canonical)
 
 Coverage checks compare canonical atoms. Context selection follows the same mapping. Legacy routes with missing `primary_index` or stream indexes execute the existing local intersection code.
 
-- [ ] **Step 5: Project actual Authority bridges to Primary local coordinates**
+- [x] **Step 5: Project actual Authority bridges to Primary local coordinates**
 
 Update `SfmAnalysisRoute.protected_spans()` to project only `record.refs` from actual multi-coordinate records through both indexes. Do not add `VersificationSchema.mappings` directly to `required_spans`.
 
-- [ ] **Step 6: Run all slicer/work-unit tests**
+- [x] **Step 6: Run all slicer/work-unit tests**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_sfm_alignment.py tests/test_hardening_and_segmentation.py tests/test_sections_and_work_units.py tests/test_rtc_planner.py tests/test_stc.py`
 
 Expected: PASS; unchanged exact-local tests prove the compatibility path remains intact.
 
-- [ ] **Step 7: Commit VRS-aware routing**
+- [x] **Step 7: Commit VRS-aware routing**
 
 ```bash
 git add app/system/src/sage/sfm_slicer.py app/system/tests/test_sfm_alignment.py app/system/tests/test_hardening_and_segmentation.py
@@ -523,39 +675,39 @@ git commit -m "feat: correlate STC authority through canonical VRS"
 - Changes: `merge_bounded_usfm()` receives the sealed `target_scope`, never the SOURCE-local scope
 - Preserves: schema-2.4 BIC tasks without the new fields validate and merge with their sealed `expected_references`/`scope` behavior
 
-- [ ] **Step 1: Write a failing BIC one-to-one projection test**
+- [x] **Step 1: Write a failing BIC one-to-one projection test**
 
 Create a SOURCE local `2CO 13:14` mapped to canonical `13:13` and a TARGET whose local coordinate is `13:13`. Assert the task keeps SOURCE coverage `13:14`, expects TARGET output `13:13`, and routes any existing TARGET `13:13` text.
 
-- [ ] **Step 2: Write a failing ambiguous-projection safety test**
+- [x] **Step 2: Write a failing ambiguous-projection safety test**
 
 Use a SOURCE-to-TARGET equivalence group. Assert INSPECT can be created with a report-only alignment advisory, but REWRITE/SELF-CHECK fails with `BIC_TARGET_VRS_ALIGNMENT_REQUIRED` before task output or TARGET files are written.
 
-- [ ] **Step 3: Run BIC alignment tests and witness current same-scope behavior**
+- [x] **Step 3: Run BIC alignment tests and witness current same-scope behavior**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_bic_verse_alignment.py tests/test_hardening_and_segmentation.py tests/test_rc_block_and_job_cleanup.py`
 
 Expected: SOURCE references are currently reused as TARGET references and the ambiguity guard is absent.
 
-- [ ] **Step 4: Seal separate SOURCE and TARGET coverage**
+- [x] **Step 4: Seal separate SOURCE and TARGET coverage**
 
 Build SOURCE and TARGET indexes during BIC task creation. Persist the SOURCE-local work coverage separately from the projected TARGET-local expected output. Include both Project VRS hashes and the projection metadata in the task fingerprint.
 
-- [ ] **Step 5: Validate and merge only TARGET-local coordinates**
+- [x] **Step 5: Validate and merge only TARGET-local coordinates**
 
 Pass `expected_output_references` to `validate_bic_usfm_output()` and `target_scope` to `merge_bounded_usfm()`. Keep SOURCE-local scope for memory, findings, and content-provenance records. Reject non-contiguous or equivalence-group TARGET projections before creating a writable task.
 
-- [ ] **Step 6: Verify the transaction remains fail-before-write**
+- [x] **Step 6: Verify the transaction remains fail-before-write**
 
 In the ambiguity test, snapshot the TARGET bytes and transaction directory before the call. Assert both are unchanged afterward. Retain `FileTransaction` as the only TARGET commit mechanism.
 
-- [ ] **Step 7: Run the BIC suite**
+- [x] **Step 7: Run the BIC suite**
 
 Run: `cd app/system && PYTHONDONTWRITEBYTECODE=1 env -u SAGE_DATA_HOME ../../localdata/.test-runtime/bin/python -m pytest -q -p no:cacheprovider tests/test_bic_verse_alignment.py tests/test_hardening_and_segmentation.py tests/test_rc_block_and_job_cleanup.py tests/test_rewrite_risk.py tests/test_core_hardening.py`
 
 Expected: PASS; coordinate-precise projections commit only inside TARGET-local scope and ambiguous mappings leave all governed data untouched.
 
-- [ ] **Step 8: Commit BIC alignment**
+- [x] **Step 8: Commit BIC alignment**
 
 ```bash
 git add app/system/src/sage/act_tasks.py app/system/src/sage/act_outputs.py app/system/src/sage/bounded_target.py app/system/tests/test_bic_verse_alignment.py app/system/tests/test_hardening_and_segmentation.py app/system/tests/test_rc_block_and_job_cleanup.py

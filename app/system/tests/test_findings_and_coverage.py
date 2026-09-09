@@ -154,6 +154,23 @@ def test_context_only_coordinate_cannot_be_ordinary_finding_target(tmp_path: Pat
         )
 
 
+def test_excluded_coordinate_is_not_an_authorized_finding_reference(
+    tmp_path: Path,
+) -> None:
+    """A VRS exclusion cannot become a valid finding citation through chapter expansion."""
+    schema_file = tmp_path / "target.vrs"
+    schema_file.write_text("MAT 1:3\n#! - MAT 1:2\n", encoding="utf-8")
+    schema = parse_vrs_file(schema_file, schema_id="target", canonical_id="org")
+
+    with pytest.raises(ValidationError, match="empty under VRS"):
+        validate_finding_references(
+            {"target_reference": "MAT 1:2"},
+            target_schema=schema,
+            resource_schemas={},
+            primary_target_refs=frozenset({VerseRef("MAT", 1, 2)}),
+        )
+
+
 def test_coverage_never_claims_complete_when_restricted() -> None:
     """Verify that coverage never claims complete when restricted."""
     assessment = assess_coverage(

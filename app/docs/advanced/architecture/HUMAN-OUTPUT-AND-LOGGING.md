@@ -4,7 +4,7 @@ SAGE stores canonical machine records once. Every Job owns one required primary 
 
 ## Interface localization
 
-Terminal interface localization is separate from report-language authority. The workstation selection is stored under `interface.language` in `ecosystem.yml`; menu text is loaded from `system/config/localization/menu-localization.json`. v0.01beta2 ships complete localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`. The source is formatted UTF-8 JSON so Operators can inspect and edit it without changing Python source. Functional choices remain numeric and footer navigation uses invariant `A`/`B`/`C`/`D` semantic controls.
+Terminal interface localization is separate from report-language authority. The workstation selection is stored under `interface.language` in `ecosystem.yml`; menu text is loaded from `system/config/localization/menu-localization.json`. v0.02b1 ships complete localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`. The source is formatted UTF-8 JSON so Operators can inspect and edit it without changing Python source. Functional choices remain numeric and footer navigation uses invariant `A`/`B`/`C`/`D` semantic controls.
 
 Changing interface language does not change report language, Job bindings, Scripture language, grammar profiles, commands, identifiers, paths, status codes, or machine records.
 

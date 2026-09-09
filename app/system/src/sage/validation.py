@@ -17,7 +17,8 @@ from .schema_validation import validate_schema_contracts
 from .standard import SageStandard
 from .structure_policy import load_structure_policy
 from .transactions import incomplete_transactions
-from .vrs import load_project_vrs, resolve_project_vrs_paths
+from .vrs import resolve_project_vrs_paths
+from .versification_service import VersificationService
 
 
 REQUIRED_PACKAGE_PATHS = {
@@ -164,6 +165,12 @@ REQUIRED_PACKAGE_PATHS = {
     "system/src/sage/storage.py",
     "system/resources/scripture/eng.vrs",
     "system/resources/scripture/org.vrs",
+    "system/resources/scripture/lxx.vrs",
+    "system/resources/scripture/vul.vrs",
+    "system/resources/scripture/rsc.vrs",
+    "system/resources/scripture/rso.vrs",
+    "system/resources/scripture/standard-vrs-provenance.json",
+    "system/resources/scripture/standard-vrs.LICENSE.txt",
     "system/resources/scripture/original-language/README.md",
     "system/resources/scripture/original-language/grk/README.md",
     "system/resources/scripture/original-language/heb/README.md",
@@ -352,6 +359,7 @@ def validate_static_ecosystem(
                 )
 
     project_vrs: dict[str, Any] = {}
+    versification_service = VersificationService(config)
     project_scopes: dict[str, Any] = {}
     for project_id, project in config.projects.items():
         expected_books = resolve_expected_books(project.scope)
@@ -402,7 +410,7 @@ def validate_static_ecosystem(
             errors.append(f"External project {project_id} folder is unavailable: {project.path}")
         try:
             base_path, custom_path = resolve_project_vrs_paths(config, project)
-            schema = load_project_vrs(config, project)
+            schema = versification_service.project_schema(project)
             project_vrs[project_id] = {
                 "base": str(base_path),
                 "custom": str(custom_path) if custom_path else None,

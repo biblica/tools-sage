@@ -13,10 +13,10 @@ from .canon import BOOK_ORDER, NT_27, OT_39
 from .errors import ConfigurationError, ValidationError
 from .project_codes import DEFAULT_TYPE_CODES, parse_project_code, project_code_is_path_safe
 from .storage import storage_layout
+from .paratext_filenames import peek_book_code, select_scripture_files
 
 SCHEMA_VERSION = "1.0"
 PROJECT_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,7}$")
-BOOK_ID_RE = re.compile(rb"(?m)^\\id[ \t]+([A-Za-z0-9]{3})(?:[ \t\r]|$)")
 
 
 def project_inventory_path(root: Path) -> Path:
@@ -55,31 +55,16 @@ def write_project_registry(root: Path, state: dict[str, Any]) -> Path:
     return destination
 
 
-def _peek_book_id(path: Path) -> str | None:
-    """Read only enough of one .SFM file to validate its canonical USFM book ID."""
-    try:
-        with path.open("rb") as handle:
-            prefix = handle.read(65536)
-    except OSError:
-        return None
-    match = BOOK_ID_RE.search(prefix)
-    if not match:
-        return None
-    code = match.group(1).decode("ascii").upper()
-    return code if code in BOOK_ORDER else None
-
-
 def detect_scripture_books(project_path: Path) -> tuple[str, ...]:
-    """Detect valid canonical books from readable top-level .SFM files only."""
+    """Detect canonical books from validated Project Scripture filenames and IDs."""
     root = project_path.expanduser().resolve()
     if not root.is_dir():
         return ()
     books: set[str] = set()
-    for path in root.iterdir():
-        if not path.is_file() or path.is_symlink() or path.suffix.casefold() != ".sfm":
-            continue
-        book = _peek_book_id(path)
-        if book:
+    files, _ = select_scripture_files(root)
+    for path in files:
+        book = peek_book_code(path)
+        if book in BOOK_ORDER:
             books.add(book)
     return tuple(sorted(books, key=BOOK_ORDER.__getitem__))
 

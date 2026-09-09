@@ -318,7 +318,7 @@ def test_scripted_control_center_can_open_and_exit(make_workspace) -> None:
     )
     assert center.run() == 0
     rendered = output.getvalue()
-    assert "SAGE v0.01beta2" in rendered
+    assert "SAGE v0.02b1" in rendered
     assert "BETA - PRE-RELEASE" in rendered
     assert "BIC" in rendered
     assert "Reference Text Comparison (RTC)" in rendered
@@ -429,7 +429,7 @@ def test_guided_first_run_setup_records_missing_project_root_with_ready_test_ai(
     assert "SAGE Maintenance" in rendered
     assert "B. Main menu   C. Exit SAGE" in rendered
     assert "D. Language   E. Help   F. Status" in rendered
-    assert "SAGE v0.01beta2" in rendered
+    assert "SAGE v0.02b1" in rendered
     assert "BETA - PRE-RELEASE" in rendered
 
 

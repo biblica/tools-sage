@@ -273,7 +273,8 @@ def test_source_audit_allows_explicit_historical_alpha_lineage_in_beta_handover(
     handover = copy / "docs" / "advanced" / "release" / "HANDOVER.md"
     handover.write_text(
         handover.read_text(encoding="utf-8")
-        + "\nThe historical alpha/0.02alpha1 branch was a non-release validation branch merged into 0.01beta2.\n",
+        + "\nThe historical alpha/0.02alpha1 branch was a non-release validation branch merged into 0.01beta2,"
+        + f" an ancestor of the current {(copy / 'VERSION').read_text(encoding='utf-8').strip()} source.\n",
         encoding="utf-8",
     )
     result = subprocess.run(
@@ -303,7 +304,7 @@ def test_source_audit_allows_explicit_future_prerelease_deferral(
     guide = copy / "docs" / "OPERATOR-GUIDE.md"
     guide.write_text(
         guide.read_text(encoding="utf-8")
-        + "\nFurther TUI workflow work is deferred to 0.02beta.\n",
+        + "\nFurther TUI workflow work is deferred to 0.03beta.\n",
         encoding="utf-8",
     )
     result = subprocess.run(
@@ -339,3 +340,14 @@ def test_textual_dependency_is_supplemental_to_classic_runtime(package_root: Pat
     assert "textual==8.2.8" in tui
     assert "[project.optional-dependencies]" in pyproject
     assert 'tui = ["textual==8.2.8"]' in pyproject
+
+
+def test_future_prerelease_target_accepts_compact_beta_identity(package_root: Path) -> None:
+    """Explicit future targets remain valid when the active Beta uses short spelling."""
+    import runpy
+
+    namespace = runpy.run_path(str(package_root / "system" / "tools" / "deep_audit.py"))
+    future = namespace["_is_future_prerelease_target"]
+    assert future("0.03beta", "0.02b1", "Deferred to 0.03beta")
+    assert not future("0.01beta2", "0.02b1", "Deferred to 0.01beta2")
+    assert not future("0.03beta", "0.02b1", "Current build: 0.03beta")
