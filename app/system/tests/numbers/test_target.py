@@ -4,7 +4,7 @@ from copy import deepcopy
 import pytest
 
 from sage.errors import ValidationError
-from sage.numbers.target import target_units
+from sage.numbers.target import target_units, extract_heading_units
 from sage.usj import compile_usfm_text
 from sage.vrs import VerseRef
 
@@ -22,6 +22,33 @@ def test_note_digits_do_not_enter_main_text():
     assert unit.notes[0].anchor_references == (VerseRef('MAT', 1, 1),)
     assert unit.source_locator['line_start'] == 3
     assert usj == before
+
+
+def test_editorial_headings_are_separate_exact_style_streams():
+    """Heading numbers remain available for style without entering body accuracy."""
+    usj = compile_usfm_text('\\id MAT Fixture\n\\c 1\n\\s1 Section 200\n\\p\n\\v 1 Three men.\n')
+    before = deepcopy(usj)
+    heading, = extract_heading_units(usj, source_sha256='0' * 64)
+    assert heading.main_text == 'Section 200'
+    assert heading.target_references == (VerseRef('MAT', 1, 1),)
+    assert heading.source_locator['heading'] == 1
+    assert target_units(usj, source_sha256='0' * 64)[0].main_text == 'Three men.'
+    assert usj == before
+
+
+def test_canonical_psalm_title_is_not_duplicated_as_editorial_heading():
+    """The accuracy-bearing superscription is assessed once in its canonical stream."""
+    usj = compile_usfm_text('\\id PSA Fixture\n\\c 60\n\\d Twelve thousand men.\n\\p\n\\v 1 Three men.\n')
+    assert extract_heading_units(usj, source_sha256='0' * 64) == ()
+    units = target_units(usj, source_sha256='0' * 64)
+    assert units[0].target_references == (VerseRef('PSA', 60, 0),)
+
+
+def test_heading_paragraph_stops_at_first_verse_milestone():
+    """A compiler paragraph containing the next verse cannot duplicate its body."""
+    usj = compile_usfm_text('\\id MAT Fixture\n\\c 1\n\\s1 Section 200\n\\v 1 Three men.\n')
+    heading, = extract_heading_units(usj, source_sha256='0' * 64)
+    assert heading.main_text == 'Section 200'
 
 
 @pytest.mark.parametrize('marker', ['f', 'fe', 'ef', 'efe'])
