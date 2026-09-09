@@ -45,6 +45,21 @@ python system/tools/validate_numbers_reference.py --package /path/to/unchanged/p
 
 Synthetic CI tests require no operator archive or paid model calls. The explicit `--release` gate requires the unchanged authorized package and the complete source acceptance fixtures. Missing evidence, corruption, contradictory policy, or failed golden cases produce a nonzero exit status. Qualification receipts are separate from immutable source resources.
 
+## Acceptance traceability
+
+The synthetic tests under `system/tests/numbers/` cover the complete implementation plan:
+
+| Contract | Evidence |
+|---|---|
+| Immutable import, exact values, joined registries, provenance, and qualification | `test_reference.py`, `test_reference_release.py`, and the separate real-reference receipt |
+| Target/note separation, Western mappings, canonical Psalm titles, boundary groups, and missing coordinates | `test_target.py`, `test_projection.py`, `test_scope.py` |
+| Routed model identity, exact spans, structured numeric types, uncertainty, and semantic correspondence | `test_extraction.py`, `test_model_tasks.py`, `test_compare.py` |
+| Whole registered readings, exact unit pairs, required/recommended disclosure, and no duplicate note advice | `test_variants.py`, `test_units.py`, `test_footnotes.py` |
+| Mandatory configured profiles, three independent checks, and disabled assessments | `test_style.py`, `test_policy.py`, `test_nca_jobs.py` |
+| Source evidence, counters, coverage, localized reports, sealed lifecycle, concurrency, and canonical operator routes | `test_engine.py`, `test_results.py`, `test_reporting.py`, `test_nca_tasks.py`, `test_nca_cli.py`, `test_nca_menu.py`, `test_acceptance.py` |
+
+The end-to-end acceptance test imports reference and style resources, creates a Job and Run through canonical CLI handlers, executes controlled provider responses, submits and finalizes, and verifies deterministic reports. It also checks unsupported interpretation, immutable input bytes, and replay after changed Job defaults. Existing repository tests cover the integration with other workflows and source distribution.
+
 ## Capability and distribution limits
 
 Deterministic/reference acceptance does not measure the selected model's performance in a target language. Structured model tests use controlled provider responses to verify evidence, routing, failure handling, and orchestration; they are not measured SQS confidence qualification. No live paid model call is part of CI qualification.
