@@ -112,8 +112,8 @@
     "Supplied Scripture bundles are not distributed by this command."
   ],
   "measurement": {
-    "peak_traced_bytes": 36600680,
-    "seconds": 26.5448
+    "peak_traced_bytes": 36600562,
+    "seconds": 26.9817
   },
   "mode": "RELEASE",
   "model_execution": "NOT_RUN",

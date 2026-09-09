@@ -26,7 +26,7 @@ A fresh isolated extraction of that archive passed the real-reference gate with 
 
 `REFERENCE_LINEAGE_INCOMPLETE` remains a nonblocking warning: 47 differing rows, 51 additional authoritative values, 16 additional numeric rows, and 6,749 supplementary expressions. Three unit display-spacing differences and two registered OL coordinate-boundary exceptions remain documented diagnostics. The minority-reading caution at 1SA 6:19 and registered OL absence at NEH 7:68 are retained.
 
-The first measured full-package integrity and domain acceptance run took **25.8466 seconds** with Python allocation tracing enabled; peak traced allocation was **36,635,309 bytes**. After the final loader fixes, the expanded gate passed in **26.5448 seconds**, with **36,600,680 bytes** of peak traced allocation. These are observed local measurements, not throughput guarantees or total process memory measurements. The separate [reference qualification receipt](NCA-REFERENCE-QUALIFICATION.json) records all outcomes.
+The first measured full-package integrity and domain acceptance run took **25.8466 seconds** with Python allocation tracing enabled; peak traced allocation was **36,635,309 bytes**. On the final reviewed implementation, the expanded gate passed in **26.9817 seconds**, with **36,600,562 bytes** of peak traced allocation. These are observed local measurements, not throughput guarantees or total process memory measurements. The separate [reference qualification receipt](NCA-REFERENCE-QUALIFICATION.json) records all outcomes.
 
 An existing extracted handover directory failed the checksum for `docs/SAGE_NUMBER_STYLE_PROFILE.txt`. Qualification used a fresh extraction of the original ZIP instead. Neither existing source was repaired or overwritten. The inherited workbook/source `PENDING_FINAL_RUN` gate remains unchanged.
 
@@ -70,4 +70,8 @@ No supplied Scripture archive or full-text index is added to Core or published b
 
 ## Final implementation gates
 
-The complete implementation and clean-source gate results will be recorded here after lifecycle integration and final review.
+All eleven implementation-plan tasks are complete on branch `0.02a2`. Final review approved the implementation through `1ea6980` with no unresolved blockers and 199 passing focused review tests.
+
+The clean source at `1ea6980` passed **1,530 tests in 391.28 seconds**, including all **427 NCA tests**. Schema validation passed with 48 schemas, 48 owners, and 11 source-instance groups. Package validation returned `READY`; the source deep audit returned `PASS` with no errors or warnings and all ten registered Skills. The real-reference release gate also passed on this reviewed source; its exact results and measurements are recorded above and in the separate receipt.
+
+The final documentation and Core workflow qualification metadata are checked again with the documentation/profile tests and schema, package, and source-audit gates. Core NCA is marked `VALIDATED` for these deterministic workflow and reference contracts. This does not change the inherited workbook/source `PENDING_FINAL_RUN`, qualify live model language accuracy, or apply SQS confidence checks.

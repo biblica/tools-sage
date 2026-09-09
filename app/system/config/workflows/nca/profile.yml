@@ -2,7 +2,7 @@ workflow:
   id: nca
   name: Number Consistency & Accuracy
   purpose: Validate target numeric meaning and configured presentation without writing Scripture.
-  qualification_status: IN_PROGRESS
+  qualification_status: VALIDATED
   baseline_version: 0.02a2
   execution_model: SAGE_GOVERNED_TASK_V1
 bindings: {}
@@ -30,4 +30,10 @@ process:
   - Treat HEB or GRK operator values as Authority 1 and NIV as secondary evidence.
   - Preserve insufficient evidence and incomplete coverage; never manufacture an all-clear.
 qualification_gates:
-- PENDING_FINAL_RUN
+- immutable_reference_contract_and_registered_policy
+- sealed_run_inputs_and_read_only_execution
+- exact_model_evidence_validation
+- numeric_reading_unit_footnote_and_style_acceptance
+- complete_western_coverage_and_deterministic_reports
+- canonical_cli_and_menu_acceptance
+- synthetic_regression_and_clean_source_validation
