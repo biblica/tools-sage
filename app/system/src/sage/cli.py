@@ -2198,7 +2198,18 @@ def command_task_execute(args: argparse.Namespace) -> int:
 
 def command_act_create(args: argparse.Namespace) -> int:
     """Generate one isolated provider-neutral governed task."""
+    from .nca_cli import validate_task_options
+    validate_task_options(args)
     config, _ = _load(args)
+    if args.workflow_id == 'nca':
+        from .nca_cli import command_nca_create
+        result = command_nca_create(args, config)
+        if args.json:
+            _print_json(result)
+        else:
+            for key, value in result.items():
+                print(f'{key}: {value}')
+        return 0
     result = create_act_task(
         config,
         workflow=args.workflow_id,
@@ -2252,9 +2263,20 @@ def command_act_create(args: argparse.Namespace) -> int:
 
 def command_act_submit(args: argparse.Namespace) -> int:
     """Validate one completed ACT task and report material REWRITE challenges."""
+    from .storage import resolve_persisted_path
     config, _ = _load(args)
-    task_path = resolve_declared_path(config.root, str(args.task), "task manifest")
+    task_path = resolve_persisted_path(config.root, str(args.task), "task manifest")
     result = submit_act_task(config, task_path)
+    if result.get('workflow') == 'nca':
+        from .nca import finalize_nca_run
+        finalization = finalize_nca_run(config, job_id=result['job_id'], run_id=result['run_id'])
+        result = {**result, **finalization, 'status': result['status']}
+        if args.json:
+            _print_json(result)
+        else:
+            print(f"NCA: {result['status']}")
+            print(f"Report: {result['report_path']}")
+        return 0
     source_project_id = str(result.get("contemporary_source") or "").strip()
     if result.get("operation") == "stc":
         ol_sources = [
@@ -4440,10 +4462,12 @@ def _transaction_recover(args: argparse.Namespace) -> int:
 
 def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
     """Register the shared canonical arguments for immutable ACT task creation."""
-    parser.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "saw"), required=True)
+    from .nca_cli import add_nca_task_arguments
+    add_nca_task_arguments(parser)
+    parser.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "nca", "saw"), required=True)
     parser.add_argument(
         "--operation",
-        choices=("inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check", "rtc", "stc", "focused", "ol"),
+        choices=("inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check", "rtc", "stc", "numbers", "focused", "ol"),
         required=True,
         help="Operation permitted by the selected workflow",
     )
@@ -4451,12 +4475,12 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
         "--output-project", "--target", "--wip",
         dest="output_project",
         required=True,
-        help="BIC TARGET write destination or RTC/STC WIP translation",
+        help="BIC TARGET write destination or RTC/STC/NCA WIP translation",
     )
     parser.add_argument(
         "--contemporary-source", "--source", "--reference",
         dest="contemporary_source",
-        help="BIC SOURCE content authority or RTC authorized REFERENCE; omitted for STC",
+        help="BIC SOURCE content authority or RTC authorized REFERENCE; omitted for STC/NCA",
     )
     parser.add_argument(
         "--lexical-donor", "--donor",
@@ -4489,7 +4513,7 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--job-id",
         dest="job_id",
-        help="Persistent BIC, RTC, STC, or sealed legacy Job identity owning this task",
+        help="Persistent BIC, RTC, STC, NCA, or sealed legacy Job identity owning this task",
     )
     parser.add_argument(
         "--run-id",
@@ -4832,6 +4856,8 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
 
     resource = subparsers.add_parser("resource", help="Manage Scripture resources, Paratext/PTLite mappings, and VRS roots")
     resource_actions = resource.add_subparsers(dest="resource_command", required=True)
+    from .nca_cli import register_nca_resources
+    register_nca_resources(resource_actions)
     resource_list = resource_actions.add_parser("list", help="List Scripture resources and governed external mappings")
     resource_list.set_defaults(handler=command_resource_list)
     resource_map = resource_actions.add_parser("map", help="Map a Scripture resource to an external Paratext/PTLite project folder")
@@ -4875,10 +4901,10 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     transaction = subparsers.add_parser("transaction", help="List or recover journaled workflow transactions")
     transaction_actions = transaction.add_subparsers(dest="transaction_command", required=True)
     transaction_list = transaction_actions.add_parser("list", help="List incomplete transactions")
-    transaction_list.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "saw"), required=True)
+    transaction_list.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "nca", "saw"), required=True)
     transaction_list.set_defaults(handler=_transaction_list)
     transaction_recover = transaction_actions.add_parser("recover", help="Rollback one incomplete transaction")
-    transaction_recover.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "saw"), required=True)
+    transaction_recover.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "nca", "saw"), required=True)
     transaction_recover.add_argument("--id", dest="transaction_id", required=True)
     transaction_recover.set_defaults(handler=_transaction_recover)
 
@@ -4928,7 +4954,7 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     workflow = subparsers.add_parser("workflow", help="Inspect or plan one independent workflow")
     workflow_actions = workflow.add_subparsers(dest="workflow_command", required=True)
     workflow_status = workflow_actions.add_parser("status", help="Show one workflow's qualification and resource state")
-    workflow_status.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "saw"), required=True)
+    workflow_status.add_argument("--workflow", dest="workflow_id", choices=("bic", "rtc", "stc", "nca", "saw"), required=True)
     workflow_status.set_defaults(handler=command_workflow_status)
     workflow_plan = workflow_actions.add_parser("plan", help="Build bounded section-preferred work units without analysis")
     _add_plan_arguments(workflow_plan)

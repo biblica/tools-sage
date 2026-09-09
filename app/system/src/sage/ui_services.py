@@ -84,6 +84,7 @@ TOP_LEVEL_SECTIONS: tuple[UISection, ...] = (
     UISection("bic", "BIC", "BIC Jobs, Runs, reports, recovery, generations and governed TARGET work."),
     UISection("rtc", "RTC", "Reference Text Comparison Jobs, Runs, reports, and recovery."),
     UISection("stc", "STC", "Source Text Correspondence Jobs, Runs, reports, and recovery."),
+    UISection("nca", "NCA", "Number Consistency & Accuracy Jobs, Runs, reports, and recovery."),
     UISection("configure", "SAGE Maintenance", "System settings, diagnostics, storage maintenance and system recovery."),
 )
 
@@ -91,6 +92,12 @@ TOP_LEVEL_SECTIONS: tuple[UISection, ...] = (
 def context_help_lines(title: str) -> tuple[str, ...]:
     """Return concise context-sensitive help independent of the rendering interface."""
     key = str(title).strip().upper()
+    if 'NCA' in key or 'NUMBERS CHECK' in key:
+        return (
+            'NCA compares target numeric meaning with an immutable qualified OL index and registered reading policies.',
+            'One configured Number Style Profile is required. Accuracy, presentation and footnote checks are independently selectable.',
+            "Findings depend on the selected model's language and numeric understanding. SQS confidence checks have not been applied.",
+        )
     if "PARATEXT" in key or "PROJECT" in key:
         return (
             "Quick Scan discovers immediate Project folders by Settings.xml marker only.",
@@ -759,6 +766,7 @@ class OperatorUIService:
             "bic_job": self.job_summary("bic"),
             "rtc_job": self.job_summary("rtc"),
             "stc_job": self.job_summary("stc"),
+            "nca_job": self.job_summary("nca"),
             "last_run": self.last_run_summary(),
             "unfinished_run": self.last_run_is_resumable(),
             "model": self.model_summary(),
@@ -801,7 +809,7 @@ class OperatorUIService:
                 "catalog": catalog,
                 "registered": rows,
             }
-        if view in {"bic", "rtc", "stc", "saw"}:
+        if view in {"bic", "rtc", "stc", "nca", "saw"}:
             jobs = []
             report = self.store.discover_report(view, include_archived=True)
             active_id = self.store.active_jobs().get(view)

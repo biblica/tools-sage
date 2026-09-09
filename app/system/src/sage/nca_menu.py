@@ -1,0 +1,218 @@
+"""NCA operator flow using the existing Control Center and Job store."""
+from __future__ import annotations
+
+from pathlib import Path
+
+from sage.errors import ValidationError
+from sage.registry import load_ecosystem
+from sage.nca_cli import CHECK_LABELS, inspect_numbers_package
+from sage.numbers.resources import import_reference, reference_package_candidates
+from sage.numbers.style import import_style_profile, style_profile_candidates
+
+
+def choose_style(center, project) -> str | None:
+    """Choose a compatible configured guide or import an operator-completed copy."""
+    while True:
+        config = load_ecosystem(center.store.settings_path)
+        script = config.language_profile(project.language_profile).script
+        candidates = style_profile_candidates(config, language=project.language_code, script=script, project=project.project_id)
+        if len(candidates) == 1:
+            center.io.write(f'Number Style Profile: {candidates[0].selector}')
+            return candidates[0].selector
+        options = [(str(index), item.selector) for index, item in enumerate(candidates, 1)]
+        import_key = str(len(options) + 1)
+        options.extend(((import_key, 'Import configured Number Style Profile'), ('B', 'Back')))
+        center.io.write('A configured Number Style Profile is required, including when presentation is OFF.')
+        center.io.write('Template: system/config/profiles/numbers/number-style-template.yml')
+        choice = center.io.choose('NCA Number Style Profile', options)
+        if choice == 'B':
+            return None
+        if choice == import_key:
+            raw = center.io.text('Configured profile path', required=False).strip()
+            if not raw:
+                return None
+            import_style_profile(config, Path(raw).expanduser())
+        else:
+            return candidates[int(choice) - 1].selector
+
+
+def choose_package(center) -> str | None:
+    """Show qualification diagnostics before binding an immutable package."""
+    while True:
+        config = load_ecosystem(center.store.settings_path)
+        candidates = reference_package_candidates(config)
+        options = [(str(index), f'{bundle.package_id} [{bundle.qualification_status}]') for index, (_, bundle) in enumerate(candidates, 1)]
+        import_key = str(len(options) + 1)
+        options.extend(((import_key, 'Import NCA reference archive'), ('B', 'Back')))
+        choice = center.io.choose('NCA reference package', options)
+        if choice == 'B':
+            return None
+        if choice == import_key:
+            raw = center.io.text('NCA reference archive path', required=False).strip()
+            if not raw:
+                return None
+            path = import_reference(config, Path(raw).expanduser())
+            package_id = path.name
+        else:
+            package_id = candidates[int(choice) - 1][1].package_id
+        status = inspect_numbers_package(config, package_id)
+        center.io.write(f"Reference qualification: {status['qualification_status']}")
+        center.io.write(f"Numeric reference coverage: {status['rows']} indexed rows")
+        for diagnostic in status['diagnostics']:
+            center.io.write(str(diagnostic))
+        return package_id
+
+
+def create_job(center):
+    """Resolve one WIP, qualified package and mandatory profile before persistence."""
+    from sage.nca import create_nca_job
+    project = center.choose_or_add_resource('Start new NCA review <WIP PROJECT>', 'WIP')
+    if project is None:
+        return None
+    package_id = choose_package(center)
+    if package_id is None:
+        return None
+    selector = choose_style(center, project)
+    if selector is None:
+        return None
+    config = load_ecosystem(center.store.settings_path)
+    center.io.write(f'Input language: {project.language_code}; script: {config.language_profile(project.language_profile).script}')
+    center.io.write('Numeric interpretation depends on the selected model; unsupported evidence remains unassessed.')
+    center._write_job_ai_routing('nca', None)
+    job = create_nca_job(load_ecosystem(center.store.settings_path), wip=project.project_id, package_id=package_id, style_selector=selector)
+    center.store.set_active_job('nca', job.job_id)
+    return job
+
+
+def choose_checks(center, job) -> dict[str, bool] | None:
+    """Offer independent pre-Run switches while keeping the style binding mandatory."""
+    defaults = {key: True for key in CHECK_LABELS}
+    defaults.update(job.defaults.get('checks', {}))
+    checks = dict(defaults)
+    while True:
+        center.io.write(f"Number Style Profile: {job.profiles.get('number_style', 'NOT CONFIGURED')}")
+        choices = [(str(index), f"{center.localizer.text(label)}: {'ON' if checks[key] else 'OFF'}") for index, (key, label) in enumerate(CHECK_LABELS.items(), 1)]
+        choices.extend((('4', 'Restore saved check defaults'), ('5', 'Change Number Style Profile'),
+                        ('6', 'Save check defaults'), ('7', 'Continue with selected checks'), ('B', 'Back')))
+        choice = center.io.choose('NCA Run checks', choices)
+        if choice == 'B':
+            return None
+        if choice in {'1', '2', '3'}:
+            key = tuple(CHECK_LABELS)[int(choice) - 1]
+            checks[key] = not checks[key]
+        elif choice == '4':
+            checks = dict(defaults)
+        elif choice == '5':
+            config = load_ecosystem(center.store.settings_path)
+            selector = choose_style(center, config.project(job.bindings['wip']))
+            if selector:
+                job = center.store.revise_job(job, profiles={'number_style': selector})
+        elif not any(checks.values()):
+            center.io.write('Enable at least one NCA check.')
+        elif choice == '6':
+            job = center.store.revise_job(job, defaults={**job.defaults, 'checks': checks})
+            defaults = dict(checks)
+        elif choice == '7':
+            return checks
+
+
+def start_run(center, job) -> None:
+    """Create and execute the same governed task used by the canonical CLI."""
+    from sage.nca import create_nca_run
+    show_preflight(center, job)
+    checks = choose_checks(center, job)
+    if checks is None:
+        return
+    scope = center.io.text('Scripture scope', required=False).strip()
+    if not scope:
+        return
+    config = load_ecosystem(center.store.settings_path)
+    run = create_nca_run(config, job_id=job.job_id, scope_value=scope, checks=checks)
+    continue_run(center, job, run)
+
+
+def continue_run(center, job, run) -> None:
+    """Resume sealed NCA inputs and checks without consulting mutable Job defaults."""
+    scope = run.scope
+    task = center.controller(job, ['task', 'create', '--workflow', 'nca', '--operation', 'numbers',
+                                  '--wip', job.bindings['wip'], '--scope', scope,
+                                  '--job-id', job.job_id, '--run-id', run.run_id])
+    manifest = str(task.get('task_manifest') or task.get('task_manifest_path') or '')
+    if not manifest:
+        raise ValidationError('NCA task creation did not return its manifest.', code='NCA_TASK_MANIFEST_MISSING')
+    arguments = ['task', 'execute', '--task', manifest]
+    if center.dry_run_provider:
+        arguments.append('--dry-run')
+    result = center.controller(job, arguments)
+    center.io.write(f"NCA execution: {result.get('status', 'UNKNOWN')}")
+    if not center.dry_run_provider and result.get('status') == 'EXECUTED':
+        finalized = center.controller(job, ['task', 'submit', '--task', manifest])
+        center.io.write(f"NCA report: {finalized.get('report_path') or finalized.get('status', 'UNKNOWN')}")
+    center.io.pause()
+
+
+def show_preflight(center, job) -> None:
+    """Show input identity, available reference coverage and actual model qualification."""
+    config = load_ecosystem(center.store.settings_path)
+    project = config.project(job.bindings['wip'])
+    status = inspect_numbers_package(config, job.resources['numbers_package']['package_id'])
+    center.io.write(f"Input language: {project.language_code}; script: {config.language_profile(project.language_profile).script}")
+    center.io.write(f"Numeric reference coverage: {status['rows']} indexed rows; {status['qualification_status']}")
+    center.io.write('Numeric interpretation depends on the selected model; unsupported evidence remains unassessed.')
+    center._write_job_ai_routing('nca', None)
+
+
+def job_menu(center, job) -> None:
+    """Operate one NCA Job without entering RTC or STC execution branches."""
+    while True:
+        job = center.store.load_job(job.job_id, tool='nca')
+        run = center.store.active_run(job)
+        choice = center.io.choose('NUMBER CONSISTENCY & ACCURACY (NCA)',
+                                  (('1', 'Run SAGE NUMBERS CHECK'), ('2', 'Reports and history'),
+                                   ('3', 'NCA check defaults and profile'), ('4', 'Recovery and diagnostics'),
+                                   ('5', 'Manage Job'), ('B', 'Back')),
+                                  context=(f'Job: {job.job_id}', f"WIP Project: {job.bindings['wip']}", f"Number Style Profile: {job.profiles['number_style']}"))
+        if choice == 'B':
+            return
+        if choice == '1':
+            if run is None:
+                start_run(center, job)
+            else:
+                center.io.write(f'Resuming NCA Run: {run.run_id}')
+                continue_run(center, job, run)
+        elif choice == '2':
+            center.reports_menu(job)
+        elif choice == '3':
+            choose_checks(center, job)
+        elif choice == '4':
+            center.recovery_menu(job)
+        elif choice == '5':
+            if center._job_settings_menu(job):
+                return
+
+
+def workflow_menu(center) -> None:
+    """Create, select and operate independent NCA Jobs using shared discovery."""
+    while True:
+        choice = center.io.choose('NUMBER CONSISTENCY & ACCURACY (NCA)',
+                                  (('1', 'Open active NCA job'), ('2', 'Choose active NCA job'),
+                                   ('3', 'Add NCA job <WIP PROJECT>'), ('4', 'NCA reference packages'), ('B', 'Back')))
+        if choice == 'B':
+            return
+        try:
+            if choice == '4':
+                choose_package(center)
+                continue
+            if choice == '3':
+                job = create_job(center)
+            elif choice == '2':
+                job = center.choose_job('nca')
+            else:
+                job = center.store.active_job('nca') or center.choose_job('nca')
+            if job is not None:
+                job_menu(center, job)
+        except ValidationError as exc:
+            center.io.write(str(exc))
+            if exc.next_action:
+                center.io.write(exc.next_action)
+            center.io.pause()

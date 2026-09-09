@@ -11,6 +11,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Scripture Project Operator Cheat Sheet](PROJECT-OPERATOR-CHEAT-SHEET.md) — discovery, Add-to-SAGE, Project maintenance, Job-owned reports, reporting languages, and original-language resources.
 - [BIC Cheat Sheet](BIC-CHEAT-SHEET.md) — BIC Job, Run, task, state, and recovery quick reference.
 - [RTC/STC Cheat Sheet](RTC-STC-CHEAT-SHEET.md) — canonical RTC/STC Job setup, authority, finalization, and read-only boundaries.
+- [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) — number accuracy, registered readings and notes, required style profiles, Run switches, and coverage limits.
 - [Good Practice](GOOD-PRACTICE.md) — safe operating and source-maintenance habits.
 - [Known Limitations](KNOWN-LIMITATIONS.md) — explicit functional and platform limits.
 - [Windows Cheat Sheet](windows/CHEAT-SHEET.md), [Recovery](windows/RECOVERY.md), and [Errors](windows/ERRORS.md).
@@ -31,7 +32,7 @@ in the `docs/` root. Technical and governance material is grouped under
 
 ## Advanced: workflow and execution governance
 
-- [BIC, RTC, and STC Authority Boundaries](advanced/workflows/BIC-RTC-STC-AUTHORITY-BOUNDARIES.md) — independent workflows, role authority, and write limits.
+- [BIC, RTC, STC, and NCA Authority Boundaries](advanced/workflows/BIC-RTC-STC-AUTHORITY-BOUNDARIES.md) — independent workflows, role authority, and write limits.
 - [Full Process Flow](advanced/workflows/FULL-PROCESS-FLOW.md) — ordered BIC/RTC/STC controller flows and state transitions.
 - [REWRITE Lexical Risk and Bounded OL Flow](advanced/workflows/REWRITE-LEXICAL-RISK-AND-OL.md) — lexical burden, semantic risk, and conditional original-language checks.
 - [BIC Target Generations](advanced/workflows/TARGET-GENERATIONS.md) — immutable TARGET generations and verification.

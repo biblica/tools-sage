@@ -267,6 +267,7 @@ def test_documentation_root_contains_only_simple_operator_material() -> None:
         "GOOD-PRACTICE.md",
         "INDEX.md",
         "KNOWN-LIMITATIONS.md",
+        "NCA-CHEAT-SHEET.md",
         "OPERATOR-GUIDE.md",
         "PROJECT-OPERATOR-CHEAT-SHEET.md",
         "RTC-STC-CHEAT-SHEET.md",

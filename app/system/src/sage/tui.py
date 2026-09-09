@@ -26,7 +26,10 @@ from .errors import SageError
 from .interface_localization import LANGUAGE_DISPLAY_NAMES, SUPPORTED_INTERFACE_LANGUAGES
 from .runtime_status import RuntimeStatus
 from .ui_format import menu_item
-from .ui_services import TOP_LEVEL_SECTIONS, OperatorUIService, context_help_lines, probe_workflow_ai
+from .ui_services import TOP_LEVEL_SECTIONS as OPERATOR_SECTIONS, OperatorUIService, context_help_lines, probe_workflow_ai
+
+# The experimental TUI keeps its frozen navigation and execution scope.
+TOP_LEVEL_SECTIONS = tuple(section for section in OPERATOR_SECTIONS if section.view_id != 'nca')
 
 
 class InfoModal(ModalScreen[None]):

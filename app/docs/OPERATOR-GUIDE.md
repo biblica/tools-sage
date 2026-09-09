@@ -10,7 +10,8 @@ Open a terminal in the SAGE root. The classic menu remains the authoritative def
   2. Bible Index & Context (BIC)
   3. Reference Text Comparison (RTC)
   4. Source Text Correspondence (STC)
-  5. SAGE Maintenance
+  5. Number Consistency & Accuracy (NCA)
+  6. SAGE Maintenance
 
 ┌──────────────────────────────────────────────────────────────────────┐
 │  A. Back   B. Main menu   C. Exit SAGE                               │
@@ -150,3 +151,7 @@ Path rule: chapter output is always under `localdata/reports/<job-id>/<BOOK>/<CC
 Missing comparison coordinates, custom-versification differences, and similar usable text-structure deficiencies are reported and do not abort an otherwise safe RTC or STC Run. Preflight may show `READY_WITH_STRUCTURE_PROBLEMS`; a completed analysis uses `COMPLETE_WITH_STRUCTURE_PROBLEMS`, with `VERSIFICATION_MISMATCH` and addition/omission detail in the chapter report. Software faults, malformed evidence, unsafe paths, or immutable evidence drift remain real failures.
 
 **SAGE Maintenance > Resource Status Report** inventories onboarded Projects, active RTC/STC roles, WIP snapshot identity, versification, and the exact `GRK`/`HEB` authority without changing resources. **SAGE Maintenance > System actions > Wipe all Job data** requires the exact confirmation `WIPE JOB DATA`; it removes Jobs, Runs, tasks, reports, exports, history, pointers, locks, and transactions while retaining the managed environment/dependencies, Project Inventory and external Paratext locations, resource mappings, indexes, and configuration. **Reset SAGE to out-of-box state** remains the stronger first-run reset and requires `RESET SAGE`.
+
+## NCA numbers review
+
+NCA binds one WIP Project, a qualified immutable numbers package, and one configured Number Style Profile. Accuracy, presentation, and footnote checks are independent Run switches; the style profile remains required with presentation OFF. See the [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) for setup, outcomes, and coverage limits. NCA never modifies Scripture or Paratext Notes XML.

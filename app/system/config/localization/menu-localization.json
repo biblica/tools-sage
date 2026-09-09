@@ -3394,6 +3394,190 @@
       "fr": "Effacer toutes les données de Job",
       "ru": "Удалить все данные Job",
       "pt-BR": "Apagar todos os dados de Job"
+    },
+    "menu.nca": {
+      "en-US": "Number Consistency & Accuracy (NCA)",
+      "en-GB": "Number Consistency & Accuracy (NCA)",
+      "id": "Konsistensi & Akurasi Angka (NCA)",
+      "fr": "Cohérence et exactitude des nombres (NCA)",
+      "ru": "Согласованность и точность чисел (NCA)",
+      "pt-BR": "Consistência e precisão numérica (NCA)"
+    },
+    "menu.nca.accuracy": {
+      "en-US": "Number accuracy",
+      "en-GB": "Number accuracy",
+      "id": "Akurasi angka",
+      "fr": "Exactitude des nombres",
+      "ru": "Точность чисел",
+      "pt-BR": "Precisão numérica"
+    },
+    "menu.nca.presentation": {
+      "en-US": "Presentation consistency",
+      "en-GB": "Presentation consistency",
+      "id": "Konsistensi penyajian",
+      "fr": "Cohérence de présentation",
+      "ru": "Согласованность оформления",
+      "pt-BR": "Consistência de apresentação"
+    },
+    "menu.nca.footnotes": {
+      "en-US": "Footnote review and recommendations",
+      "en-GB": "Footnote review and recommendations",
+      "id": "Tinjauan dan rekomendasi catatan kaki",
+      "fr": "Révision et recommandations de notes",
+      "ru": "Проверка и рекомендации по сноскам",
+      "pt-BR": "Revisão e recomendações de notas"
+    },
+    "menu.nca.profile": {
+      "en-US": "NCA Number Style Profile",
+      "en-GB": "NCA Number Style Profile",
+      "id": "Profil Gaya Angka NCA",
+      "fr": "Profil de style des nombres NCA",
+      "ru": "Профиль оформления чисел NCA",
+      "pt-BR": "Perfil de estilo numérico NCA"
+    },
+    "menu.nca.profile.import": {
+      "en-US": "Import configured Number Style Profile",
+      "en-GB": "Import configured Number Style Profile",
+      "id": "Impor Profil Gaya Angka yang dikonfigurasi",
+      "fr": "Importer un profil de style des nombres configuré",
+      "ru": "Импортировать настроенный профиль оформления чисел",
+      "pt-BR": "Importar perfil de estilo numérico configurado"
+    },
+    "menu.nca.reference": {
+      "en-US": "NCA reference package",
+      "en-GB": "NCA reference package",
+      "id": "Paket referensi NCA",
+      "fr": "Paquet de référence NCA",
+      "ru": "Пакет эталонных данных NCA",
+      "pt-BR": "Pacote de referência NCA"
+    },
+    "menu.nca.reference.import": {
+      "en-US": "Import NCA reference archive",
+      "en-GB": "Import NCA reference archive",
+      "id": "Impor arsip referensi NCA",
+      "fr": "Importer une archive de référence NCA",
+      "ru": "Импортировать архив эталонных данных NCA",
+      "pt-BR": "Importar arquivo de referência NCA"
+    },
+    "menu.nca.checks": {
+      "en-US": "NCA Run checks",
+      "en-GB": "NCA Run checks",
+      "id": "Pemeriksaan Run NCA",
+      "fr": "Contrôles du Run NCA",
+      "ru": "Проверки Run NCA",
+      "pt-BR": "Verificações do Run NCA"
+    },
+    "menu.nca.defaults.restore": {
+      "en-US": "Restore saved check defaults",
+      "en-GB": "Restore saved check defaults",
+      "id": "Pulihkan pengaturan pemeriksaan tersimpan",
+      "fr": "Rétablir les contrôles enregistrés par défaut",
+      "ru": "Восстановить сохранённые параметры проверок",
+      "pt-BR": "Restaurar verificações padrão salvas"
+    },
+    "menu.nca.profile.change": {
+      "en-US": "Change Number Style Profile",
+      "en-GB": "Change Number Style Profile",
+      "id": "Ubah Profil Gaya Angka",
+      "fr": "Changer le profil de style des nombres",
+      "ru": "Изменить профиль оформления чисел",
+      "pt-BR": "Alterar perfil de estilo numérico"
+    },
+    "menu.nca.defaults.save": {
+      "en-US": "Save check defaults",
+      "en-GB": "Save check defaults",
+      "id": "Simpan pengaturan pemeriksaan",
+      "fr": "Enregistrer les contrôles par défaut",
+      "ru": "Сохранить параметры проверок",
+      "pt-BR": "Salvar verificações padrão"
+    },
+    "menu.nca.checks.continue": {
+      "en-US": "Continue with selected checks",
+      "en-GB": "Continue with selected checks",
+      "id": "Lanjutkan dengan pemeriksaan yang dipilih",
+      "fr": "Continuer avec les contrôles choisis",
+      "ru": "Продолжить с выбранными проверками",
+      "pt-BR": "Continuar com as verificações escolhidas"
+    },
+    "menu.nca.run": {
+      "en-US": "Run SAGE NUMBERS CHECK",
+      "en-GB": "Run SAGE NUMBERS CHECK",
+      "id": "Jalankan SAGE NUMBERS CHECK",
+      "fr": "Exécuter SAGE NUMBERS CHECK",
+      "ru": "Запустить SAGE NUMBERS CHECK",
+      "pt-BR": "Executar SAGE NUMBERS CHECK"
+    },
+    "menu.nca.defaults": {
+      "en-US": "NCA check defaults and profile",
+      "en-GB": "NCA check defaults and profile",
+      "id": "Pengaturan pemeriksaan dan profil NCA",
+      "fr": "Contrôles par défaut et profil NCA",
+      "ru": "Параметры проверок и профиль NCA",
+      "pt-BR": "Verificações padrão e perfil NCA"
+    },
+    "menu.nca.job.open": {
+      "en-US": "Open active NCA job",
+      "en-GB": "Open active NCA job",
+      "id": "Buka job NCA aktif",
+      "fr": "Ouvrir le job NCA actif",
+      "ru": "Открыть активный job NCA",
+      "pt-BR": "Abrir job NCA ativo"
+    },
+    "menu.nca.job.choose": {
+      "en-US": "Choose active NCA job",
+      "en-GB": "Choose active NCA job",
+      "id": "Pilih job NCA aktif",
+      "fr": "Choisir le job NCA actif",
+      "ru": "Выбрать активный job NCA",
+      "pt-BR": "Escolher job NCA ativo"
+    },
+    "menu.nca.job.add": {
+      "en-US": "Add NCA job <WIP PROJECT>",
+      "en-GB": "Add NCA job <WIP PROJECT>",
+      "id": "Tambah job NCA <WIP PROJECT>",
+      "fr": "Ajouter un job NCA <WIP PROJECT>",
+      "ru": "Добавить job NCA <WIP PROJECT>",
+      "pt-BR": "Adicionar job NCA <WIP PROJECT>"
+    },
+    "menu.nca.references": {
+      "en-US": "NCA reference packages",
+      "en-GB": "NCA reference packages",
+      "id": "Paket referensi NCA",
+      "fr": "Paquets de référence NCA",
+      "ru": "Пакеты эталонных данных NCA",
+      "pt-BR": "Pacotes de referência NCA"
+    },
+    "menu.nca.start": {
+      "en-US": "Start new NCA review <WIP PROJECT>",
+      "en-GB": "Start new NCA review <WIP PROJECT>",
+      "id": "Mulai tinjauan NCA baru <WIP PROJECT>",
+      "fr": "Démarrer une nouvelle révision NCA <WIP PROJECT>",
+      "ru": "Начать новую проверку NCA <WIP PROJECT>",
+      "pt-BR": "Iniciar nova revisão NCA <WIP PROJECT>"
+    },
+    "menu.nca.unassessed": {
+      "en-US": "NOT ASSESSED",
+      "en-GB": "NOT ASSESSED",
+      "id": "BELUM DINILAI",
+      "fr": "NON ÉVALUÉ",
+      "ru": "НЕ ОЦЕНЕНО",
+      "pt-BR": "NÃO AVALIADO"
+    },
+    "menu.nca.reports": {
+      "en-US": "NCA reports and history",
+      "en-GB": "NCA reports and history",
+      "id": "Laporan dan riwayat NCA",
+      "fr": "Rapports et historique NCA",
+      "ru": "Отчёты и история NCA",
+      "pt-BR": "Relatórios e histórico NCA"
+    },
+    "menu.nca.create": {
+      "en-US": "Create an NCA Job",
+      "en-GB": "Create an NCA Job",
+      "id": "Buat Job NCA",
+      "fr": "Créer un Job NCA",
+      "ru": "Создать Job NCA",
+      "pt-BR": "Criar Job NCA"
     }
   }
 }
