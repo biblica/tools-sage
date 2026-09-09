@@ -240,13 +240,14 @@ class FootnoteDecision:
             values = _tuple("footnote evidence span", span)
             if len(values) != 2 or any(type(value) is not int for value in values) or values[0] < 0 or values[1] <= values[0]:
                 raise _invalid("footnote evidence span", span)
-        if len(spans) != len(set(spans)):
-            raise _invalid("footnote evidence spans", self.evidence_spans)
         note_ids = _tuple("footnote evidence note IDs", self.evidence_note_ids)
         if any(not isinstance(note_id, str) or not note_id for note_id in note_ids):
             raise _invalid("footnote evidence note IDs", self.evidence_note_ids)
         if note_ids and len(note_ids) != len(spans):
             raise _invalid("footnote evidence note IDs", self.evidence_note_ids)
+        evidence_keys = tuple(zip(note_ids, spans)) if note_ids else spans
+        if len(evidence_keys) != len(set(evidence_keys)):
+            raise _invalid("footnote evidence spans", self.evidence_spans)
 
 
 @dataclass(frozen=True)

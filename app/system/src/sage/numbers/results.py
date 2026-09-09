@@ -276,6 +276,17 @@ def _validated_span(value: object, *, label: str) -> tuple[int, int]:
     return value[0], value[1]
 
 
+def _is_ordered_subsequence(values: list[str], authority: list[str]) -> bool:
+    """Return whether partial OL values retain their authoritative sequence."""
+    position = 0
+    for value in values:
+        try:
+            position = authority.index(value, position) + 1
+        except ValueError:
+            return False
+    return True
+
+
 def _validate_expression(
     value: object,
     *,
@@ -360,6 +371,12 @@ def _validate_expression(
         representation_spans.append(child_span)
     if len(representation_spans) != len(set(representation_spans)):
         raise _error("Numeric representations repeat.", "NCA_RESULT_EXPRESSION_INVALID")
+    if (
+        re.search(r"\([^)]*\d[^)]*\)", surface)
+        and any(char.isalpha() for char in surface.split("(", 1)[0])
+        and len(representations) < 2
+    ):
+        raise _error("Dual-form numeric evidence is incomplete.", "NCA_RESULT_EXPRESSION_INVALID")
     return expression_id, span
 
 
@@ -609,6 +626,10 @@ def _validate_unit(
         not source_context or source_flat != source_context["ol_values"]
     ):
         raise _error("Correspondence outcome lacks exact OL evidence.", "NCA_RESULT_EXPRESSION_INVALID")
+    if source_context and semantic["outcome"] not in correspondence_outcomes and not _is_ordered_subsequence(
+        source_flat, source_context["ol_values"]
+    ):
+        raise _error("Partial OL evidence is outside its authority sequence.", "NCA_RESULT_EXPRESSION_INVALID")
     if reading["footnote_action"] not in FOOTNOTE_ACTIONS:
         raise _error("Reading footnote action is unknown.", "NCA_RESULT_ENUM_INVALID")
     evidence_ids = semantic["evidence_ids"]
@@ -694,6 +715,10 @@ def _validate_unit(
         span = _validated_span(evidence_span, label="Footnote evidence span")
         if not isinstance(note_id, str) or note_id not in note_streams or span[1] > len(note_streams[note_id]):
             raise _error("Footnote evidence is outside its note stream.", "NCA_RESULT_EXPRESSION_INVALID")
+    if len(list(zip(note_ids, evidence_spans))) != len(
+        {(note_id, tuple(span)) for note_id, span in zip(note_ids, evidence_spans)}
+    ):
+        raise _error("Footnote evidence repeats within one note.", "NCA_RESULT_EXPRESSION_INVALID")
     if footnote["status"] == "ADEQUATE" and not evidence_spans or footnote["status"] != "ADEQUATE" and evidence_spans:
         raise _error("Footnote evidence disagrees with its status.", "NCA_RESULT_DECISION_INVALID")
     if not isinstance(raw["style_findings"], list) or not isinstance(raw["limitations"], list) or any(
