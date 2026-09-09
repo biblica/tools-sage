@@ -17,6 +17,7 @@ from sage.atomic import atomic_write_json
 from sage.errors import ValidationError
 
 from .reference import REFERENCE_PARSER_VERSION, load_reference, validate_package_id
+from .models import ReferenceBundle
 
 if TYPE_CHECKING:
     from sage.registry import EcosystemConfig
@@ -25,6 +26,34 @@ if TYPE_CHECKING:
 MAX_ARCHIVE_ENTRIES = 10_000
 MAX_ARCHIVE_MEMBER_BYTES = 512 * 1024 * 1024
 MAX_ARCHIVE_TOTAL_BYTES = 1024 * 1024 * 1024
+
+
+def resolve_reference_package(config: EcosystemConfig, package_id: str) -> ReferenceBundle:
+    """Requalify one imported package and require its stored identity to match."""
+    library = config.data_root / 'inputs' / 'resources' / 'numbers'
+    validate_package_id(package_id)
+    path = library / package_id
+    if library.is_symlink() or path.is_symlink():
+        raise ValidationError('NCA reference selectors cannot use symlinks.', code='NCA_REFERENCE_PUBLICATION_CONFLICT')
+    destination = _publication_destination(library, package_id)
+    if not destination.is_dir():
+        raise ValidationError('NCA reference package is not imported.', code='NCA_REFERENCE_NOT_IMPORTED', next_action='Import and qualify the NCA operator archive.')
+    bundle = load_reference(destination, qualification='STRICT')
+    if bundle.package_id != package_id:
+        raise ValidationError('NCA package directory and manifest identities disagree.', code='NCA_REFERENCE_PUBLICATION_CONFLICT')
+    bundle.require_qualified()
+    return bundle
+
+
+def reference_package_candidates(config: EcosystemConfig) -> tuple[tuple[Path, ReferenceBundle], ...]:
+    """List qualified packages, exposing corrupt published packages as errors."""
+    library = config.data_root / 'inputs' / 'resources' / 'numbers'
+    if library.is_symlink():
+        raise ValidationError('NCA resource library cannot be a symlink.', code='NCA_REFERENCE_PUBLICATION_CONFLICT')
+    if not library.exists():
+        return ()
+    return tuple((path, resolve_reference_package(config, path.name)) for path in sorted(library.iterdir())
+                 if not path.name.startswith('.'))
 
 
 def _archive_error(message: str, **details: object) -> ValidationError:

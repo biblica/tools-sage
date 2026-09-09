@@ -169,3 +169,60 @@ def target_units(usj: Mapping[str, object], *, source_sha256: str) -> tuple[Targ
             units.append(TargetUnit(identity, (ref,), "\n".join(texts), notes,
                                     source_sha256, locator))
     return tuple(sorted(units, key=lambda unit: unit.target_references[0]))
+
+
+def extract_heading_units(usj: Mapping[str, object], *, source_sha256: str) -> tuple[TargetUnit, ...]:
+    """Preserve editorial headings as separate style-only streams anchored forward.
+
+    Canonical Psalm superscriptions already belong to accuracy-bearing verse
+    units and are excluded here. A verse milestone ends heading content even
+    when the compiler retains it in the same paragraph node.
+    """
+    target_units(usj, source_sha256=source_sha256)
+    book = str(usj['sage']['book_code'])
+    content = list(usj.get('content', []))
+    chapter, verse_seen = 0, False
+    results = []
+    for index, node in enumerate(content):
+        if not isinstance(node, Mapping):
+            continue
+        if node.get('type') == 'chapter':
+            chapter, verse_seen = int(node['number']), False
+            continue
+        marker = str(node.get('marker', ''))
+        heading = bool(re.fullmatch(r'(?:s[1-5]?|ms[1-3]?|mt[1-4]?|mte[1-2]?|cl|cd|r|mr|d)', marker))
+        if marker == 'd' and book == 'PSA' and chapter and not verse_seen:
+            heading = False
+        nodes = list(node.get('content', []))
+        before = []
+        for child in nodes:
+            if isinstance(child, Mapping) and child.get('type') == 'verse':
+                break
+            before.append(child)
+        if heading:
+            text = visible_text(before).strip()
+            if text:
+                refs = _following_heading_reference(content, index, book, chapter)
+                identity = f'{source_sha256}:{book}:heading:{index}'
+                notes = _notes(before, refs, identity) if refs else ()
+                results.append(TargetUnit(identity, refs, text, notes, source_sha256,
+                                          {'heading': 1, 'content_index': index, 'chapter': chapter}))
+        if node.get('type') == 'verse' or any(isinstance(child, Mapping) and child.get('type') == 'verse' for child in nodes):
+            verse_seen = True
+    return tuple(results)
+
+
+def _following_heading_reference(content: list[object], start: int, book: str, chapter: int) -> tuple[VerseRef, ...]:
+    """Anchor a heading to the following body verse without claiming numeric equivalence."""
+    for node in content[start:]:
+        if not isinstance(node, Mapping):
+            continue
+        if node.get('type') == 'chapter':
+            chapter = int(node['number'])
+        children = [node] if node.get('type') == 'verse' else node.get('content', [])
+        for child in children:
+            if isinstance(child, Mapping) and child.get('type') == 'verse' and chapter:
+                number = str(child.get('number', '')).split('-')[0]
+                if number.isdigit():
+                    return (VerseRef(book, chapter, int(number)),)
+    return ()
