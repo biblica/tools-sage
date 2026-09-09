@@ -170,6 +170,19 @@ def test_unit_result_rejects_a_contradictory_reference_index_aggregate():
     assert exc.value.code == "NCA_MODEL_INVALID"
 
 
+def test_footnote_model_scopes_duplicate_offsets_by_note_identity():
+    """Equal note-local offsets are valid across notes but cannot repeat in one note."""
+    decision = FootnoteDecision(
+        "REQUIRE", "ADEQUATE", "NONE", ((0, 1), (0, 1)), ("note-1", "note-2")
+    )
+    assert decision.evidence_spans == ((0, 1), (0, 1))
+
+    with pytest.raises(ValidationError):
+        FootnoteDecision(
+            "REQUIRE", "ADEQUATE", "NONE", ((0, 1), (0, 1)), ("note-1", "note-1")
+        )
+
+
 def provenance() -> dict[str, object]:
     """Return the immutable identity fields Task 9 supplies at finalization."""
     return {
@@ -587,6 +600,81 @@ def test_correspondence_outcome_requires_exact_indexed_ol_values():
     document = complete_document()
     document["units"][0]["source_evidence"]["expressions"] = []
     document["summary"]["ol_expressions_checked"] = 0
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_EXPRESSION_INVALID"
+
+
+def test_partial_ol_evidence_must_be_an_authority_ordered_subsequence():
+    """An insufficient result may retain partial OL evidence only in indexed order."""
+    document = complete_document()
+    unit = document["units"][0]
+    unit["reading"].update(selected="UNSUPPORTED", source_ids=[])
+    unit["reading"]["semantic"].update(
+        outcome="INSUFFICIENT_EVIDENCE", evidence_ids=[], reason_codes=["ROLE_UNRESOLVED"]
+    )
+    unit["final_outcome"] = "INSUFFICIENT_EVIDENCE"
+    source = unit["source_evidence"]
+    source["context"].update(ol_text="four men", ol_values=["3"])
+    source["expressions"][0].update(surface="four", span=[0, 4], values=["4"], role_spans=[[5, 8]])
+    document["findings"][0].update(
+        category="EVIDENCE", code="NCA_INSUFFICIENT_EVIDENCE",
+        selected_reading="UNSUPPORTED", source_ids=[], evidence_ids=[],
+    )
+    document["coverage"].update(
+        result="INSUFFICIENT_DATA", coverage="PARTIAL", confidence_basis="LIMITED",
+        restrictions=["ROLE_UNRESOLVED"],
+    )
+    document["summary"].update(
+        insufficient_evidence=1, value_differences=0,
+    )
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_EXPRESSION_INVALID"
+
+
+def test_dual_form_result_requires_both_serialized_representations():
+    """Words plus parenthesized digits cannot lose either exact representation span."""
+    document = complete_document()
+    unit = document["units"][0]
+    unit["projection"]["target_text"] = "three (3) men"
+    expression = unit["extraction"]["expressions"][0]
+    expression.update(surface="three (3)", span=[0, 9], role_spans=[[10, 13]], representations=[])
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_EXPRESSION_INVALID"
+
+
+def test_result_rejects_duplicate_footnote_evidence_within_one_note():
+    """Canonical footnote evidence keys spans by both note identity and local offset."""
+    document = complete_document()
+    unit = document["units"][0]
+    unit["projection"]["target_note_streams"] = [{"note_id": "note-1", "text": "x"}]
+    unit["reading"].update(
+        selected="OL", footnote_action="REQUIRE", registry_id="MAT 1:1",
+        source_ids=["SRC-1"], source_validation_outcome="PASS_AUTHORITY1",
+    )
+    unit["reading"]["semantic"].update(outcome="PASS_AUTHORITY1", reason_codes=[])
+    unit["footnote"] = {
+        "action": "REQUIRE", "status": "ADEQUATE", "outcome": "NONE",
+        "evidence_spans": [[0, 1], [0, 1]], "evidence_note_ids": ["note-1", "note-1"],
+    }
+    unit["final_outcome"] = "PASS_AUTHORITY1"
+    document["findings"] = []
+    document["coverage"]["result"] = "NO_FINDINGS"
+    document["summary"].update(findings=0, passes=1, value_differences=0)
 
     with pytest.raises(ValidationError) as exc:
         validate_numbers_result(
