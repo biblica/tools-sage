@@ -829,6 +829,12 @@ def _check_registry_joins(
                         reference=key.label(),
                         field=left_field,
                     )
+        if parse_values(operator["OL_VALUES"]) == parse_values(operator["NIV_VALUES"]):
+            raise _reference_error(
+                f"NCA textual alternate duplicates the OL numeric reading at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+            )
         if variant["MANUSCRIPT_EVIDENCE"] != footnote["MANUSCRIPT_EVIDENCE"] or variant["NIV_FOOTNOTE"] != footnote["NIV_FOOTNOTE"]:
             raise _reference_error(
                 f"NCA variant evidence conflict at {key.label()}",

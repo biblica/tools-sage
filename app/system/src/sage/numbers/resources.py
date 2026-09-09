@@ -28,9 +28,35 @@ MAX_ARCHIVE_MEMBER_BYTES = 512 * 1024 * 1024
 MAX_ARCHIVE_TOTAL_BYTES = 1024 * 1024 * 1024
 
 
+def _reference_library(config: EcosystemConfig) -> Path:
+    """Resolve the numbers library without following symlinked publication parents."""
+    configured_root = Path(config.data_root).expanduser()
+    resolved_root = configured_root.resolve()
+    components = (
+        configured_root / "inputs",
+        configured_root / "inputs" / "resources",
+        configured_root / "inputs" / "resources" / "numbers",
+    )
+    if any(path.is_symlink() for path in components):
+        raise ValidationError(
+            "NCA resource library cannot use symbolic links.",
+            code="NCA_REFERENCE_PUBLICATION_CONFLICT",
+        )
+    library = components[-1].resolve()
+    try:
+        library.relative_to(resolved_root)
+    except ValueError as exc:
+        raise ValidationError(
+            "NCA resource library escapes configured data storage.",
+            code="NCA_REFERENCE_PUBLICATION_CONFLICT",
+            details={"data_root": str(resolved_root), "resource_root": str(library)},
+        ) from exc
+    return library
+
+
 def resolve_reference_package(config: EcosystemConfig, package_id: str) -> ReferenceBundle:
     """Requalify one imported package and require its stored identity to match."""
-    library = config.data_root / 'inputs' / 'resources' / 'numbers'
+    library = _reference_library(config)
     validate_package_id(package_id)
     path = library / package_id
     if library.is_symlink() or path.is_symlink():
@@ -47,7 +73,7 @@ def resolve_reference_package(config: EcosystemConfig, package_id: str) -> Refer
 
 def reference_package_candidates(config: EcosystemConfig) -> tuple[tuple[Path, ReferenceBundle], ...]:
     """List qualified packages, exposing corrupt published packages as errors."""
-    library = config.data_root / 'inputs' / 'resources' / 'numbers'
+    library = _reference_library(config)
     if library.is_symlink():
         raise ValidationError('NCA resource library cannot be a symlink.', code='NCA_REFERENCE_PUBLICATION_CONFLICT')
     if not library.exists():
@@ -194,6 +220,7 @@ def import_reference(config: EcosystemConfig, archive: Path) -> Path:
     source = Path(archive).expanduser().resolve()
     if not source.is_file() or source.is_symlink():
         raise _archive_error(f"NCA reference archive is unavailable or unsafe: {source}", path=str(source))
+    publication_parent = _reference_library(config)
     archive_sha256 = hashlib.sha256(source.read_bytes()).hexdigest()
     try:
         with zipfile.ZipFile(source) as package:
@@ -202,7 +229,6 @@ def import_reference(config: EcosystemConfig, archive: Path) -> Path:
             if corrupt is not None:
                 raise _archive_error(f"NCA archive CRC failure: {corrupt}", path=corrupt)
 
-            publication_parent = config.data_root / "inputs" / "resources" / "numbers"
             publication_parent.mkdir(parents=True, exist_ok=True)
             staging = Path(tempfile.mkdtemp(prefix=".numbers-reference-", dir=publication_parent))
             try:

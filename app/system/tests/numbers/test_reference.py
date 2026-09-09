@@ -289,6 +289,34 @@ def test_variant_value_must_match_authoritative_sequence(tmp_path: Path) -> None
     assert caught.value.code == "NCA_REFERENCE_CONTRACT_CONFLICT"
 
 
+def test_textual_variant_must_differ_numerically_from_authoritative_ol(
+    tmp_path: Path,
+) -> None:
+    """A registered whole-reading alternate cannot duplicate the OL numeric sequence."""
+    root = _copy_fixture(tmp_path)
+    ref = VerseRef("JDG", 14, 15)
+    _mutate_table_row(
+        root,
+        "SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv",
+        ref,
+        NIV_VALUES="7",
+        ALT_READING_STATUS="NIV_FAVORED: NIV/alternate 7",
+    )
+    _mutate_table_row(root, "canonical_number_index.tsv", ref, NIV_VALUES="7")
+    _mutate_table_row(
+        root,
+        "textual_variant_registry.tsv",
+        ref,
+        NIV_VALUE_RESEARCHED="7",
+    )
+    _mutate_table_row(root, "footnote_guidance.tsv", ref, ALT_NIV_VALUES="7")
+
+    with pytest.raises(ValidationError) as caught:
+        load_reference(root, qualification="STRICT")
+
+    assert caught.value.code == "NCA_REFERENCE_CONTRACT_CONFLICT"
+
+
 def test_invalid_expression_ordinal_becomes_governed_diagnostic(tmp_path: Path) -> None:
     """Malformed supplementary ordinals cannot escape DIAGNOSTIC as raw ValueError."""
     root = _copy_fixture(tmp_path)
@@ -473,6 +501,34 @@ def test_archive_import_rejects_symlinks(tmp_path: Path) -> None:
     with pytest.raises(ValidationError) as caught:
         import_reference(config, archive)
     assert caught.value.code == "NCA_REFERENCE_ARCHIVE_INVALID"
+
+
+@pytest.mark.parametrize("link_component", ["numbers", "resources"])
+def test_archive_import_rejects_symlinked_publication_library(
+    tmp_path: Path,
+    link_component: str,
+) -> None:
+    """Import cannot stage through a symlinked library or escaping parent path."""
+    archive = tmp_path / "reference.zip"
+    _archive_tree(FIXTURE, archive)
+    data_root = tmp_path / "data"
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    inputs = data_root / "inputs"
+    inputs.mkdir(parents=True)
+    if link_component == "resources":
+        (inputs / "resources").symlink_to(outside, target_is_directory=True)
+    else:
+        resources = inputs / "resources"
+        resources.mkdir()
+        (resources / "numbers").symlink_to(outside, target_is_directory=True)
+    config = SimpleNamespace(data_root=data_root, root=tmp_path / "app")
+
+    with pytest.raises(ValidationError) as caught:
+        import_reference(config, archive)
+
+    assert caught.value.code == "NCA_REFERENCE_PUBLICATION_CONFLICT"
+    assert list(outside.iterdir()) == []
 
 
 def test_manifest_package_id_cannot_escape_publication_root(tmp_path: Path) -> None:
