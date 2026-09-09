@@ -21,7 +21,7 @@ from sage.registry import load_ecosystem
 from sage.resource_mounts import clear_base_vrs_root, set_base_vrs_root, set_project_root
 from sage.resource_registration import register_catalogued_scripture_project
 from sage.scripture import compile_project
-from conftest import grammar_profile
+from .conftest import grammar_profile
 
 
 def _write_pt_project(path: Path, *, iso: str, language: str, name: str) -> None:
