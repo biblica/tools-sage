@@ -88,7 +88,7 @@ def validate_read_class(value: object) -> str:
 def task_evidence_policy(workflow: str) -> dict[str, Any]:
     """Return the immutable evidence/competence contract embedded in each governed task."""
     normalized = workflow.strip().lower()
-    if normalized not in {"bic", "rtc", "stc", "saw"}:
+    if normalized not in {"bic", "rtc", "stc", "nca", "saw"}:
         raise ValidationError(f"Unsupported evidence-policy workflow: {workflow}")
     authority = (
         {
@@ -102,6 +102,12 @@ def task_evidence_policy(workflow: str) -> dict[str, Any]:
             "REFERENCE": "authorized LWC comparison/content authority",
             "WIP": "subject under analysis, not independent content authority",
             "ORIGINAL_LANGUAGE": "bounded content evidence only when explicitly routed",
+        }
+        if normalized in {"rtc", "stc", "saw"}
+        else {
+            "NUMBERS_PACKAGE": "authoritative registered numeric and reading evidence",
+            "WIP": "subject under analysis, not independent content authority",
+            "NUMBER_STYLE": "presentation rules only; never numeric content authority",
         }
     )
     return {

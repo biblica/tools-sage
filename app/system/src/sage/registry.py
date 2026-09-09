@@ -30,7 +30,7 @@ from .original_language_resources import apply_original_language_resources
 SUPPORTED_SCHEMA = "0.04"
 PROJECT_FORMATS = {"USFM"}
 PROJECT_KINDS = {"SCRIPTURE", "GENERATED_SCRIPTURE"}
-CURRENT_WORKFLOW_IDS = {"bic", "rtc", "stc"}
+CURRENT_WORKFLOW_IDS = {"bic", "rtc", "stc", "nca"}
 LEGACY_WORKFLOW_IDS = {"saw"}
 WORKFLOW_IDS = CURRENT_WORKFLOW_IDS | LEGACY_WORKFLOW_IDS
 PROFILE_ROLES = PROJECT_ROLE_VALUES | {"TARGET"}

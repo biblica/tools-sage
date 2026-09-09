@@ -2082,6 +2082,8 @@ def _require_inspect_complete(
 
 def _expected_outputs(workflow: str, operation: str) -> tuple[str, ...]:
     """Return the exact output allowlist for one workflow operation."""
+    if workflow == "nca" and operation == "numbers":
+        return ("output/model-evidence.json",)
     if workflow == "bic" and operation == "inspect":
         return ("output/inspect-submission.json",)
     if workflow == "bic" and operation == "rewrite":
@@ -4322,6 +4324,22 @@ def create_act_task(
     parent_review_portion_id = str(parent_review_portion_id or "").strip() or None
     if workflow not in ACT_OPERATIONS or operation not in ACT_OPERATIONS[workflow]:
         raise ValidationError(f"Unsupported ACT operation: {workflow}/{operation}")
+    if workflow == "nca" and operation == "numbers":
+        if not job_id or not run_id:
+            raise ValidationError(
+                "Low-level NCA task creation requires sealed Job and Run IDs",
+                code="NCA_TASK_BINDING_INVALID",
+            )
+        from .nca import create_nca_task
+
+        return dict(
+            create_nca_task(
+                config,
+                job_id=job_id,
+                run_id=run_id,
+                scope_value=scope_value,
+            )
+        )
     if ol_referral_contract is not None and (
         workflow not in {"rtc", "saw"}
         or operation != "rtc"
@@ -7065,7 +7083,12 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         raise ValidationError("ACT task manifest is missing canonical workflow/Job/Run identity")
     job_store = JobStore(config.root, config.settings_path)
     owning_job = _load_owning_job(config, job_id, workflow_hint)
-    config = load_ecosystem(job_store.ensure_runtime_files(owning_job))
+    runtime_settings = (
+        owning_job.runtime_settings_path
+        if workflow_hint == "nca" and owning_job.runtime_settings_path.is_file()
+        else job_store.ensure_runtime_files(owning_job)
+    )
+    config = load_ecosystem(runtime_settings)
     workflow = workflow_for_task(config, task_root)
     task_id = task_root.name
     control_path, control = _load_control(config, workflow, task_id)
@@ -7213,7 +7236,14 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
     stc_publication: dict[str, Any] | None = None
     final_status: str
     conditional_ol_evidence_used = False
-    if workflow == "bic" and operation == "inspect":
+    if workflow == "nca" and operation == "numbers":
+        from .nca import submit_nca_task
+
+        _normalized, validation_details = submit_nca_task(
+            raw, output_paths["output/model-evidence.json"]
+        )
+        final_status = "FINALIZED"
+    elif workflow == "bic" and operation == "inspect":
         fingerprints = dict(raw.get("resource_fingerprints", {}))
         normalized = validate_bic_inspect_output(
             output_paths["output/inspect-submission.json"],
@@ -7657,4 +7687,33 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             "submission_sha256": sha256_file(validation_root / "submission.json"),
         },
     )
+    if workflow == "nca" and operation == "numbers":
+        from .nca import finalize_nca_run
+
+        finalized = finalize_nca_run(config, job_id=job_id, run_id=run_id)
+        result.update(
+            {
+                "result_path": finalized["result_path"],
+                "result_sha256": finalized["result_sha256"],
+                "report_path": finalized["report_path"],
+                "report_sha256": finalized["report_sha256"],
+            }
+        )
+        for key in (
+            "secondary_report_path",
+            "secondary_report_sha256",
+            "secondary_report_language",
+        ):
+            if key in finalized:
+                result[key] = finalized[key]
+        atomic_write_json(validation_root / "submission.json", result)
+        _update_control(
+            control_path,
+            {
+                **control,
+                "status": final_status,
+                "validated_utc": result["validated_utc"],
+                "submission_sha256": sha256_file(validation_root / "submission.json"),
+            },
+        )
     return result

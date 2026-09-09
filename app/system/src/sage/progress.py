@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS = "ROUTED_SFM_ESTIMATED_TOKENS"
+PROGRESS_BASIS_EXPECTED_NUMERIC_UNITS = "EXPECTED_NUMERIC_UNITS"
 PROGRESS_BASIS_ACT_ESTIMATED_TOKENS = "ACT_ESTIMATED_TOKENS"
 PROGRESS_BASIS_PROJECTED_HANDOFF_ESTIMATED_TOKENS = "PROJECTED_HANDOFF_ESTIMATED_TOKENS"
 PROGRESS_ADVANCEMENT_FINALIZED_TASKS = "FINALIZED_TASKS_ONLY"
@@ -100,6 +101,7 @@ def validate_job_progress_policy(raw: Mapping[str, Any] | None) -> JobProgressPo
     if basis not in {
         PROGRESS_BASIS_ROUTED_SFM_ESTIMATED_TOKENS,
         PROGRESS_BASIS_ACT_ESTIMATED_TOKENS,
+        PROGRESS_BASIS_EXPECTED_NUMERIC_UNITS,
     }:
         raise ValueError(f"Unsupported Job progress basis: {basis}")
     if advancement != PROGRESS_ADVANCEMENT_FINALIZED_TASKS:
@@ -126,6 +128,14 @@ def _resolve_task_path(root: Path, value: str) -> Path:
 
 def _task_weight(manifest: Mapping[str, Any], basis: str) -> int:
     """Return progress weight without granting transport telemetry any sizing authority."""
+    if basis == PROGRESS_BASIS_EXPECTED_NUMERIC_UNITS:
+        values = manifest.get("expected_unit_ids")
+        if not isinstance(values, list):
+            coverage = manifest.get("coverage")
+            values = coverage.get("expected_unit_ids") if isinstance(coverage, Mapping) else None
+        if isinstance(values, list) and values and all(isinstance(value, str) for value in values):
+            return len(set(values))
+        return 1
     budget = manifest.get("context_budget")
     if not isinstance(budget, Mapping):
         return 1

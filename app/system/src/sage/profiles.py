@@ -30,6 +30,7 @@ REQUIRED_LANGUAGE_PROFILE_ROLES = {
     "bic": {"CONTENT_SOURCE", "GENERATED_TARGET"},
     "rtc": {"WIP"},
     "stc": {"WIP"},
+    "nca": set(),
     "saw": {"WIP"},
 }
 
@@ -54,6 +55,13 @@ EXPECTED_PROCESS_STAGES = {
     "stc": [
         "DETERMINISTIC_PREFLIGHT",
         "SOURCE_TEXT_CORRESPONDENCE",
+        "COVERAGE_RECONCILIATION",
+        "DETERMINISTIC_FINALISATION",
+    ],
+    "nca": [
+        "DETERMINISTIC_PREFLIGHT",
+        "MODEL_INTERPRETATION",
+        "NUMERIC_EVALUATION",
         "COVERAGE_RECONCILIATION",
         "DETERMINISTIC_FINALISATION",
     ],
@@ -189,6 +197,7 @@ def _parse_bindings(
         "bic": {"CONTENT_SOURCE", "LEXICAL_DONOR", "GENERATED_TARGET"},
         "rtc": {"WIP", "REFERENCE"},
         "stc": {"WIP"},
+        "nca": {"WIP"},
         "saw": {"WIP"} if runtime_tool == "stc" else {"WIP", "REFERENCE"},
     }[workflow_id]
     optional_roles = {"ORIGINAL_LANGUAGE_GREEK", "ORIGINAL_LANGUAGE_HEBREW"}
@@ -338,7 +347,7 @@ def load_workflow_profile(config: EcosystemConfig, workflow: WorkflowSpec) -> Wo
             f"{workflow.workflow_id}.permissions.may_write_projects must be a list"
         )
     may_write_projects = tuple(item.strip() for item in writable)
-    if workflow.workflow_id in {"rtc", "stc", "saw"} and may_write_projects:
+    if workflow.workflow_id in {"rtc", "stc", "nca", "saw"} and may_write_projects:
         identity = (
             "Legacy analysis"
             if workflow.workflow_id == "saw"

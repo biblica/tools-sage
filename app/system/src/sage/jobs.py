@@ -8,17 +8,17 @@ import re
 import shutil
 import tempfile
 import zipfile
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable, Mapping
 
 import yaml
 
 from .atomic import atomic_write_json, atomic_write_text
 from .config import load_json, load_yaml, require_mapping, require_string
 from .errors import ConfigurationError, SageError, ValidationError
-from .job_snapshots import capture_wip_snapshot, seal_run_snapshot
+from .job_snapshots import capture_wip_snapshot, seal_run_snapshot, verify_wip_snapshot
 from .locking import WorkspaceLock
 from .registry import EcosystemConfig, load_ecosystem
 from .resource_mounts import apply_resource_mounts
@@ -37,13 +37,15 @@ from .progress import DEFAULT_JOB_PROGRESS_POLICY, validate_job_progress_policy
 from .storage import StorageError, declare_governed_path, resolve_declared_path, resolve_persisted_path, storage_layout
 from .workflow_identity import (
     ANALYSIS_WORKFLOWS,
+    SNAPSHOT_WIP_WORKFLOWS,
     SUPPORTED_JOB_TOOLS,
     canonical_analysis_job_id,
+    canonical_nca_job_id,
     runtime_workflow_id,
 )
 
 # Current runtime workflows plus the read-only legacy analysis adapter.
-TOOL_IDS = ("bic", "rtc", "stc", "saw")
+TOOL_IDS = ("bic", "rtc", "stc", "nca", "saw")
 PERSISTED_JOB_TOOLS = SUPPORTED_JOB_TOOLS
 JOB_SCHEMA_VERSION = "1.0"
 RUN_SCHEMA_VERSION = "1.0"
@@ -52,8 +54,25 @@ RUN_CLOSED_STATUSES = frozenset(
 )
 _JOB_ID_RE = re.compile(
     r"^(?:(?:BIC|SAW)_[A-Za-z0-9][A-Za-z0-9._-]{1,190}"
-    r"|(?:RTC|STC)-[A-Za-z0-9][A-Za-z0-9._-]{0,63}_[0-9]{8})$"
+    r"|(?:RTC|STC|NCA)-[A-Za-z0-9][A-Za-z0-9._-]{0,63}_[0-9]{8})$"
 )
+_NCA_CHECK_NAMES = {
+    "number_accuracy",
+    "presentation_consistency",
+    "footnote_review",
+}
+
+
+def _validate_nca_defaults(value: Mapping[str, Any]) -> dict[str, Any]:
+    """Require the exact editable NCA Job check-default contract."""
+    if set(value) != {"checks"} or not isinstance(value.get("checks"), Mapping):
+        raise ValidationError("NCA Job defaults require one checks mapping", code="NCA_CHECK_POLICY_INVALID")
+    checks = value["checks"]
+    if set(checks) != _NCA_CHECK_NAMES or any(type(checks[name]) is not bool for name in checks):
+        raise ValidationError("NCA Job check defaults are invalid", code="NCA_CHECK_POLICY_INVALID")
+    if not any(checks.values()):
+        raise ValidationError("At least one NCA Job check default must be enabled", code="NCA_CHECK_POLICY_ALL_OFF")
+    return {"checks": {name: checks[name] for name in sorted(checks)}}
 
 
 @dataclass(frozen=True)
@@ -76,6 +95,7 @@ class Job:
     root: Path
     manifest_path: Path
     controller_root: Path
+    resources: dict[str, Any] = field(default_factory=dict)
 
     @property
     def runtime_settings_path(self) -> Path:
@@ -243,6 +263,7 @@ def _binding_contract(tool: str) -> tuple[set[str], set[str]]:
         ),
         "rtc": ({"wip", "reference"}, set()),
         "stc": ({"wip"}, set()),
+        "nca": ({"wip"}, set()),
     }
     try:
         required, optional = contracts[tool]
@@ -443,7 +464,7 @@ class JobStore:
                     details=exc.details,
                 ) from exc
         wip_snapshot: dict[str, Any] | None = None
-        if job_tool in ANALYSIS_WORKFLOWS:
+        if job_tool in SNAPSHOT_WIP_WORKFLOWS:
             if "wip_snapshot" not in raw:
                 raise ConfigurationError(
                     f"Job {manifest_job_id} is missing its WIP snapshot receipt"
@@ -462,10 +483,10 @@ class JobStore:
                     f"Job {manifest_job_id} WIP snapshot belongs to {snapshot_project}, "
                     f"not {bindings['wip']}"
                 )
-            expected_job_id = canonical_analysis_job_id(
-                job_tool,
-                bindings["wip"],
-                snapshot_date,
+            expected_job_id = (
+                canonical_nca_job_id(bindings["wip"], snapshot_date)
+                if job_tool == "nca"
+                else canonical_analysis_job_id(job_tool, bindings["wip"], snapshot_date)
             )
             snapshot_receipt_path = path.parent / "snapshot" / "SNAPSHOT.json"
             if (
@@ -476,7 +497,17 @@ class JobStore:
                     f"Job {manifest_job_id} WIP snapshot evidence is missing"
                 )
             if snapshot_receipt_path.is_file():
-                snapshot_receipt = load_json(snapshot_receipt_path)
+                try:
+                    snapshot_receipt = verify_wip_snapshot(
+                        path.parent / "snapshot",
+                        require_file_inventory=job_tool == "nca",
+                    )
+                except ValidationError as exc:
+                    raise ConfigurationError(
+                        exc.message,
+                        code=exc.code,
+                        details=exc.details,
+                    ) from exc
                 for field in ("project_id", "snapshot_date", "content_fingerprint"):
                     if snapshot_receipt.get(field) != wip_snapshot.get(field):
                         raise ConfigurationError(
@@ -497,7 +528,47 @@ class JobStore:
             str(key): require_string(value, f"job profiles.{key}")
             for key, value in require_mapping(raw.get("profiles"), "job profiles").items()
         }
+        resources_raw = require_mapping(raw.get("resources", {}), "job resources")
+        resources = {
+            str(key): dict(require_mapping(value, f"job resources.{key}"))
+            for key, value in resources_raw.items()
+        }
+        if job_tool == "nca":
+            if set(resources) != {"numbers_package"}:
+                raise ConfigurationError(
+                    f"Job {manifest_job_id} requires exactly one numbers_package resource",
+                    code="NCA_PACKAGE_BINDING_INVALID",
+                )
+            package = resources["numbers_package"]
+            if set(package) != {"package_id", "sha256"}:
+                raise ConfigurationError(
+                    f"Job {manifest_job_id} has an invalid numbers_package resource",
+                    code="NCA_PACKAGE_BINDING_INVALID",
+                )
+            try:
+                from .numbers.resources import resolve_reference_package
+
+                bundle = resolve_reference_package(load_ecosystem(self.settings_path), str(package["package_id"]))
+            except ValidationError as exc:
+                raise ConfigurationError(
+                    exc.message,
+                    code=exc.code,
+                    next_action=exc.next_action,
+                    details=exc.details,
+                ) from exc
+            if package["sha256"] != bundle.sha256:
+                raise ConfigurationError(
+                    f"Job {manifest_job_id} numbers package bytes have changed",
+                    code="NCA_REFERENCE_PACKAGE_STALE",
+                )
+        elif resources:
+            raise ConfigurationError(f"Job {manifest_job_id} has unsupported resources")
         defaults = dict(require_mapping(raw.get("defaults"), "job defaults"))
+        if job_tool == "nca":
+            try:
+                defaults = _validate_nca_defaults(defaults)
+            except ValidationError as exc:
+                raise ConfigurationError(exc.message, code=exc.code) from exc
         try:
             progress_quantifier = validate_job_progress_policy(
                 require_mapping(raw.get("progress_quantifier", {}), "job progress_quantifier")
@@ -547,6 +618,7 @@ class JobStore:
         try:
             canonical_profiles = self._validate_project_bindings(
                 tool=job_tool, job_id=manifest_job_id, bindings=bindings, profiles=profiles,
+                validate_live_profiles=False,
             )
         except ValidationError as exc:
             raise ConfigurationError(
@@ -559,7 +631,7 @@ class JobStore:
         return Job(
             job_id=manifest_job_id, tool=job_tool,
             display_name=require_string(raw.get("display_name", manifest_job_id), "job display_name"),
-            status=status, bindings=bindings, profiles=canonical_profiles, defaults=defaults,
+            status=status, bindings=bindings, profiles=canonical_profiles, resources=resources, defaults=defaults,
             progress_quantifier=progress_quantifier,
             primary_report_language=primary_report_language,
             secondary_report_language=secondary_report_language,
@@ -577,6 +649,7 @@ class JobStore:
         job_id: str,
         bindings: dict[str, str],
         profiles: dict[str, str] | None,
+        validate_live_profiles: bool = True,
     ) -> dict[str, str]:
         """Resolve Job bindings and derive role-specific grammar profiles at Job scope."""
         # Project inventory stays role-neutral here; all semantic authority below is Job-scoped.
@@ -728,6 +801,38 @@ class JobStore:
                 "target_grammar": resolve_profile(wip, "WIP", "target_grammar"),
                 "reference_grammar": resolve_profile(reference, "REFERENCE", "reference_grammar"),
             }
+        elif tool == "nca":
+            wip = bound("wip", "WIP")
+            if wip.content_state != "UNDER_REVIEW":
+                raise ValidationError(
+                    f"NCA WIP Project {wip.project_id} must be UNDER_REVIEW",
+                    code="PROJECT_BINDING_MISMATCH",
+                )
+            selector = supplied.get("number_style")
+            if set(supplied) - {"number_style"}:
+                raise ValidationError(
+                    f"Job {job_id} has unsupported profile bindings",
+                    code="PROJECT_BINDING_MISMATCH",
+                )
+            if validate_live_profiles:
+                namespace = config.language_profile(wip.language_profile)
+                from .numbers.style import resolve_style_profile
+
+                style = resolve_style_profile(
+                    config,
+                    selector,
+                    language=wip.language_code,
+                    script=namespace.script,
+                    project=wip.project_id,
+                )
+                expected_profiles = {"number_style": style.selector}
+            elif not isinstance(selector, str) or not selector.strip():
+                raise ValidationError(
+                    f"Job {job_id} has no Number Style Profile selector",
+                    code="NCA_STYLE_PROFILE_NOT_CONFIGURED",
+                )
+            else:
+                expected_profiles = {"number_style": selector.strip()}
         else:
             wip = bound("wip", "WIP")
             expected_profiles = {
@@ -751,6 +856,7 @@ class JobStore:
         display_name: str,
         bindings: dict[str, str],
         profiles: dict[str, str] | None = None,
+        resources: dict[str, Any] | None = None,
         defaults: dict[str, Any] | None = None,
         primary_report_language: str | None = None,
         secondary_report_language: str | None = None,
@@ -779,12 +885,13 @@ class JobStore:
             )
         requested_id = job_id.strip()
         snapshot_time: datetime | None = None
-        if normalized_tool in ANALYSIS_WORKFLOWS:
+        if normalized_tool in SNAPSHOT_WIP_WORKFLOWS:
             snapshot_time = self._analysis_import_time(bindings["wip"], imported_at)
-            expected_id = canonical_analysis_job_id(
-                normalized_tool,
-                bindings["wip"],
-                snapshot_time.astimezone(timezone.utc).strftime("%Y%m%d"),
+            snapshot_date = snapshot_time.astimezone(timezone.utc).strftime("%Y%m%d")
+            expected_id = (
+                canonical_nca_job_id(bindings["wip"], snapshot_date)
+                if normalized_tool == "nca"
+                else canonical_analysis_job_id(normalized_tool, bindings["wip"], snapshot_date)
             )
         else:
             expected_id = default_job_name(
@@ -810,11 +917,39 @@ class JobStore:
                 )
         elif normalized_tool in {"saw", "rtc"}:
             _validate_analysis_role_separation(normalized_id, bindings)
+        canonical_resources = {str(key): dict(value) for key, value in (resources or {}).items()}
+        if normalized_tool == "nca":
+            if set(canonical_resources) != {"numbers_package"}:
+                raise ValidationError(
+                    "NCA Job requires exactly one immutable numbers_package resource",
+                    code="NCA_PACKAGE_BINDING_INVALID",
+                )
+            package = canonical_resources["numbers_package"]
+            if set(package) != {"package_id", "sha256"}:
+                raise ValidationError(
+                    "NCA numbers_package requires package_id and sha256",
+                    code="NCA_PACKAGE_BINDING_INVALID",
+                )
+            from .numbers.resources import resolve_reference_package
+
+            bundle = resolve_reference_package(load_ecosystem(self.settings_path), str(package["package_id"]))
+            if package["sha256"] != bundle.sha256:
+                raise ValidationError(
+                    "NCA numbers_package hash differs from qualified package bytes",
+                    code="NCA_REFERENCE_PACKAGE_STALE",
+                )
+        elif canonical_resources:
+            raise ValidationError("Only NCA Jobs accept operator resource bindings")
         canonical_profiles = self._validate_project_bindings(
             tool=normalized_tool,
             job_id=normalized_id,
             bindings=bindings,
             profiles=profiles,
+        )
+        canonical_defaults = (
+            _validate_nca_defaults(dict(defaults or {}))
+            if normalized_tool == "nca"
+            else dict(defaults or {})
         )
         system_default = load_ecosystem(self.settings_path).human_output.operator_language
         legacy_default = dict(defaults or {}).get("report_language")
@@ -861,7 +996,7 @@ class JobStore:
                 for relative in ("memory", "generations", "target-history"):
                     (root / relative).mkdir(parents=True, exist_ok=True)
             wip_snapshot = None
-            if normalized_tool in ANALYSIS_WORKFLOWS:
+            if normalized_tool in SNAPSHOT_WIP_WORKFLOWS:
                 assert snapshot_time is not None
                 wip_snapshot = capture_wip_snapshot(
                     self.sage_root,
@@ -878,8 +1013,17 @@ class JobStore:
                 "status": "ACTIVE",
                 "bindings": bindings,
                 "profiles": canonical_profiles,
-                "defaults": defaults or {},
-                "progress_quantifier": DEFAULT_JOB_PROGRESS_POLICY.to_dict(),
+                "resources": canonical_resources,
+                "defaults": canonical_defaults,
+                "progress_quantifier": (
+                    {
+                        "basis": "EXPECTED_NUMERIC_UNITS",
+                        "advancement": "FINALIZED_TASKS_ONLY",
+                        "visual_cells": 10,
+                    }
+                    if normalized_tool == "nca"
+                    else DEFAULT_JOB_PROGRESS_POLICY.to_dict()
+                ),
                 "reporting": {
                     "primary_language": canonical_primary,
                     "secondary_language": canonical_secondary,
@@ -906,6 +1050,7 @@ class JobStore:
         *,
         display_name: str | None = None,
         bindings: dict[str, str] | None = None,
+        profiles: dict[str, str] | None = None,
         defaults: dict[str, Any] | None = None,
         reporting: dict[str, Any] | None = None,
         status: str | None = None,
@@ -918,7 +1063,7 @@ class JobStore:
                 raise ValidationError("Job display name cannot be blank")
             raw["display_name"] = normalized_name
         if bindings is not None:
-            if project.tool in ANALYSIS_WORKFLOWS:
+            if project.tool in SNAPSHOT_WIP_WORKFLOWS:
                 raise ValidationError(
                     f"{project.tool.upper()} Project bindings are immutable for the Job lifetime",
                     code="JOB_BINDINGS_IMMUTABLE",
@@ -937,8 +1082,36 @@ class JobStore:
                     "Job Project bindings cannot be revised through this operation",
                     code="JOB_BINDING_REVISION_UNSUPPORTED",
                 )
+        if profiles is not None:
+            if project.tool != "nca":
+                raise ValidationError(
+                    "Profile revision is supported only for NCA number-style selection",
+                    code="JOB_PROFILE_REVISION_UNSUPPORTED",
+                )
+            nonclosed = [
+                run.run_id
+                for run in self.list_runs(project)
+                if run.status not in RUN_CLOSED_STATUSES
+            ]
+            if nonclosed:
+                raise ValidationError(
+                    "Cannot revise the NCA number-style profile while a Run is open",
+                    code="NCA_STYLE_PROFILE_RUN_OPEN",
+                    details={"run_ids": nonclosed},
+                )
+            canonical = self._validate_project_bindings(
+                tool=project.tool,
+                job_id=project.job_id,
+                bindings=dict(project.bindings),
+                profiles=dict(profiles),
+            )
+            raw["profiles"] = canonical
         if defaults is not None:
-            raw["defaults"] = dict(defaults)
+            raw["defaults"] = (
+                _validate_nca_defaults(defaults)
+                if project.tool == "nca"
+                else dict(defaults)
+            )
         if reporting is not None:
             unsupported_reporting = sorted(set(reporting) - {"primary_language", "secondary_language"})
             if unsupported_reporting:
@@ -983,7 +1156,15 @@ class JobStore:
         atomic_write_text(project.manifest_path, _safe_yaml(raw))
         updated = self.load_job(project.job_id, tool=project.tool)
         atomic_write_text(updated.root / "README.md", self._render_project_readme(raw))
-        self.write_runtime_files(updated)
+        # NCA check defaults and display metadata govern the next Run only. Avoid
+        # rewriting an open Run's otherwise identical ACT settings fingerprint.
+        nca_runtime_unchanged = (
+            project.tool == "nca"
+            and profiles is None
+            and bindings is None
+        )
+        if not nca_runtime_unchanged:
+            self.write_runtime_files(updated)
         return self.load_job(project.job_id, tool=project.tool)
 
     def refresh_job_snapshot(
@@ -994,9 +1175,9 @@ class JobStore:
     ) -> Job:
         """Refresh mutable WIP evidence without changing any sealed Run snapshot."""
         current = self.load_job(project.job_id, tool=project.tool)
-        if current.tool not in ANALYSIS_WORKFLOWS or current.wip_snapshot is None:
+        if current.tool not in SNAPSHOT_WIP_WORKFLOWS or current.wip_snapshot is None:
             raise ValidationError(
-                "WIP snapshot refresh is available only for RTC and STC Jobs",
+                "WIP snapshot refresh is available only for RTC, STC, and NCA Jobs",
                 code="JOB_SNAPSHOT_REFRESH_UNSUPPORTED",
             )
         if current.status != "ACTIVE":
@@ -1022,10 +1203,10 @@ class JobStore:
             imported_at,
         )
         snapshot_date = refresh_time.astimezone(timezone.utc).strftime("%Y%m%d")
-        next_job_id = canonical_analysis_job_id(
-            current.tool,
-            current.bindings["wip"],
-            snapshot_date,
+        next_job_id = (
+            canonical_nca_job_id(current.bindings["wip"], snapshot_date)
+            if current.tool == "nca"
+            else canonical_analysis_job_id(current.tool, current.bindings["wip"], snapshot_date)
         )
         lock_path = current.controller_root / "locks" / "snapshot-refresh.lock"
         with WorkspaceLock(lock_path, f"{current.tool.upper()}_SNAPSHOT_REFRESH"):
@@ -1043,6 +1224,7 @@ class JobStore:
                     display_name=current.display_name,
                     bindings=dict(current.bindings),
                     profiles=dict(current.profiles),
+                    resources=dict(current.resources),
                     defaults=dict(current.defaults),
                     primary_report_language=current.primary_report_language,
                     secondary_report_language=current.secondary_report_language,
@@ -1264,6 +1446,13 @@ class JobStore:
                 f"- Configured Hebrew resource: `{bindings.get('original_language_hebrew') or 'NOT_CONFIGURED'}`",
                 f"- Selected WIP grammar profile: `{profiles.get('target_grammar') or 'NOT_CONFIGURED'}`",
             ])
+        elif str(payload["tool"]).lower() == "nca":
+            package = dict(payload.get("resources", {})).get("numbers_package", {})
+            lines.extend([
+                f"- WIP Project: `{bindings['wip']}`",
+                f"- Number package: `{package.get('package_id') or 'NOT_CONFIGURED'}`",
+                f"- Selected Number Style Profile: `{profiles.get('number_style') or 'NOT_CONFIGURED'}`",
+            ])
         else:
             lines.extend([
                 f"- WIP Project: `{bindings['wip']}`",
@@ -1365,7 +1554,7 @@ class JobStore:
         if project.tool == "bic":
             grammar_variants[project.bindings["content_source"]] = project.profiles["source_grammar"].split("/", 1)[-1]
             grammar_variants[project.bindings["generated_target"]] = project.profiles["target_grammar"].split("/", 1)[-1]
-        else:
+        elif project.tool != "nca":
             grammar_variants[project.bindings["wip"]] = project.profiles["target_grammar"].split("/", 1)[-1]
         for resource_id, value in registered.items():
             item = dict(require_mapping(value, f"projects.{resource_id}"))
@@ -1580,19 +1769,44 @@ class JobStore:
         scope: str,
         focus: str | None = None,
         check_type: str | None = None,
+        initialize_run: Callable[[Path], None] | None = None,
+        replace_active_run_id: str | None = None,
     ) -> Run:
         """Create one deterministic Run and make it current for the selected Job."""
         normalized_operation = operation.strip().lower()
-        expected_operation = {"rtc": "rtc", "stc": "stc"}.get(project.tool)
+        expected_operation = {"rtc": "rtc", "stc": "stc", "nca": "numbers"}.get(project.tool)
         if expected_operation and normalized_operation != expected_operation:
             raise ValidationError(
                 f"{project.tool.upper()} Job can create only {expected_operation.upper()} Runs",
                 code="JOB_OPERATION_MISMATCH",
             )
+        if project.tool == "nca" and initialize_run is None:
+            raise ValidationError(
+                "NCA Run creation requires its atomic policy initializer",
+                code="NCA_RUN_SNAPSHOT_REQUIRED",
+            )
 
         lock_path = project.controller_root / "locks" / "run-create.lock"
         with WorkspaceLock(lock_path, f"{project.tool.upper()}_RUN_CREATE"):
-            if project.tool in ANALYSIS_WORKFLOWS:
+            if project.tool == "nca":
+                active = self.active_run(project)
+                if active is not None and active.run_id != replace_active_run_id:
+                    raise ValidationError(
+                        f"NCA Job already has an active Run: {active.run_id}",
+                        code="NCA_RUN_ALREADY_ACTIVE",
+                        next_action=(
+                            "Continue, complete, or abandon the active Run before "
+                            "starting another."
+                        ),
+                    )
+                if replace_active_run_id is not None and (
+                    active is None or active.run_id != replace_active_run_id
+                ):
+                    raise ValidationError(
+                        "NCA replacement no longer owns the active Run pointer",
+                        code="NCA_RUN_ALREADY_ACTIVE",
+                    )
+            if project.tool in SNAPSHOT_WIP_WORKFLOWS:
                 prefix = f"{project.job_id}-"
             else:
                 date = datetime.now(timezone.utc).strftime("%Y%m%d")
@@ -1608,14 +1822,17 @@ class JobStore:
             run_id = f"{prefix}{(max(sequences, default=0) + 1):03d}"
             root = run_root / run_id
             try:
-                if project.tool in ANALYSIS_WORKFLOWS:
+                if project.tool in SNAPSHOT_WIP_WORKFLOWS:
                     seal_run_snapshot(
                         project.root / "snapshot",
                         root / "snapshot",
                         run_id=run_id,
+                        require_file_inventory=project.tool == "nca",
                     )
-                for relative in ("tasks", "plans", "diagnostics"):
+                for relative in ("tasks", "plans", "diagnostics", "validation"):
                     (root / relative).mkdir(parents=True, exist_ok=True)
+                if initialize_run is not None:
+                    initialize_run(root)
                 now = _utc_now()
                 payload = {
                     "schema_version": RUN_SCHEMA_VERSION,
@@ -1668,6 +1885,12 @@ class JobStore:
         """Preserve an incomplete Run as abandoned and recreate its operator request."""
         if run.job_id != project.job_id or run.tool != project.tool:
             raise ValidationError("Run restart requires its owning Job")
+        if project.tool == "nca":
+            from .nca import restart_nca_run
+
+            return restart_nca_run(
+                load_ecosystem(self.settings_path), job=project, run=run
+            )
         if run.status in {"COMPLETE", "ARCHIVED", "ABANDONED"}:
             raise ValidationError(
                 f"Cannot restart a {run.status.lower()} Run; start a new task instead"

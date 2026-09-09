@@ -12,17 +12,28 @@ from .atomic import atomic_write_json, atomic_write_text
 from .errors import ValidationError
 from .hashing import sha256_bytes, sha256_file
 from .storage import storage_layout
+from .workflow_identity import SUPPORTED_JOB_TOOLS
 
 SCHEMA_VERSION = "1.0"
 CANONICAL_JOB_DIRS = {
     "runs",
     "diagnostics",
     "exports",
+    "snapshot",
 }
 CANONICAL_SAGE_DIRS = {"state", "locks", "transactions", "indexes", "cache"}
 BIC_JOB_DIRS = {"memory", "generations", "target-history", "report_data"}
 SAW_JOB_DIRS = {"report_data"}
-CANONICAL_RUN_DIRS = {"tasks", "plans", "diagnostics"}
+CANONICAL_RUN_DIRS = {
+    "tasks",
+    "plans",
+    "diagnostics",
+    "snapshot",
+    "profiles",
+    "validation",
+    "reports",
+}
+CANONICAL_RUN_FILES = {"check-policy.json", "check-policy.sha256"}
 RESERVED_RUN_DIRS: set[str] = set()
 UNUSED_JOB_DIRS = {"archive"}
 UNUSED_SAGE_DIRS = {"workspace_data"}
@@ -86,7 +97,7 @@ def audit_job_layout(sage_root: Path) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     job_count = 0
     run_count = 0
-    for tool in ("bic", "saw"):
+    for tool in SUPPORTED_JOB_TOOLS:
         tool_root = jobs_root / tool
         if not tool_root.is_dir():
             continue
@@ -123,7 +134,7 @@ def audit_job_layout(sage_root: Path) -> dict[str, Any]:
                             continue
                         run_count += 1
                         for run_child in sorted(run_root.iterdir(), key=lambda item: item.name.casefold()):
-                            if run_child.name in {"run.json", "status.json"}:
+                            if run_child.name in {"run.json", "status.json"} | CANONICAL_RUN_FILES:
                                 continue
                             owner = f"{job_root.name}/{run_root.name}"
                             if run_child.name in UNUSED_RUN_DIRS:

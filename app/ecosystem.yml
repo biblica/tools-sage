@@ -213,6 +213,12 @@ workflows:
     lock_root: "@system/workflows/stc/locks"
     transaction_root: "@system/workflows/stc/transactions"
     output_root: "@system/workflows/stc/output"
+  nca:
+    profile: system/config/workflows/nca/profile.yml
+    state_root: "@system/workflows/nca/state"
+    lock_root: "@system/workflows/nca/locks"
+    transaction_root: "@system/workflows/nca/transactions"
+    output_root: "@system/workflows/nca/output"
   # Read-only compatibility profile for sealed Jobs created before RTC/STC
   # became independent canonical workflows.
   saw:

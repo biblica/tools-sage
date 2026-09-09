@@ -1,6 +1,10 @@
 schema_id: sage-active-jobs-1.0
-required: [schema_version, bic, saw, updated_utc]
+required: [schema_version, bic, rtc, stc, nca, updated_utc]
+optional: [saw]
 controls:
   schema_version: '1.0'
   bic: zero_or_one_canonical_job_id
-  saw: zero_or_one_canonical_job_id
+  rtc: zero_or_one_canonical_job_id
+  stc: zero_or_one_canonical_job_id
+  nca: zero_or_one_canonical_job_id
+  saw: compatibility_only_zero_or_one_canonical_job_id
