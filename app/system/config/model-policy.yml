@@ -51,6 +51,10 @@ skill_routes:
     suite_id: alpha1-stc
     suite_sha256: 18ca0c439dc1819cdbc510a3148a02819c79b96f85326ca33f5af5984edd7ee9
     execution_class: GOVERNED_SKILL
+  nca-numbers:
+    suite_id: alpha1-nca-numbers
+    suite_sha256: 223b93b3ff2860f11dc0092aa6dad8373be7ccd81f4f36b2320acbbc33058571
+    execution_class: GOVERNED_SKILL
   saw-rtc:
     suite_id: alpha1-saw-rtc
     suite_sha256: 62a2721e373bbf84c020f1262eb8278c94df8f207cd131d94847555ba759432b

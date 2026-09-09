@@ -1,0 +1,19 @@
+schema_id: sage-nca-extraction-1.0
+required: [schema_version, phase, work_units]
+controls:
+  schema_version: '1.0'
+  owner: system/src/sage/numbers/extraction.py
+  exact_target_streams: required
+  normalized_values: reduced_rational_strings
+  confidence_gate: prohibited
+  phases:
+    extraction:
+      schema_ref: sage-nca-extraction-1.0#extraction
+      authority_inputs: [target, language, parsing_conventions]
+      prohibited_inputs: [ol_text, ol_values, niv_text, niv_values]
+    correspondence:
+      schema_ref: sage-nca-extraction-1.0#correspondence
+      authority_inputs: [validated_target_extraction, bounded_ol_row]
+    footnote:
+      schema_ref: sage-nca-extraction-1.0#footnote
+      authority_inputs: [target_note, registered_guidance]

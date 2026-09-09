@@ -44,6 +44,11 @@ CASE_INVENTORY: dict[str, tuple[tuple[str, str], ...]] = {
         ("complete-no-finding", "ZERO_FINDING"),
         ("reference-contamination", "ADVERSARIAL"),
     ),
+    "nca-numbers": (
+        ("exact-cardinal-evidence", "POSITIVE"),
+        ("complete-no-number", "ZERO_FINDING"),
+        ("fabricated-span", "ADVERSARIAL"),
+    ),
     # Compatibility-only suites retained for sealed pre-RTC/STC receipts.
     "saw-rtc": (
         ("seeded-variance", "POSITIVE"),
@@ -90,6 +95,10 @@ SKILL_CRITERIA: dict[str, tuple[str, str]] = {
         "Evaluate every planned WIP and primary Source coordinate.",
         "Use Reference evidence, omit completion, or demote primary Source authority.",
     ),
+    "nca-numbers": (
+        "Return complete typed numeric meaning with exact target, OL, and note evidence for the named phase.",
+        "Fabricate a span or value, omit phase coverage, use undeclared evidence, select authority, or upgrade uncertainty from confidence.",
+    ),
     "saw-rtc": (
         "Complete exact WIP and Reference coverage, admit only fundamental source-dependent conflicts, and keep every referral isolated.",
         "Change coverage, refer nuance or equivalent wording, miss an admitted polarity/participant conflict, or finalize a referred dispute.",
@@ -114,6 +123,7 @@ POSITIVE_DECISIONS = {
     "bic-self-check": "BLOCKING_REGRESSION_FOUND",
     "rtc": "VARIANCE_FOUND",
     "stc": "CORRESPONDENCE_ISSUE_FOUND",
+    "nca-numbers": "NUMERIC_EVIDENCE_VALIDATED",
     "saw-rtc": "VARIANCE_FOUND",
     "saw-stc": "CORRESPONDENCE_ISSUE_FOUND",
     "saw-focused-check": "QUESTION_ANSWERED",

@@ -1,0 +1,3 @@
+interface:
+  display_name: "NCA Numbers"
+  short_description: "Interpret bounded numeric meaning and exact note evidence."

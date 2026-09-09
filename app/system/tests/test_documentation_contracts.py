@@ -35,7 +35,7 @@ def frontmatter(path: Path) -> dict[str, str]:
 def test_all_skills_have_consistent_frontmatter() -> None:
     """Verify that all skills have consistent frontmatter."""
     paths = sorted(SKILLS.glob("*/SKILL.md"))
-    assert len(paths) == 9
+    assert len(paths) == 10
     for path in paths:
         data = frontmatter(path)
         assert set(data) == {"name", "description"}
@@ -51,7 +51,7 @@ def test_all_skills_have_consistent_frontmatter() -> None:
 def test_registered_skill_hashes_match_current_and_original_files() -> None:
     """Verify that registered skill hashes match current and original files."""
     document = json.loads((ROOT / "system" / "config" / "skills.json").read_text(encoding="utf-8"))
-    assert len(document["skills"]) == 9
+    assert len(document["skills"]) == 10
     for skill_id, item in document["skills"].items():
         assert skill_id
         assert sha256(ROOT / item["file"]) == item["adapted_sha256"]

@@ -31,6 +31,7 @@ SCHEMA_OWNERS: dict[str, str] = {
     "model-qualification-seeds.schema.yml": "system/src/sage/model_evaluation.py",
     "model-routing-override.schema.yml": "system/src/sage/routing_override.py",
     "model-routing-override-receipt.schema.yml": "system/src/sage/routing_override.py",
+    "nca-extraction.schema.yml": "system/src/sage/numbers/extraction.py",
     "numbers-reference.schema.yml": "system/src/sage/numbers/reference.py",
     "ol-authority-profile.schema.yml": "system/src/sage/original_language_resources.py",
     "original-language-resources.schema.yml": "system/src/sage/original_language_resources.py",

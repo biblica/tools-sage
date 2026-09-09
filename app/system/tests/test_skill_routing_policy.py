@@ -24,6 +24,7 @@ REGISTERED_SKILLS = (
     "bic-self-check",
     "rtc",
     "stc",
+    "nca-numbers",
     "saw-rtc",
     "saw-stc",
     "saw-focused-check",
