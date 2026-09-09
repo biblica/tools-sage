@@ -55,6 +55,7 @@ def complete_run_result() -> RunResult:
         expression_id="target-1",
         role_spans=((6, 9),),
     )
+    source_expression = replace(expression, expression_id="ol-1", stream_id="ol")
     semantic = SemanticDecision("REVIEW_VALUE_DIFFERENCE")
     unit = UnitResult(
         projected,
@@ -63,6 +64,19 @@ def complete_run_result() -> RunResult:
         FootnoteDecision("NONE", "NOT_REQUIRED", "NONE"),
         "REVIEW_VALUE_DIFFERENCE",
         ol_references=("MRK 9:44",),
+        source_expressions=(source_expression,),
+        reference_context={
+            "language": "GRK",
+            "ol_text": "three men",
+            "ol_values": (Fraction(3),),
+            "variant_class": None,
+            "scholarship_status": None,
+        },
+        reference_index=({
+            "western_reference": "MAT 1:1",
+            "status": "INDEXED",
+            "ol_reference": "MRK 9:44",
+        },),
     )
     finding = {
         "finding_id": "NUMBERS_RUN-1_UNIT-1_0001",
@@ -92,6 +106,17 @@ def complete_run_result() -> RunResult:
     summary = {
         "units": 1,
         "expressions": 1,
+        "target_expressions": 1,
+        "ol_expressions_checked": 1,
+        "passes": 0,
+        "unit_conversions": 0,
+        "value_differences": 1,
+        "missing_numbers": 0,
+        "added_numbers": 0,
+        "known_variants": 0,
+        "style_findings": 0,
+        "indexed_coordinates": 1,
+        "unindexed_coordinates": 0,
         "findings": 1,
         "insufficient_evidence": 0,
         "reference_not_indexed": 0,
@@ -101,6 +126,48 @@ def complete_run_result() -> RunResult:
         "extraction_unsupported": 0,
     }
     return RunResult((unit,), (finding,), coverage, summary)
+
+
+@pytest.mark.parametrize(
+    "build",
+    [
+        lambda: NumericExpression(
+            (Fraction(3),), "CARDINAL", "three", (0, 5),
+            representations=({"invented": True},),
+        ),
+        lambda: NumericExpression((Fraction(3),), "CARDINAL", "", (0, 0)),
+        lambda: NumericExpression((Fraction(3),), "CARDINAL", "x", (False, 1)),
+        lambda: NumericExpression(
+            (Fraction(3),), "CARDINAL", "three (3)", (0, 9),
+            representations=({"surface": "xxxxx", "span": (0, 5), "value": "3"},),
+        ),
+        lambda: NumericExpression(
+            (Fraction(3),), "CARDINAL", "three", (0, 5), role_spans=((2, 2),)
+        ),
+        lambda: FootnoteDecision("REQUIRE", "ADEQUATE", "NONE", ((1, 1),)),
+    ],
+)
+def test_shared_evidence_models_reject_malformed_or_empty_nested_spans(build):
+    """Immutable evidence records reject invented representation fields and empty spans."""
+    with pytest.raises(ValidationError) as exc:
+        build()
+
+    assert exc.value.code == "NCA_MODEL_INVALID"
+
+
+def test_unit_result_rejects_a_contradictory_reference_index_aggregate():
+    """Typed results keep each Western reference aligned to its exact index state."""
+    with pytest.raises(ValidationError) as exc:
+        replace(
+            complete_run_result().units[0],
+            reference_index=({
+                "western_reference": "MAT 1:2",
+                "status": "UNINDEXED",
+                "ol_reference": None,
+            },),
+        )
+
+    assert exc.value.code == "NCA_MODEL_INVALID"
 
 
 def provenance() -> dict[str, object]:
@@ -179,6 +246,9 @@ def test_result_document_serializes_exact_fractions_and_mandatory_limitations():
     assert validated["provenance"]["style_profile"]["sha256"] == "b" * 64
     assert validated["units"][0]["projection"]["ol_references"] == ["MRK 9:44"]
     assert validated["units"][0]["projection"]["target_text"] == "three men"
+    assert validated["units"][0]["source_evidence"]["expressions"][0]["values"] == ["3"]
+    assert validated["units"][0]["source_evidence"]["context"]["ol_text"] == "three men"
+    assert validated["units"][0]["source_evidence"]["context"]["ol_values"] == ["3"]
 
 
 @pytest.mark.parametrize(
@@ -254,6 +324,8 @@ def test_numbers_result_schema_declares_exact_scope_and_evidence_controls():
     assert schema["controls"]["sqs_confidence_checks"] == "not_applied"
     assert schema["controls"]["ol_reference_state"] == "ordered_nullable_resolved_rows"
     assert schema["controls"]["target_span_binding"] == "exact_serialized_target_stream"
+    assert schema["controls"]["ol_expression_evidence"] == "exact_serialized_source_stream"
+    assert schema["controls"]["handover_summary_counters"] == "derived_from_assessments"
     assert schema["required"] == [
         "schema_version", "workflow", "check_id", "provenance", "check_policy",
         "model_receipts", "limitations", "units", "findings", "coverage", "summary",
@@ -286,6 +358,7 @@ def test_incomplete_result_accepts_an_exact_empty_receipt_ledger():
     document = complete_document()
     unit = document["units"][0]
     unit["extraction"].update(status="UNSUPPORTED", limitations=["Model unavailable"], expressions=[])
+    unit["source_evidence"] = {"expressions": [], "context": {}}
     unit["reading"].update(selected="UNSUPPORTED", source_ids=[])
     unit["reading"]["semantic"].update(outcome="INSUFFICIENT_EVIDENCE", evidence_ids=[])
     unit["final_outcome"] = "INSUFFICIENT_EVIDENCE"
@@ -303,7 +376,8 @@ def test_incomplete_result_accepts_an_exact_empty_receipt_ledger():
         restrictions=["Model unavailable"],
     )
     document["summary"].update(
-        expressions=0, insufficient_evidence=1,
+        expressions=0, target_expressions=0, ol_expressions_checked=0,
+        value_differences=0, insufficient_evidence=1,
         extraction_complete=0, extraction_unsupported=1,
     )
 
@@ -320,6 +394,9 @@ def test_registered_absence_serializes_null_ol_reference_distinct_from_unknown()
     unit = document["units"][0]
     unit["projection"]["status"] = "REGISTERED_ABSENCE"
     unit["projection"]["ol_references"] = [None]
+    unit["projection"]["reference_index"][0].update(
+        status="REGISTERED_ABSENCE", ol_reference=None
+    )
     document["findings"][0].update(ol_reference=None, ol_references=[None])
 
     validated = validate_numbers_result(
@@ -490,6 +567,20 @@ def test_review_outcome_from_complete_correspondence_requires_its_receipt():
         )
 
     assert exc.value.code == "NCA_RESULT_RECEIPT_INVALID"
+
+
+def test_correspondence_outcome_requires_exact_indexed_ol_values():
+    """A semantic comparison cannot drop or replace its bound OL expression sequence."""
+    document = complete_document()
+    document["units"][0]["source_evidence"]["expressions"] = []
+    document["summary"]["ol_expressions_checked"] = 0
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_EXPRESSION_INVALID"
 
 
 def test_partial_extraction_cannot_validate_as_complete_no_findings():

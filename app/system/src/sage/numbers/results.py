@@ -96,6 +96,7 @@ def _unit_document(result: object) -> dict[str, object]:
             "western_references": [ref.label() for ref in result.projected.western_references],
             "canonical_references": [ref.label() for ref in result.projected.canonical_references],
             "ol_references": list(result.ol_references),
+            "reference_index": _plain(result.reference_index),
             "precision": result.projected.precision,
             "status": result.projected.status,
             "source_sha256": target.source_sha256,
@@ -109,6 +110,12 @@ def _unit_document(result: object) -> dict[str, object]:
             "status": result.extraction.status,
             "limitations": list(result.extraction.limitations),
             "expressions": [_expression_document(item) for item in result.extraction.expressions],
+        },
+        "source_evidence": {
+            "expressions": [
+                _expression_document(item) for item in result.source_expressions
+            ],
+            "context": _plain(result.reference_context),
         },
         "reading": {
             "selected": result.reading.selected,
@@ -274,6 +281,7 @@ def _validate_expression(
     *,
     role_required: bool,
     target_text: str,
+    expected_stream: str,
 ) -> tuple[str, tuple[int, int]]:
     """Validate one complete nested expression against its serialized target stream."""
     raw = _require_mapping(value, "numeric expression", "NCA_RESULT_EXPRESSION_INVALID")
@@ -284,7 +292,7 @@ def _validate_expression(
     if set(raw) != expected:
         raise _error("Numeric expression fields are malformed.", "NCA_RESULT_EXPRESSION_INVALID")
     expression_id = raw["expression_id"]
-    if not isinstance(expression_id, str) or not expression_id or raw["stream_id"] != "main":
+    if not isinstance(expression_id, str) or not expression_id or raw["stream_id"] != expected_stream:
         raise _error("Numeric expression identity is missing.", "NCA_RESULT_EXPRESSION_INVALID")
     surface = raw["surface"]
     span = _validated_span(raw["span"], label="Numeric expression span")
@@ -417,7 +425,7 @@ def _validate_unit(
 ) -> Mapping[str, Any]:
     """Validate one unit's closed outcomes, references, spans, and evidence IDs."""
     raw = _require_mapping(value, "unit result", "NCA_RESULT_SCHEMA_INVALID")
-    _require_keys(raw, {"unit_id", "projection", "extraction", "reading", "footnote", "final_outcome", "style_findings", "limitations"}, "unit result")
+    _require_keys(raw, {"unit_id", "projection", "extraction", "source_evidence", "reading", "footnote", "final_outcome", "style_findings", "limitations"}, "unit result")
     unit_id = raw["unit_id"]
     if not isinstance(unit_id, str) or not unit_id:
         raise _error("Unit result ID is missing.", "NCA_RESULT_COVERAGE_INVALID")
@@ -427,7 +435,7 @@ def _validate_unit(
         {
             "target_references", "western_references", "canonical_references",
             "ol_references", "precision", "status", "source_sha256", "source_locator",
-            "target_text", "target_note_streams",
+            "target_text", "target_note_streams", "reference_index",
         },
         "projection",
     )
@@ -443,12 +451,30 @@ def _validate_unit(
             raise _error("Projection references are malformed.", "NCA_RESULT_REFERENCE_INVALID")
     if (
         not isinstance(ol_references, list)
-        or len(ol_references) not in {0, len(western)}
+        or len(ol_references) > len(western)
         or any(value is not None and (not isinstance(value, str) or not value) for value in ol_references)
         or any(value is None for value in ol_references)
         and projection.get("status") != "REGISTERED_ABSENCE"
     ):
         raise _error("OL references do not match resolved Western rows.", "NCA_RESULT_REFERENCE_INVALID")
+    reference_index = projection.get("reference_index")
+    if not isinstance(reference_index, list) or len(reference_index) != len(western):
+        raise _error("Western reference index ledger is incomplete.", "NCA_RESULT_REFERENCE_INVALID")
+    resolved_ol: list[object] = []
+    for western_reference, index_value in zip(western, reference_index):
+        index_row = _require_mapping(
+            index_value, "reference index row", "NCA_RESULT_REFERENCE_INVALID"
+        )
+        if set(index_row) != {"western_reference", "status", "ol_reference"} or index_row["western_reference"] != western_reference:
+            raise _error("Reference index row is malformed.", "NCA_RESULT_REFERENCE_INVALID")
+        if index_row["status"] == "INDEXED" and isinstance(index_row["ol_reference"], str) and index_row["ol_reference"]:
+            resolved_ol.append(index_row["ol_reference"])
+        elif index_row["status"] == "REGISTERED_ABSENCE" and index_row["ol_reference"] is None:
+            resolved_ol.append(None)
+        elif index_row["status"] != "UNINDEXED" or index_row["ol_reference"] is not None:
+            raise _error("Reference index state is invalid.", "NCA_RESULT_REFERENCE_INVALID")
+    if resolved_ol != ol_references:
+        raise _error("OL references disagree with the reference index.", "NCA_RESULT_REFERENCE_INVALID")
     _validate_hash(projection.get("source_sha256"), "Target source hash")
     if not isinstance(projection.get("precision"), str) or not projection["precision"]:
         raise _error("Projection precision is missing.", "NCA_RESULT_SCHEMA_INVALID")
@@ -507,7 +533,8 @@ def _validate_unit(
     spans: list[tuple[int, int]] = []
     for expression in expressions:
         expression_id, span = _validate_expression(
-            expression, role_required=role_required, target_text=target_text
+            expression, role_required=role_required, target_text=target_text,
+            expected_stream="main",
         )
         identities.append(expression_id)
         spans.append(span)
@@ -517,6 +544,61 @@ def _validate_unit(
         for right in spans[index + 1:]
     ):
         raise _error("Numeric expression evidence overlaps or repeats.", "NCA_RESULT_EXPRESSION_INVALID")
+    source_evidence = _require_mapping(
+        raw["source_evidence"], "source evidence", "NCA_RESULT_SCHEMA_INVALID"
+    )
+    _require_keys(source_evidence, {"expressions", "context"}, "source evidence")
+    source_context = _require_mapping(
+        source_evidence["context"], "source context", "NCA_RESULT_SCHEMA_INVALID"
+    )
+    if source_context and set(source_context) != {
+        "language", "ol_text", "ol_values", "variant_class", "scholarship_status"
+    }:
+        raise _error("Source context fields are malformed.", "NCA_RESULT_SCHEMA_INVALID")
+    if source_context and (
+        not isinstance(source_context["language"], str)
+        or not isinstance(source_context["ol_text"], str)
+        or not isinstance(source_context["ol_values"], list)
+        or any(
+            source_context[field] is not None
+            and (not isinstance(source_context[field], str) or not source_context[field])
+            for field in ("variant_class", "scholarship_status")
+        )
+    ):
+        raise _error("Source context is malformed.", "NCA_RESULT_EXPRESSION_INVALID")
+    if source_context:
+        for source_number in source_context["ol_values"]:
+            _validate_fraction(source_number)
+    source_values = source_evidence["expressions"]
+    if not isinstance(source_values, list) or source_values and not source_context:
+        raise _error("Source expressions lack their OL stream.", "NCA_RESULT_EXPRESSION_INVALID")
+    source_ids_seen: list[str] = []
+    source_spans: list[tuple[int, int]] = []
+    for source_expression in source_values:
+        expression_id, span = _validate_expression(
+            source_expression,
+            role_required=True,
+            target_text=source_context["ol_text"],
+            expected_stream="ol",
+        )
+        source_ids_seen.append(expression_id)
+        source_spans.append(span)
+    if len(source_ids_seen) != len(set(source_ids_seen)) or any(
+        left[0] < right[1] and right[0] < left[1]
+        for index, left in enumerate(source_spans)
+        for right in source_spans[index + 1:]
+    ):
+        raise _error("Source expression evidence overlaps or repeats.", "NCA_RESULT_EXPRESSION_INVALID")
+    source_flat = [number for expression in source_values for number in expression["values"]]
+    correspondence_outcomes = {
+        "PASS_AUTHORITY1", "PASS_EQUIVALENT_NUMERIC_EXPRESSION", "PASS_UNIT_CONVERSION",
+        "REGISTERED_ALTERNATE", "NO_CONFIGURED_OL_READING", "REVIEW_VALUE_DIFFERENCE",
+        "REVIEW_NUMBER_MISSING", "REVIEW_NUMBER_ADDED",
+    }
+    if semantic["outcome"] in correspondence_outcomes and (
+        not source_context or source_flat != source_context["ol_values"]
+    ):
+        raise _error("Correspondence outcome lacks exact OL evidence.", "NCA_RESULT_EXPRESSION_INVALID")
     if reading["footnote_action"] not in FOOTNOTE_ACTIONS:
         raise _error("Reading footnote action is unknown.", "NCA_RESULT_ENUM_INVALID")
     evidence_ids = semantic["evidence_ids"]
@@ -819,6 +901,8 @@ def validate_numbers_result(
         )
         for unit in validated_units
     )
+    # Recompute every aggregate from the validated units before accepting any
+    # caller-supplied coverage, receipt, or handover summary claim.
     _validate_coverage(
         raw["coverage"], expected_unit_ids, actual_ids,
         findings_count=len(findings),
@@ -848,6 +932,52 @@ def validate_numbers_result(
         "units": len(units),
         "findings": len(findings),
         "expressions": sum(len(unit["extraction"]["expressions"]) for unit in units),
+        "target_expressions": sum(len(unit["extraction"]["expressions"]) for unit in units),
+        "ol_expressions_checked": (
+            sum(len(unit["source_evidence"]["expressions"]) for unit in units)
+            if checks["number_accuracy"] else 0
+        ),
+        "passes": sum(
+            unit["reading"]["semantic"]["outcome"] in {
+                "PASS_AUTHORITY1", "PASS_EQUIVALENT_NUMERIC_EXPRESSION",
+                "PASS_UNIT_CONVERSION",
+            }
+            for unit in units
+        ) if checks["number_accuracy"] else 0,
+        "unit_conversions": sum(
+            unit["reading"]["semantic"]["outcome"] == "PASS_UNIT_CONVERSION"
+            for unit in units
+        ) if checks["number_accuracy"] else 0,
+        "value_differences": sum(
+            unit["reading"]["semantic"]["outcome"] == "REVIEW_VALUE_DIFFERENCE"
+            for unit in units
+        ) if checks["number_accuracy"] else 0,
+        "missing_numbers": sum(
+            unit["reading"]["semantic"]["outcome"] == "REVIEW_NUMBER_MISSING"
+            for unit in units
+        ) if checks["number_accuracy"] else 0,
+        "added_numbers": sum(
+            unit["reading"]["semantic"]["outcome"] == "REVIEW_NUMBER_ADDED"
+            for unit in units
+        ) if checks["number_accuracy"] else 0,
+        "known_variants": sum(
+            unit["reading"]["selected"] == "ALT" for unit in units
+        ) if checks["number_accuracy"] else 0,
+        "style_findings": sum(
+            style["status"] == "REVIEW"
+            for unit in units
+            for style in unit["style_findings"]
+        ) if checks["presentation_consistency"] else 0,
+        "indexed_coordinates": sum(
+            row["status"] != "UNINDEXED"
+            for unit in units
+            for row in unit["projection"]["reference_index"]
+        ),
+        "unindexed_coordinates": sum(
+            row["status"] == "UNINDEXED"
+            for unit in units
+            for row in unit["projection"]["reference_index"]
+        ),
         "insufficient_evidence": sum(
             "PRESENTATION_CHECK_DISABLED" not in unit["limitations"]
             and (
@@ -873,6 +1003,8 @@ def validate_numbers_result(
             unit["extraction"]["status"] == "UNSUPPORTED" for unit in units
         ),
     }
-    if any(summary.get(key) != value for key, value in expected_summary.items()):
+    if set(summary) != set(expected_summary) or any(
+        summary.get(key) != value for key, value in expected_summary.items()
+    ):
         raise _error("NCA summary does not derive from the result payload.", "NCA_RESULT_SUMMARY_INVALID")
     return _plain(raw)

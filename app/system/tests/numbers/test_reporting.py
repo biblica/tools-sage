@@ -42,6 +42,19 @@ def report_document() -> dict[str, object]:
             "source_locator": {"line_start": 14, "line_end": 14},
         },
         "extraction": {"status": "COMPLETE", "limitations": [], "expressions": []},
+        "source_evidence": {
+            "expressions": [{
+                "expression_id": "ol-1", "stream_id": "ol", "surface": "three",
+                "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": None,
+                "qualifier": "EXACT", "role": "men", "role_spans": [[6, 9]],
+                "representations": [],
+            }],
+            "context": {
+                "language": "GRK", "ol_text": "three men",
+                "ol_values": ["3"],
+                "variant_class": "TEXTUAL_VARIANT", "scholarship_status": "SUPPORTED",
+            },
+        },
         "reading": {
             "selected": "ALT",
             "footnote_action": "REQUIRE",
@@ -89,6 +102,10 @@ def report_document() -> dict[str, object]:
         },
         "summary": {
             "units": 1, "expressions": 0, "findings": 1,
+            "target_expressions": 0, "ol_expressions_checked": 1, "passes": 0,
+            "unit_conversions": 0, "value_differences": 0, "missing_numbers": 0,
+            "added_numbers": 0, "known_variants": 1, "style_findings": 0,
+            "indexed_coordinates": 1, "unindexed_coordinates": 0,
             "insufficient_evidence": 0, "reference_not_indexed": 0, "not_assessed": 0,
             "extraction_complete": 1, "extraction_partial": 0, "extraction_unsupported": 0,
         },
@@ -105,6 +122,8 @@ def test_report_exposes_navigation_authority_and_registered_note_evidence():
         "SRC-1, SRC-2", "ALT", "REQUIRE", "MISSING",
         "EXTRACTION: fixture-provider/fixture-model",
         "Other witnesses read four.", "NCA_FOOTNOTE_REVIEW_MISSING_FOOTNOTE",
+        "three = 3 [CARDINAL ; role=men ; qualifier=EXACT]",
+        "TEXTUAL_VARIANT", "SUPPORTED",
         NCA_CAPABILITY_LIMITATION,
     ):
         assert expected in report
