@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from contextlib import ExitStack
 from datetime import datetime, timezone
 import json
 import os
@@ -145,30 +146,58 @@ def restart_nca_run(config: EcosystemConfig, *, job: Job, run: Run) -> Run:
     """Abandon one open NCA Run after atomically creating its fresh replacement."""
     if job.tool != "nca" or run.tool != "nca" or run.job_id != job.job_id:
         raise ValidationError("NCA restart requires an owning Job and Run", code="NCA_TASK_BINDING_INVALID")
-    if run.status in {"COMPLETE", "ARCHIVED", "ABANDONED"}:
-        raise ValidationError(f"Cannot restart a {run.status.lower()} NCA Run")
-    validate_nca_job_prerequisites(config, job)
-    defaults = job.defaults.get("checks")
-    exact_checks = validate_checks(defaults if isinstance(defaults, Mapping) else None)
-    route = _configured_nca_route(config)
     store = _store(config)
+    with ExitStack() as locks:
+        locks.enter_context(
+            WorkspaceLock(run.root / "locks" / "lifecycle.lock", "NCA_RUN_RESTART")
+        )
+        job = store.load_job(job.job_id, tool="nca")
+        run = store.load_run(job, run.run_id)
+        active = store.active_run(job)
+        if (
+            run.status in {"COMPLETE", "ARCHIVED", "ABANDONED"}
+            or active is None
+            or active.run_id != run.run_id
+        ):
+            raise ValidationError(
+                "NCA restart requires the active open Run",
+                code="NCA_RUN_NOT_ACTIVE",
+            )
+        runtime = _runtime_config(store, job)
+        for persisted in run.task_manifests:
+            manifest_path = resolve_persisted_path(
+                runtime.root,
+                persisted,
+                "NCA restart task manifest",
+            )
+            locks.enter_context(
+                WorkspaceLock(
+                    manifest_path.parent / "locks" / "execution.lock",
+                    "NCA_RUN_RESTART",
+                )
+            )
 
-    def initialize(root: Path) -> None:
-        """Seal current Job defaults and resources in the replacement Run."""
-        snapshot = build_nca_run_snapshot(config, job, checks=exact_checks, route=route)
-        resolved = validate_nca_job_prerequisites(config, job)
-        write_nca_run_snapshot(root, snapshot, style_bytes=resolved.style.content_bytes)
+        validate_nca_job_prerequisites(config, job)
+        defaults = job.defaults.get("checks")
+        exact_checks = validate_checks(defaults if isinstance(defaults, Mapping) else None)
+        route = _configured_nca_route(config)
 
-    replacement = store.create_run(
-        job,
-        operation="numbers",
-        scope=run.scope,
-        initialize_run=initialize,
-        replace_active_run_id=run.run_id,
-    )
-    store.update_run(run, status="ABANDONED", current_stage="ABANDONED")
-    store.set_active_run(job, replacement.run_id)
-    return replacement
+        def initialize(root: Path) -> None:
+            """Seal current Job defaults and resources in the replacement Run."""
+            snapshot = build_nca_run_snapshot(config, job, checks=exact_checks, route=route)
+            resolved = validate_nca_job_prerequisites(config, job)
+            write_nca_run_snapshot(root, snapshot, style_bytes=resolved.style.content_bytes)
+
+        replacement = store.create_run(
+            job,
+            operation="numbers",
+            scope=run.scope,
+            initialize_run=initialize,
+            replace_active_run_id=run.run_id,
+        )
+        store.update_run(run, status="ABANDONED", current_stage="ABANDONED")
+        store.set_active_run(job, replacement.run_id)
+        return replacement
 
 
 def create_nca_task(
@@ -182,6 +211,36 @@ def create_nca_task(
     store = _store(config)
     job = store.load_job(job_id, tool="nca")
     run = store.load_run(job, run_id)
+    with WorkspaceLock(
+        run.root / "locks" / "lifecycle.lock",
+        "NCA_TASK_CREATE",
+    ):
+        return _create_nca_task_locked(
+            config,
+            job_id=job_id,
+            run_id=run_id,
+            scope_value=scope_value,
+        )
+
+
+def _create_nca_task_locked(
+    config: EcosystemConfig,
+    *,
+    job_id: str,
+    run_id: str,
+    scope_value: str,
+) -> Mapping[str, object]:
+    """Create or reopen one NCA task while holding its Run lifecycle lock."""
+    store = _store(config)
+    job = store.load_job(job_id, tool="nca")
+    run = store.load_run(job, run_id)
+    completed_resume = run.status == "COMPLETE" and bool(run.task_manifests)
+    active = store.active_run(job)
+    if not completed_resume and (active is None or active.run_id != run.run_id):
+        raise ValidationError(
+            "NCA task creation requires the active open Run",
+            code="NCA_RUN_NOT_ACTIVE",
+        )
     if run.operation != "numbers" or run.scope != parse_scope(scope_value).label():
         raise ValidationError(
             "NCA task scope must equal its sealed Run request",

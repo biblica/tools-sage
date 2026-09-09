@@ -499,6 +499,79 @@ def test_abandoned_run_task_cannot_execute_after_restart(
     assert CountingTasks.instances == 0
 
 
+def test_abandoned_run_without_task_cannot_create_or_publish_one(
+    make_workspace, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Task creation cannot revive an abandoned Run that never owned a task."""
+    _root, config, job, run = _run(make_workspace, monkeypatch)
+    store = JobStore(config.root, config.settings_path)
+    replacement = store.restart_run(job, run)
+    runtime = config.workflow("nca")
+
+    with pytest.raises(ValidationError) as caught:
+        create_nca_task(
+            config,
+            job_id=job.job_id,
+            run_id=run.run_id,
+            scope_value=run.scope,
+        )
+
+    assert caught.value.code == "NCA_RUN_NOT_ACTIVE"
+    assert store.load_run(job, run.run_id).status == "ABANDONED"
+    assert store.active_run(job).run_id == replacement.run_id
+    assert list(runtime.output_root.rglob("task-manifest.json")) == []
+
+
+def test_restart_cannot_overtake_inflight_task_execution(
+    make_workspace, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Restart fails while the old task holds its provider-to-publication lock."""
+    root, config, job, run = _run(make_workspace, monkeypatch)
+    created = create_nca_task(
+        config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope
+    )
+    path = Path(str(created["task_manifest_path"]))
+    entered = Event()
+    release = Event()
+
+    class BlockingTasks(_OfflineTasks):
+        """Hold the provider phase open across the restart attempt."""
+
+        def extract(self, unit, *, language: str, style_profile):
+            """Signal execution ownership and wait for the restart assertion."""
+            entered.set()
+            assert release.wait(timeout=10)
+            return super().extract(unit, language=language, style_profile=style_profile)
+
+    monkeypatch.setattr("sage.numbers.model_tasks.NcaModelTasks", BlockingTasks)
+    completed: list[object] = []
+    failures: list[BaseException] = []
+
+    def execute_old() -> None:
+        """Capture the old task result after restart is denied."""
+        try:
+            completed.append(execute_task(config, task_manifest=path))
+        except BaseException as exc:  # pragma: no cover - asserted below
+            failures.append(exc)
+
+    worker = Thread(target=execute_old)
+    worker.start()
+    assert entered.wait(timeout=10)
+    store = JobStore(root, root / "ecosystem.yml")
+    try:
+        with pytest.raises(LockError):
+            store.restart_run(job, run)
+    finally:
+        release.set()
+        worker.join(timeout=10)
+
+    assert not worker.is_alive()
+    assert failures == []
+    assert len(completed) == 1
+    assert [item.run_id for item in store.list_runs(job)] == [run.run_id]
+    assert store.active_run(job).run_id == run.run_id
+
+
 def test_finalize_publishes_both_sealed_report_languages(
     make_workspace, monkeypatch: pytest.MonkeyPatch
 ) -> None:
