@@ -932,6 +932,23 @@ def _prompt(
                     },
                     "rtc_stage": manifest.get("rtc_stage"),
                     "scope": manifest.get("scope"),
+                    **(
+                        {
+                            "source_primary_references": manifest.get(
+                                "source_primary_references",
+                                manifest.get("expected_references", []),
+                            ),
+                            "target_scope": manifest.get(
+                                "target_scope", manifest.get("scope")
+                            ),
+                            "expected_output_references": manifest.get(
+                                "expected_output_references",
+                                manifest.get("expected_references", []),
+                            ),
+                        }
+                        if manifest.get("workflow") == "bic"
+                        else {}
+                    ),
                     "allowed_writes": manifest.get("allowed_writes"),
                     "expected_references": manifest.get("expected_references", []),
                     "expected_work_unit_ids": dict(

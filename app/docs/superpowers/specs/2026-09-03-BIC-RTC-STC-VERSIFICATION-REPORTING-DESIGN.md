@@ -34,6 +34,8 @@ Project-specific without weakening machine auditability.
 6. Render configured Project display names throughout human reports while retaining
    stable Project IDs in machine data and compact metadata.
 7. Preserve all sealed legacy Jobs, Runs, plans, tasks, and reports byte-for-byte.
+8. Accept the complete Paratext VRS grammar required by the standard SIL schemas
+   before workflow alignment depends on those schemas.
 
 ## Non-goals
 
@@ -45,6 +47,67 @@ Project-specific without weakening machine auditability.
 - Re-enabling the paused Textual TUI workflow actions.
 - Replacing the established RTC/STC chapter report paths or Job-owned report model.
 - Splitting `menu.py` or `cli.py` merely to reduce line counts.
+- Introducing a network service, Java/.NET runtime dependency, or automatic
+  download for versification handling.
+
+## Standard VRS baseline and provenance
+
+SAGE ships the six standard schemes used by the current SIL/Paratext ecosystem:
+`org.vrs`, `eng.vrs`, `lxx.vrs`, `vul.vrs`, `rsc.vrs`, and `rso.vrs`. The four
+new files are imported from `sillsdev/libpalaso` commit
+`bb9d36de70ed7fd6c3e62f0c86c1001f0009eb50`. The existing `eng.vrs` is already
+byte-identical to that source. The existing `org.vrs` differs only in trailing
+whitespace and remains byte-stable. A machine-readable provenance manifest records
+the source URL, source path, pinned commit, upstream SHA-256, shipped SHA-256, and
+MIT license for every bundled schema.
+
+The parser accepts both legacy plain directives and Paratext 7.3+ executable
+comment directives for exclusions and verse segments. It preserves verse-segment
+metadata, applies `END` when a custom schema truncates inherited chapters, and
+rejects `&` mappings unless at least one side is exactly one verse. Segment data is
+structural metadata only: it may produce an advisory, but it never authorizes SAGE
+to split or reconstruct phrase-level Scripture text.
+
+## Versification subsystem assessment
+
+SAGE has one principal low-level implementation in `vrs.py`, but it does not yet
+have one workflow-facing versification service. Catalog resolution, base/custom
+loading, validation, scope expansion, evidence serialization, canonical projection,
+and RTC/STC advisory handling are distributed across `registry.py`, `scripture.py`,
+`references.py`, `findings.py`, `act_tasks.py`, workflow planners, and menu code.
+
+The target is an internal subsystem, not a separately deployed service. `vrs.py`
+remains the pure schema/parser layer. A narrow workflow-facing facade owns schema
+catalog/provenance, load-compose-cache, effective fingerprinting, reference
+projection, verse-index construction, and structured diagnostics. BIC, RTC, and STC
+adapters consume that facade and retain their own policy decisions. This boundary
+prevents each workflow from independently deciding how alternate versifications
+align while avoiding a new process or external runtime dependency.
+
+The first facade slice is `versification_service.py`:
+
+```python
+service = VersificationService(config)
+service.catalog() -> tuple[VersificationCatalogEntry, ...]
+service.base_schema(filename) -> VersificationSchema
+service.project_schema(project_or_id) -> VersificationSchema
+service.effective_fingerprint(project_or_id) -> str
+service.to_canonical(project_or_id, refs) -> ReferenceProjection
+service.from_canonical(project_or_id, refs) -> ReferenceProjection
+```
+
+Catalog entries expose the registered filename, current file SHA-256, canonical and
+default roles, and pinned upstream provenance when the governed manifest contains
+it. The service cache key includes the resolved base/custom paths and their current
+content hashes. A changed Project VRS therefore invalidates the cached schema in the
+same process. Returned schemas are independent copies until the low-level schema
+model becomes deeply immutable; callers cannot corrupt the cache by mutation.
+
+`ReferenceProjection` contains deterministic ordered input/output references,
+direction, schema identity, and `COORDINATE` or `EQUIVALENCE_GROUP` precision. The
+facade performs reference projection but does not select Scripture records, decide
+whether a mismatch blocks, or rewrite a Project coordinate. Those responsibilities
+belong to the later verse-index and workflow-adapter stages.
 
 ## Terminology and identity
 
@@ -181,14 +244,20 @@ class ProjectIdentity:
     project_id: str
     display_name: str
     imported_date: str | None
-    content_fingerprint: str
-    vrs_schema_id: str
-    effective_vrs_sha256: str
+    content_fingerprint: str | None
+    vrs_schema_id: str | None
+    effective_vrs_sha256: str | None
 ```
 
 The identity is resolved once from the owning Job, Project inventory, effective
 runtime Project, and compiled Project result. The configured display name is
 primary. The Project ID is the fallback only when no display name was recorded.
+Every Project actually compiled or routed for the task has validated content and
+effective-VRS hashes. A dormant Job binding remains sealed for machine identity and
+human naming, but its three compilation-provenance fields are `None`; SAGE neither
+fabricates hashes nor reads an unused Project merely to populate task identity.
+An allowed-empty BIC TARGET with compilation status `NOT_GENERATED` follows the
+same rule because it is a destination without existing Scripture/VRS evidence.
 
 `resource_bindings` remains the canonical machine role-to-ID map. Every new
 BIC/RTC/STC writer seals `resource_display_names` as the human projection in tasks

@@ -9,15 +9,43 @@ versification:
   base_files:
     - eng.vrs
     - org.vrs
+    - lxx.vrs
+    - vul.vrs
+    - rsc.vrs
+    - rso.vrs
   custom_file_default: custom.vrs
 ```
 
 - `org.vrs` is the canonical mapping target used for cross-versification equivalence. It is **not** the default numbering for an ordinary translation Project.
 - `eng.vrs` is the default English/KJV-style versification for a Project that does not explicitly state another configured base VRS.
+- `lxx.vrs`, `vul.vrs`, `rsc.vrs`, and `rso.vrs` provide the standard Septuagint,
+  Vulgate, Russian Protestant, and Russian Orthodox schemes used by SIL/Paratext.
 - A Project-declared or operator-approved base VRS overrides the default.
 - `auto` for `custom_file` is a resolution instruction, not a filename.
 
 Base VRS files reside directly under the configured base-VRS root. A custom VRS may reside only inside its own project. SAGE composes the effective schema, hashes all source files, and routes VRS evidence into analytical tasks.
+
+The six bundled schemas are governed by
+`system/resources/scripture/standard-vrs-provenance.json`, which pins their
+upstream source revision and both upstream and shipped SHA-256 values. The parser
+accepts plain and Paratext 7.3+ `#!` exclusion and verse-segment directives,
+supports custom `END` chapter truncation, and enforces the one-sided `&` mapping
+rule. Verse-segment metadata describes structural correspondence only; SAGE never
+uses it to split or synthesize phrase-level Scripture text.
+
+## Internal versification API
+
+`VersificationService` is the single workflow-facing entry point for the base VRS
+catalog, effective Project schema loading, fingerprints, and Project-local versus
+canonical reference projection. Its cache identity includes the current base and
+custom file hashes, so editing a governed VRS invalidates the schema within the
+same process. It returns independent schema values until the low-level model is
+deeply immutable.
+
+`vrs.py` remains the parser and schema model. New workflow code must use the
+service instead of directly parsing or composing Project schemas. The API does not
+select Scripture evidence or decide whether structural differences block; those
+policies remain with BIC, RTC, STC, and the planned canonical verse index.
 
 ## Bundled Greek resource correction
 

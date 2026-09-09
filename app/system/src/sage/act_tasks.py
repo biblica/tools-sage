@@ -34,7 +34,7 @@ from .bic_memory import (
     inspect_completion_and_review_status,
     submit_inspect_transactionally,
 )
-from .canon import NT_27, OT_39, resolve_expected_books
+from .canon import BOOK_ORDER, NT_27, OT_39, resolve_expected_books
 from .config import load_json, load_yaml, require_mapping, require_string
 from .errors import ConfigurationError, EvidenceLimitError, InputRequiredError, ValidationError
 from .evidence import EvidencePolicy
@@ -83,7 +83,13 @@ from .references import (
     parse_scope_set,
 )
 from .profiles import load_workflow_profile
+from .paratext_filenames import paratext_book_digits, template_book_filename
 from .platform_commands import render_sage_command
+from .project_context import (
+    identity_bindings,
+    identity_display_names,
+    resolve_project_identities,
+)
 from .registry import EcosystemConfig, ProjectSpec, load_ecosystem
 from .runtime_paths import (
     plan_container,
@@ -94,15 +100,24 @@ from .runtime_paths import (
     workflow_memory_root,
     workflow_for_task,
 )
-from .stc import plan_stc_work_units, stc_authority_family, validate_stc_submission, finalize_stc_run
+from .stc import (
+    LEGACY_STC_PLANNER_VERSION,
+    STC_PLANNER_VERSION,
+    finalize_stc_run,
+    plan_stc_work_units,
+    stc_authority_family,
+    validate_stc_submission,
+)
 from .stc_reporting import publish_stc_reports
 from .rtc_planner import (
+    LEGACY_RTC_PLANNER_VERSION,
     RTC_HANDOFF_CONTRACT_VERSION,
     RTC_PLANNER_VERSION,
     rtc_prompt_schema_projection_version,
     rtc_slicing_policy,
 )
-from .scripture import compile_project_scope, discover_book_ids
+from .verse_alignment import ProjectVerseIndex, align_records, project_coordinates
+from .scripture import compile_project, compile_project_scope, discover_book_ids
 from .rtc_policy import load_run_policy_snapshot
 from .semantic.diagnostics import analysis_signals_from_scope_evidence
 from .semantic.evidence import scope_evidence_for_project
@@ -115,15 +130,16 @@ from .workflow_identity import (
     is_analysis_workflow,
     legacy_saw_workflow,
 )
-from .project_inventory import registered_project_records, require_project_imported_at
+from .project_inventory import require_project_imported_at
 from .usj import compile_usfm_file, compile_usfm_text, parse_usj_units
-from .vrs import VerseRef, load_project_vrs, resolve_project_vrs_paths
+from .vrs import VerseRef, resolve_project_vrs_paths
+from .versification_service import VersificationService
 from .vocabulary import (
     CANONICAL_TARGET_TEXT_OPERATION,
     require_canonical_operation_set,
     require_canonical_target_text_vocabulary,
 )
-from .work_units import records_from_project_result, select_records_for_scope
+from .work_units import EvidenceRecord, records_from_project_result, select_records_for_scope
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_text, plan_sfm_work_units
 from .source_coverage import (
     source_comparison_status,
@@ -586,7 +602,8 @@ def _validate_task_projects(
     source_label = "BIC SOURCE" if workflow == "bic" else f"{workflow.upper()} REFERENCE"
     _assert_enabled(output, output_label)
     _assert_enabled(source, source_label)
-    _assert_project_scope(output, scope, output_label)
+    if workflow != "bic":
+        _assert_project_scope(output, scope, output_label)
     _assert_project_scope(source, scope, source_label)
     if output.project_id == source.project_id:
         raise ValidationError(f"{output_label} and {source_label} must be different projects")
@@ -980,14 +997,30 @@ def validate_act_request_readiness(
         else None
     )
     readiness_projects: list[tuple[str, ProjectSpec]] = [
-        (("BIC TARGET" if workflow == "bic" else f"{_analysis_identity(workflow)} WIP"), output),
-        (("BIC SOURCE" if workflow == "bic" else f"{_analysis_identity(workflow)} comparison source"), source),
+        (
+            "BIC SOURCE"
+            if workflow == "bic"
+            else f"{_analysis_identity(workflow)} comparison source",
+            source,
+        ),
     ]
+    if workflow != "bic":
+        readiness_projects.insert(0, (f"{_analysis_identity(workflow)} WIP", output))
     if donor is not None:
         readiness_projects.append(("BIC DONOR", donor))
-    compiled = _assert_initialized_and_ready(
-        config, workflow, readiness_projects, scope
-    )
+    if workflow == "bic":
+        compiled, bic_alignment = _prepare_bic_project_alignment(
+            config,
+            source=source,
+            target=output,
+            source_scope=scope,
+            source_readiness_projects=readiness_projects,
+        )
+    else:
+        compiled = _assert_initialized_and_ready(
+            config, workflow, readiness_projects, scope
+        )
+        bic_alignment = None
     return {
         "workflow": workflow,
         "output_project": output.project_id,
@@ -999,6 +1032,9 @@ def validate_act_request_readiness(
             "availability": "AVAILABLE" if ol_project else "UNAVAILABLE_OPTIONAL",
         },
         "scope": scope.label(),
+        "target_scope": (
+            bic_alignment["target_scope"] if bic_alignment is not None else None
+        ),
         "project_statuses": {key: value.get("status") for key, value in compiled.items()},
     }
 
@@ -1202,7 +1238,7 @@ def _write_reference_inventory_usj_packet(
     if parser_errors:
         raise ValidationError(f"Task input {source.name} has parser errors: {', '.join(parser_errors[:8])}")
     requested_scopes = [scope for value in reference_values for scope in parse_scope_set(value)]
-    if not requested_scopes:
+    if not requested_scopes and not allow_empty:
         raise ValidationError("Composite RTC stage reference inventory must not be empty")
     selected: list[dict[str, Any]] = []
     refs: set[VerseRef] = set()
@@ -1263,6 +1299,395 @@ def _write_reference_inventory_usj_packet(
         },
         bounded_usfm,
     )
+
+
+def _records_intersecting_reference_values(
+    records: Sequence[EvidenceRecord],
+    reference_values: Sequence[str],
+) -> tuple[EvidenceRecord, ...]:
+    """Select complete physical records intersecting an explicit local inventory."""
+    atoms = {
+        ref
+        for value in reference_values
+        if str(value).strip()
+        for ref in expand_reference_atoms(str(value))
+    }
+    return tuple(record for record in records if atoms.intersection(record.refs))
+
+
+def _rtc_canonical_packet_route(
+    config: EcosystemConfig,
+    *,
+    output: ProjectSpec,
+    reference: ProjectSpec,
+    compiled: Mapping[str, dict[str, Any]],
+    scope: ScriptureScope,
+    primary_reference_values: Sequence[str],
+    context_reference_values: Sequence[str],
+) -> dict[str, Any]:
+    """Resolve RTC WIP-local packet inventories through both effective Project VRSs."""
+    wip_records = records_from_project_result(
+        output.project_id,
+        compiled[output.project_id],
+        resource_role="WIP",
+    )
+    reference_records = records_from_project_result(
+        reference.project_id,
+        compiled[reference.project_id],
+        resource_role="REFERENCE",
+    )
+    selected_wip = (
+        _records_intersecting_reference_values(wip_records, primary_reference_values)
+        if primary_reference_values
+        else select_records_for_scope(wip_records, scope)
+    )
+    context_wip = _records_intersecting_reference_values(
+        wip_records,
+        context_reference_values,
+    )
+    service = VersificationService(config)
+    wip_index = ProjectVerseIndex.build(
+        output.project_id,
+        wip_records,
+        service.project_schema(output),
+    )
+    reference_index = ProjectVerseIndex.build(
+        reference.project_id,
+        reference_records,
+        service.project_schema(reference),
+    )
+    primary_alignment = align_records(selected_wip, wip_index, reference_index)
+    context_alignment = align_records(context_wip, wip_index, reference_index)
+    issues = _canonical_gap_source_issues(
+        selected_wip,
+        wip_index,
+        primary_alignment.missing_canonical_refs,
+        workflow="RTC",
+        source_stream="REFERENCE",
+        source_project_id=reference.project_id,
+        wip_project_id=output.project_id,
+        scope=scope.label(),
+    )
+    return {
+        "reference_references": [
+            record.reference for record in primary_alignment.authority_records
+        ],
+        "context_reference_references": [
+            record.reference for record in context_alignment.authority_records
+        ],
+        "alignment": {
+            "primary_local_atoms": [
+                ref.label() for ref in sorted(primary_alignment.primary_local_refs)
+            ],
+            "canonical_atoms": [
+                ref.label() for ref in sorted(primary_alignment.canonical_refs)
+            ],
+            "reference_local_spans": [
+                record.reference for record in primary_alignment.authority_records
+            ],
+            "missing_canonical_atoms": [
+                ref.label() for ref in sorted(primary_alignment.missing_canonical_refs)
+            ],
+        },
+        "source_text_issues": issues,
+    }
+
+
+def _projected_scope_for_refs(
+    refs: Iterable[VerseRef],
+    *,
+    schema,
+) -> ScriptureScope | None:
+    """Return one exact contiguous TARGET-local scope, or ``None`` when unsafe."""
+    ordered = tuple(sorted(frozenset(refs)))
+    if not ordered or len({ref.book for ref in ordered}) != 1:
+        return None
+    for previous, current in zip(ordered, ordered[1:]):
+        if previous.book != current.book:
+            return None
+        if previous.chapter == current.chapter:
+            if current.verse != previous.verse + 1:
+                return None
+            continue
+        chapter_limit = schema.chapter_limit(previous.book, previous.chapter)
+        if (
+            current.chapter != previous.chapter + 1
+            or current.verse != 1
+            or chapter_limit != previous.verse
+        ):
+            return None
+    first = ordered[0]
+    last = ordered[-1]
+    return ScriptureScope(
+        book=first.book,
+        start_chapter=first.chapter,
+        start_verse=first.verse,
+        end_chapter=last.chapter,
+        end_verse=last.verse,
+    )
+
+
+def _scope_envelope_for_refs(refs: Iterable[VerseRef]) -> ScriptureScope | None:
+    """Return the narrowest one-book scope containing every projected coordinate."""
+    ordered = tuple(sorted(frozenset(refs)))
+    if not ordered or len({ref.book for ref in ordered}) != 1:
+        return None
+    first = ordered[0]
+    last = ordered[-1]
+    return ScriptureScope(
+        book=first.book,
+        start_chapter=first.chapter,
+        start_verse=first.verse,
+        end_chapter=last.chapter,
+        end_verse=last.verse,
+    )
+
+
+def _bic_canonical_projection(
+    config: EcosystemConfig,
+    *,
+    source: ProjectSpec,
+    target: ProjectSpec,
+    compiled: Mapping[str, dict[str, Any]],
+    scope: ScriptureScope,
+) -> dict[str, Any]:
+    """Project BIC SOURCE-local coverage into deterministic TARGET coordinates."""
+    source_records = records_from_project_result(
+        source.project_id,
+        compiled[source.project_id],
+        resource_role="CONTENT_SOURCE",
+    )
+    target_result = compiled.get(target.project_id)
+    target_records = (
+        records_from_project_result(
+            target.project_id,
+            dict(target_result),
+            resource_role="GENERATED_TARGET",
+        )
+        if target_result is not None
+        and str(target_result.get("status")) in READY_RESOURCE_STATES
+        else ()
+    )
+    selected_source = select_records_for_scope(source_records, scope)
+    service = VersificationService(config)
+    source_schema = service.project_schema(source)
+    target_schema = service.project_schema(target)
+    source_index = ProjectVerseIndex.build(
+        source.project_id,
+        source_records,
+        source_schema,
+    )
+    target_index = ProjectVerseIndex.build(
+        target.project_id,
+        target_records,
+        target_schema,
+    )
+    source_refs = frozenset(ref for record in selected_source for ref in record.refs)
+    projection = project_coordinates(source_refs, source_index, target_index)
+    target_scope = _projected_scope_for_refs(
+        projection.target_local_refs,
+        schema=target_schema,
+    )
+    target_shapes: list[list[int]] = []
+    record_shapes_are_precise = True
+    for record in selected_source:
+        record_projection = project_coordinates(record.refs, source_index, target_index)
+        record_scope = _projected_scope_for_refs(
+            record_projection.target_local_refs,
+            schema=target_schema,
+        )
+        if (
+            not record_projection.is_deterministic
+            or record_scope is None
+            or record_scope.start_chapter != record_scope.end_chapter
+        ):
+            record_shapes_are_precise = False
+            continue
+        assert record_scope.start_chapter is not None
+        assert record_scope.start_verse is not None
+        assert record_scope.end_verse is not None
+        target_shapes.append(
+            [
+                record_scope.start_chapter,
+                record_scope.start_verse,
+                record_scope.end_verse,
+            ]
+        )
+    target_existing_records = target_index.records_for_canonical(
+        projection.canonical_refs
+    )
+    target_existing_refs = frozenset(
+        ref for record in target_existing_records for ref in record.refs
+    )
+    # Protected marker validation is positional, so a moved chapter break must
+    # remain inspect-only even when every individual coordinate maps precisely.
+    source_breaks: list[int] = []
+    target_breaks: list[int] = []
+    previous_source_chapter: int | None = None
+    previous_target_chapter: int | None = None
+    if len(target_shapes) == len(selected_source):
+        for index, (record, target_shape) in enumerate(
+            zip(selected_source, target_shapes)
+        ):
+            if record.chapter != previous_source_chapter:
+                source_breaks.append(index)
+                previous_source_chapter = record.chapter
+            target_chapter = target_shape[0]
+            if target_chapter != previous_target_chapter:
+                target_breaks.append(index)
+                previous_target_chapter = target_chapter
+    chapter_topology_is_compatible = (
+        len(target_shapes) == len(selected_source)
+        and source_breaks == target_breaks
+    )
+    writable = (
+        projection.is_deterministic
+        and target_scope is not None
+        and record_shapes_are_precise
+        and len(target_shapes) == len(selected_source)
+        and chapter_topology_is_compatible
+    )
+    advisory = None
+    if not writable:
+        advisory = {
+            "code": "BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+            "classification": "STRUCTURE_ADVISORY",
+            "message": (
+                "BIC SOURCE coverage does not project to one coordinate-precise, "
+                "contiguous, marker-compatible TARGET-local span. INSPECT may "
+                "continue, but writable stages require human versification alignment."
+            ),
+            "next_stage_allowed": False,
+        }
+    return {
+        "primary_stream": "SOURCE",
+        "target_stream": "TARGET",
+        "source_primary_references": [ref.label() for ref in sorted(source_refs)],
+        "canonical_references": [
+            ref.label() for ref in sorted(projection.canonical_refs)
+        ],
+        "target_local_references": [
+            ref.label() for ref in sorted(projection.target_local_refs)
+        ],
+        "target_existing_references": [
+            ref.label() for ref in sorted(target_existing_refs)
+        ],
+        "target_shapes": target_shapes,
+        "chapter_topology": {
+            "source_break_before_record_indexes": source_breaks,
+            "target_break_before_record_indexes": target_breaks,
+            "is_compatible": chapter_topology_is_compatible,
+        },
+        "precision": projection.precision,
+        "is_deterministic": projection.is_deterministic,
+        "is_writable": writable,
+        "source_effective_vrs_sha256": service.effective_fingerprint(source),
+        "target_effective_vrs_sha256": service.effective_fingerprint(target),
+        "target_scope": target_scope.label() if target_scope is not None else None,
+        "advisory": advisory,
+    }
+
+
+def _prepare_bic_project_alignment(
+    config: EcosystemConfig,
+    *,
+    source: ProjectSpec,
+    target: ProjectSpec,
+    source_scope: ScriptureScope,
+    source_readiness_projects: Sequence[tuple[str, ProjectSpec]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Compile SOURCE-side inputs, project coordinates, then compile TARGET scope."""
+    compiled = _assert_initialized_and_ready(
+        config,
+        "bic",
+        source_readiness_projects,
+        source_scope,
+    )
+    provisional = _bic_canonical_projection(
+        config,
+        source=source,
+        target=target,
+        compiled=compiled,
+        scope=source_scope,
+    )
+    target_validation_scope = _scope_envelope_for_refs(
+        VerseRef(
+            value.split()[0],
+            int(value.split()[1].split(":")[0]),
+            int(value.split(":")[1]),
+        )
+        for value in provisional["target_local_references"]
+    )
+    if target_validation_scope is None:
+        # An inspect-only projection may have no one-book TARGET envelope. Compile
+        # the declared TARGET inventory for sealed identity/fingerprint purposes;
+        # the writable-stage guard below remains authoritative.
+        compiled[target.project_id] = compile_project(config, target)
+    else:
+        _assert_project_scope(target, target_validation_scope, "BIC TARGET")
+        compiled.update(
+            _assert_initialized_and_ready(
+                config,
+                "bic",
+                (("BIC TARGET", target),),
+                target_validation_scope,
+            )
+        )
+    alignment = _bic_canonical_projection(
+        config,
+        source=source,
+        target=target,
+        compiled=compiled,
+        scope=source_scope,
+    )
+    alignment["target_validation_scope"] = (
+        target_validation_scope.label()
+        if target_validation_scope is not None
+        else None
+    )
+    return compiled, alignment
+
+
+def _canonical_gap_source_issues(
+    primary_records: Sequence[EvidenceRecord],
+    primary_index: ProjectVerseIndex,
+    missing_canonical: frozenset[VerseRef],
+    *,
+    workflow: str,
+    source_stream: str,
+    source_project_id: str,
+    wip_project_id: str,
+    scope: str,
+) -> list[dict[str, Any]]:
+    """Render canonical Authority gaps at their corresponding WIP-local coordinates."""
+    canonical_by_local: dict[VerseRef, set[VerseRef]] = {}
+    missing_local: set[VerseRef] = set()
+    for record in primary_records:
+        record_missing = primary_index.canonical_refs_for_records((record,)).intersection(
+            missing_canonical
+        )
+        if not record_missing:
+            continue
+        for local_ref in record.refs:
+            missing_local.add(local_ref)
+            canonical_by_local.setdefault(local_ref, set()).update(record_missing)
+    issues = list(source_text_issues(
+        missing_local,
+        (),
+        workflow=workflow,
+        source_stream=source_stream,
+        source_project_id=source_project_id,
+        wip_project_id=wip_project_id,
+        scope=scope,
+    ))
+    for issue in issues:
+        local_ref = next(
+            ref for ref in missing_local if ref.label() == issue["reference"]
+        )
+        issue["canonical_references"] = [
+            ref.label() for ref in sorted(canonical_by_local[local_ref])
+        ]
+    return issues
 
 def _bic_evidence_cohort(
     *,
@@ -1449,10 +1874,12 @@ def _vrs_record(
     config: EcosystemConfig,
     project: ProjectSpec,
     scope: ScriptureScope,
+    *,
+    service: VersificationService,
 ) -> dict[str, Any]:
     """Return compact, scope-bounded VRS evidence and provenance."""
     base_path, custom_path = resolve_project_vrs_paths(config, project)
-    schema = load_project_vrs(config, project)
+    schema = service.project_schema(project)
     relevant_mappings = []
     for mapping in schema.mappings:
         local_refs = mapping.local.refs()
@@ -1505,14 +1932,25 @@ def _write_vrs_evidence(
     source: ProjectSpec,
     ol_project: ProjectSpec | None,
     scope: ScriptureScope,
+    *,
+    output_scope: ScriptureScope | None = None,
 ) -> tuple[list[Path], dict[str, Any]]:
     """Write only the bounded versification evidence needed to interpret the task scope."""
+    service = VersificationService(config)
+    effective_output_scope = output_scope or scope
     resources: dict[str, Any] = {
-        "output_project": _vrs_record(config, output, scope),
-        "contemporary_source": _vrs_record(config, source, scope),
+        "output_project": _vrs_record(
+            config,
+            output,
+            effective_output_scope,
+            service=service,
+        ),
+        "contemporary_source": _vrs_record(config, source, scope, service=service),
     }
     if ol_project is not None:
-        resources["original_language"] = _vrs_record(config, ol_project, scope)
+        resources["original_language"] = _vrs_record(
+            config, ol_project, scope, service=service
+        )
     packet = {"schema_version": "1.1", "scope": scope.label(), "resources": resources}
     path = packet_root / "vrs-evidence.json"
     atomic_write_json(path, packet)
@@ -1524,7 +1962,7 @@ def _structural_candidates(
     scope: AnalysisScope,
 ) -> list[dict[str, Any]]:
     """Derive structural RTC candidates that require explicit adjudication."""
-    schema = load_project_vrs(config, project)
+    schema = VersificationService(config).project_schema(project)
     candidates: list[dict[str, Any]] = []
     for mapping in schema.mappings:
         local_refs = mapping.local.refs()
@@ -1761,11 +2199,33 @@ def _load_predecessor(
 
 
 
-def _target_book_filename(project: ProjectSpec, source_file: Path, book: str) -> str:
+def _target_book_filename(project: ProjectSpec, book: str) -> str:
     """Generate a target-owned Paratext filename without inheriting source identity."""
-    match = re.match(r"^(?P<prefix>\d{2})?[A-Za-z0-9]{3}", source_file.stem)
-    prefix = match.group("prefix") if match else ""
-    return f"{prefix}{book}{project.project_id}.SFM"
+    book_number = BOOK_ORDER.get(book)
+    if book_number is None:
+        raise ValidationError(
+            f"BIC TARGET filename cannot resolve the canonical book number for {book}",
+            code="TARGET_BOOK_FILENAME_UNSUPPORTED",
+        )
+    declared_filename = template_book_filename(project.path, book)
+    if declared_filename is not None:
+        return declared_filename
+    conventions: set[tuple[str, str]] = set()
+    for path in sorted(discover_book_ids(project.path).values()):
+        match = re.match(r"^\d{2}[A-Za-z0-9]{3}(?P<suffix>.*)$", path.stem)
+        if match:
+            conventions.add((match.group("suffix"), path.suffix or ".SFM"))
+    if len(conventions) > 1:
+        raise ValidationError(
+            f"BIC TARGET project {project.project_id} has inconsistent Scripture filename conventions",
+            code="TARGET_BOOK_FILENAME_AMBIGUOUS",
+        )
+    suffix, extension = (
+        next(iter(conventions))
+        if conventions
+        else (project.project_id, ".SFM")
+    )
+    return f"{paratext_book_digits(book)}{book}{suffix}{extension}"
 
 
 def _context_measurement(
@@ -2034,15 +2494,33 @@ def _approved_rtc_work_plan(
                 affected_scope=scope.label(),
                 next_action=f"Rebuild and approve the affected {identity} Run plan.",
             )
+        persisted_planner = dict(plan.get("rtc_planner") or {})
+        persisted_planner_version = str(
+            persisted_planner.get("version") or LEGACY_RTC_PLANNER_VERSION
+        )
+        if persisted_planner_version not in {
+            RTC_PLANNER_VERSION,
+            LEGACY_RTC_PLANNER_VERSION,
+        }:
+            raise ValidationError(
+                f"Unsupported persisted RTC planner version: {persisted_planner_version}",
+                code="RTC_PLANNER_VERSION_UNSUPPORTED",
+                affected_scope=scope.label(),
+                next_action="Resume with a supported SAGE release or rebuild and approve the Run plan.",
+            )
         expected_planner = {
-            "version": RTC_PLANNER_VERSION,
+            "version": persisted_planner_version,
             "handoff_contract_version": RTC_HANDOFF_CONTRACT_VERSION,
             "prompt_schema_projection_version": rtc_prompt_schema_projection_version(workflow),
             "slicing_stream": "WIP",
             "boundary_streams": ["WIP", "REFERENCE"],
-            "reference_correlation": "EXACT_WIP_SCRIPTURE_RANGE",
+            "reference_correlation": (
+                "CANONICAL_PROJECT_VRS"
+                if persisted_planner_version == RTC_PLANNER_VERSION
+                else "EXACT_WIP_SCRIPTURE_RANGE"
+            ),
         }
-        if dict(plan.get("rtc_planner") or {}) != expected_planner:
+        if persisted_planner != expected_planner:
             raise ValidationError(
                 f"{identity} RTC planner/prompt/schema contract changed after work-unit approval",
                 code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
@@ -2125,6 +2603,26 @@ def _approved_rtc_work_plan(
                     code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
                     affected_scope=primary_scope,
                 ) from exc
+            if str(package.get("projection") or "") != persisted_planner_version:
+                raise ValidationError(
+                    f"Approved {identity} work unit {unit_id} uses a different RTC planner projection",
+                    code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
+                    affected_scope=primary_scope,
+                )
+            if persisted_planner_version == RTC_PLANNER_VERSION:
+                alignment = package.get("alignment")
+                required_alignment_keys = {
+                    "primary_local_atoms",
+                    "canonical_atoms",
+                    "reference_local_spans",
+                    "missing_canonical_atoms",
+                }
+                if not isinstance(alignment, Mapping) or set(alignment) != required_alignment_keys:
+                    raise ValidationError(
+                        f"Approved {identity} work unit {unit_id} lacks canonical RTC alignment metadata",
+                        code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
+                        affected_scope=primary_scope,
+                    )
             if (
                 wip_tokens >= rtc_sizing_contract.wip_hard_exclusive_tokens
                 or route_tokens > rtc_sizing_contract.route_hard_max_tokens
@@ -2258,6 +2756,10 @@ def _create_approved_rtc_stage(
 ) -> dict[str, Any]:
     """Create the exact approved work units for a partitionable RTC stage."""
     units = [dict(item) for item in approved_plan.get("units", [])]
+    rtc_planner_version = str(
+        dict(approved_plan.get("rtc_planner") or {}).get("version")
+        or LEGACY_RTC_PLANNER_VERSION
+    )
     references_by_portion: dict[str, list[str]] = {}
     # Structural evidence is report-only and may cross approved RTC boundaries.
     # Route each atomic coordinate to its existing parent; meaning stages retain
@@ -2302,6 +2804,7 @@ def _create_approved_rtc_stage(
                 job_id=job_id,
                 run_id=run_id,
                 rtc_stage=rtc_stage,
+                rtc_planner_version=rtc_planner_version,
                 rtc_predecessor_files=rtc_predecessor_files,
                 ol_referral_contract=ol_referral_contract,
                 review_portion_id=str(unit["review_portion_id"]),
@@ -2571,6 +3074,7 @@ def _partition_selective_ol_cases(
     plan_seed: str,
     job_id: str | None,
     run_id: str | None,
+    rtc_planner_version: str,
     rtc_predecessor_files: Sequence[str],
     expected_ol_request_ids: Sequence[str],
     expected_ol_requests: Sequence[Mapping[str, Any]],
@@ -2663,6 +3167,7 @@ def _partition_selective_ol_cases(
             job_id=job_id,
             run_id=run_id,
             rtc_stage="SELECTIVE_OL_ADJUDICATION",
+            rtc_planner_version=rtc_planner_version,
             rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=[request_ids[index - 1]],
             expected_ol_requests=[request],
@@ -2771,6 +3276,7 @@ def _partition_act_request(
     job_id: str | None,
     run_id: str | None,
     rtc_stage: str | None = None,
+    rtc_planner_version: str | None = None,
     rtc_predecessor_files: Sequence[str] = (),
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
@@ -2800,6 +3306,7 @@ def _partition_act_request(
             plan_seed=plan_seed,
             job_id=job_id,
             run_id=run_id,
+            rtc_planner_version=(rtc_planner_version or RTC_PLANNER_VERSION),
             rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=expected_ol_request_ids,
             expected_ol_requests=expected_ol_requests,
@@ -2835,17 +3342,44 @@ def _partition_act_request(
         derived = rtc_slicing_policy(policy, profile.require_rtc_sizing())
     plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
     primary_stream_id = "WIP" if is_analysis_workflow(workflow) else "CONTENT_SOURCE"
-    route_streams = [SfmStream(primary_stream_id, tuple(records))]
+    canonical_rtc_route = (
+        workflow in {"rtc", "saw"}
+        and operation == "rtc"
+        and rtc_planner_version == RTC_PLANNER_VERSION
+    )
+    primary_index: ProjectVerseIndex | None = None
+    reference_index: ProjectVerseIndex | None = None
+    if canonical_rtc_route:
+        service = VersificationService(config)
+        primary_index = ProjectVerseIndex.build(
+            record_project_id,
+            records,
+            service.project_schema(record_project_id),
+        )
+    route_streams = [
+        SfmStream(
+            primary_stream_id,
+            tuple(records),
+            verse_index=primary_index,
+        )
+    ]
     if is_analysis_workflow(workflow) and operation in {"rtc", "focused", "ol"}:
         reference_records = records_from_project_result(
             source_project_id,
             compiled[source_project_id],
             resource_role="REFERENCE",
         )
+        if canonical_rtc_route:
+            reference_index = ProjectVerseIndex.build(
+                source_project_id,
+                reference_records,
+                service.project_schema(source_project_id),
+            )
         route_streams.append(SfmStream(
             "REFERENCE",
             tuple(reference_records),
             require_primary_coverage=not (operation == "rtc"),
+            verse_index=reference_index,
         ))
     if is_analysis_workflow(workflow) and operation == "ol":
         bound = _load_owning_job(config, str(job_id), workflow)
@@ -2865,6 +3399,8 @@ def _partition_act_request(
             route_id=f"{workflow.upper()}_{operation.upper()}",
             streams=tuple(route_streams),
             target_stream_ids=(primary_stream_id,),
+            primary_stream_id=primary_stream_id if canonical_rtc_route else None,
+            primary_index=primary_index if canonical_rtc_route else None,
         ),
         context_pool=records,
         required_spans=stage_spans,
@@ -2906,6 +3442,7 @@ def _partition_act_request(
             job_id=job_id,
             run_id=run_id,
             rtc_stage=rtc_stage,
+            rtc_planner_version=rtc_planner_version,
             rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=child_expected_ids,
             expected_ol_requests=child_expected_ol_requests,
@@ -3017,6 +3554,14 @@ def _create_rtc_composite(
         output_project_id=output_project_id,
         scope=scope,
     )
+    rtc_planner_version = str(
+        dict((approved_work_plan or {}).get("rtc_planner") or {}).get("version")
+        or (
+            LEGACY_RTC_PLANNER_VERSION
+            if approved_work_plan is not None
+            else RTC_PLANNER_VERSION
+        )
+    )
     candidates = _structural_candidates(config, output, scope)
     structure_enabled = bool(dict(rtc_policy.get("checks") or {}).get("structure_completeness", True))
     first_stage = "STRUCTURAL_ADJUDICATION" if candidates and structure_enabled else "REFERENCE_TEXT_COMPARISON"
@@ -3122,6 +3667,7 @@ def _create_rtc_composite(
             job_id=job_id,
             run_id=run_id,
             rtc_stage=first_stage,
+            rtc_planner_version=rtc_planner_version,
             rtc_stage_references=stage_references,
             ol_referral_contract=ol_referral_contract(workflow),
         )
@@ -3141,6 +3687,7 @@ def _create_rtc_composite(
         "grammar_override_id": grammar_override_id,
         "structural_stage_required": bool(candidates and structure_enabled),
         "rtc_policy": rtc_policy,
+        "rtc_planner_version": rtc_planner_version,
         "ol_referral_contract": ol_referral_contract(workflow),
         "review_portions": review_portions,
         "approved_work_plan_path": (
@@ -3180,6 +3727,7 @@ def _bounded_sfm_packet(
     primary_scope: ScriptureScope,
     destination: Path,
     *,
+    primary_references: Sequence[str] | None = None,
     context_references: Sequence[str] = (),
     allow_empty: bool = False,
 ) -> dict[str, Any]:
@@ -3193,7 +3741,21 @@ def _bounded_sfm_packet(
     parser_errors = list(usj.get("sage", {}).get("errors", []))
     if parser_errors:
         raise ValidationError(f"STC input {source.name} has parser errors: {', '.join(parser_errors[:8])}")
-    requested = (primary_scope, *(parse_scope(value) for value in context_references))
+    requested_primary = (
+        tuple(
+            requested
+            for value in primary_references
+            for requested in parse_scope_set(value)
+        )
+        if primary_references is not None
+        else (primary_scope,)
+    )
+    requested_context = tuple(
+        requested
+        for value in context_references
+        for requested in parse_scope_set(value)
+    )
+    requested = (*requested_primary, *requested_context)
     selected: list[dict[str, Any]] = []
     refs: set[VerseRef] = set()
     for unit in parse_usj_units(usj):
@@ -3229,7 +3791,11 @@ def _bounded_sfm_packet(
         lines.extend(str(line) for line in raw_lines)
     bounded = "\n".join(lines).rstrip() + "\n"
     atomic_write_text(destination, bounded)
-    primary_atoms = [ref.label() for ref in sorted(refs) if primary_scope.contains(ref)]
+    primary_atoms = [
+        ref.label()
+        for ref in sorted(refs)
+        if any(requested.contains(ref) for requested in requested_primary)
+    ]
     return {
         "path": destination.name,
         "source_file": source.name,
@@ -3302,6 +3868,7 @@ def _create_stc_task(
     work_unit_id: str | None,
     job_id: str,
     run_id: str,
+    stc_planner_version: str,
     context_before: Sequence[str],
     context_after: Sequence[str],
 ) -> dict[str, Any]:
@@ -3329,21 +3896,42 @@ def _create_stc_task(
     )
     wip_records_all = records_from_project_result(output.project_id, compiled[output.project_id], resource_role="WIP")
     ol_records_all = records_from_project_result(ol_project.project_id, compiled[ol_project.project_id], resource_role=family)
+    wip_index: ProjectVerseIndex | None = None
+    ol_index: ProjectVerseIndex | None = None
+    if stc_planner_version == STC_PLANNER_VERSION:
+        service = VersificationService(config)
+        wip_index = ProjectVerseIndex.build(
+            output.project_id,
+            wip_records_all,
+            service.project_schema(output),
+        )
+        ol_index = ProjectVerseIndex.build(
+            ol_project.project_id,
+            ol_records_all,
+            service.project_schema(ol_project),
+        )
     policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy("stc")
     units = tuple(
         unit
         for portion_index, portion in enumerate(analysis_scope_portions(scope), start=1)
         for unit in plan_stc_work_units(
             select_records_for_scope(wip_records_all, portion),
-            tuple(
-                record
-                for record in ol_records_all
-                if any(portion.contains(ref) for ref in record.refs)
+            (
+                ol_records_all
+                if stc_planner_version == STC_PLANNER_VERSION
+                else tuple(
+                    record
+                    for record in ol_records_all
+                    if any(portion.contains(ref) for ref in record.refs)
+                )
             ),
             policy,
             unit_prefix=(parent_plan_id or f"STC-{scope.book}")
             + f"-P{portion_index:03d}",
+            wip_index=wip_index,
+            ol_index=ol_index,
             context_pool=wip_records_all,
+            planner_version=stc_planner_version,
         )
     )
     if auto_partition and work_unit_id is None and len(units) > 1:
@@ -3367,6 +3955,7 @@ def _create_stc_task(
                 work_unit_id=unit.unit_id,
                 job_id=job_id,
                 run_id=run_id,
+                stc_planner_version=stc_planner_version,
                 context_before_references=item["context_before"],
                 context_after_references=item["context_after"],
             )
@@ -3385,6 +3974,7 @@ def _create_stc_task(
             "requested_scope": scope.label(), "output_project": output.project_id,
             "contemporary_source": None, "primary_ol_authority": ol_project.project_id,
             "authority_family": family, "authority_role": "PRIMARY",
+            "stc_planner_version": stc_planner_version,
             "expected_references": expected, "work_units": children,
         }
         plan_path = plan_container(config.workflow(workflow), run_id) / f"{plan_id}.json"
@@ -3395,10 +3985,55 @@ def _create_stc_task(
     ol_file = _one_book_file(ol_project, scope.book)
     assert output_file is not None and ol_file is not None
     all_context = tuple(context_before) + tuple(context_after)
+    stc_alignment: dict[str, Any] | None = None
+    stc_source_issue_rows: list[dict[str, Any]] | None = None
+    ol_primary_references: list[str] | None = None
+    ol_context_references: list[str] = list(all_context)
+    if stc_planner_version == STC_PLANNER_VERSION:
+        assert wip_index is not None and ol_index is not None
+        primary_wip = select_records_for_scope(wip_records_all, scope)
+        context_wip = _records_intersecting_reference_values(
+            wip_records_all,
+            all_context,
+        )
+        primary_alignment = align_records(primary_wip, wip_index, ol_index)
+        context_alignment = align_records(context_wip, wip_index, ol_index)
+        authority_stream = f"{family}:PRIMARY"
+        ol_primary_references = [
+            record.reference for record in primary_alignment.authority_records
+        ]
+        ol_context_references = [
+            record.reference for record in context_alignment.authority_records
+        ]
+        stc_alignment = {
+            "primary_local_atoms": [
+                ref.label() for ref in sorted(primary_alignment.primary_local_refs)
+            ],
+            "canonical_atoms": [
+                ref.label() for ref in sorted(primary_alignment.canonical_refs)
+            ],
+            "authority_stream": authority_stream,
+            "authority_local_spans": ol_primary_references,
+            "missing_canonical_atoms": [
+                ref.label() for ref in sorted(primary_alignment.missing_canonical_refs)
+            ],
+        }
+        stc_source_issue_rows = _canonical_gap_source_issues(
+            primary_wip,
+            wip_index,
+            primary_alignment.missing_canonical_refs,
+            workflow="STC",
+            source_stream=authority_stream,
+            source_project_id=ol_project.project_id,
+            wip_project_id=output.project_id,
+            scope=scope.label(),
+        )
     seed = sha256_bytes(json.dumps({
         "job_id": job_id, "run_id": run_id, "scope": scope.label(),
         "wip": output.project_id, "ol": ol_project.project_id, "family": family,
         "work_unit_id": work_unit_id, "context": list(all_context),
+        "stc_planner_version": stc_planner_version,
+        "stc_alignment": stc_alignment,
     }, sort_keys=True, separators=(",", ":")).encode("utf-8"))
     base_task_id = f"stc-{scope.book.lower()}-{seed[:12]}"
     task_id = base_task_id
@@ -3420,23 +4055,28 @@ def _create_stc_task(
             ol_file,
             scope,
             ol_path,
-            context_references=all_context,
+            primary_references=ol_primary_references,
+            context_references=ol_context_references,
             allow_empty=True,
         )
         expected_references = list(wip_packet["primary_references"])
-        source_issue_rows = list(source_text_issues(
-            (ref for value in expected_references for ref in expand_reference_atoms(value)),
-            (
-                ref
-                for value in ol_packet["primary_references"]
-                for ref in expand_reference_atoms(str(value))
-            ),
-            workflow="STC",
-            source_stream=f"{family}:PRIMARY",
-            source_project_id=ol_project.project_id,
-            wip_project_id=output.project_id,
-            scope=scope.label(),
-        ))
+        source_issue_rows = (
+            stc_source_issue_rows
+            if stc_source_issue_rows is not None
+            else list(source_text_issues(
+                (ref for value in expected_references for ref in expand_reference_atoms(value)),
+                (
+                    ref
+                    for value in ol_packet["primary_references"]
+                    for ref in expand_reference_atoms(str(value))
+                ),
+                workflow="STC",
+                source_stream=f"{family}:PRIMARY",
+                source_project_id=ol_project.project_id,
+                wip_project_id=output.project_id,
+                scope=scope.label(),
+            ))
+        )
         target_grammar_path, target_profile = _write_grammar_contract(config, output, packet_root, "wip")
         if target_grammar_path is None or target_profile is None:
             raise ValidationError(
@@ -3477,10 +4117,17 @@ def _create_stc_task(
         ]
         narrative_language = _narrative_language_contract(config)
         ol_binding_key = expected_role
-        resource_bindings = {"WIP": output.project_id, ol_binding_key: ol_project.project_id}
+        project_identities = resolve_project_identities(
+            config.root,
+            {"WIP": output.project_id, ol_binding_key: ol_project.project_id},
+            config.projects,
+            compiled,
+        )
+        resource_bindings = identity_bindings(project_identities)
+        resource_display_names = identity_display_names(project_identities)
         project_fingerprints = {
-            output.project_id: project_validation_fingerprint(compiled[output.project_id]),
-            ol_project.project_id: project_validation_fingerprint(compiled[ol_project.project_id]),
+            identity.project_id: identity.content_fingerprint
+            for identity in project_identities.values()
         }
         route_bytes = int(wip_packet["serialized_bytes"]) + int(ol_packet["serialized_bytes"])
         route_tokens = int(wip_packet["estimated_tokens"]) + int(ol_packet["estimated_tokens"])
@@ -3508,9 +4155,12 @@ def _create_stc_task(
         identity = {
             "schema_version": "2.4", "execution_mode": "SAGE_GOVERNED_TASK_V1",
             "workflow": workflow, "operation": "stc", "rtc_stage": None,
+            "stc_planner_version": stc_planner_version,
+            "stc_alignment": stc_alignment,
             "skill_id": skill.skill_id,
             "job_id": job_id, "run_id": run_id,
-            "resource_bindings": resource_bindings, "resource_display_names": resource_bindings,
+            "resource_bindings": resource_bindings,
+            "resource_display_names": resource_display_names,
             "output_project": output.project_id, "output_content_state": output.content_state,
             "contemporary_source": None, "primary_ol_authority": ol_project.project_id,
             "original_language_sources": [{
@@ -3641,6 +4291,8 @@ def create_act_task(
     job_id: str | None = None,
     run_id: str | None = None,
     rtc_stage: str | None = None,
+    rtc_planner_version: str | None = None,
+    stc_planner_version: str | None = None,
     rtc_predecessor_files: Sequence[str] = (),
     expected_ol_request_ids: Sequence[str] = (),
     expected_ol_requests: Sequence[Mapping[str, Any]] = (),
@@ -3682,6 +4334,36 @@ def create_act_task(
         rtc_stage = rtc_stage.strip().upper()
         if workflow not in {"rtc", "saw"} or operation != "rtc" or rtc_stage not in RTC_STAGES:
             raise ValidationError(f"Unsupported internal RTC stage: {rtc_stage}")
+    if workflow in {"rtc", "saw"} and operation == "rtc":
+        rtc_planner_version = str(
+            rtc_planner_version or RTC_PLANNER_VERSION
+        ).strip()
+        if rtc_planner_version not in {
+            RTC_PLANNER_VERSION,
+            LEGACY_RTC_PLANNER_VERSION,
+        }:
+            raise ValidationError(
+                f"Unsupported persisted RTC planner version: {rtc_planner_version}",
+                code="RTC_PLANNER_VERSION_UNSUPPORTED",
+                next_action="Resume with a supported SAGE release or rebuild and approve the Run plan.",
+            )
+    elif rtc_planner_version is not None:
+        raise ValidationError("RTC planner version is valid only for an RTC task")
+    if is_analysis_workflow(workflow) and operation == "stc":
+        stc_planner_version = str(
+            stc_planner_version or STC_PLANNER_VERSION
+        ).strip()
+        if stc_planner_version not in {
+            STC_PLANNER_VERSION,
+            LEGACY_STC_PLANNER_VERSION,
+        }:
+            raise ValidationError(
+                f"Unsupported persisted STC planner version: {stc_planner_version}",
+                code="STC_PLANNER_VERSION_UNSUPPORTED",
+                next_action="Resume with a supported SAGE release or rebuild the STC Run plan.",
+            )
+    elif stc_planner_version is not None:
+        raise ValidationError("STC planner version is valid only for an STC task")
     focus = focus.strip() if isinstance(focus, str) and focus.strip() else None
     if focus and ("\n" in focus or len(focus) > 600):
         raise ValidationError("--focus must be one bounded single-line question of at most 600 characters")
@@ -3817,6 +4499,7 @@ def create_act_task(
             work_unit_id=work_unit_id,
             job_id=job_id,
             run_id=run_id,
+            stc_planner_version=stc_planner_version,
             context_before=context_before,
             context_after=context_after,
         )
@@ -3867,20 +4550,60 @@ def create_act_task(
     )
     conditional_ol = workflow == "bic" and operation == "rewrite" and ol_project is not None
     readiness_projects: list[tuple[str, ProjectSpec]] = [
-        (("BIC TARGET" if workflow == "bic" else f"{_analysis_identity(workflow)} WIP"), output),
-        (("BIC SOURCE" if workflow == "bic" else f"{_analysis_identity(workflow)} comparison source"), source),
+        (
+            "BIC SOURCE"
+            if workflow == "bic"
+            else f"{_analysis_identity(workflow)} comparison source",
+            source,
+        ),
     ]
+    if workflow != "bic":
+        readiness_projects.insert(0, (f"{_analysis_identity(workflow)} WIP", output))
     if lexical_donor is not None:
         readiness_projects.append(("BIC DONOR", lexical_donor))
     if route_ol:
         assert ol_project is not None
         readiness_projects.append(("Original-language", ol_project))
-    compiled = _assert_initialized_and_ready(
-        config,
-        workflow,
-        readiness_projects,
-        scope,
-    )
+    bic_alignment: dict[str, Any] | None = None
+    if workflow == "bic":
+        assert isinstance(scope, ScriptureScope)
+        compiled, bic_alignment = _prepare_bic_project_alignment(
+            config,
+            source=source,
+            target=output,
+            source_scope=scope,
+            source_readiness_projects=readiness_projects,
+        )
+        if operation in {CANONICAL_TARGET_TEXT_OPERATION, "self_check"} and bic_alignment[
+            "advisory"
+        ] is not None:
+            raise ValidationError(
+                str(bic_alignment["advisory"]["message"]),
+                code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+                affected_scope=scope.label(),
+                next_action=(
+                    "Correct or explicitly align the SOURCE and TARGET versification before "
+                    "creating a writable BIC task."
+                ),
+                details={
+                    "source_primary_references": bic_alignment[
+                        "source_primary_references"
+                    ],
+                    "canonical_references": bic_alignment["canonical_references"],
+                    "target_local_references": bic_alignment[
+                        "target_local_references"
+                    ],
+                    "precision": bic_alignment["precision"],
+                    "chapter_topology": bic_alignment["chapter_topology"],
+                },
+            )
+    else:
+        compiled = _assert_initialized_and_ready(
+            config,
+            workflow,
+            readiness_projects,
+            scope,
+        )
     if (
         workflow in {"rtc", "saw"}
         and operation == "rtc"
@@ -3971,6 +4694,7 @@ def create_act_task(
                     job_id=job_id,
                     run_id=run_id,
                     rtc_stage=rtc_stage,
+                    rtc_planner_version=rtc_planner_version,
                     rtc_predecessor_files=rtc_predecessor_files,
                     expected_ol_request_ids=expected_ol_request_ids,
                     expected_ol_requests=expected_ol_requests,
@@ -4045,13 +4769,44 @@ def create_act_task(
         assert ol_file is not None
 
     if workflow == "bic" and operation in {CANONICAL_TARGET_TEXT_OPERATION, "self_check"}:
-        target_file = _one_book_file(output, scope.book, optional=True)
+        assert bic_alignment is not None
+        target_scope_value = str(bic_alignment["target_scope"] or "")
+        if not target_scope_value:
+            raise ValidationError(
+                "BIC writable task has no deterministic TARGET-local scope",
+                code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+                affected_scope=scope.label(),
+            )
+        target_book = parse_scope(target_scope_value).book
+        target_file = _one_book_file(output, target_book, optional=True)
         if target_file is not None and target_file.is_file():
             preflight_bounded_target_commit(
                 target_file.read_text(encoding="utf-8"),
                 source_file.read_text(encoding="utf-8"),
-                scope.label(),
+                target_scope_value,
+                expected_shapes=bic_alignment["target_shapes"],
             )
+
+    stage_reference_values = [
+        str(value).strip()
+        for value in rtc_stage_references
+        if str(value).strip()
+    ]
+    rtc_packet_route: dict[str, Any] | None = None
+    if (
+        workflow in {"rtc", "saw"}
+        and operation == "rtc"
+        and rtc_planner_version == RTC_PLANNER_VERSION
+    ):
+        rtc_packet_route = _rtc_canonical_packet_route(
+            config,
+            output=output,
+            reference=source,
+            compiled=compiled,
+            scope=scope,
+            primary_reference_values=stage_reference_values,
+            context_reference_values=context_references,
+        )
 
     expected_outputs = _expected_outputs(workflow, operation)
     project_fingerprints: dict[str, str] = {}
@@ -4077,6 +4832,13 @@ def create_act_task(
         "workflow": workflow,
         "operation": operation,
         "rtc_stage": rtc_stage,
+        "rtc_planner_version": rtc_planner_version,
+        "rtc_alignment": (
+            dict(rtc_packet_route["alignment"])
+            if rtc_packet_route is not None
+            else None
+        ),
+        "bic_alignment": bic_alignment,
         "job_id": job_id,
         "run_id": run_id,
         "output_project": output.project_id,
@@ -4144,6 +4906,7 @@ def create_act_task(
             job_id=job_id,
             run_id=run_id,
             rtc_stage=rtc_stage,
+            rtc_planner_version=rtc_planner_version,
             rtc_predecessor_files=rtc_predecessor_files,
             expected_ol_request_ids=expected_ol_request_ids,
             expected_ol_requests=expected_ol_requests,
@@ -4165,19 +4928,25 @@ def create_act_task(
 
     try:
         packet_records: dict[str, Any] = {}
-        stage_reference_values = [str(value).strip() for value in rtc_stage_references if str(value).strip()]
+        routed_reference_values = (
+            list(rtc_packet_route["reference_references"])
+            if rtc_packet_route is not None
+            else stage_reference_values
+        )
         contemporary_packet = packet_root / (
             "source.usj.json" if workflow == "bic" else "reference.usj.json"
         )
         packet_records["contemporary_source"], contemporary_semantic_usfm = (
             _write_reference_inventory_usj_packet(
                 source_file,
-                stage_reference_values,
+                routed_reference_values,
                 contemporary_packet,
                 parent_scope=scope,
                 allow_empty=workflow in {"rtc", "saw"} and operation == "rtc",
             )
-            if workflow in {"rtc", "saw"} and operation == "rtc" and stage_reference_values
+            if workflow in {"rtc", "saw"}
+            and operation == "rtc"
+            and (rtc_packet_route is not None or stage_reference_values)
             else _write_scope_usj_packet(
                 source_file,
                 scope,
@@ -4193,10 +4962,15 @@ def create_act_task(
         context_reference_packet: Path | None = None
         context_reference_model_packet: Path | None = None
         if context_references:
+            routed_context_reference_values = (
+                list(rtc_packet_route["context_reference_references"])
+                if rtc_packet_route is not None
+                else list(context_references)
+            )
             context_reference_packet = packet_root / "context-reference.usj.json"
             packet_records["context_contemporary_source"], context_reference_semantic_usfm = _write_reference_inventory_usj_packet(
                 source_file,
-                context_references,
+                routed_context_reference_values,
                 context_reference_packet,
                 parent_scope=scope,
                 allow_empty=workflow in {"rtc", "saw"} and operation == "rtc",
@@ -4314,8 +5088,15 @@ def create_act_task(
         target_semantic_usfm: str | None = None
         if predecessor:
             target_packet = packet_root / "staged-target.usj.json"
+            predecessor_scope = (
+                parse_scope(str(bic_alignment["target_scope"]))
+                if workflow == "bic"
+                and bic_alignment is not None
+                and bic_alignment.get("target_scope")
+                else scope
+            )
             packet_records["output_project"], target_semantic_usfm = _write_scope_usj_packet(
-                predecessor["rewrite_path"], scope, target_packet
+                predecessor["rewrite_path"], predecessor_scope, target_packet
             )
             packet_records["output_project"].update(
                 {
@@ -4507,8 +5288,20 @@ def create_act_task(
                 ol_role, scope, packet_records
             )
         else:
+            target_vrs_scope = (
+                parse_scope(str(bic_alignment["target_validation_scope"]))
+                if bic_alignment is not None
+                and bic_alignment.get("target_validation_scope")
+                else scope
+            )
             extra_inputs, _ = _write_vrs_evidence(
-                config, packet_root, output, source, None, scope
+                config,
+                packet_root,
+                output,
+                source,
+                None,
+                scope,
+                output_scope=target_vrs_scope,
             )
 
         conditional_paths: list[Path] = []
@@ -4525,7 +5318,12 @@ def create_act_task(
                     "schema_version": "1.0",
                     "scope": scope.label(),
                     "routing": "CONDITIONAL_MATERIAL_RISK",
-                    "original_language": _vrs_record(config, ol_project, scope),
+                    "original_language": _vrs_record(
+                        config,
+                        ol_project,
+                        scope,
+                        service=VersificationService(config),
+                    ),
                 },
             )
             conditional_paths.append(conditional_vrs_path)
@@ -4737,8 +5535,27 @@ def create_act_task(
             if is_analysis_workflow(workflow)
             else list(packet_records["contemporary_source"]["atomic_references"])
         )
+        bic_coordinate_fields: dict[str, Any] = {}
+        if workflow == "bic":
+            assert bic_alignment is not None
+            if expected_references != bic_alignment["source_primary_references"]:
+                raise ValidationError(
+                    "BIC SOURCE packet coverage differs from canonical alignment coverage",
+                    code="VERSE_ALIGNMENT_PROJECT_MISMATCH",
+                    affected_scope=scope.label(),
+                )
+            bic_coordinate_fields = {
+                "bic_alignment": bic_alignment,
+                "source_primary_references": list(expected_references),
+                "expected_output_references": list(
+                    bic_alignment["target_local_references"]
+                ),
+                "target_scope": bic_alignment["target_scope"],
+            }
         source_issue_rows = (
-            list(source_text_issues(
+            list(rtc_packet_route["source_text_issues"])
+            if rtc_packet_route is not None
+            else list(source_text_issues(
                 (
                     ref
                     for value in expected_references
@@ -4834,6 +5651,14 @@ def create_act_task(
                 if target_packet
                 else {}
             ),
+            **(
+                {
+                    "vrs.SOURCE": bic_alignment["source_effective_vrs_sha256"],
+                    "vrs.TARGET": bic_alignment["target_effective_vrs_sha256"],
+                }
+                if bic_alignment is not None
+                else {}
+            ),
         }
         bic_evidence_cohort: dict[str, Any] | None = None
         if workflow == "bic":
@@ -4896,11 +5721,14 @@ def create_act_task(
             canonical_resource_bindings["ORIGINAL_LANGUAGE_GREEK"] = bound_project.bindings["original_language_greek"]
         if bound_project.bindings.get("original_language_hebrew"):
             canonical_resource_bindings["ORIGINAL_LANGUAGE_HEBREW"] = bound_project.bindings["original_language_hebrew"]
-        inventory = registered_project_records(config.root)
-        resource_display_names = {
-            role: str(inventory.get(project_id, {}).get("display_name") or project_id)
-            for role, project_id in canonical_resource_bindings.items()
-        }
+        project_identities = resolve_project_identities(
+            config.root,
+            canonical_resource_bindings,
+            config.projects,
+            compiled,
+        )
+        canonical_resource_bindings = identity_bindings(project_identities)
+        resource_display_names = identity_display_names(project_identities)
         linguistic_profile_bindings: list[dict[str, Any]] = []
 
         def bind_profile(stream_id: str, profile: GrammarProfile | None, path: Path | None) -> None:
@@ -4940,6 +5768,13 @@ def create_act_task(
             "operation": operation,
             "skill_id": skill.skill_id,
             "rtc_stage": rtc_stage,
+            "rtc_planner_version": rtc_planner_version,
+            "rtc_alignment": (
+                dict(rtc_packet_route["alignment"])
+                if rtc_packet_route is not None
+                else None
+            ),
+            **bic_coordinate_fields,
             "job_id": job_id,
             "run_id": run_id,
             "resource_bindings": canonical_resource_bindings,
@@ -5208,6 +6043,15 @@ def create_act_task(
             *( [f"- Stage references: `{', '.join(expected_references)}`"] if workflow in {"rtc", "saw"} and operation == "rtc" and rtc_stage in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"} else [f"- Scope: `{scope.label()}`"] ),
             *(
                 [
+                    f"- SOURCE-local coverage: `{', '.join(identity['source_primary_references'])}`",
+                    f"- TARGET-local output scope: `{identity['target_scope'] or 'ALIGNMENT_REQUIRED'}`",
+                    f"- Expected TARGET-local output references: `{', '.join(identity['expected_output_references']) or 'ALIGNMENT_REQUIRED'}`",
+                ]
+                if workflow == "bic"
+                else []
+            ),
+            *(
+                [
                     f"- Context before (context-only): `{', '.join(context_before) or 'NONE'}`",
                     f"- Context after (context-only): `{', '.join(context_after) or 'NONE'}`",
                 ]
@@ -5229,6 +6073,15 @@ def create_act_task(
                 "Do not invent wording for source coordinates reported as absent; continue the run using only supplied evidence.",
                 *[f"- `{row['reference']}` — {row['message']}" for row in source_issue_rows],
             ])
+        if workflow == "bic" and bic_alignment is not None and bic_alignment["advisory"]:
+            act_lines.extend(
+                [
+                    "",
+                    "## TARGET versification advisory",
+                    "",
+                    str(bic_alignment["advisory"]["message"]),
+                ]
+            )
         if target_profile:
             act_lines.append(
                 f"- Selected project grammar profile: `{target_profile.language}/{target_profile.profile_id}` "
@@ -5488,6 +6341,7 @@ def create_act_task(
                     job_id=job_id,
                     run_id=run_id,
                     rtc_stage=rtc_stage,
+                    rtc_planner_version=rtc_planner_version,
                     rtc_predecessor_files=rtc_predecessor_files,
                     expected_ol_request_ids=expected_ol_request_ids,
                     expected_ol_requests=expected_ol_requests,
@@ -5673,6 +6527,18 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
     family = str(plan.get("authority_family") or "").strip().upper()
     if not output_project or not ol_authority or family not in {"GRK", "HEB"}:
         raise ValidationError("STC aggregate plan lacks governed WIP/primary-OL identity", code="STC_WORK_UNIT_PLAN_INVALID")
+    # Seal one planner lineage across every child before accepting terminal results.
+    stc_planner_version = str(
+        plan.get("stc_planner_version") or LEGACY_STC_PLANNER_VERSION
+    )
+    if stc_planner_version not in {
+        STC_PLANNER_VERSION,
+        LEGACY_STC_PLANNER_VERSION,
+    }:
+        raise ValidationError(
+            f"Unsupported persisted STC planner version: {stc_planner_version}",
+            code="STC_PLANNER_VERSION_UNSUPPORTED",
+        )
     expected_lineage_keys = {f"project.{output_project}", f"project.{ol_authority}"}
     planned_units: list[dict[str, Any]] = []
     accepted_results: list[dict[str, Any]] = []
@@ -5691,6 +6557,14 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
             seen_tasks.add(task_id)
         manifest_path = resolve_persisted_path(config.root, str(unit.get("manifest_path") or ""), "STC work-unit manifest")
         manifest = load_json(manifest_path)
+        manifest_planner_version = str(
+            manifest.get("stc_planner_version") or LEGACY_STC_PLANNER_VERSION
+        )
+        if manifest_planner_version != stc_planner_version:
+            raise ValidationError(
+                "STC work-unit planner version differs from its immutable plan",
+                code="RESULT_COVERAGE_DRIFT",
+            )
         planned_fingerprint = str(unit.get("task_fingerprint") or "")
         if planned_fingerprint and str(manifest.get("task_fingerprint") or "") != planned_fingerprint:
             raise ValidationError("STC work-unit task fingerprint differs from immutable plan", code="RESULT_COVERAGE_DRIFT")
@@ -5765,6 +6639,7 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         "output_project": output_project,
         "primary_ol_authority": ol_authority,
         "authority_family": family,
+        "stc_planner_version": stc_planner_version,
         "finding_count": sum(int(row.get("finding_count") or 0) for row in accepted_results),
         "source_comparison_status": source_comparison_status(source_issue_rows),
         "structural_issues": source_issue_rows,
@@ -6358,15 +7233,27 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         }
         final_status = "COMMITTED"
     elif workflow == "bic":
+        target_reference_values = raw.get(
+            "expected_output_references",
+            raw["expected_references"],
+        )
+        if not isinstance(target_reference_values, list) or not target_reference_values:
+            raise ValidationError(
+                "BIC task has no sealed TARGET-local output references",
+                code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
+                affected_scope=str(raw.get("scope") or ""),
+            )
+        target_scope_value = str(raw.get("target_scope") or raw["scope"])
+        target_scope = parse_scope(target_scope_value)
         expected_refs = {
             VerseRef(ref.split()[0], int(ref.split()[1].split(":")[0]), int(ref.split(":")[1]))
-            for ref in raw["expected_references"]
+            for ref in target_reference_values
         }
         expected_markers = tuple(raw["packets"]["contemporary_source"]["marker_sequence"])
         output_key = "output/rewrite.usfm" if operation == "rewrite" else "output/self-check.usfm"
         usfm_validation = validate_bic_usfm_output(
             output_paths[output_key],
-            expected_book=parse_scope(str(raw["scope"])).book,
+            expected_book=target_scope.book,
             expected_references=expected_refs,
             source_marker_sequence=expected_markers,
             marker_policy=str(raw.get("marker_policy") or "SEMANTIC_STRUCTURE_V1"),
@@ -6462,10 +7349,10 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             source_project = config.project(str(raw["contemporary_source"]))
             source_file = _one_book_file(source_project, parse_scope(str(raw["scope"])).book)
             assert source_file is not None
-            target_file = _one_book_file(project, parse_scope(str(raw["scope"])).book, optional=True)
+            target_file = _one_book_file(project, target_scope.book, optional=True)
             if target_file is None:
                 target_file = project.path / _target_book_filename(
-                    project, source_file, parse_scope(str(raw["scope"])).book
+                    project, target_scope.book
                 )
             if project.external:
                 if not project.external_writable_target:
@@ -6477,7 +7364,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             candidate_text = output_paths[output_key].read_text(encoding="utf-8")
             before_text = target_file.read_text(encoding="utf-8") if target_file.is_file() else ""
             after_text = (
-                merge_bounded_usfm(before_text, candidate_text, str(raw["scope"]))
+                merge_bounded_usfm(before_text, candidate_text, target_scope_value)
                 if before_text.strip()
                 else candidate_text
             )
@@ -6498,7 +7385,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             history = record_target_commit(
                 job_root=job.root,
                 target_file=target_file,
-                scope_value=str(raw["scope"]),
+                scope_value=target_scope_value,
                 before_text=before_text,
                 after_text=after_text,
                 transaction_id=transaction.transaction_id,
@@ -6510,7 +7397,8 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "transaction_id": transaction.transaction_id,
                 "target_file": str(target_file),
                 "target_sha256": sha256_file(target_file),
-                "bounded_scope": str(raw["scope"]),
+                "bounded_scope": target_scope_value,
+                "source_scope": str(raw["scope"]),
                 "history": history,
             }
             final_status = "COMMITTED"
@@ -6560,6 +7448,10 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "output_project": raw.get("output_project"),
                 "contemporary_source": None,
                 "primary_ol_authority": raw.get("primary_ol_authority"),
+                "stc_planner_version": (
+                    raw.get("stc_planner_version") or LEGACY_STC_PLANNER_VERSION
+                ),
+                "stc_alignment": raw.get("stc_alignment"),
                 "resource_bindings": raw.get("resource_bindings", {}),
                 "resource_display_names": raw.get("resource_display_names", {}),
                 "resource_fingerprints": raw.get("resource_fingerprints", {}),

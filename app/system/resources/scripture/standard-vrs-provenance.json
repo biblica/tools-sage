@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "imported_date": "2026-09-03",
+  "source": {
+    "repository": "https://github.com/sillsdev/libpalaso",
+    "commit": "bb9d36de70ed7fd6c3e62f0c86c1001f0009eb50",
+    "directory": "SIL.Scripture/Resources",
+    "license": "MIT",
+    "license_file": "standard-vrs.LICENSE.txt"
+  },
+  "resources": [
+    {
+      "filename": "eng.vrs",
+      "upstream_path": "SIL.Scripture/Resources/eng.vrs.txt",
+      "upstream_sha256": "003981c7f43c69b73b60d40a3f35f72e7ee017a686a6fb206f19a1b721157541",
+      "shipped_sha256": "003981c7f43c69b73b60d40a3f35f72e7ee017a686a6fb206f19a1b721157541",
+      "copy_state": "BYTE_IDENTICAL"
+    },
+    {
+      "filename": "org.vrs",
+      "upstream_path": "SIL.Scripture/Resources/org.vrs.txt",
+      "upstream_sha256": "1caee506dc4cc2947e45861c7d2ba5b5eeca9063ee263a37f2ca08f240e457ca",
+      "shipped_sha256": "9ae11065dda573a9ac9a16c331867ea6c39e94b89a4bcffb5dce280d45364391",
+      "copy_state": "EXISTING_SAGE_WHITESPACE_NORMALIZED"
+    },
+    {
+      "filename": "lxx.vrs",
+      "upstream_path": "SIL.Scripture/Resources/lxx.vrs.txt",
+      "upstream_sha256": "f7c7bd6e0e5a536b6ec924bfb5f19596bc21af5bee268f97dd51d0845328cc1f",
+      "shipped_sha256": "f7c7bd6e0e5a536b6ec924bfb5f19596bc21af5bee268f97dd51d0845328cc1f",
+      "copy_state": "BYTE_IDENTICAL"
+    },
+    {
+      "filename": "vul.vrs",
+      "upstream_path": "SIL.Scripture/Resources/vul.vrs.txt",
+      "upstream_sha256": "f3312f4f0ffcbf48a43a20f88212a64b070b100b2764d912481c5e481a015c51",
+      "shipped_sha256": "f3312f4f0ffcbf48a43a20f88212a64b070b100b2764d912481c5e481a015c51",
+      "copy_state": "BYTE_IDENTICAL"
+    },
+    {
+      "filename": "rsc.vrs",
+      "upstream_path": "SIL.Scripture/Resources/rsc.vrs.txt",
+      "upstream_sha256": "10beba712a98f9175268b770c24193897a1e6cdc0e5f2bb413423a839781471a",
+      "shipped_sha256": "10beba712a98f9175268b770c24193897a1e6cdc0e5f2bb413423a839781471a",
+      "copy_state": "BYTE_IDENTICAL"
+    },
+    {
+      "filename": "rso.vrs",
+      "upstream_path": "SIL.Scripture/Resources/rso.vrs.txt",
+      "upstream_sha256": "36dd088244fc5b41fa8f3d0dcce58412e3b944c9bdc8bbce818abdfb03df3072",
+      "shipped_sha256": "36dd088244fc5b41fa8f3d0dcce58412e3b944c9bdc8bbce818abdfb03df3072",
+      "copy_state": "BYTE_IDENTICAL"
+    }
+  ]
+}

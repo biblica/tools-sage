@@ -1,4 +1,4 @@
-# Git Workflow — SAGE 0.01beta2
+# Git Workflow — SAGE 0.02b1
 
 ## Repository contract
 

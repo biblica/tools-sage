@@ -5,6 +5,13 @@ before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/re
 Entries before the canonical RTC/STC migration retain former identifiers only as historical records;
 they do not define current workflows, menus, reports, Skills, or artifact names.
 
+### IMP-20260909-02B1 — Full development branch promoted to Beta 1
+
+- **Version:** `0.02b1`
+- **Milestone:** `MS-02B1-QUALIFY`
+- **Implemented:** Consolidated the complete `0.02a1` branch into the mainline checkpoint, including canonical VRS alignment across BIC/RTC/STC and Settings.xml-governed Scripture filename discovery and snapshot validation. Synchronized release identity and included NCA/SQS planning artifacts without activating those workflows.
+- **Verification:** Targeted filename/snapshot checks passed against synthetic fixtures and the real 66-book faTMNv4 Project. The final checkpoint requires clean staged-source schema, package, audit and full-suite verification; source data and prior sealed Runs remain unchanged by the repair.
+
 ### IMP-20260903-003 — RTC/STC canonical identity and progress convergence
 
 - **Version:** `0.01beta2`

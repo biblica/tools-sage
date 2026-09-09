@@ -3,7 +3,7 @@
   "release": {
     "id": "sage",
     "name": "Scripture Analysis and Generation Engine",
-    "version": "0.01beta2",
+    "version": "0.02b1",
     "status": "BETA",
     "public_release_ready": false,
     "feature_classifications": {

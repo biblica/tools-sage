@@ -1,13 +1,13 @@
-# SAGE v0.01beta2 Handover
+# SAGE v0.02b1 Handover
 
 ## Current continuation state
 
-- Version: `0.01beta2`
+- Version: `0.02b1`
 - Status: **Beta; pre-release; not an RC and not FINAL.**
 - Prior-release promotion-baseline qualification is historical reference evidence only.
 - The version reset and subsequent governed edits invalidate earlier qualification receipts. Fresh exact-source qualification is required before the first real RC.
 - Current implementation carries section-preferred RTC/STC slicing that coalesces adjacent fitting sections, with bounded lookahead and balanced oversized-section partitioning; scope-projected predecessor/selective-OL evidence; chapter-first report compilation; actual bound Project names in reports; three-column numeric menu alignment; provider-only Configure AI; exact per-Skill route qualification/resolution; and explicit connection testing.
-- Release feature classification: the Textual TUI is `EXPERIMENTAL_UNSTABLE`, displayed exactly as `EXPERIMENTAL / UNSTABLE`; it remains non-authoritative independently of the product's Alpha/Beta/RC phase. Its current preview is frozen for the remainder of `0.01beta2`, and further workflow functionality is deferred to `0.02beta`.
+- Release feature classification: the Textual TUI is `EXPERIMENTAL_UNSTABLE`, displayed exactly as `EXPERIMENTAL / UNSTABLE`; it remains non-authoritative independently of the product's Alpha/Beta/RC phase. Its current preview is frozen for the remainder of `0.02b1`, and further workflow functionality is deferred to a later release.
 - Current UI presentation contract: `docs/advanced/maintenance/UI-PRESENTATION.md`.
 - New RTC composites enforce `RTC_OL_REFERRAL_ADMISSION_V1`: only closed-class fundamental meaning conflicts unresolved by routed non-source evidence can become source referrals. Each admitted referral is isolated, while legacy sealed tasks remain resumable under their original contract.
 - RTC/STC execution progress keeps `Review range` stable and renders one replaceable live progress row; captured output emits one milestone per stage, never a stacked line per portion.
@@ -15,7 +15,7 @@
 - Machine-local runtime state, caches, `localdata/.system/runtime/python`, `runtime/venv`, and `host-capability.json` must not ship in the vanilla Core distribution.
 
 
-`0.01beta2` is the current mainline Beta. It incorporates the approved work validated on the historical `alpha/0.02alpha1` non-release branch; the branch receipts remain provenance, not qualification for the changed Beta source hash.
+`0.02b1` is the current mainline Beta, consolidating `0.02a1`. The historical non-release `alpha/0.02alpha1` branch entered the preceding `0.01beta2` baseline; those historical receipts do not qualify the current `0.02b1` source.
 
 ## Qualification rule
 
@@ -42,8 +42,12 @@ Any governed source or test change after qualification begins invalidates all re
 
 ## Release status
 
-The clean `0.01beta2` source/package gates are qualified for group testing only when accompanied by
+The clean `0.02b1` source/package gates are qualified for group testing only when accompanied by
 matching exact-source hardening and checksum receipts. The current routing source has not yet completed
 live route qualification or Operator acceptance. Native Windows/macOS acceptance remains required
 before any production-release promotion. The historical Alpha branch was merged to `main` only after
 explicit Operator approval.
+
+## Next development boundary
+
+NCA and SQS are planning work in this checkpoint. NCA is specified as Main Menu #5 after STC, with a required Number Style Profile and three pre-Run toggles. Its current planned reports disclose LLM capability limitations; shared SQS confidence checks are future functionality. No NCA runtime entry is shipped in this Beta.

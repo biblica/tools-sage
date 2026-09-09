@@ -12,26 +12,13 @@ from .canon import PERIPHERAL_BOOKS, resolve_expected_books
 from .errors import ValidationError
 from .hashing import sha256_bytes, sha256_file, sha256_paths
 from .registry import EcosystemConfig, ProjectSpec
+from .paratext_filenames import peek_book_code as _peek_book_code, select_scripture_files
 from .sections import section_index_from_usj
 from .structure_policy import load_structure_policy
 from .usj import USJ_COMPILER, compile_usfm_file, parse_usj_units
-from .vrs import VerseRef, VersificationSchema, load_project_vrs, parse_vrs_file
+from .vrs import VerseRef, VersificationSchema
+from .versification_service import VersificationService
 from .references import AnalysisScope, BOOK_ORDER, ScriptureScope, analysis_scope_portions
-
-USFM_SUFFIXES = {".sfm"}
-BOOK_ID_BYTES_RE = re.compile(rb"(?m)^\\id[ \t]+([A-Za-z0-9]{3})(?:[ \t\r]|$)")
-
-
-def _peek_book_code(path: Path) -> str | None:
-    """Read an ASCII ``\\id`` code without decoding unrelated Scripture text."""
-    try:
-        with path.open("rb") as source:
-            prefix = source.read(65536)
-    except OSError as exc:
-        raise ValidationError(f"Unable to inspect USFM book ID in {path}: {exc}") from exc
-    match = BOOK_ID_BYTES_RE.search(prefix)
-    return match.group(1).decode("ascii").upper() if match else None
-
 
 def discover_usfm_files(
     project_root: Path,
@@ -43,20 +30,8 @@ def discover_usfm_files(
     Scope-limited discovery reads only each file's ASCII ``\\id`` prefix. The
     selected book is still decoded and validated strictly when compiled.
     """
-    if not project_root.exists() or not project_root.is_dir():
-        return []
-    files = sorted(
-        path
-        for path in project_root.iterdir()
-        if path.is_file()
-        and not path.is_symlink()
-        and path.suffix.casefold() in USFM_SUFFIXES
-        and not path.name.startswith(".")
-    )
-    if books is None:
-        return files
-    selected = {book.upper() for book in books}
-    return [path for path in files if _peek_book_code(path) in selected]
+    files, _ = select_scripture_files(project_root, books=books)
+    return files
 
 
 def discover_book_ids(project_root: Path) -> dict[str, Path]:
@@ -99,12 +74,7 @@ def is_default_vrs_compatible_issue(
     default_path = config.base_vrs_files.get(default_name.casefold())
     if default_path is None or not default_path.is_file():
         return False
-    default_schema = parse_vrs_file(
-        default_path,
-        schema_id=default_name,
-        canonical_id=config.canonical_versification,
-        source_label=f"base:{default_path.name}",
-    )
+    default_schema = VersificationService(config).base_schema(default_name)
     reference = str(issue.get("reference") or "").strip().upper()
     match = re.fullmatch(r"([1-4]?[A-Z0-9]{2,3})\s+(\d+)(?::(\d+))?", reference)
     if not match:
@@ -328,14 +298,32 @@ def compile_project(
 ) -> dict[str, Any]:
     """Compile and validate declared Project content or a selected book set."""
     # Validate and cache books independently so one failed book cannot contaminate another result.
+    if not project.enabled:
+        return {
+            "project_id": project.project_id,
+            "path": str(project.path),
+            "status": "NOT_APPLICABLE",
+            "issues": [],
+            "warnings": [],
+            "files": [],
+        }
+
     requested_books = frozenset(book.upper() for book in (books or ()))
-    all_files = discover_usfm_files(project.path)
     declared_books = frozenset(resolve_expected_books(project.scope))
-    files = (
-        discover_usfm_files(project.path, books=requested_books)
-        if books is not None
-        else discover_usfm_files(project.path, books=declared_books)
-    )
+    selected_books = requested_books if books is not None else declared_books
+    try:
+        all_files, filename_validation = select_scripture_files(project.path, validate_ids=False)
+        files, _ = select_scripture_files(project.path, books=selected_books)
+    except ValidationError as exc:
+        return {
+            "project_id": project.project_id,
+            "path": str(project.path),
+            "status": "BLOCKED",
+            "issues": [{"code": exc.code, "reference": exc.affected_scope or "",
+                        "message": str(exc), **exc.details}],
+            "warnings": [],
+            "files": [],
+        }
     peripheral_books = sorted(
         {
             book
@@ -357,6 +345,7 @@ def compile_project(
             return {
                 "project_id": project.project_id,
                 "path": str(project.path),
+                "filename_validation": filename_validation,
                 "status": "NOT_GENERATED",
                 "generation_state": "NOT_RUN",
                 "issues": [],
@@ -367,6 +356,7 @@ def compile_project(
         return {
             "project_id": project.project_id,
             "path": str(project.path),
+            "filename_validation": filename_validation,
             "status": "BLOCKED",
             "issues": [
                 {
@@ -382,6 +372,7 @@ def compile_project(
         return {
             "project_id": project.project_id,
             "path": str(project.path),
+            "filename_validation": filename_validation,
             "status": "BLOCKED",
             "issues": [
                 {
@@ -406,6 +397,7 @@ def compile_project(
             return {
                 "project_id": project.project_id,
                 "path": str(project.path),
+                "filename_validation": filename_validation,
                 "status": "NOT_GENERATED",
                 "generation_state": "NOT_RUN",
                 "issues": [],
@@ -416,28 +408,20 @@ def compile_project(
         return {
             "project_id": project.project_id,
             "path": str(project.path),
+            "filename_validation": filename_validation,
             "status": "BLOCKED",
             "issues": [
                 {
                     "code": "USFM_FILES_MISSING",
                     "reference": "",
-                    "message": "No top-level .SFM files were found.",
+                    "message": "No Scripture files matching the Project filename settings and book scope were found.",
                 }
             ],
             "warnings": [],
             "files": [],
         }
-    if not project.enabled:
-        return {
-            "project_id": project.project_id,
-            "path": str(project.path),
-            "status": "NOT_APPLICABLE",
-            "issues": [],
-            "warnings": [],
-            "files": [],
-        }
 
-    schema = load_project_vrs(config, project)
+    schema = VersificationService(config).project_schema(project)
     structure_policy = load_structure_policy(config.root)
     file_results: list[dict[str, Any]] = []
     project_issues: list[dict[str, str]] = []
@@ -539,7 +523,10 @@ def compile_project(
         total_poetry_blocks += int(section_summary.get("poetry_blocks", 0))
         total_paragraphs += int(section_summary.get("paragraphs", 0))
 
-    resource_hash = sha256_paths(all_files, relative_to=project.path)
+    resource_files = list(all_files)
+    if filename_validation["template"] is not None:
+        resource_files.append(Path(filename_validation["settings_file"]))
+    resource_hash = sha256_paths(resource_files, relative_to=project.path)
     compiled_files_hash = sha256_paths(files, relative_to=project.path)
     status = "BLOCKED" if project_issues else ("READY_WITH_WARNINGS" if project_warnings else "READY")
     return {
@@ -568,6 +555,7 @@ def compile_project(
         "status": status,
         "resource_sha256": resource_hash,
         "compiled_files_sha256": compiled_files_hash,
+        "filename_validation": filename_validation,
         "effective_vrs": schema.to_dict(),
         "structure_policy": structure_policy.to_dict(),
         "summary": {

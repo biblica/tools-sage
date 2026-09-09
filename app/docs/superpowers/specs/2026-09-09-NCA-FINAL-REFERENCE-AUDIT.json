@@ -1,0 +1,1388 @@
+{
+  "audit_date": "2026-09-09",
+  "scope": "Final local reference-table integrity and internal consistency audit; no retranslation or external scholarship reassessment",
+  "authority": {
+    "primary": "OL_VALUES in operator index",
+    "secondary": "NIV_VALUES in operator index",
+    "variants_and_disclosure": "textual_variant_registry.tsv + footnote_guidance.tsv",
+    "expression_audit": "supplementary; never overrides authoritative values"
+  },
+  "archive_sha256": "f4b826a167c6f26f05799f121d9f279cd89db3cd5d7d9bca916fc3a9baf775b1",
+  "checks": [
+    {
+      "name": "archive_crc",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "name": "listed_checksums",
+      "status": "PASS",
+      "files": 37,
+      "errors": []
+    },
+    {
+      "name": "file_manifest_bytes_and_hashes",
+      "status": "PASS",
+      "files": 36,
+      "errors": []
+    },
+    {
+      "name": "tsv_structure",
+      "status": "PASS",
+      "tables": 11,
+      "errors": []
+    },
+    {
+      "name": "coordinate_and_source_keys",
+      "status": "PASS",
+      "main_keys": 6244,
+      "errors": []
+    },
+    {
+      "name": "published_file_row_counts",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "name": "exact_numeric_encoding",
+      "status": "PASS",
+      "values_checked": 37411,
+      "errors": []
+    },
+    {
+      "name": "authoritative_operator_canonical_agreement",
+      "status": "PASS",
+      "keys": 6244,
+      "unit_notes_enriched_in_operator_index": [
+        "LUK 13:21",
+        "LUK 16:6",
+        "LUK 16:7",
+        "LUK 24:13",
+        "JHN 2:6",
+        "JHN 6:19",
+        "JHN 11:18",
+        "JHN 19:39",
+        "JHN 21:8",
+        "ACT 27:28",
+        "REV 6:6",
+        "REV 16:21"
+      ],
+      "errors": []
+    },
+    {
+      "name": "critical_variant_footnote_joins",
+      "status": "PASS",
+      "variants": 21,
+      "footnote_rows": 21,
+      "errors": []
+    },
+    {
+      "name": "unit_registry_joins",
+      "status": "WARN",
+      "unit_rows": 12,
+      "display_spacing_differences": [
+        "LUK 13:21",
+        "LUK 16:6",
+        "LUK 16:7"
+      ],
+      "errors": [],
+      "disposition": "Numeric quantities, source IDs, class and notes agree; three NIV text copies omit spaces. Use authoritative operator NIV_TEXT for display."
+    },
+    {
+      "name": "reading_dependent_footnote_policy",
+      "status": "PASS",
+      "counts": {
+        "NONE / N/A": 6211,
+        "RECOMMEND / REQUIRE": 17,
+        "REQUIRE / REQUIRE": 4,
+        "NONE_TEXT_CRITICAL / NONE_TEXT_CRITICAL": 12
+      },
+      "special_outcomes": {
+        "1SA 6:19": {
+          "ol": "PASS_AUTHORITY1",
+          "alternate": "CAUTION_ACCEPTABLE_ATTESTED_MINOR_READING_WITH_FOOTNOTE"
+        },
+        "NEH 7:68": {
+          "ol": "NO_CONFIGURED_OL_READING",
+          "alternate": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+        }
+      },
+      "errors": []
+    },
+    {
+      "name": "provenance_resolution_and_url_expansion",
+      "status": "PASS",
+      "sources": 38,
+      "local_sources_without_url": [
+        "OL_HEB_LOCAL",
+        "OL_GRK_LOCAL"
+      ],
+      "external_links_fetched": false,
+      "errors": []
+    },
+    {
+      "name": "precomputed_match_status_invariants",
+      "status": "PASS",
+      "status_counts": {
+        "PASS_EXACT": 3246,
+        "NIV_EXPLICIT_OL_NONEXPLICIT": 1850,
+        "DIFFERENT_NUMERIC_EXPRESSION": 717,
+        "OL_EXPLICIT_NIV_NONEXPLICIT": 336,
+        "PASS_EQUIVALENT_REORDERED": 62,
+        "TEXTUAL_VARIANT_RESEARCHED": 21,
+        "PASS_UNIT_CONVERSION": 12
+      },
+      "errors": []
+    },
+    {
+      "name": "all_workbook_table_exports",
+      "status": "PASS",
+      "sheet_table_pairs": 11,
+      "errors": []
+    },
+    {
+      "name": "workbook_formulas_and_error_cells",
+      "status": "PASS",
+      "sheets": 12,
+      "errors": []
+    },
+    {
+      "name": "western_mapping_agreement_with_sage",
+      "status": "PASS",
+      "indexed_keys": 6244,
+      "errors": []
+    },
+    {
+      "name": "stored_ol_reference_agreement_with_mapping",
+      "status": "WARN",
+      "boundary_exceptions": [
+        [
+          "1SA 20:42",
+          "1SA 20:42",
+          [
+            "1SA 21:1"
+          ]
+        ],
+        [
+          "1CH 12:4",
+          "1CH 12:4",
+          [
+            "1CH 12:5"
+          ]
+        ]
+      ],
+      "registered_null_ol_reference": [
+        "NEH 7:68"
+      ],
+      "errors": [],
+      "disposition": "Stored OL_REF is the authoritative numeric source portion. Both source texts were verified at stored coordinates. Mapping shift points to the continuation portion at 1SA 20:42 and 1CH 12:4; do not overwrite OL_REF. Non-Western attribution requires boundary-group handling."
+    },
+    {
+      "name": "configured_ol_corpus_bytes",
+      "status": "PASS",
+      "corpus": [
+        {
+          "family": "heb",
+          "sfm_files": 39
+        },
+        {
+          "family": "grk",
+          "sfm_files": 27
+        }
+      ],
+      "errors": []
+    },
+    {
+      "name": "closed_token_coverage",
+      "status": "PASS",
+      "classes": {
+        "EXCLUDED_LEXICAL_HOMOGRAPH": 171,
+        "NUMERIC": 165,
+        "COMPOUND_COMPONENT": 3,
+        "QERE_SUPERSEDED": 2
+      },
+      "errors": []
+    },
+    {
+      "name": "ol_text_at_stored_source_reference",
+      "status": "PASS",
+      "rows_checked": 6243,
+      "method": "Existing SAGE USJ compiler, whitespace-insensitive text equality; no numeric re-extraction",
+      "errors": []
+    },
+    {
+      "name": "niv_display_text_and_boundary_readback",
+      "status": "WARN",
+      "different_regular_verses": 8,
+      "unrepresented_verse_zero_in_verse_only_parser": [
+        "PSA 60:0"
+      ],
+      "disposition": "Keep authoritative NIV index text/values. Eight source readback differences: four stray-comma cases, one appended Psalm heading, three section-continuation boundaries. NEH 7:73 seventh-month and HAG 1:15 second-year continuations are absent from indexed NIV_TEXT; do not claim exhaustive numeric transcription of all NIV source continuations. PSA 60:0 is canonical superscription content requiring structural-node extraction.",
+      "errors": []
+    },
+    {
+      "name": "supplementary_expression_provenance",
+      "status": "WARN",
+      "differing_rows": 47,
+      "additional_authoritative_values": 51,
+      "disposition": "Authoritative indexes agree; supplementary expression audit is incomplete. Preserve values and disclose lineage limit.",
+      "errors": []
+    }
+  ],
+  "details": {
+    "supplementary_expression_audit": {
+      "classification": "NONBLOCKING_LINEAGE_WARNING",
+      "runtime_numeric_rows": 4392,
+      "runtime_value_count": 6800,
+      "audit_numeric_source_coordinates": 4376,
+      "audit_expression_count": 6749,
+      "differing_rows": 47,
+      "additional_runtime_values": 51,
+      "new_numeric_rows": 16,
+      "differences": [
+        {
+          "western_reference": "EXO 12:18",
+          "ol_reference": "EXO 12:18",
+          "runtime_values": [
+            "1",
+            "14",
+            "21"
+          ],
+          "expression_audit_values": [
+            "14",
+            "21"
+          ],
+          "additional_runtime_values": [
+            "1"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "EXO 16:30",
+          "ol_reference": "EXO 16:30",
+          "runtime_values": [
+            "7"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "EXO 20:5",
+          "ol_reference": "EXO 20:5",
+          "runtime_values": [
+            "3",
+            "4"
+          ],
+          "expression_audit_values": [
+            "3"
+          ],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "EXO 34:7",
+          "ol_reference": "EXO 34:7",
+          "runtime_values": [
+            "1000",
+            "3",
+            "4"
+          ],
+          "expression_audit_values": [
+            "1000",
+            "3"
+          ],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "LEV 25:9",
+          "ol_reference": "LEV 25:9",
+          "runtime_values": [
+            "7"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "NUM 14:18",
+          "ol_reference": "NUM 14:18",
+          "runtime_values": [
+            "3",
+            "4"
+          ],
+          "expression_audit_values": [
+            "3"
+          ],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "DEU 5:9",
+          "ol_reference": "DEU 5:9",
+          "runtime_values": [
+            "3",
+            "4"
+          ],
+          "expression_audit_values": [
+            "3"
+          ],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2SA 3:3",
+          "ol_reference": "2SA 3:3",
+          "runtime_values": [
+            "3"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2SA 23:8",
+          "ol_reference": "2SA 23:8",
+          "runtime_values": [
+            "3",
+            "800",
+            "1"
+          ],
+          "expression_audit_values": [
+            "800",
+            "1"
+          ],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2KI 10:30",
+          "ol_reference": "2KI 10:30",
+          "runtime_values": [
+            "4"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2KI 11:5",
+          "ol_reference": "2KI 11:5",
+          "runtime_values": [
+            "3"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 2:15",
+          "ol_reference": "1CH 2:15",
+          "runtime_values": [
+            "6",
+            "7"
+          ],
+          "expression_audit_values": [
+            "6"
+          ],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 3:2",
+          "ol_reference": "1CH 3:2",
+          "runtime_values": [
+            "3",
+            "4"
+          ],
+          "expression_audit_values": [
+            "4"
+          ],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 3:15",
+          "ol_reference": "1CH 3:15",
+          "runtime_values": [
+            "2",
+            "3",
+            "4"
+          ],
+          "expression_audit_values": [
+            "2",
+            "4"
+          ],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 8:39",
+          "ol_reference": "1CH 8:39",
+          "runtime_values": [
+            "2",
+            "3"
+          ],
+          "expression_audit_values": [
+            "2"
+          ],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 12:9",
+          "ol_reference": "1CH 12:10",
+          "runtime_values": [
+            "2",
+            "3"
+          ],
+          "expression_audit_values": [
+            "2"
+          ],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 12:10",
+          "ol_reference": "1CH 12:11",
+          "runtime_values": [
+            "4",
+            "5"
+          ],
+          "expression_audit_values": [
+            "4"
+          ],
+          "additional_runtime_values": [
+            "5"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 12:11",
+          "ol_reference": "1CH 12:12",
+          "runtime_values": [
+            "6",
+            "7"
+          ],
+          "expression_audit_values": [
+            "6"
+          ],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 24:8",
+          "ol_reference": "1CH 24:8",
+          "runtime_values": [
+            "3",
+            "4"
+          ],
+          "expression_audit_values": [
+            "3"
+          ],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 24:10",
+          "ol_reference": "1CH 24:10",
+          "runtime_values": [
+            "7",
+            "8"
+          ],
+          "expression_audit_values": [
+            "8"
+          ],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 25:10",
+          "ol_reference": "1CH 25:10",
+          "runtime_values": [
+            "3",
+            "12"
+          ],
+          "expression_audit_values": [
+            "12"
+          ],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 25:14",
+          "ol_reference": "1CH 25:14",
+          "runtime_values": [
+            "7",
+            "12"
+          ],
+          "expression_audit_values": [
+            "12"
+          ],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "1CH 26:4",
+          "ol_reference": "1CH 26:4",
+          "runtime_values": [
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "expression_audit_values": [
+            "2",
+            "4",
+            "5"
+          ],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2CH 5:3",
+          "ol_reference": "2CH 5:3",
+          "runtime_values": [
+            "7"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2CH 10:12",
+          "ol_reference": "2CH 10:12",
+          "runtime_values": [
+            "3",
+            "3"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "3",
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2CH 20:26",
+          "ol_reference": "2CH 20:26",
+          "runtime_values": [
+            "4"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2CH 23:1",
+          "ol_reference": "2CH 23:1",
+          "runtime_values": [
+            "7",
+            "100"
+          ],
+          "expression_audit_values": [
+            "100"
+          ],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2CH 27:5",
+          "ol_reference": "2CH 27:5",
+          "runtime_values": [
+            "100",
+            "10000",
+            "10000",
+            "2",
+            "3"
+          ],
+          "expression_audit_values": [
+            "100",
+            "10000",
+            "10000",
+            "2"
+          ],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "2CH 31:7",
+          "ol_reference": "2CH 31:7",
+          "runtime_values": [
+            "3",
+            "7"
+          ],
+          "expression_audit_values": [
+            "7"
+          ],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "ECC 7:28",
+          "ol_reference": "ECC 7:28",
+          "runtime_values": [
+            "1000",
+            "1"
+          ],
+          "expression_audit_values": [
+            "1000"
+          ],
+          "additional_runtime_values": [
+            "1"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "JER 25:1",
+          "ol_reference": "JER 25:1",
+          "runtime_values": [
+            "4"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "JER 28:1",
+          "ol_reference": "JER 28:1",
+          "runtime_values": [
+            "5",
+            "4"
+          ],
+          "expression_audit_values": [
+            "5"
+          ],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "JER 36:9",
+          "ol_reference": "JER 36:9",
+          "runtime_values": [
+            "9",
+            "5"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "9",
+            "5"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "JER 39:1",
+          "ol_reference": "JER 39:1",
+          "runtime_values": [
+            "9",
+            "10"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "9",
+            "10"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "JER 45:1",
+          "ol_reference": "JER 45:1",
+          "runtime_values": [
+            "4"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "JER 51:59",
+          "ol_reference": "JER 51:59",
+          "runtime_values": [
+            "4"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "JER 52:4",
+          "ol_reference": "JER 52:4",
+          "runtime_values": [
+            "10",
+            "9"
+          ],
+          "expression_audit_values": [
+            "10"
+          ],
+          "additional_runtime_values": [
+            "9"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "EZK 20:1",
+          "ol_reference": "EZK 20:1",
+          "runtime_values": [
+            "7",
+            "5"
+          ],
+          "expression_audit_values": [
+            "7"
+          ],
+          "additional_runtime_values": [
+            "5"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "DAN 9:27",
+          "ol_reference": "DAN 9:27",
+          "runtime_values": [
+            "1/2",
+            "1"
+          ],
+          "expression_audit_values": [
+            "1/2"
+          ],
+          "additional_runtime_values": [
+            "1"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "HAG 2:1",
+          "ol_reference": "HAG 2:1",
+          "runtime_values": [
+            "21",
+            "7"
+          ],
+          "expression_audit_values": [
+            "21"
+          ],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "HAG 2:10",
+          "ol_reference": "HAG 2:10",
+          "runtime_values": [
+            "24",
+            "9",
+            "2"
+          ],
+          "expression_audit_values": [
+            "24",
+            "2"
+          ],
+          "additional_runtime_values": [
+            "9"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "HAG 2:18",
+          "ol_reference": "HAG 2:18",
+          "runtime_values": [
+            "24",
+            "9"
+          ],
+          "expression_audit_values": [
+            "24"
+          ],
+          "additional_runtime_values": [
+            "9"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "ZEC 6:3",
+          "ol_reference": "ZEC 6:3",
+          "runtime_values": [
+            "3",
+            "4"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "3",
+            "4"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "ZEC 7:1",
+          "ol_reference": "ZEC 7:1",
+          "runtime_values": [
+            "4",
+            "4",
+            "9"
+          ],
+          "expression_audit_values": [
+            "4",
+            "4"
+          ],
+          "additional_runtime_values": [
+            "9"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "ZEC 7:3",
+          "ol_reference": "ZEC 7:3",
+          "runtime_values": [
+            "5"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "5"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "ZEC 7:5",
+          "ol_reference": "ZEC 7:5",
+          "runtime_values": [
+            "5",
+            "7",
+            "70"
+          ],
+          "expression_audit_values": [
+            "5",
+            "70"
+          ],
+          "additional_runtime_values": [
+            "7"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        },
+        {
+          "western_reference": "ZEC 13:9",
+          "ol_reference": "ZEC 13:9",
+          "runtime_values": [
+            "3"
+          ],
+          "expression_audit_values": [],
+          "additional_runtime_values": [
+            "3"
+          ],
+          "audit_values_absent_from_runtime": [],
+          "audit_sequence_preserved": true
+        }
+      ],
+      "disposition": "Use authoritative operator values unchanged. Supplementary audit cannot supply complete expression-level provenance at these rows. No automatic rejection or overwrite of authoritative values."
+    },
+    "critical_reading_matrix": [
+      {
+        "western_reference": "JDG 14:15",
+        "ol_values": "7",
+        "alternate_values": "4",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Some ancient versions read fourth; the Hebrew text reads seventh.",
+        "suggested_if_alternate": "Hebrew reads seventh; some Septuagint manuscripts and the Syriac read fourth.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_JDG1415"
+        ]
+      },
+      {
+        "western_reference": "1SA 1:24",
+        "ol_values": "3;1",
+        "alternate_values": "3",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Dead Sea Scrolls, Septuagint and Syriac support a three-year-old bull; the Masoretic Text reads three bulls.",
+        "suggested_if_alternate": "Masoretic Text reads three bulls; Dead Sea Scrolls, Septuagint and Syriac support a three-year-old bull.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "SCIELO_1SA124"
+        ]
+      },
+      {
+        "western_reference": "1SA 6:19",
+        "ol_values": "70;50000",
+        "alternate_values": "70",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "OL_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "A few Hebrew manuscripts read seventy; most Hebrew manuscripts and the Septuagint support 50,070.",
+        "suggested_if_alternate": "Most Hebrew manuscripts and the Septuagint support 50,070; a few Hebrew manuscripts read seventy.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_1SA619"
+        ]
+      },
+      {
+        "western_reference": "1SA 13:1",
+        "ol_values": "1;2",
+        "alternate_values": "30;42",
+        "class": "CONJECTURAL_EMENDATION_RECONSTRUCTION",
+        "scholarship": "RECONSTRUCTED_BUT_NOT_SECURE",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "The Hebrew text is incomplete in this regnal formula; ancient witnesses and modern translations reconstruct the missing numbers differently.",
+        "suggested_if_alternate": "The Hebrew text does not contain all the supplied numbers; the regnal formula is reconstructed and remains textually uncertain.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_1SA131"
+        ]
+      },
+      {
+        "western_reference": "1SA 13:5",
+        "ol_values": "30000;6000",
+        "alternate_values": "3000;6000",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "DIVIDED",
+        "ol_footnote": "REQUIRE",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Some Septuagint manuscripts and the Syriac read 3,000; the Hebrew text reads 30,000.",
+        "suggested_if_alternate": "Hebrew reads 30,000; some Septuagint manuscripts and the Syriac read 3,000.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "TIPS_1SA135"
+        ]
+      },
+      {
+        "western_reference": "2SA 8:4",
+        "ol_values": "1700;20000;100",
+        "alternate_values": "1000;7000;20000;100",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Septuagint and the parallel in 1 Chronicles 18:4 support 1,000 chariots and 7,000 charioteers; the Hebrew text reads 1,700 charioteers.",
+        "suggested_if_alternate": "Hebrew reads 1,700 charioteers; Septuagint and the parallel in 1 Chronicles 18:4 support 1,000 chariots and 7,000 charioteers.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_2SA84"
+        ]
+      },
+      {
+        "western_reference": "2SA 15:7",
+        "ol_values": "40",
+        "alternate_values": "4",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Some ancient witnesses read four years; the Hebrew text reads forty years.",
+        "suggested_if_alternate": "Hebrew reads forty years; several ancient witnesses support four years.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_2SA157"
+        ]
+      },
+      {
+        "western_reference": "2SA 24:13",
+        "ol_values": "7;3;3",
+        "alternate_values": "3;3;3",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Septuagint and 1 Chronicles 21:12 read three years; the Hebrew text reads seven years.",
+        "suggested_if_alternate": "Hebrew reads seven years; Septuagint and 1 Chronicles 21:12 read three years.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_2SA2413"
+        ]
+      },
+      {
+        "western_reference": "1KI 4:26",
+        "ol_values": "40000;12000",
+        "alternate_values": "4000;12000",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Some Septuagint manuscripts and 2 Chronicles 9:25 read 4,000; the Hebrew text reads 40,000.",
+        "suggested_if_alternate": "Hebrew reads 40,000; some Septuagint manuscripts and 2 Chronicles 9:25 read 4,000.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_1KI426"
+        ]
+      },
+      {
+        "western_reference": "1KI 5:11",
+        "ol_values": "20000;20",
+        "alternate_values": "20000;20000",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Septuagint and 2 Chronicles 2:10 support 20,000 baths of oil; the Hebrew text reads twenty cors.",
+        "suggested_if_alternate": "Hebrew reads twenty cors of oil; Septuagint and 2 Chronicles 2:10 support 20,000 baths.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_1KI511",
+          "TIPS_1KI511"
+        ]
+      },
+      {
+        "western_reference": "2KI 25:3",
+        "ol_values": "9",
+        "alternate_values": "9;4",
+        "class": "PARALLEL_PASSAGE_RECONSTRUCTION",
+        "scholarship": "NIV_FAVORED_RECONSTRUCTION",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "The Hebrew text lacks the month number; fourth is supplied from the parallel in Jeremiah 52:6.",
+        "suggested_if_alternate": "Fourth is not present in the Hebrew text here; it is supplied from Jeremiah 52:6.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_2KI253"
+        ]
+      },
+      {
+        "western_reference": "1CH 25:9",
+        "ol_values": "1;2;12",
+        "alternate_values": "1;12;2;12",
+        "class": "STRUCTURAL_RECONSTRUCTION",
+        "scholarship": "STRUCTURAL_RECONSTRUCTION",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "The Hebrew text lacks the first group's twelve; the number is supplied from the repeated pattern and the total in verse 7.",
+        "suggested_if_alternate": "Twelve is not explicit in the Hebrew text for the first group; it is reconstructed from the repeated pattern and the total in verse 7.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_1CH259"
+        ]
+      },
+      {
+        "western_reference": "2CH 3:4",
+        "ol_values": "20;120",
+        "alternate_values": "20;20",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Some Septuagint and Syriac manuscripts read 20 cubits; the Hebrew text reads 120 cubits.",
+        "suggested_if_alternate": "Hebrew reads 120 cubits; some Septuagint and Syriac manuscripts read 20 cubits.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_2CH34"
+        ]
+      },
+      {
+        "western_reference": "2CH 22:2",
+        "ol_values": "42;1",
+        "alternate_values": "22;1",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Some Septuagint manuscripts, the Syriac and 2 Kings 8:26 read 22; the Hebrew text reads 42.",
+        "suggested_if_alternate": "Hebrew reads 42; some ancient witnesses and 2 Kings 8:26 read 22.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_2CH222"
+        ]
+      },
+      {
+        "western_reference": "2CH 36:9",
+        "ol_values": "8;3;10",
+        "alternate_values": "18;3;10",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "One Hebrew manuscript, some Septuagint manuscripts, the Syriac and 2 Kings 24:8 read 18; most Hebrew manuscripts read 8.",
+        "suggested_if_alternate": "Most Hebrew manuscripts read 8; one Hebrew manuscript, ancient versions and 2 Kings 24:8 support 18.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_2CH369"
+        ]
+      },
+      {
+        "western_reference": "NEH 7:68",
+        "ol_values": "",
+        "alternate_values": "736;245",
+        "class": "ATTESTED_VERSE_OMISSION_ADDITION",
+        "scholarship": "DIVIDED",
+        "ol_footnote": "REQUIRE",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Most Hebrew manuscripts omit this verse; some Hebrew manuscripts and ancient witnesses include it, in agreement with Ezra 2:66.",
+        "suggested_if_alternate": "This verse is absent from most Hebrew manuscripts but is supported by some Hebrew manuscripts, ancient witnesses and Ezra 2:66.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "CAM_NEH7"
+        ]
+      },
+      {
+        "western_reference": "EZK 26:1",
+        "ol_values": "11;1",
+        "alternate_values": "11;12;1",
+        "class": "CONJECTURAL_DATE_RECONSTRUCTION",
+        "scholarship": "RECONSTRUCTED_BUT_NOT_SECURE",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "The Hebrew text lacks the month number; twelfth is a proposed reconstruction of the date formula.",
+        "suggested_if_alternate": "Twelfth is not present in the Hebrew text; it is a conjectural restoration of the date formula.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_EZK261"
+        ]
+      },
+      {
+        "western_reference": "EZK 40:49",
+        "ol_values": "20;11;1;1",
+        "alternate_values": "20;12",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "DIVIDED",
+        "ol_footnote": "REQUIRE",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Septuagint reads 12 cubits; the Hebrew text reads 11 cubits. The textual evidence remains divided.",
+        "suggested_if_alternate": "Hebrew reads 11 cubits; Septuagint reads 12 cubits. The textual evidence remains divided.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "TIPS_EZK4049"
+        ]
+      },
+      {
+        "western_reference": "EZK 42:4",
+        "ol_values": "10;1",
+        "alternate_values": "10;100",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "DIVIDED",
+        "ol_footnote": "REQUIRE",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Septuagint and Syriac read 100 cubits; the Hebrew text reads one cubit. The textual evidence remains divided.",
+        "suggested_if_alternate": "Hebrew reads one cubit; Septuagint and Syriac read 100 cubits. The textual evidence remains divided.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "BH_EZK424"
+        ]
+      },
+      {
+        "western_reference": "EZK 45:1",
+        "ol_values": "25000;10000",
+        "alternate_values": "25000;20000",
+        "class": "ATTESTED_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Septuagint and the surrounding dimensions support 20,000 cubits; the Hebrew text reads 10,000 cubits.",
+        "suggested_if_alternate": "Hebrew reads 10,000 cubits; Septuagint and the surrounding dimensions support 20,000 cubits.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_EZK451"
+        ]
+      },
+      {
+        "western_reference": "EZK 45:5",
+        "ol_values": "25000;10000;20",
+        "alternate_values": "25000;10000",
+        "class": "ATTESTED_CLAUSE_LEVEL_TEXTUAL_VARIANT",
+        "scholarship": "NIV_FAVORED",
+        "ol_footnote": "RECOMMEND",
+        "alternate_footnote": "REQUIRE",
+        "suggested_if_ol": "Septuagint has an alternative clause about towns for the Levites; the Hebrew text contains the difficult expression 'twenty rooms.'",
+        "suggested_if_alternate": "Hebrew contains the difficult expression 'twenty rooms'; Septuagint has an alternative clause about towns for the Levites.",
+        "source_ids": [
+          "NIV_LOCAL",
+          "NET_EZK455"
+        ]
+      }
+    ],
+    "release_status": {
+      "reference_tables": "Authoritative by user instruction; audit verdict determined by checks",
+      "software_acceptance": "NOT_RUN_NCA_NOT_IMPLEMENTED",
+      "inherited_gate": "PENDING_FINAL_RUN unchanged",
+      "public_distribution_metadata": "Unresolved per supplied handover; unchanged"
+    },
+    "source_text_readback": {
+      "heb": {
+        "checked": 4675,
+        "missing": [],
+        "differences": 0,
+        "examples": []
+      },
+      "grk": {
+        "checked": 1568,
+        "missing": [],
+        "differences": 0,
+        "examples": []
+      },
+      "usNIVv2": {
+        "checked": 6244,
+        "missing": [
+          "PSA 60:0"
+        ],
+        "differences": 8,
+        "examples": [
+          {
+            "ref": "GEN 7:20",
+            "index": "The waters rose and covered the mountains to a depth of more than fifteen cubits. ,",
+            "source": "The waters rose and covered the mountains to a depth of more than fifteen cubits."
+          },
+          {
+            "ref": "1SA 7:2",
+            "index": "The ark remained at Kiriath Jearim a long time—twenty years in all.",
+            "source": "The ark remained at Kiriath Jearim a long time—twenty years in all.\nThen all the people of Israel turned back to the Lor"
+          },
+          {
+            "ref": "1KI 5:11",
+            "index": "and Solomon gave Hiram twenty thousand cors of wheat as food for his household, in addition to twenty thousand baths , o",
+            "source": "and Solomon gave Hiram twenty thousand cors of wheat as food for his household, in addition to twenty thousand baths of "
+          },
+          {
+            "ref": "NEH 7:73",
+            "index": "The priests, the Levites, the gatekeepers, the musicians and the temple servants, along with certain of the people and t",
+            "source": "The priests, the Levites, the gatekeepers, the musicians and the temple servants, along with certain of the people and t"
+          },
+          {
+            "ref": "PSA 119:72",
+            "index": "The law from your mouth is more precious to me than thousands of pieces of silver and gold. י Yodh",
+            "source": "The law from your mouth is more precious to me\nthan thousands of pieces of silver and gold."
+          },
+          {
+            "ref": "PRO 8:22",
+            "index": "“The Lord brought me forth as the first of his works, , before his deeds of old;",
+            "source": "“The Lord brought me forth as the first of his works,\nbefore his deeds of old;"
+          },
+          {
+            "ref": "EZK 42:16",
+            "index": "He measured the east side with the measuring rod; it was five hundred cubits. ,",
+            "source": "He measured the east side with the measuring rod; it was five hundred cubits."
+          },
+          {
+            "ref": "HAG 1:15",
+            "index": "on the twenty-fourth day of the sixth month.",
+            "source": "on the twenty-fourth day of the sixth month.\nIn the second year of King Darius,"
+          }
+        ]
+      }
+    }
+  },
+  "table_row_counts": {
+    "audit.tsv": 19,
+    "ol_token_coverage_audit.tsv": 341,
+    "normalization_overrides.tsv": 450,
+    "footnote_guidance.tsv": 21,
+    "ol_expression_audit.tsv": 6749,
+    "provenance_sources.tsv": 38,
+    "textual_variant_registry.tsv": 21,
+    "operator_rules.tsv": 12,
+    "unit_conversion_registry.tsv": 12,
+    "SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv": 6244,
+    "canonical_number_index.tsv": 6244
+  },
+  "verdict": "PASS_AUTHORITATIVE_TABLES_WITH_DOCUMENTED_LIMITATIONS",
+  "check_counts": {
+    "PASS": 18,
+    "WARN": 4
+  }
+}
