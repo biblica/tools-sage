@@ -43,6 +43,18 @@ _ENGLISH = {
     "report.nca.not_assessed": "Not assessed",
     "report.nca.result": "Result",
     "report.nca.confidence_basis": "Confidence basis",
+    "report.nca.ol_expressions_checked": "OL expressions checked",
+    "report.nca.target_expressions": "Target expressions",
+    "report.nca.passes": "Passes",
+    "report.nca.unit_conversions": "Unit conversions",
+    "report.nca.value_differences": "Value differences",
+    "report.nca.missing_numbers": "Missing numbers",
+    "report.nca.added_numbers": "Added numbers",
+    "report.nca.known_variants": "Known variants",
+    "report.nca.style_findings": "Style findings",
+    "report.nca.source_expressions": "OL source expressions",
+    "report.nca.variant_class": "Variant class",
+    "report.nca.scholarship_status": "Scholarship status",
 }
 _ENGLISH_LANGUAGES = frozenset({"en", "en-US", "en-GB"})
 _CATALOG_LANGUAGES = _ENGLISH_LANGUAGES | {"id", "fr", "ru", "pt-BR", "uk"}
@@ -126,6 +138,25 @@ def _model_identities(value: object) -> tuple[str, ...]:
                 if identity not in identities:
                     identities.append(identity)
     return tuple(identities)
+
+
+def _expressions(value: object) -> str:
+    """Render typed source expressions without changing their canonical values."""
+    if not isinstance(value, (list, tuple)):
+        return "NOT RECORDED"
+    rendered: list[str] = []
+    for item in value:
+        if not isinstance(item, Mapping):
+            continue
+        attributes = [str(item.get("kind") or "UNKNOWN")]
+        for key in ("role", "unit", "qualifier"):
+            if item.get(key) is not None:
+                attributes.append(f"{key}={item[key]}")
+        rendered.append(
+            f"{item.get('surface', 'NOT RECORDED')} = {_joined(item.get('values'))} "
+            f"[{' ; '.join(attributes)}]"
+        )
+    return "; ".join(rendered) or "NOT RECORDED"
 
 
 def render_nca_report(
@@ -212,6 +243,15 @@ def render_nca_report(
             "",
             f"- {text('report.nca.units')}: `{summary.get('units', 0)}`",
             f"- {text('report.nca.expressions')}: `{summary.get('expressions', 0)}`",
+            f"- {text('report.nca.target_expressions')}: `{summary.get('target_expressions', 0)}`",
+            f"- {text('report.nca.ol_expressions_checked')}: `{summary.get('ol_expressions_checked', 0)}`",
+            f"- {text('report.nca.passes')}: `{summary.get('passes', 0)}`",
+            f"- {text('report.nca.unit_conversions')}: `{summary.get('unit_conversions', 0)}`",
+            f"- {text('report.nca.value_differences')}: `{summary.get('value_differences', 0)}`",
+            f"- {text('report.nca.missing_numbers')}: `{summary.get('missing_numbers', 0)}`",
+            f"- {text('report.nca.added_numbers')}: `{summary.get('added_numbers', 0)}`",
+            f"- {text('report.nca.known_variants')}: `{summary.get('known_variants', 0)}`",
+            f"- {text('report.nca.style_findings')}: `{summary.get('style_findings', 0)}`",
             f"- {text('report.nca.findings')}: `{summary.get('findings', 0)}`",
             f"- {text('report.nca.insufficient_evidence')}: `{summary.get('insufficient_evidence', 0)}`",
             f"- {text('report.nca.reference_not_indexed')}: `{summary.get('reference_not_indexed', 0)}`",
@@ -233,6 +273,8 @@ def render_nca_report(
         projection = _mapping(unit.get("projection"), "unit projection")
         reading = _mapping(unit.get("reading"), "unit reading")
         footnote = _mapping(unit.get("footnote"), "unit footnote")
+        source_evidence = _mapping(unit.get("source_evidence"), "unit source evidence")
+        source_context = _mapping(source_evidence.get("context"), "unit source context")
         lines.extend(
             [
                 f"### `{unit.get('unit_id', 'NOT RECORDED')}`",
@@ -243,6 +285,9 @@ def render_nca_report(
                 f"- {text('report.nca.ol_reference')}: {_joined(projection.get('ol_references'))}",
                 f"- {text('report.nca.selected_reading')}: `{reading.get('selected', 'NOT RECORDED')}`",
                 f"- {text('report.nca.source_ids')}: {_joined(reading.get('source_ids'))}",
+                f"- {text('report.nca.source_expressions')}: {_expressions(source_evidence.get('expressions'))}",
+                f"- {text('report.nca.variant_class')}: `{source_context.get('variant_class') or 'NOT RECORDED'}`",
+                f"- {text('report.nca.scholarship_status')}: `{source_context.get('scholarship_status') or 'NOT RECORDED'}`",
                 f"- {text('report.nca.footnote_action')}: `{footnote.get('action', 'NOT RECORDED')}`",
                 f"- {text('report.nca.footnote_status')}: `{footnote.get('status', 'NOT RECORDED')}`",
                 f"- {text('report.nca.outcome')}: `{unit.get('final_outcome', 'NOT RECORDED')}`",

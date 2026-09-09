@@ -117,9 +117,9 @@ class NumericExpression:
         _enum("numeric expression kind", self.kind, NUMERIC_KINDS)
         _enum("numeric expression qualifier", self.qualifier, NUMERIC_QUALIFIERS)
         span = _tuple("numeric expression span", self.span)
-        if len(span) != 2 or any(not isinstance(value, int) for value in span) or span[0] < 0 or span[1] < span[0]:
+        if len(span) != 2 or any(type(value) is not int for value in span) or span[0] < 0 or span[1] <= span[0]:
             raise _invalid("numeric expression span", self.span)
-        if not isinstance(self.surface, str):
+        if not isinstance(self.surface, str) or not self.surface or len(self.surface) != span[1] - span[0]:
             raise _invalid("numeric expression surface", self.surface)
         if self.unit is not None and not isinstance(self.unit, str):
             raise _invalid("numeric expression unit", self.unit)
@@ -134,23 +134,57 @@ class NumericExpression:
         representations = _tuple(
             "numeric expression representations", self.representations
         )
+        # Nested evidence must be safe even when a caller constructs the dataclass
+        # directly instead of entering through the model-response validators.
         if any(not isinstance(value, Mapping) for value in representations):
             raise _invalid("numeric expression representations", self.representations)
+        representation_spans: set[Tuple[int, int]] = set()
+        for representation in representations:
+            if set(representation) != {"surface", "span", "value"}:
+                raise _invalid("numeric expression representation", representation)
+            child_span = representation["span"]
+            child_surface = representation["surface"]
+            child_value = representation["value"]
+            if (
+                not isinstance(child_span, tuple)
+                or len(child_span) != 2
+                or any(type(value) is not int for value in child_span)
+                or child_span[0] < span[0]
+                or child_span[1] > span[1]
+                or child_span[1] <= child_span[0]
+                or child_span in representation_spans
+                or not isinstance(child_surface, str)
+                or not child_surface
+                or len(child_surface) != child_span[1] - child_span[0]
+                or self.surface[child_span[0] - span[0]:child_span[1] - span[0]] != child_surface
+                or not isinstance(child_value, str)
+            ):
+                raise _invalid("numeric expression representation", representation)
+            try:
+                parsed_child = Fraction(child_value)
+            except (ValueError, ZeroDivisionError) as exc:
+                raise _invalid("numeric expression representation", representation) from exc
+            if len(values) != 1 or parsed_child != values[0] or str(parsed_child) != child_value:
+                raise _invalid("numeric expression representation", representation)
+            representation_spans.add(child_span)
         object.__setattr__(
             self,
             "representations",
             tuple(freeze(value) for value in representations),
         )
         role_spans = _tuple("numeric expression role spans", self.role_spans)
+        seen_role_spans: set[Tuple[int, int]] = set()
         for role_span in role_spans:
             values = _tuple("numeric expression role span", role_span)
             if (
                 len(values) != 2
-                or any(not isinstance(value, int) for value in values)
+                or any(type(value) is not int for value in values)
                 or values[0] < 0
-                or values[1] < values[0]
+                or values[1] <= values[0]
+                or role_span in seen_role_spans
             ):
                 raise _invalid("numeric expression role span", role_span)
+            seen_role_spans.add(role_span)
 
 
 @dataclass(frozen=True)
@@ -204,8 +238,10 @@ class FootnoteDecision:
         spans = _tuple("footnote evidence spans", self.evidence_spans)
         for span in spans:
             values = _tuple("footnote evidence span", span)
-            if len(values) != 2 or any(not isinstance(value, int) for value in values) or values[0] < 0 or values[1] < values[0]:
+            if len(values) != 2 or any(type(value) is not int for value in values) or values[0] < 0 or values[1] <= values[0]:
                 raise _invalid("footnote evidence span", span)
+        if len(spans) != len(set(spans)):
+            raise _invalid("footnote evidence spans", self.evidence_spans)
         note_ids = _tuple("footnote evidence note IDs", self.evidence_note_ids)
         if any(not isinstance(note_id, str) or not note_id for note_id in note_ids):
             raise _invalid("footnote evidence note IDs", self.evidence_note_ids)
@@ -406,6 +442,9 @@ class UnitResult:
     style_findings: Tuple[Mapping[str, object], ...] = ()
     limitations: Tuple[str, ...] = ()
     ol_references: Tuple[Optional[str], ...] = ()
+    source_expressions: Tuple[NumericExpression, ...] = ()
+    reference_context: Mapping[str, object] = field(default_factory=dict)
+    reference_index: Tuple[Mapping[str, object], ...] = ()
 
     def __post_init__(self) -> None:
         """Validate result aggregates and freeze style evidence mappings."""
@@ -427,12 +466,43 @@ class UnitResult:
             raise _invalid("unit limitations", self.limitations)
         ol_references = _tuple("unit OL references", self.ol_references)
         if (
-            len(ol_references) not in {0, len(self.projected.western_references)}
+            len(ol_references) > len(self.projected.western_references)
             or any(value is not None and (not isinstance(value, str) or not value) for value in ol_references)
             or any(value is None for value in ol_references)
             and self.projected.status != "REGISTERED_ABSENCE"
         ):
             raise _invalid("unit OL references", self.ol_references)
+        source_expressions = _tuple("unit source expressions", self.source_expressions)
+        if any(not isinstance(value, NumericExpression) for value in source_expressions):
+            raise _invalid("unit source expressions", self.source_expressions)
+        object.__setattr__(
+            self,
+            "reference_context",
+            _freeze_mapping("unit reference context", self.reference_context),
+        )
+        reference_index = _tuple("unit reference index", self.reference_index)
+        if len(reference_index) != len(self.projected.western_references):
+            raise _invalid("unit reference index", self.reference_index)
+        resolved_ol: list[Optional[str]] = []
+        for ref, value in zip(self.projected.western_references, reference_index):
+            if not isinstance(value, Mapping) or set(value) != {
+                "western_reference", "status", "ol_reference"
+            } or value.get("western_reference") != ref.label():
+                raise _invalid("unit reference index", self.reference_index)
+            status, ol_reference = value.get("status"), value.get("ol_reference")
+            if status == "INDEXED" and isinstance(ol_reference, str) and ol_reference:
+                resolved_ol.append(ol_reference)
+            elif status == "REGISTERED_ABSENCE" and ol_reference is None:
+                resolved_ol.append(None)
+            elif status != "UNINDEXED" or ol_reference is not None:
+                raise _invalid("unit reference index", self.reference_index)
+        if tuple(resolved_ol) != ol_references:
+            raise _invalid("unit reference index", self.reference_index)
+        object.__setattr__(
+            self,
+            "reference_index",
+            tuple(freeze(value) for value in reference_index),
+        )
 
 
 @dataclass(frozen=True)

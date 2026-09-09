@@ -25,6 +25,8 @@ controls:
   evidence_scope: externally_bounded_identifiers
   ol_reference_state: ordered_nullable_resolved_rows
   target_span_binding: exact_serialized_target_stream
+  ol_expression_evidence: exact_serialized_source_stream
+  handover_summary_counters: derived_from_assessments
   finding_identity: run_global
   model_receipts: exact_phase_receipts
   mandatory_capability_limitation: required

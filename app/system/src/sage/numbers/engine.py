@@ -16,6 +16,7 @@ from .model_tasks import CorrespondenceEvidence
 from .models import (
     Extraction,
     FootnoteDecision,
+    NumericExpression,
     ProjectedUnit,
     ReadingDecision,
     ReferenceBundle,
@@ -148,6 +149,21 @@ def _reading_context(
     return None, None
 
 
+def _result_reference_context(
+    row: ReferenceRow, bundle: ReferenceBundle
+) -> Mapping[str, object]:
+    """Retain exact OL stream and bounded variant metadata for result evidence."""
+    guidance = bundle.footnote_guidance.get(row.western_reference, {})
+    return {
+        "language": row.language,
+        "ol_text": row.ol_text,
+        "ol_values": tuple(row.ol_values),
+        "variant_class": row.metadata.get("VARIANT_CLASS") or guidance.get("CLASS"),
+        "scholarship_status": row.metadata.get("SCHOLARSHIP_STATUS")
+        or guidance.get("SCHOLARSHIP_STATUS"),
+    }
+
+
 def _extract(
     unit: ProjectedUnit,
     *,
@@ -198,7 +214,7 @@ def _identify_reading(
     *,
     bundle: ReferenceBundle,
     model_tasks: object | None,
-) -> tuple[ReadingDecision, tuple[str, ...]]:
+) -> tuple[ReadingDecision, tuple[str, ...], tuple[NumericExpression, ...]]:
     """Select a reading only from complete OL and registered correspondence evidence."""
     context, context_kind = _reading_context(row, extraction, bundle)
     evidence = _correspond(
@@ -208,7 +224,7 @@ def _identify_reading(
         limitations = extraction.limitations
         if evidence is not None:
             limitations += evidence.limitations
-        return _unsupported_reading("CORRESPONDENCE_INCOMPLETE"), limitations
+        return _unsupported_reading("CORRESPONDENCE_INCOMPLETE"), limitations, ()
 
     target = evidence.target_extraction
     target_values = _flat_values(target)
@@ -230,17 +246,21 @@ def _identify_reading(
                 None,
                 (),
             )
-        return reading, tuple(evidence.limitations)
+        return reading, tuple(evidence.limitations), evidence.source_expressions
 
     if evidence.registered_status != "COMPLETE":
-        return _unsupported_reading("REGISTERED_CORRESPONDENCE_INCOMPLETE"), tuple(
-            evidence.limitations + evidence.registered_limitations
+        return (
+            _unsupported_reading("REGISTERED_CORRESPONDENCE_INCOMPLETE"),
+            tuple(evidence.limitations + evidence.registered_limitations),
+            evidence.source_expressions,
         )
     candidate = compare_expressions(evidence.registered_expressions, target)
     if context_kind == "ALT":
-        return select_reading(
-            row, target_values, bundle=bundle, semantic=candidate
-        ), tuple(evidence.limitations + evidence.registered_limitations)
+        return (
+            select_reading(row, target_values, bundle=bundle, semantic=candidate),
+            tuple(evidence.limitations + evidence.registered_limitations),
+            evidence.source_expressions,
+        )
 
     target_units = Extraction(
         tuple(item for item in target.expressions if item.unit is not None),
@@ -257,7 +277,11 @@ def _identify_reading(
     reading = select_reading(
         row, row.ol_values, bundle=bundle, semantic=conversion
     )
-    return reading, tuple(evidence.limitations + evidence.registered_limitations)
+    return (
+        reading,
+        tuple(evidence.limitations + evidence.registered_limitations),
+        evidence.source_expressions,
+    )
 
 
 def _unit_signature(expression: object) -> tuple[object, ...]:
@@ -337,15 +361,25 @@ def evaluate_unit(
     bundle.require_qualified()
     validated_style = validate_style_profile(style_profile)
     resolved_rows = tuple(bundle.lookup(ref) for ref in unit.western_references)
-    ol_references = (
-        tuple(row.ol_reference for row in resolved_rows if row is not None)
-        if all(row is not None for row in resolved_rows)
-        else ()
+    ol_references = tuple(
+        row.ol_reference for row in resolved_rows if row is not None
+    )
+    reference_index = tuple(
+        {
+            "western_reference": ref.label(),
+            "status": "UNINDEXED" if row is None else (
+                "REGISTERED_ABSENCE" if row.ol_reference is None else "INDEXED"
+            ),
+            "ol_reference": None if row is None else row.ol_reference,
+        }
+        for ref, row in zip(unit.western_references, resolved_rows)
     )
     extraction = _extract(
         unit, language=language, style_profile=validated_style, model_tasks=model_tasks
     )
     limitations = list(extraction.limitations)
+    source_expressions: tuple[NumericExpression, ...] = ()
+    reference_context: Mapping[str, object] = {}
 
     # Reading identification is shared evidence, but only enabled checks may publish claims from it.
     reading = _not_assessed_reading()
@@ -388,7 +422,8 @@ def evaluate_unit(
                 else:
                     reading = _unsupported_reading("REFERENCE_OR_EXTRACTION_UNAVAILABLE")
             else:
-                reading, correspondence_limitations = _identify_reading(
+                reference_context = _result_reference_context(rows[0], bundle)
+                reading, correspondence_limitations, source_expressions = _identify_reading(
                     unit,
                     extraction,
                     rows[0],
@@ -488,6 +523,9 @@ def evaluate_unit(
         style_findings,
         tuple(dict.fromkeys(limitations)),
         ol_references,
+        source_expressions,
+        reference_context,
+        reference_index,
     )
 
 
@@ -578,11 +616,56 @@ def _unit_findings(
     return findings
 
 
-def summarize(results: tuple[UnitResult, ...]) -> Mapping[str, int]:
-    """Derive stable unit, expression, and assessment-state counts."""
+def summarize(
+    results: tuple[UnitResult, ...],
+    *,
+    checks: Mapping[str, bool] | None = None,
+) -> Mapping[str, int]:
+    """Derive handover, parser, reference, and assessment-state counters."""
+    enabled = dict(checks) if checks is not None else {
+        "number_accuracy": True,
+        "presentation_consistency": True,
+        "footnote_review": True,
+    }
+    accuracy = enabled["number_accuracy"]
+    presentation = enabled["presentation_consistency"]
+    semantic = tuple(result.reading.semantic.outcome for result in results)
     return {
         "units": len(results),
         "expressions": sum(len(result.extraction.expressions) for result in results),
+        "target_expressions": sum(len(result.extraction.expressions) for result in results),
+        "ol_expressions_checked": (
+            sum(len(result.source_expressions) for result in results) if accuracy else 0
+        ),
+        "passes": sum(
+            outcome in {
+                "PASS_AUTHORITY1", "PASS_EQUIVALENT_NUMERIC_EXPRESSION",
+                "PASS_UNIT_CONVERSION",
+            }
+            for outcome in semantic
+        ) if accuracy else 0,
+        "unit_conversions": semantic.count("PASS_UNIT_CONVERSION") if accuracy else 0,
+        "value_differences": semantic.count("REVIEW_VALUE_DIFFERENCE") if accuracy else 0,
+        "missing_numbers": semantic.count("REVIEW_NUMBER_MISSING") if accuracy else 0,
+        "added_numbers": semantic.count("REVIEW_NUMBER_ADDED") if accuracy else 0,
+        "known_variants": sum(
+            result.reading.selected == "ALT" for result in results
+        ) if accuracy else 0,
+        "style_findings": sum(
+            item.get("status") == "REVIEW"
+            for result in results
+            for item in result.style_findings
+        ) if presentation else 0,
+        "indexed_coordinates": sum(
+            item.get("status") != "UNINDEXED"
+            for result in results
+            for item in result.reference_index
+        ),
+        "unindexed_coordinates": sum(
+            item.get("status") == "UNINDEXED"
+            for result in results
+            for item in result.reference_index
+        ),
         "findings": 0,
         "insufficient_evidence": sum(
             "PRESENTATION_CHECK_DISABLED" not in result.limitations
@@ -759,6 +842,6 @@ def evaluate_run(
     coverage.update(
         expected_unit_ids=list(expected_unit_ids), assessed_unit_ids=list(actual_ids)
     )
-    summary = dict(summarize(results))
+    summary = dict(summarize(results, checks=checks))
     summary["findings"] = len(findings)
     return RunResult(results, findings, coverage, summary)

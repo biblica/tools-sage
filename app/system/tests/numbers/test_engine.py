@@ -255,6 +255,14 @@ def test_ol_pass_keeps_recommended_note_as_advisory():
 
     assert result.final_outcome == "PASS_AUTHORITY1"
     assert (result.footnote.status, result.footnote.outcome) == ("MISSING", "ADVISORY")
+    assert result.source_expressions == tasks.source
+    assert result.reference_context == {
+        "language": "GRK",
+        "ol_text": "3 men",
+        "ol_values": (Fraction(3),),
+        "variant_class": "TEXTUAL_VARIANT",
+        "scholarship_status": "SUPPORTED",
+    }
 
 
 def test_ol_reordering_requires_the_same_typed_referents():
@@ -461,12 +469,24 @@ def test_bridge_and_multirow_groups_are_evaluated_once():
         bundle=multi_rows, language="en", language_profile={},
         style_profile=style_profile(), check_policy=check_policy(), model_tasks=ambiguous_tasks,
     )
+    mixed = evaluate_run(
+        (projected(first, "3 men", end=2, western=(first, second)),),
+        bundle=single_bundle, language="en", language_profile={},
+        style_profile=style_profile(), check_policy=check_policy(), run_id="RUN-MIXED",
+        expected_unit_ids=("unit-1",), model_tasks=ol_tasks("3 men"),
+    )
 
     assert run.summary["units"] == 1
     assert tasks.extract_calls == tasks.correspond_calls == 1
     assert ambiguous.final_outcome == "INSUFFICIENT_EVIDENCE"
     assert ambiguous_tasks.extract_calls == 1
     assert ambiguous_tasks.correspond_calls == 0
+    assert mixed.units[0].ol_references == (first.label(),)
+    assert tuple(item["status"] for item in mixed.units[0].reference_index) == (
+        "INDEXED", "UNINDEXED",
+    )
+    assert mixed.summary["indexed_coordinates"] == 1
+    assert mixed.summary["unindexed_coordinates"] == 1
 
 
 def test_disabled_checks_are_not_assessed_and_emit_no_cross_check_claims():
@@ -501,10 +521,15 @@ def test_disabled_checks_are_not_assessed_and_emit_no_cross_check_claims():
     assert accuracy_only.final_outcome == "REGISTERED_ALTERNATE"
     assert accuracy_only.footnote.status == "NOT_ASSESSED"
     assert accuracy_only.style_findings == ()
+    assert accuracy_run.summary["ol_expressions_checked"] == 1
+    assert accuracy_run.summary["known_variants"] == 1
     assert not any(item["category"] == "ACCURACY" for item in footnote_only.findings)
     assert any(item["category"] == "FOOTNOTE" for item in footnote_only.findings)
     assert presentation_only.units[0].final_outcome == "NOT_ASSESSED"
     assert {item["category"] for item in presentation_only.findings} == {"STYLE"}
+    assert presentation_only.summary["ol_expressions_checked"] == 0
+    assert presentation_only.summary["passes"] == 0
+    assert presentation_only.summary["known_variants"] == 0
 
     document = numbers_result_document(
         accuracy_run,
