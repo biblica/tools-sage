@@ -321,6 +321,7 @@ def _validate_expression(
     role_spans = raw["role_spans"]
     if not isinstance(role_spans, list):
         raise _error("Numeric expression role spans are malformed.", "NCA_RESULT_EXPRESSION_INVALID")
+    validated_role_spans: list[tuple[int, int]] = []
     for role_span in role_spans:
         role_start, role_end = _validated_span(
             role_span, label="Numeric expression role span"
@@ -330,11 +331,15 @@ def _validate_expression(
                 "Numeric expression role span is outside its target stream.",
                 "NCA_RESULT_EXPRESSION_INVALID",
             )
+        validated_role_spans.append((role_start, role_end))
+    if len(validated_role_spans) != len(set(validated_role_spans)):
+        raise _error("Numeric expression role spans repeat.", "NCA_RESULT_EXPRESSION_INVALID")
     if role_required and (not isinstance(role, str) or not role or not role_spans):
         raise _error("Resolved correspondence requires role evidence.", "NCA_RESULT_EXPRESSION_INVALID")
     representations = raw["representations"]
     if not isinstance(representations, list):
         raise _error("Numeric expression representations are malformed.", "NCA_RESULT_EXPRESSION_INVALID")
+    representation_spans: list[tuple[int, int]] = []
     for representation_value in representations:
         representation = _require_mapping(representation_value, "numeric representation", "NCA_RESULT_EXPRESSION_INVALID")
         if set(representation) != {"surface", "span", "value"}:
@@ -348,8 +353,13 @@ def _validate_expression(
             or child_span[1] > len(target_text)
             or target_text[child_span[0]:child_span[1]] != child_surface
             or not (span[0] <= child_span[0] < child_span[1] <= span[1])
+            or len(values) != 1
+            or representation["value"] != values[0]
         ):
             raise _error("Numeric representation is outside its expression.", "NCA_RESULT_EXPRESSION_INVALID")
+        representation_spans.append(child_span)
+    if len(representation_spans) != len(set(representation_spans)):
+        raise _error("Numeric representations repeat.", "NCA_RESULT_EXPRESSION_INVALID")
     return expression_id, span
 
 

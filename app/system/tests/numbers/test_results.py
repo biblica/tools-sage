@@ -422,6 +422,16 @@ def test_registered_absence_serializes_null_ol_reference_distinct_from_unknown()
         lambda expression: expression.__setitem__("qualifier", "MAYBE"),
         lambda expression: expression.__setitem__("role", ""),
         lambda expression: expression.__setitem__("role_spans", [[-1, 3]]),
+        lambda expression: expression.__setitem__("role_spans", [[6, 9], [6, 9]]),
+        lambda expression: expression.__setitem__(
+            "representations", [{"surface": "three", "span": [0, 5], "value": "4"}]
+        ),
+        lambda expression: expression.__setitem__(
+            "representations", [
+                {"surface": "three", "span": [0, 5], "value": "3"},
+                {"surface": "three", "span": [0, 5], "value": "3"},
+            ]
+        ),
         lambda expression: expression.__setitem__(
             "representations", [{"surface": "three", "span": [9, 14], "value": "3"}]
         ),
