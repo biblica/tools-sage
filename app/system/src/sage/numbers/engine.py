@@ -213,9 +213,14 @@ def _identify_reading(
     target = evidence.target_extraction
     target_values = _flat_values(target)
     if context_kind is None:
-        semantic = compare_expressions(evidence.source_expressions, target)
+        semantic = compare_expressions(
+            evidence.source_expressions, target, allow_reordering=True
+        )
         reading = select_reading(
-            row, target_values, bundle=bundle, semantic=semantic
+            row,
+            row.ol_values if semantic.outcome in _PASS_OUTCOMES else target_values,
+            bundle=bundle,
+            semantic=semantic,
         )
         if semantic.outcome in {"REVIEW_NUMBER_MISSING", "REVIEW_NUMBER_ADDED"}:
             reading = ReadingDecision(
@@ -310,7 +315,9 @@ def _compare_unit_residual(
         target.status,
         target.limitations,
     )
-    return compare_expressions(tuple(remaining), target_residual)
+    return compare_expressions(
+        tuple(remaining), target_residual, allow_reordering=True
+    )
 
 
 def evaluate_unit(
@@ -329,6 +336,12 @@ def evaluate_unit(
     checks = _checks(check_policy)
     bundle.require_qualified()
     validated_style = validate_style_profile(style_profile)
+    resolved_rows = tuple(bundle.lookup(ref) for ref in unit.western_references)
+    ol_references = (
+        tuple(row.ol_reference for row in resolved_rows if row is not None)
+        if all(row is not None for row in resolved_rows)
+        else ()
+    )
     extraction = _extract(
         unit, language=language, style_profile=validated_style, model_tasks=model_tasks
     )
@@ -361,6 +374,17 @@ def evaluate_unit(
                         None,
                         (),
                     )
+                elif extraction.status == "COMPLETE":
+                    reading = ReadingDecision(
+                        "UNASSESSED",
+                        SemanticDecision(
+                            "NOT_ASSESSED",
+                            reason_codes=("NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED",),
+                        ),
+                        "NONE",
+                        None,
+                        (),
+                    )
                 else:
                     reading = _unsupported_reading("REFERENCE_OR_EXTRACTION_UNAVAILABLE")
             else:
@@ -375,14 +399,17 @@ def evaluate_unit(
 
     footnote = FootnoteDecision("NONE", "NOT_ASSESSED", "NONE")
     if checks["footnote_review"]:
-        footnote = assess_footnote(
-            reading,
-            unit.target.notes,
-            bundle=bundle,
-            language=language,
-            unit=unit.target,
-            model_tasks=model_tasks,
-        )
+        if "NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED" in reading.semantic.reason_codes:
+            footnote = FootnoteDecision("NONE", "NOT_REQUIRED", "NONE")
+        else:
+            footnote = assess_footnote(
+                reading,
+                unit.target.notes,
+                bundle=bundle,
+                language=language,
+                unit=unit.target,
+                model_tasks=model_tasks,
+            )
 
     style_findings: tuple[Mapping[str, object], ...] = ()
     if checks["presentation_consistency"]:
@@ -460,6 +487,7 @@ def evaluate_unit(
         final,
         style_findings,
         tuple(dict.fromkeys(limitations)),
+        ol_references,
     )
 
 
@@ -467,12 +495,13 @@ def _finding_base(result: UnitResult) -> dict[str, object]:
     """Return the exact target, Western, OL, selection, and evidence context."""
     target_refs = [ref.label() for ref in result.projected.target.target_references]
     western_refs = [ref.label() for ref in result.projected.western_references]
+    ol_references = list(result.ol_references)
     return {
         "target_reference": target_refs[0] if target_refs else None,
         "target_references": target_refs,
         "western_references": western_refs,
-        "ol_reference": result.reading.registry_id
-        or (western_refs[0] if len(western_refs) == 1 else None),
+        "ol_reference": ol_references[0] if len(ol_references) == 1 else None,
+        "ol_references": ol_references,
         "selected_reading": result.reading.selected,
         "source_ids": list(result.reading.source_ids),
         "evidence_ids": list(result.reading.semantic.evidence_ids),
@@ -489,7 +518,8 @@ def _unit_findings(
     base = _finding_base(result)
     findings: list[dict[str, object]] = []
     semantic = result.reading.semantic.outcome
-    if checks["number_accuracy"] and semantic not in _PASS_OUTCOMES | {
+    screened = "NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED" in result.reading.semantic.reason_codes
+    if checks["number_accuracy"] and not screened and semantic not in _PASS_OUTCOMES | {
         "REGISTERED_ALTERNATE"
     }:
         category = (
@@ -670,9 +700,19 @@ def evaluate_run(
             for unit in projected_styles
         )
     results = main_results + style_results
+    style_ids = {unit.target.unit_id for unit in projected_styles}
+    style_only_checks = {
+        "number_accuracy": False,
+        "presentation_consistency": checks["presentation_consistency"],
+        "footnote_review": False,
+    }
     local = {
         result.projected.target.unit_id: _unit_findings(
-            result, bundle=bundle, checks=checks
+            result,
+            bundle=bundle,
+            checks=style_only_checks
+            if result.projected.target.unit_id in style_ids
+            else checks,
         )
         for result in results
     }
@@ -689,7 +729,6 @@ def evaluate_run(
             if item.get("status") == "NOT_ASSESSED"
         )
     skipped = tuple(sorted(name for name, enabled in checks.items() if not enabled))
-    style_ids = {unit.target.unit_id for unit in projected_styles}
     required_complete = all(
         (
             result.extraction.status == "COMPLETE"
