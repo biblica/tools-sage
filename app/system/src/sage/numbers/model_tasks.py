@@ -498,6 +498,16 @@ def _is_subsequence(values: tuple[object, ...], expected: tuple[object, ...]) ->
     return all(any(candidate == value for candidate in iterator) for value in values)
 
 
+def _require_disjoint_primary_spans(expressions: tuple[NumericExpression, ...]) -> None:
+    """Reject overlapping independently counted expressions within one source stream."""
+    spans = sorted(expression.span for expression in expressions)
+    if any(current[0] < previous[1] for previous, current in zip(spans, spans[1:])):
+        raise _model_error(
+            "Source correspondence overlaps primary expression evidence",
+            "NCA_CORRESPONDENCE_EVIDENCE_INVALID",
+        )
+
+
 def validate_correspondence_response(
     unit: TargetUnit,
     target: Extraction,
@@ -557,6 +567,7 @@ def validate_correspondence_response(
     source_spans = [item.span for item in source]
     if len(source_ids) != len(set(source_ids)) or len(source_spans) != len(set(source_spans)):
         raise _model_error("Source correspondence duplicates expression evidence", code)
+    _require_disjoint_primary_spans(source)
     flat_values = tuple(value for expression in source for value in expression.values)
     if (
         status == "COMPLETE"
@@ -683,6 +694,7 @@ def validate_correspondence_response(
             or len(registered_spans) != len(set(registered_spans))
         ):
             raise _model_error("Registered correspondence duplicates evidence", code)
+        _require_disjoint_primary_spans(registered_expressions)
         registered_values = tuple(
             value for expression in registered_expressions for value in expression.values
         )
