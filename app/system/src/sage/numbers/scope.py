@@ -72,6 +72,9 @@ def project_scope(
     target = _without_identity_rules(target_schema)
     direct = _same_schema(target, western)
     selected_local = tuple(ref for ref in _coordinates(target, scope.book) if scope.contains(ref))
+    if not selected_local:
+        raise ValidationError('The NCA scope contains no coordinates under the effective WIP versification.',
+            code='NCA_SCOPE_OUTSIDE_VRS')
     selected_canonical = set(target.canonical_set(selected_local))
 
     def canonical_group(ref: VerseRef) -> set[VerseRef]:

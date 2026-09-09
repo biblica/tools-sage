@@ -96,3 +96,14 @@ def test_invalid_target_scope_is_rejected_instead_of_narrowed(tmp_path, label):
         project_scope((), scope=parse_scope(label), target_schema=target, western_schema=target,
             bundle=bundle((VerseRef('MAT', 1, 1), 'MAT 1:1')), mapping_path=mapping)
     assert caught.value.code == 'NCA_SCOPE_OUTSIDE_VRS'
+
+
+def test_fully_excluded_scope_cannot_become_empty_all_clear(tmp_path):
+    """A valid-looking selector must still contain an assessable coordinate under effective VRS."""
+    target = schema(tmp_path, 'eng.vrs', 'MAT 1:3\n-MAT 1:2\n')
+    mapping = tmp_path / 'mapping.txt'
+    mapping.write_text('MAT 1:1 = MAT 1:1\n')
+    with pytest.raises(ValidationError) as caught:
+        project_scope((), scope=parse_scope('MAT 1:2'), target_schema=target, western_schema=target,
+            bundle=bundle((VerseRef('MAT', 1, 1), 'MAT 1:1')), mapping_path=mapping)
+    assert caught.value.code == 'NCA_SCOPE_OUTSIDE_VRS'

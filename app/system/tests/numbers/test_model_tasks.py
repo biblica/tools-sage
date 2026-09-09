@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from fractions import Fraction
 from pathlib import Path
 
@@ -442,6 +443,37 @@ def test_partial_correspondence_preserves_uncertainty_and_cannot_supply_roles() 
     assert result.status == "PARTIAL"
     assert result.limitations == ("OL referent is ambiguous",)
     assert result.target_extraction.status == "PARTIAL"
+
+
+@pytest.mark.parametrize("stream", ["ol", "registered"])
+def test_correspondence_rejects_overlapping_primary_expression_spans(stream: str) -> None:
+    """One source character cannot supply two independently counted expressions."""
+    target = unit()
+    raw = correspondence_response(target)
+    authority = row()
+    context = None
+    expressions = []
+    for index, (start, end, value) in enumerate(((0, 2, "12"), (1, 3, "23"))):
+        expression = dict(raw["source_expressions"][0])
+        expression.update(
+            expression_id=f"{stream}-{index}", stream_id=stream,
+            surface="123 men"[start:end], span={"start": start, "end": end},
+            values=[value], role="men",
+            role_spans=[{"start": 4, "end": 7, "surface": "men"}],
+        )
+        expressions.append(expression)
+    if stream == "ol":
+        authority = replace(authority, ol_text="123 men", ol_values=(Fraction(12), Fraction(23)))
+        raw["source_expressions"] = expressions
+    else:
+        context = registered_context()
+        context.update(text="123 men", values=["12", "23"], role="men")
+        raw.update(registered_status="COMPLETE", registered_limitations=[], registered_expressions=expressions)
+
+    with pytest.raises(ValidationError) as exc:
+        validate_correspondence_response(target, validated_target(target), authority, raw, reading_context=context)
+
+    assert exc.value.code == "NCA_CORRESPONDENCE_EVIDENCE_INVALID"
 
 
 def test_registered_candidate_is_validated_without_replacing_immutable_ol() -> None:
