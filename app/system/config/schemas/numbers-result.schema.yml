@@ -1,0 +1,29 @@
+schema_id: sage-numbers-result-1.0
+required:
+  - schema_version
+  - workflow
+  - check_id
+  - provenance
+  - check_policy
+  - model_receipts
+  - limitations
+  - units
+  - findings
+  - coverage
+  - summary
+controls:
+  schema_version: '1.0'
+  owner: system/src/sage/numbers/results.py
+  workflow: nca
+  check_id: NUMBERS
+  checks:
+    - number_accuracy
+    - presentation_consistency
+    - footnote_review
+  expected_unit_reconciliation: exactly_once
+  numeric_encoding: reduced_rational_strings
+  evidence_scope: externally_bounded_identifiers
+  finding_identity: run_global
+  model_receipts: exact_phase_receipts
+  mandatory_capability_limitation: required
+  sqs_confidence_checks: not_applied
