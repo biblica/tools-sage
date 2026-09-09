@@ -72,7 +72,7 @@ def test_menu_is_a_canonical_cli_domain() -> None:
             and isinstance(item.elts[1].value, str)
         ]
         normalized_labels = [
-            label.replace(" (BIC)", "").replace(" (RTC)", "").replace(" (STC)", "")
+            label.replace(" (BIC)", "").replace(" (RTC)", "").replace(" (STC)", "").replace(" (NCA)", "")
             for label in labels
         ]
         assert all("(" not in label and ")" not in label for label in normalized_labels)
@@ -263,8 +263,8 @@ def test_bic_and_saw_active_jobs_are_independent(make_workspace) -> None:
     store.set_active_job("bic", None)
     after = store.active_jobs()
 
-    assert before == {"bic": bic.job_id, "rtc": None, "stc": None, "saw": saw.job_id}
-    assert after == {"bic": None, "rtc": None, "stc": None, "saw": saw.job_id}
+    assert before == {"bic": bic.job_id, "rtc": None, "stc": None, "nca": None, "saw": saw.job_id}
+    assert after == {"bic": None, "rtc": None, "stc": None, "nca": None, "saw": saw.job_id}
 
 
 def test_runtime_roots_are_job_scoped(make_workspace) -> None:

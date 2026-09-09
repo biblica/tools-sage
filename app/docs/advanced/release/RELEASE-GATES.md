@@ -27,7 +27,7 @@ A package may include handover data only after all applicable gates pass.
 
 ## Analytical governance
 
-- all nine registered analytical Skill files have valid frontmatter and internally consistent identifiers; deterministic controller functions such as consolidation are not registered as AI Skills;
+- all ten registered analytical Skill files have valid frontmatter and internally consistent identifiers; deterministic controller functions such as consolidation are not registered as AI Skills;
 - every controller/model operation has one execution-owner classification; Python-owned work has no
   model route or LLM token policy;
 - all nine Skills have explicit sealed evaluation inventories and three repetitions per case; RTC includes five cases for its source-referral semantic boundaries, and every case remains one review item; inventories and hashes regenerate deterministically without provider calls;
@@ -38,7 +38,7 @@ A package may include handover data only after all applicable gates pass.
   seed promotion, and repeated whenever a bound identity/hash changes;
 - execution receipts, Job/Run displays, and reports preserve actual route provenance; one-item source
   adjudication and secondary-render isolation tests pass;
-- all nine registered Skill bindings and their original/adapted hashes verify;
+- all ten registered Skill bindings and their original/adapted hashes verify;
 - routed Skill references contain only current paths, commands, filenames, and workflow claims;
 - ACT mutation, traversal, output grammar, bounded scope, scope-aware readiness, review evidence, and resubmission regressions pass;
 - BIC, RTC, and STC process-flow tests pass;

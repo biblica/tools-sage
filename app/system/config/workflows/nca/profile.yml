@@ -5,8 +5,7 @@ workflow:
   qualification_status: IN_PROGRESS
   baseline_version: 0.02a2
   execution_model: SAGE_GOVERNED_TASK_V1
-bindings:
-  WIP: null
+bindings: {}
 evidence_policies:
   default:
     target_estimated_tokens: 18000

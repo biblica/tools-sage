@@ -1028,6 +1028,38 @@ for _nca_locale, _nca_labels in _NCA_REPORT_LABELS.items():
         "report.nca." + key: label for key, label in zip(_NCA_REPORT_KEYS, _nca_labels)
     })
 
+_NCA_DETAIL_KEYS = ('style_profile', 'reference_package', 'expressions', 'insufficient_evidence', 'reference_not_indexed', 'not_assessed', 'result', 'confidence_basis')
+_NCA_DETAIL_LABELS = {
+    'en': ('Style profile', 'Reference package', 'Expressions', 'Insufficient evidence', 'Reference not indexed', 'Not assessed', 'Result', 'Confidence basis'),
+    'en-US': ('Style profile', 'Reference package', 'Expressions', 'Insufficient evidence', 'Reference not indexed', 'Not assessed', 'Result', 'Confidence basis'),
+    'en-GB': ('Style profile', 'Reference package', 'Expressions', 'Insufficient evidence', 'Reference not indexed', 'Not assessed', 'Result', 'Confidence basis'),
+    'id': ('Profil gaya', 'Paket rujukan', 'Ungkapan', 'Bukti tidak cukup', 'Rujukan tidak terindeks', 'Belum dinilai', 'Hasil', 'Dasar keyakinan'),
+    'fr': ('Profil de style', 'Paquet de référence', 'Expressions', 'Éléments insuffisants', 'Référence non indexée', 'Non évalué', 'Résultat', 'Base de confiance'),
+    'ru': ('Профиль оформления', 'Пакет эталонных данных', 'Выражения', 'Недостаточно данных', 'Ссылка не индексирована', 'Не оценено', 'Результат', 'Основание уверенности'),
+    'pt-BR': ('Perfil de estilo', 'Pacote de referência', 'Expressões', 'Evidências insuficientes', 'Referência não indexada', 'Não avaliado', 'Resultado', 'Base de confiança'),
+    'uk': ('Профіль оформлення', 'Пакет еталонних даних', 'Вирази', 'Недостатньо даних', 'Посилання не індексовано', 'Не оцінено', 'Результат', 'Підстава впевненості'),
+}
+for _nca_locale, _nca_labels in _NCA_DETAIL_LABELS.items():
+    _CATALOGUE.setdefault(_nca_locale, {}).update({
+        'report.nca.' + key: label for key, label in zip(_NCA_DETAIL_KEYS, _nca_labels)
+    })
+
+_NCA_HANDOVER_KEYS = ('ol_expressions_checked', 'target_expressions', 'passes', 'unit_conversions', 'value_differences', 'missing_numbers', 'added_numbers', 'known_variants', 'style_findings', 'source_expressions', 'variant_class', 'scholarship_status')
+_NCA_HANDOVER_LABELS = {
+    'en': ('OL numeric expressions checked', 'Target numeric expressions', 'Passes', 'Unit conversions', 'Value differences', 'Missing numbers', 'Added numbers', 'Known textual variants', 'Style findings', 'OL expression evidence', 'Variant class', 'Scholarship status'),
+    'en-US': ('OL numeric expressions checked', 'Target numeric expressions', 'Passes', 'Unit conversions', 'Value differences', 'Missing numbers', 'Added numbers', 'Known textual variants', 'Style findings', 'OL expression evidence', 'Variant class', 'Scholarship status'),
+    'en-GB': ('OL numeric expressions checked', 'Target numeric expressions', 'Passes', 'Unit conversions', 'Value differences', 'Missing numbers', 'Added numbers', 'Known textual variants', 'Style findings', 'OL expression evidence', 'Variant class', 'Scholarship status'),
+    'id': ('Ungkapan numerik OL yang diperiksa', 'Ungkapan numerik sasaran', 'Lulus', 'Konversi satuan', 'Perbedaan nilai', 'Angka yang hilang', 'Angka tambahan', 'Varian tekstual yang diketahui', 'Temuan gaya', 'Bukti ungkapan OL', 'Kelas varian', 'Status kajian'),
+    'fr': ('Expressions numériques OL vérifiées', 'Expressions numériques cibles', 'Résultats conformes', 'Conversions d’unités', 'Différences de valeurs', 'Nombres manquants', 'Nombres ajoutés', 'Variantes textuelles connues', 'Constats de style', 'Éléments des expressions OL', 'Classe de variante', 'État de la recherche'),
+    'ru': ('Проверенные числовые выражения OL', 'Числовые выражения целевого текста', 'Соответствия', 'Преобразования единиц', 'Различия значений', 'Отсутствующие числа', 'Добавленные числа', 'Известные текстовые варианты', 'Замечания по оформлению', 'Данные выражений OL', 'Класс варианта', 'Статус научной оценки'),
+    'pt-BR': ('Expressões numéricas OL verificadas', 'Expressões numéricas do texto-alvo', 'Conformidades', 'Conversões de unidades', 'Diferenças de valores', 'Números ausentes', 'Números acrescentados', 'Variantes textuais conhecidas', 'Constatações de estilo', 'Evidências de expressões OL', 'Classe da variante', 'Estado da pesquisa'),
+    'uk': ('Перевірені числові вирази OL', 'Числові вирази цільового тексту', 'Відповідності', 'Перетворення одиниць', 'Відмінності значень', 'Відсутні числа', 'Додані числа', 'Відомі текстові варіанти', 'Зауваження щодо оформлення', 'Дані виразів OL', 'Клас варіанта', 'Статус наукової оцінки'),
+}
+for _nca_locale, _nca_labels in _NCA_HANDOVER_LABELS.items():
+    _CATALOGUE.setdefault(_nca_locale, {}).update({
+        'report.nca.' + key: label for key, label in zip(_NCA_HANDOVER_KEYS, _nca_labels)
+    })
+
 
 def catalogue_text(language: str, key: str) -> str:
     """Return an approved catalog string, falling back to canonical English."""

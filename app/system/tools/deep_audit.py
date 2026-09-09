@@ -75,7 +75,7 @@ CURRENT_ANALYSIS_IDENTITY_FILES = {
     "system/config/project-management/RELEASE-CLEANUP.md",
     "system/config/project-management/TODO.md",
 }
-CURRENT_ANALYSIS_SKILLS = {"bic-inspect", "bic-rewrite", "bic-self-check", "rtc", "stc"}
+CURRENT_ANALYSIS_SKILLS = {"bic-inspect", "bic-rewrite", "bic-self-check", "rtc", "stc", "nca-numbers"}
 RETIRED_ANALYSIS_IDENTITY_RE = re.compile(r"\bSAW(?:_|\b)")
 US_SPELLING = {
     r"\banalyse\b": "analyze",
@@ -541,8 +541,8 @@ def parse_skill_frontmatter(path: Path) -> dict[str, Any]:
 def check_all_skills(root: Path, errors: list[str], counts: dict[str, int]) -> None:
     """Validate every provider-neutral routed Skill and its active references."""
     paths = sorted((root / "system" / "skills").glob("*/SKILL.md"))
-    if len(paths) != 9:
-        errors.append(f"Expected 9 governed analytical Skill files, found {len(paths)}")
+    if len(paths) != 10:
+        errors.append(f"Expected 10 governed analytical Skill files, found {len(paths)}")
     forbidden_context = {
         "Cline": "provider-specific Cline instruction",
         "SWITCH TO ACT MODE": "obsolete mode-switch instruction",
@@ -803,6 +803,7 @@ def check_skill_registry(root: Path, errors: list[str], counts: dict[str, int]) 
         ("bic", "self_check"),
         ("rtc", "rtc"),
         ("stc", "stc"),
+        ("nca", "numbers"),
         ("saw", "rtc"),
         ("saw", "stc"),
         ("saw", "focused"),
