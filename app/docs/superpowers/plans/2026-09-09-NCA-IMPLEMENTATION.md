@@ -1,6 +1,6 @@
 # Number Consistency & Accuracy (NCA) Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Read the finalized design and current/future SQS note together; this plan records implementation work, not completed product functionality.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Read the finalized design and current/future SQS note together; the completed implementation and qualification evidence is recorded in the [qualification record](../../advanced/release/NCA-QUALIFICATION.md).
 
 **Goal:** Add SAGE NUMBERS CHECK as an independent NCA workflow that validates target numeric meaning against immutable OL reference values, evaluates registered alternatives and target footnotes, then checks configured numeric style.
 
@@ -46,7 +46,7 @@ Dependency sequence:
 R1 supplementary-lineage warning --------------------------> 11 recorded limitation
 ```
 
-Paths below are relative to `app/`. Shell commands explicitly state their working directory. Proposed functions/files do not exist yet. This is divided into reviewable deliveries; each implementation delivery must leave independently testable behavior.
+Paths below are relative to `app/`. Shell commands explicitly state their working directory. The functions and files below have been implemented in reviewable deliveries. All eleven tasks are complete; the qualification record contains the final test, reference, packaging, and review evidence.
 
 ## File and interface map
 
@@ -138,7 +138,7 @@ load_reference(root: Path, *, qualification: str = "STRICT") -> ReferenceBundle
 import_reference(config: EcosystemConfig, archive: Path) -> Path
 ```
 
-- [ ] Write parser/loader tests before implementation, including exact fractions, unsupported encodings, duplicate Western keys, missing columns, missing provenance, checksum failure and mutable nested mappings.
+- [x] Write parser/loader tests before implementation, including exact fractions, unsupported encodings, duplicate Western keys, missing columns, missing provenance, checksum failure and mutable nested mappings.
 
 ```python
 def test_exact_reference_encoding():
@@ -150,11 +150,11 @@ def test_exact_reference_encoding():
     assert normalize_footnote_action("N/A") == "NONE"
 ```
 
-- [ ] Add a synthetic package with agreeing operator/canonical `OL_VALUES=3;4`, an expression audit containing only `3`, and no matching override. STRICT and DIAGNOSTIC loading both retain `3;4`; record `REFERENCE_LINEAGE_INCOMPLETE` without failing qualification solely for supplementary incompleteness. A contradictory authoritative canonical/variant value still fails with `NCA_REFERENCE_CONTRACT_CONFLICT`.
-- [ ] Run `python -m pytest -q system/tests/numbers/test_reference.py` from `app/`; witness the intended missing implementation failure.
-- [ ] Implement exact parsing, complete checksummed file inventory, registry joins and a separate qualification receipt. Reject malformed numeric encodings rather than relying on Fraction's permissive grammar. Enforce expected cardinalities through the versioned package manifest; synthetic fixtures have their own manifests and do not bypass production counts.
-- [ ] Implement bounded archive import: reject absolute/traversal entries and symlink entries; copy into a new package directory and verify before atomic publication. Preserve original bytes. Do not auto-import during startup.
-- [ ] Re-run reference tests. Verify all 47 supplementary differences, three unit-text spacing differences and two numeric-source boundary exceptions are reported without changing files. Preserve the two special reading-validation outcomes listed in the final audit. Commit this bounded delivery when execution is authorized.
+- [x] Add a synthetic package with agreeing operator/canonical `OL_VALUES=3;4`, an expression audit containing only `3`, and no matching override. STRICT and DIAGNOSTIC loading both retain `3;4`; record `REFERENCE_LINEAGE_INCOMPLETE` without failing qualification solely for supplementary incompleteness. A contradictory authoritative canonical/variant value still fails with `NCA_REFERENCE_CONTRACT_CONFLICT`.
+- [x] Run `python -m pytest -q system/tests/numbers/test_reference.py` from `app/`; witness the intended missing implementation failure.
+- [x] Implement exact parsing, complete checksummed file inventory, registry joins and a separate qualification receipt. Reject malformed numeric encodings rather than relying on Fraction's permissive grammar. Enforce expected cardinalities through the versioned package manifest; synthetic fixtures have their own manifests and do not bypass production counts.
+- [x] Implement bounded archive import: reject absolute/traversal entries and symlink entries; copy into a new package directory and verify before atomic publication. Preserve original bytes. Do not auto-import during startup.
+- [x] Re-run reference tests. Verify all 47 supplementary differences, three unit-text spacing differences and two numeric-source boundary exceptions are reported without changing files. Preserve the two special reading-validation outcomes listed in the final audit. Commit this bounded delivery when execution is authorized.
 
 **Acceptance:** authoritative-table validity, supplementary lineage completeness and software qualification are distinct states. A valid authoritative package can be used with explicit lineage/display/boundary limitations. No warnings or incomplete provenance may be silently erased.
 
@@ -171,7 +171,7 @@ project_units(units: tuple[TargetUnit, ...], *, target_schema: VersificationSche
               western_schema: VersificationSchema) -> tuple[ProjectedUnit, ...]
 ```
 
-- [ ] Test preserved body/note separation using the existing compiler:
+- [x] Test preserved body/note separation using the existing compiler:
 
 ```python
 def test_note_digits_do_not_enter_main_text():
@@ -184,14 +184,14 @@ def test_note_digits_do_not_enter_main_text():
     assert unit.notes[0].text == "Other witnesses read thirty."
 ```
 
-- [ ] Add explicit cases for nested note styles; note-only verses; x/ex exclusions; unclosed note parser errors; attributes containing digits; headings; bridge 1–2 with one shared body; PSA 51:0 repeated mappings; 1KI 4:26→OL 5:6 and 1KI 5:11→OL 5:25.
-- [ ] Add PSA 60:0 as an accuracy-bearing canonical superscription with value 12000 and OL_REF=PSA 60:2. Recover the target `\d` structural node when no `\v 0` exists; ordinary editorial-heading exclusion must not skip this indexed row.
-- [ ] Add Western 1SA 20:42 / 1CH 12:4 tests preserving stored OL_REF=1SA 20:42 / 1CH 12:4 despite the supplied mapping projecting to 1SA 21:1 / 1CH 12:5. Western lookup uses the authoritative row; non-Western target units require boundary grouping rather than comparing against the continuation alone. Never regenerate OL_REF from the map.
-- [ ] Use the indexed NIV values unchanged at section continuations such as NEH 7:73 and HAG 1:15. Retain a readback limitation for source continuation numbers absent from indexed NIV_TEXT; source text must not silently augment the authoritative secondary numeric sequence.
-- [ ] Add NEH 7:68 missing-WIP/empty-OL registry coverage cases. An adjacent verse's note is insufficient without unambiguous explicit anchoring; identity fallback cannot create an OL source verse.
-- [ ] Run `python -m pytest -q system/tests/numbers/test_target.py system/tests/numbers/test_projection.py` from `app/` and witness failures.
-- [ ] Implement tree visitors and mapping adapters; return explicit AMBIGUOUS/UNMAPPED states. Reconcile expected coverage separately from observed WIP records so absent coordinates are assessed.
-- [ ] Re-run new tests plus `system/tests/test_usj_and_scripture.py`, `test_versification_service.py`, `test_verse_alignment.py`; commit after review.
+- [x] Add explicit cases for nested note styles; note-only verses; x/ex exclusions; unclosed note parser errors; attributes containing digits; headings; bridge 1–2 with one shared body; PSA 51:0 repeated mappings; 1KI 4:26→OL 5:6 and 1KI 5:11→OL 5:25.
+- [x] Add PSA 60:0 as an accuracy-bearing canonical superscription with value 12000 and OL_REF=PSA 60:2. Recover the target `\d` structural node when no `\v 0` exists; ordinary editorial-heading exclusion must not skip this indexed row.
+- [x] Add Western 1SA 20:42 / 1CH 12:4 tests preserving stored OL_REF=1SA 20:42 / 1CH 12:4 despite the supplied mapping projecting to 1SA 21:1 / 1CH 12:5. Western lookup uses the authoritative row; non-Western target units require boundary grouping rather than comparing against the continuation alone. Never regenerate OL_REF from the map.
+- [x] Use the indexed NIV values unchanged at section continuations such as NEH 7:73 and HAG 1:15. Retain a readback limitation for source continuation numbers absent from indexed NIV_TEXT; source text must not silently augment the authoritative secondary numeric sequence.
+- [x] Add NEH 7:68 missing-WIP/empty-OL registry coverage cases. An adjacent verse's note is insufficient without unambiguous explicit anchoring; identity fallback cannot create an OL source verse.
+- [x] Run `python -m pytest -q system/tests/numbers/test_target.py system/tests/numbers/test_projection.py` from `app/` and witness failures.
+- [x] Implement tree visitors and mapping adapters; return explicit AMBIGUOUS/UNMAPPED states. Reconcile expected coverage separately from observed WIP records so absent coordinates are assessed.
+- [x] Re-run new tests plus `system/tests/test_usj_and_scripture.py`, `test_versification_service.py`, `test_verse_alignment.py`; commit after review.
 
 ## Task 3: LLM numeric interpretation and exact evidence validation
 
@@ -209,14 +209,14 @@ validate_extraction_response(unit: TargetUnit,
 
 The extraction payload contains only the target text streams, language, parsing-relevant style conventions and output schema. Keep expected OL/NIV quantities out of this extraction step. Each returned expression has an exact target stream/span, normalized fraction strings, kind, unit, qualifier and referent evidence where applicable. Later correspondence tasks may receive the specific authoritative reference row.
 
-- [ ] Write a synthetic response fixture for `three hundred and eighteen men`: one span `0:26`, one CARDINAL value `318`. Validate exact span equality, parse with `Fraction`, and preserve the original surface. Reject a fabricated quotation, out-of-range span or value encoded as an unsupported JSON type.
-- [ ] Write separate fixtures for `the third man` (ORDINAL `3`) and `a third of the men` (FRACTION `1/3`). Include an explicitly ambiguous response that remains PARTIAL; the validator must not upgrade uncertainty based on a model confidence claim.
-- [ ] Test Unicode digits, grouping/decimal ambiguity, mixed `2 1/2`, repeated quantities, ratios, ranges and qualifiers. For words plus parenthesized digits, preserve both spans and require equal values before treating them as one expression.
-- [ ] Test schema violations, absent work units, duplicate expression IDs, unrelated note/locator digits, invented source evidence and provider failures. A self-reported high score cannot bypass structural validation.
-- [ ] Run `python -m pytest -q system/tests/numbers/test_extraction.py system/tests/numbers/test_model_tasks.py` before implementation and witness the intended failures.
-- [ ] Implement bounded prompts and response validation, then wire model requests through existing SAGE provider/task execution. Keep recorded synthetic provider responses in tests; no live paid calls in ordinary CI.
-- [ ] Preserve PARTIAL/UNSUPPORTED results and report limitations where the model cannot interpret the target adequately. Do not claim full language support from zero extracted digits or successful schema validation.
-- [ ] Register task material and capture the actual provider/model, task version and input hashes. Apply existing routing requirements; SQS is not a current dependency. Re-run tests and commit the bounded delivery when execution is authorized.
+- [x] Write a synthetic response fixture for `three hundred and eighteen men`: one span `0:26`, one CARDINAL value `318`. Validate exact span equality, parse with `Fraction`, and preserve the original surface. Reject a fabricated quotation, out-of-range span or value encoded as an unsupported JSON type.
+- [x] Write separate fixtures for `the third man` (ORDINAL `3`) and `a third of the men` (FRACTION `1/3`). Include an explicitly ambiguous response that remains PARTIAL; the validator must not upgrade uncertainty based on a model confidence claim.
+- [x] Test Unicode digits, grouping/decimal ambiguity, mixed `2 1/2`, repeated quantities, ratios, ranges and qualifiers. For words plus parenthesized digits, preserve both spans and require equal values before treating them as one expression.
+- [x] Test schema violations, absent work units, duplicate expression IDs, unrelated note/locator digits, invented source evidence and provider failures. A self-reported high score cannot bypass structural validation.
+- [x] Run `python -m pytest -q system/tests/numbers/test_extraction.py system/tests/numbers/test_model_tasks.py` before implementation and witness the intended failures.
+- [x] Implement bounded prompts and response validation, then wire model requests through existing SAGE provider/task execution. Keep recorded synthetic provider responses in tests; no live paid calls in ordinary CI.
+- [x] Preserve PARTIAL/UNSUPPORTED results and report limitations where the model cannot interpret the target adequately. Do not claim full language support from zero extracted digits or successful schema validation.
+- [x] Register task material and capture the actual provider/model, task version and input hashes. Apply existing routing requirements; SQS is not a current dependency. Re-run tests and commit the bounded delivery when execution is authorized.
 
 ## Task 4: Conservative numeric correspondence
 
@@ -224,7 +224,7 @@ The extraction payload contains only the target text streams, language, parsing-
 
 **Interface:** `compare_expressions(ol: tuple[NumericExpression, ...], target: Extraction, *, allow_reordering: bool = False) -> SemanticDecision`.
 
-- [ ] Define a small test-only constructor in this test module:
+- [x] Define a small test-only constructor in this test module:
 
 ```python
 def quantity(value: int, role: str) -> NumericExpression:
@@ -242,10 +242,10 @@ def test_reordered_corresponding_quantities_can_pass():
     assert compare_expressions(ol, target, allow_reordering=True).outcome == "PASS_EQUIVALENT_NUMERIC_EXPRESSION"
 ```
 
-- [ ] Add cases for exact sequences; surface-only digit/word differences; missing/added/replaced values; repeated values; qualifier/unit changes; ordinal versus partitive; ratio preservation; PARTIAL extraction; unavailable OL expression-role evidence.
-- [ ] Run `python -m pytest -q system/tests/numbers/test_compare.py` and witness failures. Implement relationship-preserving matching and explicit insufficient-evidence decisions where correspondence is unsupported.
-- [ ] Keep value agreement separate from full semantic evidence. The engine must not create fully typed OL expressions from a flat value list by inventing roles, kinds or units.
-- [ ] Verify all tests, especially swapped-role negatives; commit.
+- [x] Add cases for exact sequences; surface-only digit/word differences; missing/added/replaced values; repeated values; qualifier/unit changes; ordinal versus partitive; ratio preservation; PARTIAL extraction; unavailable OL expression-role evidence.
+- [x] Run `python -m pytest -q system/tests/numbers/test_compare.py` and witness failures. Implement relationship-preserving matching and explicit insufficient-evidence decisions where correspondence is unsupported.
+- [x] Keep value agreement separate from full semantic evidence. The engine must not create fully typed OL expressions from a flat value list by inventing roles, kinds or units.
+- [x] Verify all tests, especially swapped-role negatives; commit.
 
 ## Task 5: Registered alternates and scoped unit examples
 
@@ -261,8 +261,8 @@ compare_registered_units(row: ReferenceRow, target: Extraction, *,
                          bundle: ReferenceBundle) -> SemanticDecision
 ```
 
-- [ ] Test the full 21-row reading matrix using small numeric/policy fixtures copied with source IDs and expected values; each fixture's package integrity is validated as in Task 1. Require registry authorization, not just NIV equality.
-- [ ] Unit adapter contract test:
+- [x] Test the full 21-row reading matrix using small numeric/policy fixtures copied with source IDs and expected values; each fixture's package integrity is validated as in Task 1. Require registry authorization, not just NIV equality.
+- [x] Unit adapter contract test:
 
 ```python
 def test_registered_range_and_qualifier_are_retained():
@@ -273,11 +273,11 @@ def test_registered_range_and_qualifier_are_retained():
     assert expression.qualifier == "ABOUT"
 ```
 
-- [ ] Add whole-sequence tests: 2CH 22:2 alternate `22;1` can select ALT; `22;2` cannot. NEH 7:68 OL omission and ALT inclusion have distinct reading states. Test unit equivalence at all 12 registered keys plus wrong verse, wrong unit, missing qualifier and changed unrelated quantity negatives.
-- [ ] Preserve the source-policy subtypes `CAUTION_ACCEPTABLE_ATTESTED_MINOR_READING_WITH_FOOTNOTE` (1SA 6:19 alternate) and `NO_CONFIGURED_OL_READING` (NEH 7:68 OL absence). Use operator NIV_TEXT for the three unit examples whose copied text omits spaces; do not edit their registry bytes or quantities.
-- [ ] Run `python -m pytest -q system/tests/numbers/test_variants.py system/tests/numbers/test_units.py`; implement typed adapters derived from supplied fields and joins, preserving original prose and hashes.
-- [ ] Never infer scholarship from source URLs or runtime model recall. Preserve the OL row even for NIV_FAVORED. Reject unprovided conversion formulas/tolerances. Treat an unrecognized registry quantity as unsupported, not a fabricated conversion.
-- [ ] Re-run tests and reference immutability checks; commit.
+- [x] Add whole-sequence tests: 2CH 22:2 alternate `22;1` can select ALT; `22;2` cannot. NEH 7:68 OL omission and ALT inclusion have distinct reading states. Test unit equivalence at all 12 registered keys plus wrong verse, wrong unit, missing qualifier and changed unrelated quantity negatives.
+- [x] Preserve the source-policy subtypes `CAUTION_ACCEPTABLE_ATTESTED_MINOR_READING_WITH_FOOTNOTE` (1SA 6:19 alternate) and `NO_CONFIGURED_OL_READING` (NEH 7:68 OL absence). Use operator NIV_TEXT for the three unit examples whose copied text omits spaces; do not edit their registry bytes or quantities.
+- [x] Run `python -m pytest -q system/tests/numbers/test_variants.py system/tests/numbers/test_units.py`; implement typed adapters derived from supplied fields and joins, preserving original prose and hashes.
+- [x] Never infer scholarship from source URLs or runtime model recall. Preserve the OL row even for NIV_FAVORED. Reject unprovided conversion formulas/tolerances. Treat an unrecognized registry quantity as unsupported, not a fabricated conversion.
+- [x] Re-run tests and reference immutability checks; commit.
 
 ## Task 6: Reading-dependent footnote adequacy
 
@@ -285,7 +285,7 @@ def test_registered_range_and_qualifier_are_retained():
 
 **Interface:** `assess_footnote(reading: ReadingDecision, notes: tuple[TargetNote, ...], *, bundle: ReferenceBundle, language: str) -> FootnoteDecision`.
 
-- [ ] Test missing-required and recommended outcomes independently of numeric accuracy:
+- [x] Test missing-required and recommended outcomes independently of numeric accuracy:
 
 ```python
 def test_divided_ol_reading_still_requires_disclosure(empty_bundle):
@@ -298,11 +298,11 @@ def test_divided_ol_reading_still_requires_disclosure(empty_bundle):
 
 For this test, add a fixture in `system/tests/numbers/conftest.py` that returns an immutable `ReferenceBundle` with empty registries, no rows, diagnostic status and hash `"0" * 64`. The missing-note branch uses the already selected reading/action; tests requiring material assessment supply the actual synthetic registry row.
 
-- [ ] Cover alternative values stated in words/digits, witness-only numeric difference disclosure, reconstruction disclosure, an unrelated note containing the same number, locator-only digits, cross-reference notes, wrong-verse notes, NIV notes and unsupported note language. Test all four actual DIVIDED rows, including both choices.
-- [ ] Run `python -m pytest -q system/tests/numbers/test_footnotes.py`; implement LLM disclosure assessment using the selected registered reading and exact target-note evidence, then validate the returned evidence and policy result. Unknown adequacy yields NOT_ASSESSED/INSUFFICIENT_EVIDENCE; absence and known inadequacy yield distinct statuses.
-- [ ] Preserve the semantic pass for OL+RECOMMEND even when the final report adds an advisory. Never accept a documented alternate with unassessed required disclosure.
-- [ ] Recommend adding or revising a footnote only when the selected reading's policy calls for disclosure and the existing target note is absent or inadequate. Supply the relevant suggested wording, alternate/uncertainty explanation and source IDs. An adequate existing note produces no duplicate add-note recommendation. Unregistered uncertainty remains operator review, never invented manuscript evidence.
-- [ ] Re-run tests; commit. Reuse Task 3 model routing; do not introduce a separate provider or confidence service.
+- [x] Cover alternative values stated in words/digits, witness-only numeric difference disclosure, reconstruction disclosure, an unrelated note containing the same number, locator-only digits, cross-reference notes, wrong-verse notes, NIV notes and unsupported note language. Test all four actual DIVIDED rows, including both choices.
+- [x] Run `python -m pytest -q system/tests/numbers/test_footnotes.py`; implement LLM disclosure assessment using the selected registered reading and exact target-note evidence, then validate the returned evidence and policy result. Unknown adequacy yields NOT_ASSESSED/INSUFFICIENT_EVIDENCE; absence and known inadequacy yield distinct statuses.
+- [x] Preserve the semantic pass for OL+RECOMMEND even when the final report adds an advisory. Never accept a documented alternate with unassessed required disclosure.
+- [x] Recommend adding or revising a footnote only when the selected reading's policy calls for disclosure and the existing target note is absent or inadequate. Supply the relevant suggested wording, alternate/uncertainty explanation and source IDs. An adequate existing note produces no duplicate add-note recommendation. Unregistered uncertainty remains operator review, never invented manuscript evidence.
+- [x] Re-run tests; commit. Reuse Task 3 model routing; do not introduce a separate provider or confidence service.
 
 ## Task 7: Numeric style without changing semantic results
 
@@ -317,7 +317,7 @@ assess_style(extraction: Extraction, *, profile: Mapping[str, object],
              location: str, context: Optional[str]) -> tuple[Mapping[str, object], ...]
 ```
 
-- [ ] Cover missing/invalid profiles, blank draft templates, incompatible language/script, required metadata, rule IDs, words/digits bands, grouping/decimal conventions, ordinal/fraction/range notation, approximation, age/date/count context exceptions and location-specific unit abbreviations. Each rule area requires a rule or an explicit NOT_SPECIFIED/NOT_APPLICABLE decision. Profile absence is a setup error; explicitly unspecified rules in a valid profile remain unassessed.
+- [x] Cover missing/invalid profiles, blank draft templates, incompatible language/script, required metadata, rule IDs, words/digits bands, grouping/decimal conventions, ordinal/fraction/range notation, approximation, age/date/count context exceptions and location-specific unit abbreviations. Each rule area requires a rule or an explicit NOT_SPECIFIED/NOT_APPLICABLE decision. Profile absence is a setup error; explicitly unspecified rules in a valid profile remain unassessed.
 
 ```python
 def test_empty_template_cannot_be_used_as_active_profile():
@@ -326,11 +326,11 @@ def test_empty_template_cannot_be_used_as_active_profile():
     assert exc.value.code == "NCA_STYLE_PROFILE_INVALID"
 ```
 
-- [ ] Run `python -m pytest -q system/tests/numbers/test_style.py`; implement the governed template, validated rules and context limitations. The shipped template is a draft for configuration, not an automatically active Western style guide. Include profile ID/version, Project/language/script applicability, source guide, status and stable rule IDs. Create configured copies through the existing local profile storage/registration conventions, outside replaceable Core.
-- [ ] Ensure body, heading and note style streams remain separate; no numbers from those latter streams enter body accuracy. Unavailable map/table material is not claimed as assessed.
-- [ ] Require profile selection and validation at Job setup regardless of the presentation toggle. Test that presentation OFF does not bypass an absent/invalid profile, and that a valid bound profile is snapshotted even when its assessment is disabled. No mutation of normalized values is allowed during style assessment.
-- [ ] Evaluate presentation consistency across comparable expressions within the selected scope using the same guide rule, location and context. Test mixed digits/words/grouping/abbreviations, approved context exceptions and a majority presentation that violates the guide. Missing guide rules yield an unassessed area, not an inferred rule. Canonical superscriptions retain their explicit accuracy-bearing role from Task 2.
-- [ ] Re-run tests; commit.
+- [x] Run `python -m pytest -q system/tests/numbers/test_style.py`; implement the governed template, validated rules and context limitations. The shipped template is a draft for configuration, not an automatically active Western style guide. Include profile ID/version, Project/language/script applicability, source guide, status and stable rule IDs. Create configured copies through the existing local profile storage/registration conventions, outside replaceable Core.
+- [x] Ensure body, heading and note style streams remain separate; no numbers from those latter streams enter body accuracy. Unavailable map/table material is not claimed as assessed.
+- [x] Require profile selection and validation at Job setup regardless of the presentation toggle. Test that presentation OFF does not bypass an absent/invalid profile, and that a valid bound profile is snapshotted even when its assessment is disabled. No mutation of normalized values is allowed during style assessment.
+- [x] Evaluate presentation consistency across comparable expressions within the selected scope using the same guide rule, location and context. Test mixed digits/words/grouping/abbreviations, approved context exceptions and a majority presentation that violates the guide. Missing guide rules yield an unassessed area, not an inferred rule. Canonical superscriptions retain their explicit accuracy-bearing role from Task 2.
+- [x] Re-run tests; commit.
 
 ## Task 8: Engine, result schema, coverage and deterministic ACT rendering
 
@@ -351,14 +351,14 @@ validate_numbers_result(document: Mapping[str, object], *,
 render_nca_report(document: Mapping[str, object]) -> str
 ```
 
-- [ ] Create complete synthetic UnitResult fixtures and serialization tests before engine implementation. The tests must mutate outcome enums, evidence IDs, coverage, profile hashes and fractions and verify rejection, not just round-trip the same implementation.
-- [ ] Add pipeline cases: OL pass plus recommended-note advisory; alternate+adequate note; alternate+missing note; unindexed target number; no digits in unsupported language; known OL number with absent target text; bridge count once; style disabled but numeric accuracy assessed.
-- [ ] Apply the snapshotted check policy: OFF checks emit no findings and are NOT ASSESSED, never passes. Test footnote-only reading identification without accuracy findings; accuracy-only registered alternate without a claim of fulfilled footnote requirements; presentation-only assessment without an OL-accuracy claim. Internal prerequisites may run without enabling a disabled assessment. In particular, footnotes OFF prohibits `ACCEPTABLE_VARIANT_WITH_FOOTNOTE`.
-- [ ] Add exact report assertions for Western and differing OL_REF, target-local navigation, SOURCE_IDS, selected reading, footnote status/action and suggested note. Preserve NUMBERS-only scope; seed unrelated grammar/theology/name issues and assert no findings for them.
-- [ ] Run `python -m pytest -q system/tests/numbers/test_engine.py system/tests/numbers/test_results.py system/tests/numbers/test_reporting.py`; implement the composed pipeline and typed result validation. Reuse run-global finding IDs instead of independent NUM-0001 counters.
-- [ ] Require the LLM capability limitation in every human report, export, zero-finding result and incomplete-result summary. Machine output carries the same limitation, actual provider/model identity and an explicit statement that SQS checks were not applied. Add a report-contract test that fails when the limitation is absent, including localized output.
-- [ ] Require `expected_unit_ids` to reconcile exactly once. Summaries derive from actual assessed expressions and results; include insufficient evidence, reference-not-indexed and parser coverage. Completion and all-clear are distinct.
-- [ ] Re-run tests and `system/tests/test_findings_and_coverage.py`, `test_report_authority.py`; commit.
+- [x] Create complete synthetic UnitResult fixtures and serialization tests before engine implementation. The tests must mutate outcome enums, evidence IDs, coverage, profile hashes and fractions and verify rejection, not just round-trip the same implementation.
+- [x] Add pipeline cases: OL pass plus recommended-note advisory; alternate+adequate note; alternate+missing note; unindexed target number; no digits in unsupported language; known OL number with absent target text; bridge count once; style disabled but numeric accuracy assessed.
+- [x] Apply the snapshotted check policy: OFF checks emit no findings and are NOT ASSESSED, never passes. Test footnote-only reading identification without accuracy findings; accuracy-only registered alternate without a claim of fulfilled footnote requirements; presentation-only assessment without an OL-accuracy claim. Internal prerequisites may run without enabling a disabled assessment. In particular, footnotes OFF prohibits `ACCEPTABLE_VARIANT_WITH_FOOTNOTE`.
+- [x] Add exact report assertions for Western and differing OL_REF, target-local navigation, SOURCE_IDS, selected reading, footnote status/action and suggested note. Preserve NUMBERS-only scope; seed unrelated grammar/theology/name issues and assert no findings for them.
+- [x] Run `python -m pytest -q system/tests/numbers/test_engine.py system/tests/numbers/test_results.py system/tests/numbers/test_reporting.py`; implement the composed pipeline and typed result validation. Reuse run-global finding IDs instead of independent NUM-0001 counters.
+- [x] Require the LLM capability limitation in every human report, export, zero-finding result and incomplete-result summary. Machine output carries the same limitation, actual provider/model identity and an explicit statement that SQS checks were not applied. Add a report-contract test that fails when the limitation is absent, including localized output.
+- [x] Require `expected_unit_ids` to reconcile exactly once. Summaries derive from actual assessed expressions and results; include insufficient evidence, reference-not-indexed and parser coverage. Completion and all-clear are distinct.
+- [x] Re-run tests and `system/tests/test_findings_and_coverage.py`, `test_report_authority.py`; commit.
 
 ## Task 9: NCA workflow, Jobs/Runs and ACT dispatch
 
@@ -377,16 +377,16 @@ finalize_nca_run(config: EcosystemConfig, *, job_id: str,
                  run_id: str) -> Mapping[str, object]
 ```
 
-- [ ] Add binding/identity tests: one WIP; no required REFERENCE; one package selector and hash; exactly one required `number_style` profile binding; Project language and configured model route; project import-date identity `NCA-<Project>_<YYYYMMDD>`. Follow the RTC Job profile resolver: one compatible candidate resolves automatically and is shown; multiple candidates require selection; none requires configuration/import. Keep resource selectors outside Scripture binding role dictionaries.
-- [ ] Implement an NCA-owned policy using the pattern in `rtc_policy.py`: `checks.number_accuracy`, `checks.presentation_consistency`, `checks.footnote_review`, all boolean and initially true. Reject all-OFF. Validate mandatory Job bindings first, then prerequisites for enabled assessments and their internal dependencies. Keep saved Job defaults editable, and write immutable Run `check-policy.json` including the required style profile ID/version/hash even when presentation is OFF. Register the new schema owner.
-- [ ] In `test_policy.py`, exercise all eight toggle combinations with a valid bound profile (all-OFF rejected), missing/invalid profile with presentation ON and OFF (both rejected), exact snapshot replay and attempted mid-Run policy changes. Changes in Job defaults or profile contents must not alter a resumed Run.
-- [ ] Test creation, immutable snapshot reuse, input/profile/package change detection, stale runs, restart/resume, active-job discovery, exactly one active execution and read-only WIP. Old RTC/STC/SAW artifacts retain their serialized identities and contracts.
-- [ ] Run `python -m pytest -q system/tests/numbers/test_nca_jobs.py system/tests/numbers/test_nca_tasks.py` and witness failures.
-- [ ] Implement explicit workflow predicates and dispatch. Do not insert NCA into RTC/STC-only sets and rely on fallback branches. Existing RTC semantic/OL policy and STC no-reference-evidence rules remain unchanged.
-- [ ] Add explicit NCA model task dispatch in the shared ACT contract using existing provider/skill routing and readiness requirements. Fingerprint target data, mapping, package, style profile, model and prompt/task identities; write only inside existing governed Run paths. Record actual provider usage and distinguish local validation from model execution. Reconcile coverage-based progress without changing other workflows' progress contracts.
-- [ ] Preserve provider readiness for model-dependent NCA execution; local reference/profile inspection need not call the model. Test missing provider remediation, failed model calls and partial results. SQS checks are future functionality and must not become a current setup blocker.
-- [ ] Validate authoritative reference contracts before real accuracy execution. R1 and documented text-copy differences remain visible warnings, not blanket blockers. Distinguish usable authoritative-reference status from software release qualification. Run failure cannot leave a partial report marked complete.
-- [ ] Verify with new tests plus `test_primary_analysis_jobs.py`, `test_authority_boundaries.py`, `test_job_snapshots.py`, `test_progress_tracking.py`, `test_storage_layout.py`; commit.
+- [x] Add binding/identity tests: one WIP; no required REFERENCE; one package selector and hash; exactly one required `number_style` profile binding; Project language and configured model route; project import-date identity `NCA-<Project>_<YYYYMMDD>`. Follow the RTC Job profile resolver: one compatible candidate resolves automatically and is shown; multiple candidates require selection; none requires configuration/import. Keep resource selectors outside Scripture binding role dictionaries.
+- [x] Implement an NCA-owned policy using the pattern in `rtc_policy.py`: `checks.number_accuracy`, `checks.presentation_consistency`, `checks.footnote_review`, all boolean and initially true. Reject all-OFF. Validate mandatory Job bindings first, then prerequisites for enabled assessments and their internal dependencies. Keep saved Job defaults editable, and write immutable Run `check-policy.json` including the required style profile ID/version/hash even when presentation is OFF. Register the new schema owner.
+- [x] In `test_policy.py`, exercise all eight toggle combinations with a valid bound profile (all-OFF rejected), missing/invalid profile with presentation ON and OFF (both rejected), exact snapshot replay and attempted mid-Run policy changes. Changes in Job defaults or profile contents must not alter a resumed Run.
+- [x] Test creation, immutable snapshot reuse, input/profile/package change detection, stale runs, restart/resume, active-job discovery, exactly one active execution and read-only WIP. Old RTC/STC/SAW artifacts retain their serialized identities and contracts.
+- [x] Run `python -m pytest -q system/tests/numbers/test_nca_jobs.py system/tests/numbers/test_nca_tasks.py` and witness failures.
+- [x] Implement explicit workflow predicates and dispatch. Do not insert NCA into RTC/STC-only sets and rely on fallback branches. Existing RTC semantic/OL policy and STC no-reference-evidence rules remain unchanged.
+- [x] Add explicit NCA model task dispatch in the shared ACT contract using existing provider/skill routing and readiness requirements. Fingerprint target data, mapping, package, style profile, model and prompt/task identities; write only inside existing governed Run paths. Record actual provider usage and distinguish local validation from model execution. Reconcile coverage-based progress without changing other workflows' progress contracts.
+- [x] Preserve provider readiness for model-dependent NCA execution; local reference/profile inspection need not call the model. Test missing provider remediation, failed model calls and partial results. SQS checks are future functionality and must not become a current setup blocker.
+- [x] Validate authoritative reference contracts before real accuracy execution. R1 and documented text-copy differences remain visible warnings, not blanket blockers. Distinguish usable authoritative-reference status from software release qualification. Run failure cannot leave a partial report marked complete.
+- [x] Verify with new tests plus `test_primary_analysis_jobs.py`, `test_authority_boundaries.py`, `test_job_snapshots.py`, `test_progress_tracking.py`, `test_storage_layout.py`; commit.
 
 **Design limit:** NCA does not call BIC/RTC/STC or automatically share their jobs. Model interpretation uses the explicit NCA tasks and existing routing. Future SQS confidence checks are tracked separately.
 
@@ -395,25 +395,25 @@ finalize_nca_run(config: EcosystemConfig, *, job_id: str,
 **Create:** `system/src/sage/nca_cli.py`, `docs/NCA-CHEAT-SHEET.md`, `system/tests/numbers/test_nca_cli.py`, `test_nca_menu.py`.
 **Modify:** `cli.py`, `menu.py`, `ui_services.py`, `human_output.py`, `system/config/localization/menu-localization.json`, `docs/INDEX.md`, `docs/OPERATOR-GUIDE.md`, `docs/advanced/workflows/BIC-RTC-STC-AUTHORITY-BOUNDARIES.md` (extend scope/title to include NCA), `docs/advanced/architecture/SAGE-SYSTEM-GRAMMAR.md`.
 
-- [ ] Test one complete menu/CLI scenario: import reference → inspect qualification diagnostic → select WIP/language/style → create NCA Job → select scope → execute qualified synthetic task → show accuracy/footnote/style/coverage report. Also test cancellation, unavailable package, unsupported language and missing style.
-- [ ] During Job setup, require selection of a compatible NCA Number Style Profile or configuration of a copy of the standard template, following RTC's language-profile interaction. Offer RTC-style numbered check toggles before Run creation: Number accuracy; Presentation consistency; Footnote review and recommendations. Show the mandatory bound profile and a Job-profile change action beside presentation settings. Reuse Job defaults and expose the same policy through CLI options.
-- [ ] Test switching each toggle, restoring defaults, all-OFF readiness, missing-profile remediation, compatible-profile reuse and presentation-OFF execution with a valid profile. Presentation OFF cannot complete setup without the required profile. Reports list enabled/disabled checks, bound profile version and NOT ASSESSED status for every disabled assessment. Do not infer toggle state from whether a resource happens to be available.
-- [ ] Follow the actual existing command grammar for Job/Run operations. Add workflow `nca` and operation `numbers` to canonical routes; keep detailed NCA argument handling in `nca_cli.py`. Add a reference inspection/import command under the existing resource command family rather than a parallel installer.
-- [ ] Insert **5. Number Consistency & Accuracy (NCA)** immediately after **4. Source Text Correspondence (STC)** in `main_menu`; change `run()` dispatch so 5 opens NCA and 6 opens SAGE Maintenance. Move the maintenance separator from `blank_before=("2", "5")` to `("2", "6")`. Update active-Job summary, localization, help/cheat-sheet references and tests together. Preserve Projects=1, BIC=2, RTC=3, STC=4, Exit=X. Test both displayed labels and actual dispatch for 5/6.
-- [ ] Run `python -m pytest -q system/tests/numbers/test_nca_cli.py system/tests/numbers/test_nca_menu.py` before and after implementation. Confirm machine codes remain canonical while human labels use the current localization catalog and Job report language.
-- [ ] Document the distinction between semantic outcomes, recommended notes, required notes and insufficient evidence; explain no automatic text edits. Include input language capability and numeric reference coverage in preflight, visible beside accuracy/style readiness.
-- [ ] Preserve TUI execution limitations and original BIC/RTC/STC navigation behavior. Test `test_command_contract.py`, `test_primary_workflow_menus.py`, `test_menu_localization.py`, `test_documentation_contracts.py`; commit.
+- [x] Test one complete menu/CLI scenario: import reference → inspect qualification diagnostic → select WIP/language/style → create NCA Job → select scope → execute qualified synthetic task → show accuracy/footnote/style/coverage report. Also test cancellation, unavailable package, unsupported language and missing style.
+- [x] During Job setup, require selection of a compatible NCA Number Style Profile or configuration of a copy of the standard template, following RTC's language-profile interaction. Offer RTC-style numbered check toggles before Run creation: Number accuracy; Presentation consistency; Footnote review and recommendations. Show the mandatory bound profile and a Job-profile change action beside presentation settings. Reuse Job defaults and expose the same policy through CLI options.
+- [x] Test switching each toggle, restoring defaults, all-OFF readiness, missing-profile remediation, compatible-profile reuse and presentation-OFF execution with a valid profile. Presentation OFF cannot complete setup without the required profile. Reports list enabled/disabled checks, bound profile version and NOT ASSESSED status for every disabled assessment. Do not infer toggle state from whether a resource happens to be available.
+- [x] Follow the actual existing command grammar for Job/Run operations. Add workflow `nca` and operation `numbers` to canonical routes; keep detailed NCA argument handling in `nca_cli.py`. Add a reference inspection/import command under the existing resource command family rather than a parallel installer.
+- [x] Insert **5. Number Consistency & Accuracy (NCA)** immediately after **4. Source Text Correspondence (STC)** in `main_menu`; change `run()` dispatch so 5 opens NCA and 6 opens SAGE Maintenance. Move the maintenance separator from `blank_before=("2", "5")` to `("2", "6")`. Update active-Job summary, localization, help/cheat-sheet references and tests together. Preserve Projects=1, BIC=2, RTC=3, STC=4, Exit=X. Test both displayed labels and actual dispatch for 5/6.
+- [x] Run `python -m pytest -q system/tests/numbers/test_nca_cli.py system/tests/numbers/test_nca_menu.py` before and after implementation. Confirm machine codes remain canonical while human labels use the current localization catalog and Job report language.
+- [x] Document the distinction between semantic outcomes, recommended notes, required notes and insufficient evidence; explain no automatic text edits. Include input language capability and numeric reference coverage in preflight, visible beside accuracy/style readiness.
+- [x] Preserve TUI execution limitations and original BIC/RTC/STC navigation behavior. Test `test_command_contract.py`, `test_primary_workflow_menus.py`, `test_menu_localization.py`, `test_documentation_contracts.py`; commit.
 
 ## Task 11: Full acceptance, reference release gate and packaging
 
 **Create:** `system/tests/numbers/test_acceptance.py`, `test_reference_release.py`, `system/tools/validate_numbers_reference.py`, `docs/advanced/release/NCA-QUALIFICATION.md`.
 **Modify:** `.github/workflows/ci.yml` at repository root only if an additional NCA qualification command is needed; `system/tools/build_release.py` / `validate_package.py` / `deep_audit.py` only for demonstrated new resource-boundary checks.
 
-- [ ] Use an isolated qualification environment with the existing pinned dependencies and record Python/dependency versions. The preceding filename-template repair passed 80 targeted tests; it also identified existing workspace artifacts and release/documentation failures. Preserve that distinction and establish an NCA baseline before implementation; the repair tests are not NCA acceptance evidence.
-- [ ] Verify authoritative-table and registry integrity against the final audit. Keep R1 as a recorded supplementary-lineage warning, using 6,800 as the runtime value count and 6,749 as the supplementary audit count. Reference maintenance, if later undertaken, gets a new package identity. Do not hide actual contract errors with xfail or broad skips.
-- [ ] Implement an explicit real-resource qualification mode. Synthetic CI stays self-contained; release qualification requires the authorized package and fails when missing. Do not publish the supplied OL/NIV source bundles or their full-text derived index without resolving the handover's stated distribution metadata through existing resource-rights governance.
-- [ ] Run the complete acceptance matrix below and publish exact environment, package hashes, counts, outcomes and limits in a separate receipt. Do not edit workbook gate cells.
-- [ ] From `app/`, run the existing gates in the qualification interpreter:
+- [x] Use an isolated qualification environment with the existing pinned dependencies and record Python/dependency versions. The preceding filename-template repair passed 80 targeted tests; it also identified existing workspace artifacts and release/documentation failures. Preserve that distinction and establish an NCA baseline before implementation; the repair tests are not NCA acceptance evidence.
+- [x] Verify authoritative-table and registry integrity against the final audit. Keep R1 as a recorded supplementary-lineage warning, using 6,800 as the runtime value count and 6,749 as the supplementary audit count. Reference maintenance, if later undertaken, gets a new package identity. Do not hide actual contract errors with xfail or broad skips.
+- [x] Implement an explicit real-resource qualification mode. Synthetic CI stays self-contained; release qualification requires the authorized package and fails when missing. Do not publish the supplied OL/NIV source bundles or their full-text derived index without resolving the handover's stated distribution metadata through existing resource-rights governance.
+- [x] Run the complete acceptance matrix below and publish exact environment, package hashes, counts, outcomes and limits in a separate receipt. Do not edit workbook gate cells.
+- [x] From `app/`, run the existing gates in the qualification interpreter:
 
 ```sh
 python -m pytest -q system/tests/numbers
@@ -423,9 +423,9 @@ python -m pytest -p no:cacheprovider system/tests
 python system/tools/deep_audit.py . --mode source
 ```
 
-- [ ] Run the future dedicated command `python system/tools/validate_numbers_reference.py --package <authorized-package-directory> --release`; its exit status must be nonzero for corrupt or contradictory authoritative records, absent sources required for acceptance, or failed golden fixtures. The documented supplementary-lineage warning alone must not cause failure. The path is supplied at execution; it is not bundled Core configuration.
-- [ ] Check supported CI platforms/Python versions, release contents, reproducible reports, no writes to Scripture/reference inputs and no runtime files in Core. Record observed timing/memory on the full dataset; set performance targets from this measured baseline rather than inventing a guarantee in the plan.
-- [ ] Review the final diff and qualification evidence, then complete the authorized development-branch workflow. No publish/deploy action is included in this planning request.
+- [x] Run the future dedicated command `python system/tools/validate_numbers_reference.py --package <authorized-package-directory> --release`; its exit status must be nonzero for corrupt or contradictory authoritative records, absent sources required for acceptance, or failed golden fixtures. The documented supplementary-lineage warning alone must not cause failure. The path is supplied at execution; it is not bundled Core configuration.
+- [x] Check supported CI platforms/Python versions, release contents, reproducible reports, no writes to Scripture/reference inputs and no runtime files in Core. Record observed timing/memory on the full dataset; set performance targets from this measured baseline rather than inventing a guarantee in the plan.
+- [x] Review the final diff and qualification evidence, then complete the authorized development-branch workflow. No publish/deploy action is included in this planning request.
 
 ## Mandatory acceptance traceability
 
@@ -462,13 +462,13 @@ python system/tools/deep_audit.py . --mode source
 
 - [x] Independent NCA workflow, Main Menu #5 after STC and authoritative OL-primary/NIV-secondary indexes confirmed by user.
 - [x] Use configured LLM interpretation; defer SQS confidence checks; require the report capability limitation in the current version.
-- [ ] Read design and audit together; separate data qualification from successful software execution.
-- [ ] Keep authoritative contract validation and documented supplementary-lineage limitations visible throughout development.
-- [ ] Implement/test domain deliveries before broad menu/lifecycle integration.
-- [ ] Keep every new outcome, field and interface consistent across schema, engine, reports and tests.
-- [ ] Require task-specific failing/passing tests and reviewer-visible commits during execution.
+- [x] Read design and audit together; separate data qualification from successful software execution.
+- [x] Keep authoritative contract validation and documented supplementary-lineage limitations visible throughout development.
+- [x] Implement/test domain deliveries before broad menu/lifecycle integration.
+- [x] Keep every new outcome, field and interface consistent across schema, engine, reports and tests.
+- [x] Require task-specific failing/passing tests and reviewer-visible commits during execution.
 
-The planning deliverables are complete when this plan, the design and the audit are available for review. Product completion requires all implementation and qualification gates above; none is claimed by this planning document.
+Implementation and qualification are complete on branch `0.02a2`: 1,530 clean-source tests pass, including 427 NCA tests, and the schema, package, source-audit, and authorized real-reference gates pass. See the [qualification record](../../advanced/release/NCA-QUALIFICATION.md) for evidence and capability limits. SQS remains future work.
 
 ## Future functionality: shared SQS confidence checks
 
