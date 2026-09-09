@@ -3,16 +3,71 @@
   "target": "SAGE TEST",
   "repository_included": false,
   "files": [
-    {"path": "HANDOVER_VERIFICATION.json", "bytes": 362, "sha256": "b109285212e2eb301f3b731acc45354bae72c47a026124179430c3e656d99950", "role": "synthetic qualification counts"},
-    {"path": "reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv", "bytes": 450, "sha256": "bfd94f285f1d94739543d8d7e2270db9aa88b379c52d6fb0d8a06460f94dc593", "role": "primary runtime reference"},
-    {"path": "reference/canonical_number_index.tsv", "bytes": 258, "sha256": "c7f9664fbeaff40ae2ff5bb0bc42a041a266060074641ef1c45ed65e305feeba", "role": "canonical authoritative reference"},
-    {"path": "reference/footnote_guidance.tsv", "bytes": 330, "sha256": "ebc570c98a348aad45235f475d58627bd7339180d25b6f4e0507a6d01d2ceff5", "role": "operator footnote decision registry"},
-    {"path": "reference/textual_variant_registry.tsv", "bytes": 220, "sha256": "fe3283213efe9b1922d83359c08849b50d1c5d58e6559eaf291f83fbf7af3958", "role": "text-critical registry"},
-    {"path": "reference/unit_conversion_registry.tsv", "bytes": 101, "sha256": "2f5d077c2d55dbdf919f0dd33ef59218f2a2db86d22f3769af66f2b325ea8482", "role": "unit equivalence registry"},
-    {"path": "reference/ol_expression_audit.tsv", "bytes": 119, "sha256": "c9988fb79ccedb1f47b8904200416d248f83846c4916ddd159ad17c382a9cc55", "role": "supplementary expression lineage"},
-    {"path": "reference/normalization_overrides.tsv", "bytes": 131, "sha256": "5d14829f5d7565fa9b9f57385d6a19d21fd562ccaadd164f37dcebb6623458a9", "role": "normalization audit"},
-    {"path": "reference/ol_token_coverage_audit.tsv", "bytes": 158, "sha256": "0eb97721586caa9055139cbcccc52d61bb49cbcaf77384346255ddaaead9292e", "role": "token coverage audit"},
-    {"path": "reference/provenance_sources.tsv", "bytes": 197, "sha256": "a40d6b3d131c37d96210b90e51cc8d732fb2fd6adc866c110c1e595244a1fe57", "role": "provenance inventory"},
-    {"path": "reference/eng_org_map_rules.txt", "bytes": 18, "sha256": "13fa3115cfc543d666353dc313d50da175c5967b8c4e23140c289fff05f39b1c", "role": "Western versification mapping"}
+    {
+      "path": "HANDOVER_VERIFICATION.json",
+      "bytes": 362,
+      "sha256": "39e49303b5f08e47ec06a5bedbaaea55f28a5253ceed6062f2caea336bf18437",
+      "role": "synthetic qualification counts"
+    },
+    {
+      "path": "reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv",
+      "bytes": 1481,
+      "sha256": "bb55a99ab805b90d8d64b3553df6770e506120adfc95e2832e2f9e81b5c02709",
+      "role": "primary runtime reference"
+    },
+    {
+      "path": "reference/canonical_number_index.tsv",
+      "bytes": 632,
+      "sha256": "2b632f137f4a4a44a5c7af9e605d57b2f99116c6e1eebee4e5bd6447515e0cfc",
+      "role": "canonical authoritative reference"
+    },
+    {
+      "path": "reference/footnote_guidance.tsv",
+      "bytes": 641,
+      "sha256": "9cf030587a08020582e809cdbea77d43b4b4d6a38abab2e81c964263725583ca",
+      "role": "operator footnote decision registry"
+    },
+    {
+      "path": "reference/textual_variant_registry.tsv",
+      "bytes": 482,
+      "sha256": "2c0467320221dcb5af8a195f284d933c8413e2a73cbce4526ffb8caababa45c3",
+      "role": "text-critical registry"
+    },
+    {
+      "path": "reference/unit_conversion_registry.tsv",
+      "bytes": 279,
+      "sha256": "ace3ba3377470fcf79c7e2c057f1842be4017ddc398dbfddc7226526dc68ee86",
+      "role": "unit equivalence registry"
+    },
+    {
+      "path": "reference/ol_expression_audit.tsv",
+      "bytes": 198,
+      "sha256": "5778102168a82df921a02330d2a9f2bb3837b8fc95293b57263b14e7b07f6017",
+      "role": "supplementary expression lineage"
+    },
+    {
+      "path": "reference/normalization_overrides.tsv",
+      "bytes": 131,
+      "sha256": "5d14829f5d7565fa9b9f57385d6a19d21fd562ccaadd164f37dcebb6623458a9",
+      "role": "normalization audit"
+    },
+    {
+      "path": "reference/ol_token_coverage_audit.tsv",
+      "bytes": 158,
+      "sha256": "0eb97721586caa9055139cbcccc52d61bb49cbcaf77384346255ddaaead9292e",
+      "role": "token coverage audit"
+    },
+    {
+      "path": "reference/provenance_sources.tsv",
+      "bytes": 197,
+      "sha256": "a40d6b3d131c37d96210b90e51cc8d732fb2fd6adc866c110c1e595244a1fe57",
+      "role": "provenance inventory"
+    },
+    {
+      "path": "reference/eng_org_map_rules.txt",
+      "bytes": 62,
+      "sha256": "03ecc58d6689d98bdf21acd04f6a77f7ee8fd1fa42c5d5adb894f964f45341b3",
+      "role": "Western versification mapping"
+    }
   ]
 }

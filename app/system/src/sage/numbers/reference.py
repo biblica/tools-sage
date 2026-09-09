@@ -22,6 +22,7 @@ from .models import ReferenceBundle, ReferenceRow
 REFERENCE_PARSER_VERSION = "1.0"
 _VALUE_RE = re.compile(r"(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?")
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
+_PACKAGE_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}")
 _PRIMARY_FIELDS = frozenset(
     {"BK", "CH", "VS", "OL_REF", "LANG", "OL_TEXT", "OL_VALUES", "NIV_TEXT", "NIV_VALUES"}
 )
@@ -108,6 +109,97 @@ _NUMERIC_COLUMNS = {
     "textual_variant_registry.tsv": ("OL_VALUE_RESEARCHED", "NIV_VALUE_RESEARCHED"),
     "ol_expression_audit.tsv": ("DIGIT_VALUE",),
 }
+_MATCH_CLASSES = {
+    "DIFFERENT_NUMERIC_EXPRESSION": frozenset({"DIFFERENT_EXPRESSION"}),
+    "NIV_EXPLICIT_OL_NONEXPLICIT": frozenset({"EXPLICITNESS_DIFFERENCE"}),
+    "OL_EXPLICIT_NIV_NONEXPLICIT": frozenset({"EXPLICITNESS_DIFFERENCE"}),
+    "PASS_EQUIVALENT_REORDERED": frozenset({"REORDERED_EQUIVALENCE"}),
+    "PASS_EXACT": frozenset({"NONE"}),
+    "PASS_UNIT_CONVERSION": frozenset({"UNIT_CONVERSION_NOT_TEXTUAL_VARIANT"}),
+    "TEXTUAL_VARIANT_RESEARCHED": frozenset(
+        {
+            "ATTESTED_CLAUSE_LEVEL_TEXTUAL_VARIANT",
+            "ATTESTED_TEXTUAL_VARIANT",
+            "ATTESTED_VERSE_OMISSION_ADDITION",
+            "CONJECTURAL_DATE_RECONSTRUCTION",
+            "CONJECTURAL_EMENDATION_RECONSTRUCTION",
+            "PARALLEL_PASSAGE_RECONSTRUCTION",
+            "STRUCTURAL_RECONSTRUCTION",
+        }
+    ),
+}
+_VARIANT_SCHOLARSHIP = frozenset(
+    {
+        "DIVIDED",
+        "NIV_FAVORED",
+        "NIV_FAVORED_RECONSTRUCTION",
+        "OL_FAVORED",
+        "RECONSTRUCTED_BUT_NOT_SECURE",
+        "STRUCTURAL_RECONSTRUCTION",
+    }
+)
+_AUTHORITY_BASES = frozenset(
+    {"OL_PRIMARY_NONNUMERIC_AT_REF", "OL_PRIMARY_NUMERIC", "OL_PRIMARY_VERSE_OMITTED_OR_UNMAPPED"}
+)
+_ALT_STATUS_BY_MATCH = {
+    "DIFFERENT_NUMERIC_EXPRESSION": "UNRESEARCHED_TRANSLATION_OR_EXPRESSION_DIFFERENCE",
+    "NIV_EXPLICIT_OL_NONEXPLICIT": "NIV_SECONDARY_ONLY",
+    "OL_EXPLICIT_NIV_NONEXPLICIT": "TRANSLATION_EXPLICITNESS_DIFFERENCE",
+    "PASS_EQUIVALENT_REORDERED": "NONE",
+    "PASS_EXACT": "NONE",
+    "PASS_UNIT_CONVERSION": "UNIT_CONVERSION_NOT_TEXTUAL_VARIANT",
+}
+_VALIDATION_RULE_BY_MATCH = {
+    "DIFFERENT_NUMERIC_EXPRESSION": (
+        "REVIEW: target should normally follow OL numeric semantics. NIV differs but no researched textual "
+        "variant is registered for this row."
+    ),
+    "NIV_EXPLICIT_OL_NONEXPLICIT": (
+        "Do not auto-validate from NIV. There is no explicit OL numeric expression in this indexed "
+        "comparison; operator must verify that any target number is a legitimate rendering rather than "
+        "added content."
+    ),
+    "OL_EXPLICIT_NIV_NONEXPLICIT": (
+        "OL numeric value is authoritative. A target may render the idea non-numerically only if semantic "
+        "equivalence is verified by the operator."
+    ),
+    "PASS_EQUIVALENT_REORDERED": (
+        "PASS when target semantic numeric value(s) equal OL; NIV confirms the same value(s)."
+    ),
+    "PASS_EXACT": "PASS when target semantic numeric value(s) equal OL; NIV confirms the same value(s).",
+    "PASS_UNIT_CONVERSION": (
+        "PASS if the target preserves the OL quantity, or uses a documented equivalent unit conversion "
+        "within the project tolerance; do not treat conversion as a textual variant."
+    ),
+    "TEXTUAL_VARIANT_RESEARCHED": (
+        "PASS_AUTHORITY1 when target preserves OL semantic value(s); ACCEPTABLE_VARIANT_WITH_FOOTNOTE "
+        "when a documented alternate is intentionally selected; otherwise REVIEW_OR_FAIL."
+    ),
+}
+_ABSENT_OL_VALIDATION_RULE = (
+    "NO_OL_VALUE — operator must review the attested verse inclusion; do not auto-pass from NIV alone."
+)
+_OL_QUANTITY_UNITS = frozenset(
+    {
+        "sata",
+        "baths",
+        "cors",
+        "stadia",
+        "metretes",
+        "litras",
+        "cubits",
+        "fathoms",
+        "choinix",
+        "choinikes",
+        "talent-weight",
+    }
+)
+_NIV_QUANTITY_UNITS = frozenset({"pounds", "gallons", "bushels", "miles", "yards", "feet"})
+_QUANTITY_RE = re.compile(
+    r"(?:(?P<qualifier>about|less than) )?"
+    r"(?P<number>(?:0|[1-9][0-9]{0,2}(?:,[0-9]{3})*|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*))?) "
+    r"(?P<unit>[a-z]+(?:-[a-z]+)?)"
+)
 
 
 def _reference_error(message: str, code: str, **details: object) -> ValidationError:
@@ -156,6 +248,17 @@ def normalize_footnote_action(raw: str) -> str:
         "NCA_REFERENCE_CONTRACT_CONFLICT",
         value=raw,
     )
+
+
+def validate_package_id(raw: object) -> str:
+    """Return one safe single-component package identity or reject it."""
+    if not isinstance(raw, str) or not _PACKAGE_ID_RE.fullmatch(raw) or raw in {".", ".."}:
+        raise _reference_error(
+            f"Invalid NCA package identity: {raw!r}",
+            "NCA_REFERENCE_MANIFEST_INVALID",
+            package_id=repr(raw),
+        )
+    return raw
 
 
 def _safe_relative(raw: str) -> str:
@@ -450,6 +553,54 @@ def _check_numeric_encodings(tables: Mapping[str, list[dict[str, str]]]) -> None
                 except ValidationError as exc:
                     exc.details.update({"table": table, "column": column, "line": line_number})
                     raise
+    for line_number, row in enumerate(tables["ol_expression_audit.tsv"], start=2):
+        _positive_ordinal(
+            row["EXPR_NO"],
+            table="ol_expression_audit.tsv",
+            field="EXPR_NO",
+            line=line_number,
+        )
+
+
+def _positive_ordinal(raw: str, *, table: str, field: str, line: int | None = None) -> int:
+    """Parse one canonical positive supplementary-table ordinal into a governed error."""
+    try:
+        value = int(raw)
+    except (TypeError, ValueError) as exc:
+        raise _reference_error(
+            f"Invalid NCA supplementary ordinal in {table} field {field}: {raw!r}",
+            "NCA_REFERENCE_CONTRACT_CONFLICT",
+            table=table,
+            field=field,
+            line=line,
+        ) from exc
+    if value < 1 or str(value) != raw:
+        raise _reference_error(
+            f"Invalid NCA supplementary ordinal in {table} field {field}: {raw!r}",
+            "NCA_REFERENCE_CONTRACT_CONFLICT",
+            table=table,
+            field=field,
+            line=line,
+        )
+    return value
+
+
+def _validate_quantity(raw: str, *, units: frozenset[str], reference: VerseRef, field: str) -> None:
+    """Validate a typed unit quantity without asserting a conversion to flat numeric values."""
+    parts = raw.split("; ")
+    matches = [_QUANTITY_RE.fullmatch(part) for part in parts] if raw else []
+    if (
+        not matches
+        or not all(matches)
+        or ";" in raw.replace("; ", "")
+        or any(item.group("unit") not in units for item in matches if item)
+    ):
+        raise _reference_error(
+            f"Invalid NCA typed unit quantity at {reference.label()} field {field}: {raw!r}",
+            "NCA_REFERENCE_CONTRACT_CONFLICT",
+            reference=reference.label(),
+            field=field,
+        )
 
 
 def _check_authoritative_agreement(
@@ -478,6 +629,163 @@ def _check_authoritative_agreement(
                 "NCA_REFERENCE_CONTRACT_CONFLICT",
                 reference=key.label(),
                 field=field,
+            )
+
+
+def _check_operator_contracts(
+    main: Mapping[VerseRef, dict[str, str]],
+    canonical: Mapping[VerseRef, dict[str, str]],
+    variants: Mapping[VerseRef, dict[str, str]],
+    footnotes: Mapping[VerseRef, dict[str, str]],
+    units: Mapping[VerseRef, dict[str, str]],
+) -> None:
+    """Validate closed operator vocabularies, status relationships, and registered absence."""
+    for key, row in main.items():
+        status = row["MATCH_STATUS"]
+        variant_class = row["VARIANT_CLASS"]
+        scholarship = row["SCHOLARSHIP_STATUS"]
+        if status not in _MATCH_CLASSES or variant_class not in _MATCH_CLASSES[status]:
+            raise _reference_error(
+                f"Unknown or incompatible NCA status/class at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+                match_status=status,
+                variant_class=variant_class,
+            )
+        expected_scholarship = (
+            _VARIANT_SCHOLARSHIP
+            if status == "TEXTUAL_VARIANT_RESEARCHED"
+            else frozenset({"NOT_TEXTUAL_VARIANT"})
+            if status == "PASS_UNIT_CONVERSION"
+            else frozenset({""})
+        )
+        if scholarship not in expected_scholarship:
+            raise _reference_error(
+                f"Incompatible NCA scholarship status at {key.label()}: {scholarship!r}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+                scholarship_status=scholarship,
+            )
+
+        alt_status = row["ALT_READING_STATUS"]
+        if status == "TEXTUAL_VARIANT_RESEARCHED":
+            expected_alt = f"{scholarship}: NIV/alternate {row['NIV_VALUES']}"
+        else:
+            expected_alt = _ALT_STATUS_BY_MATCH[status]
+        if alt_status != expected_alt:
+            raise _reference_error(
+                f"Incompatible NCA alternate-reading status at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+                alt_reading_status=alt_status,
+            )
+
+        ol_action = row["FOOTNOTE_IF_TARGET_FOLLOWS_OL"]
+        alt_action = row["FOOTNOTE_IF_TARGET_FOLLOWS_ALT"]
+        normalize_footnote_action(ol_action)
+        normalize_footnote_action(alt_action)
+        if status == "TEXTUAL_VARIANT_RESEARCHED":
+            expected_ol_action = "REQUIRE" if scholarship == "DIVIDED" else "RECOMMEND"
+            expected_actions = (expected_ol_action, "REQUIRE")
+        elif status == "PASS_UNIT_CONVERSION":
+            expected_actions = ("NONE_TEXT_CRITICAL", "NONE_TEXT_CRITICAL")
+        else:
+            expected_actions = ("NONE", "N/A")
+        if (ol_action, alt_action) != expected_actions:
+            raise _reference_error(
+                f"Incompatible NCA footnote policy at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+            )
+
+        if status == "PASS_UNIT_CONVERSION":
+            quantity = row["OL_VALUES"] or units[key]["OL_QUANTITY"]
+            expected_default = f"OL semantic quantity: {quantity}"
+        elif not row["OL_REF"]:
+            expected_default = "OL: [no mapped OL value]"
+        elif status == "NIV_EXPLICIT_OL_NONEXPLICIT":
+            expected_default = "NO_EXPLICIT_OL_NUMERIC_VALUE"
+        else:
+            expected_default = f"OL: {row['OL_VALUES']}"
+        expected_rule = (
+            _ABSENT_OL_VALIDATION_RULE
+            if not row["OL_REF"]
+            else _VALIDATION_RULE_BY_MATCH[status]
+        )
+        if row["TARGET_DEFAULT"] != expected_default or row["TARGET_VALIDATION_RULE"] != expected_rule:
+            raise _reference_error(
+                f"Incompatible NCA target execution policy at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+            )
+
+        canonical_row = canonical[key]
+        authority_basis = canonical_row["AUTHORITY_BASIS"]
+        if authority_basis not in _AUTHORITY_BASES:
+            raise _reference_error(
+                f"Unknown NCA authority basis at {key.label()}: {authority_basis!r}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+            )
+        # Empty OL authority is executable only through the registered omission
+        # policy; ordinary rows must retain a complete language/reference/text identity.
+        ol_fields = (row["LANG"], row["OL_REF"], row["OL_TEXT"], row["OL_VALUES"])
+        all_ol_absent = not any(ol_fields)
+        any_ol_absent = any(not value for value in ol_fields[:3])
+        registered_absence = (
+            key in variants
+            and key in footnotes
+            and variant_class == "ATTESTED_VERSE_OMISSION_ADDITION"
+            and footnotes[key]["VALIDATION_IF_TARGET_FOLLOWS_OL"] == "NO_CONFIGURED_OL_READING"
+        )
+        if all_ol_absent:
+            if not registered_absence or authority_basis != "OL_PRIMARY_VERSE_OMITTED_OR_UNMAPPED":
+                raise _reference_error(
+                    f"Unregistered blank OL authority row at {key.label()}",
+                    "NCA_REFERENCE_CONTRACT_CONFLICT",
+                    reference=key.label(),
+                )
+        elif any_ol_absent or row["LANG"] not in {"HEB", "GRK"}:
+            raise _reference_error(
+                f"Incomplete NCA OL authority identity at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+            )
+        else:
+            expected_basis = "OL_PRIMARY_NUMERIC" if row["OL_VALUES"] else "OL_PRIMARY_NONNUMERIC_AT_REF"
+            if authority_basis != expected_basis:
+                raise _reference_error(
+                    f"NCA authority basis conflicts with OL fields at {key.label()}",
+                    "NCA_REFERENCE_CONTRACT_CONFLICT",
+                    reference=key.label(),
+                    authority_basis=authority_basis,
+                )
+
+        ol_values = parse_values(row["OL_VALUES"])
+        niv_values = parse_values(row["NIV_VALUES"])
+        if status == "PASS_EXACT" and ol_values != niv_values:
+            raise _reference_error(
+                f"PASS_EXACT values differ at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+            )
+        if status == "PASS_EQUIVALENT_REORDERED" and Counter(ol_values) != Counter(niv_values):
+            raise _reference_error(
+                f"PASS_EQUIVALENT_REORDERED values differ at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+            )
+        if status == "NIV_EXPLICIT_OL_NONEXPLICIT" and (ol_values or not niv_values):
+            raise _reference_error(
+                f"NIV explicitness status conflicts with values at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+            )
+        if status == "OL_EXPLICIT_NIV_NONEXPLICIT" and (not ol_values or niv_values):
+            raise _reference_error(
+                f"OL explicitness status conflicts with values at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
             )
 
 
@@ -549,6 +857,24 @@ def _check_registry_joins(
     spacing: list[str] = []
     for key, unit in units.items():
         operator = main[key]
+        if unit["REF"] != key.label() or unit["LANG"] != operator["LANG"] or unit["LANG"] != "GRK":
+            raise _reference_error(
+                f"NCA unit identity conflict at {key.label()}",
+                "NCA_REFERENCE_CONTRACT_CONFLICT",
+                reference=key.label(),
+            )
+        _validate_quantity(
+            unit["OL_QUANTITY"],
+            units=_OL_QUANTITY_UNITS,
+            reference=key,
+            field="OL_QUANTITY",
+        )
+        _validate_quantity(
+            unit["NIV_QUANTITY"],
+            units=_NIV_QUANTITY_UNITS,
+            reference=key,
+            field="NIV_QUANTITY",
+        )
         for left_field, right_field in (
             ("CLASS", "VARIANT_CLASS"), ("SCHOLARSHIP_STATUS", "SCHOLARSHIP_STATUS"), ("OL_TEXT", "OL_TEXT"),
             ("NOTE", "TEXTUAL_CRITICAL_NOTE"), ("SOURCE_IDS", "SOURCE_IDS"),
@@ -585,6 +911,16 @@ def _check_provenance(
     ):
         for line_number, row in enumerate(tables[table], start=2):
             source_ids = _split_ids(row["SOURCE_IDS"])
+            requires_provenance = table != "SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv" or row[
+                "MATCH_STATUS"
+            ] in {"TEXTUAL_VARIANT_RESEARCHED", "PASS_UNIT_CONVERSION"}
+            if requires_provenance and not source_ids:
+                raise _reference_error(
+                    f"NCA required provenance is blank in {table} line {line_number}",
+                    "NCA_REFERENCE_PROVENANCE_MISSING",
+                    table=table,
+                    line=line_number,
+                )
             missing = [source_id for source_id in source_ids if source_id not in provenance]
             if missing:
                 raise _reference_error(
@@ -627,7 +963,14 @@ def _lineage_diagnostic(
     new_numeric = 0
     references: list[str] = []
     for key, row in main.items():
-        ordered = sorted(by_ol_ref[row["OL_REF"]], key=lambda item: int(item["EXPR_NO"]))
+        ordered = sorted(
+            by_ol_ref[row["OL_REF"]],
+            key=lambda item: _positive_ordinal(
+                item["EXPR_NO"],
+                table="ol_expression_audit.tsv",
+                field="EXPR_NO",
+            ),
+        )
         audit_values = [item["DIGIT_VALUE"] for item in ordered]
         authoritative = [str(value) for value in parse_values(row["OL_VALUES"])]
         if audit_values == authoritative:
@@ -688,8 +1031,8 @@ def _boundary_diagnostic(root: Path, main: Mapping[VerseRef, dict[str, str]]) ->
 def _load_qualified(root: Path) -> ReferenceBundle:
     """Load one already-resolved package root after full deterministic qualification."""
     manifest, verification, package_sha256 = _verify_inventory(root)
-    package_id = str(manifest.get("handover") or "").strip()
-    if not package_id or package_id != str(verification.get("handover") or "").strip():
+    package_id = validate_package_id(manifest.get("handover"))
+    if package_id != verification.get("handover"):
         raise _reference_error(
             "NCA package identity is absent or inconsistent",
             "NCA_REFERENCE_MANIFEST_INVALID",
@@ -708,6 +1051,7 @@ def _load_qualified(root: Path) -> ReferenceBundle:
     _check_numeric_encodings(tables)
     _check_authoritative_agreement(main, canonical)
     spacing = _check_registry_joins(main, variants, footnotes, units)
+    _check_operator_contracts(main, canonical, variants, footnotes, units)
 
     provenance: dict[str, dict[str, str]] = {}
     for row in tables["provenance_sources.tsv"]:
@@ -723,8 +1067,9 @@ def _load_qualified(root: Path) -> ReferenceBundle:
 
     rows: dict[VerseRef, ReferenceRow] = {}
     for key, row in main.items():
-        registered_absence = not any(
-            (row["LANG"], row["OL_REF"], row["OL_TEXT"], row["OL_VALUES"])
+        registered_absence = (
+            key in footnotes
+            and footnotes[key]["VALIDATION_IF_TARGET_FOLLOWS_OL"] == "NO_CONFIGURED_OL_READING"
         )
         if row["LANG"] not in {"HEB", "GRK"} and not registered_absence:
             raise _reference_error(
