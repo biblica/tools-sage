@@ -292,13 +292,13 @@ def _validate_expression(
     if set(raw) != expected:
         raise _error("Numeric expression fields are malformed.", "NCA_RESULT_EXPRESSION_INVALID")
     expression_id = raw["expression_id"]
-    if not isinstance(expression_id, str) or not expression_id or raw["stream_id"] != expected_stream:
+    if not isinstance(expression_id, str) or not expression_id.strip() or raw["stream_id"] != expected_stream:
         raise _error("Numeric expression identity is missing.", "NCA_RESULT_EXPRESSION_INVALID")
     surface = raw["surface"]
     span = _validated_span(raw["span"], label="Numeric expression span")
     if (
         not isinstance(surface, str)
-        or not surface
+        or not surface.strip()
         or span[1] > len(target_text)
         or target_text[span[0]:span[1]] != surface
     ):
@@ -314,9 +314,9 @@ def _validate_expression(
         raise _error("Numeric expression kind or arity is invalid.", "NCA_RESULT_EXPRESSION_INVALID")
     unit = raw["unit"]
     role = raw["role"]
-    if unit is not None and (not isinstance(unit, str) or not unit):
+    if unit is not None and (not isinstance(unit, str) or not unit.strip()):
         raise _error("Numeric expression unit is invalid.", "NCA_RESULT_EXPRESSION_INVALID")
-    if raw["qualifier"] not in NUMERIC_QUALIFIERS or role is not None and (not isinstance(role, str) or not role):
+    if raw["qualifier"] not in NUMERIC_QUALIFIERS or role is not None and (not isinstance(role, str) or not role.strip()):
         raise _error("Numeric expression meaning fields are invalid.", "NCA_RESULT_EXPRESSION_INVALID")
     role_spans = raw["role_spans"]
     if not isinstance(role_spans, list):
@@ -349,7 +349,7 @@ def _validate_expression(
         _validate_fraction(representation["value"])
         if (
             not isinstance(child_surface, str)
-            or not child_surface
+            or not child_surface.strip()
             or child_span[1] > len(target_text)
             or target_text[child_span[0]:child_span[1]] != child_surface
             or not (span[0] <= child_span[0] < child_span[1] <= span[1])
