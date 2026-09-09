@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from sage.atomic import atomic_write_json
 from sage.errors import ValidationError
 
-from .reference import REFERENCE_PARSER_VERSION, load_reference
+from .reference import REFERENCE_PARSER_VERSION, load_reference, validate_package_id
 
 if TYPE_CHECKING:
     from sage.registry import EcosystemConfig
@@ -108,6 +108,20 @@ def _validated_members(archive: zipfile.ZipFile) -> tuple[str, tuple[zipfile.Zip
     return root, tuple(files)
 
 
+def _publication_destination(parent: Path, package_id: str) -> Path:
+    """Resolve a validated package identity to exactly one child of the resource root."""
+    safe_id = validate_package_id(package_id)
+    resolved_parent = parent.resolve()
+    destination = (resolved_parent / safe_id).resolve()
+    if destination.parent != resolved_parent:
+        raise ValidationError(
+            f"NCA package publication escapes its resource root: {safe_id}",
+            code="NCA_REFERENCE_PUBLICATION_CONFLICT",
+            details={"package_id": safe_id, "resource_root": str(resolved_parent)},
+        )
+    return destination
+
+
 def _write_receipt(
     config: EcosystemConfig,
     *,
@@ -163,6 +177,7 @@ def import_reference(config: EcosystemConfig, archive: Path) -> Path:
             publication_parent.mkdir(parents=True, exist_ok=True)
             staging = Path(tempfile.mkdtemp(prefix=".numbers-reference-", dir=publication_parent))
             try:
+                newly_published = False
                 extracted = staging / root_name
                 for member in members:
                     relative = PurePosixPath(member.filename).relative_to(root_name)
@@ -172,7 +187,7 @@ def import_reference(config: EcosystemConfig, archive: Path) -> Path:
                     with destination.open("wb") as target:
                         target.write(payload)
                 bundle = load_reference(extracted, qualification="STRICT")
-                destination = publication_parent / bundle.package_id
+                destination = _publication_destination(publication_parent, bundle.package_id)
                 if destination.exists() or destination.is_symlink():
                     if destination.is_symlink() or not destination.is_dir():
                         raise ValidationError(
@@ -189,15 +204,21 @@ def import_reference(config: EcosystemConfig, archive: Path) -> Path:
                         )
                 else:
                     os.replace(extracted, destination)
-                _write_receipt(
-                    config,
-                    package_root=destination,
-                    archive=source,
-                    archive_sha256=archive_sha256,
-                    package_sha256=bundle.sha256,
-                    qualification_status=bundle.qualification_status,
-                    diagnostics=bundle.diagnostics,
-                )
+                    newly_published = True
+                try:
+                    _write_receipt(
+                        config,
+                        package_root=destination,
+                        archive=source,
+                        archive_sha256=archive_sha256,
+                        package_sha256=bundle.sha256,
+                        qualification_status=bundle.qualification_status,
+                        diagnostics=bundle.diagnostics,
+                    )
+                except Exception:
+                    if newly_published:
+                        os.replace(destination, extracted)
+                    raise
                 return destination
             finally:
                 shutil.rmtree(staging, ignore_errors=True)
