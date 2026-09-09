@@ -1,0 +1,14 @@
+{
+  "handover": "SYNTHETIC_NCA_REFERENCE_1",
+  "status": "PASS",
+  "operator_index_rows": 1,
+  "duplicate_western_keys": 0,
+  "critical_rows": 0,
+  "unit_conversion_rows": 0,
+  "ol_expression_rows": 1,
+  "normalization_override_rows": 0,
+  "ol_token_coverage_rows": 0,
+  "provenance_source_rows": 1,
+  "unresolved_source_ids": 0,
+  "footnote_guidance_rows": 0
+}

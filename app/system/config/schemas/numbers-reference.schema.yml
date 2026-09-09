@@ -1,0 +1,41 @@
+schema_id: sage-numbers-reference-1.0
+required: [FILE_MANIFEST.json, HANDOVER_VERIFICATION.json, CHECKSUMS.sha256, reference]
+controls:
+  schema_version: '1.0'
+  owner: system/src/sage/numbers/reference.py
+  storage: localdata/inputs/resources/numbers/<package-id>
+  immutable: true
+  qualification_receipt: localdata/.system/state/numbers/qualification/<package-id>.json
+  qualification_modes: [STRICT, DIAGNOSTIC]
+  qualified_statuses: [QUALIFIED, QUALIFIED_WITH_DIAGNOSTICS]
+  authority:
+    primary: reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv
+    canonical_cross_check: reference/canonical_number_index.tsv
+    supplementary_lineage: reference/ol_expression_audit.tsv
+  required_runtime_tables:
+    - reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv
+    - reference/canonical_number_index.tsv
+    - reference/textual_variant_registry.tsv
+    - reference/footnote_guidance.tsv
+    - reference/unit_conversion_registry.tsv
+    - reference/provenance_sources.tsv
+    - reference/eng_org_map_rules.txt
+  value_encoding:
+    integer: ungrouped_ascii_digits
+    fraction: reduced_positive_denominator_rational
+    sequence: semicolon_delimited_source_order
+  footnote_action_aliases:
+    NONE_TEXT_CRITICAL: NONE
+    N/A: NONE
+  nonblocking_diagnostics:
+    - REFERENCE_LINEAGE_INCOMPLETE
+    - NCA_UNIT_DISPLAY_SPACING_DIFFERENCE
+    - NCA_OL_REFERENCE_BOUNDARY_EXCEPTION
+  blocking_failures:
+    - incomplete_or_conflicting_file_inventory
+    - checksum_or_byte_count_failure
+    - invalid_utf8_or_numeric_encoding
+    - duplicate_western_or_source_key
+    - missing_required_column_or_provenance
+    - authoritative_or_registry_contract_conflict
+    - published_cardinality_mismatch
