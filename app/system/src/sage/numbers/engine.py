@@ -224,7 +224,11 @@ def _identify_reading(
         limitations = extraction.limitations
         if evidence is not None:
             limitations += evidence.limitations
-        return _unsupported_reading("CORRESPONDENCE_INCOMPLETE"), limitations, ()
+        return (
+            _unsupported_reading("CORRESPONDENCE_INCOMPLETE"),
+            limitations,
+            evidence.source_expressions if evidence is not None else (),
+        )
 
     target = evidence.target_extraction
     target_values = _flat_values(target)
