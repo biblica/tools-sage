@@ -638,6 +638,8 @@ def _validated_finalized_task(
     persisted_manifest: str,
 ) -> tuple[dict[str, object], tuple[str, ...], tuple[str, str | None]]:
     """Reconcile one finalized task against its control, receipt, and original output."""
+    # Reopen the persisted manifest through the workspace resolver before reading
+    # sibling artifacts; the Run ledger itself is not a trusted filesystem boundary.
     manifest_path = resolve_persisted_path(
         runtime.root,
         persisted_manifest,
