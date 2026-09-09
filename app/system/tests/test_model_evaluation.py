@@ -26,6 +26,7 @@ EXPECTED_CASES = {
         "participant-identity",
     ],
     "stc": ["seeded-correspondence", "complete-no-finding", "reference-contamination"],
+    "nca-numbers": ["exact-cardinal-evidence", "complete-no-number", "fabricated-span"],
     "saw-rtc": [
         "seeded-variance",
         "aligned-pair",
@@ -92,8 +93,8 @@ def test_case_builder_verifies_the_committed_sealed_bundles(package_root: Path) 
     assert result.returncode == 0, result.stdout + result.stderr
     payload = json.loads(result.stdout)
     assert payload["status"] == "PASS"
-    assert payload["skill_count"] == 9
-    assert payload["case_count"] == 31
+    assert payload["skill_count"] == 10
+    assert payload["case_count"] == 34
 
 
 class PassingTransport:

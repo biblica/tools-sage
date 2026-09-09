@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "fabricated-span",
+  "case_kind": "ADVERSARIAL",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "1ddfc3c11ba033c8ef06d322eeada113c841cefec6b09f1f6d3bdcc7a961b57a",
+  "input_sha256": "a683dc92d2df2f2b6b64bfc26e16fc11f39ea402037502c8297d9e2cf64c6e69",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-FABRICATED-SPAN"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "nca-numbers",
+  "task_id": "EVAL-NCA-NUMBERS-FABRICATED-SPAN"
+}

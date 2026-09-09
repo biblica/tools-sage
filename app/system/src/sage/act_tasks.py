@@ -151,6 +151,7 @@ ACT_OPERATIONS = {
     "bic": {"inspect", CANONICAL_TARGET_TEXT_OPERATION, "self_check"},
     "rtc": {"rtc"},
     "stc": {"stc"},
+    "nca": {"numbers"},
     "saw": {"rtc", "stc", "focused", "ol"},
 }
 CONTEMPORARY_ROLES = {"REFERENCE"}

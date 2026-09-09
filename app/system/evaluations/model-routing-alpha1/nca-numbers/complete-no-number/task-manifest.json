@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "complete-no-number",
+  "case_kind": "ZERO_FINDING",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "744905b4092a05f6c452f4531c2f48575625aeca23451bb435e3ccff98a8221b",
+  "input_sha256": "9f147e25baa7ed7c2dcea7e2e27035830c59a9bf2a943302a88083ad76df9cf7",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-COMPLETE-NO-NUMBER"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "nca-numbers",
+  "task_id": "EVAL-NCA-NUMBERS-COMPLETE-NO-NUMBER"
+}

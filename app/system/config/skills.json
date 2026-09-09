@@ -61,6 +61,18 @@
       "qualification_status": "VALIDATED",
       "transformation_summary": "Canonical Source Text Correspondence routing with legacy source traceability."
     },
+    "nca-numbers": {
+      "workflow": "nca",
+      "operation": "numbers",
+      "file": "system/skills/nca-numbers/SKILL.md",
+      "source_system": "SAGE Number Consistency & Accuracy",
+      "source_version": "2026-09-09",
+      "original_file": "system/skills/nca-numbers/references/ORIGINAL-NCA-NUMBERS-CONTRACT.md",
+      "original_sha256": "6b2a566ffc34407e89be2e474cb343f68093db345a2cf8617f1191705d7c9243",
+      "adapted_sha256": "fd72ad76ff34f8494439d4a87f52965d76dc40aad02d8a98b1db3bbc29f3c51a",
+      "qualification_status": "VALIDATED",
+      "transformation_summary": "Bounded target extraction, immutable OL correspondence, exact target-note evidence, pinned SAGE routing, and deterministic evidence validation."
+    },
     "saw-rtc": {
       "workflow": "saw",
       "operation": "rtc",

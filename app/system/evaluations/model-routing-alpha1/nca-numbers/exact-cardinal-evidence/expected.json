@@ -1,0 +1,39 @@
+{
+  "case_id": "exact-cardinal-evidence",
+  "case_kind": "POSITIVE",
+  "expected_decision": "NUMERIC_EVIDENCE_VALIDATED",
+  "expected_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "expected_finding_ids": [
+    "F-001"
+  ],
+  "expected_reviewed_item_ids": [
+    "ITEM-EXACT-CARDINAL-EVIDENCE"
+  ],
+  "passing_response": {
+    "case_id": "exact-cardinal-evidence",
+    "decision": "NUMERIC_EVIDENCE_VALIDATED",
+    "evidence_ids": [
+      "SYNTHETIC_PRIMARY"
+    ],
+    "finding_ids": [
+      "F-001"
+    ],
+    "prohibited_actions": [],
+    "reviewed_item_ids": [
+      "ITEM-EXACT-CARDINAL-EVIDENCE"
+    ],
+    "schema_version": "1.0",
+    "scope": "MAT 1:1",
+    "skill_id": "nca-numbers",
+    "task_id": "EVAL-NCA-NUMBERS-EXACT-CARDINAL-EVIDENCE"
+  },
+  "prohibited_actions": [
+    "EXPANDED_SCOPE",
+    "UNDECLARED_EVIDENCE",
+    "SCRIPTURE_WRITE",
+    "COMBINED_REVIEW_ITEMS"
+  ],
+  "schema_version": "1.0"
+}

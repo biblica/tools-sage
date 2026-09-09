@@ -19,6 +19,7 @@ SEMANTIC_OUTCOMES = frozenset(
         "PASS_AUTHORITY1",
         "PASS_EQUIVALENT_NUMERIC_EXPRESSION",
         "PASS_UNIT_CONVERSION",
+        "REGISTERED_ALTERNATE",
         "ACCEPTABLE_VARIANT_WITH_FOOTNOTE",
         "CAUTION_ACCEPTABLE_ATTESTED_MINOR_READING_WITH_FOOTNOTE",
         "NO_CONFIGURED_OL_READING",
@@ -103,6 +104,10 @@ class NumericExpression:
     unit: Optional[str] = None
     qualifier: str = "EXACT"
     role: Optional[str] = None
+    expression_id: Optional[str] = None
+    stream_id: str = "main"
+    representations: Tuple[Mapping[str, object], ...] = ()
+    role_spans: Tuple[Tuple[int, int], ...] = ()
 
     def __post_init__(self) -> None:
         """Validate exact values, closed vocabularies, and source span bounds."""
@@ -120,6 +125,32 @@ class NumericExpression:
             raise _invalid("numeric expression unit", self.unit)
         if self.role is not None and not isinstance(self.role, str):
             raise _invalid("numeric expression role", self.role)
+        if self.expression_id is not None and (
+            not isinstance(self.expression_id, str) or not self.expression_id
+        ):
+            raise _invalid("numeric expression ID", self.expression_id)
+        if not isinstance(self.stream_id, str) or not self.stream_id:
+            raise _invalid("numeric expression stream ID", self.stream_id)
+        representations = _tuple(
+            "numeric expression representations", self.representations
+        )
+        if any(not isinstance(value, Mapping) for value in representations):
+            raise _invalid("numeric expression representations", self.representations)
+        object.__setattr__(
+            self,
+            "representations",
+            tuple(freeze(value) for value in representations),
+        )
+        role_spans = _tuple("numeric expression role spans", self.role_spans)
+        for role_span in role_spans:
+            values = _tuple("numeric expression role span", role_span)
+            if (
+                len(values) != 2
+                or any(not isinstance(value, int) for value in values)
+                or values[0] < 0
+                or values[1] < values[0]
+            ):
+                raise _invalid("numeric expression role span", role_span)
 
 
 @dataclass(frozen=True)
@@ -163,6 +194,7 @@ class FootnoteDecision:
     status: str
     outcome: str
     evidence_spans: Tuple[Tuple[int, int], ...] = ()
+    evidence_note_ids: Tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         """Validate footnote policy vocabularies and evidence span bounds."""
@@ -174,6 +206,11 @@ class FootnoteDecision:
             values = _tuple("footnote evidence span", span)
             if len(values) != 2 or any(not isinstance(value, int) for value in values) or values[0] < 0 or values[1] < values[0]:
                 raise _invalid("footnote evidence span", span)
+        note_ids = _tuple("footnote evidence note IDs", self.evidence_note_ids)
+        if any(not isinstance(note_id, str) or not note_id for note_id in note_ids):
+            raise _invalid("footnote evidence note IDs", self.evidence_note_ids)
+        if note_ids and len(note_ids) != len(spans):
+            raise _invalid("footnote evidence note IDs", self.evidence_note_ids)
 
 
 @dataclass(frozen=True)
