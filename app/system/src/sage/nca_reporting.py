@@ -35,22 +35,34 @@ _ENGLISH = {
     "report.nca.outcome": "Outcome",
     "report.nca.restrictions": "Restrictions",
     "report.nca.model_identity": "Model identity",
+    "report.nca.style_profile": "Style profile",
+    "report.nca.reference_package": "Reference package",
+    "report.nca.expressions": "Expressions",
+    "report.nca.insufficient_evidence": "Insufficient evidence",
+    "report.nca.reference_not_indexed": "Reference not indexed",
+    "report.nca.not_assessed": "Not assessed",
+    "report.nca.result": "Result",
+    "report.nca.confidence_basis": "Confidence basis",
 }
 _ENGLISH_LANGUAGES = frozenset({"en", "en-US", "en-GB"})
 _CATALOG_LANGUAGES = _ENGLISH_LANGUAGES | {"id", "fr", "ru", "pt-BR", "uk"}
 
 
-def _translation_function(
+def _localization_function(
     *, language: str, localize: Callable[[str], str] | object | None
 ) -> Callable[[str], str]:
     """Resolve an explicit report-language catalog without silent English fallback."""
     if localize is None:
         if language not in _CATALOG_LANGUAGES:
             raise ValidationError(
-                f"NCA report translation is unavailable for {language}.",
+                f"NCA report localization is unavailable for {language}.",
                 code="NCA_REPORT_TRANSLATION_REQUIRED",
             )
-        return lambda key: catalogue_text(language, key)
+        return lambda key: (
+            _ENGLISH[key]
+            if catalogue_text(language, key) == key
+            else catalogue_text(language, key)
+        )
     function = localize if callable(localize) else getattr(localize, "text_key", None)
     if not callable(function):
         raise ValidationError(
@@ -58,19 +70,19 @@ def _translation_function(
             code="NCA_REPORT_TRANSLATION_REQUIRED",
         )
 
-    def translated(key: str) -> str:
-        """Return catalog text, retaining English only for visibly untranslated labels."""
+    def localized(key: str) -> str:
+        """Return catalog text, retaining English only for visibly unresolved labels."""
         value = function(key)
         if not isinstance(value, str) or not value.strip() or value == key:
             if key == "report.nca.capability_limitation" and language not in _ENGLISH_LANGUAGES:
                 raise ValidationError(
-                    f"NCA capability limitation is not translated for {language}.",
+                    f"NCA capability limitation is not localized for {language}.",
                     code="NCA_REPORT_TRANSLATION_REQUIRED",
                 )
             return _ENGLISH[key]
         return value
 
-    return translated
+    return localized
 
 
 def _mapping(value: object, label: str) -> Mapping[str, Any]:
@@ -86,7 +98,7 @@ def _joined(value: object) -> str:
     """Render a bounded sequence without changing the stored identifiers."""
     if not isinstance(value, (list, tuple)):
         return "NOT RECORDED"
-    return ", ".join(str(item) for item in value) or "NOT RECORDED"
+    return ", ".join("NULL" if item is None else str(item) for item in value) or "NOT RECORDED"
 
 
 def _locator(value: object) -> str:
@@ -122,7 +134,7 @@ def render_nca_report(
     language: str = "en",
     localize: Callable[[str], str] | object | None = None,
 ) -> str:
-    """Render NCA evidence while translating only human-facing prose and labels."""
+    """Render NCA evidence while localizing only human-facing prose and labels."""
     if not isinstance(document, Mapping) or document.get("check_id") != "NUMBERS":
         raise ValidationError(
             "NCA report requires a canonical NUMBERS result.",
@@ -137,7 +149,7 @@ def render_nca_report(
             "The NCA capability and SQS limitation is required.",
             code="NCA_RESULT_LIMITATION_REQUIRED",
         )
-    text = _translation_function(language=language, localize=localize)
+    text = _localization_function(language=language, localize=localize)
     provenance = _mapping(document.get("provenance"), "provenance")
     style = _mapping(provenance.get("style_profile"), "style profile")
     reference = _mapping(provenance.get("reference_package"), "reference package")
@@ -161,8 +173,8 @@ def render_nca_report(
         f"- Job: `{provenance.get('job_id', 'NOT RECORDED')}`",
         f"- Run: `{provenance.get('run_id', 'NOT RECORDED')}`",
         f"- WIP: `{wip.get('identity', 'NOT RECORDED')}` (`{wip.get('sha256', 'NOT RECORDED')}`)",
-        f"- Style profile: `{style.get('selector', 'NOT RECORDED')}` (`{style.get('sha256', 'NOT RECORDED')}`)",
-        f"- Reference package: `{reference.get('package_id', 'NOT RECORDED')}` (`{reference.get('sha256', 'NOT RECORDED')}`)",
+        f"- {text('report.nca.style_profile')}: `{style.get('selector', 'NOT RECORDED')}` (`{style.get('sha256', 'NOT RECORDED')}`)",
+        f"- {text('report.nca.reference_package')}: `{reference.get('package_id', 'NOT RECORDED')}` (`{reference.get('sha256', 'NOT RECORDED')}`)",
         "",
         f"## {text('report.nca.checks')}",
         "",
@@ -198,18 +210,18 @@ def render_nca_report(
             "",
             f"## {text('report.nca.summary')}",
             "",
-            f"- Units: `{summary.get('units', 0)}`",
-            f"- Expressions: `{summary.get('expressions', 0)}`",
-            f"- Findings: `{summary.get('findings', 0)}`",
-            f"- Insufficient evidence: `{summary.get('insufficient_evidence', 0)}`",
-            f"- Reference not indexed: `{summary.get('reference_not_indexed', 0)}`",
-            f"- Not assessed: `{summary.get('not_assessed', 0)}`",
+            f"- {text('report.nca.units')}: `{summary.get('units', 0)}`",
+            f"- {text('report.nca.expressions')}: `{summary.get('expressions', 0)}`",
+            f"- {text('report.nca.findings')}: `{summary.get('findings', 0)}`",
+            f"- {text('report.nca.insufficient_evidence')}: `{summary.get('insufficient_evidence', 0)}`",
+            f"- {text('report.nca.reference_not_indexed')}: `{summary.get('reference_not_indexed', 0)}`",
+            f"- {text('report.nca.not_assessed')}: `{summary.get('not_assessed', 0)}`",
             "",
             f"## {text('report.nca.coverage')}",
             "",
-            f"- Result: `{coverage.get('result', 'NOT RECORDED')}`",
-            f"- Coverage: `{coverage.get('coverage', 'NOT RECORDED')}`",
-            f"- Confidence basis: `{coverage.get('confidence_basis', 'NOT RECORDED')}`",
+            f"- {text('report.nca.result')}: `{coverage.get('result', 'NOT RECORDED')}`",
+            f"- {text('report.nca.coverage')}: `{coverage.get('coverage', 'NOT RECORDED')}`",
+            f"- {text('report.nca.confidence_basis')}: `{coverage.get('confidence_basis', 'NOT RECORDED')}`",
             f"- {text('report.nca.restrictions')}: {_joined(coverage.get('restrictions'))}",
             "",
             f"## {text('report.nca.units')}",
@@ -228,7 +240,7 @@ def render_nca_report(
                 f"- {text('report.nca.target_reference')}: {_joined(projection.get('target_references'))}",
                 f"- {text('report.nca.target_locator')}: {_locator(projection.get('source_locator'))}",
                 f"- {text('report.nca.western_reference')}: {_joined(projection.get('western_references'))}",
-                f"- {text('report.nca.ol_reference')}: `{reading.get('registry_id') or 'NOT RECORDED'}`",
+                f"- {text('report.nca.ol_reference')}: {_joined(projection.get('ol_references'))}",
                 f"- {text('report.nca.selected_reading')}: `{reading.get('selected', 'NOT RECORDED')}`",
                 f"- {text('report.nca.source_ids')}: {_joined(reading.get('source_ids'))}",
                 f"- {text('report.nca.footnote_action')}: `{footnote.get('action', 'NOT RECORDED')}`",

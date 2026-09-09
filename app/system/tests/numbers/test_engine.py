@@ -1,5 +1,6 @@
 """NCA engine composition keeps accuracy, footnotes, and style independent."""
 
+from dataclasses import replace
 from fractions import Fraction
 from types import SimpleNamespace
 
@@ -15,6 +16,7 @@ from sage.numbers.models import (
     TargetNote,
     TargetUnit,
 )
+from sage.numbers.results import numbers_result_document, validate_numbers_result
 from sage.vrs import VerseRef
 
 
@@ -62,6 +64,24 @@ def check_policy(*, accuracy: bool = True, presentation: bool = True,
     }
 
 
+def phase_receipt(phase: str) -> dict[str, object]:
+    """Build one exact deterministic receipt for canonical engine-result validation."""
+    return {
+        "phase": phase,
+        "task_version": f"nca-{phase.casefold()}-1.0",
+        "provider": "fixture-provider",
+        "model": "fixture-model",
+        "reasoning_effort": "medium",
+        "route_id": "nca-numbers",
+        "routing_mode": "AUTOMATIC",
+        "qualification_status": "PROVISIONAL_UNQUALIFIED",
+        "prompt_sha256": "c" * 64,
+        "input_sha256": "d" * 64,
+        "response_sha256": "e" * 64,
+        "provider_metadata": {},
+    }
+
+
 def expression(text: str, value: int, *, role: str = "men", expression_id: str = "target-1",
                stream_id: str = "main", unit: str | None = None) -> NumericExpression:
     """Create one exact role-bound numeric expression for a controlled stream."""
@@ -77,6 +97,30 @@ def expression(text: str, value: int, *, role: str = "men", expression_id: str =
         expression_id=expression_id,
         stream_id=stream_id,
         role_spans=((0, len(text)),),
+    )
+
+
+def expression_at(
+    text: str,
+    surface: str,
+    value: int,
+    *,
+    role: str,
+    expression_id: str,
+    stream_id: str,
+) -> NumericExpression:
+    """Create one expression at the exact occurrence selected by its surface."""
+    start = text.index(surface)
+    role_start = text.index(role)
+    return NumericExpression(
+        (Fraction(value),),
+        "CARDINAL",
+        surface,
+        (start, start + len(surface)),
+        role=role,
+        expression_id=expression_id,
+        stream_id=stream_id,
+        role_spans=((role_start, role_start + len(role)),),
     )
 
 
@@ -213,6 +257,87 @@ def test_ol_pass_keeps_recommended_note_as_advisory():
     assert (result.footnote.status, result.footnote.outcome) == ("MISSING", "ADVISORY")
 
 
+def test_ol_reordering_requires_the_same_typed_referents():
+    """A reordered OL sequence passes only when each quantity keeps its referent."""
+    ref = VerseRef("1SA", 25, 2)
+    source_text = "3000 sheep and 1000 goats"
+    target_text = "1000 goats and 3000 sheep"
+    source = (
+        expression_at(source_text, "3000", 3000, role="sheep", expression_id="ol-1", stream_id="ol"),
+        expression_at(source_text, "1000", 1000, role="goats", expression_id="ol-2", stream_id="ol"),
+    )
+    reordered = Extraction(
+        (
+            expression_at(target_text, "1000", 1000, role="goats", expression_id="target-1", stream_id="main"),
+            expression_at(target_text, "3000", 3000, role="sheep", expression_id="target-2", stream_id="main"),
+        ),
+        "COMPLETE",
+    )
+    swapped = Extraction(
+        (
+            expression_at(target_text, "1000", 1000, role="sheep", expression_id="target-1", stream_id="main"),
+            expression_at(target_text, "3000", 3000, role="goats", expression_id="target-2", stream_id="main"),
+        ),
+        "COMPLETE",
+    )
+    row = ReferenceRow(
+        ref, ref.label(), "HEB", source_text, (Fraction(3000), Fraction(1000)),
+        target_text, (Fraction(1000), Fraction(3000)), {"SOURCE_IDS": "SRC-1"},
+    )
+    bundle = ReferenceBundle(
+        "fixture", "b" * 64, {ref: row}, {}, {}, {},
+        {"SRC-1": {"SOURCE_ID": "SRC-1"}}, "QUALIFIED",
+    )
+
+    positive = evaluate_unit(
+        projected(ref, target_text), bundle=bundle, language="en", language_profile={},
+        style_profile=style_profile(),
+        check_policy=check_policy(presentation=False, footnotes=False),
+        model_tasks=ControlledModelTasks(reordered, source),
+    )
+    negative = evaluate_unit(
+        projected(ref, target_text), bundle=bundle, language="en", language_profile={},
+        style_profile=style_profile(),
+        check_policy=check_policy(presentation=False, footnotes=False),
+        model_tasks=ControlledModelTasks(swapped, source),
+    )
+
+    assert positive.final_outcome == "PASS_EQUIVALENT_NUMERIC_EXPRESSION"
+    assert negative.final_outcome == "REVIEW_VALUE_DIFFERENCE"
+
+
+def test_unit_result_preserves_differing_ol_reference_from_bound_row():
+    """Western lookup never replaces the row's distinct original-language coordinate."""
+    ref = VerseRef("MAT", 1, 1)
+    row = ReferenceRow(
+        ref, "MRK 9:44", "GRK", "3 men", (Fraction(3),),
+        "3 men", (Fraction(3),), {"SOURCE_IDS": "SRC-1"},
+    )
+    bundle = ReferenceBundle(
+        "fixture", "b" * 64, {ref: row}, {}, {}, {},
+        {"SRC-1": {"SOURCE_ID": "SRC-1"}}, "QUALIFIED",
+    )
+
+    result = evaluate_unit(
+        projected(ref, "3 men"), bundle=bundle, language="en", language_profile={},
+        style_profile=style_profile(), check_policy=check_policy(), model_tasks=ol_tasks("3 men"),
+    )
+
+    assert result.ol_references == ("MRK 9:44",)
+
+    review = evaluate_run(
+        (projected(ref, "4 men"),), bundle=bundle, language="en", language_profile={},
+        style_profile=style_profile(), check_policy=check_policy(presentation=False, footnotes=False),
+        run_id="RUN-DIFFERING-OL", expected_unit_ids=("unit-1",),
+        model_tasks=ControlledModelTasks(
+            Extraction((expression("4 men", 4),), "COMPLETE"),
+            (expression("3 men", 3, expression_id="ol-1", stream_id="ol"),),
+        ),
+    )
+    assert review.findings[0]["ol_reference"] == "MRK 9:44"
+    assert review.findings[0]["western_references"] == ("MAT 1:1",)
+
+
 def test_registered_alternate_requires_adequate_note_for_acceptable_outcome():
     """A complete candidate correspondence plus disclosure permits the registered outcome."""
     ref = VerseRef("MAT", 1, 1)
@@ -269,6 +394,25 @@ def test_unindexed_target_number_is_visible_reference_gap():
 
     assert result.final_outcome == "REFERENCE_NOT_INDEXED"
     assert tasks.correspond_calls == 0
+
+
+def test_unindexed_empty_unit_is_screened_without_an_accuracy_finding():
+    """A complete number-free unit needs no registry row and keeps complete coverage."""
+    ref = VerseRef("MAT", 1, 2)
+    bundle = ReferenceBundle("fixture", "b" * 64, {}, {}, {}, {}, {}, "QUALIFIED")
+    tasks = ControlledModelTasks(Extraction((), "COMPLETE"), ())
+
+    run = evaluate_run(
+        (projected(ref, "ordinary prose"),), bundle=bundle, language="en",
+        language_profile={}, style_profile=style_profile(),
+        check_policy=check_policy(presentation=False, footnotes=False),
+        run_id="RUN-SCREENED", expected_unit_ids=("unit-1",), model_tasks=tasks,
+    )
+
+    assert run.units[0].reading.semantic.outcome == "NOT_ASSESSED"
+    assert run.findings == ()
+    assert run.coverage["coverage"] == "COMPLETE_WITH_RESTRICTIONS"
+    assert run.coverage["result"] == "NO_FINDINGS"
 
 
 def test_unsupported_language_and_absent_target_number_never_pass():
@@ -334,11 +478,13 @@ def test_disabled_checks_are_not_assessed_and_emit_no_cross_check_claims():
     candidate = (expression("4 men", 4, expression_id="alt-1", stream_id="registered"),)
 
     accuracy_tasks = ControlledModelTasks(target, source, registered=candidate)
-    accuracy_only = evaluate_unit(
-        projected(ref, "4 men"), bundle=bundle, language="en", language_profile={},
-        style_profile=style_profile(words=True), check_policy=check_policy(presentation=False, footnotes=False),
-        model_tasks=accuracy_tasks,
+    accuracy_run = evaluate_run(
+        (projected(ref, "4 men"),), bundle=bundle, language="en", language_profile={},
+        style_profile=style_profile(words=True),
+        check_policy=check_policy(presentation=False, footnotes=False),
+        run_id="RUN-ACCURACY", expected_unit_ids=("unit-1",), model_tasks=accuracy_tasks,
     )
+    accuracy_only = accuracy_run.units[0]
     footnote_tasks = ControlledModelTasks(target, source, registered=candidate)
     footnote_only = evaluate_run(
         (projected(ref, "4 men"),), bundle=bundle, language="en", language_profile={},
@@ -359,6 +505,29 @@ def test_disabled_checks_are_not_assessed_and_emit_no_cross_check_claims():
     assert any(item["category"] == "FOOTNOTE" for item in footnote_only.findings)
     assert presentation_only.units[0].final_outcome == "NOT_ASSESSED"
     assert {item["category"] for item in presentation_only.findings} == {"STYLE"}
+
+    document = numbers_result_document(
+        accuracy_run,
+        provenance={
+            "run_id": "RUN-ACCURACY", "job_id": "JOB-1",
+            "style_profile": {"selector": "fixture-en/1", "sha256": "f" * 64},
+            "reference_package": {"package_id": "fixture", "sha256": "b" * 64},
+            "wip": {"identity": "WIP", "sha256": "a" * 64},
+        },
+        check_policy=check_policy(presentation=False, footnotes=False),
+        model_receipts={
+            "EXTRACTION": [phase_receipt("EXTRACTION")],
+            "CORRESPONDENCE": [phase_receipt("CORRESPONDENCE")],
+            "FOOTNOTE": [],
+        },
+    )
+    validated = validate_numbers_result(
+        document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+    )
+    assert validated["units"][0]["footnote"] == {
+        "action": "NONE", "status": "NOT_ASSESSED", "outcome": "NONE",
+        "evidence_spans": [], "evidence_note_ids": [],
+    }
 
 
 def test_registered_unit_conversion_requires_candidate_correspondence_and_residual_check():
@@ -418,6 +587,54 @@ def test_registered_unit_preserves_typed_ol_residuals_independently_of_niv():
     assert result_for("years").final_outcome == "REVIEW_VALUE_DIFFERENCE"
 
 
+def test_registered_unit_allows_role_preserving_residual_reordering():
+    """A unit conversion preserves typed OL residuals even when their order changes."""
+    ref = VerseRef("LUK", 16, 7)
+    source_text = "3 sata and 2 debts and 5 years"
+    target_text = "60 gallons and 5 years and 2 debts"
+    row = ReferenceRow(
+        ref, ref.label(), "GRK", source_text,
+        (Fraction(3), Fraction(2), Fraction(5)), target_text,
+        (Fraction(60), Fraction(5), Fraction(2)), {"SOURCE_IDS": "SRC-1"},
+    )
+    record = {"OL_QUANTITY": "3 sata", "NIV_QUANTITY": "60 gallons", "SOURCE_IDS": "SRC-1"}
+    bundle = ReferenceBundle(
+        "fixture", "b" * 64, {ref: row}, {}, {}, {ref: record},
+        {"SRC-1": {"SOURCE_ID": "SRC-1"}}, "QUALIFIED",
+    )
+    source = (
+        expression_at(source_text, "3", 3, role="sata", expression_id="ol-1", stream_id="ol"),
+        expression_at(source_text, "2", 2, role="debts", expression_id="ol-2", stream_id="ol"),
+        expression_at(source_text, "5", 5, role="years", expression_id="ol-3", stream_id="ol"),
+    )
+    target = Extraction(
+        (
+            expression_at(target_text, "60", 60, role="gallons", expression_id="target-1", stream_id="main"),
+            expression_at(target_text, "5", 5, role="years", expression_id="target-2", stream_id="main"),
+            expression_at(target_text, "2", 2, role="debts", expression_id="target-3", stream_id="main"),
+        ),
+        "COMPLETE",
+    )
+    source = (
+        replace(source[0], unit="saton", role="measure"), source[1], source[2],
+    )
+    target = Extraction(
+        (replace(target.expressions[0], unit="gallon", role="measure"),) + target.expressions[1:],
+        "COMPLETE",
+    )
+    registered = (
+        replace(target.expressions[0], expression_id="unit-1", stream_id="registered"),
+    )
+
+    result = evaluate_unit(
+        projected(ref, target_text), bundle=bundle, language="en", language_profile={},
+        style_profile=style_profile(), check_policy=check_policy(),
+        model_tasks=ControlledModelTasks(target, source, registered=registered),
+    )
+
+    assert result.final_outcome == "PASS_UNIT_CONVERSION"
+
+
 def test_model_tasks_are_required_for_interpretation():
     """The engine cannot synthesize typed correspondence when no model adapter is supplied."""
     ref = VerseRef("MAT", 1, 1)
@@ -463,6 +680,7 @@ def test_registered_absence_reaches_its_explicit_reference_policy():
 
     assert result.reading.selected == "OL"
     assert result.final_outcome == "NO_CONFIGURED_OL_READING"
+    assert result.ol_references == (None,)
 
 
 def test_presentation_assesses_body_and_note_as_separate_streams():
@@ -536,6 +754,16 @@ def test_run_assesses_supplied_headings_once_with_heading_rules():
     assert disabled_heading.final_outcome == "NOT_ASSESSED"
     assert disabled_heading.style_findings == ()
     assert disabled.summary["insufficient_evidence"] == 0
+
+    combined = evaluate_run(
+        (projected(ref, "3 men"),), style_units=(heading,),
+        bundle=reference_bundle(ref), language="en", language_profile={},
+        style_profile=style_profile(words=True),
+        check_policy=check_policy(footnotes=False), run_id="RUN-HEADINGS-COMBINED",
+        expected_unit_ids=("unit-1", "heading-1"), model_tasks=ol_tasks("3 men"),
+    )
+    heading_findings = [item for item in combined.findings if item["work_unit_id"] == "heading-1"]
+    assert {item["category"] for item in heading_findings} == {"STYLE"}
 
 
 def test_footnote_only_unsupported_interpretation_is_visible_as_insufficient():

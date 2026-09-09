@@ -35,6 +35,7 @@ def report_document() -> dict[str, object]:
             "target_references": ["MAT 1:2"],
             "western_references": ["MAT 1:1"],
             "canonical_references": ["MAT 1:1"],
+            "ol_references": ["MRK 9:44"],
             "precision": "COORDINATE",
             "status": "READY",
             "source_sha256": "a" * 64,
@@ -44,7 +45,7 @@ def report_document() -> dict[str, object]:
         "reading": {
             "selected": "ALT",
             "footnote_action": "REQUIRE",
-            "registry_id": "MRK 9:44",
+            "registry_id": "MAT 1:1",
             "source_ids": ["SRC-1", "SRC-2"],
             "source_validation_outcome": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE",
             "semantic": {"outcome": "REGISTERED_ALTERNATE", "evidence_ids": ["SRC-1"], "reason_codes": []},
@@ -130,8 +131,8 @@ def test_zero_finding_and_incomplete_reports_still_show_capability_limitations()
 
 
 def test_localized_report_changes_human_labels_but_retains_machine_evidence():
-    """A bound report localizer translates prose without altering codes or identifiers."""
-    translations = {
+    """A bound report localizer changes prose without altering codes or identifiers."""
+    localized_text = {
         "report.nca.title": "Laporan NCA",
         "report.nca.limitations": "Batasan",
         "report.nca.capability_limitation": "Temuan dibatasi oleh pemahaman bahasa dan kemampuan interpretasi angka LLM yang dipilih. Pemeriksaan keyakinan SQS belum diterapkan.",
@@ -139,11 +140,11 @@ def test_localized_report_changes_human_labels_but_retains_machine_evidence():
     }
 
     report = render_nca_report(
-        report_document(), language="id", localize=lambda key: translations.get(key, key)
+        report_document(), language="id", localize=lambda key: localized_text.get(key, key)
     )
 
     assert "# Laporan NCA" in report
-    assert translations["report.nca.capability_limitation"] in report
+    assert localized_text["report.nca.capability_limitation"] in report
     assert "NCA_FOOTNOTE_REVIEW_MISSING_FOOTNOTE" in report
     assert "SRC-1, SRC-2" in report
     assert "MRK 9:44" in report
@@ -151,7 +152,7 @@ def test_localized_report_changes_human_labels_but_retains_machine_evidence():
 
 
 def test_report_rejects_missing_limitation_and_unknown_language_rendering():
-    """Reports fail closed when capability prose or requested translation is unavailable."""
+    """Reports fail closed when capability prose or requested localization is unavailable."""
     missing = deepcopy(report_document())
     missing["limitations"]["capability"] = ""
     with pytest.raises(ValidationError) as exc:

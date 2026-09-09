@@ -1,6 +1,7 @@
 """NCA machine results preserve exact evidence and reject invented state."""
 
 from copy import deepcopy
+from dataclasses import replace
 from fractions import Fraction
 from pathlib import Path
 
@@ -54,13 +55,14 @@ def complete_run_result() -> RunResult:
         expression_id="target-1",
         role_spans=((6, 9),),
     )
-    semantic = SemanticDecision("PASS_AUTHORITY1", ("SRC-1",))
+    semantic = SemanticDecision("REVIEW_VALUE_DIFFERENCE")
     unit = UnitResult(
         projected,
         Extraction((expression,), "COMPLETE"),
-        ReadingDecision("OL", semantic, "NONE", None, ("SRC-1",)),
+        ReadingDecision("UNSUPPORTED", semantic, "NONE", None, ()),
         FootnoteDecision("NONE", "NOT_REQUIRED", "NONE"),
-        "PASS_AUTHORITY1",
+        "REVIEW_VALUE_DIFFERENCE",
+        ol_references=("MRK 9:44",),
     )
     finding = {
         "finding_id": "NUMBERS_RUN-1_UNIT-1_0001",
@@ -71,10 +73,11 @@ def complete_run_result() -> RunResult:
         "target_reference": "MAT 1:1",
         "target_references": ["MAT 1:1"],
         "western_references": ["MAT 1:1"],
-        "ol_reference": "MAT 1:1",
-        "selected_reading": "OL",
-        "source_ids": ["SRC-1"],
-        "evidence_ids": ["SRC-1"],
+        "ol_reference": "MRK 9:44",
+        "ol_references": ["MRK 9:44"],
+        "selected_reading": "UNSUPPORTED",
+        "source_ids": [],
+        "evidence_ids": [],
         "message": "Review numeric meaning.",
     }
     coverage = {
@@ -125,22 +128,26 @@ def policy() -> dict[str, object]:
 
 def receipts() -> dict[str, list[dict[str, object]]]:
     """Return one exact model-phase receipt without synthesizing confidence."""
-    return {
-        "EXTRACTION": [{
-            "phase": "EXTRACTION",
-            "task_version": "nca-extraction-v1",
+    def receipt(phase: str) -> dict[str, object]:
+        """Build one complete exact receipt for a phase that actually ran."""
+        return {
+            "phase": phase,
+            "task_version": f"nca-{phase.casefold()}-1.0",
             "provider": "fixture-provider",
             "model": "fixture-model",
             "reasoning_effort": "medium",
             "route_id": "nca-numbers",
-            "routing_mode": "PINNED",
-            "qualification_status": "QUALIFIED",
+            "routing_mode": "AUTOMATIC",
+            "qualification_status": "PROVISIONAL_UNQUALIFIED",
             "prompt_sha256": "d" * 64,
             "input_sha256": "e" * 64,
             "response_sha256": "f" * 64,
             "provider_metadata": {},
-        }],
-        "CORRESPONDENCE": [],
+        }
+
+    return {
+        "EXTRACTION": [receipt("EXTRACTION")],
+        "CORRESPONDENCE": [receipt("CORRESPONDENCE")],
         "FOOTNOTE": [],
     }
 
@@ -170,6 +177,8 @@ def test_result_document_serializes_exact_fractions_and_mandatory_limitations():
     assert validated["limitations"]["capability"] == NCA_CAPABILITY_LIMITATION
     assert validated["limitations"]["sqs_confidence_checks_applied"] is False
     assert validated["provenance"]["style_profile"]["sha256"] == "b" * 64
+    assert validated["units"][0]["projection"]["ol_references"] == ["MRK 9:44"]
+    assert validated["units"][0]["projection"]["target_text"] == "three men"
 
 
 @pytest.mark.parametrize(
@@ -181,6 +190,7 @@ def test_result_document_serializes_exact_fractions_and_mandatory_limitations():
         (lambda value: value["provenance"]["style_profile"].__setitem__("sha256", "bad"), "NCA_RESULT_PROVENANCE_INVALID"),
         (lambda value: value["units"][0]["extraction"]["expressions"][0]["values"].__setitem__(0, 3.0), "NCA_RESULT_FRACTION_INVALID"),
         (lambda value: value["summary"].__setitem__("extraction_complete", 0), "NCA_RESULT_SUMMARY_INVALID"),
+        (lambda value: value["units"][0]["projection"].__setitem__("ol_references", [None]), "NCA_RESULT_REFERENCE_INVALID"),
     ],
 )
 def test_result_validation_rejects_independent_contract_mutations(mutation, code):
@@ -242,6 +252,8 @@ def test_numbers_result_schema_declares_exact_scope_and_evidence_controls():
     assert schema["controls"]["expected_unit_reconciliation"] == "exactly_once"
     assert schema["controls"]["numeric_encoding"] == "reduced_rational_strings"
     assert schema["controls"]["sqs_confidence_checks"] == "not_applied"
+    assert schema["controls"]["ol_reference_state"] == "ordered_nullable_resolved_rows"
+    assert schema["controls"]["target_span_binding"] == "exact_serialized_target_stream"
     assert schema["required"] == [
         "schema_version", "workflow", "check_id", "provenance", "check_policy",
         "model_receipts", "limitations", "units", "findings", "coverage", "summary",
@@ -277,14 +289,21 @@ def test_incomplete_result_accepts_an_exact_empty_receipt_ledger():
     unit["reading"].update(selected="UNSUPPORTED", source_ids=[])
     unit["reading"]["semantic"].update(outcome="INSUFFICIENT_EVIDENCE", evidence_ids=[])
     unit["final_outcome"] = "INSUFFICIENT_EVIDENCE"
-    document["findings"] = []
+    document["findings"][0].update(
+        category="EVIDENCE",
+        code="NCA_INSUFFICIENT_EVIDENCE",
+        selected_reading="UNSUPPORTED",
+        source_ids=[],
+        evidence_ids=[],
+    )
     document["model_receipts"]["EXTRACTION"] = []
+    document["model_receipts"]["CORRESPONDENCE"] = []
     document["coverage"].update(
         result="INSUFFICIENT_DATA", coverage="PARTIAL", confidence_basis="LIMITED",
         restrictions=["Model unavailable"],
     )
     document["summary"].update(
-        expressions=0, findings=0, insufficient_evidence=1,
+        expressions=0, insufficient_evidence=1,
         extraction_complete=0, extraction_unsupported=1,
     )
 
@@ -293,3 +312,215 @@ def test_incomplete_result_accepts_an_exact_empty_receipt_ledger():
     )
 
     assert validated["model_receipts"] == {"EXTRACTION": [], "CORRESPONDENCE": [], "FOOTNOTE": []}
+
+
+def test_registered_absence_serializes_null_ol_reference_distinct_from_unknown():
+    """A resolved nullable row uses null while an unresolved lookup uses an empty list."""
+    document = complete_document()
+    unit = document["units"][0]
+    unit["projection"]["status"] = "REGISTERED_ABSENCE"
+    unit["projection"]["ol_references"] = [None]
+    document["findings"][0].update(ol_reference=None, ol_references=[None])
+
+    validated = validate_numbers_result(
+        document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+    )
+
+    assert validated["units"][0]["projection"]["ol_references"] == [None]
+
+    with pytest.raises(ValidationError):
+        replace(complete_run_result().units[0], ol_references=(None,))
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda expression: expression.__setitem__("expression_id", ""),
+        lambda expression: expression.__setitem__("stream_id", ""),
+        lambda expression: expression.__setitem__("stream_id", "forged"),
+        lambda expression: expression.__setitem__("surface", ""),
+        lambda expression: expression.__setitem__("span", [-1, 5]),
+        lambda expression: expression.__setitem__("span", [0, 99]),
+        lambda expression: expression.__setitem__("kind", "NUMBER"),
+        lambda expression: expression.__setitem__("qualifier", "MAYBE"),
+        lambda expression: expression.__setitem__("role", ""),
+        lambda expression: expression.__setitem__("role_spans", [[-1, 3]]),
+        lambda expression: expression.__setitem__(
+            "representations", [{"surface": "three", "span": [9, 14], "value": "3"}]
+        ),
+    ],
+)
+def test_result_validation_rejects_malformed_nested_expression_evidence(mutation):
+    """Serialized target evidence retains bounded IDs, spans, roles, and numeric enums."""
+    document = complete_document()
+    mutation(document["units"][0]["extraction"]["expressions"][0])
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_EXPRESSION_INVALID"
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda unit: unit["extraction"]["expressions"][0].update(
+            surface="xxxxx", span=[0, 5]
+        ),
+        lambda unit: unit["extraction"]["expressions"][0].update(
+            role_spans=[[6, 99]]
+        ),
+        lambda unit: unit["extraction"]["expressions"][0].update(
+            representations=[{"surface": "xxxxx", "span": [0, 5], "value": "3"}]
+        ),
+    ],
+)
+def test_result_validation_binds_nested_evidence_to_the_serialized_target_stream(mutation):
+    """Expression, role, and representation spans stay inside the immutable target text."""
+    document = complete_document()
+    mutation(document["units"][0])
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_EXPRESSION_INVALID"
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda unit: unit["reading"].__setitem__("invented", True),
+        lambda unit: unit["reading"]["semantic"].__setitem__("invented", True),
+        lambda unit: unit["footnote"].__setitem__("invented", True),
+        lambda unit: unit.__setitem__("final_outcome", "PASS_AUTHORITY1"),
+        lambda unit: unit["footnote"].update(
+            action="NONE", status="NOT_REQUIRED", outcome="ADVISORY"
+        ),
+    ],
+)
+def test_result_validation_rejects_invented_or_contradictory_decision_state(mutation):
+    """Closed reading, footnote, and final decisions cannot be changed after serialization."""
+    document = complete_document()
+    mutation(document["units"][0])
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code in {"NCA_RESULT_SCHEMA_INVALID", "NCA_RESULT_DECISION_INVALID"}
+
+
+@pytest.mark.parametrize(("field", "value"), [("location", "forged"), ("area", "forged")])
+def test_result_validation_rejects_unknown_style_context(field, value):
+    """Style decisions retain only closed rule areas and exact target stream locations."""
+    document = complete_document()
+    style = {
+        "rule_id": "NCA-DIGITS",
+        "area": "digits",
+        "code": "NCA_STYLE_RULE_UNSPECIFIED",
+        "status": "NOT_ASSESSED",
+        "location": "body",
+    }
+    style[field] = value
+    document["units"][0]["style_findings"] = [style]
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_DECISION_INVALID"
+
+
+def test_result_validation_binds_findings_to_their_owning_unit():
+    """A finding cannot replace its unit references, selection, or evidence context."""
+    document = complete_document()
+    document["findings"][0].update(
+        target_reference="REV 22:21",
+        target_references=["REV 22:21"],
+        western_references=["REV 22:21"],
+        ol_reference="REV 22:21",
+        ol_references=["REV 22:21"],
+    )
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_FINDING_INVALID"
+
+
+def test_result_validation_rejects_cross_reading_authority_promotion():
+    """An alternate cannot borrow the OL pass policy or another reading's authority."""
+    document = complete_document()
+    reading = document["units"][0]["reading"]
+    reading.update(
+        selected="ALT",
+        registry_id="MAT 1:1",
+        source_ids=["SRC-1"],
+        source_validation_outcome="PASS_AUTHORITY1",
+    )
+    reading["semantic"].update(
+        outcome="REGISTERED_ALTERNATE", evidence_ids=["SRC-1"], reason_codes=[]
+    )
+    document["units"][0]["final_outcome"] = "REGISTERED_ALTERNATE"
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_DECISION_INVALID"
+
+
+def test_review_outcome_from_complete_correspondence_requires_its_receipt():
+    """A correspondence-derived mismatch cannot retain only extraction provenance."""
+    document = complete_document()
+    document["model_receipts"]["CORRESPONDENCE"] = []
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_RECEIPT_INVALID"
+
+
+def test_partial_extraction_cannot_validate_as_complete_no_findings():
+    """Incomplete extraction forces insufficient-data coverage even with no findings."""
+    document = complete_document()
+    document["units"][0]["extraction"].update(status="PARTIAL", limitations=["One token unresolved"])
+    document["summary"].update(extraction_complete=0, extraction_partial=1, insufficient_evidence=1)
+    document["coverage"].update(result="NO_FINDINGS", coverage="COMPLETE", confidence_basis="FULL")
+
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            document, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+
+    assert exc.value.code == "NCA_RESULT_COVERAGE_INVALID"
+
+
+def test_resolved_accuracy_requires_complete_correspondence_receipt_identity():
+    """A semantic OL decision cannot rely only on an extraction receipt."""
+    missing = complete_document()
+    missing["model_receipts"]["CORRESPONDENCE"] = []
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            missing, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+    assert exc.value.code == "NCA_RESULT_RECEIPT_INVALID"
+
+    malformed = complete_document()
+    malformed["model_receipts"]["EXTRACTION"][0]["invented"] = True
+    with pytest.raises(ValidationError) as exc:
+        validate_numbers_result(
+            malformed, expected_unit_ids=("unit-1",), allowed_evidence_ids=("SRC-1",)
+        )
+    assert exc.value.code == "NCA_RESULT_RECEIPT_INVALID"

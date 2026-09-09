@@ -405,6 +405,7 @@ class UnitResult:
     final_outcome: str
     style_findings: Tuple[Mapping[str, object], ...] = ()
     limitations: Tuple[str, ...] = ()
+    ol_references: Tuple[Optional[str], ...] = ()
 
     def __post_init__(self) -> None:
         """Validate result aggregates and freeze style evidence mappings."""
@@ -424,6 +425,14 @@ class UnitResult:
         limitations = _tuple("unit limitations", self.limitations)
         if any(not isinstance(value, str) for value in limitations):
             raise _invalid("unit limitations", self.limitations)
+        ol_references = _tuple("unit OL references", self.ol_references)
+        if (
+            len(ol_references) not in {0, len(self.projected.western_references)}
+            or any(value is not None and (not isinstance(value, str) or not value) for value in ol_references)
+            or any(value is None for value in ol_references)
+            and self.projected.status != "REGISTERED_ABSENCE"
+        ):
+            raise _invalid("unit OL references", self.ol_references)
 
 
 @dataclass(frozen=True)

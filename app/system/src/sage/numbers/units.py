@@ -1,6 +1,7 @@
 """Exact adapters for registered verse-specific unit examples."""
 from __future__ import annotations
 
+from collections import Counter
 import re
 from fractions import Fraction
 
@@ -50,7 +51,9 @@ def compare_registered_units(row: ReferenceRow, target: Extraction, *, bundle: R
     """Check the registered pair and preserve every unrelated indexed source value.
 
     This adapter supplies conversion evidence, not whole-verse role alignment.
-    The engine must independently validate correspondence of the referents.
+    The engine must independently validate the full typed residual correspondence,
+    including every referent, kind, unit, qualifier, and permitted reordering,
+    before it can return an overall pass.
     An implicit singular unit in the original registry may supply a quantity of
     one absent from the flat index; no other missing source value is inferred.
     """
@@ -78,7 +81,7 @@ def compare_registered_units(row: ReferenceRow, target: Extraction, *, bundle: R
     retained = tuple(item for item in target.expressions if item.unit is None)
     retained_values = tuple(value for item in retained for value in item.values)
     if (tuple(_unit_meaning(item) for item in converted) != tuple(_unit_meaning(item) for item in expected)
-            or retained_values != tuple(remaining)):
+            or Counter(retained_values) != Counter(remaining)):
         return SemanticDecision('REVIEW_VALUE_DIFFERENCE', reason_codes=('REGISTERED_UNIT_PAIR_DIFFERENT',))
     source_ids = tuple(part.strip() for part in str(record.get('SOURCE_IDS', '')).split(';') if part.strip())
     return SemanticDecision('PASS_UNIT_CONVERSION', source_ids, ('REGISTERED_UNIT_EXAMPLE', 'UNRELATED_VALUES_PRESERVED'))
