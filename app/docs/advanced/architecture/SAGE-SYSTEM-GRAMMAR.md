@@ -318,3 +318,7 @@ Files named `ORIGINAL-*`, promotion reports, historical conversion inputs, and d
 ## Beta path normalization
 
 - Generated path grammar: never emit identical adjacent directory segments. For polished RTC/STC output, use `localdata/reports/<job-id>/<BOOK>/` for a whole-book scope; add a distinct scope directory only when it contributes additional coordinates. The same non-duplication rule applies to Job `report_data/`.
+
+## NCA workflow identity
+
+The canonical workflow is `nca`, its operation is `numbers`, and its check identity is `NUMBERS`. Human labels are **Number Consistency & Accuracy (NCA)** and **SAGE NUMBERS CHECK**. Main Menu option 5 opens NCA; option 6 opens SAGE Maintenance. Package/profile selectors remain distinct from Scripture role bindings. Use **NOT ASSESSED** for disabled checks, and distinguish completed execution from complete assessment. SQS confidence checks are future functionality; every NCA result carries the current LLM capability limitation and states that SQS checks have not been applied.

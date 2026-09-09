@@ -35,7 +35,8 @@ shell -> SAGE -> Codex login / governed AI subprocess
   3. Reference Text Comparison (RTC)
   4. Source Text Correspondence (STC)
 
-  5. SAGE Maintenance
+  5. Number Consistency & Accuracy (NCA)
+  6. SAGE Maintenance
 
 ┌──────────────────────────────────────────────────────────────────────┐
 │  A. Back   B. Main menu   C. Exit SAGE                               │

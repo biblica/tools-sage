@@ -1,10 +1,10 @@
-# BIC, RTC, and STC authority boundaries — v0.02b1
+# BIC, RTC, STC, and NCA authority boundaries — v0.02b1
 
-BIC, RTC, and STC are independent canonical workflows. None creates, converts, or hands work directly to another.
+BIC, RTC, STC, and NCA are independent canonical workflows. None creates, converts, or hands work directly to another.
 
 ## Local evidence boundary
 
-All three workflows enforce **Local Evidence, General Linguistic Competence**. Content evidence must be SAGE-local, owned by the Job, routed in the sealed task, and used only according to its `evidence_class`. Model recall, external Scripture/translations/lexicons/commentary, web sources, and unstated facts are not content evidence.
+All four workflows enforce **Local Evidence, General Linguistic Competence**. Content evidence must be SAGE-local, owned by the Job, routed in the sealed task, and used only according to its `evidence_class`. Model recall, external Scripture/translations/lexicons/commentary, web sources, and unstated facts are not content evidence.
 
 ## BIC
 
@@ -46,4 +46,10 @@ There is no BIC TARGET -> RTC/STC WIP handoff, automatic generation handoff, rol
 
 ## Legacy compatibility
 
-The retired shared-analysis identifier remains readable only for sealed historical Jobs, Runs, tasks, reports, and qualification receipts. New artifacts use BIC, RTC, or STC identity exclusively.
+The retired shared-analysis identifier remains readable only for sealed historical Jobs, Runs, tasks, reports, and qualification receipts. New artifacts use BIC, RTC, STC, or NCA identity exclusively.
+
+## NCA
+
+NCA binds one immutable WIP snapshot plus a qualified numbers package and mandatory Number Style Profile. Package selectors are resources, not Scripture role bindings. OL values are Authority 1; NIV is secondary evidence. Only registered whole alternate readings and exact registered unit examples can authorize deviations. Independent accuracy, presentation, and footnote switches are sealed per Run. Disabled checks are NOT ASSESSED. Required missing disclosure and insufficient interpretation remain visible. No Scripture or Paratext Notes XML writes are permitted.
+
+Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.

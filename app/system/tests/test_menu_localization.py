@@ -133,7 +133,8 @@ def test_menu_localization_json_covers_all_static_and_governed_dynamic_menu_text
     assert len(strings) >= 339
     canonical = {value["en-US"].casefold() for value in strings.values()}
     assert len(canonical) == len(strings)
-    required = _static_choose_text(package_root / "system/src/sage/menu.py") | DYNAMIC_MENU_TEXT
+    required = (_static_choose_text(package_root / "system/src/sage/menu.py")
+                | _static_choose_text(package_root / "system/src/sage/nca_menu.py") | DYNAMIC_MENU_TEXT)
     missing = sorted(text for text in required if text.strip().casefold() not in canonical)
     assert not missing
     for key, value in strings.items():

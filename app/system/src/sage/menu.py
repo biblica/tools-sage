@@ -685,6 +685,11 @@ class SageControlCenter:
 
     def ensure_initialized(self, project: Job, *, force: bool = False) -> dict[str, Any]:
         """Implement `ensure initialized` in the deterministic terminal control flow."""
+        if project.tool == 'nca':
+            from .numbers.policy import validate_nca_job_prerequisites
+            bindings = validate_nca_job_prerequisites(load_ecosystem(self.store.settings_path), project)
+            return {'state': 'READY', 'workflow': 'nca', 'reference_qualification': bindings.bundle.qualification_status,
+                    'number_style': bindings.style.selector}
         settings = self.store.ensure_runtime_files(project)
         config = load_ecosystem(settings)
         state = read_state(ecosystem_state_path(config.runtime_state_root))
@@ -2017,7 +2022,8 @@ class SageControlCenter:
                 elif choice == "2": self.bic_menu()
                 elif choice == "3": self.analysis_menu("rtc")
                 elif choice == "4": self.analysis_menu("stc")
-                elif choice == "5":
+                elif choice == "5": self.nca_menu()
+                elif choice == "6":
                     destination = self.system_configuration_menu()
                     if destination == "EXIT":
                         self.store.record_cue("SAGE_EXITED")
@@ -2040,11 +2046,12 @@ class SageControlCenter:
                     ("1", "BIC reports and history"),
                     ("2", "RTC reports and history"),
                     ("3", "STC reports and history"),
+                    ("4", "NCA reports and history"),
                     ("B", "Back"),
                 ),
             )
             if choice == "B": return
-            tool = {"1": "bic", "2": "rtc", "3": "stc"}[choice]
+            tool = {"1": "bic", "2": "rtc", "3": "stc", "4": "nca"}[choice]
             project = self.store.active_job(tool) or self.choose_job(tool)
             if project is not None: self.reports_menu(project)
 
@@ -2057,7 +2064,7 @@ class SageControlCenter:
                 ("5", "Create an STC Job"), ("6", "Enter Scripture ranges"),
                 ("7", "How SAGE splits large scopes"), ("8", "Project status meanings"),
                 ("9", "Reporting languages"), ("10", "Greek and Hebrew resources"),
-                ("11", "Command and recovery guides"), ("B", "Back")))
+                ("11", "Command and recovery guides"), ("12", "Create an NCA Job"), ("B", "Back")))
             if choice == "B": return
             guides = {
                 "1": "Configure paths and resources first; Project addition and Job setup are separate tasks.",
@@ -2070,6 +2077,7 @@ class SageControlCenter:
                 "8": "READY can be used directly; WARNING is usable with a disclosed issue; ERROR requires correction before affected work.",
                 "9": "The global Operator language is the default primary language for new Jobs. Each Job owns one required primary and may add one optional secondary reporting language.",
                 "10": "GRK and HEB are governed original-language authorities; STC does not use a REFERENCE Project.",
+                "12": "NCA > Add NCA Job. Choose a WIP Project, qualified numbers package, and configured Number Style Profile. Choose independent accuracy, presentation, and footnote checks before each Run. See docs/NCA-CHEAT-SHEET.md.",
             }
             if choice == "11": self._show_support_docs()
             else:
@@ -2142,6 +2150,7 @@ class SageControlCenter:
                 allowed_skills = {
                     "rtc": {"rtc"},
                     "stc": {"stc"},
+                    "nca": {"nca-numbers"},
                 }.get(tool)
                 rows = [
                     dict(row)
@@ -2160,6 +2169,7 @@ class SageControlCenter:
         labels = {
             "rtc": "RTC",
             "stc": "STC",
+            "nca-numbers": "NUMBERS",
             "saw-rtc": "RTC",
             "saw-stc": "STC",
             "saw-focused-check": "TARGETED",
@@ -2180,6 +2190,16 @@ class SageControlCenter:
             )
         self.io.write()
 
+    def nca_menu(self) -> None:
+        """Open the independent NCA workflow through its owned operator adapter."""
+        from .nca_menu import workflow_menu
+        workflow_menu(self)
+
+    def nca_job_menu(self, project: Job) -> None:
+        """Open one NCA Job without using an RTC/STC fallback."""
+        from .nca_menu import job_menu
+        job_menu(self, project)
+
     def main_menu(self) -> str:
         """Render the task-oriented current Main Menu."""
         self.io.write()
@@ -2191,6 +2211,7 @@ class SageControlCenter:
         self.io.write(f"BIC active Job: {self._job_summary('bic')}")
         self.io.write(f"RTC active Job: {self._job_summary('rtc')}")
         self.io.write(f"STC active Job: {self._job_summary('stc')}")
+        self.io.write(f"NCA active Job: {self._job_summary('nca')}")
         if self._last_run_is_resumable():
             self.io.write(f"Unfinished Run: {self._last_run_summary()}")
         return self.io.choose(
@@ -2200,10 +2221,11 @@ class SageControlCenter:
                 ("2", "Bible Index & Context (BIC)"),
                 ("3", "Reference Text Comparison (RTC)"),
                 ("4", "Source Text Correspondence (STC)"),
-                ("5", "SAGE Maintenance"),
+                ("5", "Number Consistency & Accuracy (NCA)"),
+                ("6", "SAGE Maintenance"),
                 ("X", "Exit SAGE"),
             ),
-            blank_before=("2", "5"),
+            blank_before=("2", "6"),
         )
 
     def resume_or_start_task(self) -> None:
@@ -2217,6 +2239,7 @@ class SageControlCenter:
                 ("1", "BIC"),
                 ("2", "Reference Text Comparison (RTC)"),
                 ("3", "Source Text Correspondence (STC)"),
+                ("4", "Number Consistency & Accuracy (NCA)"),
                 ("B", "Back"),
             ),
         )
@@ -2225,6 +2248,8 @@ class SageControlCenter:
             if project is not None:
                 self.store.record_cue("NEW_TASK_SELECTED", tool="bic", job_id=project.job_id)
                 self.start_bic_run(project)
+        elif choice == '4':
+            self.nca_menu()
         elif choice in {"2", "3"}:
             tool = "rtc" if choice == "2" else "stc"
             project = self.store.active_job(tool) or self.choose_job(tool)
@@ -3785,6 +3810,10 @@ class SageControlCenter:
     def continue_run(self, project: Job, run: Run) -> None:
         """Implement `continue run` in the deterministic terminal control flow."""
         try:
+            if project.tool == 'nca':
+                from .nca_menu import continue_run
+                continue_run(self, project, run)
+                return
             self.ensure_initialized(project)
             if project.tool == "bic":
                 run = self._continue_bic(project, run)
@@ -5014,6 +5043,8 @@ class SageControlCenter:
                             self._saw_job_menu(repaired)
                         elif tool in {"rtc", "stc"}:
                             self.analysis_job_menu(repaired)
+                        elif tool == 'nca':
+                            self.nca_job_menu(repaired)
                         else:
                             self._bic_job_menu(repaired)
                 elif active is None:
@@ -5023,6 +5054,8 @@ class SageControlCenter:
                     self._saw_job_menu(active)
                 elif tool in {"rtc", "stc"}:
                     self.analysis_job_menu(active)
+                elif tool == 'nca':
+                    self.nca_job_menu(active)
                 else:
                     self._bic_job_menu(active)
                 continue
@@ -5140,7 +5173,7 @@ class SageControlCenter:
             self.io.write()
             self.io.write(f"MANAGE JOB - {project.job_id}")
             self.io.write("-" * 72)
-            if project.tool in {"rtc", "stc"}:
+            if project.tool in {"rtc", "stc", "nca"}:
                 self.io.write(f"WIP Project:               {project.bindings['wip']}")
                 if project.tool == "rtc":
                     self.io.write(f"REFERENCE Project:         {project.bindings['reference']}")
@@ -5167,7 +5200,7 @@ class SageControlCenter:
             ]
             # Analysis Jobs expose snapshot refresh and deletion while Project
             # bindings remain immutable for the Job lifetime.
-            if project.tool in {"rtc", "stc"}:
+            if project.tool in {"rtc", "stc", "nca"}:
                 options.extend([
                     ("5", "Refresh WIP snapshot from Project source"),
                     ("6", "Delete Job"),
@@ -5179,7 +5212,7 @@ class SageControlCenter:
             )
             if choice == "B":
                 return False
-            if choice == "5" and project.tool in {"rtc", "stc"}:
+            if choice == "5" and project.tool in {"rtc", "stc", "nca"}:
                 try:
                     project = self.store.refresh_job_snapshot(
                         project,
@@ -5194,7 +5227,7 @@ class SageControlCenter:
                     self.show_error(exc)
                 self.io.pause()
                 continue
-            if choice == "6" and project.tool in {"rtc", "stc"}:
+            if choice == "6" and project.tool in {"rtc", "stc", "nca"}:
                 if self._delete_job(project):
                     return True
                 continue
@@ -5241,8 +5274,8 @@ class SageControlCenter:
                 self.io.pause()
                 continue
             config = load_ecosystem(self.store.settings_path)
-            audience_role = "WIP" if project.tool in {"saw", "rtc", "stc"} else "TARGET"
-            audience_binding = "wip" if project.tool in {"saw", "rtc", "stc"} else "generated_target"
+            audience_role = "WIP" if project.tool in {"saw", "rtc", "stc", "nca"} else "TARGET"
+            audience_binding = "wip" if project.tool in {"saw", "rtc", "stc", "nca"} else "generated_target"
             audience_language = config.project(project.bindings[audience_binding]).language_code
             changed, requested = self._choose_secondary_reporting_language(
                 role=audience_role,
@@ -5271,6 +5304,9 @@ class SageControlCenter:
     def create_job_wizard(self, tool: str) -> Job | None:
         """Create one Job by assigning roles to Projects already in the SAGE Project Inventory."""
         # The wizard deliberately resolves every binding before it asks JobStore to persist anything.
+        if tool == 'nca':
+            from .nca_menu import create_job
+            return create_job(self)
         if tool == "bic":
             source = self.choose_or_add_resource("CHOOSE BIC <SOURCE>", "CONTENT_SOURCE")
             if not source: return
