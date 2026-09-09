@@ -672,6 +672,35 @@ def test_model_tasks_are_required_for_interpretation():
     assert result.extraction.status == "UNSUPPORTED"
 
 
+def test_partial_correspondence_retains_its_validated_ol_subsequence():
+    """Incomplete correspondence remains insufficient while preserving exact OL evidence."""
+    ref = VerseRef("MAT", 1, 1)
+    target = Extraction((expression("3 men", 3),), "COMPLETE")
+    source = (expression("3 men", 3, expression_id="ol-1", stream_id="ol"),)
+
+    class PartialTasks(ControlledModelTasks):
+        """Return one validated partial correspondence result for evidence retention."""
+
+        def correspond(self, unit, target, reference, *, reading_context=None):
+            """Expose a valid OL subsequence with an explicit unresolved limitation."""
+            return SimpleNamespace(
+                value=CorrespondenceEvidence(
+                    self.source, target, "PARTIAL", ("One role is unresolved",)
+                )
+            )
+
+    run = evaluate_run(
+        (projected(ref, "3 men"),), bundle=reference_bundle(ref), language="en",
+        language_profile={}, style_profile=style_profile(), check_policy=check_policy(),
+        run_id="RUN-PARTIAL-OL", expected_unit_ids=("unit-1",),
+        model_tasks=PartialTasks(target, source),
+    )
+
+    assert run.units[0].final_outcome == "INSUFFICIENT_EVIDENCE"
+    assert run.units[0].source_expressions == source
+    assert run.summary["ol_expressions_checked"] == 1
+
+
 def test_registered_absence_reaches_its_explicit_reference_policy():
     """A registered absent target unit is assessed through its nullable-OL authority row."""
     ref = VerseRef("NEH", 7, 68)
