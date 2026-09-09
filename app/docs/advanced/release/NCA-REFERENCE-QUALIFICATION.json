@@ -1,0 +1,607 @@
+{
+  "capability_limitation": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
+  "classified_token_rows": 341,
+  "counts": {
+    "footnote_guidance": 21,
+    "numeric_rows": 4392,
+    "ol_values": 6800,
+    "provenance_sources": 38,
+    "rows": 6244,
+    "unit_examples": 12,
+    "variants": 21
+  },
+  "diagnostics": [
+    {
+      "additional_authoritative_values": 51,
+      "code": "REFERENCE_LINEAGE_INCOMPLETE",
+      "differing_rows": 47,
+      "disposition": "Use authoritative operator values unchanged; supplementary expression lineage is incomplete.",
+      "new_numeric_rows": 16,
+      "references": [
+        "EXO 12:18",
+        "EXO 16:30",
+        "EXO 20:5",
+        "EXO 34:7",
+        "LEV 25:9",
+        "NUM 14:18",
+        "DEU 5:9",
+        "2SA 3:3",
+        "2SA 23:8",
+        "2KI 10:30",
+        "2KI 11:5",
+        "1CH 2:15",
+        "1CH 3:2",
+        "1CH 3:15",
+        "1CH 8:39",
+        "1CH 12:9",
+        "1CH 12:10",
+        "1CH 12:11",
+        "1CH 24:8",
+        "1CH 24:10",
+        "1CH 25:10",
+        "1CH 25:14",
+        "1CH 26:4",
+        "2CH 5:3",
+        "2CH 10:12",
+        "2CH 20:26",
+        "2CH 23:1",
+        "2CH 27:5",
+        "2CH 31:7",
+        "ECC 7:28",
+        "JER 25:1",
+        "JER 28:1",
+        "JER 36:9",
+        "JER 39:1",
+        "JER 45:1",
+        "JER 51:59",
+        "JER 52:4",
+        "EZK 20:1",
+        "DAN 9:27",
+        "HAG 2:1",
+        "HAG 2:10",
+        "HAG 2:18",
+        "ZEC 6:3",
+        "ZEC 7:1",
+        "ZEC 7:3",
+        "ZEC 7:5",
+        "ZEC 13:9"
+      ],
+      "runtime_numeric_rows": 4392,
+      "runtime_value_count": 6800,
+      "severity": "WARNING",
+      "supplementary_expression_count": 6749
+    },
+    {
+      "code": "NCA_UNIT_DISPLAY_SPACING_DIFFERENCE",
+      "count": 3,
+      "disposition": "Use authoritative operator NIV_TEXT for display and preserve registry bytes.",
+      "references": [
+        "LUK 13:21",
+        "LUK 16:6",
+        "LUK 16:7"
+      ],
+      "severity": "WARNING"
+    },
+    {
+      "code": "NCA_OL_REFERENCE_BOUNDARY_EXCEPTION",
+      "count": 2,
+      "disposition": "Preserve the stored authoritative OL_REF and use boundary-group handling.",
+      "exceptions": [
+        {
+          "projected_ol_references": [
+            "1SA 21:1"
+          ],
+          "stored_ol_reference": "1SA 20:42",
+          "western_reference": "1SA 20:42"
+        },
+        {
+          "projected_ol_references": [
+            "1CH 12:5"
+          ],
+          "stored_ol_reference": "1CH 12:4",
+          "western_reference": "1CH 12:4"
+        }
+      ],
+      "severity": "WARNING"
+    }
+  ],
+  "limits": [
+    "Reference/domain acceptance does not measure target-language LLM accuracy.",
+    "Registered unit pairs preserve unrelated OL quantities; NIV residual changes at LUK 16:7 and JHN 19:39 remain review cases.",
+    "Original PENDING_FINAL_RUN gate and package contents are unchanged.",
+    "Supplied Scripture bundles are not distributed by this command."
+  ],
+  "measurement": {
+    "peak_traced_bytes": 36600680,
+    "seconds": 26.5448
+  },
+  "mode": "RELEASE",
+  "model_execution": "NOT_RUN",
+  "numeric_cases": [
+    {
+      "ol_reference": "GEN 14:14",
+      "reference": "GEN 14:14",
+      "values": "318"
+    },
+    {
+      "ol_reference": "JDG 7:3",
+      "reference": "JDG 7:3",
+      "values": "22000;10000"
+    },
+    {
+      "ol_reference": "JDG 20:10",
+      "reference": "JDG 20:10",
+      "values": "10;100;100;1000;1000;10000"
+    },
+    {
+      "ol_reference": "1SA 25:2",
+      "reference": "1SA 25:2",
+      "values": "3000;1000"
+    },
+    {
+      "ol_reference": "PSA 91:7",
+      "reference": "PSA 91:7",
+      "values": "1000;10000"
+    },
+    {
+      "ol_reference": "EXO 25:10",
+      "reference": "EXO 25:10",
+      "values": "5/2;3/2;3/2"
+    },
+    {
+      "ol_reference": "1CH 24:11",
+      "reference": "1CH 24:11",
+      "values": "9;10"
+    },
+    {
+      "ol_reference": "1KI 18:44",
+      "reference": "1KI 18:44",
+      "values": "7"
+    },
+    {
+      "ol_reference": "ZEC 3:9",
+      "reference": "ZEC 3:9",
+      "values": "1;7;1"
+    },
+    {
+      "ol_reference": "REV 5:11",
+      "reference": "REV 5:11",
+      "values": "10000;10000;1000;1000"
+    },
+    {
+      "ol_reference": "REV 4:7",
+      "reference": "REV 4:7",
+      "values": "1;2;3;4"
+    },
+    {
+      "ol_reference": "REV 6:8",
+      "reference": "REV 6:8",
+      "values": "1/4"
+    },
+    {
+      "ol_reference": "PSA 60:2",
+      "reference": "PSA 60:0",
+      "values": "12000"
+    },
+    {
+      "ol_reference": "1SA 20:42",
+      "reference": "1SA 20:42",
+      "values": "2"
+    },
+    {
+      "ol_reference": "1CH 12:4",
+      "reference": "1CH 12:4",
+      "values": "30;30"
+    }
+  ],
+  "package_id": "SAGE_NUMBERS_CODEX_HANDOVER_0.02a1_2026-09-09",
+  "package_sha256": "b04a08e7e51e405defeb1c1821a8fb3c63bf1af4f6bda7ce7c4fff268b19b202",
+  "parser_version": "1.0",
+  "qualification_status": "QUALIFIED_WITH_DIAGNOSTICS",
+  "reading_cases": [
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "JDG 14:15",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "JDG 14:15",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "1SA 1:24",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "1SA 1:24",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "1SA 6:19",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "1SA 6:19",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "CAUTION_ACCEPTABLE_ATTESTED_MINOR_READING_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "1SA 13:1",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "1SA 13:1",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "OL",
+      "reference": "1SA 13:5",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "1SA 13:5",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "2SA 8:4",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "2SA 8:4",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "2SA 15:7",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "2SA 15:7",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "2SA 24:13",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "2SA 24:13",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "1KI 4:26",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "1KI 4:26",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "1KI 5:11",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "1KI 5:11",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "2KI 25:3",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "2KI 25:3",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "1CH 25:9",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "1CH 25:9",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "2CH 3:4",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "2CH 3:4",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "2CH 22:2",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "2CH 22:2",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "2CH 36:9",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "2CH 36:9",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "OL",
+      "reference": "NEH 7:68",
+      "semantic": "NO_CONFIGURED_OL_READING",
+      "source_policy": "NO_CONFIGURED_OL_READING"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "NEH 7:68",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "EZK 26:1",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "EZK 26:1",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "OL",
+      "reference": "EZK 40:49",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "EZK 40:49",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "OL",
+      "reference": "EZK 42:4",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "EZK 42:4",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "EZK 45:1",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "EZK 45:1",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    },
+    {
+      "footnote_action": "RECOMMEND",
+      "reading": "OL",
+      "reference": "EZK 45:5",
+      "semantic": "PASS_AUTHORITY1",
+      "source_policy": "PASS_AUTHORITY1"
+    },
+    {
+      "footnote_action": "REQUIRE",
+      "reading": "ALT",
+      "reference": "EZK 45:5",
+      "semantic": "REGISTERED_ALTERNATE",
+      "source_policy": "ACCEPTABLE_VARIANT_WITH_FOOTNOTE"
+    }
+  ],
+  "runtime": {
+    "dependencies": {
+      "PyYAML": "6.0.3",
+      "openpyxl": "3.1.5",
+      "pytest": "9.0.2"
+    },
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "python": "3.12.4"
+  },
+  "schema_version": "1.0",
+  "sqs_checks_applied": false,
+  "status": "PASS",
+  "unit_cases": [
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "LUK 13:21",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_LUK_13_21"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "LUK 16:6",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_LUK_16_6"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "LUK 16:7",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_LUK_16_7"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "LUK 24:13",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_LUK_24_13"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "JHN 2:6",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_JHN_2_6"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "JHN 6:19",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_JHN_6_19"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "JHN 11:18",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_JHN_11_18"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "JHN 19:39",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_JHN_19_39"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "JHN 21:8",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_JHN_21_8"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "ACT 27:28",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_ACT_27_28"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "REV 6:6",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_REV_6_6"
+      ]
+    },
+    {
+      "outcome": "PASS_UNIT_CONVERSION",
+      "reference": "REV 16:21",
+      "source_ids": [
+        "BIBLICA_PHILOSOPHY",
+        "UNIT_REV_16_21"
+      ]
+    }
+  ]
+}
