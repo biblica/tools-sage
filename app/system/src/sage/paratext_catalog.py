@@ -16,6 +16,7 @@ from .canon import BOOK_ORDER, NT_27, OT_39
 from .errors import ConfigurationError, ValidationError
 from .project_codes import parse_project_code
 from .project_inventory import detect_scripture_books
+from .paratext_filenames import find_settings_file, select_scripture_files
 from .iso_languages import resolve_paratext_language
 from .language_identification import estimate_language_identity, parse_ldml_identity
 from .resource_mounts import normalize_operator_path
@@ -191,8 +192,8 @@ def _source_signature(project_path: Path) -> str:
 def inspect_paratext_project(project_path: Path) -> dict[str, Any]:
     """Preparse one discovered Paratext project into persistent catalog/menu metadata."""
     path = project_path.expanduser().resolve()
-    settings_path = path / "settings.xml"
-    if not settings_path.is_file():
+    settings_path = find_settings_file(path)
+    if settings_path is None:
         raise ValidationError(f"settings.xml not found: {settings_path}", code="PARATEXT_SETTINGS_NOT_FOUND")
     settings = parse_settings_xml(settings_path)
     warnings: list[str] = []
@@ -204,6 +205,7 @@ def inspect_paratext_project(project_path: Path) -> dict[str, Any]:
     except ValidationError as exc:
         canon_books = ()
         errors.append(exc.code)
+    _, filename_validation = select_scripture_files(path)
     sfm_books = detect_scripture_books(path)
     effective_books = canon_books or sfm_books
     if not canons_path.is_file():
@@ -271,6 +273,7 @@ def inspect_paratext_project(project_path: Path) -> dict[str, Any]:
         "code_metadata": code,
         "canon_books": list(canon_books),
         "sfm_books": list(sfm_books),
+        "filename_validation": filename_validation,
         "books": list(effective_books),
         "book_count": len(effective_books),
         "scope": detailed_scope,

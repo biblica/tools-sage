@@ -83,6 +83,7 @@ from .references import (
     parse_scope_set,
 )
 from .profiles import load_workflow_profile
+from .paratext_filenames import paratext_book_digits, template_book_filename
 from .platform_commands import render_sage_command
 from .project_context import (
     identity_bindings,
@@ -2206,6 +2207,9 @@ def _target_book_filename(project: ProjectSpec, book: str) -> str:
             f"BIC TARGET filename cannot resolve the canonical book number for {book}",
             code="TARGET_BOOK_FILENAME_UNSUPPORTED",
         )
+    declared_filename = template_book_filename(project.path, book)
+    if declared_filename is not None:
+        return declared_filename
     conventions: set[tuple[str, str]] = set()
     for path in sorted(discover_book_ids(project.path).values()):
         match = re.match(r"^\d{2}[A-Za-z0-9]{3}(?P<suffix>.*)$", path.stem)
@@ -2221,7 +2225,7 @@ def _target_book_filename(project: ProjectSpec, book: str) -> str:
         if conventions
         else (project.project_id, ".SFM")
     )
-    return f"{book_number:02d}{book}{suffix}{extension}"
+    return f"{paratext_book_digits(book)}{book}{suffix}{extension}"
 
 
 def _context_measurement(

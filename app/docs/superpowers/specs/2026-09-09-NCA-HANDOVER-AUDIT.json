@@ -1,0 +1,540 @@
+{
+  "review_date": "2026-09-09",
+  "review_type": "read_only_handover_analysis_not_release_certification",
+  "repository_head": "b4ec29d",
+  "archive_name": "SAGE_NUMBERS_CODEX_HANDOVER_0.02a1_2026-09-09.zip",
+  "archive_sha256": "f4b826a167c6f26f05799f121d9f279cd89db3cd5d7d9bca916fc3a9baf775b1",
+  "checksum_entries": [
+    {
+      "file": "CODEX_BOOTSTRAP_PROMPT.txt",
+      "matches": true
+    },
+    {
+      "file": "CURRENT_STATUS.md",
+      "matches": true
+    },
+    {
+      "file": "FILE_MANIFEST.json",
+      "matches": true
+    },
+    {
+      "file": "HANDOVER_VERIFICATION.json",
+      "matches": true
+    },
+    {
+      "file": "LOCKED_DECISIONS.md",
+      "matches": true
+    },
+    {
+      "file": "START_HERE.md",
+      "matches": true
+    },
+    {
+      "file": "diagnostics/README.md",
+      "matches": true
+    },
+    {
+      "file": "diagnostics/legacy_342_action_manifest.tsv",
+      "matches": true
+    },
+    {
+      "file": "diagnostics/pre_operator_rerun_audit.json",
+      "matches": true
+    },
+    {
+      "file": "docs/01_RUNTIME_CONTRACT.md",
+      "matches": true
+    },
+    {
+      "file": "docs/02_DATA_SCHEMA.md",
+      "matches": true
+    },
+    {
+      "file": "docs/03_OPERATOR_AND_FOOTNOTE_POLICY.md",
+      "matches": true
+    },
+    {
+      "file": "docs/04_VERSIFICATION_CONTRACT.md",
+      "matches": true
+    },
+    {
+      "file": "docs/05_IMPLEMENTATION_SEQUENCE.md",
+      "matches": true
+    },
+    {
+      "file": "docs/06_ACCEPTANCE_TESTS.md",
+      "matches": true
+    },
+    {
+      "file": "docs/07_PROVENANCE_AND_DISTRIBUTION.md",
+      "matches": true
+    },
+    {
+      "file": "docs/08_ACT_OUTPUT_CONTRACT.md",
+      "matches": true
+    },
+    {
+      "file": "docs/ACT_NUMBERS_TEMPLATE.txt",
+      "matches": true
+    },
+    {
+      "file": "docs/SAGE_NUMBERS_CHECK_LOCKED_SPEC.md",
+      "matches": true
+    },
+    {
+      "file": "docs/SAGE_NUMBER_STYLE_PROFILE.txt",
+      "matches": true
+    },
+    {
+      "file": "reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.xlsx",
+      "matches": true
+    },
+    {
+      "file": "reference/audit.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/canonical_number_index.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/eng_org_map_rules.txt",
+      "matches": true
+    },
+    {
+      "file": "reference/footnote_guidance.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/normalization_overrides.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/ol_expression_audit.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/ol_token_coverage_audit.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/operator_rules.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/provenance_sources.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/textual_variant_registry.tsv",
+      "matches": true
+    },
+    {
+      "file": "reference/unit_conversion_registry.tsv",
+      "matches": true
+    },
+    {
+      "file": "sources/README.md",
+      "matches": true
+    },
+    {
+      "file": "sources/grk.zip",
+      "matches": true
+    },
+    {
+      "file": "sources/heb.zip",
+      "matches": true
+    },
+    {
+      "file": "sources/usNIVv2.zip",
+      "matches": true
+    }
+  ],
+  "table_row_counts": {
+    "audit.tsv": 19,
+    "ol_token_coverage_audit.tsv": 341,
+    "normalization_overrides.tsv": 450,
+    "footnote_guidance.tsv": 21,
+    "ol_expression_audit.tsv": 6749,
+    "provenance_sources.tsv": 38,
+    "textual_variant_registry.tsv": 21,
+    "operator_rules.tsv": 12,
+    "unit_conversion_registry.tsv": 12,
+    "SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv": 6244,
+    "canonical_number_index.tsv": 6244
+  },
+  "duplicate_western_keys": 0,
+  "runtime_ol_numeric_rows": 4392,
+  "runtime_ol_value_count": 6800,
+  "expression_audit_unique_ol_refs": 6244,
+  "expression_audit_value_count": 6749,
+  "runtime_expression_audit_disagreements": [
+    {
+      "western_reference": "EXO 12:18",
+      "ol_reference": "EXO 12:18",
+      "runtime_values": "1;14;21",
+      "expression_audit_values": "14;21",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "EXO 16:30",
+      "ol_reference": "EXO 16:30",
+      "runtime_values": "7",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "EXO 20:5",
+      "ol_reference": "EXO 20:5",
+      "runtime_values": "3;4",
+      "expression_audit_values": "3",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "EXO 34:7",
+      "ol_reference": "EXO 34:7",
+      "runtime_values": "1000;3;4",
+      "expression_audit_values": "1000;3",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "LEV 25:9",
+      "ol_reference": "LEV 25:9",
+      "runtime_values": "7",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "NUM 14:18",
+      "ol_reference": "NUM 14:18",
+      "runtime_values": "3;4",
+      "expression_audit_values": "3",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "DEU 5:9",
+      "ol_reference": "DEU 5:9",
+      "runtime_values": "3;4",
+      "expression_audit_values": "3",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2SA 3:3",
+      "ol_reference": "2SA 3:3",
+      "runtime_values": "3",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2SA 23:8",
+      "ol_reference": "2SA 23:8",
+      "runtime_values": "3;800;1",
+      "expression_audit_values": "800;1",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2KI 10:30",
+      "ol_reference": "2KI 10:30",
+      "runtime_values": "4",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2KI 11:5",
+      "ol_reference": "2KI 11:5",
+      "runtime_values": "3",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 2:15",
+      "ol_reference": "1CH 2:15",
+      "runtime_values": "6;7",
+      "expression_audit_values": "6",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 3:2",
+      "ol_reference": "1CH 3:2",
+      "runtime_values": "3;4",
+      "expression_audit_values": "4",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 3:15",
+      "ol_reference": "1CH 3:15",
+      "runtime_values": "2;3;4",
+      "expression_audit_values": "2;4",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 8:39",
+      "ol_reference": "1CH 8:39",
+      "runtime_values": "2;3",
+      "expression_audit_values": "2",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 12:9",
+      "ol_reference": "1CH 12:10",
+      "runtime_values": "2;3",
+      "expression_audit_values": "2",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 12:10",
+      "ol_reference": "1CH 12:11",
+      "runtime_values": "4;5",
+      "expression_audit_values": "4",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 12:11",
+      "ol_reference": "1CH 12:12",
+      "runtime_values": "6;7",
+      "expression_audit_values": "6",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 24:8",
+      "ol_reference": "1CH 24:8",
+      "runtime_values": "3;4",
+      "expression_audit_values": "3",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 24:10",
+      "ol_reference": "1CH 24:10",
+      "runtime_values": "7;8",
+      "expression_audit_values": "8",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 25:10",
+      "ol_reference": "1CH 25:10",
+      "runtime_values": "3;12",
+      "expression_audit_values": "12",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 25:14",
+      "ol_reference": "1CH 25:14",
+      "runtime_values": "7;12",
+      "expression_audit_values": "12",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "1CH 26:4",
+      "ol_reference": "1CH 26:4",
+      "runtime_values": "2;3;4;5",
+      "expression_audit_values": "2;4;5",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2CH 5:3",
+      "ol_reference": "2CH 5:3",
+      "runtime_values": "7",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2CH 10:12",
+      "ol_reference": "2CH 10:12",
+      "runtime_values": "3;3",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2CH 20:26",
+      "ol_reference": "2CH 20:26",
+      "runtime_values": "4",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2CH 23:1",
+      "ol_reference": "2CH 23:1",
+      "runtime_values": "7;100",
+      "expression_audit_values": "100",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2CH 27:5",
+      "ol_reference": "2CH 27:5",
+      "runtime_values": "100;10000;10000;2;3",
+      "expression_audit_values": "100;10000;10000;2",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "2CH 31:7",
+      "ol_reference": "2CH 31:7",
+      "runtime_values": "3;7",
+      "expression_audit_values": "7",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "ECC 7:28",
+      "ol_reference": "ECC 7:28",
+      "runtime_values": "1000;1",
+      "expression_audit_values": "1000",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "JER 25:1",
+      "ol_reference": "JER 25:1",
+      "runtime_values": "4",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "JER 28:1",
+      "ol_reference": "JER 28:1",
+      "runtime_values": "5;4",
+      "expression_audit_values": "5",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "JER 36:9",
+      "ol_reference": "JER 36:9",
+      "runtime_values": "9;5",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "JER 39:1",
+      "ol_reference": "JER 39:1",
+      "runtime_values": "9;10",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "JER 45:1",
+      "ol_reference": "JER 45:1",
+      "runtime_values": "4",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "JER 51:59",
+      "ol_reference": "JER 51:59",
+      "runtime_values": "4",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "JER 52:4",
+      "ol_reference": "JER 52:4",
+      "runtime_values": "10;9",
+      "expression_audit_values": "10",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "EZK 20:1",
+      "ol_reference": "EZK 20:1",
+      "runtime_values": "7;5",
+      "expression_audit_values": "7",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "DAN 9:27",
+      "ol_reference": "DAN 9:27",
+      "runtime_values": "1/2;1",
+      "expression_audit_values": "1/2",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "HAG 2:1",
+      "ol_reference": "HAG 2:1",
+      "runtime_values": "21;7",
+      "expression_audit_values": "21",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "HAG 2:10",
+      "ol_reference": "HAG 2:10",
+      "runtime_values": "24;9;2",
+      "expression_audit_values": "24;2",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "HAG 2:18",
+      "ol_reference": "HAG 2:18",
+      "runtime_values": "24;9",
+      "expression_audit_values": "24",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "ZEC 6:3",
+      "ol_reference": "ZEC 6:3",
+      "runtime_values": "3;4",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "ZEC 7:1",
+      "ol_reference": "ZEC 7:1",
+      "runtime_values": "4;4;9",
+      "expression_audit_values": "4;4",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "ZEC 7:3",
+      "ol_reference": "ZEC 7:3",
+      "runtime_values": "5",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "ZEC 7:5",
+      "ol_reference": "ZEC 7:5",
+      "runtime_values": "5;7;70",
+      "expression_audit_values": "5;70",
+      "normalization_override_rows_at_ol_ref": 0
+    },
+    {
+      "western_reference": "ZEC 13:9",
+      "ol_reference": "ZEC 13:9",
+      "runtime_values": "3",
+      "expression_audit_values": "",
+      "normalization_override_rows_at_ol_ref": 0
+    }
+  ],
+  "invalid_numeric_values": [],
+  "unresolved_source_ids": [],
+  "workbook_formula_cells": [],
+  "workbook_error_cells": [],
+  "workbook_operator_index_equals_tsv": true,
+  "corpus_identity": [
+    {
+      "family": "heb",
+      "sfm_files": 39,
+      "byte_identical_to_repository": 39
+    },
+    {
+      "family": "grk",
+      "sfm_files": 27,
+      "byte_identical_to_repository": 27
+    }
+  ],
+  "versification_probe": {
+    "method": "SAGE parse_vrs_file and local_to_canonical; pack mapping versus bundled eng.vrs at each indexed Western key",
+    "indexed_keys_checked": 6244,
+    "mapping_disagreements": 0,
+    "limits": "Does not certify every unindexed coordinate, reverse mapping, exclusions, or project custom VRS."
+  },
+  "parser_probe": {
+    "body_text": "Three men.",
+    "footnote_preserved_in_usj": true,
+    "result": "PASS"
+  },
+  "inherited_release_gate": "PENDING_FINAL_RUN",
+  "pytest_probe": {
+    "status": "NOT_RUN",
+    "reason": "Managed runtime has no pytest module; collection did not start."
+  },
+  "review_conclusion": "Package integrity confirmed; expression-audit reconciliation required before reference release qualification."
+}

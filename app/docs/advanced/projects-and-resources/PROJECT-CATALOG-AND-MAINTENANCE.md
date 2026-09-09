@@ -1,4 +1,4 @@
-# Paratext Project Catalog and Maintenance — v0.01beta2
+# Paratext Project Catalog and Maintenance — v0.02b1
 
 ## Operator model
 

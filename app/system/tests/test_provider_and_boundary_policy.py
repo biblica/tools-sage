@@ -175,7 +175,7 @@ def test_provider_build_policy_enables_only_codex_and_preserves_ollama_admin(tmp
     assert PROVIDER_IDS == ("codex", "ollama")
     assert ENABLED_AUTOMATED_PROVIDER_IDS == ("codex",)
     assert set(FUTURE_PROVIDER_IDS) >= {"grok", "gemini"}
-    with pytest.raises(ConfigurationError, match="disabled by the 0.01beta2 build policy"):
+    with pytest.raises(ConfigurationError, match="disabled by the 0.02b1 build policy"):
         make_executor("ollama", DEFAULT_LLM_SETTINGS)
 
     sage_root = tmp_path / "SAGE" / "app"
@@ -235,6 +235,8 @@ def test_external_scripture_extensions_are_case_insensitive_and_narrow(tmp_path:
     usfm = root / "41MAT.USFM"
     for path in (sfm, vrs, xml, usfm):
         path.write_text("fixture", encoding="utf-8")
+    # Discovery now parses filename settings; this extension-only fixture has no template.
+    xml.write_text("<ScriptureText/>", encoding="utf-8")
 
     assert validate_external_file(sfm, roots=(root,)) == sfm.resolve()
     assert validate_external_file(vrs, roots=(root,)) == vrs.resolve()

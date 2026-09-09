@@ -1,6 +1,6 @@
-# Development Status — SAGE v0.01beta2
+# Development Status — SAGE v0.02b1
 
-**Status: BETA — PRE-RELEASE; FRESH EXACT-SOURCE QUALIFICATION IS REQUIRED BEFORE THE FIRST RC. PUBLIC-PRODUCTION READINESS IS NOT CLAIMED.** This Beta carries Windows UTF-8 execution hardening, UTF-8 CLI/controller output handling, canonical numbered-book report naming, governed interruption/retry behavior, regional Language Profiles, Source Text Correspondence (STC), routed-SFM-only Scripture sizing, universal model-facing linguistic-profile specificity, and current Operator UI/reporting convergence. The classic menu and scriptable CLI remain authoritative. Further TUI workflow functionality is paused for `0.01beta2` and deferred to `0.02beta`.
+**Status: BETA — PRE-RELEASE; FRESH EXACT-SOURCE QUALIFICATION IS REQUIRED BEFORE THE FIRST RC. PUBLIC-PRODUCTION READINESS IS NOT CLAIMED.** This Beta carries Windows UTF-8 execution hardening, UTF-8 CLI/controller output handling, canonical numbered-book report naming, governed interruption/retry behavior, regional Language Profiles, Source Text Correspondence (STC), routed-SFM-only Scripture sizing, universal model-facing linguistic-profile specificity, and current Operator UI/reporting convergence. The classic menu and scriptable CLI remain authoritative. Further TUI workflow functionality is paused for `0.02b1` and deferred to a later release.
 
 See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workflows/JOB-STORAGE-MAINTENANCE.md`, and `docs/advanced/maintenance/WINDOWS-CODEX-EXECUTION-AUDIT.md`.
 
@@ -10,7 +10,7 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 
 - `sage tui` opens the optional **EXPERIMENTAL / UNSTABLE** full-screen Textual shell with keyboard/mouse navigation. It is not an authoritative Operator surface; no-argument launch opens the classic menu.
 - The TUI targets `100 x 30` and provides numeric `1`-`5` top-level navigation, persistent view history, Help/Status overlays, interface-language switching, live session/AI status, startup-readiness gating, and native Projects-root / Quick Scan / AI-retest remediation. Persistent System Status / Active AI / Project / Active Job blocks show one sequential Job at a time; the Active Job line uses the governed 10-cell progress bar. Job/Run/report mutation remains read-only in the TUI.
-- The retained TUI baseline is frozen for the rest of `0.01beta2`. Workflow-changing operations other than the existing bounded startup-remediation actions remain in `sage menu` / CLI; their TUI migration resumes in `0.02beta`.
+- The retained TUI baseline is frozen for the rest of `0.02b1`. Workflow-changing operations other than the existing bounded startup-remediation actions remain in `sage menu` / CLI; their TUI migration resumes in a later release.
 - One normal root launcher per host: `.\sage.cmd` on Windows or `./sage` on macOS/Linux; both forward to the implementation under `system/bin/`.
 - Main is ownership-oriented: **Scripture Projects**, **BIC**, **RTC**, **STC**, and **SAGE Maintenance**. Reports and Job recovery are under their BIC/RTC/STC workflow; system recovery is under SAGE Maintenance. Contextual Help and Status are global footer services rather than numbered Main-menu operations.
 - Configuration persists when changed; there is no manual SAVE prerequisite before BIC/RTC/STC appear or can be opened.
@@ -26,7 +26,7 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 
 ## Project and language state
 
-- The v0.01beta2 vanilla tree ships a regional library of `PROJECT_REVIEW_REQUIRED` WIP grammar starters keyed by canonical BCP 47 region tags. New Project imports resolve and confirm a regional profile identity; Paratext shorthand is retained only as provenance.
+- The v0.02b1 vanilla tree ships a regional library of `PROJECT_REVIEW_REQUIRED` WIP grammar starters keyed by canonical BCP 47 region tags. New Project imports resolve and confirm a regional profile identity; Paratext shorthand is retained only as provenance.
 - The Setup-owned terminal interface ships complete editable menu-localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR` in `system/config/localization/menu-localization.json`. Interface locale is independent from Job reporting and Scripture-language identity.
 - The persistent ordinary Project collection is `localdata/.system/state/project-inventory.json` and is described to operators as the **SAGE Project Inventory**.
 - SAGE Projects are role-neutral. Adding one never grants BIC TARGET write authority or assigns a workflow role.
@@ -75,11 +75,11 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 
 ## Pre-release data policy
 
-`localdata` is persistent local/operator state during Beta testing. Product-version changes do not delete Projects, Jobs, Runs, reports, local resources/plugins, or operator settings. Explicitly regenerable `.system` state may be invalidated by its own schema/fingerprint contract, and the managed runtime at `localdata/.system/runtime/venv` is repaired/rebuilt when dependency fingerprints change. This Beta intentionally provides no migration path from the retired in-Core development layout; `0.01beta2` establishes the canonical external-data contract.
+`localdata` is persistent local/operator state during Beta testing. Product-version changes do not delete Projects, Jobs, Runs, reports, local resources/plugins, or operator settings. Explicitly regenerable `.system` state may be invalidated by its own schema/fingerprint contract, and the managed runtime at `localdata/.system/runtime/venv` is repaired/rebuilt when dependency fingerprints change. This Beta intentionally provides no migration path from the retired in-Core development layout; `0.02b1` establishes the canonical external-data contract.
 
 ## Naming and serialization state
 
-- Qualification evidence created under earlier development labels is historical. The v0.01beta2 source requires a new clean staged-source qualification before it may become an RC; `MS-BETA2-QUALIFY` tracks that gate and is currently blocked by `BI-20260826-001` until the refactored external-data Core completes exact-source qualification.
+- Qualification evidence created under earlier development labels is historical. The v0.02b1 source requires a new clean staged-source qualification before it may become an RC; `MS-02B1-QUALIFY` tracks that gate and is currently blocked by `BI-20260826-001` until the refactored external-data Core completes exact-source qualification.
 - Current SAGE-owned configuration/policy/profile filenames use lowercase kebab-case; Python remains snake_case and current Markdown documents remain uppercase kebab-case.
 - `sage.yml` and `terminology.yml` are consolidated into `system/config/sage-standard.json`.
 - Skill, qualification-baseline, authority-source, protected-pin, and Run-manifest records now use JSON.
@@ -90,7 +90,7 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 
 - `system/tools/validate_schemas.py` validates all 43 shipped schema contracts, unique IDs, duplicate keys, owner mappings, and applicable source instances, including `OL_AUTHORITY_PROFILE`.
 - `validate_package.py` requires every shipped schema, including evaluation-set and resource-rights contracts.
-- Focused Beta validation is required after the version change. Clean source-package and deep-audit claims are deferred to `MS-BETA2-QUALIFY`.
+- Focused Beta validation is required after the version change. Clean source-package and deep-audit claims are deferred to `MS-02B1-QUALIFY`.
 - U.S. English is canonical for current system/operator prose; localized `en-GB` remains governed only in the interface localization source.
 
 ## Source hygiene
@@ -98,3 +98,7 @@ See `docs/advanced/workflows/EXECUTION-BLOCK-AND-RETRY.md`, `docs/advanced/workf
 Current operating material must not present earlier pre-release implementation labels as current, use obsolete Project registration grammar, ship operator Project/Job/Run state, retain runtime caches/build artifacts, or include fixture workflow bindings. Historical labels may remain in the changelog, byte-pinned protected-contract metadata, compatibility tests, and migration references.
 
 - Windows UNC-root launcher hardening: `system/bin/sage.cmd` now enters the SAGE root with `pushd`/`popd` instead of `cd /d`, preserving local-drive behavior while allowing cmd.exe UNC-drive mapping.
+
+## Current checkpoint and planned work
+
+The full `0.02a1` development branch is consolidated as `0.02b1`, including shared versification alignment and Paratext filename-template validation. NCA and SQS are documented future implementation work; neither is activated by this release.

@@ -21,7 +21,7 @@ def test_tui_service_main_snapshot_uses_governed_release_and_runtime_ai(make_wor
 
     snapshot = service.main_snapshot()
 
-    assert snapshot["version"] == "0.01beta2"
+    assert snapshot["version"] == "0.02b1"
     assert snapshot["release_status"] == "BETA"
     assert snapshot["feature_classifications"]["tui"] == "EXPERIMENTAL_UNSTABLE"
     assert snapshot["ai"] == ai
@@ -85,7 +85,7 @@ def test_cli_exposes_tui_without_importing_textual(make_workspace) -> None:
     assert args.no_live_ai is True
     help_text = build_parser().format_help()
     assert "EXPERIMENTAL / UNSTABLE" in help_text
-    assert "0.01beta2" in help_text
+    assert "0.02b1" in help_text
 
 
 def test_startup_readiness_blocks_operational_surfaces_without_projects_root(make_workspace) -> None:

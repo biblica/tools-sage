@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the implemented `v0.01beta2` contract for selecting an AI execution route.
+This document defines the implemented `v0.02b1` contract for selecting an AI execution route.
 It replaces the normal Operator-owned global model/reasoning choice with deterministic SAGE
 routing by registered analytical Skill. It also retains one guarded global override for controlled
 diagnostics and Beta testing.

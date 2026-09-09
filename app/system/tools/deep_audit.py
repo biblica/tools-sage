@@ -972,7 +972,7 @@ def iter_audit_paths(root: Path, mode: str):
 def _is_future_prerelease_target(token: str, current: str, line: str) -> bool:
     """Allow later prerelease labels only in an explicit planning/deferral line."""
     pattern = re.compile(
-        r"(?i)^(\d+)\.(\d+)(?:-?(?:alpha|beta|dev)\d*(?:\.\d+)?|-?rc\d+(?:\.\d+)?)$"
+        r"(?i)^(\d+)\.(\d+)(?:-?(?:alpha|beta|dev)\d*(?:\.\d+)?|(?:a|b)\d+|-?rc\d+(?:\.\d+)?)$"
     )
     candidate = pattern.fullmatch(token)
     active = pattern.fullmatch(current)

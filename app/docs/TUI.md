@@ -1,8 +1,8 @@
-# SAGE TUI — frozen in v0.01beta2; workflow functionality deferred to v0.02beta
+# SAGE TUI — frozen in v0.02b1; workflow functionality deferred to a later release
 
 ## Status
 
-The Textual TUI is **EXPERIMENTAL / UNSTABLE** in `v0.01beta2`. Its current preview remains available, but further TUI workflow development is frozen for the rest of the `0.01beta2` line. Project registration, Job, Run, report, and recovery action parity is deferred to `0.02beta`. The classic menu and scriptable CLI remain authoritative.
+The Textual TUI is **EXPERIMENTAL / UNSTABLE** in `v0.02b1`. Its current preview remains available, but further TUI workflow development is frozen for the rest of the `0.02b1` line. Project registration, Job, Run, report, and recovery action parity is deferred to a later release. The classic menu and scriptable CLI remain authoritative.
 
 Launch it explicitly:
 
@@ -12,7 +12,7 @@ sage tui
 
 The root `./sage` / `sage.cmd` launchers enter the classic menu by default. The explicit `tui` command opens only the retained preview described below.
 
-## Implemented through 0.01beta2
+## Implemented through 0.02b1
 
 - full-screen Textual application shell targeting `100 x 30` during the current layout iteration;
 - keyboard and mouse navigation with numeric `1`-`5` functional shortcuts;
@@ -63,11 +63,11 @@ SAGE remains sequential in this development slice: exactly one execution is pres
 
 The dashboard treats `DONE` and `CANCELLED` as idle. `FAILED` and `BLOCKED` remain visible because they require Operator attention. A blocked Run is terminated for that execution attempt but remains resumable from governed state after its reason is remediated.
 
-## Frozen v0.01beta2 boundary
+## Frozen v0.02b1 boundary
 
 Only the already-implemented bounded startup-remediation actions listed above are enabled. Use `sage menu` or the scriptable CLI for Project registration/removal, Job changes, Run creation/continuation, AI login/configuration, report actions, and recovery writes. Reports and Job recovery are owned by the relevant BIC/RTC/STC workflow; system recovery is owned by SAGE Maintenance.
 
-No additional TUI action surfaces will be added to `0.01beta2`. This freezes the release boundary and avoids mixing TUI migration work with RTC/STC classic-menu qualification.
+No additional TUI action surfaces will be added to `0.02b1`. This freezes the release boundary and avoids mixing TUI migration work with RTC/STC classic-menu qualification.
 
 ## Dependency and portability
 
@@ -81,9 +81,9 @@ The root launchers detect an explicit `tui` command and ask the bootstrapper to 
 
 Textual is selected because the framework supports terminal keyboard/mouse interaction across Windows, macOS, and Linux. Native-host acceptance remains required before the TUI can become the default launcher.
 
-## Deferred 0.02beta work
+## Deferred work
 
-TUI workflow development resumes only in `0.02beta`, in this order:
+TUI workflow development resumes only in a later release, in this order:
 
 1. Add native Scripture-resource validation, AI login guidance, workflow/Job configuration, and active-Job validation.
 2. Add Project registration/selection/validation actions behind the shared Project services.
@@ -93,6 +93,6 @@ TUI workflow development resumes only in `0.02beta`, in this order:
 6. Keep the classic menu authoritative until action parity and recovery behavior pass release gates.
 7. Only then consider changing the default no-argument interface.
 
-## 0.02beta resumption rule
+## Resumption rule
 
-When work resumes in `0.02beta`, the Textual TUI must use the authoritative BIC/RTC/STC information architecture, workflow-specific Job bindings, diagnostics/report ownership, and configured Project names. TUI controls may replace numeric choices with buttons, switches, or links, but they must call the same governed services as the classic workflow. Mouse and keyboard activation must invoke the same action. Until a write surface reaches parity, it remains read-only and directs writes to the classic menu rather than inventing an alternate workflow.
+When work resumes in a later release, the Textual TUI must use the authoritative BIC/RTC/STC information architecture, workflow-specific Job bindings, diagnostics/report ownership, and configured Project names. TUI controls may replace numeric choices with buttons, switches, or links, but they must call the same governed services as the classic workflow. Mouse and keyboard activation must invoke the same action. Until a write surface reaches parity, it remains read-only and directs writes to the classic menu rather than inventing an alternate workflow.
