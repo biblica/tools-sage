@@ -413,6 +413,7 @@ def test_registered_absence_serializes_null_ol_reference_distinct_from_unknown()
     "mutation",
     [
         lambda expression: expression.__setitem__("expression_id", ""),
+        lambda expression: expression.__setitem__("expression_id", " "),
         lambda expression: expression.__setitem__("stream_id", ""),
         lambda expression: expression.__setitem__("stream_id", "forged"),
         lambda expression: expression.__setitem__("surface", ""),
@@ -421,6 +422,8 @@ def test_registered_absence_serializes_null_ol_reference_distinct_from_unknown()
         lambda expression: expression.__setitem__("kind", "NUMBER"),
         lambda expression: expression.__setitem__("qualifier", "MAYBE"),
         lambda expression: expression.__setitem__("role", ""),
+        lambda expression: expression.__setitem__("role", " "),
+        lambda expression: expression.__setitem__("unit", " "),
         lambda expression: expression.__setitem__("role_spans", [[-1, 3]]),
         lambda expression: expression.__setitem__("role_spans", [[6, 9], [6, 9]]),
         lambda expression: expression.__setitem__(
