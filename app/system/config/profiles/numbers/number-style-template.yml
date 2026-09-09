@@ -1,0 +1,77 @@
+# Configure a copy and import it into the Operator number-style library.
+# DRAFT is never selectable. Set each applicable rule to CONFIGURED and supply
+# its explicit fields, or retain an intentional NOT_SPECIFIED/NOT_APPLICABLE.
+schema_version: '1.0'
+profile:
+  id: number-style-template
+  version: '1'
+  language: ''
+  script: ''
+  projects: ['*']
+  source_guide: ''
+  recorded_by: ''
+  recorded_date: ''
+  status: DRAFT
+rules:
+  digits:
+    id: NCA-DIGITS
+    status: NOT_SPECIFIED
+    # preferred: '0123456789'
+    # allowed: ['0123456789']
+  bands:
+    id: NCA-BANDS
+    status: NOT_SPECIFIED
+    # bands:
+    #   - {min: '0', max: '9', form: WORDS}
+    #   - {min: '10', max: '99', form: DIGITS}
+    #   - {min: '100', max: null, form: WORDS_AND_DIGITS}
+  grouping:
+    id: NCA-GROUPING
+    status: NOT_SPECIFIED
+    # style: WESTERN  # WESTERN, INDIC, or NONE
+    # separator: ','  # Exact character; distinguish ordinary/NBSP/narrow spaces.
+    # minimum: '1000'
+  decimal:
+    id: NCA-DECIMAL
+    status: NOT_SPECIFIED
+    # separator: '.'
+  ordinals:
+    id: NCA-ORDINALS
+    status: NOT_SPECIFIED
+    # form: WORDS  # WORDS, DIGITS, or WORDS_AND_DIGITS
+    # suffixes: []
+  fractions:
+    id: NCA-FRACTIONS
+    status: NOT_SPECIFIED
+    # notation: SLASH  # WORDS, SLASH, or UNICODE
+    # forms: {'1/2': '½', '1/4': '¼'}
+  ranges:
+    id: NCA-RANGES
+    status: NOT_SPECIFIED
+    # separator: '–'
+  qualifiers:
+    id: NCA-QUALIFIERS
+    status: NOT_SPECIFIED
+    # forms: {ABOUT: ['about'], LESS_THAN: ['less than'], MORE_THAN: ['more than']}
+  contexts:
+    id: NCA-CONTEXTS
+    status: NOT_SPECIFIED
+    decisions:
+      ages: {status: NOT_SPECIFIED}
+      dates: {status: NOT_SPECIFIED}
+      time: {status: NOT_SPECIFIED}
+      money: {status: NOT_SPECIFIED}
+      measurements: {status: NOT_SPECIFIED}
+      counts: {status: NOT_SPECIFIED}
+      genealogies: {status: NOT_SPECIFIED}
+    # INHERIT uses general rules. OVERRIDE requires a rules mapping, for example:
+    # ages: {status: OVERRIDE, rules: {bands: {bands: [{min: '0', max: null, form: DIGITS}]}}}
+  units:
+    id: NCA-UNITS
+    status: NOT_SPECIFIED
+    locations:
+      body: {status: NOT_SPECIFIED}
+      heading: {status: NOT_SPECIFIED}
+      footnote: {status: NOT_SPECIFIED}
+    # A configured location requires form, spacing and approved literal forms:
+    # heading: {status: CONFIGURED, form: ABBREVIATION, spacing: SPACE, forms: {mile: ['mi']}}

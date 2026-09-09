@@ -1,0 +1,23 @@
+schema_id: sage-number-style-profile-1.0
+required: [schema_version, profile, rules]
+controls:
+  schema_version: '1.0'
+  owner: system/src/sage/numbers/style.py
+  storage: localdata/inputs/styleguides/numbers/<profile-id>/<version>.yml
+  selector: <profile-id>/<version>
+  selectable_status: CONFIGURED
+  draft_selectable: false
+  mandatory_job_binding: number_style
+  mandatory_when_presentation_disabled: true
+  profile_required: [id, version, language, script, projects, source_guide, recorded_by, recorded_date, status]
+  required_rule_areas: [digits, bands, grouping, decimal, ordinals, fractions, ranges, qualifiers, contexts, units]
+  rule_required: [id, status]
+  rule_status: [CONFIGURED, NOT_SPECIFIED, NOT_APPLICABLE]
+  number_forms: [WORDS, DIGITS, WORDS_AND_DIGITS]
+  contexts: [ages, dates, time, money, measurements, counts, genealogies]
+  locations: [body, heading, footnote]
+  scope_unavailable: NOT_ASSESSED
+  missing_guide_rule: NOT_ASSESSED
+  semantic_mutation: prohibited
+  authoritative_unit_conversion: reference_registry_only
+  duplicate_yaml_keys: prohibited
