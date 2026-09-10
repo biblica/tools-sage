@@ -1,0 +1,179 @@
+{
+  "schema_version": "1.0",
+  "description": "Synthetic NCA optimization goldens; no source text is copied from a translation.",
+  "reference_package": "reference/lineage",
+  "cases": [
+    {
+      "case_id": "ordinary_numeric",
+      "language": "en",
+      "streams": {"body": "Three men.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:1"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:1", "ol_reference": "MAT 5:1", "language": "GRK", "text": "three men", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"}
+        ]}
+      ],
+      "expected": {"expressions": [
+        {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+    },
+    {
+      "case_id": "ordinary_number_free",
+      "language": "en",
+      "streams": {"body": "The people rested.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:2"],
+      "reference_rows": [],
+      "expected": {"expressions": [], "baseline_outcome": "NOT_ASSESSED", "optimized_outcome": "NOT_ASSESSED", "uncertainty": ["NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED"], "bridge_result_new_behavior": false}
+    },
+    {
+      "case_id": "indexed_omission",
+      "language": "en",
+      "streams": {"body": "The men arrived.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:3"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:3", "ol_reference": "MAT 5:3", "language": "GRK", "text": "three men", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"}
+        ]}
+      ],
+      "expected": {"expressions": [], "baseline_outcome": "REVIEW_NUMBER_MISSING", "optimized_outcome": "REVIEW_NUMBER_MISSING", "uncertainty": [], "bridge_result_new_behavior": false}
+    },
+    {
+      "case_id": "unindexed_numeric",
+      "language": "en",
+      "streams": {"body": "Seven lamps.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:4"],
+      "reference_rows": [],
+      "expected": {"expressions": [
+        {"surface": "Seven", "span": [0, 5], "values": ["7"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "lamps"}
+      ], "baseline_outcome": "REFERENCE_NOT_INDEXED", "optimized_outcome": "REFERENCE_NOT_INDEXED", "uncertainty": ["WESTERN_REFERENCE_NOT_INDEXED"], "bridge_result_new_behavior": false}
+    },
+    {
+      "case_id": "registered_absence",
+      "language": "en",
+      "streams": {"body": "No count is stated.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:5"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:5", "ol_reference": null, "language": "GRK", "text": "no configured source reading", "expressions": [], "registered_absence": true}
+      ],
+      "expected": {"expressions": [], "baseline_outcome": "NO_CONFIGURED_OL_READING", "optimized_outcome": "NO_CONFIGURED_OL_READING", "uncertainty": ["REGISTERED_OL_ABSENCE"], "bridge_result_new_behavior": false}
+    },
+    {
+      "case_id": "mixed_word_digit",
+      "language": "en",
+      "streams": {"body": "Three (3) men.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:6"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:6", "ol_reference": "MAT 5:6", "language": "GRK", "text": "three men", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"}
+        ]}
+      ],
+      "expected": {"expressions": [
+        {"surface": "Three (3)", "span": [0, 9], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men", "representations": [
+          {"surface": "Three", "span": [0, 5], "value": "3"},
+          {"surface": "3", "span": [7, 8], "value": "3"}
+        ]}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+    },
+    {
+      "case_id": "unicode_digits",
+      "language": "ar",
+      "streams": {"body": "٣ lamps.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:7"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:7", "ol_reference": "MAT 5:7", "language": "GRK", "text": "three lamps", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "lamps"}
+        ]}
+      ],
+      "expected": {"expressions": [
+        {"surface": "٣", "span": [0, 1], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "lamps"}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+    },
+    {
+      "case_id": "repeated_values",
+      "language": "en",
+      "streams": {"body": "Three men and three women.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:8"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:8", "ol_reference": "MAT 5:8", "language": "GRK", "text": "three men and three women", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"},
+          {"surface": "three", "span": [14, 19], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "women"}
+        ]}
+      ],
+      "expected": {"expressions": [
+        {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"},
+        {"surface": "three", "span": [14, 19], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "women"}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+    },
+    {
+      "case_id": "ratio_fraction_ordinal",
+      "language": "en",
+      "streams": {"body": "A 3:2 ratio, one-half share, and first place.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:9"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:9", "ol_reference": "MAT 5:9", "language": "GRK", "text": "a 3:2 ratio, one-half share, and first place", "expressions": [
+          {"surface": "3:2", "span": [2, 5], "values": ["3", "2"], "kind": "RATIO", "unit": null, "qualifier": "EXACT", "role": "ratio"},
+          {"surface": "one-half", "span": [13, 21], "values": ["1/2"], "kind": "FRACTION", "unit": null, "qualifier": "EXACT", "role": "share"},
+          {"surface": "first", "span": [33, 38], "values": ["1"], "kind": "ORDINAL", "unit": null, "qualifier": "EXACT", "role": "place"}
+        ]}
+      ],
+      "expected": {"expressions": [
+        {"surface": "3:2", "span": [2, 5], "values": ["3", "2"], "kind": "RATIO", "unit": null, "qualifier": "EXACT", "role": "ratio"},
+        {"surface": "one-half", "span": [13, 21], "values": ["1/2"], "kind": "FRACTION", "unit": null, "qualifier": "EXACT", "role": "share"},
+        {"surface": "first", "span": [33, 38], "values": ["1"], "kind": "ORDINAL", "unit": null, "qualifier": "EXACT", "role": "place"}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+    },
+    {
+      "case_id": "bridge_clear_roles",
+      "language": "en",
+      "streams": {"body": "Three men came, then four women.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:10", "MAT 5:11"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:10", "ol_reference": "MAT 5:10", "language": "GRK", "text": "three men", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"}
+        ]},
+        {"western_reference": "MAT 5:11", "ol_reference": "MAT 5:11", "language": "GRK", "text": "four women", "expressions": [
+          {"surface": "four", "span": [0, 4], "values": ["4"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "women"}
+        ]}
+      ],
+      "expected": {"expressions": [
+        {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"},
+        {"surface": "four", "span": [21, 25], "values": ["4"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "women"}
+      ], "baseline_outcome": "INSUFFICIENT_EVIDENCE", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": true}
+    },
+    {
+      "case_id": "bridge_repeated_values",
+      "language": "en",
+      "streams": {"body": "Three men and three women.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:12", "MAT 5:13"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:12", "ol_reference": "MAT 5:12", "language": "GRK", "text": "three men", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"}
+        ]},
+        {"western_reference": "MAT 5:13", "ol_reference": "MAT 5:13", "language": "GRK", "text": "three women", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "women"}
+        ]}
+      ],
+      "expected": {"expressions": [
+        {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"},
+        {"surface": "three", "span": [14, 19], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "women"}
+      ], "baseline_outcome": "INSUFFICIENT_EVIDENCE", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": true}
+    },
+    {
+      "case_id": "bridge_ambiguous",
+      "language": "en",
+      "streams": {"body": "Three people came.", "notes": [], "headings": []},
+      "western_references": ["MAT 5:14", "MAT 5:15"],
+      "reference_rows": [
+        {"western_reference": "MAT 5:14", "ol_reference": "MAT 5:14", "language": "GRK", "text": "three travelers", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "travelers"}
+        ]},
+        {"western_reference": "MAT 5:15", "ol_reference": "MAT 5:15", "language": "GRK", "text": "three witnesses", "expressions": [
+          {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "witnesses"}
+        ]}
+      ],
+      "expected": {"expressions": [
+        {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "people"}
+      ], "baseline_outcome": "INSUFFICIENT_EVIDENCE", "optimized_outcome": "INSUFFICIENT_EVIDENCE", "uncertainty": ["AMBIGUOUS_BRIDGE_ASSIGNMENT"], "bridge_result_new_behavior": true}
+    }
+  ]
+}
