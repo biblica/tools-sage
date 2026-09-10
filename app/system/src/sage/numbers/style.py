@@ -245,7 +245,13 @@ def assess_style(extraction: Extraction, *, profile: Mapping[str, object],
                  location: str, context: Optional[str]) -> tuple[Mapping[str, object], ...]:
     """Report guide violations and unassessed areas without rewriting expressions."""
     validated = validate_style_profile(profile)
-    rules = _plain(validated['rules'])
+    return _assess_prepared_style(extraction, profile=validated, location=location, context=context)
+
+
+def _assess_prepared_style(extraction: Extraction, *, profile: Mapping[str, object],
+                           location: str, context: Optional[str]) -> tuple[Mapping[str, object], ...]:
+    """Assess a profile already validated at the owning engine boundary."""
+    rules = _plain(profile['rules'])
     output: list[Mapping[str, object]] = []
 
     def record(area: str, code: str, status: str = 'NOT_ASSESSED', expression: Any = None, expected: Any = None) -> None:
