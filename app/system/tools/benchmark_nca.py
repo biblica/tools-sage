@@ -605,6 +605,9 @@ def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
                             _plain_expression(item) for item in actual.extraction.expressions
                         ],
                         "outcome": actual.final_outcome,
+                        "semantic_reason_codes": list(
+                            actual.reading.semantic.reason_codes
+                        ),
                         "limitations": list(actual.limitations),
                         "coverage_status": result.coverage["coverage"],
                     }
@@ -621,6 +624,14 @@ def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
                 item["outcome"]
                 == expected_by_id[item["case_id"]]["baseline_outcome"]
             ),
+            "observed_uncertainty": item["semantic_reason_codes"],
+            "expected_baseline_uncertainty": expected_by_id[item["case_id"]][
+                "baseline_uncertainty"
+            ],
+            "matches_uncertainty": (
+                item["semantic_reason_codes"]
+                == expected_by_id[item["case_id"]]["baseline_uncertainty"]
+            ),
             "matches_expressions": (
                 [
                     _golden_expression(expression)
@@ -632,7 +643,9 @@ def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
                 ]
             ),
             "expected_optimized": expected_by_id[item["case_id"]]["optimized_outcome"],
-            "expected_uncertainty": expected_by_id[item["case_id"]]["uncertainty"],
+            "expected_optimized_uncertainty": expected_by_id[item["case_id"]][
+                "optimized_uncertainty"
+            ],
             "bridge_result_new_behavior": expected_by_id[item["case_id"]][
                 "bridge_result_new_behavior"
             ],

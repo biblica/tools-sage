@@ -4,6 +4,7 @@ from dataclasses import replace
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 from time import perf_counter_ns
@@ -129,7 +130,8 @@ def test_optimization_fixture_has_exact_required_golden_semantics():
             "expressions",
             "baseline_outcome",
             "optimized_outcome",
-            "uncertainty",
+            "baseline_uncertainty",
+            "optimized_uncertainty",
             "bridge_result_new_behavior",
         }
         body = case["streams"]["body"]
@@ -148,6 +150,20 @@ def test_optimization_fixture_has_exact_required_golden_semantics():
         for case in cases
         if len(case["western_references"]) == 1
     )
+    assert {
+        case["case_id"]: (
+            case["expected"]["baseline_uncertainty"],
+            case["expected"]["optimized_uncertainty"],
+        )
+        for case in bridges
+    } == {
+        "bridge_clear_roles": (["MERGED_ALIGNMENT_UNAVAILABLE"], []),
+        "bridge_repeated_values": (["MERGED_ALIGNMENT_UNAVAILABLE"], []),
+        "bridge_ambiguous": (
+            ["MERGED_ALIGNMENT_UNAVAILABLE"],
+            ["AMBIGUOUS_BRIDGE_ASSIGNMENT"],
+        ),
+    }
 
 
 def test_synthetic_baseline_records_observed_calls_loads_and_golden_outcomes(
@@ -197,6 +213,7 @@ def test_synthetic_baseline_records_observed_calls_loads_and_golden_outcomes(
     assert receipt["local_loads"]["profile_validation_elapsed_ms"] >= 0
     assert all(diff["matches_baseline"] for diff in receipt["semantic_outcome_diffs"])
     assert all(diff["matches_expressions"] for diff in receipt["semantic_outcome_diffs"])
+    assert all(diff["matches_uncertainty"] for diff in receipt["semantic_outcome_diffs"])
     assert {diff["case_id"] for diff in receipt["semantic_outcome_diffs"]} == {
         case["case_id"]
         for case in json.loads(FIXTURE.read_text(encoding="utf-8"))["cases"]
@@ -205,6 +222,53 @@ def test_synthetic_baseline_records_observed_calls_loads_and_golden_outcomes(
         assert re.fullmatch(r"[0-9a-f]{64}", receipt[field])
     assert receipt["environment"]["python"]
     assert receipt["environment"]["platform"]
+
+
+def test_baseline_detects_changed_uncertainty_with_other_goldens_unchanged(
+    tmp_path: Path,
+):
+    """A reason-code regression must fail even when outcome and expressions still match."""
+    document = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    document["cases"][0]["expected"]["baseline_uncertainty"] = [
+        "REGRESSION_SENTINEL"
+    ]
+    fixture_dir = tmp_path / "fixtures"
+    fixture_dir.mkdir()
+    shutil.copytree(
+        FIXTURE.parent / document["reference_package"],
+        fixture_dir / document["reference_package"],
+    )
+    changed_fixture = fixture_dir / FIXTURE.name
+    changed_fixture.write_text(json.dumps(document), encoding="utf-8")
+    receipt_path = tmp_path / "changed-uncertainty.json"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(TOOL),
+            "--strategy",
+            "baseline",
+            "--cases",
+            str(changed_fixture),
+            "--receipt",
+            str(receipt_path),
+        ],
+        check=False,
+        cwd=TOOL.parents[2],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    changed = next(
+        diff
+        for diff in receipt["semantic_outcome_diffs"]
+        if diff["case_id"] == "ordinary_numeric"
+    )
+    assert changed["matches_baseline"] is True
+    assert changed["matches_expressions"] is True
+    assert changed["matches_uncertainty"] is False
+    assert changed["observed_uncertainty"] == []
+    assert changed["expected_baseline_uncertainty"] == ["REGRESSION_SENTINEL"]
 
 
 def test_benchmark_rejects_an_unimplemented_strategy(tmp_path: Path):

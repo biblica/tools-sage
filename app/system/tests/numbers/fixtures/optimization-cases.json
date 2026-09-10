@@ -15,7 +15,7 @@
       ],
       "expected": {"expressions": [
         {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"}
-      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "baseline_uncertainty": [], "optimized_uncertainty": [], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "ordinary_number_free",
@@ -23,7 +23,7 @@
       "streams": {"body": "The people rested.", "notes": [], "headings": []},
       "western_references": ["MAT 5:2"],
       "reference_rows": [],
-      "expected": {"expressions": [], "baseline_outcome": "NOT_ASSESSED", "optimized_outcome": "NOT_ASSESSED", "uncertainty": ["NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED"], "bridge_result_new_behavior": false}
+      "expected": {"expressions": [], "baseline_outcome": "NOT_ASSESSED", "optimized_outcome": "NOT_ASSESSED", "baseline_uncertainty": ["NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED"], "optimized_uncertainty": ["NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED"], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "indexed_omission",
@@ -35,7 +35,7 @@
           {"surface": "three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"}
         ]}
       ],
-      "expected": {"expressions": [], "baseline_outcome": "REVIEW_NUMBER_MISSING", "optimized_outcome": "REVIEW_NUMBER_MISSING", "uncertainty": [], "bridge_result_new_behavior": false}
+      "expected": {"expressions": [], "baseline_outcome": "REVIEW_NUMBER_MISSING", "optimized_outcome": "REVIEW_NUMBER_MISSING", "baseline_uncertainty": ["TARGET_QUANTITY_MISSING"], "optimized_uncertainty": ["TARGET_QUANTITY_MISSING"], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "unindexed_numeric",
@@ -45,7 +45,7 @@
       "reference_rows": [],
       "expected": {"expressions": [
         {"surface": "Seven", "span": [0, 5], "values": ["7"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "lamps"}
-      ], "baseline_outcome": "REFERENCE_NOT_INDEXED", "optimized_outcome": "REFERENCE_NOT_INDEXED", "uncertainty": ["WESTERN_REFERENCE_NOT_INDEXED"], "bridge_result_new_behavior": false}
+      ], "baseline_outcome": "REFERENCE_NOT_INDEXED", "optimized_outcome": "REFERENCE_NOT_INDEXED", "baseline_uncertainty": ["WESTERN_REFERENCE_NOT_INDEXED"], "optimized_uncertainty": ["WESTERN_REFERENCE_NOT_INDEXED"], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "registered_absence",
@@ -55,7 +55,7 @@
       "reference_rows": [
         {"western_reference": "MAT 5:5", "ol_reference": null, "language": "GRK", "text": "no configured source reading", "expressions": [], "registered_absence": true}
       ],
-      "expected": {"expressions": [], "baseline_outcome": "NO_CONFIGURED_OL_READING", "optimized_outcome": "NO_CONFIGURED_OL_READING", "uncertainty": ["REGISTERED_OL_ABSENCE"], "bridge_result_new_behavior": false}
+      "expected": {"expressions": [], "baseline_outcome": "NO_CONFIGURED_OL_READING", "optimized_outcome": "NO_CONFIGURED_OL_READING", "baseline_uncertainty": [], "optimized_uncertainty": [], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "mixed_word_digit",
@@ -72,7 +72,7 @@
           {"surface": "Three", "span": [0, 5], "value": "3"},
           {"surface": "3", "span": [7, 8], "value": "3"}
         ]}
-      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "baseline_uncertainty": [], "optimized_uncertainty": [], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "unicode_digits",
@@ -86,7 +86,7 @@
       ],
       "expected": {"expressions": [
         {"surface": "٣", "span": [0, 1], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "lamps"}
-      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "baseline_uncertainty": [], "optimized_uncertainty": [], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "repeated_values",
@@ -102,7 +102,7 @@
       "expected": {"expressions": [
         {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"},
         {"surface": "three", "span": [14, 19], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "women"}
-      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "baseline_uncertainty": [], "optimized_uncertainty": [], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "ratio_fraction_ordinal",
@@ -120,7 +120,7 @@
         {"surface": "3:2", "span": [2, 5], "values": ["3", "2"], "kind": "RATIO", "unit": null, "qualifier": "EXACT", "role": "ratio"},
         {"surface": "one-half", "span": [13, 21], "values": ["1/2"], "kind": "FRACTION", "unit": null, "qualifier": "EXACT", "role": "share"},
         {"surface": "first", "span": [33, 38], "values": ["1"], "kind": "ORDINAL", "unit": null, "qualifier": "EXACT", "role": "place"}
-      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": false}
+      ], "baseline_outcome": "PASS_AUTHORITY1", "optimized_outcome": "PASS_AUTHORITY1", "baseline_uncertainty": [], "optimized_uncertainty": [], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "bridge_clear_roles",
@@ -138,7 +138,7 @@
       "expected": {"expressions": [
         {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"},
         {"surface": "four", "span": [21, 25], "values": ["4"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "women"}
-      ], "baseline_outcome": "INSUFFICIENT_EVIDENCE", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": true}
+      ], "baseline_outcome": "INSUFFICIENT_EVIDENCE", "optimized_outcome": "PASS_AUTHORITY1", "baseline_uncertainty": ["MERGED_ALIGNMENT_UNAVAILABLE"], "optimized_uncertainty": [], "bridge_result_new_behavior": true}
     },
     {
       "case_id": "bridge_repeated_values",
@@ -156,7 +156,7 @@
       "expected": {"expressions": [
         {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "men"},
         {"surface": "three", "span": [14, 19], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "women"}
-      ], "baseline_outcome": "INSUFFICIENT_EVIDENCE", "optimized_outcome": "PASS_AUTHORITY1", "uncertainty": [], "bridge_result_new_behavior": true}
+      ], "baseline_outcome": "INSUFFICIENT_EVIDENCE", "optimized_outcome": "PASS_AUTHORITY1", "baseline_uncertainty": ["MERGED_ALIGNMENT_UNAVAILABLE"], "optimized_uncertainty": [], "bridge_result_new_behavior": true}
     },
     {
       "case_id": "bridge_ambiguous",
@@ -173,7 +173,7 @@
       ],
       "expected": {"expressions": [
         {"surface": "Three", "span": [0, 5], "values": ["3"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "people"}
-      ], "baseline_outcome": "INSUFFICIENT_EVIDENCE", "optimized_outcome": "INSUFFICIENT_EVIDENCE", "uncertainty": ["AMBIGUOUS_BRIDGE_ASSIGNMENT"], "bridge_result_new_behavior": true}
+      ], "baseline_outcome": "INSUFFICIENT_EVIDENCE", "optimized_outcome": "INSUFFICIENT_EVIDENCE", "baseline_uncertainty": ["MERGED_ALIGNMENT_UNAVAILABLE"], "optimized_uncertainty": ["AMBIGUOUS_BRIDGE_ASSIGNMENT"], "bridge_result_new_behavior": true}
     }
   ]
 }
