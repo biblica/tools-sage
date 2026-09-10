@@ -108,6 +108,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/plans/2026-09-03-BIC-RTC-STC-VERSIFICATION-REPORTING.md`
 - `docs/superpowers/plans/2026-09-03-RTC-STC-CANONICAL-IDENTITY.md`
 - `docs/superpowers/plans/2026-09-09-NCA-IMPLEMENTATION.md`
+- `docs/superpowers/plans/2026-09-10-NCA-OPTIMIZATION.md`
 - `docs/superpowers/specs`
 - `docs/superpowers/specs/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
 - `docs/superpowers/specs/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS-DESIGN.md`
@@ -119,6 +120,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/specs/2026-09-09-NCA-HANDOVER-AUDIT.json`
 - `docs/superpowers/specs/2026-09-09-NCA-SQS-INTEGRATION.md`
 - `docs/superpowers/specs/2026-09-09-NCA-STYLE-QUESTIONNAIRE.md`
+- `docs/superpowers/specs/2026-09-10-NCA-OPTIMIZATION-DESIGN.md`
 - `docs/windows`
 - `docs/windows/CHEAT-SHEET.md`
 - `docs/windows/ERRORS.md`
