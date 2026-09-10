@@ -49,3 +49,7 @@ python -m sage.cli task submit --task /path/to/task-manifest.json
 Use `--job-id` for an existing Job and `--run-id` for a sealed Run. New-Run switches are `--number-accuracy` / `--no-number-accuracy`, `--presentation-consistency` / `--no-presentation-consistency`, and `--footnote-review` / `--no-footnote-review`. Omitted switches use Job defaults. Package/style selectors belong to Job setup and cannot replace sealed Run evidence.
 
 Resource inspection is local. Model-dependent execution requires the configured NCA route and provider readiness. `task execute --dry-run` validates the request without generating findings. NCA never edits Scripture or Paratext Notes XML. The experimental TUI retains its documented execution limitations; use the Control Center or CLI for NCA.
+
+## Planned optimization
+
+The [optimization design](superpowers/specs/2026-09-10-NCA-OPTIMIZATION-DESIGN.md) and [implementation plan](superpowers/plans/2026-09-10-NCA-OPTIMIZATION.md) propose full-scope batched extraction, validated input/checkpoint reuse, attributed bridge comparison, and chapter-organized reports. These are planned changes; the current runtime retains its existing behavior and bridge limitations.
