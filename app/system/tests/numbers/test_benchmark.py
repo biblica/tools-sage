@@ -12,7 +12,7 @@ from time import perf_counter_ns
 import pytest
 
 from sage.llm_tasks import execute_task
-import sage.nca as nca_module
+from sage.numbers import execution as execution_module
 from sage.nca import create_nca_task
 from sage.numbers.telemetry import CallMeasurement, summarize_calls
 
@@ -296,16 +296,16 @@ def test_benchmark_rejects_an_unimplemented_strategy(tmp_path: Path):
     assert not receipt_path.exists()
 
 
-def test_canonical_baseline_observes_three_execution_reference_loads(
+def test_canonical_execution_observes_one_reference_load(
     make_workspace, monkeypatch: pytest.MonkeyPatch
 ):
-    """The governed version-1 task must expose every actual execution-time package load."""
+    """The governed task measures the actual attempt-owned package qualification boundary."""
     _root, config, job, run = _run(make_workspace, monkeypatch)
     created = create_nca_task(
         config, job_id=job.job_id, run_id=run.run_id, scope_value="MAT 1"
     )
     manifest = Path(str(created["task_manifest_path"]))
-    actual_bundle = nca_module._bundle
+    actual_bundle = execution_module.resolve_reference_package
     elapsed: list[int] = []
 
     def measured_bundle(*args, **kwargs):
@@ -316,9 +316,9 @@ def test_canonical_baseline_observes_three_execution_reference_loads(
         finally:
             elapsed.append((perf_counter_ns() - started) // 1_000_000)
 
-    monkeypatch.setattr(nca_module, "_bundle", measured_bundle)
+    monkeypatch.setattr(execution_module, "resolve_reference_package", measured_bundle)
     monkeypatch.setattr("sage.numbers.model_tasks.NcaModelTasks", _OfflineTasks)
     execute_task(config, task_manifest=manifest)
 
-    assert len(elapsed) == 3
+    assert len(elapsed) == 1
     assert all(value >= 0 for value in elapsed)

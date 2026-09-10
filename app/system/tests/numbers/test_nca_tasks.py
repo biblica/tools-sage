@@ -228,7 +228,11 @@ def test_execution_replays_sealed_style_and_policy_after_live_job_changes(
     )
 
     assert executed["status"] == "EXECUTED"
-    assert output["check_policy"]["checks"]["footnote_review"] is True
+    assert output["check_policy"]["checks"] == {
+        "number_accuracy": True,
+        "presentation_consistency": True,
+        "footnote_review": True,
+    }
 
 
 def test_submit_rejects_model_evidence_or_execution_receipt_tamper(

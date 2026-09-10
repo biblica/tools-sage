@@ -31,7 +31,7 @@ from .references import parse_scope
 from .registry import EcosystemConfig
 from .runtime_paths import task_container
 from .storage import StorageError, declare_governed_path, resolve_persisted_path
-from .versification_service import VersificationService
+from .numbers.execution import package_root as _package_root, prepare_execution_inputs, validate_reference_snapshot
 from .workflow_identity import canonical_nca_job_id
 
 
@@ -209,7 +209,7 @@ def create_nca_task(
 ) -> Mapping[str, object]:
     """Create or return one governed NCA ACT task for an exact Run scope."""
     store = _store(config)
-    job = store.load_job(job_id, tool="nca")
+    job = store._load_job_metadata(job_id, tool="nca")
     run = store.load_run(job, run_id)
     with WorkspaceLock(
         run.root / "locks" / "lifecycle.lock",
@@ -232,7 +232,7 @@ def _create_nca_task_locked(
 ) -> Mapping[str, object]:
     """Create or reopen one NCA task while holding its Run lifecycle lock."""
     store = _store(config)
-    job = store.load_job(job_id, tool="nca")
+    job = store._load_job_metadata(job_id, tool="nca")
     run = store.load_run(job, run_id)
     completed_resume = run.status == "COMPLETE" and bool(run.task_manifests)
     active = store.active_run(job)
@@ -248,10 +248,9 @@ def _create_nca_task_locked(
         )
     policy = load_nca_run_snapshot(run.root)
     runtime_config = _runtime_config(store, job)
-    projected, headings, expected_ids, expected_refs = _sealed_units(
-        runtime_config, job=job, run=run, policy=policy
-    )
-    del projected, headings
+    inputs = prepare_execution_inputs(runtime_config, job, run, policy)
+    expected_ids = inputs.expected_unit_ids
+    expected_refs = tuple(ref.label() for ref in inputs.expected_references)
 
     # The Run ledger is the idempotency authority: its one exact coverage task
     # survives menu/CLI retries and completed-result resume without re-creation.
@@ -389,7 +388,7 @@ def _create_nca_task_locked(
             "expected_unit_ids": list(expected_ids),
             "coverage": {"expected_unit_ids": list(expected_ids)},
             "structural_candidate_ids": [],
-            "allowed_evidence_ids": sorted(str(value) for value in _bundle(runtime_config, policy).provenance),
+            "allowed_evidence_ids": sorted(str(value) for value in inputs.bundle.provenance),
             "governance_inputs": governance,
             "allowed_reads": reads,
             "conditional_reads": [],
@@ -465,8 +464,8 @@ def _create_nca_task_locked(
                 os.chmod(immutable, 0o444)
             except OSError:
                 pass
-        store.update_run(
-            run,
+        store._update_run_for_job(
+            job, run,
             status="ACTIVE",
             current_stage="MODEL_INTERPRETATION",
             task_manifests=(str(manifest_path.resolve()),),
@@ -509,6 +508,8 @@ def _execute_nca_task_locked(
     manifest_path, manifest, runtime_config, job, run, policy = _validate_task(
         config, task_manifest
     )
+    inputs = prepare_execution_inputs(runtime_config, job, run, policy)
+    expected_ids = inputs.expected_unit_ids
     output_path = manifest_path.parent / "output/model-evidence.json"
     receipt_path = manifest_path.parent / "validation/llm-execution-receipt.json"
     if output_path.is_file() and receipt_path.is_file():
@@ -532,14 +533,10 @@ def _execute_nca_task_locked(
             "allowed_writes": ["output/model-evidence.json"],
         }
 
-    from .numbers.engine import evaluate_run
+    from .numbers.engine import evaluate_prepared_run
     from .numbers.model_tasks import NcaModelTasks
     from .numbers.results import numbers_result_document, validate_numbers_result
 
-    projected, headings, expected_ids, _expected_refs = _sealed_units(
-        runtime_config, job=job, run=run, policy=policy
-    )
-    style_document = yaml.safe_load((run.root / "profiles/number-style.yml").read_text(encoding="utf-8"))
     tasks = NcaModelTasks(
         runtime_config,
         expected_route_id=str(route["route_id"]),
@@ -555,22 +552,7 @@ def _execute_nca_task_locked(
     started = _utc_now()
     # The engine receives only sealed target/style/package data. The proxy records
     # successful phase receipts while keeping provider payload boundaries in model_tasks.
-    result = evaluate_run(
-        projected,
-        bundle=_bundle(runtime_config, policy),
-        language=str(policy["wip"]["language"]),
-        language_profile={
-            "language": policy["wip"]["language"],
-            "script": policy["wip"]["script"],
-        },
-        style_profile=style_document,
-        check_policy=policy,
-        run_id=run.run_id,
-        expected_unit_ids=expected_ids,
-        model_tasks=recording,
-        coverage_restrictions=_reference_restrictions(policy),
-        style_units=headings,
-    )
+    result = evaluate_prepared_run(inputs, model_tasks=recording, run_id=run.run_id)
     if expected_ids and not any(recording.receipts.values()):
         raise ValidationError(
             "NCA model execution produced no validated phase evidence",
@@ -608,7 +590,7 @@ def finalize_nca_run(
 ) -> Mapping[str, object]:
     """Reconcile accepted task coverage and publish one deterministic NCA report."""
     store = _store(config)
-    job = store.load_job(job_id, tool="nca")
+    job = store._load_job_metadata(job_id, tool="nca")
     run = store.load_run(job, run_id)
     result_path = run.root / "validation/numbers-result.json"
     report_path = run.root / "reports/NUMBER-CONSISTENCY-ACCURACY.md"
@@ -662,8 +644,8 @@ def finalize_nca_run(
     if secondary_report_path is not None and secondary_report is not None:
         atomic_write_text(secondary_report_path, secondary_report)
     if run.status != "COMPLETE" or run.result != "DONE":
-        store.update_run(
-            run,
+        store._update_run_for_job(
+            job, run,
             status="COMPLETE",
             current_stage="DETERMINISTIC_FINALISATION",
             result="DONE",
@@ -708,6 +690,7 @@ def _validated_finalized_task(
         config,
         manifest_path,
     )
+    validate_reference_snapshot(reopened_runtime, _policy, job=reopened_job)
     if (
         reopened_runtime.root != runtime.root
         or reopened_job.job_id != job.job_id
@@ -905,87 +888,6 @@ def _load_json(path: Path, label: str) -> dict[str, Any]:
     return value
 
 
-def _package_root(config: EcosystemConfig, package_id: str) -> Path:
-    """Return one confined imported numbers package directory."""
-    from .storage import storage_layout
-
-    root = storage_layout(config.root).resources_root / "numbers"
-    path = (root / package_id).resolve()
-    try:
-        path.relative_to(root.resolve())
-    except ValueError as exc:
-        raise ValidationError("NCA package path escapes its resource root", code="EXTERNAL_PATH_ESCAPE") from exc
-    return path
-
-
-def _bundle(config: EcosystemConfig, policy: Mapping[str, object]):
-    """Requalify the exact package sealed by the Run and reject identity drift."""
-    raw = policy.get("reference_package")
-    if not isinstance(raw, Mapping):
-        raise ValidationError("NCA Run reference identity is missing", code="NCA_RUN_SNAPSHOT_INVALID")
-    bundle = resolve_reference_package(config, str(raw.get("package_id") or ""))
-    if bundle.sha256 != raw.get("sha256"):
-        raise ValidationError("NCA reference package changed after Run creation", code="NCA_REFERENCE_PACKAGE_STALE")
-    files: dict[str, str] = {}
-    root = _package_root(config, bundle.package_id)
-    for path in sorted(root.rglob("*")):
-        if path.is_file() and not path.is_symlink():
-            files[path.relative_to(root).as_posix()] = sha256_file(path)
-    inventory = sha256_bytes(json.dumps(files, sort_keys=True, separators=(",", ":")).encode("utf-8"))
-    if files != raw.get("files") or inventory != raw.get("inventory_sha256"):
-        raise ValidationError("NCA reference package inventory changed after Run creation", code="NCA_REFERENCE_PACKAGE_STALE")
-    return bundle
-
-
-def _sealed_units(
-    config: EcosystemConfig,
-    *,
-    job: Job,
-    run: Run,
-    policy: Mapping[str, object],
-):
-    """Project numeric body units and independent heading style streams from sealed USJ."""
-    from .numbers.scope import project_scope
-    from .numbers.target import extract_heading_units, target_units
-
-    scope = parse_scope(run.scope)
-    receipt = verify_wip_snapshot(run.root / "snapshot", require_file_inventory=True)
-    body = []
-    headings = []
-    for relative, digest in sorted(receipt["files"].items()):
-        path = run.root / "snapshot" / relative
-        raw = _load_json(path, "NCA sealed USJ")
-        body.extend(
-            unit
-            for unit in target_units(raw, source_sha256=digest)
-        )
-        headings.extend(
-            unit
-            for unit in extract_heading_units(raw, source_sha256=digest)
-            if any(scope.contains(ref) for ref in unit.target_references)
-        )
-    bundle = _bundle(config, policy)
-    service = VersificationService(config)
-    all_projected, expected_refs = project_scope(
-        tuple(body),
-        scope=scope,
-        target_schema=service.project_schema(job.bindings["wip"]),
-        western_schema=service.base_schema("eng.vrs"),
-        bundle=bundle,
-        mapping_path=_package_root(config, bundle.package_id) / 'reference/eng_org_map_rules.txt',
-    )
-    # Keep every scoped target stream so extraction can surface target-added
-    # numbers at Western coordinates absent from the authoritative index.
-    projected = tuple(all_projected)
-    heading_values = tuple(headings)
-    expected_ids = tuple(unit.target.unit_id for unit in projected) + tuple(
-        unit.unit_id for unit in heading_values
-    )
-    if len(expected_ids) != len(set(expected_ids)):
-        raise ValidationError("NCA projected unit identities overlap", code="NCA_RESULT_COVERAGE_INVALID")
-    return projected, heading_values, expected_ids, tuple(ref.label() for ref in expected_refs)
-
-
 def _created_task_result(path: Path, manifest: Mapping[str, object]) -> dict[str, object]:
     """Return the stable task-create result consumed by CLI and menu controllers."""
     return {
@@ -1006,7 +908,7 @@ def _validate_task(
     if manifest.get("workflow") != "nca" or manifest.get("operation") != "numbers":
         raise ValidationError("Task is not an NCA NUMBERS task", code="NCA_TASK_INVALID")
     store = _store(config)
-    job = store.load_job(str(manifest.get("job_id") or ""), tool="nca")
+    job = store._load_job_metadata(str(manifest.get("job_id") or ""), tool="nca")
     runtime = _runtime_config(store, job)
     run = store.load_run(job, str(manifest.get("run_id") or ""))
     if run.status != "COMPLETE":
@@ -1037,7 +939,6 @@ def _validate_task(
             if not input_path.is_file() or sha256_file(input_path) != item.get("sha256"):
                 raise ValidationError("NCA task input changed after creation", code="ACT_INPUT_STALE")
     policy = load_nca_run_snapshot(run.root)
-    _bundle(runtime, policy)
     model_contract = policy.get("model_contract")
     if not isinstance(model_contract, Mapping):
         raise ValidationError("NCA model contract is missing", code="NCA_RUN_SNAPSHOT_INVALID")
@@ -1064,16 +965,6 @@ def _provenance(job: Job, run: Run, policy: Mapping[str, object]) -> dict[str, o
             "sha256": policy["wip"]["content_fingerprint"],
         },
     }
-
-
-def _reference_restrictions(policy: Mapping[str, object]) -> tuple[str, ...]:
-    """Retain nonblocking package diagnostics as explicit Run coverage limits."""
-    diagnostics = policy["reference_package"].get("diagnostics", [])
-    return tuple(
-        str(item.get("code"))
-        for item in diagnostics
-        if isinstance(item, Mapping) and str(item.get("code") or "")
-    )
 
 
 def _execution_receipt(

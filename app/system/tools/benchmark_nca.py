@@ -560,8 +560,10 @@ def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
 
     outcomes = []
     execution_started = perf_counter_ns()
-    # Both modules hold a reference to the validator: evaluate_unit uses its imported
-    # alias, while assess_style resolves the function from the style module at runtime.
+    # Retain the baseline algorithm's second, per-stream style validation. Each
+    # fixture is a separate one-unit run; current public evaluate_run validates at
+    # its run boundary, and this baseline-only adapter restores assess_style's
+    # original strict traversal. Optimized measurements must not use this adapter.
     with tempfile.TemporaryDirectory(prefix="sage-nca-benchmark-") as data_home:
         with ExitStack() as stack:
             stack.enter_context(
@@ -572,6 +574,9 @@ def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
             )
             stack.enter_context(
                 patch.object(style_module, "validate_style_profile", measured_validate)
+            )
+            stack.enter_context(
+                patch.object(engine_module, "_assess_prepared_style", style_module.assess_style)
             )
             settings = {
                 "selected_provider": "codex",

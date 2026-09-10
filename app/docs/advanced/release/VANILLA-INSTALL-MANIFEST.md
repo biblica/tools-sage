@@ -720,6 +720,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/__init__.py`
 - `system/src/sage/numbers/compare.py`
 - `system/src/sage/numbers/engine.py`
+- `system/src/sage/numbers/execution.py`
 - `system/src/sage/numbers/extraction.py`
 - `system/src/sage/numbers/footnotes.py`
 - `system/src/sage/numbers/model_tasks.py`
@@ -840,6 +841,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_benchmark.py`
 - `system/tests/numbers/test_compare.py`
 - `system/tests/numbers/test_engine.py`
+- `system/tests/numbers/test_execution_context.py`
 - `system/tests/numbers/test_extraction.py`
 - `system/tests/numbers/test_footnotes.py`
 - `system/tests/numbers/test_model_tasks.py`

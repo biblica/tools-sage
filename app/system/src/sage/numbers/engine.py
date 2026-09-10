@@ -27,7 +27,8 @@ from .models import (
     UnitResult,
 )
 from .reference import parse_values
-from .style import assess_style, validate_style_profile
+from .style import _assess_prepared_style, validate_style_profile
+from .execution import ExecutionInputs, reference_restrictions
 from .units import compare_registered_units, parse_registered_quantity
 from .variants import select_reading
 
@@ -359,11 +360,25 @@ def evaluate_unit(
     model_tasks: object | None = None,
 ) -> UnitResult:
     """Evaluate one projected stream once under three independently enabled checks."""
-    if not isinstance(unit, ProjectedUnit) or not isinstance(language_profile, Mapping):
+    if (not isinstance(unit, ProjectedUnit) or not isinstance(bundle, ReferenceBundle)
+            or not isinstance(language_profile, Mapping)):
         raise ValidationError("NCA unit inputs are malformed.", code="NCA_ENGINE_INPUT_INVALID")
     checks = _checks(check_policy)
     bundle.require_qualified()
     validated_style = validate_style_profile(style_profile)
+    return _evaluate_prepared_unit(
+        unit, bundle=bundle, language=language, language_profile=language_profile,
+        style_profile=validated_style, checks=checks, model_tasks=model_tasks,
+    )
+
+
+def _evaluate_prepared_unit(
+    unit: ProjectedUnit, *, bundle: ReferenceBundle, language: str,
+    language_profile: Mapping[str, object], style_profile: Mapping[str, object],
+    checks: Mapping[str, bool], model_tasks: object | None,
+) -> UnitResult:
+    """Evaluate one stream using only boundary-validated resources and switches."""
+    validated_style = style_profile
     resolved_rows = tuple(bundle.lookup(ref) for ref in unit.western_references)
     ol_references = tuple(
         row.ol_reference for row in resolved_rows if row is not None
@@ -458,7 +473,7 @@ def evaluate_unit(
             else None
         )
         assessed_styles = list(
-            assess_style(
+            _assess_prepared_style(
                 extraction,
                 profile=validated_style,
                 location=_style_location(unit),
@@ -493,7 +508,7 @@ def evaluate_unit(
                     "stream_id": f"note:{note.note_id}",
                     "note_id": note.note_id,
                 }
-                for item in assess_style(
+                for item in _assess_prepared_style(
                     note_extraction,
                     profile=validated_style,
                     location="footnote",
@@ -714,8 +729,44 @@ def evaluate_run(
 ) -> RunResult:
     """Evaluate an exact run scope once and derive findings, coverage, and summary."""
     checks = _checks(check_policy)
+    if not isinstance(bundle, ReferenceBundle) or not isinstance(language_profile, Mapping):
+        raise ValidationError("NCA run inputs are malformed.", code="NCA_ENGINE_INPUT_INVALID")
+    bundle.require_qualified()
+    validated_style = validate_style_profile(style_profile)
+    return _evaluate_prepared_units(
+        units, bundle=bundle, language=language, language_profile=language_profile,
+        style_profile=validated_style, checks=checks, run_id=run_id,
+        expected_unit_ids=expected_unit_ids, model_tasks=model_tasks,
+        coverage_restrictions=coverage_restrictions, style_units=style_units,
+    )
+
+
+def evaluate_prepared_run(inputs: ExecutionInputs, *, model_tasks: object, run_id: str) -> RunResult:
+    """Evaluate a controller-owned context without reopening or revalidating resources."""
+    if not isinstance(inputs, ExecutionInputs):
+        raise ValidationError("NCA execution context is required.", code="NCA_ENGINE_INPUT_INVALID")
+    wip = inputs.policy["wip"]
+    return _evaluate_prepared_units(
+        inputs.projected_units, bundle=inputs.bundle, language=str(wip["language"]),
+        language_profile={"language": wip["language"], "script": wip["script"]},
+        style_profile=inputs.style_profile, checks=inputs.policy["checks"],
+        run_id=run_id, expected_unit_ids=inputs.expected_unit_ids, model_tasks=model_tasks,
+        coverage_restrictions=reference_restrictions(inputs.policy), style_units=inputs.style_units,
+    )
+
+
+def _evaluate_prepared_units(
+    units: Sequence[ProjectedUnit], *, bundle: ReferenceBundle, language: str,
+    language_profile: Mapping[str, object], style_profile: Mapping[str, object],
+    checks: Mapping[str, bool], run_id: str, expected_unit_ids: tuple[str, ...],
+    model_tasks: object | None, coverage_restrictions: Sequence[str],
+    style_units: Sequence[TargetUnit],
+) -> RunResult:
+    """Reconcile exact coverage and evaluate separately owned body and style streams."""
     unit_values = tuple(units)
-    if any(not isinstance(unit, TargetUnit) for unit in style_units):
+    if any(not isinstance(unit, ProjectedUnit) for unit in unit_values) or any(
+        not isinstance(unit, TargetUnit) for unit in style_units
+    ):
         raise ValidationError(
             "NCA style streams must be TargetUnit values.", code="NCA_ENGINE_INPUT_INVALID"
         )
@@ -741,13 +792,13 @@ def evaluate_run(
             code="NCA_RESULT_COVERAGE_INVALID",
         )
     main_results = tuple(
-        evaluate_unit(
+        _evaluate_prepared_unit(
             unit,
             bundle=bundle,
             language=language,
             language_profile=language_profile,
             style_profile=style_profile,
-            check_policy=check_policy,
+            checks=checks,
             model_tasks=model_tasks,
         )
         for unit in unit_values
@@ -762,13 +813,13 @@ def evaluate_run(
             }
         }
         style_results = tuple(
-            evaluate_unit(
+            _evaluate_prepared_unit(
                 unit,
                 bundle=bundle,
                 language=language,
                 language_profile=language_profile,
                 style_profile=style_profile,
-                check_policy=style_policy,
+                checks=style_policy["checks"],
                 model_tasks=model_tasks,
             )
             for unit in projected_styles

@@ -404,7 +404,30 @@ class JobStore:
         )
 
     def load_job(self, job_id: str, *, tool: str | None = None) -> Job:
-        """Load and validate one current Job."""
+        """Load a Job and strictly qualify its current resource binding."""
+        job = self._load_job_metadata(job_id, tool=tool)
+        if job.tool == "nca":
+            package = job.resources["numbers_package"]
+            try:
+                from .numbers.resources import resolve_reference_package
+
+                bundle = resolve_reference_package(load_ecosystem(self.settings_path), str(package["package_id"]))
+            except ValidationError as exc:
+                raise ConfigurationError(
+                    exc.message,
+                    code=exc.code,
+                    next_action=exc.next_action,
+                    details=exc.details,
+                ) from exc
+            if package["sha256"] != bundle.sha256:
+                raise ConfigurationError(
+                    f"Job {job.job_id} numbers package bytes have changed",
+                    code="NCA_REFERENCE_PACKAGE_STALE",
+                )
+        return job
+
+    def _load_job_metadata(self, job_id: str, *, tool: str | None = None) -> Job:
+        """Validate Job structure; governed NCA callers separately own sealed package trust."""
         job_id = validate_context_id(job_id, "job_id")
         assert job_id is not None
         tools = (tool.strip().lower(),) if tool else PERSISTED_JOB_TOOLS
@@ -544,22 +567,6 @@ class JobStore:
                 raise ConfigurationError(
                     f"Job {manifest_job_id} has an invalid numbers_package resource",
                     code="NCA_PACKAGE_BINDING_INVALID",
-                )
-            try:
-                from .numbers.resources import resolve_reference_package
-
-                bundle = resolve_reference_package(load_ecosystem(self.settings_path), str(package["package_id"]))
-            except ValidationError as exc:
-                raise ConfigurationError(
-                    exc.message,
-                    code=exc.code,
-                    next_action=exc.next_action,
-                    details=exc.details,
-                ) from exc
-            if package["sha256"] != bundle.sha256:
-                raise ConfigurationError(
-                    f"Job {manifest_job_id} numbers package bytes have changed",
-                    code="NCA_REFERENCE_PACKAGE_STALE",
                 )
         elif resources:
             raise ConfigurationError(f"Job {manifest_job_id} has unsupported resources")
@@ -1980,7 +1987,13 @@ class JobStore:
         )
 
     def update_run(self, run: Run, **changes: Any) -> Run:
-        """Update bounded Run state."""
+        """Update bounded Run state after strictly reopening its Job."""
+        return self._update_run_for_job(self.load_job(run.job_id, tool=run.tool), run, **changes)
+
+    def _update_run_for_job(self, project: Job, run: Run, **changes: Any) -> Run:
+        """Update bounded state for a Job already validated by the owning controller."""
+        if project.job_id != run.job_id or project.tool != run.tool:
+            raise ValidationError("Run update belongs to another Job", code="NCA_TASK_BINDING_INVALID")
         raw = load_json(run.manifest_path)
         allowed = {
             "status", "current_stage", "result", "result_reason", "task_manifests",
@@ -2029,7 +2042,6 @@ class JobStore:
         raw["updated_utc"] = _utc_now()
         atomic_write_json(run.manifest_path, raw)
         atomic_write_json(run.status_path, raw)
-        project = self.load_job(run.job_id, tool=run.tool)
         if status in RUN_CLOSED_STATUSES:
             # Completion may occur outside the menu. Reconcile the Job-local
             # pointer here so every caller observes the same lifecycle state.
