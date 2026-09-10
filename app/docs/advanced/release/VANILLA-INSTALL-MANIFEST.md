@@ -731,6 +731,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/results.py`
 - `system/src/sage/numbers/scope.py`
 - `system/src/sage/numbers/style.py`
+- `system/src/sage/numbers/telemetry.py`
 - `system/src/sage/numbers/target.py`
 - `system/src/sage/numbers/units.py`
 - `system/src/sage/numbers/variants.py`
@@ -816,6 +817,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/__init__.py`
 - `system/tests/numbers/conftest.py`
 - `system/tests/numbers/fixtures`
+- `system/tests/numbers/fixtures/optimization-cases.json`
 - `system/tests/numbers/fixtures/reference`
 - `system/tests/numbers/fixtures/reference/lineage`
 - `system/tests/numbers/fixtures/reference/lineage/CHECKSUMS.sha256`
@@ -835,6 +837,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/fixtures/registered-readings.json`
 - `system/tests/numbers/fixtures/registered-units.json`
 - `system/tests/numbers/test_acceptance.py`
+- `system/tests/numbers/test_benchmark.py`
 - `system/tests/numbers/test_compare.py`
 - `system/tests/numbers/test_engine.py`
 - `system/tests/numbers/test_extraction.py`
@@ -950,6 +953,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/bootstrap_python.ps1`
 - `system/tools/bootstrap_python.sh`
 - `system/tools/bootstrap_runtime.py`
+- `system/tools/benchmark_nca.py`
 - `system/tools/build_model_evaluation_cases.py`
 - `system/tools/build_release.py`
 - `system/tools/clone_and_install.cmd`
