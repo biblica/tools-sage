@@ -667,3 +667,267 @@ def test_malformed_provider_json_is_not_converted_to_unsupported_extraction(pack
         )
 
     assert exc.value.code == "NCA_MODEL_RESPONSE_INVALID"
+
+
+def test_extract_batch_has_one_target_only_capsule_and_exact_parent_receipt(package_root):
+    """One physical batch call binds raw bytes and every local item without usage cloning."""
+    import hashlib
+    from sage.numbers.telemetry import summarize_calls
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    raw_text = ' \n' + json.dumps(batch_response(batch), ensure_ascii=False, indent=2) + '\n'
+    transport = RecordedExecutor([ProviderResponse(provider='codex', model='gpt-5.6-sol',
+        reasoning_effort='medium', content=raw_text, metadata={'usage': {'input_tokens': 100, 'output_tokens': 50}})])
+    tasks = model_tasks(package_root, transport)
+    assert hasattr(tasks, 'extract_batch'), 'one-call batch extraction is not implemented'
+    result = tasks.extract_batch(batch, parsing_conventions={'ol_values': ['318'], 'registry_present': True})
+    assert len(transport.requests) == 1
+    prompt = json.loads(transport.requests[0].prompt)
+    assert prompt['task_version'] == result.receipt.task_version == 'nca-extraction-2.0'
+    assert prompt['input']['routed_sfm'] == batch.routed_sfm
+    assert prompt['input']['parsing_conventions'] == {}
+    assert all(word not in prompt['skill_contract'].lower() for word in ('niv', 'registry', 'correspondence', 'footnote'))
+    assert len(result.value.item_sha256) == 2
+    assert result.raw_response == raw_text
+    assert result.receipt.response_sha256 == hashlib.sha256(raw_text.encode()).hexdigest()
+    assert len(tasks.attempts) == 1
+    attempt = tasks.attempts[0]
+    assert attempt.raw_response == raw_text
+    assert attempt.measurement.response_bytes == len(raw_text.encode())
+    assert attempt.measurement.unit_ids == tuple(value.input_id for value in batch.inputs)
+    wire = dict(prompt=transport.requests[0].prompt, schema=transport.requests[0].schema,
+        model='gpt-5.6-sol', reasoning_effort='medium', timeout_seconds=600)
+    assert attempt.measurement.request_bytes == len(json.dumps(wire, ensure_ascii=False, sort_keys=True,
+        separators=(',', ':')).encode())
+    assert summarize_calls(tuple(value.measurement for value in tasks.attempts))['input_tokens'] == 100
+    assert all(node.get('additionalProperties') is False for node in object_schemas(transport.requests[0].schema))
+
+
+@pytest.mark.parametrize('failure', ['provider', 'truncation', 'schema', 'route'])
+def test_failed_batch_attempts_retain_raw_evidence_and_exact_call_count(package_root, failure):
+    """Failed physical calls remain measurable even when no validated receipt can be admitted."""
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    content = '{"schema_version":' if failure == 'truncation' else json.dumps(batch_response(batch))
+    if failure == 'schema':
+        content = '{}'
+    value = RuntimeError('transient') if failure == 'provider' else ProviderResponse(
+        provider='codex', model='wrong' if failure == 'route' else 'gpt-5.6-sol',
+        reasoning_effort='medium', content=content)
+    transport = RecordedExecutor([value])
+    tasks = model_tasks(package_root, transport)
+    assert hasattr(tasks, 'extract_batch'), 'one-call batch extraction is not implemented'
+    with pytest.raises(ValidationError):
+        tasks.extract_batch(batch, parsing_conventions={})
+    assert len(tasks.attempts) == len(transport.requests) == 1
+    assert tasks.attempts[0].raw_response == (None if failure == 'provider' else content)
+    assert tasks.attempts[0].measurement.status not in {'SUCCESS', 'COMPLETE', 'VALIDATED'}
+
+
+def test_batch_preflight_failure_is_not_a_physical_attempt(package_root):
+    """Invalid conventions cannot create phantom provider calls or telemetry."""
+    from .test_batch_extraction import batch_fixture
+    tasks = model_tasks(package_root, RecordedExecutor([]))
+    assert hasattr(tasks, 'extract_batch'), 'one-call batch extraction is not implemented'
+    with pytest.raises(ValidationError):
+        tasks.extract_batch(batch_fixture(), parsing_conventions={'digits': {'preferred': '0'}})
+    assert tasks.attempts == ()
+
+
+def bounded_extract(tasks, batch, **kwargs):
+    """Call the focused orchestration API with an explicit RED assertion."""
+    from sage.numbers import model_tasks as module
+    assert hasattr(module, 'extract_batch_with_retries'), 'bounded extraction is not implemented'
+    return module.extract_batch_with_retries(tasks, batch, parsing_conventions={}, **kwargs)
+
+
+@pytest.mark.parametrize('count', [1, 2, 4])
+def test_retry_split_tree_has_finite_attempts_and_explicit_singleton_failures(package_root, count):
+    """Repeated physical failures terminate within two attempts per binary-tree node."""
+    from .test_batch_extraction import batch_fixture
+    batch = batch_fixture(tuple('three men' for _ in range(count)))
+    bound = 2 * (2 * count - 1)
+    transport = RecordedExecutor([RuntimeError('transient') for _ in range(bound)])
+    tasks = model_tasks(package_root, transport)
+    result = bounded_extract(tasks, batch)
+    assert len(transport.requests) == len(tasks.attempts) == bound
+    assert len({value.measurement.request_id for value in tasks.attempts}) == bound
+    assert not result.accepted
+    assert set(result.pending) == {value.input_id for value in batch.inputs}
+    assert all(value.startswith('NCA_BATCH_SINGLETON_FAILED') for value in result.pending.values())
+    assert {request.model for request in transport.requests} == {'gpt-5.6-sol'}
+    assert transport.status_calls == 1
+
+
+@pytest.mark.parametrize('status', ['COMPLETE', 'PARTIAL', 'UNSUPPORTED'])
+def test_accepted_items_checkpoint_before_remaining_calls_and_never_resubmit(package_root, status):
+    """Durable parent acceptance precedes retries and incomplete interpretation stays terminal."""
+    from sage.numbers.batching import _batch
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    raw = batch_response(batch)
+    raw['work_units'].pop()
+    raw['work_units'][0].update(status=status, limitations=[] if status == 'COMPLETE' else ['ambiguous'])
+    remaining = _batch(batch.inputs[1:], batch.inputs[1].routed_sfm)
+    transport = RecordedExecutor([raw, batch_response(remaining)])
+    tasks = model_tasks(package_root, transport)
+    parents = []
+
+    def checkpoint(result):
+        """Prove parent evidence is available before another provider request occurs."""
+        assert len(transport.requests) == len(parents) + 1
+        assert result.raw_response
+        parents.append(result)
+
+    result = bounded_extract(tasks, batch, on_accept=checkpoint)
+    assert len(parents) == 2 and len(result.parents) == 2 and not result.pending
+    assert result.accepted[batch.inputs[0].input_id].status == status
+    assert json.loads(transport.requests[1].prompt)['input']['work_units'][0]['input_id'] == batch.inputs[1].input_id
+    assert len(json.loads(transport.requests[1].prompt)['input']['work_units']) == 1
+
+
+def test_acceptance_callback_interruption_is_not_retried(package_root):
+    """A failed durable checkpoint interrupts before any next provider request."""
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    raw = batch_response(batch)
+    raw['work_units'].pop()
+    transport = RecordedExecutor([raw])
+    tasks = model_tasks(package_root, transport)
+
+    def interrupt(result):
+        """Simulate a checkpoint interruption that must propagate unchanged."""
+        raise RuntimeError('checkpoint interrupted')
+
+    with pytest.raises(RuntimeError, match='checkpoint interrupted'):
+        bounded_extract(tasks, batch, on_accept=interrupt)
+    assert len(transport.requests) == 1
+
+
+@pytest.mark.parametrize('retries', [True, -1, 2, '1'])
+def test_invalid_retry_budget_fails_before_provider_calls(package_root, retries):
+    """Only zero or one exact retry may be configured within the physical call bound."""
+    from .test_batch_extraction import batch_fixture
+    transport = RecordedExecutor([])
+    with pytest.raises(ValidationError):
+        bounded_extract(model_tasks(package_root, transport), batch_fixture(), transient_retries=retries)
+    assert not transport.requests
+
+
+def test_route_mismatch_does_not_retry_or_split(package_root):
+    """A pinned identity failure cannot authorize more requests or another route."""
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    transport = RecordedExecutor([ProviderResponse(provider='codex', model='wrong',
+        reasoning_effort='medium', content=json.dumps(batch_response(batch)))])
+    with pytest.raises(ValidationError) as exc:
+        bounded_extract(model_tasks(package_root, transport), batch)
+    assert exc.value.code == 'LLM_RESPONSE_ROUTE_MISMATCH'
+    assert len(transport.requests) == 1
+
+
+def test_retry_then_split_accepts_recorded_children_on_the_pinned_route(package_root):
+    """A failed parent can bisect into valid independent receipts without route substitution."""
+    from sage.numbers.batching import split_batch
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    children = split_batch(batch)
+    transport = RecordedExecutor([RuntimeError('transient'), RuntimeError('transient'),
+        batch_response(children[0]), batch_response(children[1])])
+    tasks = model_tasks(package_root, transport)
+    result = bounded_extract(tasks, batch)
+    assert not result.pending and len(result.accepted) == 2
+    assert len(result.parents) == 2 and len(tasks.attempts) == 4
+    assert all(parent.receipt.route_id == tasks.route_snapshot['route_id'] for parent in result.parents)
+
+
+def test_zero_retries_uses_one_call_per_failed_tree_node(package_root):
+    """Disabling transient retries preserves splitting while reducing the physical bound."""
+    from .test_batch_extraction import batch_fixture
+    transport = RecordedExecutor([RuntimeError('transient')] * 3)
+    result = bounded_extract(model_tasks(package_root, transport), batch_fixture(), transient_retries=0)
+    assert len(transport.requests) == 3 and len(result.pending) == 2
+
+
+def test_valid_second_attempt_retains_failed_raw_parent_evidence(package_root):
+    """A truncated first attempt remains auditable after a successful same-batch retry."""
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    transport = RecordedExecutor([ProviderResponse(provider='codex', model='gpt-5.6-sol',
+        reasoning_effort='medium', content='{'), batch_response(batch)])
+    tasks = model_tasks(package_root, transport)
+    result = bounded_extract(tasks, batch)
+    assert len(result.parents) == 1 and len(tasks.attempts) == 2
+    assert tasks.attempts[0].raw_response == '{'
+    assert tasks.attempts[0].measurement.status == 'NCA_MODEL_RESPONSE_INVALID'
+    assert not result.pending
+
+
+def test_receipt_rejects_unregistered_phase_version_pair(package_root):
+    """A phase cannot relabel a v1 receipt as another phase or an invented task version."""
+    target = unit()
+    receipt = model_tasks(package_root, RecordedExecutor([extraction_response(target)])).extract(
+        target, language='en', style_profile={}).receipt
+    for version in ('nca-footnote-1.0', 'nca-extraction-9.0'):
+        with pytest.raises(ValidationError) as exc:
+            replace(receipt, task_version=version)
+        assert exc.value.code == 'NCA_MODEL_RECEIPT_INVALID'
+
+
+def test_batch_phase_result_requires_exact_receipt_bound_raw_response(package_root):
+    """V2 replay cannot rely on reconstructed JSON or discard provider response bytes."""
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    tasks = model_tasks(package_root, RecordedExecutor([batch_response(batch)]))
+    result = tasks.extract_batch(batch, parsing_conventions={})
+    for raw in (None, result.raw_response + ' '):
+        with pytest.raises(ValidationError) as exc:
+            replace(result, raw_response=raw)
+        assert exc.value.code == 'NCA_MODEL_RECEIPT_INVALID'
+
+
+def test_parent_result_identifies_exact_physical_request_even_when_responses_repeat(package_root):
+    """Replay consumers locate child request bytes by unique attempt ID instead of response hash."""
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    transport = RecordedExecutor([batch_response(batch), batch_response(batch)])
+    tasks = model_tasks(package_root, transport)
+    first = tasks.extract_batch(batch, parsing_conventions={})
+    second = tasks.extract_batch(batch, parsing_conventions={})
+    assert hasattr(first, 'request_id'), 'parent result does not identify its physical attempt'
+    assert first.receipt.response_sha256 == second.receipt.response_sha256
+    assert first.request_id != second.request_id
+    assert first.request_id == tasks.attempts[0].measurement.request_id
+    assert second.request_id == tasks.attempts[1].measurement.request_id
+
+
+def test_physical_attempt_elapsed_excludes_local_semantic_validation(package_root, monkeypatch):
+    """Provider latency must not absorb local validation time in transport telemetry."""
+    from sage.numbers import model_tasks as module
+    from .test_batch_extraction import batch_fixture, batch_response
+    batch = batch_fixture()
+    now = [1_000_000]
+
+    def clock():
+        """Return a deterministic wall-clock position around the transport boundary."""
+        return now[0]
+
+    class TimedTransport(RecordedExecutor):
+        """Advance the clock only by the recorded physical provider latency."""
+        def execute(self, request):
+            """End the provider request after four milliseconds."""
+            now[0] = 5_000_000
+            return super().execute(request)
+
+    actual = module.validate_batch_extraction_response
+
+    def expensive_validation(batch, raw):
+        """Add local semantic processing after the provider response has arrived."""
+        now[0] = 100_000_000
+        return actual(batch, raw)
+
+    monkeypatch.setattr(module, 'perf_counter_ns', clock)
+    monkeypatch.setattr(module, 'validate_batch_extraction_response', expensive_validation)
+    tasks = model_tasks(package_root, TimedTransport([batch_response(batch)]))
+    tasks.extract_batch(batch, parsing_conventions={})
+    assert tasks.attempts[0].measurement.elapsed_ms == 4

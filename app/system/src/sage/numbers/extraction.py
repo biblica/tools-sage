@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from fractions import Fraction
 import re
 from typing import Any, Mapping
 
 from sage.errors import ValidationError
 
+from .batching import ExtractionBatch
+from .transport import _digest
 from .models import (
+    freeze,
     EXTRACTION_STATUSES,
     NUMERIC_KINDS,
     NUMERIC_QUALIFIERS,
@@ -368,6 +372,13 @@ def validate_extraction_response(
     )
     if raw["unit_id"] != unit.unit_id:
         raise _error("Extraction response covers the wrong work unit", code="NCA_EXTRACTION_COVERAGE_INVALID")
+    return _validated_extraction_item(raw, text=unit.main_text, stream_id="main")
+
+
+def _validated_extraction_item(
+    raw: Mapping[str, Any], *, text: str, stream_id: str,
+) -> Extraction:
+    """Validate status and exact expressions in one admitted offset domain."""
     status = _require_text(raw["status"], "work_units[0].status")
     if status not in EXTRACTION_STATUSES:
         raise _error("Extraction status is unsupported", code="NCA_EXTRACTION_SCHEMA_INVALID")
@@ -380,7 +391,7 @@ def validate_extraction_response(
     if status != "COMPLETE" and not limitations:
         raise _error("Incomplete extraction must state a limitation", code="NCA_EXTRACTION_SCHEMA_INVALID")
     expressions = tuple(
-        _validated_expression(value, text=unit.main_text)
+        _validated_expression(value, text=text, expected_stream_id=stream_id)
         for value in _require_list(raw["expressions"], "expressions", code="NCA_EXTRACTION_SCHEMA_INVALID")
     )
     ids = [item.expression_id for item in expressions]
@@ -391,3 +402,94 @@ def validate_extraction_response(
     if any(start < previous_end for (_previous_start, previous_end), (start, _end) in zip(ordered_spans, ordered_spans[1:])):
         raise _error("Extraction contains overlapping expression evidence", code="NCA_EXTRACTION_EVIDENCE_INVALID")
     return Extraction(expressions=expressions, status=status, limitations=limitations)
+
+
+@dataclass(frozen=True)
+class BatchValidation:
+    """Independently admitted members with controller-owned response item hashes."""
+
+    accepted: Mapping[str, Extraction]
+    pending: Mapping[str, str]
+    batch_id: str
+    item_sha256: Mapping[str, str]
+
+    def __post_init__(self) -> None:
+        """Own immutable results and require disjoint, fully hashed accepted membership."""
+        if (not isinstance(self.batch_id, str) or not self.batch_id
+                or not isinstance(self.accepted, Mapping) or not isinstance(self.pending, Mapping)
+                or not isinstance(self.item_sha256, Mapping)
+                or set(self.accepted).intersection(self.pending)
+                or set(self.item_sha256) != set(self.accepted)
+                or any(not isinstance(key, str) or not key for key in (*self.accepted, *self.pending))
+                or any(not isinstance(value, Extraction) for value in self.accepted.values())
+                or any(not isinstance(value, str) or not value for value in self.pending.values())
+                or any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value)
+                       for value in self.item_sha256.values())):
+            raise _error("Invalid batch validation binding", code="NCA_BATCH_COVERAGE_INVALID")
+        for field in ("accepted", "pending", "item_sha256"):
+            object.__setattr__(self, field, freeze(getattr(self, field)))
+
+
+def build_batch_extraction_payload(
+    batch: ExtractionBatch, *, parsing_conventions: Mapping[str, object],
+) -> Mapping[str, object]:
+    """Send only bound target streams, routed SFM, and allowlisted parsing conventions."""
+    if not isinstance(batch, ExtractionBatch) or not isinstance(parsing_conventions, Mapping):
+        raise _error("Invalid batch extraction input", code="NCA_EXTRACTION_PAYLOAD_INVALID")
+    conventions = _parsing_conventions({"rules": parsing_conventions})
+    if (any(value.conventions_sha256 != _digest(conventions) for value in batch.inputs)
+            or len({(value.language, value.purpose) for value in batch.inputs}) != 1):
+        raise _error("Batch extraction conventions differ", code="NCA_EXTRACTION_PAYLOAD_INVALID")
+    return {
+        "schema_version": "2.0", "phase": "EXTRACTION", "batch_id": batch.batch_id,
+        "language": batch.inputs[0].language,
+        "routed_sfm": batch.routed_sfm,
+        "work_units": [{"input_id": value.input_id, "stream_id": value.stream_id,
+                        "text": value.text} for value in batch.inputs],
+        "parsing_conventions": conventions,
+        "output_schema_id": "sage-nca-extraction-2.0#extraction",
+    }
+
+
+def validate_batch_extraction_response(
+    batch: ExtractionBatch, response: Mapping[str, object],
+) -> BatchValidation:
+    """Reconcile envelope identities first, then validate known members independently."""
+    code = "NCA_EXTRACTION_SCHEMA_INVALID"
+    coverage = "NCA_BATCH_COVERAGE_INVALID"
+    if not isinstance(batch, ExtractionBatch):
+        raise _error("Invalid extraction batch", code=coverage)
+    root = _require_object(response, "response", code=code)
+    _require_exact_keys(root, required=frozenset({"schema_version", "phase", "batch_id", "work_units"}),
+                        label="response", code=code)
+    if root["schema_version"] != "2.0" or root["phase"] != "EXTRACTION":
+        raise _error("Extraction response identity is invalid", code=code)
+    if root["batch_id"] != batch.batch_id:
+        raise _error("Invalid batch identities", code=coverage)
+    rows = _require_list(root["work_units"], "work_units", code=code)
+    received = []
+    for row in rows:
+        item = _require_object(row, "work unit", code=coverage)
+        if not isinstance(item.get("input_id"), str) or not item["input_id"]:
+            raise _error("Invalid batch identities", code=coverage)
+        received.append(item["input_id"])
+    expected = {item.input_id for item in batch.inputs}
+    if len(received) != len(set(received)) or set(received) - expected:
+        raise _error("Invalid batch identities", code=coverage)
+    by_id = dict(zip(received, rows))
+    accepted, pending, hashes = {}, {}, {}
+    for value in batch.inputs:
+        raw = by_id.get(value.input_id)
+        if raw is None:
+            pending[value.input_id] = "NCA_BATCH_INPUT_MISSING"
+            continue
+        try:
+            _require_exact_keys(raw, required=frozenset({"input_id", "status", "limitations", "expressions"}),
+                                label="work unit", code=code)
+            accepted[value.input_id] = _validated_extraction_item(raw, text=value.text, stream_id=value.stream_id)
+        except ValidationError as exc:
+            pending[value.input_id] = str(exc.code)
+            continue
+        hashes[value.input_id] = _digest({"batch_id": batch.batch_id, "input_id": value.input_id,
+                                         "projection_sha256": value.projection_sha256, "item": raw})
+    return BatchValidation(accepted, pending, batch.batch_id, hashes)

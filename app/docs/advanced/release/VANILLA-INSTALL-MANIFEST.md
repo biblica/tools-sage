@@ -236,6 +236,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/schemas/model-routing-override.schema.yml`
 - `system/config/schemas/nca-check-policy.schema.yml`
 - `system/config/schemas/nca-extraction.schema.yml`
+- `system/config/schemas/nca-extraction-v2.schema.yml`
 - `system/config/schemas/number-style-profile.schema.yml`
 - `system/config/schemas/numbers-reference.schema.yml`
 - `system/config/schemas/numbers-result.schema.yml`
@@ -606,6 +607,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/nca-numbers/agents/openai.yaml`
 - `system/skills/nca-numbers/references`
 - `system/skills/nca-numbers/references/ORIGINAL-NCA-NUMBERS-CONTRACT.md`
+- `system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md`
 - `system/skills/rtc`
 - `system/skills/rtc/SKILL.md`
 - `system/skills/rtc/agents`
@@ -841,6 +843,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/fixtures/registered-units.json`
 - `system/tests/numbers/test_acceptance.py`
 - `system/tests/numbers/test_batching.py`
+- `system/tests/numbers/test_batch_extraction.py`
 - `system/tests/numbers/test_benchmark.py`
 - `system/tests/numbers/test_compare.py`
 - `system/tests/numbers/test_engine.py`

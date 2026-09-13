@@ -95,30 +95,30 @@
     "nca-numbers": {
       "cases": [
         {
-          "bundle_sha256": "3286110d5b93f765a6dbe8fb8f60065033c188960543a599d2937c4de9a27be3",
+          "bundle_sha256": "b33b8ff4a38849666fd946362578cec38d87baa42691646177be7b55417275f7",
           "case_id": "exact-cardinal-evidence",
           "case_kind": "POSITIVE",
           "path": "system/evaluations/model-routing-alpha1/nca-numbers/exact-cardinal-evidence"
         },
         {
-          "bundle_sha256": "a3f48794faa3e1473dc4602862cbad05fbd22f0da3de5f0b8283030cf9a7ab9c",
+          "bundle_sha256": "acdb44345a51981ac93130fad8e8d3dc082769a5ce46de249c3fa34ab985414c",
           "case_id": "complete-no-number",
           "case_kind": "ZERO_FINDING",
           "path": "system/evaluations/model-routing-alpha1/nca-numbers/complete-no-number"
         },
         {
-          "bundle_sha256": "456b38acf40a06903088dee7c7af287f77093e03f7a8e17906aeb4b214d772db",
+          "bundle_sha256": "c061a5fc1bf51246f59a05e3958df74da408c2646da45f406e8225a634ff58f3",
           "case_id": "fabricated-span",
           "case_kind": "ADVERSARIAL",
           "path": "system/evaluations/model-routing-alpha1/nca-numbers/fabricated-span"
         }
       ],
-      "disqualifying_behavior": "Fabricate a span or value, omit phase coverage, use undeclared evidence, select authority, or upgrade uncertainty from confidence.",
+      "disqualifying_behavior": "Fabricate numeric evidence, accept missing or invalid batch coverage, combine independent adjudications or note assessments, supply expected values to target extraction, select authority, or upgrade uncertainty.",
       "execution_class": "GOVERNED_SKILL",
       "repetitions_per_case": 3,
-      "required_semantic_success": "Return complete typed numeric meaning with exact target, OL, and note evidence for the named phase.",
+      "required_semantic_success": "Return exact numeric evidence for the named phase; only target inventory may share one bounded multi-input review item.",
       "suite_id": "alpha1-nca-numbers",
-      "suite_sha256": "223b93b3ff2860f11dc0092aa6dad8373be7ccd81f4f36b2320acbbc33058571",
+      "suite_sha256": "9bb95ea68529a5f0091a172db53fef43f664413deb8399395798bec5abcd4de0",
       "suite_version": "1.0",
       "validator_id": "sealed-semantic-contract-v1"
     },

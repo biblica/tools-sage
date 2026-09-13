@@ -96,8 +96,8 @@ SKILL_CRITERIA: dict[str, tuple[str, str]] = {
         "Use Reference evidence, omit completion, or demote primary Source authority.",
     ),
     "nca-numbers": (
-        "Return complete typed numeric meaning with exact target, OL, and note evidence for the named phase.",
-        "Fabricate a span or value, omit phase coverage, use undeclared evidence, select authority, or upgrade uncertainty from confidence.",
+        "Return exact numeric evidence for the named phase; only target inventory may share one bounded multi-input review item.",
+        "Fabricate numeric evidence, accept missing or invalid batch coverage, combine independent adjudications or note assessments, supply expected values to target extraction, select authority, or upgrade uncertainty.",
     ),
     "saw-rtc": (
         "Complete exact WIP and Reference coverage, admit only fundamental source-dependent conflicts, and keep every referral isolated.",
@@ -267,6 +267,15 @@ def _case_artifacts(skill_id: str, case_id: str, case_kind: str) -> dict[str, by
             "Return one JSON object matching the evaluation-result schema.",
             "Preserve task, Skill, case, scope, reviewed-item, and evidence identity exactly.",
             "Do not expand scope, add evidence, write Scripture, combine items, or qualify yourself.",
+            *(
+                [
+                    "Only target numeric inventory may contain multiple independent inputs in one bounded review item; keep each input ID, stream, and offset domain exact.",
+                    "Keep semantic adjudications and note assessments separate. Missing or invalid extraction members stay pending; PARTIAL and UNSUPPORTED remain unresolved semantic evidence without automatic retries.",
+                    "Use only target text and parsing conventions for extraction. Preserve one exact parent request/response receipt and locally bind accepted members to it.",
+                ]
+                if skill_id == "nca-numbers"
+                else []
+            ),
             *(
                 [
                     f"For {'SAW RTC' if skill_id == 'saw-rtc' else 'RTC'}, admit an original-language referral only for a fundamental incompatible core proposition in a closed conflict class when routed non-source evidence cannot settle it.",

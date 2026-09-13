@@ -5,6 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 import hashlib
 import json
+from copy import deepcopy
+from time import perf_counter_ns
+from uuid import uuid4
 from types import MappingProxyType
 from typing import Any, Callable, Generic, Mapping, TypeVar
 
@@ -16,7 +19,12 @@ from sage.model_policy import cache_provider_catalog
 from sage.registry import EcosystemConfig
 from sage.routing_override import resolve_routing_mode
 
+from .batching import ExtractionBatch, _batch, split_batch
+from .telemetry import CallMeasurement
 from .extraction import (
+    BatchValidation,
+    build_batch_extraction_payload,
+    validate_batch_extraction_response,
     _span,
     _validated_expression,
     _validated_role_spans,
@@ -437,7 +445,9 @@ class ModelPhaseReceipt:
 
     def __post_init__(self) -> None:
         """Freeze provider metadata so transport receipts cannot mutate later."""
-        if self.phase not in _TASK_VERSIONS:
+        admitted = {(phase, version) for phase, version in _TASK_VERSIONS.items()}
+        admitted.add(("EXTRACTION", "nca-extraction-2.0"))
+        if (self.phase, self.task_version) not in admitted:
             raise _model_error("Unknown NCA phase receipt", "NCA_MODEL_RECEIPT_INVALID")
         fields = (
             self.task_version,
@@ -485,11 +495,22 @@ class ModelPhaseResult(Generic[T]):
 
     value: T
     receipt: ModelPhaseReceipt
+    raw_response: str | None = None
+    request_id: str | None = None
 
     def __post_init__(self) -> None:
         """Require a real phase receipt for every returned interpretation."""
         if not isinstance(self.receipt, ModelPhaseReceipt):
             raise _model_error("NCA phase result lacks a receipt", "NCA_MODEL_RECEIPT_INVALID")
+        if self.receipt.task_version == "nca-extraction-2.0" and (
+            self.raw_response is None or not isinstance(self.request_id, str) or not self.request_id
+        ):
+            raise _model_error("NCA v2 result lacks physical request evidence", "NCA_MODEL_RECEIPT_INVALID")
+        if self.raw_response is not None and (
+            not isinstance(self.raw_response, str)
+            or _sha256(self.raw_response.encode("utf-8")) != self.receipt.response_sha256
+        ):
+            raise _model_error("NCA raw response differs from its receipt", "NCA_MODEL_RECEIPT_INVALID")
 
 
 def _is_subsequence(values: tuple[object, ...], expected: tuple[object, ...]) -> bool:
@@ -868,6 +889,7 @@ class NcaModelTasks:
         self._executor = executor
         self._provider_status = status
         self._route = route
+        self._attempts: list[ModelAttempt] = []
 
     @property
     def route_identity(self) -> Mapping[str, object]:
@@ -891,83 +913,109 @@ class NcaModelTasks:
             }
         )
 
-    def _prompt(self, phase: str, payload: Mapping[str, object]) -> str:
-        """Assemble one canonical phase prompt with the registered Skill contract."""
-        skill_path = self._config.root / "system/skills/nca-numbers/SKILL.md"
+    @property
+    def attempts(self) -> tuple[ModelAttempt, ...]:
+        """Expose all actual calls, including failed unadmitted raw provider evidence."""
+        return tuple(self._attempts)
+
+    def _prompt(self, phase: str, payload: Mapping[str, object], *, task_version: str | None = None) -> str:
+        """Assemble a version-aware capsule without authority policy in batch extraction."""
+        version = task_version or _TASK_VERSIONS[phase]
+        batch_extraction = phase == "EXTRACTION" and version == "nca-extraction-2.0"
+        relative = ("system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md"
+                    if batch_extraction else "system/skills/nca-numbers/SKILL.md")
         try:
-            skill_contract = skill_path.read_text(encoding="utf-8")
+            skill_contract = (self._config.root / relative).read_text(encoding="utf-8")
         except OSError as exc:
             raise _model_error("Registered NCA Skill contract is unavailable", "NCA_MODEL_SKILL_INVALID") from exc
-        return _canonical_json(
-            {
-                "task_version": _TASK_VERSIONS[phase],
-                "skill_id": SKILL_ID,
-                "phase": phase,
-                "instructions": _PHASE_INSTRUCTIONS[phase],
-                "skill_contract": skill_contract,
-                "input": payload,
-            }
-        )
+        return _canonical_json({
+            "task_version": version, "skill_id": SKILL_ID, "phase": phase,
+            "instructions": ("Interpret only the supplied independent target streams. Return one version-2.0 "
+                             "batch envelope with exact input identities and local evidence offsets."
+                             if batch_extraction else _PHASE_INSTRUCTIONS[phase]),
+            "skill_contract": skill_contract, "input": payload,
+        })
 
     def _execute(
-        self,
-        phase: str,
-        payload: Mapping[str, object],
-        validator: Callable[[Mapping[str, object]], T],
+        self, phase: str, payload: Mapping[str, object],
+        validator: Callable[[Mapping[str, object]], T], *,
+        task_version: str | None = None, schema: Mapping[str, object] | None = None,
     ) -> ModelPhaseResult[T]:
-        """Execute one sealed request and return only validated content with a receipt."""
-        prompt = self._prompt(phase, payload)
+        """Measure each physical call and admit a receipt only after exact validation."""
+        version = task_version or _TASK_VERSIONS[phase]
+        prompt = self._prompt(phase, payload, task_version=version)
         identity = self._route.identity
         reasoning = None if identity.reasoning_id == "provider-default" else identity.reasoning_id
-        request = ProviderRequest(
-            prompt=prompt,
-            schema=dict(_SCHEMAS[phase]),
-            model=identity.model_id,
-            reasoning_effort=reasoning,
-            timeout_seconds=self._timeout_seconds,
-        )
+        request = ProviderRequest(prompt=prompt, schema=dict(schema or _SCHEMAS[phase]),
+            model=identity.model_id, reasoning_effort=reasoning, timeout_seconds=self._timeout_seconds)
+        wire = {"prompt": request.prompt, "schema": request.schema, "model": request.model,
+                "reasoning_effort": request.reasoning_effort, "timeout_seconds": request.timeout_seconds}
+        wire_text = _canonical_json(wire)
+        unit_ids = (tuple(str(item.get("input_id", item.get("unit_id"))) for item in payload["work_units"])
+                    if phase == "EXTRACTION" else (str(payload["unit_id"]),))
+        request_id = uuid4().hex
+        response = None
+        status = "NCA_MODEL_PROVIDER_FAILED"
+        execute_prevalidated = getattr(self._executor, "execute_prevalidated", None)
+        started_ns = perf_counter_ns()
         try:
-            execute_prevalidated = getattr(self._executor, "execute_prevalidated", None)
-            response = (
-                execute_prevalidated(request, self._provider_status)
-                if callable(execute_prevalidated)
-                else self._executor.execute(request)
-            )
-        except Exception as exc:
-            raise _model_error(
-                f"NCA {phase.lower()} provider request failed: {exc}",
-                "NCA_MODEL_PROVIDER_FAILED",
-            ) from exc
-        _validate_provider_response_route(response, self._route)
-        try:
-            raw = json.loads(response.content)
-        except (TypeError, json.JSONDecodeError) as exc:
-            raise _model_error(
-                f"NCA {phase.lower()} response is not one JSON object",
-                "NCA_MODEL_RESPONSE_INVALID",
-            ) from exc
-        if not isinstance(raw, Mapping):
-            raise _model_error(
-                f"NCA {phase.lower()} response is not one JSON object",
-                "NCA_MODEL_RESPONSE_INVALID",
-            )
-        value = validator(raw)
-        input_text = _canonical_json(payload)
-        receipt = ModelPhaseReceipt(
-            phase=phase,
-            task_version=_TASK_VERSIONS[phase],
-            provider=response.provider,
-            model=identity.model_id,
-            reasoning_effort=identity.reasoning_id,
-            route_id=identity.route_id,
-            routing_mode=self._route.routing_mode,
-            qualification_status=self._route.qualification,
-            prompt_sha256=_sha256(prompt.encode("utf-8")),
-            input_sha256=_sha256(input_text.encode("utf-8")),
-            response_sha256=_sha256(response.content.encode("utf-8")),
-            provider_metadata=response.metadata,
-        )
-        return ModelPhaseResult(value, receipt)
+            try:
+                response = (execute_prevalidated(request, self._provider_status)
+                            if callable(execute_prevalidated) else self._executor.execute(request))
+            except Exception as exc:
+                if isinstance(exc, ValidationError) and exc.code in {
+                    "LLM_RESPONSE_ROUTE_MISMATCH", "NCA_MODEL_ROUTE_CHANGED", "PROVIDER_ROUTE_UNAVAILABLE"
+                }:
+                    raise
+                raise _model_error(f"NCA {phase.lower()} provider request failed: {exc}",
+                                   "NCA_MODEL_PROVIDER_FAILED") from exc
+            finally:
+                finished_ns = perf_counter_ns()
+            _validate_provider_response_route(response, self._route)
+            try:
+                raw = json.loads(response.content)
+            except (TypeError, json.JSONDecodeError) as exc:
+                raise _model_error(f"NCA {phase.lower()} response is not one JSON object",
+                                   "NCA_MODEL_RESPONSE_INVALID") from exc
+            if not isinstance(raw, Mapping):
+                raise _model_error(f"NCA {phase.lower()} response is not one JSON object", "NCA_MODEL_RESPONSE_INVALID")
+            value = validator(raw)
+            receipt = ModelPhaseReceipt(
+                phase=phase, task_version=version, provider=response.provider, model=identity.model_id,
+                reasoning_effort=identity.reasoning_id, route_id=identity.route_id,
+                routing_mode=self._route.routing_mode, qualification_status=self._route.qualification,
+                prompt_sha256=_sha256(prompt.encode("utf-8")),
+                input_sha256=_sha256(_canonical_json(payload).encode("utf-8")),
+                response_sha256=_sha256(response.content.encode("utf-8")), provider_metadata=response.metadata)
+            result = ModelPhaseResult(value, receipt, response.content, request_id)
+            status = "VALIDATED"
+            return result
+        except ValidationError as exc:
+            status = str(exc.code)
+            raise
+        finally:
+            content = response.content if response is not None else None
+            metadata = response.metadata if response is not None else {}
+            usage = metadata.get("usage", {})
+            measurement = CallMeasurement(request_id=request_id, phase=phase, unit_ids=unit_ids,
+                elapsed_ms=(finished_ns - started_ns) // 1_000_000,
+                request_bytes=len(wire_text.encode("utf-8")),
+                response_bytes=len(content.encode("utf-8")) if isinstance(content, str) else 0,
+                input_tokens=_usage_counter(usage, "input_tokens"),
+                output_tokens=_usage_counter(usage, "output_tokens"), status=status, reused=False)
+            response_identity = ({"provider": response.provider, "model": response.model,
+                                  "reasoning_effort": response.reasoning_effort, "metadata": metadata}
+                                 if response is not None else {})
+            self._attempts.append(ModelAttempt(measurement, wire, content, response_identity))
+
+    def extract_batch(
+        self, batch: ExtractionBatch, *, parsing_conventions: Mapping[str, object],
+    ) -> ModelPhaseResult[BatchValidation]:
+        """Send precisely one target-only batch request and retain its one parent receipt."""
+        payload = build_batch_extraction_payload(batch, parsing_conventions=parsing_conventions)
+        return self._execute("EXTRACTION", payload,
+            lambda response: validate_batch_extraction_response(batch, response),
+            task_version="nca-extraction-2.0", schema=_batch_response_schema())
 
     def extract(
         self,
@@ -1060,3 +1108,104 @@ class NcaModelTasks:
                 unit, note, required_action, response
             ),
         )
+
+
+def _batch_response_schema() -> dict[str, object]:
+    """Keep v1 provider contracts intact while closing the version-2.0 batch envelope."""
+    schema = deepcopy(_SCHEMAS["EXTRACTION"])
+    schema["required"].append("batch_id")
+    properties = schema["properties"]
+    properties["schema_version"] = {"const": "2.0"}
+    properties["batch_id"] = {"type": "string", "minLength": 1}
+    rows = properties["work_units"]
+    rows.pop("maxItems")
+    rows["minItems"] = 0
+    item = rows["items"]
+    item["required"][0] = "input_id"
+    item["properties"]["input_id"] = item["properties"].pop("unit_id")
+    item["properties"].pop("confidence")
+    item["properties"]["expressions"]["items"]["properties"]["stream_id"] = {"type": "string", "minLength": 1}
+    return schema
+
+
+def _usage_counter(usage: object, field: str) -> int | None:
+    """Retain reported exact nonnegative token counts without estimates or coercion."""
+    value = usage.get(field) if isinstance(usage, Mapping) else None
+    return value if type(value) is int and value >= 0 else None
+
+
+@dataclass(frozen=True)
+class ModelAttempt:
+    """One physical request and its exact raw evidence, independent of receipt admission."""
+
+    measurement: CallMeasurement
+    request: Mapping[str, object]
+    raw_response: str | None
+    response_identity: Mapping[str, object]
+
+    def __post_init__(self) -> None:
+        """Own request and provider identity data so later transports cannot mutate evidence."""
+        object.__setattr__(self, "request", freeze(self.request))
+        object.__setattr__(self, "response_identity", freeze(self.response_identity))
+
+
+@dataclass(frozen=True)
+class BatchExtractionResult:
+    """Bounded terminal dispositions and unique parent receipts for checkpoint consumers."""
+
+    accepted: Mapping[str, Extraction]
+    pending: Mapping[str, str]
+    parents: tuple[ModelPhaseResult[BatchValidation], ...]
+
+    def __post_init__(self) -> None:
+        """Own aggregate dispositions without copying parent usage into members."""
+        object.__setattr__(self, "accepted", freeze(self.accepted))
+        object.__setattr__(self, "pending", freeze(self.pending))
+
+
+def extract_batch_with_retries(
+    tasks: NcaModelTasks, batch: ExtractionBatch, *, parsing_conventions: Mapping[str, object],
+    transient_retries: int = 1,
+    on_accept: Callable[[ModelPhaseResult[BatchValidation]], None] | None = None,
+) -> BatchExtractionResult:
+    """Retry at most once per node, checkpoint successes immediately, and bisect unresolved inputs."""
+    if type(transient_retries) is not int or transient_retries not in {0, 1}:
+        raise _model_error("Batch retry count must be zero or one", "NCA_BATCH_POLICY_INVALID")
+    # Validate once before building a failure tree; no preflight failure is a provider call.
+    build_batch_extraction_payload(batch, parsing_conventions=parsing_conventions)
+    accepted, pending, parents = {}, {}, []
+    retryable = {"NCA_MODEL_PROVIDER_FAILED", "NCA_MODEL_RESPONSE_INVALID", "NCA_BATCH_COVERAGE_INVALID",
+                 "NCA_EXTRACTION_SCHEMA_INVALID", "NCA_EXTRACTION_EVIDENCE_INVALID"}
+
+    def visit(current: ExtractionBatch) -> None:
+        """Spend one bounded node budget, then recurse only into strictly smaller membership."""
+        reasons = {}
+        for _attempt in range(1 + transient_retries):
+            try:
+                result = tasks.extract_batch(current, parsing_conventions=parsing_conventions)
+            except ValidationError as exc:
+                if exc.code not in retryable:
+                    raise
+                reasons = {value.input_id: str(exc.code) for value in current.inputs}
+                continue
+            reasons = dict(result.value.pending)
+            if result.value.accepted:
+                # This callback deliberately sits outside the provider retry exception boundary.
+                if on_accept is not None:
+                    on_accept(result)
+                parents.append(result)
+                accepted.update(result.value.accepted)
+                remaining = tuple(value for value in current.inputs if value.input_id in reasons)
+                if remaining:
+                    visit(_batch(remaining, ''.join(value.routed_sfm for value in remaining), current.contract_version))
+                return
+        children = split_batch(current)
+        if children:
+            for child in children:
+                visit(child)
+        else:
+            key = current.inputs[0].input_id
+            pending[key] = "NCA_BATCH_SINGLETON_FAILED: " + reasons[key]
+
+    visit(batch)
+    return BatchExtractionResult(accepted, pending, tuple(parents))
