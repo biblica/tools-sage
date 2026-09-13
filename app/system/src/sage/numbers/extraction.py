@@ -117,8 +117,15 @@ def _fraction(value: object, label: str) -> Fraction:
             f"{label} must be a canonical rational string",
             code="NCA_EXTRACTION_EVIDENCE_INVALID",
         )
-    parsed = Fraction(value)
-    if str(parsed) != value:
+    try:
+        parsed = Fraction(value)
+        canonical = str(parsed)
+    except (ValueError, ZeroDivisionError, OverflowError) as exc:
+        raise _error(
+            f"{label} cannot be represented as an exact rational",
+            code="NCA_EXTRACTION_EVIDENCE_INVALID",
+        ) from exc
+    if canonical != value:
         raise _error(
             f"{label} must be reduced and normalized",
             code="NCA_EXTRACTION_EVIDENCE_INVALID",

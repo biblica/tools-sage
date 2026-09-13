@@ -157,3 +157,29 @@ def test_batch_payload_filters_authority_and_requires_bound_conventions():
     with pytest.raises(ValidationError) as exc:
         extraction.build_batch_extraction_payload(batch, parsing_conventions={'digits': {'preferred': '0123'}})
     assert exc.value.code == 'NCA_EXTRACTION_PAYLOAD_INVALID'
+
+
+def test_runtime_large_rational_limit_cannot_discard_a_valid_sibling():
+    """Huge exact values either remain representable or leave only their own input pending."""
+    # Python versions/configurations differ in integer-string conversion limits.
+    # Observe the real local boundary without changing any global interpreter setting.
+    enormous = '9' * 5000
+    try:
+        converted = Fraction(enormous)
+        str(converted)
+    except (ValueError, OverflowError):
+        representable = False
+    else:
+        representable = True
+    batch = batch_fixture()
+    raw = batch_response(batch)
+    raw['work_units'][0]['expressions'][0]['values'] = [enormous]
+    result = validate(batch, raw)
+    first, second = [value.input_id for value in batch.inputs]
+    assert result.accepted[second].expressions[0].values == (Fraction(4),)
+    if representable:
+        assert not result.pending
+        assert result.accepted[first].expressions[0].values == (converted,)
+    else:
+        assert set(result.accepted) == {second}
+        assert result.pending == {first: 'NCA_EXTRACTION_EVIDENCE_INVALID'}

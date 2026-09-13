@@ -931,3 +931,48 @@ def test_physical_attempt_elapsed_excludes_local_semantic_validation(package_roo
     tasks = model_tasks(package_root, TimedTransport([batch_response(batch)]))
     tasks.extract_batch(batch, parsing_conventions={})
     assert tasks.attempts[0].measurement.elapsed_ms == 4
+
+
+def test_recorded_rational_conversion_failure_checkpoints_sibling_and_terminates_singleton(package_root, monkeypatch):
+    """A failed numeric conversion cannot discard accepted work or bypass bounded disposition."""
+    from sage.numbers import extraction
+    from sage.numbers.batching import _batch
+    from .test_batch_extraction import batch_fixture, batch_response
+    actual_fraction = extraction.Fraction
+    enormous = '9' * 5000
+
+    def limited_fraction(value):
+        """Reproduce a digit-limit failure consistently on Python 3.10 and later."""
+        if value == enormous:
+            raise ValueError('recorded integer string conversion limit')
+        return actual_fraction(value)
+
+    monkeypatch.setattr(extraction, 'Fraction', limited_fraction)
+    batch = batch_fixture()
+    failed_singleton = _batch(batch.inputs[:1], batch.inputs[0].routed_sfm)
+    parent = batch_response(batch)
+    parent['work_units'][0]['expressions'][0]['values'] = [enormous]
+    child = batch_response(failed_singleton)
+    child['work_units'][0]['expressions'][0]['values'] = [enormous]
+    transport = RecordedExecutor([parent, child, child])
+    tasks = model_tasks(package_root, transport)
+    accepted_parents = []
+
+    def checkpoint(result):
+        """Observe valid sibling acceptance before retrying the failed numeric input."""
+        assert len(transport.requests) == 1
+        accepted_parents.append(result)
+
+    result = bounded_extract(tasks, batch, on_accept=checkpoint)
+    first, second = [value.input_id for value in batch.inputs]
+    assert result.accepted[second].expressions[0].values == (Fraction(4),)
+    assert set(result.accepted) == {second}
+    assert result.pending == {first: 'NCA_BATCH_SINGLETON_FAILED: NCA_EXTRACTION_EVIDENCE_INVALID'}
+    assert len(accepted_parents) == len(result.parents) == 1
+    assert len(transport.requests) == len(tasks.attempts) == 3
+    assert len(transport.requests) <= 2 * (2 * len(batch.inputs) - 1)
+    assert all(json.loads(request.prompt)['input']['work_units'][0]['input_id'] == first
+               and len(json.loads(request.prompt)['input']['work_units']) == 1
+               for request in transport.requests[1:])
+    assert all(enormous in attempt.raw_response for attempt in tasks.attempts)
+    assert {request.model for request in transport.requests} == {'gpt-5.6-sol'}
