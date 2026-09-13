@@ -618,3 +618,17 @@ def test_finalize_publishes_both_sealed_report_languages(
     retried = finalize_nca_run(config, job_id=job.job_id, run_id=run.run_id)
     assert retried["secondary_report_language"] == "fr"
     assert Path(str(retried["secondary_report_path"])).read_bytes() == sealed_secondary
+
+
+def test_nca_controller_checkpoint_declarations_do_not_expand_model_authority(make_workspace, monkeypatch):
+    """New task controls declare private persistence while model writes stay bounded."""
+    _root, config, job, run = _run(make_workspace, monkeypatch)
+    task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value='MAT 1')
+    manifest = json.loads(Path(task['task_manifest_path']).read_text())
+    assert manifest['allowed_writes'] == ['output/model-evidence.json']
+    assert set(manifest['controller_allowed_writes']) == {
+        'validation/nca-phases/attempts/*.json', 'validation/nca-phases/ledger.json',
+        'validation/nca-phases/publication/output.json', 'validation/nca-phases/publication/receipt.json',
+        'validation/nca-phases/publication/manifest.json', 'validation/llm-execution-receipt.json',
+        'locks/nca-phases.lock', 'output/model-evidence.json'}
+    assert not (Path(task['task_manifest_path']).parent / 'validation/nca-phases').exists()

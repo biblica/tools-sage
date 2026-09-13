@@ -1,0 +1,38 @@
+schema_id: sage-nca-phase-ledger-1.0
+required: [schema_version, task_fingerprint, entries, failures]
+controls:
+  schema_version: '1.0'
+  owner: system/src/sage/numbers/replay.py
+  unknown_fields: prohibited
+  storage: governed_task_root_only
+  ledger: validation/nca-phases/ledger.json
+  attempts: validation/nca-phases/attempts/<attempt-id>.json
+  attempt_ids: unique_lowercase_uuid_hex
+  attempt_mutation: prohibited
+  ledger_entry_required: [key, attempt_id, artifact_sha256]
+  attempt_required: [schema_version, task_fingerprint, key, attempt_id, status, artifact]
+  phase_key_required: [phase, task_fingerprint, input_ids, input_sha256, policy_sha256, route_sha256, contract_sha256, validator_version]
+  identity: exact_key_and_task_membership
+  input_hash: named_original_source_package_mapping_profile_bytes_and_ordered_stream_ids
+  contract_hash: named_original_schema_skill_capsule_and_phase_version_bytes
+  raw_response: exact_provider_utf8_bound_to_receipt
+  artifact_required: [receipt, raw_response, request_id, route_snapshot, attempt, item_sha256]
+  physical_request_association: request_id_not_response_hash
+  batch_item_hashes: current_validator_reconciliation_required
+  non_batch_item_hashes: empty_mapping
+  reuse_validation: current_controller_validator_on_every_lookup
+  incomplete_interpretation: preserve_partial_and_unsupported
+  orphan_attempts: excluded_from_membership
+  failed_attempts: independent_immutable_diagnostics
+  publication_manifest: validation/nca-phases/publication/manifest.json
+  publication_required: [schema_version, task_fingerprint, checkpoints, files]
+  publication_staged_files: [output.json, receipt.json]
+  publication_destinations: [output/model-evidence.json, validation/llm-execution-receipt.json]
+  publication_authority: current_controller_derivation_from_nonempty_revalidated_checkpoint_set
+  publication_hashes: both_exact_final_byte_payloads_before_either_canonical_write
+  arbitrary_partial_output: rejected
+  lock_order: [task_execution_lock, phase_ledger_lock]
+  lock_path: locks/nca-phases.lock
+  symlinks_and_path_escapes: prohibited
+  model_write_authority: unchanged
+  optimized_run_dispatch: not_activated
