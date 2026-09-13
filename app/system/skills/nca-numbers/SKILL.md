@@ -8,6 +8,8 @@ Execute only the named phase of the sealed SAGE governed task described by `task
 
 For `EXTRACTION`, use only the target main-text stream, target language, and parsing conventions. Identify every numeric expression with its exact stream, quoted half-open span, reduced rational values, kind, unit, qualifier, and exact referent evidence when available. Do not infer expected values from original-language Scripture, NIV, model recall, or external sources.
 
+For version-2.0 `EXTRACTION`, use the target-only capsule in `references/TARGET-EXTRACTION-CONTRACT.md`. One bounded request may inventory multiple independent target input streams. Echo their input IDs and keep offsets local to each admitted stream. Missing or invalid members remain pending; valid PARTIAL/UNSUPPORTED interpretations remain terminal. A batch shares one parent receipt. Independent semantic adjudications and note assessments remain separate.
+
 For `CORRESPONDENCE`, use only the validated target extraction and bounded authoritative OL row. Preserve the supplied OL value sequence exactly. Bind OL expressions and target expressions to exact text and referent spans. Registered reading context is bounded evidence; it does not authorize the model to choose textual authority or a final policy outcome.
 
 For `FOOTNOTE`, assess only the selected target note against the registered guidance. Quote every supporting note span exactly. Do not borrow evidence from another note or decide whether a registered reading is authoritative.

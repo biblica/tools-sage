@@ -1,0 +1,25 @@
+schema_id: sage-nca-extraction-2.0
+required: [schema_version, phase, batch_id, work_units]
+controls:
+  schema_version: '2.0'
+  owner: system/src/sage/numbers/extraction.py
+  phase: EXTRACTION
+  work_unit_required: [input_id, status, limitations, expressions]
+  unknown_fields: prohibited
+  authority_inputs: [target_streams, routed_sfm, language, parsing_conventions]
+  prohibited_inputs: [ol_text, ol_values, niv_text, niv_values, variant_values, registry_present, expected_number_flags]
+  exact_target_streams: required
+  offset_authority: admitted_stream_text
+  normalized_values: reduced_rational_strings
+  coverage: independently_validate_known_inputs
+  duplicate_or_unknown_input_id: reject_parent_envelope
+  absent_or_invalid_input: pending
+  incomplete_interpretation: retain_partial_or_unsupported
+  automatic_semantic_retry: prohibited
+  controller_item_hashes: local_only
+  receipt_binding: one_parent_request_response
+  raw_response: exact_provider_utf8
+  physical_attempts: include_failed_calls
+  maximum_transient_retries: 1
+  singleton_failure: explicit
+  confidence_gate: prohibited

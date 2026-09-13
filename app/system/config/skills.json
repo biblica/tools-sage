@@ -69,9 +69,9 @@
       "source_version": "2026-09-09",
       "original_file": "system/skills/nca-numbers/references/ORIGINAL-NCA-NUMBERS-CONTRACT.md",
       "original_sha256": "6b2a566ffc34407e89be2e474cb343f68093db345a2cf8617f1191705d7c9243",
-      "adapted_sha256": "fd72ad76ff34f8494439d4a87f52965d76dc40aad02d8a98b1db3bbc29f3c51a",
+      "adapted_sha256": "0ea4481aa2c5b67eda9247407b00be779d313a0ca11a20d920ae8c9280684289",
       "qualification_status": "VALIDATED",
-      "transformation_summary": "Bounded target extraction, immutable OL correspondence, exact target-note evidence, pinned SAGE routing, and deterministic evidence validation."
+      "transformation_summary": "Bounded target extraction, immutable OL correspondence, exact target-note evidence, pinned SAGE routing, and deterministic evidence validation. Version-2.0 target-only batch capsule with independent input coverage and one parent receipt."
     },
     "saw-rtc": {
       "workflow": "saw",

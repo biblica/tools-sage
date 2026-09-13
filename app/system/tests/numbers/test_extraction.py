@@ -350,3 +350,13 @@ def test_unknown_response_fields_and_invalid_status_contracts_are_rejected() -> 
     with pytest.raises(ValidationError) as status:
         validate_extraction_response(unit, raw)
     assert status.value.code == "NCA_EXTRACTION_SCHEMA_INVALID"
+
+
+def test_shared_expression_boundary_requires_the_admitted_note_stream() -> None:
+    """The v2 note inventory uses its own exact text and identity with legacy semantics."""
+    from sage.numbers.extraction import _validated_expression
+    raw = expression('note-local', 'three', 0, 5, '3', stream_id='note-2')
+    result = _validated_expression(raw, text='three women', expected_stream_id='note-2')
+    assert result.stream_id == 'note-2' and result.values == (Fraction(3),)
+    with pytest.raises(ValidationError):
+        _validated_expression(raw, text='three women', expected_stream_id='note-1')
