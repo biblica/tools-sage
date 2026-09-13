@@ -718,6 +718,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/nca_reporting.py`
 - `system/src/sage/numbers`
 - `system/src/sage/numbers/__init__.py`
+- `system/src/sage/numbers/batching.py`
 - `system/src/sage/numbers/compare.py`
 - `system/src/sage/numbers/engine.py`
 - `system/src/sage/numbers/execution.py`
@@ -734,6 +735,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/style.py`
 - `system/src/sage/numbers/telemetry.py`
 - `system/src/sage/numbers/target.py`
+- `system/src/sage/numbers/transport.py`
 - `system/src/sage/numbers/units.py`
 - `system/src/sage/numbers/variants.py`
 - `system/src/sage/ol_referrals.py`
@@ -838,6 +840,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/fixtures/registered-readings.json`
 - `system/tests/numbers/fixtures/registered-units.json`
 - `system/tests/numbers/test_acceptance.py`
+- `system/tests/numbers/test_batching.py`
 - `system/tests/numbers/test_benchmark.py`
 - `system/tests/numbers/test_compare.py`
 - `system/tests/numbers/test_engine.py`
@@ -859,6 +862,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_scope.py`
 - `system/tests/numbers/test_style.py`
 - `system/tests/numbers/test_target.py`
+- `system/tests/numbers/test_transport.py`
 - `system/tests/numbers/test_units.py`
 - `system/tests/numbers/test_variants.py`
 - `system/tests/test_authority_boundaries.py`

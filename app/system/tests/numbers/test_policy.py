@@ -116,3 +116,18 @@ def test_missing_or_mutated_run_policy_fails_closed(
     with pytest.raises(ValidationError) as changed:
         load_nca_run_snapshot(run.root)
     assert changed.value.code == "NCA_CHECK_POLICY_ALL_OFF"
+
+
+def test_optimization_policy_is_versioned_and_preserves_hard_limits(package_root):
+    """New optimization settings remain separate from sealed historical Runs and SFM limits."""
+    import yaml
+    from sage.numbers.policy import validate_optimization_policy
+    raw = yaml.safe_load((package_root / 'system/config/workflows/nca/profile.yml').read_text())
+    assert validate_optimization_policy(raw['optimization_policy']) == {
+        'contract_version': 'nca-optimization-2.0', 'extraction_batch_max_units': 8,
+        'request_concurrency': 1, 'transient_retries': 1, 'reuse_scope': 'TASK'}
+    assert raw['evidence_policies']['default']['maximum_primary_verse_units'] == 220
+    for field in ('extraction_batch_max_units', 'request_concurrency', 'transient_retries'):
+        for value in (True, 0, -1, 1.5, '8'):
+            with pytest.raises(ValidationError):
+                validate_optimization_policy(dict(raw['optimization_policy'], **{field: value}))

@@ -67,6 +67,44 @@ STC uses the same general slicer with a different route profile: WIP plus the te
 
 Protected bridges, OL correspondence spans, discourse units, and exact primary coverage remain controller-owned constraints. Context SFM counts only when that context is actually sent to the model.
 
+### NCA target inventory extraction
+
+The `nca-optimization-2.0` policy prepares new optimized Runs for at most eight protected
+extraction inputs per batch, request concurrency one, one transient retry, and reuse limited
+to the current task. Run sealing and activation use the optimized execution contract;
+these settings do not rewrite historical Run snapshots.
+
+NCA inventories the complete expected Western coordinate ledger from the existing
+WIP-local scope projection, including unindexed coordinates, registered absences, and
+missing WIP placeholders. It retains the actual requested WIP scope separately so a
+protected boundary expansion cannot be mistaken for the original selection. Missing
+placeholders remain explicit coverage gaps and do not become empty completed extractions.
+
+Each body, note, or editorial heading has its own offset stream and source/projection binding.
+Bodies and notes bind to retained raw compiler verse SFM; bounded headings and canonical Psalm
+superscriptions render their retained structural source nodes with their actual markers.
+Structural renderings preserve source wording and node provenance, rather than claiming to
+recover original formatting bytes that the compiler did not retain. Notes retain their own
+text and declared anchors even when their physical source verse differs. A note associated
+with a missing coordinate is extracted once at its physical source.
+
+The shared `plan_sfm_work_units` planner sizes the actual routed Scripture streams. The
+eight-input cap does not lower the 220-atomic-verse hard limit: a ten-verse bridge is one
+protected input. Explicit required spans also protect groups assembled from multiple
+source records, including chapter boundaries. Overlapping body/note/heading coordinates
+start another candidate batch. Different purposes, languages, and parsing conventions
+also stay in separate batches, and chapter boundaries are preferred between complete inputs. Input IDs, profile conventions, schemas, hashes, and USJ
+projections never enter Scripture token estimation.
+
+A batch retains exactly the SFM sized by its route, including any routed context; context
+does not add accepted extraction members. Oversized protected inputs remain explicitly
+blocked. Every eligible input appears exactly once in either planned membership or the
+blocked ledger. Binary fallback bisects only batch membership and stops at singletons,
+so a full split tree contains at most `2 * input_count - 1` requests before transient
+retries. Child batches retain complete member SFM; optional parent context is omitted.
+Independent semantic adjudications and note assessments remain separate review items.
+The existing capability limitation and `SQS: NOT_APPLIED` remain in reports and exports.
+
 ## 7. Task-scoped provider readiness and exact routing
 
 Provider authentication and the live capability catalog are checked before task evidence is assembled.

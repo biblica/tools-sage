@@ -23,6 +23,7 @@ from .resources import resolve_reference_package
 from .scope import project_scope
 from .style import load_style_profile
 from .target import extract_heading_units, target_units
+from .transport import StreamInput
 
 
 @dataclass(frozen=True)
@@ -37,6 +38,7 @@ class ExecutionInputs:
     expected_unit_ids: tuple[str, ...]
     expected_references: tuple[VerseRef, ...]
     source_documents: Mapping[str, Mapping[str, object]]
+    requested_scope: str = ""
 
     def __post_init__(self) -> None:
         """Require concrete immutable model coverage and copy nested source evidence."""
@@ -162,10 +164,45 @@ def prepare_execution_inputs(
     projected = tuple(projected)
     expected_ids = tuple(unit.target.unit_id for unit in projected) + tuple(unit.unit_id for unit in headings)
     return ExecutionInputs(bundle, style.document, sealed, projected, tuple(headings),
-                           expected_ids, tuple(expected_refs), documents)
+                           expected_ids, tuple(expected_refs), documents, run.scope)
 
 
 def reference_restrictions(policy: Mapping[str, object]) -> tuple[str, ...]:
     """Retain nonblocking package diagnostics as explicit Run coverage limits."""
     return tuple(str(item.get("code")) for item in policy["reference_package"].get("diagnostics", ())
                  if isinstance(item, Mapping) and str(item.get("code") or ""))
+
+
+@dataclass(frozen=True)
+class ScopeInventory:
+    """Full coordinate ledger and protected groups, independent of numeric detection."""
+    expected_references: tuple[VerseRef, ...]
+    projected_units: tuple[ProjectedUnit, ...]
+    expected_groups: frozenset[str]
+    stream_inputs: tuple[StreamInput, ...]
+    requested_scope: str
+
+
+def build_inventory(inputs: ExecutionInputs) -> ScopeInventory:
+    """Reuse the attempt's project_scope result without loading or qualifying again."""
+    from .extraction import _parsing_conventions
+    from .transport import streams_for_target
+
+    conventions = _parsing_conventions(inputs.style_profile)
+    language = str(inputs.policy['wip']['language'])
+    streams = []
+    for projected in inputs.projected_units:
+        target = projected.target
+        # Missing placeholders remain coverage, even when a nearby physical note
+        # is also associated with that absence by the projection authority.
+        if target.target_references:
+            streams.extend(streams_for_target(target, inputs.source_documents[target.source_sha256],
+                language=language, conventions=conventions))
+    for target in inputs.style_units:
+        streams.extend(streams_for_target(target, inputs.source_documents[target.source_sha256],
+            language=language, conventions=conventions, heading=True))
+    return ScopeInventory(inputs.expected_references, inputs.projected_units,
+        frozenset(unit.target.unit_id for unit in inputs.projected_units
+                  if any(inputs.bundle.lookup(ref) is not None for ref in unit.western_references)),
+        tuple(value for purpose in ('BODY', 'NOTE_STYLE', 'HEADING_STYLE')
+              for value in streams if value.purpose == purpose), inputs.requested_scope)

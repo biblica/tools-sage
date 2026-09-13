@@ -254,3 +254,14 @@ def load_nca_run_snapshot(run_root: Path) -> Mapping[str, object]:
     if value.get("sqs_checks_applied") is not False or value.get("capability_limitation_code") != CAPABILITY_LIMITATION_CODE:
         raise ValidationError("NCA capability limitation contract is invalid", code="NCA_RUN_SNAPSHOT_INVALID")
     return value
+
+
+def validate_optimization_policy(raw: Mapping[str, object]) -> dict[str, object]:
+    """Validate versioned settings for future optimized Runs without resealing history."""
+    integers = ('extraction_batch_max_units', 'request_concurrency', 'transient_retries')
+    if (not isinstance(raw, Mapping)
+            or set(raw) != {'contract_version', 'reuse_scope', *integers}
+            or raw.get('contract_version') != 'nca-optimization-2.0' or raw.get('reuse_scope') != 'TASK'
+            or any(type(raw.get(name)) is not int or raw[name] <= 0 for name in integers)):
+        raise ValidationError('NCA optimization policy is invalid', code='NCA_OPTIMIZATION_POLICY_INVALID')
+    return dict(raw)
