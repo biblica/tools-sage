@@ -360,3 +360,28 @@ def test_shared_expression_boundary_requires_the_admitted_note_stream() -> None:
     assert result.stream_id == 'note-2' and result.values == (Fraction(3),)
     with pytest.raises(ValidationError):
         _validated_expression(raw, text='three women', expected_stream_id='note-1')
+
+
+@pytest.mark.parametrize('stage', ['parse', 'format'])
+@pytest.mark.parametrize('error_type', [ValueError, ZeroDivisionError, OverflowError])
+def test_rational_conversion_failures_become_evidence_validation_errors(monkeypatch, stage, error_type):
+    """Interpreter conversion failures cannot escape the shared exact-rational boundary."""
+    from sage.numbers import extraction
+
+    class UnrenderableRational:
+        """Represent a successful parse whose canonical rendering exceeds a runtime limit."""
+        def __str__(self):
+            """Raise the recorded canonical-conversion failure."""
+            raise error_type('recorded rational conversion failure')
+
+    def failed_fraction(value):
+        """Reproduce the conversion boundary independently of interpreter digit-limit defaults."""
+        if stage == 'parse':
+            raise error_type('recorded rational conversion failure')
+        return UnrenderableRational()
+
+    monkeypatch.setattr(extraction, 'Fraction', failed_fraction)
+    with pytest.raises(ValidationError) as exc:
+        extraction._fraction('3', 'expression.values[0]')
+    assert exc.value.code == 'NCA_EXTRACTION_EVIDENCE_INVALID'
+    assert isinstance(exc.value.__cause__, error_type)
