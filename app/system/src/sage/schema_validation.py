@@ -34,6 +34,7 @@ SCHEMA_OWNERS: dict[str, str] = {
     "nca-extraction-v2.schema.yml": "system/src/sage/numbers/extraction.py",
     "nca-extraction.schema.yml": "system/src/sage/numbers/extraction.py",
     "nca-check-policy.schema.yml": "system/src/sage/numbers/policy.py",
+    "nca-phase-ledger.schema.yml": "system/src/sage/numbers/replay.py",
     "numbers-reference.schema.yml": "system/src/sage/numbers/reference.py",
     "numbers-result.schema.yml": "system/src/sage/numbers/results.py",
     "number-style-profile.schema.yml": "system/src/sage/numbers/style.py",

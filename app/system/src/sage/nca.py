@@ -35,6 +35,20 @@ from .numbers.execution import package_root as _package_root, prepare_execution_
 from .workflow_identity import canonical_nca_job_id
 
 
+# Controller persistence is separate from model output authority. These reserved
+# declarations prepare phase replay without dispatching optimized execution.
+_CONTROLLER_ALLOWED_WRITES = (
+    "output/model-evidence.json",
+    "validation/llm-execution-receipt.json",
+    "validation/nca-phases/attempts/*.json",
+    "validation/nca-phases/ledger.json",
+    "validation/nca-phases/publication/output.json",
+    "validation/nca-phases/publication/receipt.json",
+    "validation/nca-phases/publication/manifest.json",
+    "locks/nca-phases.lock",
+)
+
+
 def _store(config: EcosystemConfig) -> JobStore:
     """Return the shared lifecycle store for one resolved ecosystem."""
     return JobStore(config.root, config.settings_path)
@@ -393,6 +407,7 @@ def _create_nca_task_locked(
             "allowed_reads": reads,
             "conditional_reads": [],
             "allowed_writes": ["output/model-evidence.json"],
+            "controller_allowed_writes": list(_CONTROLLER_ALLOWED_WRITES),
             "output_grammar": "NCA_MODEL_EVIDENCE_1.0",
             "narrative_language": {
                 "tag": job.primary_report_language,
@@ -455,6 +470,7 @@ def _create_nca_task_locked(
             "task_fingerprint": fingerprint,
             "settings_sha256": sha256_file(runtime_config.settings_path),
             "allowed_writes": ["output/model-evidence.json"],
+            "controller_allowed_writes": list(_CONTROLLER_ALLOWED_WRITES),
             "status": "CREATED",
             "created_utc": _utc_now(),
         }
