@@ -122,11 +122,17 @@ def _source_records(unit: TargetUnit, document: Mapping[str, object]) -> tuple[E
         parts = []
         index = 0
         offset = 0
+        reference_offset = 0
         while f'component_{index}_start' in locator:
             prefix = f'component_{index}_'
             child_locator = {key[len(prefix):]: value for key, value in locator.items()
                              if key.startswith(prefix) and key[len(prefix):] not in {'start', 'end'}}
-            child_records = _source_records(replace(unit, source_locator=child_locator), document)
+            # _combined orders components by their retained local references.
+            # Consume every bridge atom so the next component starts at its own
+            # coordinate even when physical line bounds (and text) coincide.
+            child_records = _source_records(replace(unit, source_locator=child_locator,
+                target_references=unit.target_references[reference_offset:]), document)
+            reference_offset += sum(record.atomic_count for record in child_records)
             child_text = '\n'.join(record.payload['projection_text'] for record in child_records)
             if locator[prefix + 'start'] != offset or locator[prefix + 'end'] != offset + len(child_text):
                 raise ValidationError('NCA component offsets differ from source', code='NCA_TRANSPORT_INVALID')
@@ -134,9 +140,12 @@ def _source_records(unit: TargetUnit, document: Mapping[str, object]) -> tuple[E
             parts.extend(child_records)
             index += 1
         return tuple(parts)
-    if 'line_start' in locator:
+    if 'line_start' in locator and unit.target_references:
+        first = unit.target_references[0]
         matches = [raw for raw in document['sage']['verse_records']
-                   if raw['line_start'] == locator['line_start'] and raw['line_end'] == locator['line_end']]
+                   if raw['line_start'] == locator['line_start'] and raw['line_end'] == locator['line_end']
+                   and document['sage']['book_code'] == first.book
+                   and raw['chapter'] == first.chapter and raw['verse_start'] == first.verse]
         if len(matches) != 1 or not matches[0].get('raw_usfm'):
             raise ValidationError('NCA source locator does not resolve exactly', code='NCA_TRANSPORT_INVALID')
         raw = matches[0]

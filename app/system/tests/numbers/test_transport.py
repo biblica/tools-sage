@@ -113,3 +113,44 @@ def test_structural_inline_markers_keep_delimiters_and_source_text():
     value, = streams_for_target(heading, source, language='en', conventions={}, heading=True)
     assert '\\zcustom Two' in value.routed_sfm
     assert value.text == 'Section Two'
+
+
+@pytest.mark.parametrize('first_label, second_label', [('1', '2'), ('1-2', '3')])
+@pytest.mark.parametrize('second_text', ['Four.', 'Three.'])
+def test_same_line_verse_records_resolve_by_retained_coordinates(first_label, second_label, second_text):
+    """Shared physical lines and even identical text cannot erase separate compiler records."""
+    from sage.numbers.transport import streams_for_target
+    source = compile_usfm_text(
+        f'\\id MAT Fixture\n\\c 1\n\\v {first_label} Three. \\v {second_label} {second_text}\n')
+    assert source['sage']['errors'] == []
+    units = target_units(source, source_sha256='0' * 64)
+    assert [dict(unit.source_locator) for unit in units] == [
+        {'line_start': 3, 'line_end': 3}, {'line_start': 3, 'line_end': 3}]
+    values = tuple(streams_for_target(unit, source, language='en', conventions={})[0] for unit in units)
+    assert [value.text for value in values] == ['Three.', second_text]
+    assert [value.records[0].sfm for value in values] == [
+        f'\\v {first_label} Three.', f'\\v {second_label} {second_text}']
+    assert [value.records[0].refs for value in values] == [unit.target_references for unit in units]
+
+
+@pytest.mark.parametrize('first_label, second_label', [('1', '2'), ('1-2', '3')])
+@pytest.mark.parametrize('second_text', ['Four.', 'Three.'])
+def test_same_line_combined_components_keep_distinct_protected_source_records(first_label, second_label, second_text):
+    """Component offsets and ordered coordinates disambiguate a protected same-line group."""
+    from sage.numbers.transport import streams_for_target
+    from sage.numbers.projection import _combined
+    from sage.numbers.batching import plan_batches
+    from sage.evidence import EvidencePolicy
+    source = compile_usfm_text(
+        f'\\id MAT Fixture\n\\c 1\n\\v {first_label} Three. \\v {second_label} {second_text}\n')
+    group = _combined(target_units(source, source_sha256='0' * 64))
+    value, = streams_for_target(group, source, language='en', conventions={})
+    assert value.text == 'Three.\n' + second_text
+    assert [record.sfm for record in value.records] == [
+        f'\\v {first_label} Three.', f'\\v {second_label} {second_text}']
+    assert tuple(ref for record in value.records for ref in record.refs) == group.target_references
+    assert group.source_locator['component_1_start'] == 7
+    plan = plan_batches((value,), policy=EvidencePolicy())
+    assert len(plan.batches) == 1 and plan.batches[0].inputs == (value,)
+    assert not plan.blocked
+    assert plan.batches[0].routed_sfm == value.routed_sfm
