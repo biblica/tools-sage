@@ -14,6 +14,10 @@
 12. Build a hosted qualification-registry service so normal Operators can begin work within minutes without running local catalog benchmarks. Publish signed, immutable route records keyed by provider, exact model/capability fingerprint, provider-native reasoning ID, Skill/adapted-Skill hash, suite hash, policy version, verdict, evidence hash, and review/expiry state. SAGE must query through the replaceable local qualification-evidence repository API, verify signatures and exact identities locally, cache an approved last-known registry for offline use, fail closed on mismatch, and never accept provider/model self-qualification. Full benchmarking remains release/maintainer tooling; local evaluation is only a fallback for new, unavailable, or disputed routes.
 
 
+## Future architecture
+
+- [ ] **`TODO-20260914-001` — UPDATE PROJECT propagation to WIP analysis footprints.** Define how updating a WIP Project affects its RTC, STC, and NCA footprints: reviewed coverage, findings, cached analysis, and continuation checkpoints. Compare the previous and updated Project revisions, identify affected books/chapters and dependent Jobs/Runs, and mark affected footprints as stale or requiring review. Plan refreshed analysis for changed or newly available scope, including previously missing books. Preserve valid unaffected coverage and immutable historical reports with their original Project revision; distinguish those reports from results current for the updated WIP. Verify changed text, added/removed books, unchanged updates, and continuation after an update across all three workflows. This is future architecture work; implementation is not scheduled.
+
 ## 0.02b1 TUI work — IN PROGRESS
 
 `0.02b1` keeps the Textual migration **EXPERIMENTAL / UNSTABLE**. The classic terminal menu/CLI remains authoritative and is the default launch surface until parity and acceptance gates pass:
