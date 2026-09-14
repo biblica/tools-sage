@@ -810,11 +810,8 @@ class JobStore:
             }
         elif tool == "nca":
             wip = bound("wip", "WIP")
-            if wip.content_state != "UNDER_REVIEW":
-                raise ValidationError(
-                    f"NCA WIP Project {wip.project_id} must be UNDER_REVIEW",
-                    code="PROJECT_BINDING_MISMATCH",
-                )
+            # Inventory state is role-neutral; runtime settings assign UNDER_REVIEW
+            # from this Job's WIP binding without modifying the registered Project.
             selector = supplied.get("number_style")
             if set(supplied) - {"number_style"}:
                 raise ValidationError(
