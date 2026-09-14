@@ -712,7 +712,7 @@ def validate_analysis_findings(
             if request_id in seen_request_ids:
                 raise ValidationError(f"Duplicate OL review request_id: {request_id}")
             seen_request_ids.add(request_id)
-            reference = normalize_scope_set(_require_string(request.get("target_reference"), f"ol_review_requests[{index}].target_reference", maximum=160))
+            reference = normalize_scope_set(_require_string(request.get("target_reference"), f"ol_review_requests[{index}].target_reference"))
             if not _scope_contains_reference(parse_scope(scope_value), reference):
                 raise ValidationError(
                     f"ol_review_requests[{index}].target_reference is outside the task scope",
@@ -788,7 +788,7 @@ def validate_analysis_findings(
         if request_id not in expected_request_set:
             raise ValidationError(f"ol_resolutions[{index}] resolves an unexpected OL request: {request_id}")
         expected_request = expected_request_map.get(request_id, {})
-        target_reference = normalize_scope_set(_require_string(resolution.get("target_reference"), f"ol_resolutions[{index}].target_reference", maximum=160))
+        target_reference = normalize_scope_set(_require_string(resolution.get("target_reference"), f"ol_resolutions[{index}].target_reference"))
         if expected_request and target_reference != expected_request.get("target_reference"):
             raise ValidationError(f"ol_resolutions[{index}].target_reference does not match its inherited OL request")
         outcome = str(resolution.get("outcome", "")).strip().upper()
@@ -867,7 +867,6 @@ def validate_analysis_findings(
         reference = normalize_scope_set(_require_string(
             row.get("target_reference"),
             f"findings[{index}].target_reference",
-            maximum=160,
         ))
         if not _scope_contains_reference(parent_scope, reference):
             raise ValidationError(

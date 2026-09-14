@@ -12,7 +12,12 @@ import pytest
 import yaml
 
 from sage.storage import storage_layout
-from sage.act_outputs import validate_saw_findings
+from sage.act_outputs import (
+    render_action_report,
+    render_operator_note_text,
+    validate_analysis_findings,
+    validate_saw_findings,
+)
 from sage.act_tasks import (
     _review_portion_for_reference,
     aggregate_act_plan,
@@ -50,6 +55,111 @@ def _initialize(package_root: Path, root: Path) -> None:
         timeout=40,
     )
     assert result.returncode == 0, result.stderr + result.stdout
+
+
+@pytest.fixture
+def long_citation_submission(tmp_path: Path):
+    """Provide a complete RTC submission with a long, discontiguous Psalm citation."""
+    refs = [f"PSA 119:{verse}" for verse in range(1, 177)]
+    citation = "; ".join(refs[::2])
+    document = {
+        "schema_version": "2.0", "task_id": "rtc-long-citation",
+        "operation": "rtc", "stage": "REFERENCE_TEXT_COMPARISON",
+        "scope": "PSA 119:1-176", "focus": None, "check_type": None,
+        "coverage": {"status": "COMPLETE", "reviewed_references": refs},
+        "review_receipts": [{
+            "receipt_id": "RR-PSA", "work_unit_id": "WU-PSA",
+            "task_fingerprint": "citation-fixture", "reviewed_references": refs,
+            "checks_performed": ["MEANING"],
+            "evidence_summary": "Reviewed all assigned Psalm coordinates.",
+        }],
+        "findings": [{
+            "finding_id": "F001", "target_reference": citation,
+            "category": "MEANING", "issue": "A repeated expression needs review.",
+            "required_action": "Review each cited occurrence.",
+            "action_level": "REVIEW", "confidence": "HIGH",
+            "evidence_ids": ["WIP", "REFERENCE"], "grammar_rule_ids": [],
+            "original_language_evidence": "",
+        }],
+    }
+    options = {
+        "task_id": document["task_id"], "operation": "rtc", "workflow": "rtc",
+        "scope_value": document["scope"], "focus": None, "check_type": None,
+        "expected_references": refs, "structural_candidate_ids": [],
+        "grammar_rule_ids": [], "allowed_evidence_ids": ["WIP", "REFERENCE"],
+        "task_fingerprint": "citation-fixture", "required_review_checks": ["MEANING"],
+        "expected_work_unit_ids": ["WU-PSA"],
+    }
+
+    def validate(**overrides):
+        """Write the submitted evidence and invoke the current RTC validation boundary."""
+        path = tmp_path / "long-citation.json"
+        path.write_text(json.dumps(document), encoding="utf-8")
+        return validate_analysis_findings(path, **{**options, **overrides})
+
+    return document, citation, validate
+
+
+def test_rtc_long_target_reference_survives_validation_and_reports(long_citation_submission) -> None:
+    """Long in-scope citations survive admission and both human report formats intact."""
+    document, citation, validate = long_citation_submission
+    result = validate()
+    assert result["findings"][0]["target_reference"] == citation
+    assert citation in render_action_report(result)
+    assert citation in render_operator_note_text(result)
+
+
+def test_rtc_long_target_reference_survives_ol_request_and_resolution(long_citation_submission) -> None:
+    """The complete citation survives both RTC referral and selective-OL validation."""
+    document, citation, validate = long_citation_submission
+    document["findings"] = []
+    document["ol_review_requests"] = [_strict_referral(target_reference=citation)]
+    meaning = validate(ol_referral_contract="RTC_OL_REFERRAL_ADMISSION_V1")
+    request = meaning["ol_review_requests"][0]
+    assert request["target_reference"] == citation
+    document["stage"] = "SELECTIVE_OL_ADJUDICATION"
+    document["ol_review_requests"] = []
+    document["ol_resolutions"] = [{
+        "request_id": request["request_id"], "target_reference": citation,
+        "outcome": "NO_FINDING", "decision": "BOTH_DEFENSIBLE",
+        "original_language_evidence": "The routed Hebrew evidence supports both readings.",
+        "rationale": "The repeated expression introduces no discrepancy.",
+    }]
+    result = validate(
+        rtc_stage="SELECTIVE_OL_ADJUDICATION",
+        expected_ol_request_ids=[request["request_id"]], expected_ol_requests=[request],
+    )
+    assert result["ol_resolutions"][0]["target_reference"] == citation
+
+
+@pytest.mark.parametrize("field", ["findings", "ol_review_requests", "ol_resolutions"])
+def test_rtc_reference_text_budget_still_rejects_oversized_citations(long_citation_submission, field: str) -> None:
+    """Reference fields retain the normal output-text budget instead of unlimited input."""
+    document, _, validate = long_citation_submission
+    oversized = "; ".join(["PSA 119:1"] * 1201)
+    options = {}
+    if field == "ol_review_requests":
+        document["findings"] = []
+        document[field] = [_strict_referral(target_reference=oversized)]
+    elif field == "ol_resolutions":
+        document["findings"] = []
+        document["stage"] = "SELECTIVE_OL_ADJUDICATION"
+        document[field] = [{"request_id": "OLR-1", "target_reference": oversized}]
+        options = {"rtc_stage": document["stage"], "expected_ol_request_ids": ["OLR-1"]}
+    else:
+        document[field][0]["target_reference"] = oversized
+    with pytest.raises(ValidationError, match="exceeds 12000 characters"):
+        validate(**options)
+
+
+@pytest.mark.parametrize("invalid_tail", ["PSA 120:1", "MAT 1:1", "PSA 119:?"])
+def test_rtc_long_target_reference_retains_scope_and_syntax_checks(long_citation_submission, invalid_tail: str) -> None:
+    """A valid long prefix cannot hide an unauthorized or malformed citation portion."""
+    document, citation, validate = long_citation_submission
+    document["findings"][0]["target_reference"] = citation + "; " + invalid_tail
+    expected = "outside the bounded task scope" if invalid_tail != "PSA 119:?" else "Unknown Scripture book"
+    with pytest.raises(ValidationError, match=expected):
+        validate()
 
 
 def _plan_json(
