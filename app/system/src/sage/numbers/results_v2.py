@@ -82,6 +82,8 @@ def _group_view(group: Mapping[str, object], checks: Mapping[str, bool]) -> dict
         _require(isinstance(component, Mapping), 'Invalid component')
         _require_keys(component, {'western_reference', 'ol_reference', 'owned_target_expression_ids', 'source_expressions',
             'reading', 'footnote', 'final_outcome', 'limitations'}, 'component')
+        _require(isinstance(component['limitations'], list)
+            and all(isinstance(x, str) and x for x in component['limitations']), 'Invalid component limitations')
         ref = component['western_reference']
         _require(ref in refs and component['ol_reference'] == rows[refs.index(ref)]['ol_reference'], 'Foreign component reference')
         _require(isinstance(component['owned_target_expression_ids'], list), 'Invalid component ownership')
@@ -137,8 +139,10 @@ def _validate_numbers_result_v2(document: Mapping[str, object], *, expected_unit
     groups = document['groups']
     _require(isinstance(groups, list) and all(isinstance(x, Mapping) for x in groups), 'Invalid groups')
     _require(len(set(allowed_evidence_ids)) == len(allowed_evidence_ids), 'Duplicate allowed evidence')
-    units = [_validate_unit(_group_view(g, checks), set(allowed_evidence_ids), checks) for g in groups]
-    findings = _validate_findings(document['findings'], set(allowed_evidence_ids), units=units, checks=checks)
+    unit_checks = {g['unit_id']: dict(checks, number_accuracy=False, footnote_review=False)
+        if g['projection']['precision'] == 'STYLE_STREAM' else checks for g in groups}
+    units = [_validate_unit(_group_view(g, checks), set(allowed_evidence_ids), unit_checks[g['unit_id']]) for g in groups]
+    findings = _validate_findings(document['findings'], set(allowed_evidence_ids), units=units, checks=checks, unit_checks=unit_checks)
     complete = all((u['extraction']['status'] == 'COMPLETE' or 'PRESENTATION_CHECK_DISABLED' in u['limitations'])
         and g['alignment_status'] != 'UNAVAILABLE' and (u['projection']['precision'] == 'STYLE_STREAM'
             or (u['reading']['semantic']['outcome'] not in {'INSUFFICIENT_EVIDENCE', 'REFERENCE_NOT_INDEXED'}
@@ -170,15 +174,53 @@ def _validate_numbers_result_v2(document: Mapping[str, object], *, expected_unit
     metrics, receipts = document['metrics'], document['model_receipts']
     phases = ('EXTRACTION', 'CORRESPONDENCE', 'FOOTNOTE', 'GROUP_CORRESPONDENCE')
     _require(isinstance(metrics, Mapping) and isinstance(receipts, Mapping) and set(receipts) == set(phases), 'Invalid phase evidence')
+    _require_keys(metrics, set(summarize_calls(())) | {'accepted_phase_receipts', 'checkpoint_reuse',
+        'reused_checkpoint_ids', 'batch_members', 'calls', 'checkpoints', 'planning'}, 'metrics')
+    _require(isinstance(metrics['calls'], list), 'Physical calls must be an array')
+    from dataclasses import fields
+    for raw in metrics['calls']:
+        _require(isinstance(raw, Mapping), 'Invalid physical call')
+        _require_keys(raw, {field.name for field in fields(CallMeasurement)}, 'physical call')
+        _require(isinstance(raw['unit_ids'], list) and len(set(raw['unit_ids'])) == len(raw['unit_ids']), 'Invalid call members')
     calls = tuple(CallMeasurement(**dict(x, unit_ids=tuple(x['unit_ids']))) for x in metrics['calls'])
+    calls_by_id = {call.request_id: call for call in calls}
+    _require(len(calls_by_id) == len(calls) and all(call.phase in phases and not call.reused for call in calls),
+        'Physical calls must be unique original requests')
     derived = _plain(summarize_calls(calls))
-    _require(all(metrics.get(k) == v for k, v in derived.items()), 'Physical call counters differ')
+    import json
+    _require(json.dumps({k: metrics[k] for k in derived}, sort_keys=True) == json.dumps(derived, sort_keys=True), 'Physical call counters differ')
+    for name in ('accepted_phase_receipts', 'checkpoint_reuse', 'batch_members'):
+        _require(type(metrics[name]) is int and metrics[name] >= 0, 'Invalid exact phase counter')
+    planning = metrics['planning']
+    _require(isinstance(planning, Mapping), 'Invalid planning evidence')
+    _require_keys(planning, {'input_ids', 'blocked', 'missing_owner_ids'}, 'planning')
+    for name in ('input_ids', 'missing_owner_ids'):
+        _require(isinstance(planning[name], list) and all(isinstance(x, str) and x for x in planning[name])
+            and len(set(planning[name])) == len(planning[name]), 'Invalid planning identities')
+    planned = set(planning['input_ids'])
+    _require(all(re.fullmatch(r'input:[0-9a-f]{64}', x) for x in planned), 'Invalid planned input identity')
+    blocked = planning['blocked']
+    _require(isinstance(blocked, Mapping) and set(blocked) <= planned
+        and all(isinstance(x, str) and x for x in blocked.values()), 'Invalid blocked inputs')
+    _require(set(planning['missing_owner_ids']) <= set(expected_unit_ids), 'Foreign missing owner')
+    for call in calls:
+        _require(set(call.unit_ids) <= (planned if call.phase == 'EXTRACTION' else set(expected_unit_ids)), 'Foreign physical call inputs')
     checkpoints = metrics['checkpoints']
     _require(isinstance(checkpoints, list) and len({x['checkpoint_id'] for x in checkpoints}) == len(checkpoints), 'Duplicate checkpoints')
     actual_receipts = {phase: [] for phase in phases}
+    accepted_members, checkpoint_requests, phase_keys, task_bindings = set(), set(), set(), set()
     for checkpoint in checkpoints:
         _require_keys(checkpoint, {'checkpoint_id', 'key', 'receipt', 'request_id', 'accepted_input_ids'}, 'checkpoint reference')
         key = PhaseKey.from_dict(checkpoint['key'])
+        _require(isinstance(checkpoint['checkpoint_id'], str) and re.fullmatch(r'[0-9a-f]{32}', checkpoint['checkpoint_id']) is not None,
+            'Invalid checkpoint identity')
+        call = calls_by_id.get(checkpoint['request_id'])
+        _require(call is not None and call.phase == key.phase and call.unit_ids == key.input_ids
+            and call.status == 'VALIDATED', 'Checkpoint request does not bind an accepted physical call')
+        _require(call.request_id not in checkpoint_requests and key.identity not in phase_keys, 'Repeated accepted request or phase key')
+        checkpoint_requests.add(call.request_id)
+        phase_keys.add(key.identity)
+        task_bindings.add((key.task_fingerprint, key.policy_sha256, key.route_sha256))
         receipt = checkpoint['receipt']
         _require(set(receipt) == _RECEIPT_FIELDS and key.phase in phases and receipt['phase'] == key.phase
             and receipt['task_version'] == 'nca-' + key.phase.lower().replace('_', '-') + '-2.0', 'Invalid v2 receipt')
@@ -186,12 +228,20 @@ def _validate_numbers_result_v2(document: Mapping[str, object], *, expected_unit
         for field in ('prompt_sha256', 'input_sha256', 'response_sha256'):
             _validate_hash(receipt[field], field)
         _require(all(receipt[k] == policy['model_route'][k] for k in ('route_id', 'provider', 'model', 'reasoning_effort')), 'Receipt route differs')
-        _require(set(checkpoint['accepted_input_ids']) <= set(key.input_ids), 'Foreign batch member')
+        members = checkpoint['accepted_input_ids']
+        _require(isinstance(members, list) and all(isinstance(x, str) for x in members)
+            and len(set(members)) == len(members) and set(members) <= set(key.input_ids), 'Duplicate or foreign batch member')
+        _require(bool(members) if key.phase == 'EXTRACTION' else not members, 'Invalid accepted phase membership')
+        _require(not accepted_members.intersection(members), 'Repeated accepted extraction member')
+        accepted_members.update(members)
         actual_receipts[key.phase].append(receipt)
+    _require(len(task_bindings) <= 1, 'Checkpoint task or policy bindings differ')
+    _require(not accepted_members.intersection(blocked) and accepted_members | set(blocked) == planned, 'Planning dispositions do not cover exact inputs')
     _require(actual_receipts == receipts, 'Receipt ledger differs')
     _require(metrics['accepted_phase_receipts'] == len(checkpoints) and metrics['batch_members'] == sum(len(x['accepted_input_ids']) for x in checkpoints), 'Receipt or member count differs')
     reused = metrics['reused_checkpoint_ids']
-    _require(len(set(reused)) == len(reused) and set(reused) <= {x['checkpoint_id'] for x in checkpoints}
+    _require(isinstance(reused, list) and all(isinstance(x, str) for x in reused)
+        and len(set(reused)) == len(reused) and set(reused) <= {x['checkpoint_id'] for x in checkpoints}
         and metrics['checkpoint_reuse'] == len(reused), 'Checkpoint reuse differs')
     _require(not any(g['extraction']['status'] in {'COMPLETE', 'PARTIAL'} for g in groups) or bool(receipts['EXTRACTION']), 'Assessed extraction needs a receipt')
     if (checks['number_accuracy'] or checks['footnote_review']) and any(
