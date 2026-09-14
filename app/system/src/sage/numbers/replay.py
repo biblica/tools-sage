@@ -217,6 +217,44 @@ def _validate_physical(key: PhaseKey, artifact: object) -> Mapping[str, object]:
     return value
 
 
+def _windows_process_api() -> tuple[Callable, Callable, Callable, Callable]:
+    """Bind non-destructive Win32 process waiting with full-width HANDLE signatures."""
+    import ctypes
+    from ctypes import wintypes
+    kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+    kernel.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+    kernel.OpenProcess.restype = wintypes.HANDLE
+    kernel.WaitForSingleObject.argtypes = (wintypes.HANDLE, wintypes.DWORD)
+    kernel.WaitForSingleObject.restype = wintypes.DWORD
+    kernel.CloseHandle.argtypes = (wintypes.HANDLE,)
+    kernel.CloseHandle.restype = wintypes.BOOL
+    return kernel.OpenProcess, kernel.WaitForSingleObject, kernel.CloseHandle, ctypes.get_last_error
+
+
+def _windows_process_exists(pid: int) -> bool:
+    """Treat Windows owners as live unless a process handle or absence proves death.
+
+    Signal zero is destructive on Windows. SYNCHRONIZE is sufficient to wait
+    without query, termination, or modification rights. Invalid-parameter means
+    absent only with a nonzero, representable DWORD PID and fixed valid arguments;
+    denied, failed, or otherwise ambiguous queries never authorize recovery.
+    """
+    if type(pid) is not int or not 0 < pid <= 0xffffffff:
+        return True
+    try:
+        open_process, wait, close, last_error = _windows_process_api()
+        handle = open_process(0x00100000, False, pid)  # SYNCHRONIZE only.
+        if not handle:
+            return last_error() != 87  # ERROR_INVALID_PARAMETER, absent PID.
+        try:
+            state = wait(handle, 0)
+        finally:
+            closed = close(handle)
+        return state != 0 or not closed  # Only WAIT_OBJECT_0 proves exit.
+    except (OSError, AttributeError, ValueError, OverflowError):
+        return True
+
+
 class NcaWorkspaceLock(WorkspaceLock):
     """Guard NCA directory ownership with a persistent process-held advisory lock.
 
@@ -253,7 +291,11 @@ class NcaWorkspaceLock(WorkspaceLock):
             return False
         try:
             acquired = datetime.fromisoformat(owner['acquired_utc'])
-            return acquired.tzinfo is not None and not _process_exists(owner['pid'])
+            if acquired.tzinfo is None:
+                return False
+            exists = (_windows_process_exists(owner['pid']) if os.name == 'nt'
+                      else _process_exists(owner['pid']))
+            return not exists
         except (ValueError, OverflowError):
             return False
 
