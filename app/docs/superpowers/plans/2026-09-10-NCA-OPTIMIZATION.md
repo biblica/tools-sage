@@ -10,7 +10,7 @@
 
 **Spec:** [NCA optimization design](../specs/2026-09-10-NCA-OPTIMIZATION-DESIGN.md). Also read the [initial NCA design](../specs/2026-09-09-NCA-DESIGN.md), [reference audit](../specs/2026-09-09-NCA-FINAL-REFERENCE-AUDIT.md), [qualification record](../../advanced/release/NCA-QUALIFICATION.md), and [model-handoff policy](../../advanced/models-and-ai/MODEL-HANDOFF-OPTIMIZATION.md).
 
-**Status:** Tasks 1–8 are implemented and independently reviewed. Task 9 deterministic qualification was independently reviewed at `04559e5a855d887a92342c379323c29112d0b09a`. The initial final whole-branch verdict is WITH_FIXES; consolidated functional fixes are measured at `93fe80837145af022b5c1e13e820afffc4992fba`, and scoped re-review is PENDING. Live-model qualification remains `LIVE_MODEL_BENCHMARK_NOT_RUN`; SQS: NOT_APPLIED. See the [optimization qualification](../../advanced/release/NCA-OPTIMIZATION-QUALIFICATION.md).
+**Status:** Tasks 1–8 are implemented and independently reviewed. Task 9 deterministic qualification was independently reviewed at `04559e5a855d887a92342c379323c29112d0b09a`. The initial final whole-branch verdict is WITH_FIXES; the first scoped review at `25c3fcc8af9cc630062291d02625625ee745af7d` returned NOT_APPROVED due to F1. Current residual fixes are measured at `ec3e46fad44d0375ad7d33f948d28df4863632a0`; residual verification is PENDING. Live-model qualification remains `LIVE_MODEL_BENCHMARK_NOT_RUN`; SQS: NOT_APPLIED. See the [optimization qualification](../../advanced/release/NCA-OPTIMIZATION-QUALIFICATION.md).
 
 ## Global constraints
 
@@ -335,6 +335,15 @@ The initial final whole-branch review of `04559e5a855d887a92342c379323c29112d0b0
 - [x] Regenerate all provider-free measurements from the exact functional fix revision and retain LIVE_MODEL_BENCHMARK_NOT_RUN and SQS: NOT_APPLIED.
 - [x] Verify Python 3.10 grammar/docstrings, protected qualification files, the unchanged authorized unpacked package and original reference interpretation evidence.
 - [x] Record the single settled full repository suite (1944 passed in 605.00s (0:10:04)) and current schema/package/source-audit gates; preserve final metadata bundle verification in the external fix report.
-- [ ] Obtain the controller's actual scoped re-review verdict and integrate locally only after approval.
+- [x] Record the first scoped verdict: NOT_APPROVED at `25c3fcc` due to residual F1.
+- [ ] Obtain actual residual verification and integrate locally only after approval.
 
-Historical qualification remains explicit: the six-command sequence belongs to `1512e260867ea2708d2b02c4cfb556906e72e7d0`, with the subsequent full-suite/benchmark amendment at `6001294dc2360ede1cdab445e5df8aedb64771da`. Current fix evidence is separate in the optimization qualification and benchmark receipt. Scoped re-review remains **PENDING**; the initial WITH_FIXES verdict is not approval of this fix. Native Windows and Python 3.10 runtime limitations remain unchanged, and no model speed claim is made.
+Historical qualification remains explicit: the six-command sequence belongs to `1512e260867ea2708d2b02c4cfb556906e72e7d0`, with the subsequent full-suite/benchmark amendment at `6001294dc2360ede1cdab445e5df8aedb64771da`. Current fix evidence is separate in the optimization qualification and benchmark receipt. First scoped review returned **NOT_APPROVED** due to F1; residual verification remains **PENDING**. Native Windows and Python 3.10 runtime limitations remain unchanged, and no model speed claim is made.
+
+### Sole residual F1
+
+- [x] Reproduce actual process death before output/receipt/manifest atomic replacement using portable subprocesses; retain all earlier recovery tests.
+- [x] Recognize only the three exact atomic temporary destinations and a governed nonempty portable token; keep current evidence validation, locks, diagnostic-only retention and path/link/unknown rejection unchanged. Functional commit: `ec3e46fad44d0375ad7d33f948d28df4863632a0`.
+- [x] Pass 219 current covering tests, including 35 benchmark tests; regenerate current provider-free measurements and pass current schema/package/source checks. Preserve final metadata checks in the external residual report.
+- [x] Retain the historical 1,944-test full-suite gate at `93fe808` without claiming it was rerun on F1. Preserve unchanged original qualification/reference evidence and platform/provider limits.
+- [ ] Record actual residual verification; current status is PENDING.
