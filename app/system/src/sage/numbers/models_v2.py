@@ -72,6 +72,8 @@ class GroupResult:
         for name in ('unmatched_target_ids', 'unresolved_target_ids', 'limitations'):
             _require(_strings(getattr(self, name)), 'Invalid group identifiers')
         refs = [ref.label() for ref in self.projected.western_references]
+        _require(len(refs) == len(set(refs)), 'Duplicate Western ledger coordinates')
+        _require(all(set(row) == {'western_reference', 'ol_reference', 'status', 'context', 'provenance'} for row in self.reference_rows), 'Invalid reference row fields')
         _require([row.get('western_reference') for row in self.reference_rows] == refs, 'Incomplete reference rows')
         component_refs = [x.western_reference.label() for x in self.components]
         _require(len(set(component_refs)) == len(component_refs) and set(component_refs) <= set(refs), 'Duplicate or foreign components')
@@ -86,6 +88,97 @@ class GroupResult:
         _require(len(ledger) == len(set(ledger)) and set(ledger) == set(ids), 'Incomplete or overlapping attribution')
         _require(self.alignment_status != 'UNAVAILABLE' or not self.components and bool(self.limitations), 'Unresolved alignment needs explicit limits')
         _require(self.alignment_status != 'COMPLETE' or component_refs == refs and not self.unresolved_target_ids, 'Resolved alignment must cover every row')
+        _require(self.alignment_status != 'NOT_ASSESSED' or not self.components and not self.expression_ownership
+            and not self.unresolved_target_ids, 'Unassessed alignment cannot claim numeric ownership')
+        _require(self.alignment_status != 'PARTIAL' or component_refs == refs and bool(self.limitations), 'Partial alignment needs rows and limits')
+        if len(refs) > 1 and self.alignment_status == 'COMPLETE':
+            _require(self.extraction.status == 'COMPLETE' and all(row['status'] != 'UNINDEXED' for row in self.reference_rows),
+                'Complete alignment lacks complete extraction or authority')
+        _validate_group_evidence(self)
+
+
+def _note_content_covers(note, span: tuple[int, int]) -> bool:
+    """Allow one disclosure span across adjacent original content fields without admitting gaps."""
+    cursor = span[0]
+    parts = sorted((part['start'], part['end']) for part in note.content_spans if part.get('kind') == 'CONTENT')
+    for start, end in parts:
+        if start > cursor:
+            break
+        cursor = max(cursor, end)
+        if cursor >= span[1]:
+            return True
+    return False
+
+
+def _validate_group_evidence(group: GroupResult) -> None:
+    """Bind typed evidence to exact streams and prevent cross-row policy or note authority."""
+    from .results import _expression_document, _validate_expression, _is_ordered_subsequence, _validate_fraction
+    from fractions import Fraction
+    from .groups import attributed_notes
+    rows = {row['western_reference']: row for row in group.reference_rows}
+    for row in group.reference_rows:
+        provenance = row['provenance']
+        _require(isinstance(provenance, Mapping) and set(provenance) == {'ol_source_ids', 'guidance_source_ids', 'unit_source_ids'}
+            and all(_strings(value) for value in provenance.values()), 'Invalid row source provenance')
+        _require(row['status'] in {'INDEXED', 'REGISTERED_ABSENCE', 'UNINDEXED'}, 'Invalid row status')
+        _require((row['status'] == 'INDEXED') == (row['ol_reference'] is not None), 'Row source nullability differs from ledger state')
+        _require(row['status'] != 'UNINDEXED' or not any(provenance.values()) and not row['context'], 'Unindexed row has invented authority')
+        if row['status'] != 'UNINDEXED':
+            context = row['context']
+            _require(isinstance(context, Mapping) and set(context) == {'language', 'ol_text', 'ol_values', 'variant_class', 'scholarship_status'}
+                and isinstance(context['language'], str) and isinstance(context['ol_text'], str)
+                and isinstance(context['ol_values'], tuple) and all(context[name] is None or isinstance(context[name], str)
+                    and bool(context[name]) for name in ('variant_class', 'scholarship_status')), 'Invalid original row source context')
+            for value in context['ol_values']:
+                _validate_fraction(str(value) if isinstance(value, Fraction) else value)
+    note_pairs = set()
+    target_spans = []
+    for expression in group.extraction.expressions:
+        _eid, span = _validate_expression(_expression_document(expression), role_required=False,
+            target_text=group.projected.target.main_text, expected_stream='main')
+        _require(not any(a < span[1] and span[0] < b for a, b in target_spans), 'Overlapping target evidence')
+        target_spans.append(span)
+    for component in group.components:
+        row = rows[component.western_reference.label()]
+        _require(row['status'] in {'INDEXED', 'REGISTERED_ABSENCE', 'UNINDEXED'}, 'Invalid row status')
+        _require(component.reading.registry_id in {None, component.western_reference.label()}, 'Foreign row policy registry')
+        provenance = row['provenance']
+        _require(component.reading.registry_id is None or bool(provenance['guidance_source_ids']), 'Registered reading lacks row guidance provenance')
+        selected = provenance['guidance_source_ids'] if component.reading.registry_id is not None else provenance['ol_source_ids']
+        if component.reading.selected in {'OL', 'ALT'}:
+            _require(component.reading.source_ids == selected, 'Reading source IDs differ from owning row policy')
+        if component.reading.semantic.outcome == 'PASS_UNIT_CONVERSION':
+            _require(bool(provenance['unit_source_ids']) and component.reading.semantic.evidence_ids == provenance['unit_source_ids'],
+                'Unit source IDs differ from owning conversion policy')
+        else:
+            _require(set(component.reading.semantic.evidence_ids) <= set(selected), 'Semantic sources differ from owning row policy')
+        if row['status'] == 'UNINDEXED':
+            _require(not any(provenance.values()) and not row['context'] and not component.source_expressions
+                and (len(group.reference_rows) == 1 or not component.owned_target_expression_ids) and component.reading.selected in {'UNSUPPORTED', 'UNASSESSED'},
+                'Unindexed row cannot own authoritative evidence')
+            continue
+        context = row['context']
+        _require(bool(context), 'Indexed component lacks exact source context')
+        resolved = (len(group.reference_rows) > 1 and group.alignment_status == 'COMPLETE') or component.reading.semantic.outcome not in {'INSUFFICIENT_EVIDENCE', 'REFERENCE_NOT_INDEXED', 'NOT_ASSESSED'}
+        source_ids, spans = set(), []
+        for expression in component.source_expressions:
+            eid, span = _validate_expression(_expression_document(expression), role_required=resolved,
+                target_text=context['ol_text'], expected_stream='ol')
+            _require(eid not in source_ids and not any(a < span[1] and span[0] < b for a, b in spans), 'Repeated source evidence')
+            source_ids.add(eid)
+            spans.append(span)
+        values = [str(value) for expression in component.source_expressions for value in expression.values]
+        _require(values == [str(value) for value in context['ol_values']] if resolved else _is_ordered_subsequence(values, [str(value) for value in context['ol_values']]),
+            'Source sequence differs from owning authority')
+        if len(group.reference_rows) > 1:
+            eligible, _ambiguous = attributed_notes(group.projected, component.western_reference)
+            notes = {note.note_id: note for note in eligible}
+            for note_id, span in zip(component.footnote.evidence_note_ids, component.footnote.evidence_spans):
+                _require(note_id in notes and notes[note_id].marker in {'f', 'fe', 'ef', 'efe'}
+                    and span[1] <= len(notes[note_id].text)
+                    and _note_content_covers(notes[note_id], span), 'Footnote evidence lacks unique row attribution')
+                _require((note_id, span) not in note_pairs, 'Repeated note evidence ownership')
+                note_pairs.add((note_id, span))
 
 
 @dataclass(frozen=True)

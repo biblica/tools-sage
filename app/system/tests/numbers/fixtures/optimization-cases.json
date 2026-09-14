@@ -124,6 +124,7 @@
     },
     {
       "case_id": "bridge_clear_roles",
+      "group_evidence": {"assignments": {"MAT 5:10": [1], "MAT 5:11": [2]}, "unresolved": [], "status": "COMPLETE", "limitations": []},
       "language": "en",
       "streams": {"body": "Three men came, then four women.", "notes": [], "headings": []},
       "western_references": ["MAT 5:10", "MAT 5:11"],
@@ -142,6 +143,7 @@
     },
     {
       "case_id": "bridge_repeated_values",
+      "group_evidence": {"assignments": {"MAT 5:12": [1], "MAT 5:13": [2]}, "unresolved": [], "status": "COMPLETE", "limitations": []},
       "language": "en",
       "streams": {"body": "Three men and three women.", "notes": [], "headings": []},
       "western_references": ["MAT 5:12", "MAT 5:13"],
@@ -160,6 +162,7 @@
     },
     {
       "case_id": "bridge_ambiguous",
+      "group_evidence": {"assignments": {"MAT 5:14": [], "MAT 5:15": []}, "unresolved": [1], "status": "PARTIAL", "limitations": ["AMBIGUOUS_BRIDGE_ASSIGNMENT"]},
       "language": "en",
       "streams": {"body": "Three people came.", "notes": [], "headings": []},
       "western_references": ["MAT 5:14", "MAT 5:15"],

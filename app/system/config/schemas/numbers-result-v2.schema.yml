@@ -7,7 +7,14 @@ controls:
   parent_extraction: once_per_group
   component_expression_ownership: disjoint_complete_partition
   reference_rows: all_projected_western_rows
-  unresolved_bridge_components: empty
+  alignment_status: [NOT_ASSESSED, COMPLETE, PARTIAL, UNAVAILABLE]
+  partial_bridge_components: retain_resolved_and_unresolved_rows
+  unavailable_bridge_components: empty
+  projection_note_attribution: exact_target_western_mapping_and_original_note_metadata
+  source_evidence: exact_row_sequence_or_ordered_partial_subsequence
+  row_provenance: distinct_ol_guidance_and_unit_source_ids_bound_to_selected_policy
+  disclosure_evidence: uniquely_owned_note_id_and_span
+  counters: parent_extractions_and_reference_coordinate_assessments
   unsupported_or_blocked_evidence: never_pass
   physical_calls: distinct_from_receipts_members_and_reuse
   phase_checkpoint_references: required

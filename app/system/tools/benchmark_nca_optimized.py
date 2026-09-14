@@ -45,11 +45,33 @@ class RecordedBatchTransport(baseline._RecordedTransport):
                 items.append({'input_id': supplied['input_id'], 'status': legacy['status'],
                     'limitations': legacy['limitations'], 'expressions': legacy['expressions']})
             raw = {'schema_version': '2.0', 'phase': 'EXTRACTION', 'batch_id': payload['batch_id'], 'work_units': items}
+        elif envelope['phase'] == 'GROUP_CORRESPONDENCE':
+            raw = self._group_response(payload)
         else:
             raw = dict(self._correspondence_response(payload), schema_version='2.0')
         self.requests.append(request)
         return ProviderResponse(provider='codex', model='gpt-5.6-sol', reasoning_effort='medium',
             content=json.dumps(raw, ensure_ascii=False, sort_keys=True), metadata={'request_id': f'recorded-{len(self.requests)}'})
+
+    def _group_response(self, payload):
+        """Render literal row allocations, including an explicitly unresolved bridge."""
+        case = self._cases[payload['unit_id']]
+        evidence = case['group_evidence']
+        target = payload['target']['expressions']
+        assignments = {ref: [target[index - 1]['expression_id'] for index in indexes]
+            for ref, indexes in evidence['assignments'].items()}
+        rows = {}
+        for row in case['reference_rows']:
+            ref = row['western_reference']
+            source = [baseline._response_expression(item, expression_id=f'ol-{ref}-{index}',
+                stream_id='ol', text=row['text']) for index, item in enumerate(row['expressions'], 1)]
+            rows[ref] = {'status': evidence['status'], 'limitations': evidence['limitations'],
+                'source_expressions': source, 'target_roles': [{'expression_id': item['expression_id'],
+                    'role': item['role'], 'role_spans': baseline._role_span(case['streams']['body'], item['role'])}
+                    for item in target if item['expression_id'] in assignments[ref]]}
+        return {'schema_version': '2.0', 'phase': 'GROUP_CORRESPONDENCE', 'unit_id': payload['unit_id'],
+            'status': evidence['status'], 'limitations': evidence['limitations'], 'rows': rows, 'assignments': assignments,
+            'unmatched_target_ids': [], 'unresolved_target_ids': [target[index - 1]['expression_id'] for index in evidence['unresolved']]}
 
 
 def run_synthetic_optimized(cases_path: Path) -> dict[str, object]:

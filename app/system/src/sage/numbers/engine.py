@@ -244,6 +244,15 @@ def _identify_reading(
             evidence.source_expressions if evidence is not None else (),
         )
 
+    return _identify_reading_from_evidence(row, extraction, evidence, bundle=bundle)
+
+
+def _identify_reading_from_evidence(
+    row: ReferenceRow, extraction: Extraction, evidence: CorrespondenceEvidence,
+    *, bundle: ReferenceBundle,
+) -> tuple[ReadingDecision, tuple[str, ...], tuple[NumericExpression, ...]]:
+    """Apply row policies to validated evidence without another physical adjudication."""
+    context, context_kind = _reading_context(row, extraction, bundle)
     target = evidence.target_extraction
     target_values = _flat_values(target)
     if context_kind is None:
@@ -507,6 +516,7 @@ def _evaluate_prepared_unit(
                 unit,
                 target=note_target,
                 canonical_references=note.anchor_references,
+                target_western_mapping={},
             )
             note_extraction = (note_extractions.get(note.note_id, Extraction((), "UNSUPPORTED", ("NOTE_EXTRACTION_UNAVAILABLE",)))
                 if note_extractions is not None else _extract(

@@ -55,6 +55,13 @@ _TASK_VERSIONS = {
     "FOOTNOTE": "nca-footnote-1.0",
 }
 _PHASE_INSTRUCTIONS = {
+    "GROUP_CORRESPONDENCE": (
+        "Adjudicate this one protected target bridge against separately keyed source rows. "
+        "Assign each atomic target expression to at most one Western row, or mark it unmatched or unresolved. "
+        "Return exact per-row OL source and target referent spans, preserving source order, multiplicity, "
+        "ranges, ratios and dual forms. Registered candidates belong only to their named row. "
+        "Never infer an empty source for an unindexed row; ambiguous allocation remains PARTIAL."
+    ),
     "EXTRACTION": (
         "Interpret every numeric expression in the supplied target main stream. Return exact "
         "half-open spans, quoted surfaces, reduced rational strings, kinds, qualifiers, units, "
@@ -1100,6 +1107,15 @@ class NcaModelTasks:
                 reading_context=reading_context, schema_version=version,
             ), task_version=f"nca-correspondence-{version}", schema=schema,
         )
+
+    def correspond_group(self, unit, extraction: Extraction, reference_group):
+        """Execute one row-keyed group phase through the same physical checkpoint boundary."""
+        from .groups import build_group_payload, group_response_schema, validate_group_correspondence
+        if unit != reference_group.unit:
+            raise _model_error("Group protected unit differs", "NCA_MODEL_PAYLOAD_INVALID")
+        return self._execute("GROUP_CORRESPONDENCE", build_group_payload(reference_group, extraction),
+            lambda response: validate_group_correspondence(reference_group, extraction, response),
+            task_version="nca-group-correspondence-2.0", schema=group_response_schema(reference_group))
 
     def assess_footnote(
         self,

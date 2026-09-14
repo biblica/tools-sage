@@ -160,7 +160,10 @@ def project_units(
             status = "AMBIGUOUS"
         else:
             status = "READY"
-        results.append(ProjectedUnit(target, tuple(sorted(western)), tuple(sorted(canonical)), precision, status))
+        mapping = {ref.label(): tuple(sorted(row.label() for row in (
+            {ref} if direct else set().union(*(western_for(atom) for atom in target_schema.local_to_canonical(ref)))
+        ) if row in western)) for ref in target.target_references}
+        results.append(ProjectedUnit(target, tuple(sorted(western)), tuple(sorted(canonical)), precision, status, mapping))
         covered.update(western)
     for ref in sorted(set(expected_western_references) - covered):
         # An adjacent note only transfers if its explicit anchor is this Western

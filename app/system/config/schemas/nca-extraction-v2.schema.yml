@@ -31,4 +31,8 @@ controls:
   correspondence_validator: system/src/sage/numbers/model_tasks.py::validate_correspondence_response
   footnote_validator: system/src/sage/numbers/model_tasks.py::_validate_footnote_response
   independent_phase_response_version: '2.0'
-  group_correspondence_activation: reserved_until_group_adjudication
+  group_correspondence_validator: system/src/sage/numbers/groups.py::validate_group_correspondence
+  group_correspondence_response_schema: system/src/sage/numbers/groups.py::group_response_schema
+  group_correspondence_activation: one_adjudication_per_protected_bridge
+  group_source_authority: exact_row_keyed_streams
+  group_target_ownership: assigned_unmatched_unresolved_disjoint_partition

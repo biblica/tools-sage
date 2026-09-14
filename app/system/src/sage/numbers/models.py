@@ -389,6 +389,7 @@ class ProjectedUnit:
     canonical_references: Tuple[VerseRef, ...]
     precision: str
     status: str
+    target_western_mapping: Mapping[str, Tuple[str, ...]] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Validate projected coordinates, precision label, and readiness state."""
@@ -401,6 +402,16 @@ class ProjectedUnit:
         if not isinstance(self.precision, str) or not self.precision:
             raise _invalid("projection precision", self.precision)
         _enum("projection status", self.status, PROJECTION_STATUSES)
+        mapping = self.target_western_mapping
+        targets = {ref.label() for ref in self.target.target_references}
+        western = {ref.label() for ref in self.western_references}
+        if not isinstance(mapping, Mapping) or mapping and set(mapping) != targets or any(
+            not isinstance(rows, tuple) or any(not isinstance(row, str) or row not in western for row in rows)
+            or rows != tuple(ref.label() for ref in self.western_references if ref.label() in rows)
+            for rows in mapping.values()
+        ):
+            raise _invalid("target Western mapping", mapping)
+        object.__setattr__(self, "target_western_mapping", freeze(mapping))
 
 
 @dataclass(frozen=True)

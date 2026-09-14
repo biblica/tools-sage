@@ -502,7 +502,7 @@ def test_missing_wip_remains_unsupported_and_visible_in_final_scope(make_workspa
     inputs = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
     original = inputs.projected_units[0]
     ref = original.western_references[0]
-    absent = replace(original, target=TargetUnit('missing:' + ref.label(), (), '', (), '0' * 64, {}), status='UNMAPPED')
+    absent = replace(original, target=TargetUnit('missing:' + ref.label(), (), '', (), '0' * 64, {}), status='UNMAPPED', target_western_mapping={})
     projected = (absent,) + inputs.projected_units[1:]
     inputs = replace(inputs, projected_units=projected, expected_unit_ids=tuple(x.target.unit_id for x in projected))
     tasks = _OfflineTasks(config, expected_route_id='nca-route-fixture')

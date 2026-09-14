@@ -337,4 +337,9 @@ def test_optimized_benchmark_preserves_nonbridge_goldens_and_reduces_local_work(
     assert receipt['calls']['phase_counts']['EXTRACTION'] < 12
     assert all(x['matches_baseline'] and x['matches_expressions'] and x['matches_uncertainty']
                for x in receipt['semantic_outcome_diffs'] if not x['bridge_result_new_behavior'])
-    assert all(x['observed'] == 'INSUFFICIENT_EVIDENCE' for x in receipt['semantic_outcome_diffs'] if x['bridge_result_new_behavior'])
+    assert {x['case_id']: x['observed'] for x in receipt['semantic_outcome_diffs'] if x['bridge_result_new_behavior']} == {
+        'bridge_clear_roles': 'PASS_AUTHORITY1', 'bridge_repeated_values': 'PASS_AUTHORITY1',
+        'bridge_ambiguous': 'INSUFFICIENT_EVIDENCE'}
+    assert all(x['observed'] == x['expected_optimized'] and x['observed_uncertainty'] == x['expected_optimized_uncertainty']
+        for x in receipt['semantic_outcome_diffs'])
+    assert receipt['calls']['phase_counts']['GROUP_CORRESPONDENCE'] == 3
