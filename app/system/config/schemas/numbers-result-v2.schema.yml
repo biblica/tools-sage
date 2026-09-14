@@ -20,3 +20,6 @@ controls:
   planned_extraction_calls: initial_batch_count_exact_nonnegative_integer_optional_for_historical_v2
   phase_checkpoint_references: required
   sqs_confidence_checks_applied: false
+  note_extractions: optional_for_historical_v2_exact_note_ids_spans_and_admitted_expressions
+  usage_report: descriptive_from_parent_heading_and_note_extractions_no_inferred_rules
+  absent_stylesheet_provenance: paired_null_selector_and_sha256

@@ -114,6 +114,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/plans/2026-09-03-RTC-STC-CANONICAL-IDENTITY.md`
 - `docs/superpowers/plans/2026-09-09-NCA-IMPLEMENTATION.md`
 - `docs/superpowers/plans/2026-09-10-NCA-OPTIMIZATION.md`
+- `docs/superpowers/plans/2026-09-14-NCA-NUMBER-USAGE.md`
 - `docs/superpowers/specs`
 - `docs/superpowers/specs/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
 - `docs/superpowers/specs/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS-DESIGN.md`
@@ -836,6 +837,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/telemetry.py`
 - `system/src/sage/numbers/transport.py`
 - `system/src/sage/numbers/units.py`
+- `system/src/sage/numbers/usage.py`
 - `system/src/sage/numbers/variants.py`
 - `system/src/sage/ol_referrals.py`
 - `system/src/sage/ollama_admin.py`
@@ -956,6 +958,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_nca_jobs.py`
 - `system/tests/numbers/test_nca_menu.py`
 - `system/tests/numbers/test_nca_tasks.py`
+- `system/tests/numbers/test_optional_style.py`
 - `system/tests/numbers/test_policy.py`
 - `system/tests/numbers/test_projection.py`
 - `system/tests/numbers/test_reference.py`
@@ -970,6 +973,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_target.py`
 - `system/tests/numbers/test_transport.py`
 - `system/tests/numbers/test_units.py`
+- `system/tests/numbers/test_usage.py`
 - `system/tests/numbers/test_variants.py`
 - `system/tests/test_authority_boundaries.py`
 - `system/tests/test_beta_saw_policy.py`

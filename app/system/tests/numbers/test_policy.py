@@ -42,12 +42,12 @@ def test_all_toggle_combinations_require_at_least_one_enabled(
 
 
 @pytest.mark.parametrize("presentation", (False, True))
-def test_style_binding_remains_mandatory_when_presentation_is_off(
+def test_selected_style_binding_remains_validated_when_presentation_is_off(
     make_workspace,
     monkeypatch: pytest.MonkeyPatch,
     presentation: bool,
 ) -> None:
-    """Disabling presentation never makes a missing mandatory style profile acceptable."""
+    """Disabling presentation never bypasses validation of an explicitly bound guide."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     config, _style_bytes = _prepare_nca_workspace(root)
     _route(monkeypatch)

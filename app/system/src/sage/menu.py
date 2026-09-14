@@ -689,7 +689,7 @@ class SageControlCenter:
             from .numbers.policy import validate_nca_job_prerequisites
             bindings = validate_nca_job_prerequisites(load_ecosystem(self.store.settings_path), project)
             return {'state': 'READY', 'workflow': 'nca', 'reference_qualification': bindings.bundle.qualification_status,
-                    'number_style': bindings.style.selector}
+                    'number_style': bindings.style.selector if bindings.style else None}
         settings = self.store.ensure_runtime_files(project)
         config = load_ecosystem(settings)
         state = read_state(ecosystem_state_path(config.runtime_state_root))

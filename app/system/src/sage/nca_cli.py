@@ -12,7 +12,7 @@ from sage.numbers.style import import_style_profile, load_style_profile
 
 CHECK_LABELS = {
     'number_accuracy': 'Number accuracy',
-    'presentation_consistency': 'Presentation consistency',
+    'presentation_consistency': 'Number usage and presentation',
     'footnote_review': 'Footnote review and recommendations',
 }
 
@@ -35,7 +35,7 @@ def check_overrides(args: argparse.Namespace) -> dict[str, bool]:
 def add_nca_task_arguments(parser: argparse.ArgumentParser) -> None:
     """Register NCA selectors and booleans without adding provider overrides."""
     parser.add_argument('--numbers-package', help='NCA reference package ID; omitted uses the bundled Core reference')
-    parser.add_argument('--number-style', help='Required configured NCA profile ID/version for a new Job')
+    parser.add_argument('--number-style', help='Optional configured NCA profile ID/version; omitted means no stylesheet')
     for key, label in CHECK_LABELS.items():
         parser.add_argument('--' + key.replace('_', '-'), action=argparse.BooleanOptionalAction,
                             default=None, help=label + '; omitted options use saved Job defaults')
@@ -109,7 +109,7 @@ def command_nca_create(args: argparse.Namespace, config) -> Mapping[str, object]
         job = store.load_job(args.job_id, tool='nca')
         if args.output_project != job.bindings['wip']:
             raise ValidationError('NCA WIP differs from the bound Job.', code='NCA_TASK_BINDING_INVALID')
-        if args.numbers_package or args.number_style:
+        if args.numbers_package is not None or args.number_style is not None:
             raise ValidationError('Resource selectors belong to Job setup; revise the Job before creating a new Run.', code='NCA_TASK_BINDING_INVALID')
     else:
         if args.run_id:

@@ -23,8 +23,9 @@ controls:
     source: qualified_content_addressed_resource
     fields: [package_id, sha256, parser_version, qualification_status, diagnostics, inventory_sha256, files]
   number_style:
-    source: Run_owned_exact_copy
+    source: Run_owned_exact_copy_or_explicit_absence
     fields: [selector, sha256, profile_id, version, language, script]
+    absent: null_selector_sha256_profile_id_version_no_profile_file
   model_contract:
     fields: [skill_id, skill_sha256, prompt_task_contract_version, structured_response_schema_sha256]
   model_route:

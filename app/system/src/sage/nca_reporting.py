@@ -83,10 +83,20 @@ _ENGLISH.update({
     'report.nca.preflight': 'Scoped preflight',
     'report.nca.reference_expectations': 'Reference expectations (Western)',
     'report.nca.protected_groups': 'Protected groups',
-    'report.nca.mandatory_profile': 'Number Style Profile (required even with presentation OFF)',
+    'report.nca.mandatory_profile': 'Number Style Profile (optional)',
     'report.nca.input_language': 'Input language and script',
     'report.nca.failed_calls': 'Failed calls',
     'report.nca.exact_evidence': 'Exact evidence',
+    'report.nca.usage_title': 'Number Usage Report',
+    'report.nca.usage_notice': 'Observed usage in this Run scope, derived from accepted numeric extraction. Counts describe observed expressions; partial extraction is not complete coverage.',
+    'report.nca.usage_forms': 'Observed forms',
+    'report.nca.usage_stream': 'Text location',
+    'report.nca.usage_form': 'Form',
+    'report.nca.usage_details': 'Numeric details',
+    'report.nca.usage_mixed': 'Mixed usage for operator review',
+    'report.nca.usage_mixed_notice': 'Mixed forms can be appropriate in different contexts. These observations are not violations of approved rules; they do not create a stylesheet. Separator characters are observed without assuming a decimal or grouping convention.',
+    'report.nca.usage_no_mixed': 'No mixed usage identified in the available extracted evidence.',
+    'report.nca.no_stylesheet': 'No stylesheet selected. Checks against approved rules are not assessed; numeric accuracy and footnote review remain independent.',
 })
 _ENGLISH_LANGUAGES = frozenset({"en", "en-US", "en-GB"})
 _CATALOG_LANGUAGES = _ENGLISH_LANGUAGES | {"id", "fr", "ru", "pt-BR", "uk"}
@@ -411,7 +421,8 @@ def render_nca_report(
         f"- Job: `{provenance.get('job_id', 'NOT RECORDED')}`",
         f"- Run: `{provenance.get('run_id', 'NOT RECORDED')}`",
         f"- WIP: `{wip.get('identity', 'NOT RECORDED')}` (`{wip.get('sha256', 'NOT RECORDED')}`)",
-        f"- {text('report.nca.style_profile')}: `{style.get('selector', 'NOT RECORDED')}` (`{style.get('sha256', 'NOT RECORDED')}`)",
+        (f"- {text('report.nca.style_profile')}: `{style['selector']}` (`{style.get('sha256', 'NOT RECORDED')}`)"
+         if style.get('selector') else f"- {text('report.nca.no_stylesheet')}"),
         f"- {text('report.nca.reference_package')}: `{reference.get('package_id', 'NOT RECORDED')}` (`{reference.get('sha256', 'NOT RECORDED')}`)",
         "",
         f"## {text('report.nca.checks')}",
@@ -514,6 +525,8 @@ def render_nca_report(
     for raw_finding in (() if is_v2 else findings):
         finding = _mapping(raw_finding, "finding")
         lines.extend(_finding_lines(finding, text))
+    from .numbers.usage import render_number_usage
+    lines.extend(render_number_usage(document, text))
     lines.extend(
         [
             f"## {text('report.nca.limitations')}",

@@ -57,6 +57,7 @@ class GroupResult:
     unresolved_target_ids: tuple[str, ...]
     style_findings: tuple[Mapping[str, object], ...]
     limitations: tuple[str, ...]
+    note_extractions: Mapping[str, Extraction] | None = None
 
     def __post_init__(self) -> None:
         """Freeze nested evidence and reject duplicate, missing, or foreign attribution."""
@@ -68,6 +69,11 @@ class GroupResult:
             object.__setattr__(self, name, freeze(value))
         _require(isinstance(self.expression_ownership, Mapping), 'Invalid ownership mapping')
         object.__setattr__(self, 'expression_ownership', freeze(self.expression_ownership))
+        if self.note_extractions is not None:
+            _require(isinstance(self.note_extractions, Mapping)
+                and set(self.note_extractions) <= {note.note_id for note in self.projected.target.notes}
+                and all(isinstance(value, Extraction) for value in self.note_extractions.values()), 'Invalid note extractions')
+            object.__setattr__(self, 'note_extractions', freeze(self.note_extractions))
         _require(isinstance(self.components, tuple) and all(isinstance(x, ComponentResult) for x in self.components), 'Invalid components')
         for name in ('unmatched_target_ids', 'unresolved_target_ids', 'limitations'):
             _require(_strings(getattr(self, name)), 'Invalid group identifiers')

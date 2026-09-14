@@ -108,7 +108,7 @@ def create_nca_job(
         job_id=job_id,
         display_name=display_name or f"NCA {wip}",
         bindings={"wip": wip},
-        profiles={"number_style": style.selector},
+        profiles={"number_style": style.selector} if style else {},
         resources={
             "numbers_package": {
                 "package_id": bundle.package_id,
@@ -154,7 +154,7 @@ def create_nca_run(
         """Write every NCA-owned Run artifact inside JobStore's rollback boundary."""
         snapshot = build_nca_run_snapshot(config, job, checks=exact_checks, route=route)
         resolved = validate_nca_job_prerequisites(config, job)
-        write_nca_run_snapshot(root, snapshot, style_bytes=resolved.style.content_bytes)
+        write_nca_run_snapshot(root, snapshot, style_bytes=resolved.style.content_bytes if resolved.style else None)
 
     return store.create_run(
         job,
@@ -208,7 +208,7 @@ def restart_nca_run(config: EcosystemConfig, *, job: Job, run: Run) -> Run:
             """Seal current Job defaults and resources in the replacement Run."""
             snapshot = build_nca_run_snapshot(config, job, checks=exact_checks, route=route)
             resolved = validate_nca_job_prerequisites(config, job)
-            write_nca_run_snapshot(root, snapshot, style_bytes=resolved.style.content_bytes)
+            write_nca_run_snapshot(root, snapshot, style_bytes=resolved.style.content_bytes if resolved.style else None)
 
         replacement = store.create_run(
             job,
@@ -300,7 +300,7 @@ def _create_nca_task_locked(
 
     skill = load_skill_registry(runtime_config.root)[("nca", "numbers")]
     policy_path = run.root / "check-policy.json"
-    style_path = run.root / "profiles/number-style.yml"
+    style_path = run.root / "profiles/number-style.yml" if policy['number_style']['selector'] is not None else None
     snapshot = verify_wip_snapshot(run.root / "snapshot", require_file_inventory=True)
     package = policy["reference_package"]
     package_root = _package_root(runtime_config, str(package["package_id"]))
@@ -320,13 +320,14 @@ def _create_nca_task_locked(
         }
         for relative, digest in sorted(package["files"].items())
     )
-    reads.append(
-        {
-            "path": _relative(runtime_config.root, style_path),
-            "sha256": sha256_file(style_path),
-            "evidence_class": PROCESS_CONTROL,
-        }
-    )
+    if style_path is not None:
+        reads.append(
+            {
+                "path": _relative(runtime_config.root, style_path),
+                "sha256": sha256_file(style_path),
+                "evidence_class": PROCESS_CONTROL,
+            }
+        )
     governance = [
         {
             "path": _relative(runtime_config.root, policy_path),
@@ -375,7 +376,7 @@ def _create_nca_task_locked(
             "resource_bindings": {
                 "WIP": project.project_id,
                 "NUMBERS_PACKAGE": package["package_id"],
-                "NUMBER_STYLE": policy["number_style"]["selector"],
+                **({"NUMBER_STYLE": policy["number_style"]["selector"]} if style_path else {}),
             },
             "resource_display_names": {},
             "output_project": project.project_id,
@@ -400,14 +401,14 @@ def _create_nca_task_locked(
             "packets": {
                 "wip_snapshot": _relative(runtime_config.root, run.root / "snapshot"),
                 "reference_package": str(package["package_id"]),
-                "number_style": _relative(runtime_config.root, style_path),
+                **({"number_style": _relative(runtime_config.root, style_path)} if style_path else {}),
             },
             "resource_fingerprints": {
                 "settings": sha256_file(runtime_config.settings_path),
                 "check_policy": sha256_file(policy_path),
                 "wip": str(policy["wip"]["inventory_sha256"]),
                 "reference_package": str(package["inventory_sha256"]),
-                "number_style": str(policy["number_style"]["sha256"]),
+                **({"number_style": str(policy["number_style"]["sha256"])} if style_path else {}),
                 "model_route": str(policy["model_route"]["route_id"]),
             },
             "expected_references": list(expected_refs),
@@ -1140,7 +1141,14 @@ def _execute_optimized_task(path: Path, manifest: Mapping[str, object], config: 
         """Reconcile staged decisions with freshly replayed typed phase evidence and current scope."""
         accepted = validate_numbers_result_v2(output, expected_unit_ids=expected_ids, allowed_evidence_ids=allowed_ids)
         for field in ('groups', 'findings', 'coverage', 'summary', 'check_policy', 'provenance', 'model_receipts'):
-            if accepted[field] != document[field]:
+            replayed = document[field]
+            if field == 'groups' and len(accepted[field]) == len(replayed):
+                # Older v2 publications predate retained note extractions. Compare
+                # their original evidence shape without rewriting accepted bytes.
+                replayed = [{key: value for key, value in group.items()
+                             if key != 'note_extractions' or key in prior}
+                            for prior, group in zip(accepted[field], replayed)]
+            if accepted[field] != replayed:
                 raise ValidationError('Staged NCA evidence differs from current phase replay', code='NCA_RESULT_EVIDENCE_INVALID')
         if accepted['metrics']['calls'] != durable_calls:
             raise ValidationError('Staged physical calls differ from durable attempt evidence', code='NCA_RESULT_EVIDENCE_INVALID')

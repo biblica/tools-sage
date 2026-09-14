@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from .models import UnitResult, FootnoteDecision
 from .models_v2 import GroupResult, OptimizedRunResult
-from .results import _unit_document, _plain, _validate_policy, NCA_CAPABILITY_LIMITATION
+from .results import _unit_document, _expression_document, _plain, _validate_policy, NCA_CAPABILITY_LIMITATION
 
 
 def component_views(group: GroupResult) -> tuple[UnitResult, ...]:
@@ -102,7 +102,10 @@ def group_document(group: GroupResult, *, checks: Mapping[str, bool]) -> dict[st
         'reference_rows': _plain(group.reference_rows), 'components': components,
         'alignment_status': group.alignment_status, 'expression_ownership': dict(group.expression_ownership),
         'unmatched_target_ids': list(group.unmatched_target_ids), 'unresolved_target_ids': list(group.unresolved_target_ids),
-        'style_findings': unit['style_findings'], 'limitations': list(group.limitations)}
+        'style_findings': unit['style_findings'], 'limitations': list(group.limitations),
+        **({'note_extractions': {key: {'status': value.status, 'limitations': list(value.limitations),
+            'expressions': [_expression_document(item) for item in value.expressions]}
+            for key, value in group.note_extractions.items()}} if group.note_extractions is not None else {})}
 
 
 def numbers_result_document_v2(result: OptimizedRunResult, *, provenance: Mapping[str, object],
@@ -129,11 +132,15 @@ def _require(condition: bool, message: str, code: str = 'NCA_RESULT_SCHEMA_INVAL
 def _group_view(group: Mapping[str, object], checks: Mapping[str, bool]) -> dict[str, object]:
     """Validate group ownership then construct shared field-validation input once per parent."""
     from .results import _require_keys
+    from .usage import validate_note_extractions
     from .engine import _unsupported_reading, _not_assessed_reading
     _require_keys(group, {'unit_id', 'projection', 'extraction', 'reference_rows', 'components', 'alignment_status',
-        'expression_ownership', 'unmatched_target_ids', 'unresolved_target_ids', 'style_findings', 'limitations'}, 'group')
+        'expression_ownership', 'unmatched_target_ids', 'unresolved_target_ids', 'style_findings', 'limitations'}
+        | ({'note_extractions'} if 'note_extractions' in group else set()), 'group')
     projection, rows, components = group['projection'], group['reference_rows'], group['components']
     _require(isinstance(projection, Mapping) and isinstance(rows, list) and isinstance(components, list), 'Invalid group structure')
+    if 'note_extractions' in group:
+        validate_note_extractions(group['note_extractions'], projection, enabled=checks['presentation_consistency'])
     refs = projection['western_references']
     _require(group['alignment_status'] in {'COMPLETE', 'PARTIAL', 'UNAVAILABLE', 'NOT_ASSESSED'}, 'Invalid alignment status')
     _require(len(rows) == len(refs), 'Reference row coverage differs', 'NCA_RESULT_REFERENCE_INVALID')
@@ -249,7 +256,9 @@ def _typed_group(raw: Mapping[str, object]) -> GroupResult:
             item['final_outcome'], tuple(item['limitations'])))
     return GroupResult(unit, extraction, tuple(raw['reference_rows']), tuple(components), raw['alignment_status'],
         raw['expression_ownership'], tuple(raw['unmatched_target_ids']), tuple(raw['unresolved_target_ids']),
-        tuple(raw['style_findings']), tuple(raw['limitations']))
+        tuple(raw['style_findings']), tuple(raw['limitations']),
+        {key: Extraction(tuple(expression(item) for item in value['expressions']), value['status'], tuple(value['limitations']))
+         for key, value in raw['note_extractions'].items()} if 'note_extractions' in raw else None)
 
 
 def _component_document(group: Mapping[str, object], component: Mapping[str, object]) -> dict[str, object]:

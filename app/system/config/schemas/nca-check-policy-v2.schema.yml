@@ -9,3 +9,8 @@ controls:
   reuse_scope: TASK
   phase_contracts: exact_installed_bytes_and_actual_model_route
   historical_runs: preserve_original_version
+  number_style:
+    selected: Run_owned_exact_copy
+    absent: null_selector_sha256_profile_id_version_no_profile_file
+    absent_language_and_script: sealed_WIP_identity
+    presentation_without_stylesheet: descriptive_usage_only
