@@ -494,12 +494,17 @@ os._exit(17)
 @pytest.mark.parametrize('owner_kind', ['live', 'foreign', 'missing', 'invalid_json', 'not_object',
     'missing_pid', 'string_pid', 'boolean_pid', 'zero_pid', 'negative_pid', 'missing_host',
     'wrong_operation', 'invalid_timestamp', 'extra_field', 'duplicate_field', 'huge_pid'])
-def test_unproven_lock_ownership_is_never_reclaimed(phase_store, phase_key, validator, owner_kind):
+def test_unproven_lock_ownership_is_never_reclaimed(phase_store, phase_key, validator, owner_kind, monkeypatch):
     """Live, foreign, malformed, and unpublished ownership cannot authorize lock removal."""
     import os
     import socket
     from sage.errors import LockError
     from sage.locking import utc_now
+    def unsafe_probe(pid):
+        """Turn any accidental Windows signal-zero regression into a safe test failure."""
+        raise AssertionError('Windows must never call the POSIX process probe')
+    if os.name == 'nt':
+        monkeypatch.setattr(replay_module(), '_process_exists', unsafe_probe)
     path = phase_store.task_root / 'locks/nca-phases.lock'
     path.mkdir(parents=True)
     owner = {'pid': os.getpid(), 'host': socket.gethostname(), 'operation': 'NCA_PHASE_LEDGER', 'acquired_utc': utc_now()}
@@ -686,3 +691,129 @@ store.recover_publication(checkpoints=checkpoints, validate_phase=validate_phase
     assert resumed.recover_publication(checkpoints=checkpoints,
         validate_phase=lambda key, value: validator(value), validate_final=validate_final) == output
     assert json.loads((phase_store.task_root / 'validation/llm-execution-receipt.json').read_text()) == receipt
+
+
+class FakeWindowsProcessApi:
+    """Supply only the non-destructive kernel process-query boundary for local decisions."""
+
+    def __init__(self, handle, error, wait_result, close_result=True):
+        """Record literal OS outcomes without invoking a real Windows process API."""
+        self.handle = handle
+        self.error = error
+        self.wait_result = wait_result
+        self.close_result = close_result
+        self.opened = []
+        self.waited = []
+        self.closed = []
+
+    def open_process(self, access, inherit, pid):
+        """Return the scripted handle while recording the requested least privileges."""
+        self.opened.append((access, inherit, pid))
+        return self.handle
+
+    def wait(self, handle, milliseconds):
+        """Return one immediate wait disposition or a scripted API failure."""
+        self.waited.append((handle, milliseconds))
+        if isinstance(self.wait_result, Exception):
+            raise self.wait_result
+        return self.wait_result
+
+    def close(self, handle):
+        """Record release of the exact full-width process handle."""
+        self.closed.append(handle)
+        return self.close_result
+
+    def last_error(self):
+        """Return the error associated with the scripted failed OpenProcess call."""
+        return self.error
+
+    def bindings(self):
+        """Expose the same four bounded callables as the real ctypes binding loader."""
+        return self.open_process, self.wait, self.close, self.last_error
+
+
+@pytest.mark.parametrize('handle,error,wait_result,close_result,stale', [
+    (None, 87, None, True, True), (None, 5, None, True, False),
+    (None, 6, None, True, False), (None, 0, None, True, False),
+    (0x100000001, 0, 0, True, True), (0x100000001, 0, 0x102, True, False),
+    (0x100000001, 0, 0xffffffff, True, False), (0x100000001, 0, 0x80, True, False),
+    (0x100000001, 0, 55, True, False), (0x100000001, 0, OSError('wait unavailable'), True, False),
+    (0x100000001, 0, 0, False, False),
+])
+def test_windows_owner_liveness_uses_only_safe_handle_decisions(tmp_path, monkeypatch, handle, error, wait_result, close_result, stale):
+    """Windows recovery admits only proven absence/exit and never dispatches signal zero."""
+    from types import SimpleNamespace
+    module = replay_module()
+    lock = module.NcaWorkspaceLock(tmp_path / 'execution.lock', 'NCA_TASK_EXECUTION')
+    owner = {**lock.owner, 'pid': 44444}
+    api = FakeWindowsProcessApi(handle, error, wait_result, close_result)
+    def unsafe_probe(pid):
+        """Fail safely if the Windows branch reaches the POSIX signal-zero probe."""
+        raise AssertionError('Windows must never call the POSIX process probe')
+    monkeypatch.setattr(module, '_process_exists', unsafe_probe)
+    monkeypatch.setattr(module, '_windows_process_api', api.bindings, raising=False)
+    monkeypatch.setattr(module, 'os', SimpleNamespace(name='nt'))
+    assert lock._is_stale(owner) is stale
+    assert api.opened == [(0x00100000, False, 44444)]
+    assert api.waited == ([(handle, 0)] if handle else [])
+    assert api.closed == ([handle] if handle else [])
+
+
+@pytest.mark.parametrize('pid', [0, -1, True, '4', 0x100000000, 10 ** 100])
+def test_windows_owner_pid_cannot_truncate_into_an_absence_claim(tmp_path, monkeypatch, pid):
+    """An invalid or overflowing DWORD PID remains unproven without any process query."""
+    from types import SimpleNamespace
+    module = replay_module()
+    lock = module.NcaWorkspaceLock(tmp_path / 'execution.lock', 'NCA_TASK_EXECUTION')
+    api = FakeWindowsProcessApi(None, 87, None)
+    def unsafe_probe(value):
+        """Prevent tests from ever dispatching a real unsafe platform signal probe."""
+        raise AssertionError('POSIX probe reached for a Windows owner')
+    monkeypatch.setattr(module, '_process_exists', unsafe_probe)
+    monkeypatch.setattr(module, '_windows_process_api', api.bindings, raising=False)
+    monkeypatch.setattr(module, 'os', SimpleNamespace(name='nt'))
+    assert lock._is_stale({**lock.owner, 'pid': pid}) is False
+    assert not api.opened
+
+
+def test_native_live_owner_survives_inspection_then_exited_owner_recovers(tmp_path, monkeypatch):
+    """Native CI probes a live child harmlessly and recovers only after its explicit exit."""
+    import os
+    import subprocess
+    import sys
+    from sage.errors import LockError
+    module = replay_module()
+    def unsafe_probe(pid):
+        """Keep native Windows regression failures harmless to either test process."""
+        raise AssertionError('Windows must never call the POSIX process probe')
+    if os.name == 'nt':
+        monkeypatch.setattr(module, '_process_exists', unsafe_probe)
+    script = '''"""Own a legacy unguarded lock until the parent permits orderly process exit."""
+import os
+from pathlib import Path
+import sys
+from sage.locking import WorkspaceLock
+WorkspaceLock(Path(sys.argv[1]), 'NCA_TASK_EXECUTION').acquire()
+print('ready', flush=True)
+sys.stdin.readline()
+os._exit(17)
+'''
+    env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[2] / 'src'),
+               PYTHONDONTWRITEBYTECODE='1', SAGE_DISABLE_OPERATIONAL_LOG='1')
+    path = tmp_path / 'execution.lock'
+    child = subprocess.Popen([sys.executable, '-c', script, str(path)], env=env, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        assert child.stdout.readline().strip() == 'ready'
+        with pytest.raises(LockError):
+            module.NcaWorkspaceLock(path, 'NCA_TASK_EXECUTION').acquire()
+        assert child.poll() is None, 'liveness inspection terminated the live owner'
+        stdout, stderr = child.communicate(input='exit\n', timeout=15)
+        assert child.returncode == 17, stderr + stdout
+        with module.NcaWorkspaceLock(path, 'NCA_TASK_EXECUTION'):
+            assert path.is_dir()
+        assert not path.exists()
+    finally:
+        if child.poll() is None:
+            child.kill()
+            child.wait(timeout=5)
