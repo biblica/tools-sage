@@ -26,9 +26,11 @@ from .models import (
     TargetUnit,
     UnitResult,
 )
+from .models_v2 import OptimizedRunResult
+from .replay import PhaseStore
 from .reference import parse_values
 from .style import _assess_prepared_style, validate_style_profile
-from .execution import ExecutionInputs, reference_restrictions
+from .execution import ExecutionInputs, ScopeInventory, reference_restrictions
 from .units import compare_registered_units, parse_registered_quantity
 from .variants import select_reading
 
@@ -44,6 +46,17 @@ _PASS_OUTCOMES = frozenset(
         "NO_CONFIGURED_OL_READING",
     }
 )
+
+
+def candidate_group_ids(inventory: ScopeInventory, extractions: Mapping[str, Extraction]) -> frozenset[str]:
+    """Union expected rows with detected or unresolved body owners without shrinking scope."""
+    candidates = set(inventory.expected_groups)
+    for unit in inventory.projected_units:
+        extraction = extractions.get(unit.target.unit_id)
+        if (extraction is None or extraction.status != "COMPLETE"
+                or any(item.stream_id == "main" for item in extraction.expressions)):
+            candidates.add(unit.target.unit_id)
+    return frozenset(candidates)
 
 
 def _checks(policy: Mapping[str, object]) -> Mapping[str, bool]:
@@ -376,6 +389,7 @@ def _evaluate_prepared_unit(
     unit: ProjectedUnit, *, bundle: ReferenceBundle, language: str,
     language_profile: Mapping[str, object], style_profile: Mapping[str, object],
     checks: Mapping[str, bool], model_tasks: object | None,
+    extraction: Extraction | None = None, note_extractions: Mapping[str, Extraction] | None = None,
 ) -> UnitResult:
     """Evaluate one stream using only boundary-validated resources and switches."""
     validated_style = style_profile
@@ -393,9 +407,10 @@ def _evaluate_prepared_unit(
         }
         for ref, row in zip(unit.western_references, resolved_rows)
     )
-    extraction = _extract(
-        unit, language=language, style_profile=validated_style, model_tasks=model_tasks
-    )
+    if extraction is None:
+        extraction = _extract(
+            unit, language=language, style_profile=validated_style, model_tasks=model_tasks
+        )
     limitations = list(extraction.limitations)
     source_expressions: tuple[NumericExpression, ...] = ()
     reference_context: Mapping[str, object] = {}
@@ -493,12 +508,9 @@ def _evaluate_prepared_unit(
                 target=note_target,
                 canonical_references=note.anchor_references,
             )
-            note_extraction = _extract(
-                note_unit,
-                language=language,
-                style_profile=validated_style,
-                model_tasks=model_tasks,
-            )
+            note_extraction = (note_extractions.get(note.note_id, Extraction((), "UNSUPPORTED", ("NOTE_EXTRACTION_UNAVAILABLE",)))
+                if note_extractions is not None else _extract(
+                    note_unit, language=language, style_profile=validated_style, model_tasks=model_tasks))
             limitations.extend(
                 f"Note {note.note_id}: {item}" for item in note_extraction.limitations
             )
@@ -900,3 +912,11 @@ def _evaluate_prepared_units(
     summary = dict(summarize(results, checks=checks))
     summary["findings"] = len(findings)
     return RunResult(results, findings, coverage, summary)
+
+
+def evaluate_optimized_run(inputs: ExecutionInputs, *, model_tasks: object, phase_store: PhaseStore, run_id: str) -> OptimizedRunResult:
+    """Execute complete scope through bounded extraction and receipt-bound phase replay."""
+    from .hybrid import evaluate
+    if not isinstance(inputs, ExecutionInputs):
+        raise ValidationError('NCA execution context is required', code='NCA_ENGINE_INPUT_INVALID')
+    return evaluate(inputs, model_tasks=model_tasks, phase_store=phase_store, run_id=run_id)

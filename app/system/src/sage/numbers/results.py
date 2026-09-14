@@ -897,6 +897,9 @@ def validate_numbers_result(
     allowed_evidence_ids: tuple[str, ...],
 ) -> dict[str, object]:
     """Validate one complete canonical NCA result against external coverage bounds."""
+    if isinstance(document, Mapping) and document.get('schema_version') == '2.0':
+        from .results_v2 import validate_numbers_result_v2
+        return validate_numbers_result_v2(document, expected_unit_ids=expected_unit_ids, allowed_evidence_ids=allowed_evidence_ids)
     raw = _require_mapping(document, "NCA result", "NCA_RESULT_SCHEMA_INVALID")
     _require_keys(raw, {"schema_version", "workflow", "check_id", "provenance", "check_policy", "model_receipts", "limitations", "units", "findings", "coverage", "summary"}, "NCA result")
     if raw["schema_version"] != "1.0" or raw["workflow"] != "nca" or raw["check_id"] != "NUMBERS":
@@ -963,7 +966,17 @@ def validate_numbers_result(
         required_phases.add("FOOTNOTE")
     _validate_receipts(raw["model_receipts"], required_phases=required_phases)
     summary = _require_mapping(raw["summary"], "summary", "NCA_RESULT_SCHEMA_INVALID")
-    expected_summary = {
+    expected_summary = _summary_document(units, findings, checks)
+    if set(summary) != set(expected_summary) or any(
+        summary.get(key) != value for key, value in expected_summary.items()
+    ):
+        raise _error("NCA summary does not derive from the result payload.", "NCA_RESULT_SUMMARY_INVALID")
+    return _plain(raw)
+
+
+def _summary_document(units: list[Mapping[str, object]], findings: list[object], checks: Mapping[str, bool]) -> dict[str, int]:
+    """Derive shared parent-level counters after strict version-specific evidence validation."""
+    return {
         "units": len(units),
         "findings": len(findings),
         "expressions": sum(len(unit["extraction"]["expressions"]) for unit in units),
@@ -1038,8 +1051,3 @@ def validate_numbers_result(
             unit["extraction"]["status"] == "UNSUPPORTED" for unit in units
         ),
     }
-    if set(summary) != set(expected_summary) or any(
-        summary.get(key) != value for key, value in expected_summary.items()
-    ):
-        raise _error("NCA summary does not derive from the result payload.", "NCA_RESULT_SUMMARY_INVALID")
-    return _plain(raw)

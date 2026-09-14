@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from sage.atomic import atomic_write_bytes, atomic_write_json, atomic_write_text
 from sage.errors import ValidationError
 from sage.job_snapshots import verify_wip_snapshot
@@ -22,7 +24,7 @@ from .style import StyleProfile, resolve_style_profile
 
 CHECK_NAMES = ("number_accuracy", "presentation_consistency", "footnote_review")
 DEFAULT_CHECKS = {name: True for name in CHECK_NAMES}
-POLICY_SCHEMA_VERSION = "1.0"
+POLICY_SCHEMA_VERSION = "2.0"
 CAPABILITY_LIMITATION_CODE = "NCA_LLM_CAPABILITY_LIMITATION"
 
 
@@ -163,7 +165,7 @@ def build_nca_run_snapshot(
     package_root = storage_layout(config.root).resources_root / "numbers" / resolved.bundle.package_id
     files, inventory_sha256 = _inventory(package_root)
     skill = config.root / "system/skills/nca-numbers/SKILL.md"
-    schema = config.root / "system/config/schemas/nca-extraction.schema.yml"
+    schema = config.root / "system/config/schemas/nca-extraction-v2.schema.yml"
     snapshot = {
         "schema_version": POLICY_SCHEMA_VERSION,
         "checks": exact_checks,
@@ -195,10 +197,13 @@ def build_nca_run_snapshot(
         "model_contract": {
             "skill_id": "nca-numbers",
             "skill_sha256": _sha256(skill),
-            "prompt_task_contract_version": "nca-model-phases-1.0",
+            "prompt_task_contract_version": "nca-model-phases-2.0",
             "structured_response_schema_sha256": _sha256(schema),
         },
         "model_route": dict(route),
+        "optimization": validate_optimization_policy(yaml.safe_load(
+            (config.root / "system/config/workflows/nca/profile.yml").read_text(encoding="utf-8")).get("optimization_policy")),
+        "phase_contracts": phase_contract_manifest(config.root, route),
         "sqs_checks_applied": False,
         "capability_limitation_code": CAPABILITY_LIMITATION_CODE,
     }
@@ -232,8 +237,12 @@ def load_nca_run_snapshot(run_root: Path) -> Mapping[str, object]:
         value = json.loads((root / "check-policy.json").read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValidationError("NCA Run policy snapshot is missing or invalid", code="NCA_RUN_SNAPSHOT_INVALID") from exc
-    if not isinstance(value, dict) or value.get("schema_version") != POLICY_SCHEMA_VERSION:
+    if not isinstance(value, dict) or value.get("schema_version") not in {"1.0", "2.0"}:
         raise ValidationError("NCA Run policy schema is invalid", code="NCA_RUN_SNAPSHOT_INVALID")
+    if value["schema_version"] == "2.0":
+        validate_optimization_policy(value.get("optimization"))
+        if not isinstance(value.get("phase_contracts"), Mapping) or value["phase_contracts"].get("model_route") != value.get("model_route"):
+            raise ValidationError("NCA phase contract manifest is invalid", code="NCA_RUN_SNAPSHOT_INVALID")
     validate_checks(value.get("checks") if isinstance(value.get("checks"), Mapping) else None)
     try:
         recorded_policy_sha = (root / "check-policy.sha256").read_text(encoding="utf-8").strip()
@@ -262,6 +271,28 @@ def validate_optimization_policy(raw: Mapping[str, object]) -> dict[str, object]
     if (not isinstance(raw, Mapping)
             or set(raw) != {'contract_version', 'reuse_scope', *integers}
             or raw.get('contract_version') != 'nca-optimization-2.0' or raw.get('reuse_scope') != 'TASK'
-            or any(type(raw.get(name)) is not int or raw[name] <= 0 for name in integers)):
+            or any(type(raw.get(name)) is not int for name in integers)
+            or raw['extraction_batch_max_units'] <= 0
+            or raw['request_concurrency'] != 1 or raw['transient_retries'] not in {0, 1}):
         raise ValidationError('NCA optimization policy is invalid', code='NCA_OPTIMIZATION_POLICY_INVALID')
     return dict(raw)
+
+
+def phase_contract_manifest(root: Path, route: Mapping[str, object]) -> dict[str, object]:
+    """Seal applicable schema, capsule, validator, routing limits, and actual route identities."""
+    paths = [
+        'system/config/schemas/nca-extraction-v2.schema.yml',
+        'system/config/schemas/nca-extraction.schema.yml',
+        'system/config/schemas/numbers-result-v2.schema.yml',
+        'system/config/schemas/nca-check-policy-v2.schema.yml',
+        'system/config/schemas/nca-phase-ledger.schema.yml',
+        'system/config/workflows/nca/profile.yml',
+        'system/skills/nca-numbers/SKILL.md',
+        'system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md',
+        'system/src/sage/nca.py', 'system/src/sage/nca_reporting.py',
+    ]
+    paths.extend(path.relative_to(root).as_posix() for path in sorted((root / 'system/src/sage/numbers').glob('*.py')))
+    return {'version': 'nca-phase-contracts-2.0', 'schema_ids': ['sage-nca-extraction-2.0', 'sage-numbers-result-2.0'],
+        'phases': {name: 'nca-' + name.lower().replace('_', '-') + '-2.0'
+                   for name in ('EXTRACTION', 'CORRESPONDENCE', 'FOOTNOTE', 'GROUP_CORRESPONDENCE')},
+        'files': {name: _sha256(root / name) for name in paths}, 'model_route': dict(route)}

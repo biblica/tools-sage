@@ -1,0 +1,11 @@
+schema_id: sage-nca-check-policy-2.0
+required: [schema_version, checks, wip, reference_package, number_style, model_contract, model_route, optimization, phase_contracts, sqs_checks_applied, capability_limitation_code]
+controls:
+  schema_version: '2.0'
+  owner: system/src/sage/numbers/policy.py
+  immutable_run_snapshot: required
+  request_concurrency: 1
+  transient_retries: [0, 1]
+  reuse_scope: TASK
+  phase_contracts: exact_installed_bytes_and_actual_model_route
+  historical_runs: preserve_original_version

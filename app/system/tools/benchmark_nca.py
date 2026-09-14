@@ -500,6 +500,13 @@ def _code_identity() -> tuple[str, dict[str, str]]:
     """Hash the exact implementation files that define this baseline measurement."""
     paths = (
         Path(__file__).resolve(),
+        Path(__file__).with_name("benchmark_nca_optimized.py"),
+        APP_ROOT / "system/src/sage/numbers/hybrid.py",
+        APP_ROOT / "system/src/sage/numbers/models_v2.py",
+        APP_ROOT / "system/src/sage/numbers/results_v2.py",
+        APP_ROOT / "system/src/sage/numbers/replay.py",
+        APP_ROOT / "system/src/sage/numbers/execution.py",
+        APP_ROOT / "system/src/sage/numbers/batching.py",
         APP_ROOT / "system/src/sage/numbers/engine.py",
         APP_ROOT / "system/src/sage/numbers/extraction.py",
         APP_ROOT / "system/src/sage/numbers/model_tasks.py",
@@ -714,9 +721,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.mode != "synthetic":
         parser.error(f"unsupported benchmark mode: {args.mode}")
-    if args.strategy != "baseline":
+    if args.strategy not in {"baseline", "optimized"}:
         parser.error(f"unsupported benchmark strategy: {args.strategy}")
-    receipt = run_synthetic_baseline(args.cases.resolve())
+    if args.strategy == "optimized":
+        from benchmark_nca_optimized import run_synthetic_optimized
+        receipt = run_synthetic_optimized(args.cases.resolve())
+    else:
+        receipt = run_synthetic_baseline(args.cases.resolve())
     destination = args.receipt.expanduser().resolve()
     destination.parent.mkdir(parents=True, exist_ok=True)
     staging = destination.with_name(f".{destination.name}.{os.getpid()}.tmp")

@@ -23,3 +23,12 @@ controls:
   maximum_transient_retries: 1
   singleton_failure: explicit
   confidence_gate: prohibited
+  phase_contracts:
+    EXTRACTION: nca-extraction-2.0
+    CORRESPONDENCE: nca-correspondence-2.0
+    FOOTNOTE: nca-footnote-2.0
+    GROUP_CORRESPONDENCE: nca-group-correspondence-2.0
+  correspondence_validator: system/src/sage/numbers/model_tasks.py::validate_correspondence_response
+  footnote_validator: system/src/sage/numbers/model_tasks.py::_validate_footnote_response
+  independent_phase_response_version: '2.0'
+  group_correspondence_activation: reserved_until_group_adjudication

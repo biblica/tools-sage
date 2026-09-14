@@ -128,6 +128,14 @@ def test_optimization_policy_is_versioned_and_preserves_hard_limits(package_root
         'request_concurrency': 1, 'transient_retries': 1, 'reuse_scope': 'TASK'}
     assert raw['evidence_policies']['default']['maximum_primary_verse_units'] == 220
     for field in ('extraction_batch_max_units', 'request_concurrency', 'transient_retries'):
-        for value in (True, 0, -1, 1.5, '8'):
+        for value in ((True, -1, 1.5, '8', 2) if field == 'transient_retries' else (True, 0, -1, 1.5, '8')):
             with pytest.raises(ValidationError):
                 validate_optimization_policy(dict(raw['optimization_policy'], **{field: value}))
+
+
+def test_v2_policy_can_explicitly_disable_transient_retry(package_root):
+    """Exact zero disables transport retry consistently with the bounded batch helper."""
+    import yaml
+    from sage.numbers.policy import validate_optimization_policy
+    raw = yaml.safe_load((package_root / 'system/config/workflows/nca/profile.yml').read_text())['optimization_policy']
+    assert validate_optimization_policy(dict(raw, transient_retries=0))['transient_retries'] == 0

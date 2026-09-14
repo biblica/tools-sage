@@ -1,0 +1,14 @@
+schema_id: sage-numbers-result-2.0
+required: [schema_version, workflow, check_id, provenance, check_policy, model_receipts, limitations, groups, findings, coverage, summary, metrics]
+controls:
+  schema_version: '2.0'
+  owner: system/src/sage/numbers/results_v2.py
+  coverage: externally_bounded_exact_parent_ids
+  parent_extraction: once_per_group
+  component_expression_ownership: disjoint_complete_partition
+  reference_rows: all_projected_western_rows
+  unresolved_bridge_components: empty
+  unsupported_or_blocked_evidence: never_pass
+  physical_calls: distinct_from_receipts_members_and_reuse
+  phase_checkpoint_references: required
+  sqs_confidence_checks_applied: false

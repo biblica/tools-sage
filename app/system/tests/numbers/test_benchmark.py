@@ -281,7 +281,7 @@ def test_benchmark_rejects_an_unimplemented_strategy(tmp_path: Path):
             "--mode",
             "synthetic",
             "--strategy",
-            "optimized",
+            "future-unsupported",
             "--cases",
             str(FIXTURE),
             "--receipt",
@@ -322,3 +322,19 @@ def test_canonical_execution_observes_one_reference_load(
 
     assert len(elapsed) == 1
     assert all(value >= 0 for value in elapsed)
+
+
+def test_optimized_benchmark_preserves_nonbridge_goldens_and_reduces_local_work(tmp_path: Path):
+    """Actual optimized batches keep golden semantics with one package/style qualification."""
+    receipt_path = tmp_path / 'optimized.json'
+    completed = subprocess.run([sys.executable, str(TOOL), '--strategy', 'optimized', '--cases', str(FIXTURE),
+        '--receipt', str(receipt_path)], check=False, cwd=TOOL.parents[2], capture_output=True, text=True)
+    assert completed.returncode == 0, completed.stderr
+    receipt = json.loads(receipt_path.read_text())
+    assert receipt['strategy'] == 'optimized'
+    assert receipt['local_loads']['reference_load_count'] == 1
+    assert receipt['local_loads']['profile_validation_count'] == 1
+    assert receipt['calls']['phase_counts']['EXTRACTION'] < 12
+    assert all(x['matches_baseline'] and x['matches_expressions'] and x['matches_uncertainty']
+               for x in receipt['semantic_outcome_diffs'] if not x['bridge_result_new_behavior'])
+    assert all(x['observed'] == 'INSUFFICIENT_EVIDENCE' for x in receipt['semantic_outcome_diffs'] if x['bridge_result_new_behavior'])

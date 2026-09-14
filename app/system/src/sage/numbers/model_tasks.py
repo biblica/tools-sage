@@ -446,7 +446,8 @@ class ModelPhaseReceipt:
     def __post_init__(self) -> None:
         """Freeze provider metadata so transport receipts cannot mutate later."""
         admitted = {(phase, version) for phase, version in _TASK_VERSIONS.items()}
-        admitted.add(("EXTRACTION", "nca-extraction-2.0"))
+        admitted.update((phase, "nca-" + phase.lower().replace("_", "-") + "-2.0")
+            for phase in ("EXTRACTION", "CORRESPONDENCE", "FOOTNOTE", "GROUP_CORRESPONDENCE"))
         if (self.phase, self.task_version) not in admitted:
             raise _model_error("Unknown NCA phase receipt", "NCA_MODEL_RECEIPT_INVALID")
         fields = (
@@ -536,6 +537,7 @@ def validate_correspondence_response(
     response: Mapping[str, object],
     *,
     reading_context: Mapping[str, object] | None = None,
+    schema_version: str = "1.0",
 ) -> CorrespondenceEvidence:
     """Validate exact OL expressions and target-role spans against immutable inputs."""
     code = "NCA_CORRESPONDENCE_EVIDENCE_INVALID"
@@ -562,7 +564,7 @@ def validate_correspondence_response(
         label="correspondence response",
         code=code,
     )
-    if raw["schema_version"] != "1.0" or raw["phase"] != "CORRESPONDENCE":
+    if raw["schema_version"] != schema_version or raw["phase"] != "CORRESPONDENCE":
         raise _model_error("Correspondence response identity is invalid", code)
     if raw["unit_id"] != unit.unit_id:
         raise _model_error(
@@ -757,6 +759,7 @@ def _validate_footnote_response(
     note: TargetNote,
     required_action: str,
     response: Mapping[str, object],
+    *, schema_version: str = "1.0",
 ) -> FootnoteDecision:
     """Validate one note assessment against its exact selected note stream."""
     code = "NCA_FOOTNOTE_EVIDENCE_INVALID"
@@ -776,7 +779,7 @@ def _validate_footnote_response(
     )
     _keys(raw, required=required, optional=frozenset({"confidence"}), label="footnote response", code=code)
     if (
-        raw["schema_version"] != "1.0"
+        raw["schema_version"] != schema_version
         or raw["phase"] != "FOOTNOTE"
         or raw["unit_id"] != unit.unit_id
         or raw["note_id"] != note.note_id
@@ -936,7 +939,23 @@ class NcaModelTasks:
             "skill_contract": skill_contract, "input": payload,
         })
 
+    def configure_phase_execution(self, executor: object) -> None:
+        """Bind one controller-owned checkpoint hook without changing public phase methods."""
+        self._phase_executor = executor
+
     def _execute(
+        self, phase: str, payload: Mapping[str, object],
+        validator: Callable[[Mapping[str, object]], T], *,
+        task_version: str | None = None, schema: Mapping[str, object] | None = None,
+    ) -> ModelPhaseResult[T]:
+        """Use the optional attempt-local hook around the exact physical phase boundary."""
+        hook = getattr(self, '_phase_executor', None)
+        if hook is not None:
+            return hook(phase, payload, validator, task_version=task_version or _TASK_VERSIONS[phase],
+                schema=schema or _SCHEMAS[phase], physical=self._execute_physical)
+        return self._execute_physical(phase, payload, validator, task_version=task_version, schema=schema)
+
+    def _execute_physical(
         self, phase: str, payload: Mapping[str, object],
         validator: Callable[[Mapping[str, object]], T], *,
         task_version: str | None = None, schema: Mapping[str, object] | None = None,
@@ -1041,8 +1060,11 @@ class NcaModelTasks:
         """Run exact OL/target correspondence with an optional registered reading hook."""
         if not isinstance(target, Extraction) or not isinstance(reference, ReferenceRow):
             raise _model_error("Correspondence inputs are not typed evidence", "NCA_MODEL_PAYLOAD_INVALID")
+        version = "2.0" if getattr(self, "_phase_executor", None) is not None else "1.0"
+        schema = deepcopy(_SCHEMAS["CORRESPONDENCE"])
+        schema["properties"]["schema_version"]["const"] = version
         payload: Mapping[str, object] = {
-            "schema_version": "1.0",
+            "schema_version": version,
             "phase": "CORRESPONDENCE",
             "unit_id": unit.unit_id,
             "target": {
@@ -1065,7 +1087,7 @@ class NcaModelTasks:
             "reading_context": _bounded_mapping(
                 reading_context, _READING_CONTEXT_FIELDS, "reading context"
             ),
-            "output_schema_id": "sage-nca-extraction-1.0#correspondence",
+            "output_schema_id": f"sage-nca-extraction-{version}#correspondence",
         }
         return self._execute(
             "CORRESPONDENCE",
@@ -1075,8 +1097,8 @@ class NcaModelTasks:
                 target,
                 reference,
                 response,
-                reading_context=reading_context,
-            ),
+                reading_context=reading_context, schema_version=version,
+            ), task_version=f"nca-correspondence-{version}", schema=schema,
         )
 
     def assess_footnote(
@@ -1092,21 +1114,24 @@ class NcaModelTasks:
             raise _model_error("Footnote is not part of the target unit", "NCA_MODEL_PAYLOAD_INVALID")
         if required_action not in FOOTNOTE_ACTIONS:
             raise _model_error("Required footnote action is invalid", "NCA_MODEL_PAYLOAD_INVALID")
+        version = "2.0" if getattr(self, "_phase_executor", None) is not None else "1.0"
+        schema = deepcopy(_SCHEMAS["FOOTNOTE"])
+        schema["properties"]["schema_version"]["const"] = version
         payload: Mapping[str, object] = {
-            "schema_version": "1.0",
+            "schema_version": version,
             "phase": "FOOTNOTE",
             "unit_id": unit.unit_id,
             "note": {"note_id": note.note_id, "text": note.text},
             "guidance": _bounded_mapping(guidance, _GUIDANCE_FIELDS, "footnote guidance"),
             "required_action": required_action,
-            "output_schema_id": "sage-nca-extraction-1.0#footnote",
+            "output_schema_id": f"sage-nca-extraction-{version}#footnote",
         }
         return self._execute(
             "FOOTNOTE",
             payload,
             lambda response: _validate_footnote_response(
-                unit, note, required_action, response
-            ),
+                unit, note, required_action, response, schema_version=version
+            ), task_version=f"nca-footnote-{version}", schema=schema,
         )
 
 

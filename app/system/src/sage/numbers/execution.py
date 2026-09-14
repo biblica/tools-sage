@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 from pathlib import Path
 import re
@@ -39,6 +39,9 @@ class ExecutionInputs:
     expected_references: tuple[VerseRef, ...]
     source_documents: Mapping[str, Mapping[str, object]]
     requested_scope: str = ""
+    policy_bytes: bytes = b""
+    contract_components: Mapping[str, bytes] = field(default_factory=dict)
+    evidence_policy: Mapping[str, object] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Require concrete immutable model coverage and copy nested source evidence."""
@@ -49,7 +52,7 @@ class ExecutionInputs:
                               (self.expected_unit_ids, str), (self.expected_references, VerseRef)):
             if not isinstance(values, tuple) or any(not isinstance(value, model) for value in values):
                 raise ValidationError("NCA context values must be typed tuples", code="NCA_ENGINE_INPUT_INVALID")
-        for name in ("style_profile", "policy", "source_documents"):
+        for name in ("style_profile", "policy", "source_documents", "contract_components", "evidence_policy"):
             value = getattr(self, name)
             if not isinstance(value, Mapping):
                 raise ValidationError("NCA context mapping is invalid", code="NCA_ENGINE_INPUT_INVALID")
@@ -163,8 +166,18 @@ def prepare_execution_inputs(
     )
     projected = tuple(projected)
     expected_ids = tuple(unit.target.unit_id for unit in projected) + tuple(unit.unit_id for unit in headings)
+    contracts = {}
+    if sealed['schema_version'] == '2.0':
+        for relative, digest in sealed['phase_contracts']['files'].items():
+            data = (config.root / relative).read_bytes()
+            if sha256_bytes(data) != digest:
+                raise ValidationError('NCA installed phase contract changed', code='NCA_MODEL_ROUTE_CHANGED')
+            contracts[relative] = data
+    import yaml
+    limits = yaml.safe_load((config.root / 'system/config/workflows/nca/profile.yml').read_text())['evidence_policies']['default']
     return ExecutionInputs(bundle, style.document, sealed, projected, tuple(headings),
-                           expected_ids, tuple(expected_refs), documents, run.scope)
+                           expected_ids, tuple(expected_refs), documents, run.scope,
+                           (run.root / 'check-policy.json').read_bytes(), contracts, limits)
 
 
 def reference_restrictions(policy: Mapping[str, object]) -> tuple[str, ...]:

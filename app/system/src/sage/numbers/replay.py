@@ -477,6 +477,22 @@ class PhaseStore:
                                        'artifact_sha256': _digest(_canonical(value))})
             atomic_write_json(self._path(_PHASE_ROOT + '/ledger.json'), ledger)
 
+    def failure_diagnostics(self) -> tuple[Mapping[str, object], ...]:
+        """Expose only FAILED diagnostics authenticated by exact immutable ledger membership."""
+        with self._lock():
+            results = []
+            for row in self._ledger()['failures']:
+                key = PhaseKey.from_dict(row['key'])
+                self._key(key)
+                raw = self._read(f"{_PHASE_ROOT}/attempts/{row['attempt_id']}.json")
+                value = _object(raw, {'schema_version', 'task_fingerprint', 'key', 'attempt_id', 'status', 'artifact'})
+                _require(value['schema_version'] == _VERSION and value['task_fingerprint'] == self.task_fingerprint
+                    and value['key'] == key.to_dict() and value['attempt_id'] == row['attempt_id']
+                    and value['status'] == 'FAILED' and _digest(_canonical(value)) == row['artifact_sha256']
+                    and isinstance(value['artifact'], Mapping), 'Failure diagnostic identity or bytes differ')
+                results.append({'key': key.to_dict(), 'diagnostic': value['artifact']})
+            return tuple(results)
+
     def _evidence(self, checkpoints: Mapping[str, PhaseKey], validate_phase: Callable) -> dict[str, object]:
         """Require exactly the caller's current checkpoint identities and revalidate each."""
         _require(isinstance(checkpoints, Mapping) and bool(checkpoints), 'Publication requires checkpoints')

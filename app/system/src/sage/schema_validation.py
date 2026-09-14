@@ -33,6 +33,8 @@ SCHEMA_OWNERS: dict[str, str] = {
     "model-routing-override-receipt.schema.yml": "system/src/sage/routing_override.py",
     "nca-extraction-v2.schema.yml": "system/src/sage/numbers/extraction.py",
     "nca-extraction.schema.yml": "system/src/sage/numbers/extraction.py",
+    "nca-check-policy-v2.schema.yml": "system/src/sage/numbers/policy.py",
+    "numbers-result-v2.schema.yml": "system/src/sage/numbers/results_v2.py",
     "nca-check-policy.schema.yml": "system/src/sage/numbers/policy.py",
     "nca-phase-ledger.schema.yml": "system/src/sage/numbers/replay.py",
     "numbers-reference.schema.yml": "system/src/sage/numbers/reference.py",
