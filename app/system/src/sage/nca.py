@@ -85,7 +85,7 @@ def create_nca_job(
     config: EcosystemConfig,
     *,
     wip: str,
-    package_id: str,
+    package_id: str | None = None,
     style_selector: str | None = None,
     display_name: str | None = None,
 ) -> Job:

@@ -1,0 +1,99 @@
+{
+  "handover": "SAGE_NUMBERS_REFERENCE_2026-09-09",
+  "schema_version": "1.0",
+  "source_package_id": "SAGE_NUMBERS_CODEX_HANDOVER_0.02a1_2026-09-09",
+  "source_package_sha256": "b04a08e7e51e405defeb1c1821a8fb3c63bf1af4f6bda7ce7c4fff268b19b202",
+  "distribution": "CORE_RUNTIME_PROJECTION",
+  "files": [
+    {
+      "path": "HANDOVER_VERIFICATION.json",
+      "sha256": "c48776faf943e3a27cb1333bd950af3f3baa501930f43c42c8de9b8dbc83f618",
+      "bytes": 654
+    },
+    {
+      "path": "README.md",
+      "sha256": "cf4f65d40e6ea643e1a41c3b3f7e8d83c264f15a8b5cc03034aae54b611ffa81",
+      "bytes": 868
+    },
+    {
+      "path": "provenance/ORIGINAL_CHECKSUMS.sha256",
+      "sha256": "b04a08e7e51e405defeb1c1821a8fb3c63bf1af4f6bda7ce7c4fff268b19b202",
+      "bytes": 3658
+    },
+    {
+      "path": "provenance/ORIGINAL_DISTRIBUTION.md",
+      "sha256": "ef3ad1f1051bc4fc47a4376c8aa688296c8b744501007e40a03538a1ffc8a0bb",
+      "bytes": 1398
+    },
+    {
+      "path": "provenance/ORIGINAL_FILE_MANIFEST.json",
+      "sha256": "b91f73839bdb394f5d0f8c0751b56029e55ed660443c0d88793041b0cb1c4554",
+      "bytes": 8082
+    },
+    {
+      "path": "provenance/ORIGINAL_HANDOVER_VERIFICATION.json",
+      "sha256": "0080bf76a9563ca0ace50b45dfc62e6f56458cb97a9787ac9cc0544d56670e9a",
+      "bytes": 596
+    },
+    {
+      "path": "reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv",
+      "sha256": "a137b41441e19b3c8cdf60f0f502ee4d5b731ac30268fa436f32c8aeab9ca283",
+      "bytes": 4567363
+    },
+    {
+      "path": "reference/audit.tsv",
+      "sha256": "62fdf82f92e9625c75d4502662fda8b8da74b79e7717c4e60f1b1e7b385f48d0",
+      "bytes": 600
+    },
+    {
+      "path": "reference/canonical_number_index.tsv",
+      "sha256": "e49e17d7887a4e1daa29d32098bfc496a36f1de610ecd8b6efdc6191762fb07d",
+      "bytes": 3026931
+    },
+    {
+      "path": "reference/eng_org_map_rules.txt",
+      "sha256": "7b4f6ffe6c325d82efd59b5adc88199a5e77b9f8b09f1aaccfde1cb1a65b95dc",
+      "bytes": 3582
+    },
+    {
+      "path": "reference/footnote_guidance.tsv",
+      "sha256": "37ba7dfc0c4324997e4541ad0926dfe4d3f6fbc4f61544e40856107130f2873d",
+      "bytes": 16619
+    },
+    {
+      "path": "reference/normalization_overrides.tsv",
+      "sha256": "1a8c8b206d1858af077171a71c4f156d792b6865729e42a62dfb138f8b602284",
+      "bytes": 104269
+    },
+    {
+      "path": "reference/ol_expression_audit.tsv",
+      "sha256": "48af314edd3bd1a6b919271178249eb7a0fead7c4ae3981a9f31771a2aaaf95b",
+      "bytes": 2266588
+    },
+    {
+      "path": "reference/ol_token_coverage_audit.tsv",
+      "sha256": "cc01cc90db3ff00f4215eafea2b60e2cf7f8de615aabcb4f2f7818a48685a519",
+      "bytes": 167507
+    },
+    {
+      "path": "reference/operator_rules.tsv",
+      "sha256": "6da3c77da76c86b448490a70f6cc7d215c0ddf197d8a8997d7b4e2a28159ce5e",
+      "bytes": 1825
+    },
+    {
+      "path": "reference/provenance_sources.tsv",
+      "sha256": "033556b14d213a1870aa65aacde5c4f6722a24630ac9f912fcf0a4fd82e15ecd",
+      "bytes": 9067
+    },
+    {
+      "path": "reference/textual_variant_registry.tsv",
+      "sha256": "94a9c3ef6892c11c510f0f222648489a02becf83bf13f3a5efe77c65c2fe862c",
+      "bytes": 22793
+    },
+    {
+      "path": "reference/unit_conversion_registry.tsv",
+      "sha256": "ada6f2a8a19c838b9cd10f781a6678dc102b37d946a810feffab3f4206b8bb9c",
+      "bytes": 7784
+    }
+  ]
+}

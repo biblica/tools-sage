@@ -1,0 +1,183 @@
+{
+  "status": "PASS_WITH_DIAGNOSTICS",
+  "source_archives_sha256": {
+    "grk": "eb3aad6463287a5ba07470750678c8eda82fe49361eb2a9a026933264d643668",
+    "heb": "316660652f65e295c7cd077de1936d9e6f4b78d7cfa87c33d433b43e15371cb5",
+    "usNIVv2": "f173dbeabf543fd98eb7cd77c7d422290554933b072425058d100deb79729046"
+  },
+  "source_files": 132,
+  "method": "SAGE USJ readback; whitespace-normalized equality; Psalms verse-zero title read from d marker. No independent OL numeric re-extraction or external scholarly review.",
+  "results": {
+    "OL": {
+      "matched": 6243,
+      "differences": [],
+      "registered_absences": [
+        "NEH 7:68"
+      ]
+    },
+    "NIV": {
+      "matched": 6224,
+      "differences": [
+        {
+          "reference": "GEN 7:20",
+          "western_reference": "GEN 7:20",
+          "indexed_text": "The waters rose and covered the mountains to a depth of more than fifteen cubits. ,",
+          "source_text": "The waters rose and covered the mountains to a depth of more than fifteen cubits.",
+          "difference_class": "CONTENT_OR_PUNCTUATION"
+        },
+        {
+          "reference": "JDG 21:3",
+          "western_reference": "JDG 21:3",
+          "indexed_text": "“ Lord, God of Israel,” they cried, “why has this happened to Israel? Why should one tribe be missing from Israel today?”",
+          "source_text": "“Lord, God of Israel,” they cried, “why has this happened to Israel? Why should one tribe be missing from Israel today?”",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "1SA 7:2",
+          "western_reference": "1SA 7:2",
+          "indexed_text": "The ark remained at Kiriath Jearim a long time—twenty years in all.",
+          "source_text": "The ark remained at Kiriath Jearim a long time—twenty years in all.\nThen all the people of Israel turned back to the Lord.",
+          "difference_class": "CONTENT_OR_PUNCTUATION"
+        },
+        {
+          "reference": "1KI 5:11",
+          "western_reference": "1KI 5:11",
+          "indexed_text": "and Solomon gave Hiram twenty thousand cors of wheat as food for his household, in addition to twenty thousand baths , of pressed olive oil. Solomon continued to do this for Hiram year after year.",
+          "source_text": "and Solomon gave Hiram twenty thousand cors of wheat as food for his household, in addition to twenty thousand baths of pressed olive oil. Solomon continued to do this for Hiram year after year.",
+          "difference_class": "CONTENT_OR_PUNCTUATION"
+        },
+        {
+          "reference": "1KI 17:21",
+          "western_reference": "1KI 17:21",
+          "indexed_text": "Then he stretched himself out on the boy three times and cried out to the Lord, “ Lord my God, let this boyʼs life return to him!”",
+          "source_text": "Then he stretched himself out on the boy three times and cried out to the Lord, “Lord my God, let this boyʼs life return to him!”",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "2CH 14:11",
+          "western_reference": "2CH 14:11",
+          "indexed_text": "Then Asa called to the Lord his God and said, “ Lord, there is no one like you to help the powerless against the mighty. Help us, Lord our God, for we rely on you, and in your name we have come against this vast army. Lord, you are our God; do not let mere mortals prevail against you.”",
+          "source_text": "Then Asa called to the Lord his God and said, “Lord, there is no one like you to help the powerless against the mighty. Help us, Lord our God, for we rely on you, and in your name we have come against this vast army. Lord, you are our God; do not let mere mortals prevail against you.”",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "2CH 20:6",
+          "western_reference": "2CH 20:6",
+          "indexed_text": "and said: “ Lord, the God of our ancestors, are you not the God who is in heaven? You rule over all the kingdoms of the nations. Power and might are in your hand, and no one can withstand you.",
+          "source_text": "and said:\n“Lord, the God of our ancestors, are you not the God who is in heaven? You rule over all the kingdoms of the nations. Power and might are in your hand, and no one can withstand you.",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "NEH 7:73",
+          "western_reference": "NEH 7:73",
+          "indexed_text": "The priests, the Levites, the gatekeepers, the musicians and the temple servants, along with certain of the people and the rest of the Israelites, settled in their own towns.",
+          "source_text": "The priests, the Levites, the gatekeepers, the musicians and the temple servants, along with certain of the people and the rest of the Israelites, settled in their own towns.\nWhen the seventh month came and the Israelites had settled in their towns,",
+          "difference_class": "CONTENT_OR_PUNCTUATION"
+        },
+        {
+          "reference": "PSA 119:72",
+          "western_reference": "PSA 119:72",
+          "indexed_text": "The law from your mouth is more precious to me than thousands of pieces of silver and gold. י Yodh",
+          "source_text": "The law from your mouth is more precious to me\nthan thousands of pieces of silver and gold.",
+          "difference_class": "CONTENT_OR_PUNCTUATION"
+        },
+        {
+          "reference": "PRO 8:22",
+          "western_reference": "PRO 8:22",
+          "indexed_text": "“The Lord brought me forth as the first of his works, , before his deeds of old;",
+          "source_text": "“The Lord brought me forth as the first of his works,\nbefore his deeds of old;",
+          "difference_class": "CONTENT_OR_PUNCTUATION"
+        },
+        {
+          "reference": "EZK 42:16",
+          "western_reference": "EZK 42:16",
+          "indexed_text": "He measured the east side with the measuring rod; it was five hundred cubits. ,",
+          "source_text": "He measured the east side with the measuring rod; it was five hundred cubits.",
+          "difference_class": "CONTENT_OR_PUNCTUATION"
+        },
+        {
+          "reference": "HAG 1:15",
+          "western_reference": "HAG 1:15",
+          "indexed_text": "on the twenty-fourth day of the sixth month.",
+          "source_text": "on the twenty-fourth day of the sixth month.\nIn the second year of King Darius,",
+          "difference_class": "CONTENT_OR_PUNCTUATION"
+        },
+        {
+          "reference": "ZEC 1:12",
+          "western_reference": "ZEC 1:12",
+          "indexed_text": "Then the angel of the Lord said, “ Lord Almighty, how long will you withhold mercy from Jerusalem and from the towns of Judah, which you have been angry with these seventy years?”",
+          "source_text": "Then the angel of the Lord said, “Lord Almighty, how long will you withhold mercy from Jerusalem and from the towns of Judah, which you have been angry with these seventy years?”",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "MAT 6:13",
+          "western_reference": "MAT 6:13",
+          "indexed_text": "And lead us not into temptation, but deliver us from the evil one. ’",
+          "source_text": "And lead us not into temptation,\nbut deliver us from the evil one.’",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "MAT 6:27",
+          "western_reference": "MAT 6:27",
+          "indexed_text": "Can any one of you by worrying add a single hour to your life ?",
+          "source_text": "Can any one of you by worrying add a single hour to your life?",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "MAT 19:5",
+          "western_reference": "MAT 19:5",
+          "indexed_text": "and said, ‘For this reason a man will leave his father and mother and be united to his wife, and the two will become one flesh’ ?",
+          "source_text": "and said, ‘For this reason a man will leave his father and mother and be united to his wife, and the two will become one flesh’?",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "JHN 3:3",
+          "western_reference": "JHN 3:3",
+          "indexed_text": "Jesus replied, “Very truly I tell you, no one can see the kingdom of God unless they are born again. ”",
+          "source_text": "Jesus replied, “Very truly I tell you, no one can see the kingdom of God unless they are born again.”",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "JHN 5:44",
+          "western_reference": "JHN 5:44",
+          "indexed_text": "How can you believe since you accept glory from one another but do not seek the glory that comes from the only God ?",
+          "source_text": "How can you believe since you accept glory from one another but do not seek the glory that comes from the only God?",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "JHN 10:29",
+          "western_reference": "JHN 10:29",
+          "indexed_text": "My Father, who has given them to me, is greater than all ; no one can snatch them out of my Fatherʼs hand.",
+          "source_text": "My Father, who has given them to me, is greater than all; no one can snatch them out of my Fatherʼs hand.",
+          "difference_class": "WHITESPACE_ONLY"
+        },
+        {
+          "reference": "REV 2:27",
+          "western_reference": "REV 2:27",
+          "indexed_text": "that one ‘will rule them with an iron scepter and will dash them to pieces like pottery’ —just as I have received authority from my Father.",
+          "source_text": "that one ‘will rule them with an iron scepter and will dash them to pieces like pottery’—just as I have received authority from my Father.",
+          "difference_class": "WHITESPACE_ONLY"
+        }
+      ],
+      "registered_absences": [],
+      "whitespace_only_differences": 12,
+      "content_or_punctuation_differences": 8
+    }
+  },
+  "known_numeric_continuation_limits": [
+    {
+      "reference": "NEH 7:73",
+      "source_continuation": "seventh month",
+      "indexed_niv_continuation": "OMITTED"
+    },
+    {
+      "reference": "HAG 1:15",
+      "source_continuation": "second year of King Darius",
+      "indexed_niv_continuation": "OMITTED"
+    }
+  ],
+  "limitations": [
+    "This verifies local source text and existing authoritative numeric indexes, not independent Hebrew/Greek numeric extraction or new scholarship.",
+    "The indexed NIV text does not include every section continuation; two such omissions contain numbers. Retain this limitation when interpreting secondary evidence."
+  ]
+}

@@ -154,4 +154,4 @@ Missing comparison coordinates, custom-versification differences, and similar us
 
 ## NCA numbers review
 
-NCA binds one WIP Project, a qualified immutable numbers package, and one configured Number Style Profile. Accuracy, presentation, and footnote checks are independent Run switches; the style profile remains required with presentation OFF. See the [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) for setup, outcomes, and coverage limits. NCA never modifies Scripture or Paratext Notes XML.
+NCA binds one WIP Project, the bundled qualified numbers reference, and one configured Number Style Profile. A standard installation requires no NCA reference archive import; additional qualified packages may be selected explicitly. Accuracy, presentation, and footnote checks are independent Run switches; the style profile remains required with presentation OFF. See the [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) for setup, outcomes, and coverage limits. NCA never modifies Scripture or Paratext Notes XML.

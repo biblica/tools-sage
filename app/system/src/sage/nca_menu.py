@@ -36,26 +36,30 @@ def choose_style(center, project) -> str | None:
             return candidates[int(choice) - 1].selector
 
 
-def choose_package(center) -> str | None:
+def choose_package(center, *, manage: bool = False) -> str | None:
     """Show qualification diagnostics before binding an immutable package."""
     while True:
         config = load_ecosystem(center.store.settings_path)
         candidates = reference_package_candidates(config)
-        options = [(str(index), f'{bundle.package_id} [{bundle.qualification_status}]') for index, (_, bundle) in enumerate(candidates, 1)]
-        import_key = str(len(options) + 1)
-        options.extend(((import_key, 'Import NCA reference archive'), ('B', 'Back')))
-        choice = center.io.choose('NCA reference package', options)
-        if choice == 'B':
-            return None
-        if choice == import_key:
-            raw = center.io.text('NCA reference archive path', required=False).strip()
-            if not raw:
-                return None
-            path = import_reference(config, Path(raw).expanduser())
-            package_id = path.name
+        if len(candidates) == 1 and not manage:
+            package_id = candidates[0][1].package_id
         else:
-            package_id = candidates[int(choice) - 1][1].package_id
+            options = [(str(index), f'{bundle.package_id} [{bundle.qualification_status}]') for index, (_, bundle) in enumerate(candidates, 1)]
+            import_key = str(len(options) + 1)
+            options.extend(((import_key, 'Import additional NCA reference archive'), ('B', 'Back')))
+            choice = center.io.choose('NCA reference package', options)
+            if choice == 'B':
+                return None
+            if choice == import_key:
+                raw = center.io.text('NCA reference archive path', required=False).strip()
+                if not raw:
+                    return None
+                path = import_reference(config, Path(raw).expanduser())
+                package_id = path.name
+            else:
+                package_id = candidates[int(choice) - 1][1].package_id
         status = inspect_numbers_package(config, package_id)
+        center.io.write(f"NCA reference package: {package_id}")
         center.io.write(f"Reference qualification: {status['qualification_status']}")
         center.io.write(f"Numeric reference coverage: {status['rows']} indexed rows")
         for diagnostic in status['diagnostics']:
@@ -224,7 +228,7 @@ def workflow_menu(center) -> None:
             return
         try:
             if choice == '4':
-                choose_package(center)
+                choose_package(center, manage=True)
                 continue
             if choice == '3':
                 job = create_job(center)

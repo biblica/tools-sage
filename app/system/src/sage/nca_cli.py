@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Mapping
 
 from sage.errors import ValidationError
-from sage.numbers.resources import import_reference, resolve_reference_package
+from sage.numbers.resources import import_reference, reference_package_path, resolve_reference_package
 from sage.numbers.style import import_style_profile, load_style_profile
 
 
@@ -34,17 +34,16 @@ def check_overrides(args: argparse.Namespace) -> dict[str, bool]:
 
 def add_nca_task_arguments(parser: argparse.ArgumentParser) -> None:
     """Register NCA selectors and booleans without adding provider overrides."""
-    parser.add_argument('--numbers-package', help='Imported NCA reference package ID for a new Job')
+    parser.add_argument('--numbers-package', help='NCA reference package ID; omitted uses the bundled Core reference')
     parser.add_argument('--number-style', help='Required configured NCA profile ID/version for a new Job')
     for key, label in CHECK_LABELS.items():
         parser.add_argument('--' + key.replace('_', '-'), action=argparse.BooleanOptionalAction,
                             default=None, help=label + '; omitted options use saved Job defaults')
 
 
-def inspect_numbers_package(config, package_id: str) -> Mapping[str, object]:
+def inspect_numbers_package(config, package_id: str | None = None) -> Mapping[str, object]:
     """Qualify a local reference package without invoking the selected model."""
-    library = config.data_root / 'inputs' / 'resources' / 'numbers'
-    path = library / package_id
+    path = reference_package_path(config, package_id)
     bundle = resolve_reference_package(config, package_id)
     return {'package_id': bundle.package_id, 'sha256': bundle.sha256,
             'qualification_status': bundle.qualification_status, 'rows': len(bundle.rows),
@@ -90,7 +89,7 @@ def register_nca_resources(resource_actions) -> None:
     imported.add_argument('--archive', required=True)
     imported.set_defaults(handler=command_nca_resource)
     inspected = actions.add_parser('inspect', help='Inspect package qualification and diagnostics locally')
-    inspected.add_argument('--package', required=True)
+    inspected.add_argument('--package', help='Package ID; omitted inspects the bundled Core reference')
     inspected.set_defaults(handler=command_nca_resource)
     style = resource_actions.add_parser('number-style', help='Import a configured NCA Number Style Profile')
     styles = style.add_subparsers(dest='nca_resource_action', required=True)
@@ -113,8 +112,8 @@ def command_nca_create(args: argparse.Namespace, config) -> Mapping[str, object]
         if args.numbers_package or args.number_style:
             raise ValidationError('Resource selectors belong to Job setup; revise the Job before creating a new Run.', code='NCA_TASK_BINDING_INVALID')
     else:
-        if not args.numbers_package or args.run_id:
-            raise ValidationError('A new NCA Job requires --numbers-package; a Run ID requires --job-id.', code='NCA_JOB_BINDING_REQUIRED')
+        if args.run_id:
+            raise ValidationError('A Run ID requires --job-id.', code='NCA_JOB_BINDING_REQUIRED')
         job = create_nca_job(config, wip=args.output_project, package_id=args.numbers_package, style_selector=args.number_style)
     overrides = check_overrides(args)
     if args.run_id:

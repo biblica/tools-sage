@@ -1,0 +1,13 @@
+Rule	Instruction
+Authority order	1) Configured Hebrew/Greek OL; 2) NIV main text as secondary comparator; 3) documented ancient witnesses and scholarship as explanatory evidence.
+Canonical key	BK | CH | VS uses the standard Western .vrs coordinate. OL_REF preserves the actual source-language coordinate.
+Target matches OL	PASS_AUTHORITY1 unless the row is a material textual-variant case requiring/recommending a disclosure footnote.
+Target differs from OL but matches researched alternate	ACCEPTABLE_VARIANT_WITH_FOOTNOTE only when the Footnote Guidance sheet documents that alternate. The OL value remains the SAGE authority reference.
+Target differs from OL and has no researched variant	REVIEW_OR_FAIL. NIV agreement alone is insufficient justification.
+Scholarly division	If status is DIVIDED, require a footnote whichever reading is selected.
+Reconstruction	If the target supplies a number absent from the configured OL, require a footnote that identifies the reconstruction/parallel source.
+OL-favored variant	If target follows the minority alternate, require a footnote. If target follows OL, recommend a footnote where the alternate is common in major translations.
+NIV-favored variant	OL remains the default validation value. A target may follow the stronger alternate, but must footnote the Hebrew/Greek reading it departs from.
+Unit conversion	Equivalent modern-unit rendering is not a textual variant. Apply ordinary translation unit-note policy, not a text-critical footnote.
+Explicitness difference	Do not infer a textual variant merely because one translation states a number explicitly and the other renders the concept idiomatically.
+Publication note wording	Suggested footnotes are neutral templates. They should be adapted to the target translation’s house style without changing the witness evidence.

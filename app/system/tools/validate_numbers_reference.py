@@ -8,6 +8,7 @@ from dataclasses import replace
 from fractions import Fraction
 from importlib.metadata import PackageNotFoundError, version
 import json
+import hashlib
 from pathlib import Path
 import platform
 import sys
@@ -22,6 +23,7 @@ from sage.atomic import atomic_write_json
 from sage.errors import ValidationError
 from sage.numbers.models import Extraction, NumericExpression, SemanticDecision
 from sage.numbers.reference import REFERENCE_PARSER_VERSION, load_reference, parse_values
+from sage.numbers.footnotes import assess_footnote, footnote_recommendation
 from sage.numbers.units import compare_registered_units, parse_registered_quantity
 from sage.numbers.variants import select_reading
 from sage.vrs import VerseRef
@@ -74,9 +76,43 @@ def _golden_readings(bundle) -> list[dict[str, object]]:
             _require(decision.footnote_action == case[f'FOOTNOTE_IF_TARGET_FOLLOWS_{choice}'], f'Changed disclosure policy at {ref.label()}.')
             _require(decision.source_validation_outcome == case[f'VALIDATION_IF_TARGET_FOLLOWS_{choice}'], f'Changed source policy at {ref.label()}.')
             _require(decision.source_ids == tuple(case['SOURCE_IDS'].split(';')), f'Changed provenance at {ref.label()}.')
+            note = assess_footnote(decision, (), bundle=bundle, language='en')
+            recommendation = footnote_recommendation(decision, note, bundle=bundle)
+            _require(note.status == 'MISSING', f'Missing-note assessment failed at {ref.label()}.')
+            _require(note.outcome == ('REVIEW_MISSING_FOOTNOTE' if decision.footnote_action == 'REQUIRE' else 'ADVISORY'),
+                     f'Missing-note severity differs at {ref.label()}.')
+            _require(recommendation is not None and recommendation['suggested_note'], f'Missing registered note at {ref.label()}.')
             outcomes.append({'reference': ref.label(), 'reading': choice, 'semantic': decision.semantic.outcome,
-                             'footnote_action': decision.footnote_action, 'source_policy': decision.source_validation_outcome})
+                             'footnote_action': decision.footnote_action, 'source_policy': decision.source_validation_outcome,
+                             'missing_note_outcome': note.outcome, 'suggested_note': recommendation['suggested_note'],
+                             'source_ids': list(decision.source_ids)})
     return outcomes
+
+
+def _require_authorized_package(package: Path, bundle) -> str:
+    """Accept the original handover or its pinned byte-preserving Core projection."""
+    if bundle.sha256 == EXPECTED_PACKAGE_SHA256:
+        return 'ORIGINAL_HANDOVER'
+    pin = json.loads((ROOT / 'system/config/numbers-reference.json').read_text(encoding='utf-8'))
+    _require(bundle.package_id == pin['package_id'] and bundle.sha256 == pin['sha256'],
+             'Release qualification requires the authorized original or bundled NCA reference.')
+    original_checksums = package / 'provenance/ORIGINAL_CHECKSUMS.sha256'
+    _require(hashlib.sha256(original_checksums.read_bytes()).hexdigest() == EXPECTED_PACKAGE_SHA256,
+             'Bundled provenance differs from the qualified original checksum inventory.')
+    checksums = dict((Path(line.split(maxsplit=1)[1].lstrip('*')).as_posix(), line.split(maxsplit=1)[0])
+                     for line in original_checksums.read_text().splitlines())
+    manifest_path = package / 'provenance/ORIGINAL_FILE_MANIFEST.json'
+    _require(hashlib.sha256(manifest_path.read_bytes()).hexdigest() == checksums['FILE_MANIFEST.json'],
+             'Bundled original manifest is not authenticated by the original inventory.')
+    original = json.loads(manifest_path.read_text())
+    expected = {item['path']: item['sha256'] for item in original['files']
+                if item['path'].startswith('reference/') and Path(item['path']).suffix in {'.tsv', '.txt'}}
+    actual = {path.relative_to(package).as_posix() for path in (package / 'reference').iterdir() if path.is_file()}
+    _require(actual == set(expected), 'Bundled runtime reference inventory differs from the supplied tables.')
+    for relative, digest in expected.items():
+        _require(hashlib.sha256((package / relative).read_bytes()).hexdigest() == digest,
+                 f'Bundled reference differs from qualified source: {relative}.')
+    return 'BUNDLED_CORE_PROJECTION'
 
 
 def _golden_units(bundle) -> list[dict[str, object]]:
@@ -116,8 +152,9 @@ def qualify(package: Path, *, release: bool = False) -> dict[str, object]:
                   'footnote_guidance': len(bundle.footnote_guidance), 'unit_examples': len(bundle.units), 'provenance_sources': len(bundle.provenance)}
         readings, units, numeric_cases = [], [], []
         token_count = None
+        package_form = 'UNQUALIFIED_PROVENANCE'
         if release:
-            _require(bundle.sha256 == EXPECTED_PACKAGE_SHA256, 'Release qualification requires the unchanged authorized 2026-09-09 package.')
+            package_form = _require_authorized_package(package, bundle)
             _require(counts == EXPECTED_COUNTS, f'The authorized NCA package counts differ: {counts}.')
             lineage = next((item for item in bundle.diagnostics if item.get('code') == 'REFERENCE_LINEAGE_INCOMPLETE'), {})
             _require((lineage.get('differing_rows'), lineage.get('additional_authoritative_values'), lineage.get('new_numeric_rows'), lineage.get('supplementary_expression_count')) == (47, 51, 16, 6749), 'The documented supplementary-lineage warning must remain explicit.')
@@ -143,7 +180,11 @@ def qualify(package: Path, *, release: bool = False) -> dict[str, object]:
             dependencies[name] = 'NOT_INSTALLED'
     return {'schema_version': '1.0', 'status': 'PASS', 'mode': 'RELEASE' if release else 'INTEGRITY',
             'package_id': bundle.package_id, 'package_sha256': bundle.sha256, 'parser_version': REFERENCE_PARSER_VERSION,
-            'qualification_status': bundle.qualification_status, 'counts': counts,
+            'qualification_status': bundle.qualification_status, 'counts': counts, 'package_form': package_form,
+            'numeric_index_validation': {'ol_rows': len(bundle.rows), 'niv_rows': len(bundle.rows),
+                'ol_values': sum(len(row.ol_values) for row in bundle.rows.values()),
+                'niv_values': sum(len(row.niv_values) for row in bundle.rows.values()),
+                'operator_canonical_agreement': 'PASS', 'registered_note_readings': len(readings)},
             'diagnostics': [_plain(item) for item in bundle.diagnostics], 'reading_cases': readings, 'unit_cases': units,
             'numeric_cases': numeric_cases, 'classified_token_rows': token_count,
             'runtime': {'python': platform.python_version(), 'platform': platform.platform(), 'dependencies': dependencies},

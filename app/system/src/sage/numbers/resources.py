@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import re
 import shutil
@@ -54,19 +55,65 @@ def _reference_library(config: EcosystemConfig) -> Path:
     return library
 
 
-def resolve_reference_package(config: EcosystemConfig, package_id: str) -> ReferenceBundle:
-    """Requalify one imported package and require its stored identity to match."""
-    library = _reference_library(config)
+def _bundled_registration(config: EcosystemConfig) -> tuple[str, Path, str] | None:
+    """Read the pinned Core reference identity without loading its tables."""
+    root_value = getattr(config, "root", None)
+    if root_value is None:
+        return None
+    root = Path(root_value).resolve()
+    pin_path = root / "system/config/numbers-reference.json"
+    if not pin_path.exists():
+        return None
+    try:
+        pin = json.loads(pin_path.read_text(encoding="utf-8"))
+        package_id = validate_package_id(pin["package_id"])
+        path = root / pin["path"]
+        resolved = path.resolve()
+        resolved.relative_to(root / "system/resources/numbers")
+        if any(parent.is_symlink() for parent in (path, *path.parents) if parent != root):
+            raise ValueError("symbolic link in bundled reference path")
+        digest = pin["sha256"]
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise ValueError("invalid package checksum")
+        return package_id, resolved, digest
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise ValidationError("Bundled NCA reference registration is invalid.",
+                              code="NCA_REFERENCE_MANIFEST_INVALID") from exc
+
+
+def reference_package_path(config: EcosystemConfig, package_id: str | None = None) -> Path:
+    """Locate the selected Core or imported package through one shared path contract."""
+    bundled = _bundled_registration(config)
+    if package_id is None:
+        if bundled is None:
+            raise ValidationError("Bundled NCA reference is unavailable; repair the SAGE installation.",
+                                  code="NCA_REFERENCE_NOT_BUNDLED")
+        return bundled[1]
     validate_package_id(package_id)
+    if bundled is not None and package_id == bundled[0]:
+        return bundled[1]
+    library = _reference_library(config)
     path = library / package_id
     if library.is_symlink() or path.is_symlink():
         raise ValidationError('NCA reference selectors cannot use symlinks.', code='NCA_REFERENCE_PUBLICATION_CONFLICT')
-    destination = _publication_destination(library, package_id)
+    return _publication_destination(library, package_id)
+
+
+def resolve_reference_package(config: EcosystemConfig, package_id: str | None = None) -> ReferenceBundle:
+    """Requalify the bundled default or an explicitly selected imported package."""
+    destination = reference_package_path(config, package_id)
+    bundled = _bundled_registration(config)
+    is_bundled = bundled is not None and destination == bundled[1]
     if not destination.is_dir():
+        if is_bundled:
+            raise ValidationError('Bundled NCA reference is missing; repair the SAGE installation.', code='NCA_REFERENCE_NOT_BUNDLED')
         raise ValidationError('NCA reference package is not imported.', code='NCA_REFERENCE_NOT_IMPORTED', next_action='Import and qualify the NCA operator archive.')
     bundle = load_reference(destination, qualification='STRICT')
-    if bundle.package_id != package_id:
+    expected_id = bundled[0] if is_bundled else package_id
+    if bundle.package_id != expected_id:
         raise ValidationError('NCA package directory and manifest identities disagree.', code='NCA_REFERENCE_PUBLICATION_CONFLICT')
+    if is_bundled and bundle.sha256 != bundled[2]:
+        raise ValidationError('Bundled NCA reference differs from the Core pin.', code='NCA_REFERENCE_CHECKSUM_FAILED')
     bundle.require_qualified()
     return bundle
 
@@ -76,10 +123,21 @@ def reference_package_candidates(config: EcosystemConfig) -> tuple[tuple[Path, R
     library = _reference_library(config)
     if library.is_symlink():
         raise ValidationError('NCA resource library cannot be a symlink.', code='NCA_REFERENCE_PUBLICATION_CONFLICT')
-    if not library.exists():
-        return ()
-    return tuple((path, resolve_reference_package(config, path.name)) for path in sorted(library.iterdir())
-                 if not path.name.startswith('.'))
+    candidates = []
+    bundled = _bundled_registration(config)
+    if bundled is not None:
+        candidates.append((bundled[1], resolve_reference_package(config, bundled[0])))
+    if library.exists():
+        for path in sorted(library.iterdir()):
+            if path.name.startswith('.'):
+                continue
+            if bundled is not None and path.name == bundled[0]:
+                duplicate = load_reference(path, qualification='STRICT')
+                if duplicate.sha256 != bundled[2]:
+                    raise ValidationError('Imported package conflicts with the bundled NCA identity.', code='NCA_REFERENCE_PUBLICATION_CONFLICT')
+                continue
+            candidates.append((path, resolve_reference_package(config, path.name)))
+    return tuple(candidates)
 
 
 def _archive_error(message: str, **details: object) -> ValidationError:
@@ -242,6 +300,13 @@ def import_reference(config: EcosystemConfig, archive: Path) -> Path:
                     with destination.open("wb") as target:
                         target.write(payload)
                 bundle = load_reference(extracted, qualification="STRICT")
+                bundled = _bundled_registration(config)
+                if bundled is not None and bundle.package_id == bundled[0] and bundle.sha256 != bundled[2]:
+                    raise ValidationError(
+                        'Imported package conflicts with the bundled NCA identity.',
+                        code='NCA_REFERENCE_PUBLICATION_CONFLICT',
+                        details={'package_id': bundle.package_id},
+                    )
                 destination = _publication_destination(publication_parent, bundle.package_id)
                 if destination.exists() or destination.is_symlink():
                     if destination.is_symlink() or not destination.is_dir():

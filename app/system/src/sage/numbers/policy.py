@@ -15,11 +15,10 @@ from sage.errors import ValidationError
 from sage.job_snapshots import verify_wip_snapshot
 from sage.jobs import Job
 from sage.registry import EcosystemConfig
-from sage.storage import storage_layout
 
 from .models import ReferenceBundle
 from .reference import REFERENCE_PARSER_VERSION
-from .resources import resolve_reference_package
+from .resources import reference_package_path, resolve_reference_package
 from .style import StyleProfile, resolve_style_profile
 
 CHECK_NAMES = ("number_accuracy", "presentation_consistency", "footnote_review")
@@ -162,7 +161,7 @@ def build_nca_run_snapshot(
         or not route["qualification_evidence_sha256"]
     ):
         raise ValidationError("NCA model route identity is incomplete", code="NCA_MODEL_ROUTE_INVALID")
-    package_root = storage_layout(config.root).resources_root / "numbers" / resolved.bundle.package_id
+    package_root = reference_package_path(config, resolved.bundle.package_id)
     files, inventory_sha256 = _inventory(package_root)
     skill = config.root / "system/skills/nca-numbers/SKILL.md"
     schema = config.root / "system/config/schemas/nca-extraction-v2.schema.yml"
