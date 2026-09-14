@@ -17428,6 +17428,19 @@
       "transport_boundary": "sage.executors.ProviderRequest"
     }
   },
+  "final_review": {
+    "findings": {
+      "F1": "ADDRESSED",
+      "I1": "ADDRESSED",
+      "M1": "ADDRESSED",
+      "M2": "ADDRESSED"
+    },
+    "new_findings": [],
+    "report": "final-residual-verification.md",
+    "report_sha256": "a5155d2f912f89990bee33adb97274bcac0f650876a1108a9c256af21e8f74cb",
+    "reviewed_commit": "57f336e6570b384e31d336d62b96f8ac66ffbadc",
+    "verdict": "APPROVED"
+  },
   "first_scoped_review": {
     "addressed_findings": [
       "I1",
@@ -19618,6 +19631,15 @@
     }
   },
   "live_status": "LIVE_MODEL_BENCHMARK_NOT_RUN",
+  "local_integration": {
+    "branch": "main0.02a2",
+    "evidence": "Controller confirmed clean integrated tree matches the qualified residual metadata stage; documentation closeout is a subsequent local commit.",
+    "integrated_commit": "57f336e6570b384e31d336d62b96f8ac66ffbadc",
+    "method": "LOCAL_FAST_FORWARD",
+    "status": "COMPLETED",
+    "verified_byte_and_mode_match": true,
+    "verified_tracked_files": 837
+  },
   "measurement_elapsed_ms": 12583,
   "native_checks": {
     "actual": "macOS arm64 / CPython 3.12.4",
@@ -19760,10 +19782,10 @@
     "new_full_repository_suite_run": false,
     "portable_process_death_cases": 9
   },
-  "residual_verification_status": "PENDING",
-  "review_status": "WITH_FIXES",
+  "residual_verification_status": "APPROVED",
+  "review_status": "APPROVED",
   "schema_version": "1.0",
-  "scoped_review_status": "NOT_APPROVED",
+  "scoped_review_status": "APPROVED",
   "sqs_status": "NOT_APPLIED",
   "task_base_commit": "1067c172c80e71f650b9d7b436e6f9fa5e1cabe4"
 }

@@ -1,6 +1,6 @@
 # NCA optimization qualification
 
-The current measured implementation is `ec3e46fad44d0375ad7d33f948d28df4863632a0`. Initial final review returned **WITH_FIXES** at `04559e5a855d887a92342c379323c29112d0b09a`; the first scoped review returned **NOT_APPROVED** at `25c3fcc8af9cc630062291d02625625ee745af7d` because of residual F1. The bounded F1 correction is complete; residual verification is **PENDING**. Task base remains `1067c172c80e71f650b9d7b436e6f9fa5e1cabe4`. Core remains `0.02b1`; the user branch remains `0.02a2`. The original [NCA qualification](NCA-QUALIFICATION.md) and [reference qualification](NCA-REFERENCE-QUALIFICATION.json) are preserved byte-for-byte.
+The current measured implementation is `ec3e46fad44d0375ad7d33f948d28df4863632a0`. Initial final review returned **WITH_FIXES** at `04559e5a855d887a92342c379323c29112d0b09a`; the first scoped review returned **NOT_APPROVED** at `25c3fcc8af9cc630062291d02625625ee745af7d` because of residual F1. Final residual verification is **APPROVED** for reviewed commit `57f336e6570b384e31d336d62b96f8ac66ffbadc`; I1, M1, M2 and F1 are addressed, with no new findings. The controller completed the local fast-forward of `main0.02a2` to that reviewed commit and verified all 837 tested file bytes and modes. Task base remains `1067c172c80e71f650b9d7b436e6f9fa5e1cabe4`. Core remains `0.02b1`; the user branch remains `0.02a2`. The original [NCA qualification](NCA-QUALIFICATION.md) and [reference qualification](NCA-REFERENCE-QUALIFICATION.json) are preserved byte-for-byte.
 
 The separate [synthetic receipt](NCA-OPTIMIZATION-BENCHMARK.json) binds exact implementation files, fixtures, SFM/projection identities, package/style/check settings, route and strategy-specific benchmark contracts. It measures real `ProviderRequest` objects through the existing model-task boundary with recorded responses. It does not certify model interpretation.
 
@@ -40,7 +40,7 @@ Labels must match the exact selected input fingerprint and every unit; malformed
 
 ## Release evidence
 
-The historical six-command sequence below passed on the corrected complete tracked release bundle. Its evidence remains attached to `1512e26`; the subsequent `6001294` amendment and first `93fe808` fixes and residual `ec3e46f` correction have separate qualification evidence. The first scoped verdict is NOT_APPROVED due to F1; residual verification remains pending.
+The historical six-command sequence below passed on the corrected complete tracked release bundle. Its evidence remains attached to `1512e26`; the subsequent `6001294` amendment and first `93fe808` fixes and residual `ec3e46f` correction have separate qualification evidence. The first scoped verdict is NOT_APPROVED due to F1; final residual verification is APPROVED at `57f336e`.
 
 The NCA capability limitation remains: model interpretation of language-specific numeric expressions, correspondence and note meaning requires independent qualification. SQS: NOT_APPLIED.
 
@@ -75,7 +75,7 @@ The retained original real-reference gate authenticates the package to `b04a08e7
 
 The initial app-only staging attempt omitted tracked bundle-root files and therefore failed ten launcher/documentation/release-builder tests. The corrected complete bundle passes them; no functional source change was needed. Schema IDs and Skill contracts were unchanged by Task 9, so no additional schema or Skill inventory entry was required. The vanilla manifest includes the two bounded benchmark helpers, new fixture and separate qualification artifacts.
 
-Canonical capability limitation: Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied. SQS: NOT_APPLIED. Initial final review: WITH_FIXES. First scoped review: NOT_APPROVED due to F1. Residual verification: PENDING.
+Canonical capability limitation: Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied. SQS: NOT_APPLIED. Initial final review: WITH_FIXES. First scoped review: NOT_APPROVED due to F1. Final residual verification: APPROVED at `57f336e`.
 
 ## Consolidated final-review fixes
 
@@ -85,7 +85,7 @@ Canonical regression tests cover interruption after staged output, after staged 
 
 M1 rejects nondefault `--fault` before dispatch unless `--mode synthetic --strategy optimized` is selected. Baseline, paired and live rejection tests accompany all four supported synthetic fault positives. M2 corrects `optimized_run_dispatch` to `activated` in the phase-ledger schema.
 
-Historical first-fix qualification at `93fe808` passed: 1944 passed in 605.00s (0:10:04). Schema validation reports 52 schema IDs/PASS, package validation reports READY, and deep source audit reports PASS; all have no warnings. This is the single complete repository suite after I1/M1/M2, including all NCA tests; it predates F1 and is not claimed as a fresh run on the residual correction. The final metadata bundle receives separate schema/package/source-audit and documentation checks, with exact logs retained in the final-fix report. The covering regression run passed 189 tests, including 35 benchmark tests. Python 3.10 grammar and punctuated function/class docstrings pass for seven changed Python files; this is not native Python 3.10 execution. The controlled, labeled-corpus, fault and cold-process measurements were regenerated again for the current residual implementation identity. The 12-case labeled corpus still records 19 baseline versus 13 optimized calls and zero finding differences.
+Historical first-fix qualification at `93fe808` passed: 1944 passed in 605.00s (0:10:04). Schema validation reports 52 schema IDs/PASS, package validation reports READY, and deep source audit reports PASS; all have no warnings. This is the single complete repository suite after I1/M1/M2, including all NCA tests; it predates F1 and is not claimed as a fresh run on the residual correction. The final metadata bundle receives separate schema/package/source-audit and documentation checks, with outcomes and original gate hashes recorded in the benchmark receipt. The covering regression run passed 189 tests, including 35 benchmark tests. Python 3.10 grammar and punctuated function/class docstrings pass for seven changed Python files; this is not native Python 3.10 execution. The controlled, labeled-corpus, fault and cold-process measurements were regenerated again for the current residual implementation identity. The 12-case labeled corpus still records 19 baseline versus 13 optimized calls and zero finding differences.
 
 The original reference release command was not repeated: its implementation dependencies, all qualification fixtures, both original qualification documents, and the complete 38-file authorized unpacked package remain byte-identical. The existing 15-example/42-choice/12-unit gate is retained with its original log identity. The original archive hash remains prior verified provenance only. No new shipped file was added, so the vanilla installation manifest does not require a refresh.
 
@@ -96,7 +96,7 @@ The original reference release command was not repeated: its implementation depe
 | `python system/tools/validate_package.py` | READY, no warnings | 0.84 |
 | `python system/tools/deep_audit.py . --mode source` | PASS, no warnings | 8.585 |
 
-Exact first-fix gate log SHA256 identities are recorded in the benchmark receipt under `fix_gates`, bound to `fix_gate_implementation_commit`; historical `release_gates` and `amendment_gates` retain their original revision-specific evidence. The final metadata bundle checks and exact tracked-source inventories remain in the external final-fix report. First scoped review is NOT_APPROVED due to F1; residual verification is PENDING.
+Exact first-fix gate log SHA256 identities are recorded in the benchmark receipt under `fix_gates`, bound to `fix_gate_implementation_commit`; historical `release_gates` and `amendment_gates` retain their original revision-specific evidence. The final metadata checks passed 47 documentation tests, schema validation, package validation and source audit; the reviewed tracked-source inventories matched all 837 files and modes. First scoped review is NOT_APPROVED due to F1; final residual verification is APPROVED at `57f336e`.
 
 ## F1 residual correction and bounded qualification
 
@@ -106,7 +106,7 @@ Portable subprocess tests actually terminate with `os._exit(73)` before the shar
 
 Current covering qualification passed **219 tests in 81.10s**, including **35 benchmark tests** and nine actual process-death cases. Five changed Python files pass Python 3.10 grammar, punctuated function/class docstrings and required long-function comments. Current provider-free measurement binds all 249 implementation hashes, four unchanged fixture hashes and ten strategy receipts to the residual revision. The 13 controlled gates pass; calls/payloads and labeled findings are unchanged. Native platform/provider limits remain as stated above.
 
-The current schema/package/source checks below use the complete tracked bundle. Final metadata additionally receives schema/package/source-audit/documentation checks, with exact logs in the appended residual report. The prior 1,944-test full-suite evidence remains valid for `93fe808`; no second broad suite was run for this bounded recognizer/declaration change. Original qualification documents, reference interpretation dependencies, fixtures and all 38 authorized package files remain unchanged, so the original reference gate remains applicable.
+The current schema/package/source checks below use the complete tracked bundle. Final metadata additionally receives schema/package/source-audit/documentation checks, with 47 documentation tests passing alongside schema/package/source-audit checks. The prior 1,944-test full-suite evidence remains valid for `93fe808`; no second broad suite was run for this bounded recognizer/declaration change. Original qualification documents, reference interpretation dependencies, fixtures and all 38 authorized package files remain unchanged, so the original reference gate remains applicable.
 
 | Current residual source gate at `ec3e46f` | Result | Elapsed seconds |
 |---|---|---:|
@@ -114,4 +114,4 @@ The current schema/package/source checks below use the complete tracked bundle. 
 | `python system/tools/validate_package.py` | READY, no warnings | 0.949 |
 | `python system/tools/deep_audit.py . --mode source` | PASS, no warnings | 8.371 |
 
-Initial WITH_FIXES and first scoped NOT_APPROVED are historical verdicts. Residual verification remains PENDING until the controller records actual reviewer confirmation; this document does not approve integration.
+Initial WITH_FIXES and first scoped NOT_APPROVED remain historical verdicts. The final residual reviewer approved commit `57f336e6570b384e31d336d62b96f8ac66ffbadc` with all findings addressed and no new findings. The local review record's exact SHA256 and substantive verdict are recorded in the benchmark receipt; temporary review reports are not shipped artifacts. Local integration to `main0.02a2` at that commit is complete and verified; this factual documentation closeout is a subsequent local commit. Measured functional revision `ec3e46fad44d0375ad7d33f948d28df4863632a0`, raw benchmark results and every gate hash remain unchanged.
