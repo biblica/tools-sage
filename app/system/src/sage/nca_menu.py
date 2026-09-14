@@ -5,6 +5,7 @@ from pathlib import Path
 
 from sage.errors import ValidationError
 from sage.registry import load_ecosystem
+from sage.references import validate_scripture_scope
 from sage.nca_cli import CHECK_LABELS, inspect_numbers_package
 from sage.numbers.resources import import_reference, reference_package_candidates
 from sage.numbers.style import import_style_profile, style_profile_candidates
@@ -129,7 +130,8 @@ def start_run(center, job) -> None:
     checks = choose_checks(center, job)
     if checks is None:
         return
-    scope = center.io.text('Scripture scope', required=False).strip()
+    scope = center.io.text('Scripture scope', required=False,
+                          validator=lambda value: validate_scripture_scope(value, workflow='nca').label()).strip()
     if not scope:
         return
     config = load_ecosystem(center.store.settings_path)

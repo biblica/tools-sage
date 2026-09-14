@@ -24,6 +24,27 @@ import sage.workflow_identity as workflow_identity
 IMPORT_TIME = datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc)
 
 
+@pytest.mark.parametrize('tool', ['bic', 'rtc', 'stc'])
+def test_run_creation_validates_before_persistence_and_saves_canonical_scope(make_workspace, tool):
+    """Direct callers cannot persist malformed scopes or depend on menu normalization."""
+    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    store = JobStore(root, root / 'ecosystem.yml')
+    if tool == 'bic':
+        job = next(job for job in store.bootstrap_default_jobs() if job.tool == 'bic')
+    else:
+        job = store.create_job(tool=tool, job_id=f'{tool.upper()}-usWIP_20260901',
+            display_name='Scope fixture', imported_at=IMPORT_TIME,
+            bindings={'wip': 'usWIP', **({'reference': 'usNIVv2'} if tool == 'rtc' else {})})
+    for invalid in ['', 'MAT 3-1', 'MAT 1; MRK 1']:
+        with pytest.raises(ValidationError):
+            store.create_run(job, operation=tool, scope=invalid)
+        assert store.active_run(job) is None
+        assert list((job.root / 'runs').glob('*')) == []
+    requested = ' matthew 01 ' if tool == 'bic' else 'matthew 03; 01'
+    run = store.create_run(job, operation=tool, scope=requested)
+    assert run.scope == ('MAT 1' if tool == 'bic' else 'MAT 1; MAT 3')
+
+
 def _initialize(package_root: Path, root: Path) -> None:
     """Initialize a fixture workspace through the public CLI boundary."""
     env = dict(os.environ)

@@ -6,6 +6,25 @@ import pytest
 from sage.nca_menu import choose_checks, choose_style
 
 
+def test_nca_scope_prompt_retries_invalid_input_before_creating_run(make_workspace, monkeypatch):
+    """A scope typo is corrected in the prompt and only the valid request is sealed."""
+    from sage.nca import create_nca_job
+    from sage.nca_menu import start_run
+    from .test_nca_jobs import _prepare_nca_workspace, _route
+    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    config, _ = _prepare_nca_workspace(root)
+    _route(monkeypatch)
+    job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1')
+    center, output = _center(root, '7', 'MAT 0', 'matthew 01')
+    # This test stops at the execution boundary; CLI lifecycle is covered separately.
+    monkeypatch.setattr('sage.nca_menu.continue_run', lambda *_args: None)
+    start_run(center, job)
+    run = center.store.active_run(job)
+    assert run.scope == 'MAT 1'
+    assert run.run_id.endswith('-001')
+    assert 'Chapter must be positive' in output.getvalue()
+
+
 @pytest.mark.parametrize('status', ['CANCELLED', 'UNKNOWN', 'FAILED', 'BLOCKED', None])
 def test_incomplete_execution_never_submits(make_workspace, status):
     """Only completed model execution may enter governed submission."""

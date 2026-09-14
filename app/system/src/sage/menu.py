@@ -62,7 +62,7 @@ from .interface_localization import (
 from .language_codes import canonical_language_tag, canonical_regional_language_tag, canonical_script_code
 from .model_service import ModelService
 from .executors.codex_cli import CodexCLIExecutor
-from .references import parse_analysis_scope, parse_scope
+from .references import parse_analysis_scope, parse_scope, validate_scripture_scope
 from .scripture import VERSIFICATION_ADVISORY_CODES, compile_project_scope, is_default_vrs_compatible_issue
 from .resource_mounts import (
     clear_base_vrs_root,
@@ -3097,9 +3097,9 @@ class SageControlCenter:
 
     def _select_scripture_scope(self, project: Job, *, primary_binding: str) -> str | None:
         """Offer guided book/range selection while retaining expert direct scope entry."""
-        parse_selected_scope = (
-            parse_analysis_scope if project.tool in {"rtc", "stc", "saw"} else parse_scope
-        )
+        def parse_selected_scope(value: str):
+            """Use the global scope rules for guided and direct entry."""
+            return validate_scripture_scope(value, workflow=project.tool)
         while True:
             choice = self.io.choose(
                 "CHOOSE SCRIPTURE SCOPE",
@@ -4620,7 +4620,7 @@ class SageControlCenter:
                         )
                     )
                 elif choice == "4":
-                    scope = self.io.text("INSPECT scope", validator=lambda value: parse_scope(value).label())
+                    scope = self.io.text("INSPECT scope", validator=lambda value: validate_scripture_scope(value, workflow='bic').label())
                     decision_id = self.io.text("Decision ID")
                     reviewer = self.io.text("Reviewer")
                     decision = self.io.choose(
@@ -4699,10 +4699,10 @@ class SageControlCenter:
                     scope = self.io.text("Scope filter (blank for all)", required=False)
                     arguments = ["project", "target-history", "--job", project.job_id]
                     if scope:
-                        arguments.extend(["--scope", parse_scope(scope).label()])
+                        arguments.extend(["--scope", validate_scripture_scope(scope, workflow='bic').label()])
                     self.print_payload(self.controller(project, arguments))
                 elif choice == "6":
-                    scope = self.io.text("Exact committed TARGET scope", validator=lambda value: parse_scope(value).label())
+                    scope = self.io.text("Exact committed TARGET scope", validator=lambda value: validate_scripture_scope(value, workflow='bic').label())
                     if self.io.confirm(
                         f"Revert TARGET scope {scope} to its immediately preceding committed state?",
                         default=False,
@@ -4791,7 +4791,7 @@ class SageControlCenter:
                     if replacement is not None:
                         self.io.pause()
                 elif choice == "7" and project.tool == "bic":
-                    scope = self.io.text("BIC scope to restart", validator=lambda value: parse_scope(value).label())
+                    scope = self.io.text("BIC scope to restart", validator=lambda value: validate_scripture_scope(value, workflow='bic').label())
                     run = self.store.restart_bic_scope(project, scope=scope)
                     self.io.write(f"Restarted BIC analytical scope {scope}: {run.run_id}")
                     self.io.write("TARGET Scripture changed: NO")

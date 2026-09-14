@@ -78,7 +78,8 @@ from .references import (
     analysis_scope_portions,
     atomic_reference_labels,
     expand_reference_atoms,
-    parse_analysis_scope,
+    scripture_scopes_equal,
+    validate_scripture_scope,
     parse_scope,
     parse_scope_set,
 )
@@ -933,7 +934,9 @@ def _ensure_task_context(
                 "ABANDONED",
             }:
                 continue
-            if candidate.operation != run_operation or candidate.scope != scope.label():
+            if candidate.operation != run_operation or not scripture_scopes_equal(
+                candidate.scope, scope.label(), workflow=workflow, operation=run_operation,
+            ):
                 continue
             if is_analysis_workflow(workflow) and (candidate.focus != focus or candidate.check_type != check_type):
                 continue
@@ -952,8 +955,8 @@ def _ensure_task_context(
     run = store.load_run(job, run_id)
     if job.status != "ACTIVE":
         raise ValidationError(f"Job {job.job_id} is not ACTIVE")
-    if run.scope != scope.label():
-        run_scope = parse_analysis_scope(run.scope)
+    if not scripture_scopes_equal(run.scope, scope.label(), workflow=workflow, operation=run.operation):
+        run_scope = validate_scripture_scope(run.scope, workflow=workflow, operation=run.operation)
         if not (allow_run_subscope and _scope_is_contained(run_scope, scope)):
             raise ValidationError("Task scope does not match the owning Run scope")
     if workflow == "bic":
@@ -4414,11 +4417,7 @@ def create_act_task(
     elif normalized_check_type:
         raise ValidationError("--type is valid only for legacy Targeted Checks")
 
-    scope = (
-        parse_analysis_scope(scope_value)
-        if is_analysis_workflow(workflow) and operation in {"rtc", "stc"}
-        else parse_scope(scope_value)
-    )
+    scope = validate_scripture_scope(scope_value, workflow=workflow, operation=operation)
     portion_values = (
         review_portion_id,
         review_portion_index,

@@ -106,8 +106,7 @@ from .references import (
     BOOK_LABELS,
     BOOK_ORDER,
     analysis_scope_portions,
-    parse_analysis_scope,
-    parse_scope,
+    validate_scripture_scope,
     replace_scope_book,
     resolve_book,
     split_scope_book,
@@ -721,12 +720,10 @@ def _resolve_scope_input(args: argparse.Namespace, field: str = "scope") -> None
     if not isinstance(value, str) or not value.strip():
         return
     original = value.strip()
-    parse_requested_scope = (
-        parse_analysis_scope
-        if getattr(args, "workflow_id", None) in {"rtc", "stc", "saw"}
-        and str(getattr(args, "operation", "")).strip().lower() in {"rtc", "stc"}
-        else parse_scope
-    )
+    def parse_requested_scope(value: str):
+        """Apply the same scope policy as direct Run creation and menus."""
+        return validate_scripture_scope(value, workflow=getattr(args, 'workflow_id', None),
+                                        operation=getattr(args, 'operation', None))
     try:
         scope = parse_requested_scope(original)
         setattr(args, field, scope.label())
@@ -2839,7 +2836,7 @@ def command_evaluation_plan(args: argparse.Namespace) -> int:
         evaluation = config.evaluation_sets[args.set_id]
     except KeyError as exc:
         raise ValidationError(f"Unknown evaluation set: {args.set_id}") from exc
-    scope = parse_scope(args.scope)
+    scope = validate_scripture_scope(args.scope)
     focus = args.focus.strip() if isinstance(args.focus, str) and args.focus.strip() else None
     if args.operation in {"focused", "ol"} and not focus:
         raise ValidationError(f"Legacy analysis operation {args.operation} requires --focus")
@@ -3242,7 +3239,7 @@ def command_bic_restart_scope(args: argparse.Namespace) -> int:
     config, _ = _load(args)
     store = JobStore(config.root, config.settings_path)
     project = store.load_job(args.job, tool="bic")
-    run = store.restart_bic_scope(project, scope=parse_scope(args.scope).label())
+    run = store.restart_bic_scope(project, scope=validate_scripture_scope(args.scope).label())
     result = {
         "status": "RESTARTED",
         "job_id": project.job_id,
@@ -3266,7 +3263,7 @@ def command_bic_target_history(args: argparse.Namespace) -> int:
     config, _ = _load(args)
     store = JobStore(config.root, config.settings_path)
     project = store.load_job(args.job, tool="bic")
-    scope = parse_scope(args.scope).label() if args.scope else None
+    scope = validate_scripture_scope(args.scope).label() if args.scope else None
     rows = list_target_history(project.root, scope_value=scope)
     if args.json:
         _print_json(rows)
@@ -3287,7 +3284,7 @@ def command_bic_revert_target_scope(args: argparse.Namespace) -> int:
     runtime_path = store.ensure_runtime_files(project)
     runtime = load_ecosystem(runtime_path)
     target = runtime.project(project.bindings["generated_target"])
-    scope = parse_scope(args.scope)
+    scope = validate_scripture_scope(args.scope)
     target_file = _one_book_file(target, scope.book, optional=False)
     assert target_file is not None
     if target.external:
@@ -3432,11 +3429,7 @@ def command_plan(args: argparse.Namespace) -> int:
         )
     selected_role = role if project_id == default_project else matching_roles[0]
     project = config.project(project_id)
-    scope = (
-        parse_analysis_scope(args.scope)
-        if profile.workflow_id in {"rtc", "stc", "saw"} and operation in {"rtc", "stc"}
-        else parse_scope(args.scope)
-    )
+    scope = validate_scripture_scope(args.scope, workflow=profile.workflow_id, operation=operation)
     scope_portions = analysis_scope_portions(scope)
     result = compile_project_scope(config, project, scope)
     if result.get("status") not in {"READY", "READY_WITH_WARNINGS"}:
