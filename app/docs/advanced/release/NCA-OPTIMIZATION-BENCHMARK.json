@@ -19632,7 +19632,7 @@
   },
   "live_status": "LIVE_MODEL_BENCHMARK_NOT_RUN",
   "local_integration": {
-    "branch": "main0.02a2",
+    "branch": "0.02a2",
     "evidence": "Controller confirmed clean integrated tree matches the qualified residual metadata stage; documentation closeout is a subsequent local commit.",
     "integrated_commit": "57f336e6570b384e31d336d62b96f8ac66ffbadc",
     "method": "LOCAL_FAST_FORWARD",
