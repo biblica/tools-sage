@@ -196,3 +196,21 @@ def test_heading_result_finalizes_without_suppressing_enabled_body_findings(make
         validate_numbers_result(document, expected_unit_ids=tuple(manifest['expected_unit_ids']),
             allowed_evidence_ids=tuple(manifest['allowed_evidence_ids']))
     assert caught.value.code == 'NCA_RESULT_FINDING_INVALID'
+
+
+def test_planned_extraction_count_is_retained_and_exact(canonical_document):
+    """Initial extraction calls remain distinct from retries and reject false counters."""
+    from copy import deepcopy
+    from sage.numbers.results import validate_numbers_result
+    document, expected, allowed = canonical_document
+    planning = document['metrics']['planning']
+    assert 'planned_extraction_calls' in planning, 'initial batch count is missing'
+    assert 0 < planning['planned_extraction_calls'] <= len(planning['input_ids'])
+    for value in (True, -1, 1.0, len(planning['input_ids']) + 1):
+        invalid = deepcopy(document)
+        invalid['metrics']['planning']['planned_extraction_calls'] = value
+        with pytest.raises(ValidationError):
+            validate_numbers_result(invalid, expected_unit_ids=expected, allowed_evidence_ids=allowed)
+    legacy = deepcopy(document)
+    del legacy['metrics']['planning']['planned_extraction_calls']
+    assert validate_numbers_result(legacy, expected_unit_ids=expected, allowed_evidence_ids=allowed) == legacy

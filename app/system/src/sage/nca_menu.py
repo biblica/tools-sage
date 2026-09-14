@@ -119,7 +119,6 @@ def choose_checks(center, job) -> dict[str, bool] | None:
 def start_run(center, job) -> None:
     """Create and execute the same governed task used by the canonical CLI."""
     from sage.nca import create_nca_run
-    show_preflight(center, job)
     checks = choose_checks(center, job)
     if checks is None:
         return
@@ -141,9 +140,11 @@ def continue_run(center, job, run) -> None:
     if not manifest:
         raise ValidationError('NCA task creation did not return its manifest.', code='NCA_TASK_MANIFEST_MISSING')
     arguments = ['task', 'execute', '--task', manifest]
-    if center.dry_run_provider:
-        arguments.append('--dry-run')
-    result = center.controller(job, arguments)
+    preflight = center.controller(job, arguments + ['--dry-run'])
+    show_preflight(center, job, preflight)
+    result = preflight
+    if not center.dry_run_provider and preflight.get('status') == 'READY_TO_EXECUTE':
+        result = center.controller(job, arguments)
     center.io.write(f"NCA execution: {result.get('status', 'UNKNOWN')}")
     if not center.dry_run_provider and result.get('status') == 'EXECUTED':
         finalized = center.controller(job, ['task', 'submit', '--task', manifest])
@@ -151,15 +152,37 @@ def continue_run(center, job, run) -> None:
     center.io.pause()
 
 
-def show_preflight(center, job) -> None:
-    """Show input identity, available reference coverage and actual model qualification."""
-    config = load_ecosystem(center.store.settings_path)
-    project = config.project(job.bindings['wip'])
-    status = inspect_numbers_package(config, job.resources['numbers_package']['package_id'])
-    center.io.write(f"Input language: {project.language_code}; script: {config.language_profile(project.language_profile).script}")
-    center.io.write(f"Numeric reference coverage: {status['rows']} indexed rows; {status['qualification_status']}")
-    center.io.write('Numeric interpretation depends on the selected model; unsupported evidence remains unassessed.')
-    center._write_job_ai_routing('nca', None)
+def show_preflight(center, job, result) -> None:
+    """Display controller-derived sealed scope estimates without reloading Job resources."""
+    from sage.nca_reporting import _exact
+    from sage.human_output import catalogue_text
+
+    text = lambda key: catalogue_text(center.localizer.language, key)
+    plan = result.get('preflight', {})
+    center.io.write(text('report.nca.preflight'))
+    if plan:
+        values = (
+            ('input_language', f"{plan.get('language')}; {plan.get('script')}"),
+            ('requested_scope', plan.get('requested_scope')),
+            ('mandatory_profile', plan.get('style_profile', {}).get('selector')),
+            ('checks', plan.get('checks')),
+            ('reference_expectations', plan.get('reference_expectations')),
+            ('indexed_coordinates', plan.get('indexed_coordinates')),
+            ('unindexed_coordinates', plan.get('unindexed_coordinates')),
+            ('protected_groups', plan.get('protected_group_ids')),
+            ('planned_extraction_calls', plan.get('planned_extraction_calls')),
+            ('planned_inputs', len(plan.get('input_ids', ()))),
+            ('blocked_inputs', plan.get('blocked')),
+            ('missing_owners', plan.get('missing_owner_ids')),
+            ('scope_expansion', plan.get('scope_expansions')),
+            ('limitations', plan.get('limitations')),
+        )
+        for key, value in values:
+            center.io.write(f"{text('report.nca.' + key)}: {_exact(value)}")
+    center.io.write(f"{text('report.nca.model_identity')}: {result.get('provider', 'NOT RECORDED')}/{result.get('model', 'NOT RECORDED')}")
+    center.io.write(text('report.nca.planning_notice'))
+    center.io.write(text('report.nca.capability_limitation'))
+    center.io.write('SQS: NOT_APPLIED')
 
 
 def job_menu(center, job) -> None:

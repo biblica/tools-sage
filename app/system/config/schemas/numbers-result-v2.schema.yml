@@ -17,5 +17,6 @@ controls:
   counters: parent_extractions_and_reference_coordinate_assessments
   unsupported_or_blocked_evidence: never_pass
   physical_calls: distinct_from_receipts_members_and_reuse
+  planned_extraction_calls: initial_batch_count_exact_nonnegative_integer_optional_for_historical_v2
   phase_checkpoint_references: required
   sqs_confidence_checks_applied: false

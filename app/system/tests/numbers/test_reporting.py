@@ -192,3 +192,98 @@ def test_report_rejects_missing_model_identity_for_assessed_units():
         render_nca_report(document)
 
     assert exc.value.code == "NCA_RESULT_RECEIPT_INVALID"
+
+
+def chapter_document():
+    """Cover cross-chapter parents, unresolved ownership and missing WIP navigation."""
+    document = report_document()
+    unit = document.pop('units')[0]
+    component = dict(western_reference='MAT 1:1', ol_reference='MRK 9:44',
+        owned_target_expression_ids=['target-3'], source_expressions=unit['source_evidence']['expressions'],
+        reading=unit['reading'], footnote=unit['footnote'], final_outcome=unit['final_outcome'], limitations=['ROW_LIMIT'])
+    group = dict(unit_id='bridge', projection=dict(unit['projection'],
+        target_references=['MAT 1:25', 'MAT 2:1'], western_references=['MAT 1:1', 'MAT 1:2'],
+        target_western_mapping={'MAT 1:25': ['MAT 1:1'], 'MAT 2:1': ['MAT 1:2']}),
+        extraction=unit['extraction'], components=[component], alignment_status='PARTIAL',
+        expression_ownership={'target-3': 'MAT 1:1'}, unmatched_target_ids=[], unresolved_target_ids=['target-4'],
+        limitations=['CORRESPONDENCE_INCOMPLETE'], style_findings=[], reference_rows=[
+            dict(western_reference='MAT 1:1', ol_reference='MRK 9:44', status='INDEXED',
+                 context=unit['source_evidence']['context'], provenance={'ol': ['OL-ROW-1']}),
+            dict(western_reference='MAT 1:2', ol_reference=None, status='UNINDEXED', context={}, provenance={})])
+    missing = deepcopy(group)
+    missing.update(unit_id='missing:GEN 10:1', components=[], alignment_status='UNAVAILABLE')
+    missing['projection'].update(target_references=[], western_references=['GEN 10:1'], target_western_mapping={})
+    unresolved = deepcopy(group)
+    unresolved.update(unit_id='unaligned', components=[], alignment_status='UNAVAILABLE')
+    unresolved['projection'].update(target_references=['MAT 3:1', 'MAT 3:2'], target_western_mapping={})
+    findings = []
+    for index, owner in enumerate(('bridge', 'unaligned', 'missing:GEN 10:1'), 1):
+        finding = deepcopy(document['findings'][0])
+        finding.update(finding_id=f'F-{index}', work_unit_id=owner, target_reference=None,
+                       target_references=[], western_references=['MAT 1:1'])
+        findings.append(finding)
+    document.update(schema_version='2.0', groups=[missing, unresolved, group], findings=findings,
+        metrics={'provider_calls': 4, 'checkpoint_reuse': 2, 'failed_calls': 1,
+                 'planning': {'input_ids': ['input-1', 'input-2'], 'blocked': {'input-2': 'OVERSIZED'},
+                              'missing_owner_ids': ['missing:GEN 10:1']}})
+    document['summary'].update(findings=3, indexed_coordinates=1, unindexed_coordinates=1)
+    document['coverage'].update(requested_scope='MAT 1:25', scope_expansions=[
+        {'unit_id': 'bridge', 'included_target_references': ['MAT 2:1'], 'western_references': ['MAT 1:1', 'MAT 1:2']}])
+    document['model_receipts']['GROUP_CORRESPONDENCE'] = [{'provider': 'group-provider', 'model': 'group-model'}]
+    return document
+
+
+def test_chapter_navigation_retains_unlocated_and_cross_boundary_parents():
+    """Every finding owns one primary chapter and other chapters contain only links."""
+    from sage import nca_reporting
+    assert hasattr(nca_reporting, 'chapter_sections'), 'chapter navigation is missing'
+    sections = nca_reporting.chapter_sections(chapter_document())
+    assert [(x['book'], x['chapter']) for x in sections] == [('MAT', 1), ('MAT', 2), ('MAT', 3), (None, None)]
+    assert sections[0]['finding_ids'] == ('F-1',)
+    assert sections[1]['finding_ids'] == ()
+    assert sections[1]['cross_references'][0]['finding_ids'] == ('F-1',)
+    assert sections[-1]['group_ids'] == ('missing:GEN 10:1',)
+    assert sections[-1]['finding_ids'] == ('F-3',)
+    assert sections[-1]['target_references'] == ()
+
+
+def test_chapter_report_preserves_exact_row_evidence_and_unique_findings():
+    """A report renders each parent and finding once with localized evidence labels."""
+    report = render_nca_report(chapter_document(), language='fr')
+    for value in ('## MAT 1', '## MAT 2', '## MAT 3', 'MAT 1:25, MAT 2:1',
+                  'GROUP_CORRESPONDENCE: group-provider/group-model', 'OL-ROW-1',
+                  'CORRESPONDENCE_INCOMPLETE', 'ROW_LIMIT', 'UNINDEXED', 'GEN 10:1',
+                  'MRK 9:44', 'target-4', 'OVERSIZED', 'SQS: `NOT_APPLIED`'):
+        assert value in report
+    for fid in ('F-1', 'F-2', 'F-3'):
+        assert report.count(f'### `{fid}`') == 1
+    assert report.count('### `bridge`') == 1
+    assert 'Alignment:' not in report
+    assert 'Couverture sans emplacement WIP' in report
+    assert 'Appels exécutés: `4`' in report
+    assert 'Points de reprise réutilisés: `2`' in report
+
+
+def test_every_optimized_report_label_has_an_explicit_locale_entry():
+    """English fallback cannot conceal absent translations in supported report locales."""
+    from sage import human_output, nca_reporting
+    required = {'chapters', 'unlocated', 'alignment', 'cross_reference', 'parent_group',
+                'planned_inputs', 'executed_calls', 'reused_checkpoints', 'blocked_inputs',
+                'missing_owners', 'scope_expansion', 'requested_scope', 'row_evidence',
+                'indexed_coordinates', 'unindexed_coordinates', 'extraction_complete',
+                'extraction_partial', 'extraction_unsupported', 'unresolved_targets'}
+    required |= set(human_output._NCA_OPTIMIZED_LABELS)
+    for locale in ('en', 'en-US', 'en-GB', 'id', 'fr', 'ru', 'pt-BR', 'uk'):
+        for suffix in required:
+            key = 'report.nca.' + suffix
+            assert key in human_output._CATALOGUE[locale], (locale, key)
+            assert key in nca_reporting._ENGLISH
+
+
+def test_historical_missing_planned_call_count_is_not_inferred():
+    """A historical document never acquires a fabricated planned call measurement."""
+    document = chapter_document()
+    report = render_nca_report(document)
+    assert 'Planned extraction calls (initial batches): `NOT RECORDED`' in report
+    document['metrics']['planning']['planned_extraction_calls'] = 1
+    assert 'Planned extraction calls (initial batches): `1`' in render_nca_report(document)

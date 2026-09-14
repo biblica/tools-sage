@@ -245,7 +245,7 @@ def test_failure_diagnostic_reader_authenticates_durable_membership(tmp_path):
         store.failure_diagnostics()
 
 
-@pytest.mark.parametrize('damage', ['calls', 'request_id', 'members', 'key'])
+@pytest.mark.parametrize('damage', ['calls', 'request_id', 'members', 'key', 'planned_calls', 'missing_planned_calls'])
 def test_publication_rejects_self_consistent_metrics_forgery(make_workspace, monkeypatch, damage):
     """Recomputed aggregate counters cannot authorize an invented physical request association."""
     from copy import deepcopy
@@ -271,6 +271,10 @@ def test_publication_rejects_self_consistent_metrics_forgery(make_workspace, mon
             metrics.update(summarize_calls(()))
         elif damage == 'request_id':
             metrics['checkpoints'][0]['request_id'] = 'fabricated-request'
+        elif damage == 'planned_calls':
+            metrics['planning']['planned_extraction_calls'] = len(metrics['planning']['input_ids'])
+        elif damage == 'missing_planned_calls':
+            del metrics['planning']['planned_extraction_calls']
         elif damage == 'members':
             metrics['batch_members'] -= len(metrics['checkpoints'][0]['accepted_input_ids'])
             metrics['checkpoints'][0]['accepted_input_ids'] = []

@@ -37,21 +37,17 @@ def test_shared_nca_snapshot_and_frozen_tui_navigation(make_workspace):
     assert TOP_LEVEL_SECTIONS[-1].view_id == 'configure'
 
 
-def test_run_preflight_shows_reference_and_language_capability(make_workspace, monkeypatch):
-    """Readiness exposes package coverage and model limits alongside the input language."""
+def test_run_preflight_shows_reference_and_language_capability(make_workspace):
+    """Readiness reports scoped evidence without traversing a whole reference package."""
     from sage.nca_menu import show_preflight
-    from .test_nca_jobs import _prepare_nca_workspace
     root = make_workspace(configured=True, qualification_status='VALIDATED')
-    _prepare_nca_workspace(root)
     center, output = _center(root)
-    calls = []
-    monkeypatch.setattr(center, '_write_job_ai_routing', lambda tool, run: calls.append((tool, run)))
-    job = SimpleNamespace(bindings={'wip': 'usWIP'}, resources={'numbers_package': {'package_id': 'SYNTHETIC_NCA_REFERENCE_1'}})
-    show_preflight(center, job)
-    assert 'Input language: en; script: Latn' in output.getvalue()
-    assert 'Numeric reference coverage:' in output.getvalue()
-    assert 'unsupported evidence remains unassessed' in output.getvalue()
-    assert calls == [('nca', None)]
+    show_preflight(center, SimpleNamespace(), {'preflight': {
+        'language': 'en', 'script': 'Latn', 'indexed_coordinates': 1,
+        'reference_expectations': ['MAT 1:1'], 'requested_scope': 'MAT 1:1'}})
+    assert 'en; Latn' in output.getvalue()
+    assert 'Indexed coordinates: 1' in output.getvalue()
+    assert 'SQS: NOT_APPLIED' in output.getvalue()
 
 
 def test_nca_reinitialization_uses_own_resource_contract(make_workspace, monkeypatch):
@@ -143,3 +139,38 @@ def test_single_compatible_profile_is_reused_from_project_language_namespace(mak
     center, output = _center(root)
     assert choose_style(center, project) == 'fixture-en/1'
     assert 'Number Style Profile: fixture-en/1' in output.getvalue()
+
+
+def test_resume_preflight_uses_one_task_before_execution(make_workspace):
+    """Resume displays the sealed plan and executes the same task without another prompt."""
+    from sage.nca_menu import continue_run
+    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    center, output = _center(root)
+    center.dry_run_provider = False
+    calls = []
+
+    def controller(_job, arguments):
+        """Record task identity and expose the dry-run sealed scope plan."""
+        calls.append(arguments)
+        if arguments[1] == 'create':
+            return {'task_manifest_path': '/tmp/sealed-task.json'}
+        if '--dry-run' in arguments:
+            return {'status': 'READY_TO_EXECUTE', 'provider': 'sealed-provider', 'model': 'sealed-model',
+                'preflight': {'requested_scope': 'MAT 2:1', 'planned_extraction_calls': 2,
+                    'input_ids': ['one', 'two'], 'blocked': {'two': 'OVERSIZED'},
+                    'missing_owner_ids': ['missing:MAT 2:2'], 'protected_group_ids': ['bridge'],
+                    'indexed_coordinates': 1, 'unindexed_coordinates': 1,
+                    'reference_expectations': ['MAT 1:1'], 'scope_expansions': [],
+                    'style_profile': {'selector': 'sealed-style/1'}, 'checks': {'number_accuracy': True},
+                    'language': 'en', 'script': 'Latn', 'limitations': ['REFERENCE_GAP']}}
+        return {'status': 'FAILED'}
+
+    center.controller = controller
+    continue_run(center, SimpleNamespace(job_id='JOB', bindings={'wip': 'usWIP'}),
+                 SimpleNamespace(run_id='RUN', scope='MAT 2:1'))
+    assert [args[1] for args in calls] == ['create', 'execute', 'execute']
+    assert '--dry-run' in calls[1] and '--dry-run' not in calls[2]
+    assert calls[1][3] == calls[2][3] == '/tmp/sealed-task.json'
+    for value in ('MAT 2:1', 'sealed-style/1', 'sealed-provider', 'OVERSIZED', 'REFERENCE_GAP',
+                  'missing:MAT 2:2', 'Planning estimates', 'SQS: NOT_APPLIED'):
+        assert value in output.getvalue()

@@ -124,3 +124,35 @@ def command_nca_create(args: argparse.Namespace, config) -> Mapping[str, object]
     else:
         run = create_nca_run(config, job_id=job.job_id, scope_value=args.scope, checks=overrides or None)
     return create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=args.scope)
+
+
+def scoped_preflight(inputs) -> Mapping[str, object]:
+    """Describe one prepared sealed scope without requalification or provider work."""
+    from sage.references import parse_scope
+    from sage.numbers.execution import build_inventory, plan_extraction, reference_restrictions
+    from sage.numbers.results import NCA_CAPABILITY_LIMITATION
+
+    inventory = build_inventory(inputs)
+    scope = parse_scope(inputs.requested_scope)
+    refs = inputs.expected_references
+    indexed = [ref.label() for ref in refs if inputs.bundle.lookup(ref) is not None]
+    # Historical v1 has no batch policy: never imply it used the optimized planner.
+    streams, plan = plan_extraction(inputs, inventory) if inputs.policy['schema_version'] == '2.0' else ((), None)
+    owners = {stream.owner_unit_id for stream in streams if stream.purpose != 'NOTE_STYLE'}
+    return {'requested_scope': inputs.requested_scope,
+        'language': inputs.policy['wip']['language'], 'script': inputs.policy['wip']['script'],
+        'style_profile': _plain(inputs.policy['number_style']), 'checks': _plain(inputs.policy['checks']),
+        'reference_expectations': indexed, 'indexed_coordinates': len(indexed),
+        'unindexed_coordinates': len(refs) - len(indexed),
+        'protected_group_ids': list(inputs.expected_unit_ids),
+        'planned_extraction_calls': len(plan.batches) if plan is not None else None,
+        'input_ids': [stream.input_id for stream in streams],
+        'blocked': dict(plan.blocked) if plan is not None else {},
+        'missing_owner_ids': [unit.target.unit_id for unit in inputs.projected_units
+                              if unit.target.unit_id not in owners] if plan is not None else [],
+        'scope_expansions': [{'unit_id': unit.target.unit_id,
+            'included_target_references': [ref.label() for ref in unit.target.target_references if not scope.contains(ref)],
+            'western_references': [ref.label() for ref in unit.western_references]}
+            for unit in inputs.projected_units if any(not scope.contains(ref) for ref in unit.target.target_references)],
+        'limitations': list(reference_restrictions(inputs.policy)),
+        'capability': NCA_CAPABILITY_LIMITATION, 'sqs_confidence_checks_applied': False}
