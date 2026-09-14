@@ -191,6 +191,13 @@ def test_heading_result_finalizes_without_suppressing_enabled_body_findings(make
     assert not any(f['work_unit_id'] == heading['unit_id'] and f['category'] != 'STYLE' for f in document['findings'])
     assert any(f['category'] == 'EVIDENCE' for f in document['findings'])
     assert Path(finalized['report_path']).is_file()
+    from sage.numbers.usage import number_usage
+    usage = number_usage(document)
+    assert usage['expression_count'] == (2 if presentation else 0)
+    if presentation:
+        assert {row['location'] for row in usage['examples']} == {'heading', 'footnote'}
+        assert any(row['surface'] == '7' and row['note_id'] for row in usage['examples'])
+        assert 'Number Usage Report' in Path(finalized['report_path']).read_text()
     document['findings'] = [f for f in document['findings'] if f['category'] != 'EVIDENCE']
     with pytest.raises(ValidationError) as caught:
         validate_numbers_result(document, expected_unit_ids=tuple(manifest['expected_unit_ids']),

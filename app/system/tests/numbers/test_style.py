@@ -214,7 +214,7 @@ def test_words_with_parenthesized_digits_can_be_required():
 
 
 def test_profile_library_import_selection_and_content_conflicts(make_workspace, tmp_path):
-    """Imported profiles live in localdata and resolve exactly or require selection."""
+    """Imported profiles live in localdata and resolve only through explicit selection."""
     import yaml
     from sage.numbers.style import import_style_profile, resolve_style_profile
     from sage.registry import load_ecosystem
@@ -228,16 +228,14 @@ def test_profile_library_import_selection_and_content_conflicts(make_workspace, 
     imported = import_style_profile(config, source)
     assert imported.is_relative_to(storage_layout(config.root).styleguides_root)
     assert imported.read_bytes() == original
-    selected = resolve_style_profile(config, None, language='en', script='Latn', project='Fixture')
+    selected = resolve_style_profile(config, 'fixture-en/1', language='en', script='Latn', project='Fixture')
     assert selected.path == imported
     assert selected.selector == 'fixture-en/1'
     assert selected.document['profile']['version'] == '1'
     raw['profile']['id'] = 'second-en'
     source.write_text(yaml.safe_dump(raw), encoding='utf-8')
     import_style_profile(config, source)
-    with pytest.raises(ValidationError) as exc:
-        resolve_style_profile(config, None, language='en', script='Latn')
-    assert exc.value.code == 'NCA_STYLE_PROFILE_SELECTION_REQUIRED'
+    assert resolve_style_profile(config, None, language='en', script='Latn') is None
     assert resolve_style_profile(config, 'fixture-en/1', language='en', script='Latn').sha256 == selected.sha256
     raw['profile']['id'] = 'fixture-en'
     raw['profile']['source_guide'] = 'Changed same version'
@@ -255,8 +253,8 @@ def test_profile_library_rejects_missing_and_escaping_selectors(make_workspace):
 
     config = load_ecosystem(make_workspace() / 'ecosystem.yml')
     with pytest.raises(ValidationError) as exc:
-        resolve_style_profile(config, None, language='en', script='Latn')
-    assert exc.value.code == 'NCA_STYLE_PROFILE_NOT_CONFIGURED'
+        resolve_style_profile(config, 'missing/1', language='en', script='Latn')
+    assert exc.value.code == 'NCA_STYLE_PROFILE_INVALID'
     with pytest.raises(ValidationError):
         resolve_style_profile(config, '../../profile', language='en', script='Latn')
 

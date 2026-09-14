@@ -252,7 +252,10 @@ def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, ru
         if alignment == 'UNAVAILABLE':
             limits = tuple(dict.fromkeys((*limits, 'GROUP_ALIGNMENT_UNRESOLVED')))
         groups.append(GroupResult(unit, extraction, rows, components, alignment, ownership,
-            unmatched, unresolved, result.style_findings, limits))
+            unmatched, unresolved, result.style_findings, limits,
+            {note.note_id: notes.get(unit.target.unit_id, {}).get(note.note_id,
+                Extraction((), 'UNSUPPORTED', ('NOTE_EXTRACTION_UNAVAILABLE',)))
+             for note in unit.target.notes} if checks['presentation_consistency'] else {}))
     local = {g.projected.target.unit_id: group_findings(g, bundle=inputs.bundle,
         checks=dict(checks, number_accuracy=False, footnote_review=False) if g.projected.precision == 'STYLE_STREAM' else checks) for g in groups}
     findings = tuple(assign_global_finding_ids(local, run_id=run_id, prefix='NUMBERS'))

@@ -6,22 +6,22 @@
 
 1. SAGE includes the qualified NCA reference tables. A standard installation selects the bundled package automatically; no archive import is required. Review any reference diagnostics shown.
 2. Choose an onboarded WIP Project. Its language, script, recorded import date, and versification identify the input.
-3. Choose one compatible configured **Number Style Profile**. One candidate resolves automatically; multiple candidates require a choice. If none exists, configure a copy of `system/config/profiles/numbers/number-style-template.yml` and import it. The shipped draft is not an active guide.
+3. Optionally select a compatible **Number Style Profile**, or choose **Continue without stylesheet**. To check approved rules, configure and import a copy of `system/config/profiles/numbers/number-style-template.yml`. The shipped draft is not an active guide.
 4. Review reference diagnostics and model routing. The independent Job is named `NCA-<Project>_<YYYYMMDD>`.
 
-The style profile is mandatory even with presentation OFF. Record all questionnaire areas, using `NOT_SPECIFIED` when the guide supplies no rule. Unspecified areas remain unassessed. Profiles use resolved localdata `inputs/styleguides/numbers`; additional imported packages use `inputs/resources/numbers`. The bundled reference remains read-only under Core `system/resources/numbers`.
+A stylesheet is optional. Without one, NCA reports observed number usage and leaves checks against approved presentation rules unassessed. If a stylesheet is supplied, record all questionnaire areas, using `NOT_SPECIFIED` when the guide supplies no rule. Unspecified areas remain unassessed. Profiles use resolved localdata `inputs/styleguides/numbers`; additional imported packages use `inputs/resources/numbers`. The bundled reference remains read-only under Core `system/resources/numbers`.
 
 ## Choose Run checks
 
 Three independent switches are initially ON:
 
 - **Number accuracy** compares supported numeric meaning with immutable OL authority.
-- **Presentation consistency** applies the guide to number forms, separators, contexts, and units.
+- **Number usage and presentation** reports observed forms and applies approved style rules when a guide is selected.
 - **Footnote review and recommendations** checks disclosure for the selected registered reading.
 
-At least one check must be ON. OFF means **NOT ASSESSED**, never passed. Save or restore Job defaults before starting. Each Run seals its checks, style bytes/hash, package, target snapshot, mapping, and model/task identities. Resuming uses sealed evidence; revised defaults apply to new Runs.
+At least one check must be ON. OFF means **NOT ASSESSED**, never passed. Save or restore Job defaults before starting. Each Run seals its checks, selected style bytes/hash or explicit absence, package, target snapshot, mapping, and model/task identities. Resuming uses sealed evidence; revised defaults apply to new Runs.
 
-After choosing checks and scope, the menu seals the Run and displays its scoped preflight. This shows Western reference expectations, indexed and unindexed coordinates, protected groups, the mandatory profile, enabled checks, initial extraction batch estimates, blocked inputs, missing WIP coverage, and any scope expansion. A protected bridge may include verses outside the requested range; those exact additions remain visible. Resuming uses the same sealed inputs.
+After choosing checks and scope, the menu seals the Run and displays its scoped preflight. This shows Western reference expectations, indexed and unindexed coordinates, protected groups, the optional profile selection, enabled checks, initial extraction batch estimates, blocked inputs, missing WIP coverage, and any scope expansion. A protected bridge may include verses outside the requested range; those exact additions remain visible. Resuming uses the same sealed inputs.
 
 Batch estimates use the same routed-SFM limits and enabled body/note/heading streams as execution. They are planning information, not measured time, cost, or model qualification. Independent correspondence and footnote calls, retries, and checkpoint reuse depend on the evidence.
 
@@ -47,8 +47,7 @@ Run from the application directory with the managed Python environment. Global `
 
 ```sh
 python -m sage.cli resource numbers inspect
-python -m sage.cli resource number-style import --path /path/to/configured-profile.yml
-python -m sage.cli task create --workflow nca --operation numbers --wip PROJECT_ID --scope "MAT 1:1-17" --number-style PROFILE_ID/VERSION
+python -m sage.cli task create --workflow nca --operation numbers --wip PROJECT_ID --scope "MAT 1:1-17"
 python -m sage.cli task execute --task /path/to/task-manifest.json --dry-run
 python -m sage.cli task execute --task /path/to/task-manifest.json
 python -m sage.cli task submit --task /path/to/task-manifest.json
@@ -65,3 +64,9 @@ Full-scope bounded extraction, validated checkpoint reuse, attributed bridge com
 The `--numbers-package` selector is optional for a new Job; omission selects the bundled Core reference. `resource numbers inspect` also defaults to the bundled reference. Use `resource numbers import --archive ...` only to add another qualified package.
 
 Final bundled-table validation, ambiguous-reading notes and known NIV continuation limits: [validation report](advanced/release/NCA-BUNDLED-REFERENCE-VALIDATION.md).
+
+## Number Usage Report
+
+With presentation enabled, the NCA report includes observed forms, number kinds, units, digit sets and separator characters, with exact WIP examples grouped by book and chapter. Main text, headings and footnotes remain separate; a protected bridge is counted once with its full WIP references. Mixed forms for the same numeric value are observations for operator review, not automatic errors or inferred approved rules. Partial or missing extraction is visible. Historical reports without retained footnote extraction mark those notes unassessed.
+
+Omit `--number-style` to run without a stylesheet, even if compatible guides are installed. Optionally import a configured guide with `resource number-style import --path /path/to/configured-profile.yml`, then add `--number-style PROFILE_ID/VERSION` when creating the Job. The sealed Run preserves that choice; importing a guide later does not change an existing Run. Usage reporting reuses extraction evidence and makes no additional report-generation model calls.

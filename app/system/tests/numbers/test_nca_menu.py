@@ -122,7 +122,7 @@ def test_nca_workflow_menu_can_cancel_before_creating_any_job(make_workspace):
     assert 'Add NCA JOB <WIP PROJECT>' in output.getvalue()
 
 
-def test_single_compatible_profile_is_reused_from_project_language_namespace(make_workspace, tmp_path):
+def test_single_compatible_profile_is_selected_from_project_language_namespace(make_workspace, tmp_path):
     """Project script comes from its configured language namespace during guide choice."""
     import yaml
     from sage.registry import load_ecosystem
@@ -136,7 +136,7 @@ def test_single_compatible_profile_is_reused_from_project_language_namespace(mak
     source = tmp_path / 'profile.yml'
     source.write_text(yaml.safe_dump(raw))
     import_style_profile(config, source)
-    center, output = _center(root)
+    center, output = _center(root, '1')
     assert choose_style(center, project) == 'fixture-en/1'
     assert 'Number Style Profile: fixture-en/1' in output.getvalue()
 

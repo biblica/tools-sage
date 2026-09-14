@@ -11,29 +11,32 @@ from sage.numbers.style import import_style_profile, style_profile_candidates
 
 
 def choose_style(center, project) -> str | None:
-    """Choose a compatible configured guide or import an operator-completed copy."""
+    """Choose a guide, return empty text for no stylesheet, or None for cancellation."""
     while True:
         config = load_ecosystem(center.store.settings_path)
         script = config.language_profile(project.language_profile).script
         candidates = style_profile_candidates(config, language=project.language_code, script=script, project=project.project_id)
-        if len(candidates) == 1:
-            center.io.write(f'Number Style Profile: {candidates[0].selector}')
-            return candidates[0].selector
         options = [(str(index), item.selector) for index, item in enumerate(candidates, 1)]
         import_key = str(len(options) + 1)
-        options.extend(((import_key, 'Import configured Number Style Profile'), ('B', 'Back')))
-        center.io.write('A configured Number Style Profile is required, including when presentation is OFF.')
+        skip_key = str(len(options) + 2)
+        options.extend(((import_key, 'Import configured Number Style Profile'),
+                        (skip_key, 'Continue without stylesheet'), ('B', 'Back')))
+        center.io.write('An optional Number Style Profile adds approved rule checks to the Number Usage Report.')
         center.io.write('Template: system/config/profiles/numbers/number-style-template.yml')
         choice = center.io.choose('NCA Number Style Profile', options)
         if choice == 'B':
             return None
+        if choice == skip_key:
+            return ''
         if choice == import_key:
             raw = center.io.text('Configured profile path', required=False).strip()
             if not raw:
                 return None
             import_style_profile(config, Path(raw).expanduser())
         else:
-            return candidates[int(choice) - 1].selector
+            selector = candidates[int(choice) - 1].selector
+            center.io.write(f'Number Style Profile: {selector}')
+            return selector
 
 
 def choose_package(center, *, manage: bool = False) -> str | None:
@@ -68,7 +71,7 @@ def choose_package(center, *, manage: bool = False) -> str | None:
 
 
 def create_job(center):
-    """Resolve one WIP, qualified package and mandatory profile before persistence."""
+    """Resolve one WIP, qualified package and optional profile before persistence."""
     from sage.nca import create_nca_job
     project = center.choose_or_add_resource('Start new NCA review <WIP PROJECT>', 'WIP')
     if project is None:
@@ -83,13 +86,13 @@ def create_job(center):
     center.io.write(f'Input language: {project.language_code}; script: {config.language_profile(project.language_profile).script}')
     center.io.write('Numeric interpretation depends on the selected model; unsupported evidence remains unassessed.')
     center._write_job_ai_routing('nca', None)
-    job = create_nca_job(load_ecosystem(center.store.settings_path), wip=project.project_id, package_id=package_id, style_selector=selector)
+    job = create_nca_job(load_ecosystem(center.store.settings_path), wip=project.project_id, package_id=package_id, style_selector=selector or None)
     center.store.set_active_job('nca', job.job_id)
     return job
 
 
 def choose_checks(center, job) -> dict[str, bool] | None:
-    """Offer independent pre-Run switches while keeping the style binding mandatory."""
+    """Offer independent pre-Run switches and an optional approved stylesheet."""
     defaults = {key: True for key in CHECK_LABELS}
     defaults.update(job.defaults.get('checks', {}))
     checks = dict(defaults)
@@ -109,8 +112,8 @@ def choose_checks(center, job) -> dict[str, bool] | None:
         elif choice == '5':
             config = load_ecosystem(center.store.settings_path)
             selector = choose_style(center, config.project(job.bindings['wip']))
-            if selector:
-                job = center.store.revise_job(job, profiles={'number_style': selector})
+            if selector is not None:
+                job = center.store.revise_job(job, profiles={'number_style': selector} if selector else {})
         elif not any(checks.values()):
             center.io.write('Enable at least one NCA check.')
         elif choice == '6':
@@ -198,7 +201,7 @@ def job_menu(center, job) -> None:
                                   (('1', 'Run SAGE NUMBERS CHECK'), ('2', 'Reports and history'),
                                    ('3', 'NCA check defaults and profile'), ('4', 'Recovery and diagnostics'),
                                    ('5', 'Manage Job'), ('B', 'Back')),
-                                  context=(f'Job: {job.job_id}', f"WIP Project: {job.bindings['wip']}", f"Number Style Profile: {job.profiles['number_style']}"))
+                                  context=(f'Job: {job.job_id}', f"WIP Project: {job.bindings['wip']}", f"Number Style Profile: {job.profiles.get('number_style', 'NOT CONFIGURED')}"))
         if choice == 'B':
             return
         if choice == '1':

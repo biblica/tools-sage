@@ -139,8 +139,8 @@ def test_create_nca_job_seals_wip_package_style_and_default_checks(make_workspac
     assert runtime["permissions"]["may_write_projects"] == []
 
 
-def test_nca_job_rejects_reference_binding_and_requires_style_even_when_check_off(make_workspace) -> None:
-    """NCA cannot inherit REFERENCE authority or omit its mandatory style decision."""
+def test_nca_job_rejects_reference_binding_and_explicit_invalid_style(make_workspace) -> None:
+    """NCA cannot inherit REFERENCE authority or ignore an invalid selected style."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     config, _style_bytes = _prepare_nca_workspace(root)
     store = JobStore(root, root / "ecosystem.yml")

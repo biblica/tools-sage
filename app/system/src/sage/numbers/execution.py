@@ -20,7 +20,7 @@ from .policy import _inventory, load_nca_run_snapshot
 from .reference import REFERENCE_PARSER_VERSION
 from .resources import reference_package_path, resolve_reference_package
 from .scope import project_scope
-from .style import load_style_profile
+from .style import load_style_profile, validate_style_profile
 from .target import extract_heading_units, target_units
 from .transport import StreamInput
 
@@ -124,14 +124,18 @@ def prepare_execution_inputs(
     if (project.project_id != wip["project_id"] or project.language_code != wip["language"]
             or namespace.script != wip["script"] or project.content_state != "UNDER_REVIEW"):
         raise ValidationError("NCA sealed Project identity changed", code="NCA_WIP_SNAPSHOT_STALE")
-    style = load_style_profile(run.root / "profiles/number-style.yml", language=wip["language"],
-                               script=wip["script"], project=wip["project_id"])
     identity = sealed["number_style"]
-    if (identity.get("sha256") != style.sha256 or identity.get("selector") != style.selector
-            or any(identity.get(key) != style.document["profile"][field]
-                   for key, field in (("profile_id", "id"), ("version", "version"),
-                                      ("language", "language"), ("script", "script")))):
-        raise ValidationError("NCA sealed style identity changed", code="NCA_STYLE_PROFILE_STALE")
+    if identity['selector'] is None:
+        style_document = validate_style_profile(None)
+    else:
+        style = load_style_profile(run.root / "profiles/number-style.yml", language=wip["language"],
+                                   script=wip["script"], project=wip["project_id"])
+        if (identity.get("sha256") != style.sha256 or identity.get("selector") != style.selector
+                or any(identity.get(key) != style.document["profile"][field]
+                       for key, field in (("profile_id", "id"), ("version", "version"),
+                                          ("language", "language"), ("script", "script")))):
+            raise ValidationError("NCA sealed style identity changed", code="NCA_STYLE_PROFILE_STALE")
+        style_document = style.document
 
     # Read the already verified inventory and hash the bytes actually retained, so
     # later inventory extraction never needs mutable paths or reconstructed SFM.
@@ -168,7 +172,7 @@ def prepare_execution_inputs(
             contracts[relative] = data
     import yaml
     limits = yaml.safe_load((config.root / 'system/config/workflows/nca/profile.yml').read_text())['evidence_policies']['default']
-    return ExecutionInputs(bundle, style.document, sealed, projected, tuple(headings),
+    return ExecutionInputs(bundle, style_document, sealed, projected, tuple(headings),
                            expected_ids, tuple(expected_refs), documents, run.scope,
                            (run.root / 'check-policy.json').read_bytes(), contracts, limits)
 

@@ -32,7 +32,7 @@ class NCAJobBindings:
     """Resolved immutable NCA resources and Project applicability at Job scope."""
 
     bundle: ReferenceBundle
-    style: StyleProfile
+    style: StyleProfile | None
     project_id: str
     language: str
     script: str
@@ -92,12 +92,12 @@ def validate_checks(raw: Mapping[str, object] | None) -> dict[str, bool]:
 
 
 def validate_nca_job_prerequisites(config: EcosystemConfig, job: Job) -> NCAJobBindings:
-    """Resolve and revalidate the WIP, package, and mandatory style binding for one NCA Job."""
+    """Resolve and revalidate the WIP, package, and optional style binding for one NCA Job."""
     if job.tool != "nca" or set(job.bindings) != {"wip"}:
         raise ValidationError("NCA Job requires one WIP binding", code="NCA_JOB_BINDING_INVALID")
-    if set(job.resources) != {"numbers_package"} or set(job.profiles) != {"number_style"}:
+    if set(job.resources) != {"numbers_package"} or set(job.profiles) - {"number_style"}:
         raise ValidationError(
-            "NCA Job requires one numbers package and one Number Style Profile",
+            "NCA Job requires one numbers package and an optional Number Style Profile",
             code="NCA_JOB_BINDING_INVALID",
         )
     project = config.project(job.bindings["wip"])
@@ -114,7 +114,7 @@ def validate_nca_job_prerequisites(config: EcosystemConfig, job: Job) -> NCAJobB
     namespace = config.language_profile(project.language_profile)
     style = resolve_style_profile(
         config,
-        job.profiles["number_style"],
+        job.profiles.get("number_style"),
         language=project.language_code,
         script=namespace.script,
         project=project.project_id,
@@ -186,12 +186,12 @@ def build_nca_run_snapshot(
             "inventory_sha256": inventory_sha256,
         },
         "number_style": {
-            "selector": resolved.style.selector,
-            "sha256": resolved.style.sha256,
-            "profile_id": resolved.style.document["profile"]["id"],
-            "version": resolved.style.document["profile"]["version"],
-            "language": resolved.style.document["profile"]["language"],
-            "script": resolved.style.document["profile"]["script"],
+            "selector": resolved.style.selector if resolved.style else None,
+            "sha256": resolved.style.sha256 if resolved.style else None,
+            "profile_id": resolved.style.document["profile"]["id"] if resolved.style else None,
+            "version": resolved.style.document["profile"]["version"] if resolved.style else None,
+            "language": resolved.style.document["profile"]["language"] if resolved.style else resolved.language,
+            "script": resolved.style.document["profile"]["script"] if resolved.style else resolved.script,
         },
         "model_contract": {
             "skill_id": "nca-numbers",
@@ -213,15 +213,21 @@ def write_nca_run_snapshot(
     run_root: Path,
     snapshot: Mapping[str, object],
     *,
-    style_bytes: bytes,
+    style_bytes: bytes | None,
 ) -> Path:
-    """Write policy and exact style bytes before a new Run becomes discoverable."""
+    """Write policy and any selected style bytes before a new Run becomes discoverable."""
     root = run_root.resolve()
     style = snapshot.get("number_style")
-    if not isinstance(style, Mapping) or hashlib.sha256(style_bytes).hexdigest() != style.get("sha256"):
+    if not isinstance(style, Mapping):
         raise ValidationError("NCA style snapshot bytes differ from policy", code="NCA_STYLE_PROFILE_STALE")
     style_path = root / "profiles/number-style.yml"
-    atomic_write_bytes(style_path, style_bytes)
+    if style.get('selector') is None:
+        if style_bytes is not None or style_path.exists() or any(style.get(key) is not None for key in ('sha256', 'profile_id', 'version')):
+            raise ValidationError("NCA absent style snapshot has unexpected content", code="NCA_STYLE_PROFILE_STALE")
+    else:
+        if style_bytes is None or hashlib.sha256(style_bytes).hexdigest() != style.get("sha256"):
+            raise ValidationError("NCA style snapshot bytes differ from policy", code="NCA_STYLE_PROFILE_STALE")
+        atomic_write_bytes(style_path, style_bytes)
     policy_path = root / "check-policy.json"
     atomic_write_json(policy_path, _plain(snapshot))
     atomic_write_text(root / "check-policy.sha256", _sha256(policy_path) + "\n")
@@ -230,7 +236,7 @@ def write_nca_run_snapshot(
 
 
 def load_nca_run_snapshot(run_root: Path) -> Mapping[str, object]:
-    """Load and verify mandatory Run-owned policy, style, and WIP evidence."""
+    """Load and verify Run-owned policy, optional style, and WIP evidence."""
     root = run_root.resolve()
     try:
         value = json.loads((root / "check-policy.json").read_text(encoding="utf-8"))
@@ -250,7 +256,15 @@ def load_nca_run_snapshot(run_root: Path) -> Mapping[str, object]:
     if recorded_policy_sha != _sha256(root / "check-policy.json"):
         raise ValidationError("NCA Run policy changed after creation", code="NCA_RUN_SNAPSHOT_INVALID")
     style = value.get("number_style")
-    if not isinstance(style, Mapping) or _sha256(root / "profiles/number-style.yml") != style.get("sha256"):
+    if not isinstance(style, Mapping) or set(style) != {'selector', 'sha256', 'profile_id', 'version', 'language', 'script'}:
+        raise ValidationError("NCA sealed style bytes have changed", code="NCA_STYLE_PROFILE_STALE")
+    style_path = root / "profiles/number-style.yml"
+    if style['selector'] is None:
+        if (any(style[key] is not None for key in ('sha256', 'profile_id', 'version'))
+                or style_path.exists() or style_path.is_symlink()
+                or any(style[key] != value.get('wip', {}).get(key) for key in ('language', 'script'))):
+            raise ValidationError("NCA sealed style absence has changed", code="NCA_STYLE_PROFILE_STALE")
+    elif _sha256(style_path) != style.get('sha256'):
         raise ValidationError("NCA sealed style bytes have changed", code="NCA_STYLE_PROFILE_STALE")
     wip = value.get("wip")
     receipt = verify_wip_snapshot(root / "snapshot", require_file_inventory=True)

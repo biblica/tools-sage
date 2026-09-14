@@ -150,9 +150,14 @@ def _validate_area(area: str, rule: Mapping[str, Any]) -> None:
                     raise _invalid('Approved unit forms must be literal strings.')
 
 
-def validate_style_profile(raw: Mapping[str, object], *, language: Optional[str] = None,
+def validate_style_profile(raw: Optional[Mapping[str, object]], *, language: Optional[str] = None,
                            script: Optional[str] = None, project: Optional[str] = None) -> Mapping[str, object]:
-    """Require one complete configured guide, preserving explicit unspecified areas."""
+    """Validate a selected guide or prepare an internal context with no style rules."""
+    if raw is None:
+        return freeze({'profile': {'status': 'NOT_CONFIGURED'}, 'rules': {
+            area: {'id': 'NCA_UNCONFIGURED_' + area.upper(), 'status': 'NOT_SPECIFIED'}
+            for area in RULE_AREAS
+        }})
     if not isinstance(raw, Mapping) or raw.get('schema_version') != '1.0':
         raise _invalid('Missing or unsupported number-style schema version.')
     profile, rules = raw.get('profile'), raw.get('rules')
@@ -251,6 +256,8 @@ def assess_style(extraction: Extraction, *, profile: Mapping[str, object],
 def _assess_prepared_style(extraction: Extraction, *, profile: Mapping[str, object],
                            location: str, context: Optional[str]) -> tuple[Mapping[str, object], ...]:
     """Assess a profile already validated at the owning engine boundary."""
+    if profile['profile']['status'] == 'NOT_CONFIGURED':
+        return ()
     rules = _plain(profile['rules'])
     output: list[Mapping[str, object]] = []
 
@@ -405,6 +412,8 @@ def load_style_profile(path: Path, *, language: Optional[str] = None,
         if len(data) > 2 * 1024 * 1024:
             raise _invalid('Number-style profile exceeds the supported size.')
         raw = yaml.load(data.decode('utf-8-sig'), Loader=_ProfileLoader)
+        if raw is None:
+            raise _invalid('An imported number-style guide must contain a configured profile.')
         document = validate_style_profile(raw, language=language, script=script, project=project)
     except (OSError, UnicodeError, yaml.YAMLError, TypeError, RecursionError) as exc:
         raise _invalid(f'Cannot read number-style profile: {path.name}.') from exc
@@ -455,10 +464,10 @@ def style_profile_candidates(config: EcosystemConfig, *, language: str, script: 
 
 
 def resolve_style_profile(config: EcosystemConfig, selector: Optional[str], *, language: str,
-                          script: str, project: Optional[str] = None) -> StyleProfile:
-    """Resolve exactly one compatible guide, following existing Job profile selection."""
+                          script: str, project: Optional[str] = None) -> Optional[StyleProfile]:
+    """Resolve an explicitly selected guide; omission never grants a guide authority."""
     if selector is not None:
-        if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,63}/[A-Za-z0-9][A-Za-z0-9._-]{0,63}', selector):
+        if not isinstance(selector, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,63}/[A-Za-z0-9][A-Za-z0-9._-]{0,63}', selector):
             raise _invalid('Number-style selector must be an imported profile ID/version.')
         library = _profile_library(config)
         path = library / (selector + '.yml')
@@ -468,9 +477,4 @@ def resolve_style_profile(config: EcosystemConfig, selector: Optional[str], *, l
         if result.selector != selector:
             raise _invalid('Number-style selector and stored profile identity disagree.')
         return result
-    candidates = style_profile_candidates(config, language=language, script=script, project=project)
-    if not candidates:
-        raise ValidationError('No compatible configured NCA Number Style Profile is available.', code='NCA_STYLE_PROFILE_NOT_CONFIGURED', next_action='Configure a copy of the Number Style Profile template and import it.')
-    if len(candidates) != 1:
-        raise ValidationError('Select one compatible NCA Number Style Profile.', code='NCA_STYLE_PROFILE_SELECTION_REQUIRED', details={'candidates': [item.selector for item in candidates]})
-    return candidates[0]
+    return None

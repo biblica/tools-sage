@@ -832,7 +832,9 @@ class JobStore:
                     script=namespace.script,
                     project=wip.project_id,
                 )
-                expected_profiles = {"number_style": style.selector}
+                expected_profiles = {"number_style": style.selector} if style else {}
+            elif selector is None and not supplied:
+                expected_profiles = {}
             elif not isinstance(selector, str) or not selector.strip():
                 raise ValidationError(
                     f"Job {job_id} has no Number Style Profile selector",

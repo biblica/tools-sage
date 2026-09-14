@@ -211,13 +211,15 @@ def _validate_provenance(value: object) -> None:
     style = _require_mapping(raw["style_profile"], "style profile provenance", "NCA_RESULT_PROVENANCE_INVALID")
     reference = _require_mapping(raw["reference_package"], "reference provenance", "NCA_RESULT_PROVENANCE_INVALID")
     wip = _require_mapping(raw["wip"], "WIP provenance", "NCA_RESULT_PROVENANCE_INVALID")
-    if not isinstance(style.get("selector"), str) or not style["selector"]:
+    absent_style = set(style) == {'selector', 'sha256'} and style['selector'] is None and style['sha256'] is None
+    if not absent_style and (not isinstance(style.get("selector"), str) or not style["selector"]):
         raise _error("Style profile selector is missing.", "NCA_RESULT_PROVENANCE_INVALID")
     if not isinstance(reference.get("package_id"), str) or not reference["package_id"]:
         raise _error("Reference package ID is missing.", "NCA_RESULT_PROVENANCE_INVALID")
     if not isinstance(wip.get("identity"), str) or not wip["identity"]:
         raise _error("WIP identity is missing.", "NCA_RESULT_PROVENANCE_INVALID")
-    _validate_hash(style.get("sha256"), "Style profile hash")
+    if not absent_style:
+        _validate_hash(style.get("sha256"), "Style profile hash")
     _validate_hash(reference.get("sha256"), "Reference package hash")
     _validate_hash(wip.get("sha256"), "WIP hash")
 

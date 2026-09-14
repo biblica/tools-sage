@@ -95,7 +95,7 @@ def context_help_lines(title: str) -> tuple[str, ...]:
     if 'NCA' in key or 'NUMBERS CHECK' in key:
         return (
             'NCA compares target numeric meaning with an immutable qualified OL index and registered reading policies.',
-            'One configured Number Style Profile is required. Accuracy, presentation and footnote checks are independently selectable.',
+            'The Number Style Profile is optional. Presentation reports observed number usage and checks approved rules when a profile is selected. Accuracy and footnote checks are independent.',
             "Findings depend on the selected model's language and numeric understanding. SQS confidence checks have not been applied.",
         )
     if "PARATEXT" in key or "PROJECT" in key:
