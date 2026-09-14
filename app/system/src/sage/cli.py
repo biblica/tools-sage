@@ -1045,6 +1045,10 @@ def _ensure_workspace_initialized_input(
     """Offer an immediate safe initialization retry for analytical task creation."""
     if getattr(args, "command", None) != "task" or getattr(args, "task_command", None) != "create":
         return config
+    if getattr(args, "workflow_id", None) == "nca":
+        # NCA validates its qualified references and sealed WIP/Run snapshots in
+        # command_nca_create; it does not use the generic initialization receipt.
+        return config
     state = read_state(ecosystem_state_path(config.runtime_state_root))
     missing = not state
     stale = bool(state) and _initialization_is_stale(config, state)
