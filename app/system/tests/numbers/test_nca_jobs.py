@@ -101,7 +101,8 @@ def _route(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.mark.parametrize('setup', ['existing_run', 'stale_receipt'])
-def test_cli_creates_nca_task_without_generic_initialization(make_workspace, monkeypatch, capsys, setup):
+@pytest.mark.parametrize('scope', ['MAT 1:1', 'mat', 'Matthew 1:1'])
+def test_cli_creates_nca_task_without_generic_initialization(make_workspace, monkeypatch, capsys, setup, scope):
     """CLI remediation must allow NCA's sealed Job/Run prerequisites to govern creation."""
     from sage import cli
     from sage.state import ecosystem_state_path
@@ -109,7 +110,7 @@ def test_cli_creates_nca_task_without_generic_initialization(make_workspace, mon
     config, _ = _prepare_nca_workspace(root, content_state='LOCKED')
     _route(monkeypatch)
     job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1')
-    run = create_nca_run(config, job_id=job.job_id, scope_value='MAT 1:1')
+    run = create_nca_run(config, job_id=job.job_id, scope_value=scope)
     config = load_ecosystem(job.runtime_settings_path)
     options = ['--job-id', job.job_id, '--run-id', run.run_id]
     receipt = ecosystem_state_path(config.runtime_state_root)
@@ -121,13 +122,14 @@ def test_cli_creates_nca_task_without_generic_initialization(make_workspace, mon
     original_receipt = receipt.read_bytes() if receipt.exists() else None
     monkeypatch.setattr('sys.argv', ['sage', '--settings', str(config.settings_path), '--json', '--no-prompt',
         'task', 'create', '--workflow', 'nca', '--operation', 'numbers',
-        '--wip', 'usWIP', '--scope', 'MAT 1:1', *options])
+        '--wip', 'usWIP', '--scope', scope, *options])
     with pytest.raises(SystemExit) as caught:
         cli.main()
     payload = json.loads(capsys.readouterr().out)
     assert caught.value.code == 0, payload
     task = json.loads(Path(payload['task_manifest_path']).read_text())
     assert task['workflow'] == 'nca'
+    assert task['scope'] == scope
     assert 'NUMBER_STYLE' not in task['resource_bindings']
     from .test_nca_tasks import _OfflineTasks
     monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
