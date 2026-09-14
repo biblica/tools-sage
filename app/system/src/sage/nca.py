@@ -551,7 +551,12 @@ def _execute_nca_task_locked(
             raise ValidationError("Existing NCA output differs from its execution receipt", code="EXECUTION_RECEIPT_OUTPUT_MISMATCH")
         return {**receipt, **preflight, "status": "EXECUTED", "receipt_path": str(receipt_path)}
     if output_path.exists() or receipt_path.exists():
-        raise ValidationError("NCA task has partial execution artifacts", code="LLM_TASK_OUTPUT_NOT_EMPTY")
+        # A staged v2 publication may have only one final copy after interruption.
+        # Preflight admits recovery without trusting or writing its contents; the
+        # subsequent optimized execution revalidates every phase and publication.
+        publication = manifest_path.parent / "validation/nca-phases/publication/manifest.json"
+        if not (dry_run and policy['schema_version'] == '2.0' and publication.is_file()):
+            raise ValidationError("NCA task has partial execution artifacts", code="LLM_TASK_OUTPUT_NOT_EMPTY")
 
     route = policy["model_route"]
     if dry_run:
