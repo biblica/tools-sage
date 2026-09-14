@@ -174,3 +174,95 @@ def test_resume_preflight_uses_one_task_before_execution(make_workspace):
     for value in ('MAT 2:1', 'sealed-style/1', 'sealed-provider', 'OVERSIZED', 'REFERENCE_GAP',
                   'missing:MAT 2:2', 'Planning estimates', 'SQS: NOT_APPLIED'):
         assert value in output.getvalue()
+
+
+@pytest.mark.parametrize('remaining', ['output', 'receipt'])
+@pytest.mark.parametrize('damage', [None, 'unbacked', 'tampered'])
+def test_menu_resume_recovers_partial_publication_only_through_authenticated_execution(
+    make_workspace, monkeypatch, remaining, damage
+):
+    """Read-only preflight permits recoverable copies while execution authenticates publication."""
+    from pathlib import Path
+    from sage.cli import build_parser
+    from sage.errors import ValidationError
+    from sage.nca import create_nca_task, execute_nca_task
+    from sage.nca_menu import continue_run
+    from sage.numbers import replay
+    from .test_nca_tasks import _run, _OfflineTasks
+
+    root, config, job, run = _run(make_workspace, monkeypatch)
+    task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
+    manifest = Path(task['task_manifest_path'])
+    output = manifest.parent / 'output/model-evidence.json'
+    receipt = manifest.parent / 'validation/llm-execution-receipt.json'
+    publication = manifest.parent / 'validation/nca-phases/publication'
+    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
+    write_bytes = replay.atomic_write_bytes
+
+    def interrupt(destination, payload):
+        """Leave the actual staged publication after its first canonical write."""
+        write_bytes(destination, payload)
+        if destination == output:
+            raise RuntimeError('publication interrupted')
+
+    monkeypatch.setattr(replay, 'atomic_write_bytes', interrupt)
+    with pytest.raises(RuntimeError, match='publication interrupted'):
+        execute_nca_task(config, manifest)
+    monkeypatch.setattr(replay, 'atomic_write_bytes', write_bytes)
+    before = (publication / 'output.json').read_bytes()
+    if remaining == 'receipt':
+        # The same authenticated publication can restore either missing final copy.
+        receipt.write_bytes((publication / 'receipt.json').read_bytes())
+        output.unlink()
+    if damage == 'unbacked':
+        (publication / 'manifest.json').unlink()
+    elif damage == 'tampered':
+        (publication / 'output.json').write_bytes(before + b' ')
+
+    class NoCalls(_OfflineTasks):
+        """Replay admitted phases without repeating any completion request."""
+
+        def _execute_physical(self, *args, **kwargs):
+            """Reject any physical call while recovering a prepared publication."""
+            pytest.fail('unexpected recovery completion')
+
+    def forbidden(*args, **kwargs):
+        """Preflight cannot construct a provider even when recovery is pending."""
+        pytest.fail('provider constructed during recovery preflight')
+
+    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', NoCalls)
+    center, displayed = _center(root)
+    center.dry_run_provider = False
+    commands, results = [], []
+    monkeypatch.setattr('sage.cli._print_json', results.append)
+
+    def controller(_job, arguments):
+        """Run actual CLI handlers in-process so offline transport remains observable."""
+        commands.append(arguments)
+        args = build_parser().parse_args(['--settings', str(root / 'ecosystem.yml'), '--json', *arguments])
+        with monkeypatch.context() as attempt:
+            if '--dry-run' in arguments:
+                attempt.setattr('sage.numbers.model_tasks.NcaModelTasks', forbidden)
+            assert args.handler(args) == 0
+        if '--dry-run' in arguments:
+            assert not (receipt if remaining == 'output' else output).exists()
+        return results[-1]
+
+    center.controller = controller
+    if damage:
+        with pytest.raises(ValidationError) as rejected:
+            continue_run(center, job, run)
+        if damage == 'unbacked':
+            assert rejected.value.code == 'LLM_TASK_OUTPUT_NOT_EMPTY'
+        else:
+            assert 'Staged final bytes differ' in str(rejected.value)
+        assert not (receipt if remaining == 'output' else output).exists()
+        assert [args[1] for args in commands] == (['create', 'execute'] if damage == 'unbacked'
+                                                  else ['create', 'execute', 'execute'])
+    else:
+        continue_run(center, job, run)
+        assert output.read_bytes() == before
+        assert receipt.is_file()
+        assert 'NCA execution: EXECUTED' in displayed.getvalue()
+        assert [args[1] for args in commands] == ['create', 'execute', 'execute', 'submit']
+        assert commands[1][3] == commands[2][3] == commands[3][3] == str(manifest)
