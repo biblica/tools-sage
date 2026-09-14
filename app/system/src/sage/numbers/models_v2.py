@@ -131,11 +131,16 @@ def _validate_group_evidence(group: GroupResult) -> None:
                     and bool(context[name]) for name in ('variant_class', 'scholarship_status')), 'Invalid original row source context')
             for value in context['ol_values']:
                 _validate_fraction(str(value) if isinstance(value, Fraction) else value)
+    resolved_rows = {component.western_reference for component in group.components
+        if (len(group.reference_rows) > 1 and group.alignment_status == 'COMPLETE')
+        or component.reading.semantic.outcome not in {'INSUFFICIENT_EVIDENCE', 'REFERENCE_NOT_INDEXED', 'NOT_ASSESSED'}}
+    required_target_ids = {eid for component in group.components if component.western_reference in resolved_rows
+        for eid in component.owned_target_expression_ids}
     note_pairs = set()
     target_spans = []
     for expression in group.extraction.expressions:
         _eid, span = _validate_expression(_expression_document(expression),
-            role_required=len(group.reference_rows) > 1 and group.alignment_status == 'COMPLETE',
+            role_required=expression.expression_id in required_target_ids,
             target_text=group.projected.target.main_text, expected_stream='main')
         _require(not any(a < span[1] and span[0] < b for a, b in target_spans), 'Overlapping target evidence')
         target_spans.append(span)
@@ -160,7 +165,7 @@ def _validate_group_evidence(group: GroupResult) -> None:
             continue
         context = row['context']
         _require(bool(context), 'Indexed component lacks exact source context')
-        resolved = (len(group.reference_rows) > 1 and group.alignment_status == 'COMPLETE') or component.reading.semantic.outcome not in {'INSUFFICIENT_EVIDENCE', 'REFERENCE_NOT_INDEXED', 'NOT_ASSESSED'}
+        resolved = component.western_reference in resolved_rows
         source_ids, spans = set(), []
         for expression in component.source_expressions:
             eid, span = _validate_expression(_expression_document(expression), role_required=resolved,
