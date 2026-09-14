@@ -16,6 +16,12 @@ traceability and must link to an entry in `IMPLEMENTED-UPDATES.md`.
 | `TODO-20260829-001` | 2026-08-29 | `0.02b1` | `MS-02B1-QUALIFY` | HIGH | IN_PROGRESS | Complete exact-source automated hardening for provider-neutral per-Skill routing, then run controlled live synthetic qualification and review/promote accepted route seeds. | Routing implementation and documentation complete |
 | `TODO-20260829-002` | 2026-08-29 | `0.02b1` | `MS-02B1-NATIVE` | HIGH | OPEN | Operator-test provider-only Setup, automatic/override routes, continue/retry receipts, Job/Run/report route display, and one-item isolation on macOS and Windows before any RC promotion. | Live qualified route seeds and exact-source hardening |
 
+## Future architecture
+
+| ID | Added | Target | Priority | State | Work item | Dependency |
+|---|---|---|---|---|---|---|
+| `TODO-20260914-001` | 2026-09-14 | Future architecture; unscheduled | MEDIUM | OPEN | Define how UPDATE PROJECT propagates WIP changes to RTC/STC/NCA footprints, including stale coverage/findings, cache and checkpoint validity, newly available books, and historical report provenance. | [Architecture scope](../NEXT-DEVELOPMENT-WORK.md#future-architecture) |
+
 ## Completion rule
 
 A TODO becomes `DONE` only after implementation and proportionate verification. Its corresponding
