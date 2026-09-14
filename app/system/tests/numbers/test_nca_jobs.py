@@ -100,6 +100,70 @@ def _route(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("sage.nca._configured_nca_route", lambda _config: dict(ROUTE))
 
 
+@pytest.mark.parametrize('setup', ['existing_run', 'stale_receipt'])
+def test_cli_creates_nca_task_without_generic_initialization(make_workspace, monkeypatch, capsys, setup):
+    """CLI remediation must allow NCA's sealed Job/Run prerequisites to govern creation."""
+    from sage import cli
+    from sage.state import ecosystem_state_path
+    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    config, _ = _prepare_nca_workspace(root, content_state='LOCKED')
+    _route(monkeypatch)
+    job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1')
+    run = create_nca_run(config, job_id=job.job_id, scope_value='MAT 1:1')
+    config = load_ecosystem(job.runtime_settings_path)
+    options = ['--job-id', job.job_id, '--run-id', run.run_id]
+    receipt = ecosystem_state_path(config.runtime_state_root)
+    if setup == 'stale_receipt':
+        receipt.parent.mkdir(parents=True, exist_ok=True)
+        receipt.write_text(json.dumps({'state': 'READY', 'settings_sha256': 'obsolete'}))
+    else:
+        receipt.unlink(missing_ok=True)
+    original_receipt = receipt.read_bytes() if receipt.exists() else None
+    monkeypatch.setattr('sys.argv', ['sage', '--settings', str(config.settings_path), '--json', '--no-prompt',
+        'task', 'create', '--workflow', 'nca', '--operation', 'numbers',
+        '--wip', 'usWIP', '--scope', 'MAT 1:1', *options])
+    with pytest.raises(SystemExit) as caught:
+        cli.main()
+    payload = json.loads(capsys.readouterr().out)
+    assert caught.value.code == 0, payload
+    task = json.loads(Path(payload['task_manifest_path']).read_text())
+    assert task['workflow'] == 'nca'
+    assert 'NUMBER_STYLE' not in task['resource_bindings']
+    from .test_nca_tasks import _OfflineTasks
+    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
+    task_path = payload['task_manifest_path']
+    for arguments, status in [
+        (['execute', '--dry-run'], 'READY_TO_EXECUTE'),
+        (['execute'], 'EXECUTED'),
+        (['submit'], 'FINALIZED'),
+    ]:
+        monkeypatch.setattr('sys.argv', ['sage', '--settings', str(config.settings_path), '--json',
+            '--no-prompt', 'task', *arguments, '--task', task_path])
+        with pytest.raises(SystemExit) as caught:
+            cli.main()
+        payload = json.loads(capsys.readouterr().out)
+        assert caught.value.code == 0, payload
+        assert payload['status'] == status
+    assert (receipt.read_bytes() if receipt.exists() else None) == original_receipt
+
+
+@pytest.mark.parametrize('workflow', ['bic', 'rtc', 'stc'])
+def test_other_workflows_still_require_workspace_initialization(make_workspace, workflow):
+    """The NCA exception must not remove the initialization gate for other tasks."""
+    import argparse
+    from sage.cli import _ensure_workspace_initialized_input
+    from sage.errors import InputRequiredError
+    from sage.state import ecosystem_state_path
+    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    config = load_ecosystem(root / 'ecosystem.yml')
+    ecosystem_state_path(config.runtime_state_root).unlink(missing_ok=True)
+    args = argparse.Namespace(command='task', task_command='create', workflow_id=workflow,
+                              no_prompt=True, json=True)
+    with pytest.raises(InputRequiredError) as caught:
+        _ensure_workspace_initialized_input(args, config)
+    assert caught.value.code == 'WORKSPACE_INITIALIZATION_INPUT_REQUIRED'
+
+
 def test_role_neutral_locked_project_runs_as_nca_wip_without_global_changes(make_workspace, monkeypatch):
     """Selecting an imported Project grants only a read-only Job-local WIP role."""
     from sage.nca import create_nca_task, execute_nca_task, finalize_nca_run
