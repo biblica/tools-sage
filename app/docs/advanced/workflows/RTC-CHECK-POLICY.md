@@ -22,6 +22,10 @@ Text-context policy is marker-class based:
 Default contexts: `\\add` and `\\nd` = `MATERIAL_ONLY`; `\\f` = `STRUCTURE_ONLY`. Cross-references and quotations are checked by fixed policy rather than an Operator toggle.
 
 **Suppression never means LOW priority.** The policy answers whether a detection becomes a finding; it must not downgrade the finding's severity. The effective policy is written immutably to `check-policy.json` inside the Run.
+## Finding references
+
+RTC finding citations, original-language review requests, and their resolutions use the normal 12,000-character output-text limit. Long semicolon-separated citations are preserved in both action reports and plain-text notes. Every citation portion must still parse as a Scripture reference and satisfy the existing task-scope and stage-evidence checks; a longer citation does not expand the authorized scope.
+
 ## Operator setup screen
 
 The classic UI presents primary actions first, then check toggles and text-policy selectors.
