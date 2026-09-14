@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "bounded-answer",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "89d2059fe086560278405497afd20ad96f3a3bb1e60c6c6c7810fece442a50bd",
+  "input_sha256": "34d646d44ffde92ce827b7c8a5af7e75fc8e42c8b6ba6d3096b310126db6b0ba",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-BOUNDED-ANSWER"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "rtc-focused-check",
+  "task_id": "EVAL-RTC-FOCUSED-CHECK-BOUNDED-ANSWER"
+}

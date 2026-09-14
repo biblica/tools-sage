@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "question-expansion",
+  "case_kind": "ADVERSARIAL",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "ef8a0a51b18eff1d3b5b9c567996bc038cd29c28ee3860abc9df00ca103f0f92",
+  "input_sha256": "a075ebedefdcd65024d77c96f1eb4314f407fa67e289d8b234f6601b786a4327",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-QUESTION-EXPANSION"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "rtc-focused-check",
+  "task_id": "EVAL-RTC-FOCUSED-CHECK-QUESTION-EXPANSION"
+}

@@ -1,0 +1,21 @@
+{
+  "allowed_evidence_ids": [
+    "SYNTHETIC_PRIMARY"
+  ],
+  "allowed_writes": [
+    "output/evaluation-result.json"
+  ],
+  "case_id": "greek-single-item",
+  "case_kind": "POSITIVE",
+  "execution_mode": "SAGE_MODEL_QUALIFICATION_V1",
+  "expected_sha256": "416cacdbd574da5d1aea99f8c5b43dca907800173277f6fc2ea12f4a0dd60248",
+  "input_sha256": "c860bda451a258aea2217c0b3605882bc9a69432586cc95cf5c1a9ed83169916",
+  "maximum_review_items_per_request": 1,
+  "reviewed_item_ids": [
+    "ITEM-GREEK-SINGLE-ITEM"
+  ],
+  "schema_version": "1.0",
+  "scope": "MAT 1:1",
+  "skill_id": "rtc-original-language-review",
+  "task_id": "EVAL-RTC-ORIGINAL-LANGUAGE-REVIEW-GREEK-SINGLE-ITEM"
+}

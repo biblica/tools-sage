@@ -19,5 +19,8 @@ controls:
   original_file_inside_workspace: true
   original_hash_verified: true
   adapted_hash_verified: true
+  shared_reference_paths_inside_global_references: true
+  shared_reference_hashes_verified: true
+  qualification_identity_includes_shared_reference_pins: true
   qualification_status: VALIDATED
   file_hashes_recorded_in_ACT_task: true

@@ -8,6 +8,8 @@ from pathlib import Path
 
 import yaml
 
+from sage.skill_routing import skill_contract_sha256
+
 from sage.storage import storage_layout
 from sage.act_outputs import render_action_report
 from sage.executors.base import (
@@ -110,7 +112,7 @@ def _bind_execution_route(root: Path, document: dict) -> dict:
     capability = status.model_capabilities[0]
     policy = yaml.safe_load((root / "system/config/model-policy.yml").read_text(encoding="utf-8"))
     skills = json.loads((root / "system/config/skills.json").read_text(encoding="utf-8"))
-    route_policy = policy["skill_routes"]["saw-rtc"]
+    route_policy = policy["skill_routes"]["rtc"]
     seeds = {
         "schema_version": "1.0",
         "routes": [
@@ -119,8 +121,8 @@ def _bind_execution_route(root: Path, document: dict) -> dict:
                 "model_id": capability.model,
                 "capability_fingerprint": capability_fingerprint(capability),
                 "reasoning_id": "medium",
-                "skill_id": "saw-rtc",
-                "skill_sha256": skills["skills"]["saw-rtc"]["adapted_sha256"],
+                "skill_id": "rtc",
+                "skill_sha256": skill_contract_sha256(skills["skills"]["rtc"]),
                 "suite_id": route_policy["suite_id"],
                 "suite_sha256": route_policy["suite_sha256"],
                 "policy_version": policy["qualification_policy_version"],
@@ -137,7 +139,7 @@ def _bind_execution_route(root: Path, document: dict) -> dict:
         encoding="utf-8",
     )
     document["execution_route"] = resolve_skill_route(
-        root, "saw-rtc", [status]
+        root, "rtc", [status]
     ).to_dict()
     return document
 
@@ -406,7 +408,7 @@ def test_stc_summaries_use_the_provisional_originating_route_one_at_a_time(
         lambda provider, settings: FakeExecutor(),
     )
     sage_root = _workspace_with_uk_profile(package_root, make_workspace)
-    route = resolve_skill_route(sage_root, "saw-stc", [_translation_status()])
+    route = resolve_skill_route(sage_root, "stc", [_translation_status()])
     assert route.qualification == "PROVISIONAL_UNQUALIFIED"
     document["execution_route"] = route.to_dict()
 
@@ -476,7 +478,7 @@ def test_tampered_provisional_route_projection_degrades_before_execution(
         lambda provider, settings: FakeExecutor(),
     )
     sage_root = _workspace_with_uk_profile(package_root, make_workspace)
-    route = resolve_skill_route(sage_root, "saw-stc", [_translation_status()])
+    route = resolve_skill_route(sage_root, "stc", [_translation_status()])
     assert route.qualification == "PROVISIONAL_UNQUALIFIED"
     document = _document()
     document["execution_route"] = route.to_dict()

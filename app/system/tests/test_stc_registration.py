@@ -30,8 +30,8 @@ def test_saw_workflow_profile_declares_stc_evidence_policy() -> None:
 def test_stc_governed_skill_is_registered_and_hashed() -> None:
     """Release skill registry includes a dedicated STC analytical contract."""
     registry = json.loads((ROOT / "config/skills.json").read_text(encoding="utf-8"))
-    item = registry["skills"]["saw-stc"]
-    assert item["workflow"] == "saw"
+    item = registry["skills"]["stc"]
+    assert item["workflow"] == "stc"
     assert item["operation"] == "stc"
     assert (ROOT.parent / item["file"]).is_file()
     assert (ROOT.parent / item["original_file"]).is_file()

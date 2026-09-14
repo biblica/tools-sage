@@ -276,7 +276,7 @@ def test_skill_registry_routes_no_legacy_contracts(package_root: Path) -> None:
             path
             for path in reference_root.glob("*")
             if path.is_file()
-            and not path.name.startswith("ORIGINAL-")
+            and not path.name.startswith(("ORIGINAL-", "LEGACY-"))
             and path.name != "RUN-RTC.md"
         )
         text = "\n".join(path.read_text(encoding="utf-8") for path in files)
@@ -326,6 +326,12 @@ def test_rtc_context_excludes_ol_and_raw_profile(
         scope_value="MAT 1:1",
     )
     paths = {item["path"] for item in task["allowed_reads"]}
+    shared = {
+        item["path"]: item for item in task["governance_inputs"]
+        if "/skills/global/references/" in item["path"]
+    }
+    assert len(shared) == 3
+    assert all(item["evidence_class"] == "PROCESS_CONTROL" and item["sha256"] for item in shared.values())
     assert not any(path.endswith("original-language.usj.json") for path in paths)
     assert not any(
         path.endswith("system/config/profiles/grammar/en/bol-target.yml") for path in paths
@@ -359,7 +365,7 @@ def test_task_budget_uses_routed_sfm_only_and_keeps_controller_byte_inventory(
         contemporary_source_id="usNIVv2",
         scope_value="MAT 1:1",
     )
-    assert task["skill_id"] == "saw-rtc"
+    assert task["skill_id"] == "rtc"
 
     budget = task["context_budget"]
     governance = budget["governance_context"]

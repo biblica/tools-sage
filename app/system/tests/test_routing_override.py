@@ -11,6 +11,8 @@ from pathlib import Path
 import pytest
 import yaml
 
+from sage.skill_routing import skill_contract_sha256
+
 from sage.errors import ConfigurationError, ValidationError
 from sage.executors.base import ModelCapability, ProviderStatus, ReasoningEffortOption
 from sage.llm_settings import load_llm_settings, settings_path, update_llm_selection
@@ -61,7 +63,7 @@ def _qualified_workspace(package_root: Path, tmp_path: Path) -> tuple[Path, Prov
     policy_path = root / "system/config/model-policy.yml"
     policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
     suite_sha256 = "a" * 64
-    policy["skill_routes"]["saw-rtc"]["suite_sha256"] = suite_sha256
+    policy["skill_routes"]["rtc"]["suite_sha256"] = suite_sha256
     policy_path.write_text(yaml.safe_dump(policy, sort_keys=False), encoding="utf-8")
     skills = json.loads((root / "system/config/skills.json").read_text(encoding="utf-8"))
     seeds = {
@@ -72,9 +74,9 @@ def _qualified_workspace(package_root: Path, tmp_path: Path) -> tuple[Path, Prov
                 "model_id": capability.model,
                 "capability_fingerprint": capability_fingerprint(capability),
                 "reasoning_id": "medium",
-                "skill_id": "saw-rtc",
-                "skill_sha256": skills["skills"]["saw-rtc"]["adapted_sha256"],
-                "suite_id": "alpha1-saw-rtc",
+                "skill_id": "rtc",
+                "skill_sha256": skill_contract_sha256(skills["skills"]["rtc"]),
+                "suite_id": "alpha1-rtc",
                 "suite_sha256": suite_sha256,
                 "policy_version": "alpha1-1",
                 "qualification_status": "QUALIFIED",
@@ -153,7 +155,7 @@ def test_setting_override_records_exact_route_and_skill_coverage(
     """Enabling an override must persist exact identity and one auditable action receipt."""
     override = _override_module()
     root, status = _qualified_workspace(package_root, tmp_path)
-    route = resolve_skill_route(root, "saw-rtc", [status])
+    route = resolve_skill_route(root, "rtc", [status])
     selection = {
         "provider": route.identity.provider,
         "model_id": route.identity.model_id,
@@ -166,20 +168,20 @@ def test_setting_override_records_exact_route_and_skill_coverage(
 
     assert result["routing_mode"] == "GLOBAL_OVERRIDE"
     assert result["qualified_skill_count"] == 1
-    assert result["registered_skill_count"] == 10
-    assert result["qualified_skills"] == ["saw-rtc"]
+    assert result["registered_skill_count"] == 8
+    assert result["qualified_skills"] == ["rtc"]
     assert persisted["selection"] == selection
     receipt = json.loads(Path(result["receipt_path"]).read_text(encoding="utf-8"))
     assert receipt["action"] == "ENABLE"
     assert receipt["previous_mode"] == "AUTOMATIC"
-    assert receipt["qualified_skills"] == ["saw-rtc"]
+    assert receipt["qualified_skills"] == ["rtc"]
 
 
 def test_override_fails_closed_for_an_unqualified_skill(package_root: Path, tmp_path: Path) -> None:
     """A route qualified only for RTC must never execute STC under the global pin."""
     override = _override_module()
     root, status = _qualified_workspace(package_root, tmp_path)
-    route = resolve_skill_route(root, "saw-rtc", [status])
+    route = resolve_skill_route(root, "rtc", [status])
     override.set_global_override(
         root,
         selection={
@@ -192,7 +194,7 @@ def test_override_fails_closed_for_an_unqualified_skill(package_root: Path, tmp_
     )
 
     with pytest.raises(ValidationError) as caught:
-        override.resolve_routing_mode(root, "saw-stc", [status])
+        override.resolve_routing_mode(root, "stc", [status])
 
     assert caught.value.code == "GLOBAL_OVERRIDE_NOT_QUALIFIED_FOR_SKILL"
 
@@ -203,7 +205,7 @@ def test_clearing_override_restores_automatic_and_preserves_a_receipt(
     """Clearing a pin must remove active state without deleting its audit evidence."""
     override = _override_module()
     root, status = _qualified_workspace(package_root, tmp_path)
-    route = resolve_skill_route(root, "saw-rtc", [status])
+    route = resolve_skill_route(root, "rtc", [status])
     override.set_global_override(
         root,
         selection={
@@ -229,7 +231,7 @@ def test_model_service_applies_override_mode_to_each_skill_status(
 ) -> None:
     """Shared service status must show the pin and fail-closed Skill coverage truthfully."""
     root, status = _qualified_workspace(package_root, tmp_path)
-    route = resolve_skill_route(root, "saw-rtc", [status])
+    route = resolve_skill_route(root, "rtc", [status])
     selection = {
         "provider": route.identity.provider,
         "model_id": route.identity.model_id,
@@ -244,7 +246,7 @@ def test_model_service_applies_override_mode_to_each_skill_status(
     cleared = service.clear_global_override()
 
     assert enabled["qualified_skill_count"] == 1
-    assert rows["saw-rtc"]["routing_mode"] == "GLOBAL_OVERRIDE"
-    assert rows["saw-rtc"]["selection_mode"] == "USER_OVERRIDE"
-    assert rows["saw-stc"]["reason_code"] == "GLOBAL_OVERRIDE_NOT_QUALIFIED_FOR_SKILL"
+    assert rows["rtc"]["routing_mode"] == "GLOBAL_OVERRIDE"
+    assert rows["rtc"]["selection_mode"] == "USER_OVERRIDE"
+    assert rows["stc"]["reason_code"] == "GLOBAL_OVERRIDE_NOT_QUALIFIED_FOR_SKILL"
     assert cleared["routing_mode"] == "AUTOMATIC"

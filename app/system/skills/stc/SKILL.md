@@ -15,3 +15,5 @@ Review correspondence at phrase and construction level; do not assume one-to-one
 Complete the semantic review for every assigned coordinate, including when there are no findings. SAGE owns work-unit identity, source selection, scope, context, fingerprints, coverage, and final ledgers.
 
 Return only the semantic fields required by the response schema. SAGE validates coordinates, normalizes finding IDs, reconciles exact primary coverage, and creates the canonical STC Run result and reports.
+
+The routed global evidence, semantic-index, and read-only analysis execution contracts apply. They do not authorize a Reference Project or RTC predecessor input for STC.

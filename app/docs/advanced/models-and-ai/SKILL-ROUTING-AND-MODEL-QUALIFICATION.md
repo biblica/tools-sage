@@ -7,15 +7,22 @@ It replaces the normal Operator-owned global model/reasoning choice with determi
 routing by registered analytical Skill. It also retains one guarded global override for controlled
 diagnostics and Beta testing.
 
-The design applies to the five current analytical Skills and two compatibility-only legacy Skills:
+The design applies to the six current analytical Skills and two compatibility-only legacy Skills:
 
 - `bic-inspect`
 - `bic-rewrite`
 - `bic-self-check`
 - `rtc`
 - `stc`
-- `saw-focused-check` (legacy sealed Jobs only)
-- `saw-original-language-review` (legacy sealed Jobs only)
+- `nca-numbers`
+- `rtc-focused-check` (parked RTC helper; legacy bounded operations only)
+- `rtc-original-language-review` (parked RTC helper; legacy bounded operations only)
+
+The former `saw-rtc` and `saw-stc` registrations are consolidated into `rtc` and `stc`. Persisted SAW operation identities resolve to these canonical Skills when tasks are recreated. The two parked helpers retain the `saw/focused` and `saw/ol` compatibility bindings, with RTC ownership recorded in the registry; they do not add RTC/STC menu operations. The bounded OL helper keeps its Reference comparison context and is therefore not an STC Skill.
+
+Shared local-evidence, semantic-index, and read-only execution rules live under `system/skills/global/references/`. Each consuming Skill declares exact shared-reference hashes in `skills.json`; the loader validates them and the task manifest seals them as `PROCESS_CONTROL` reads. Shared references have no independent model route. STC retains direct WIP-to-GRK/HEB authority with no Reference dependency. BIC and NCA retain their existing specialized contracts.
+
+Former Skills and evaluation bundles remain under `system/skills/legacy-saw/` and `system/evaluations/legacy-saw/` for traceability. They are excluded from current Skill discovery and evaluation routing. Old manifests and qualification receipts are not rewritten. Recreate tasks with stale Skill paths/hashes and qualify the current Skill identity before claiming measured qualification; a true no-data route continues to use the existing provisional policy.
 
 Controller-only planning, validation, aggregation, report composition, and finalization remain
 deterministic Python work. They are not model Skills and do not receive model routes.
@@ -89,7 +96,7 @@ One route is identified by:
 - exact provider-reported model ID or model-version ID;
 - provider capability fingerprint;
 - provider-native reasoning setting, or `provider-default` when no setting exists;
-- registered `skill_id` and adapted Skill SHA-256;
+- registered `skill_id` and Skill contract SHA-256 (entrypoint hash plus canonical shared-reference pins when present);
 - evaluation-suite ID, version, and SHA-256;
 - qualification-policy version.
 
@@ -148,8 +155,8 @@ The Alpha1 success boundaries are:
 | `bic-self-check` | Detect every seeded rewrite regression and return the expected commit/block decision | Approve a seeded blocking regression or alter Scripture |
 | `rtc` | Complete exact WIP/REFERENCE coverage, report seeded variances, and defer only qualifying source-text disputes | Missing/extra coverage, ordinary issue wrongly sent to OL, or source-text dispute finalized without required adjudication |
 | `stc` | Evaluate every planned WIP/primary-SOURCE coordinate and return the expected correspondence result | Use a REFERENCE dependency, omit analytical completion, or treat non-primary evidence as SOURCE authority |
-| `saw-focused-check` | Answer only the sealed focused question with the expected bounded evidence | Expand the question/scope, use OL Scripture, or perform general RTC |
-| `saw-original-language-review` | Resolve exactly one sealed OL item against the correct GRK/HEB authority and expected semantic decision | Combine items, use the wrong testament authority, or import unrelated context into the decision |
+| `rtc-focused-check` | Answer only the sealed focused question with the expected bounded evidence | Expand the question/scope, use OL Scripture, or perform general RTC |
+| `rtc-original-language-review` | Resolve exactly one sealed OL item against the correct GRK/HEB authority and expected semantic decision | Combine items, use the wrong testament authority, or import unrelated context into the decision |
 
 Each case enumerates its expected finding IDs/categories, allowed equivalence set for narrative
 conclusions, required zero-finding state where applicable, and prohibited outputs. A route cannot

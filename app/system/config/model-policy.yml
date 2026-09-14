@@ -55,19 +55,11 @@ skill_routes:
     suite_id: alpha1-nca-numbers
     suite_sha256: 9bb95ea68529a5f0091a172db53fef43f664413deb8399395798bec5abcd4de0
     execution_class: GOVERNED_SKILL
-  saw-rtc:
-    suite_id: alpha1-saw-rtc
-    suite_sha256: 62a2721e373bbf84c020f1262eb8278c94df8f207cd131d94847555ba759432b
+  rtc-focused-check:
+    suite_id: alpha1-rtc-focused-check
+    suite_sha256: fe48f685953383fb509fd54b885a16de4a1481c3ccd861e66ace331841e8dd0d
     execution_class: GOVERNED_SKILL
-  saw-stc:
-    suite_id: alpha1-saw-stc
-    suite_sha256: 1c896bba410242439a92246ff443632274c3f35e67c37b3adeca59dd0491691c
-    execution_class: GOVERNED_SKILL
-  saw-focused-check:
-    suite_id: alpha1-saw-focused-check
-    suite_sha256: 8c841b220fe65722ba893bf6bd9f9693fea8a90113ee3b3138e08c44ac834a7f
-    execution_class: GOVERNED_SKILL
-  saw-original-language-review:
-    suite_id: alpha1-saw-original-language-review
-    suite_sha256: b3d53f5b45604ac1ee0dec1b6f7100766eeadcc7ad2b822c152f330fbc299570
+  rtc-original-language-review:
+    suite_id: alpha1-rtc-original-language-review
+    suite_sha256: accb3752147d852159580b2c595126db1c8b123af4ac0e368e2a7e66ec4cd809
     execution_class: GOVERNED_SKILL

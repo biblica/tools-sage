@@ -2172,8 +2172,8 @@ class SageControlCenter:
             "nca-numbers": "NUMBERS",
             "saw-rtc": "RTC",
             "saw-stc": "STC",
-            "saw-focused-check": "TARGETED",
-            "saw-original-language-review": "SRC REVIEW",
+            "rtc-focused-check": "TARGETED",
+            "rtc-original-language-review": "SRC REVIEW",
             "bic-inspect": "INSPECT",
             "bic-rewrite": "REWRITE",
             "bic-self-check": "SELF-CHECK",
@@ -3987,10 +3987,10 @@ class SageControlCenter:
     def _preflight_saw_route(self, run: Run) -> dict[str, Any] | None:
         """Resolve the exact current analysis route before task creation or visible work."""
         skill_ids = {
-            "rtc": "rtc" if run.tool == "rtc" else "saw-rtc",
-            "stc": "stc" if run.tool == "stc" else "saw-stc",
-            "focused": "saw-focused-check",
-            "ol": "saw-original-language-review",
+            "rtc": "rtc",
+            "stc": "stc",
+            "focused": "rtc-focused-check",
+            "ol": "rtc-original-language-review",
         }
         actual = self._active_run_route_row(run)
         if self.dry_run_provider:

@@ -27,16 +27,8 @@ EXPECTED_CASES = {
     ],
     "stc": ["seeded-correspondence", "complete-no-finding", "reference-contamination"],
     "nca-numbers": ["exact-cardinal-evidence", "complete-no-number", "fabricated-span"],
-    "saw-rtc": [
-        "seeded-variance",
-        "aligned-pair",
-        "false-ol-referral",
-        "fundamental-polarity",
-        "participant-identity",
-    ],
-    "saw-stc": ["seeded-correspondence", "complete-no-finding", "reference-contamination"],
-    "saw-focused-check": ["bounded-answer", "bounded-zero-result", "question-expansion"],
-    "saw-original-language-review": [
+    "rtc-focused-check": ["bounded-answer", "bounded-zero-result", "question-expansion"],
+    "rtc-original-language-review": [
         "greek-single-item",
         "hebrew-no-change",
         "multi-item-contamination",
@@ -93,8 +85,8 @@ def test_case_builder_verifies_the_committed_sealed_bundles(package_root: Path) 
     assert result.returncode == 0, result.stdout + result.stderr
     payload = json.loads(result.stdout)
     assert payload["status"] == "PASS"
-    assert payload["skill_count"] == 10
-    assert payload["case_count"] == 34
+    assert payload["skill_count"] == 8
+    assert payload["case_count"] == 26
 
 
 class PassingTransport:
@@ -228,7 +220,7 @@ def test_model_evaluation_progresses_native_reasoning_and_stops_at_first_qualifi
 
     result = evaluation.evaluate_model_for_skill(
         package_root,
-        skill_id="saw-rtc",
+        skill_id="rtc",
         provider=status.provider,
         model_id="model-a",
         status=status,
@@ -294,7 +286,7 @@ def test_catalog_evaluation_handles_provider_default_and_recommends_per_skill(
     result = evaluation.evaluate_catalog(
         package_root,
         provider=status.provider,
-        skill_ids=["saw-focused-check"],
+        skill_ids=["rtc-focused-check"],
         model_ids=["model-a", "model-b"],
         status=status,
         transport_factory=factory,
@@ -328,7 +320,7 @@ def test_evaluation_rejects_response_route_metadata_mismatch(package_root: Path)
 
     receipt = evaluation.evaluate_candidate(
         package_root,
-        skill_id="saw-rtc",
+        skill_id="rtc",
         provider="fixture",
         model_id="gpt-evaluation-fixture",
         reasoning_id="careful",
@@ -363,7 +355,7 @@ def test_evaluation_rejects_missing_exact_route_metadata(package_root: Path) -> 
 
     receipt = evaluation.evaluate_candidate(
         package_root,
-        skill_id="saw-rtc",
+        skill_id="rtc",
         provider="fixture",
         model_id="gpt-evaluation-fixture",
         reasoning_id="careful",
@@ -388,7 +380,7 @@ def test_all_three_repetitions_of_all_cases_are_required_for_qualification(
 
     receipt = evaluation.evaluate_candidate(
         package_root,
-        skill_id="saw-original-language-review",
+        skill_id="rtc-original-language-review",
         provider="fixture",
         model_id="gpt-evaluation-fixture",
         reasoning_id="careful",
@@ -401,7 +393,7 @@ def test_all_three_repetitions_of_all_cases_are_required_for_qualification(
     assert len(transport.calls) == 9
     assert all(count == 3 for count in {
         case_id: sum(1 for called, _rep in transport.calls if called == case_id)
-        for case_id in EXPECTED_CASES["saw-original-language-review"]
+        for case_id in EXPECTED_CASES["rtc-original-language-review"]
     }.values())
 
 
@@ -427,7 +419,7 @@ def test_one_hard_contract_failure_marks_candidate_failed(package_root: Path) ->
 
     receipt = evaluation.evaluate_candidate(
         package_root,
-        skill_id="saw-focused-check",
+        skill_id="rtc-focused-check",
         provider="fixture",
         model_id="gpt-evaluation-fixture",
         reasoning_id="careful",
@@ -460,7 +452,7 @@ def test_mixed_semantic_repetitions_mark_candidate_unreliable(package_root: Path
 
     receipt = evaluation.evaluate_candidate(
         package_root,
-        skill_id="saw-rtc",
+        skill_id="rtc",
         provider="fixture",
         model_id="gpt-evaluation-fixture",
         reasoning_id="careful",
@@ -493,7 +485,7 @@ def test_ol_case_validator_rejects_more_than_one_review_item(package_root: Path)
 
     receipt = evaluation.evaluate_candidate(
         package_root,
-        skill_id="saw-original-language-review",
+        skill_id="rtc-original-language-review",
         provider="fixture",
         model_id="gpt-evaluation-fixture",
         reasoning_id="careful",
@@ -513,7 +505,7 @@ def test_receipt_reconciliation_detects_evidence_tampering(package_root: Path) -
     evaluation = _evaluation_module()
     receipt = evaluation.evaluate_candidate(
         package_root,
-        skill_id="saw-rtc",
+        skill_id="rtc",
         provider="fixture",
         model_id="gpt-evaluation-fixture",
         reasoning_id="careful",
@@ -537,7 +529,7 @@ def test_only_current_qualified_receipts_can_be_promoted_to_seed_candidates(
     evaluation = _evaluation_module()
     receipt = evaluation.evaluate_candidate(
         package_root,
-        skill_id="saw-focused-check",
+        skill_id="rtc-focused-check",
         provider="fixture",
         model_id="gpt-evaluation-fixture",
         reasoning_id="careful",
@@ -554,5 +546,5 @@ def test_only_current_qualified_receipts_can_be_promoted_to_seed_candidates(
 
     assert result["status"] == "PROMOTED_CANDIDATE"
     assert len(seeds["routes"]) == 1
-    assert seeds["routes"][0]["skill_id"] == "saw-focused-check"
+    assert seeds["routes"][0]["skill_id"] == "rtc-focused-check"
     assert seeds["routes"][0]["evidence_sha256"] == receipt["evidence_sha256"]

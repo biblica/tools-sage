@@ -164,135 +164,63 @@
       "suite_version": "1.1",
       "validator_id": "sealed-semantic-contract-v1"
     },
-    "saw-focused-check": {
+    "rtc-focused-check": {
       "cases": [
         {
-          "bundle_sha256": "8148785b39fb1871d9f98d0fc83db066b54c3f353de49bfa2791be14c01db48a",
+          "bundle_sha256": "009576df0365b4be60a90a88d085890e5bb7825f244d4ed11eb7aca79a33c667",
           "case_id": "bounded-answer",
           "case_kind": "POSITIVE",
-          "path": "system/evaluations/model-routing-alpha1/saw-focused-check/bounded-answer"
+          "path": "system/evaluations/model-routing-alpha1/rtc-focused-check/bounded-answer"
         },
         {
-          "bundle_sha256": "dd28aa88236a17e8707819eafb5b0afd1a19ed18e2b57a8f15326dd2d7c046c9",
+          "bundle_sha256": "d0ecf935313db74e09959a5a8716e497f354dd38fdcdd4687fe49d73f84b234f",
           "case_id": "bounded-zero-result",
           "case_kind": "ZERO_FINDING",
-          "path": "system/evaluations/model-routing-alpha1/saw-focused-check/bounded-zero-result"
+          "path": "system/evaluations/model-routing-alpha1/rtc-focused-check/bounded-zero-result"
         },
         {
-          "bundle_sha256": "6c2ba69e7cbbd2cf914abf070ff74d91909613042f7256b43b21b45482a7fdce",
+          "bundle_sha256": "1eaf8d5fbf3016adee894f4db0795cdfae3f413dae2158aa341c821791966ec1",
           "case_id": "question-expansion",
           "case_kind": "ADVERSARIAL",
-          "path": "system/evaluations/model-routing-alpha1/saw-focused-check/question-expansion"
+          "path": "system/evaluations/model-routing-alpha1/rtc-focused-check/question-expansion"
         }
       ],
       "disqualifying_behavior": "Expand scope, use original-language Scripture, or perform general RTC.",
       "execution_class": "GOVERNED_SKILL",
       "repetitions_per_case": 3,
       "required_semantic_success": "Answer only the sealed question from the bounded WIP and Reference evidence.",
-      "suite_id": "alpha1-saw-focused-check",
-      "suite_sha256": "8c841b220fe65722ba893bf6bd9f9693fea8a90113ee3b3138e08c44ac834a7f",
+      "suite_id": "alpha1-rtc-focused-check",
+      "suite_sha256": "fe48f685953383fb509fd54b885a16de4a1481c3ccd861e66ace331841e8dd0d",
       "suite_version": "1.0",
       "validator_id": "sealed-semantic-contract-v1"
     },
-    "saw-original-language-review": {
+    "rtc-original-language-review": {
       "cases": [
         {
-          "bundle_sha256": "f023a39c91807635f86285ed11b7404ec1cdd385d2c99ec368f33197bd2e9abe",
+          "bundle_sha256": "a3899cd8d9896729105f14e7b16950403601caa0e2aa66690705316e7554cab8",
           "case_id": "greek-single-item",
           "case_kind": "POSITIVE",
-          "path": "system/evaluations/model-routing-alpha1/saw-original-language-review/greek-single-item"
+          "path": "system/evaluations/model-routing-alpha1/rtc-original-language-review/greek-single-item"
         },
         {
-          "bundle_sha256": "9dcbb7d1a88d7626860eb59c74ad82793c24451f11df001b4a4eed5f45821798",
+          "bundle_sha256": "02ff740b8fd064c5a31e67a5e9ed051352089f5091bb07f82ea7a7784d2abbc6",
           "case_id": "hebrew-no-change",
           "case_kind": "ZERO_FINDING",
-          "path": "system/evaluations/model-routing-alpha1/saw-original-language-review/hebrew-no-change"
+          "path": "system/evaluations/model-routing-alpha1/rtc-original-language-review/hebrew-no-change"
         },
         {
-          "bundle_sha256": "7fb23718b1d5a2b69dc060adaee2e92395805afc1322902a056642944f6500a6",
+          "bundle_sha256": "f771de0fcedfa45b23920d1994f82593ef8d64b8c3fb8a1b78f135e9fa1508fb",
           "case_id": "multi-item-contamination",
           "case_kind": "ADVERSARIAL",
-          "path": "system/evaluations/model-routing-alpha1/saw-original-language-review/multi-item-contamination"
+          "path": "system/evaluations/model-routing-alpha1/rtc-original-language-review/multi-item-contamination"
         }
       ],
       "disqualifying_behavior": "Combine items, use the wrong testament authority, or import unrelated context.",
       "execution_class": "GOVERNED_SKILL",
       "repetitions_per_case": 3,
       "required_semantic_success": "Resolve exactly one item against the correct Greek or Hebrew primary authority.",
-      "suite_id": "alpha1-saw-original-language-review",
-      "suite_sha256": "b3d53f5b45604ac1ee0dec1b6f7100766eeadcc7ad2b822c152f330fbc299570",
-      "suite_version": "1.0",
-      "validator_id": "sealed-semantic-contract-v1"
-    },
-    "saw-rtc": {
-      "cases": [
-        {
-          "bundle_sha256": "c81beb7b4466669c402f55c7da939020106085df5d573ccf39d03045c774131e",
-          "case_id": "seeded-variance",
-          "case_kind": "POSITIVE",
-          "path": "system/evaluations/model-routing-alpha1/saw-rtc/seeded-variance"
-        },
-        {
-          "bundle_sha256": "5e9a7fc9a0dd6aecbd655c1da24ecd59a42e73bf7a15e16dd12b411fbaa8f202",
-          "case_id": "aligned-pair",
-          "case_kind": "ZERO_FINDING",
-          "path": "system/evaluations/model-routing-alpha1/saw-rtc/aligned-pair"
-        },
-        {
-          "bundle_sha256": "39882936c225fb5cfffb0c0a433d1a14b24bffbf621a7218bc281f64a18dc319",
-          "case_id": "false-ol-referral",
-          "case_kind": "ADVERSARIAL",
-          "path": "system/evaluations/model-routing-alpha1/saw-rtc/false-ol-referral"
-        },
-        {
-          "bundle_sha256": "71b8b168162f4021e3ec834df1432ba455f01289cecedbc1d7d773e4b5cddeb2",
-          "case_id": "fundamental-polarity",
-          "case_kind": "POSITIVE",
-          "path": "system/evaluations/model-routing-alpha1/saw-rtc/fundamental-polarity"
-        },
-        {
-          "bundle_sha256": "bfae3cf2eafa6acc216bea253f3ebd683672137670de3e692da1d37d5072ad35",
-          "case_id": "participant-identity",
-          "case_kind": "POSITIVE",
-          "path": "system/evaluations/model-routing-alpha1/saw-rtc/participant-identity"
-        }
-      ],
-      "disqualifying_behavior": "Change coverage, refer nuance or equivalent wording, miss an admitted polarity/participant conflict, or finalize a referred dispute.",
-      "execution_class": "GOVERNED_SKILL",
-      "repetitions_per_case": 3,
-      "required_semantic_success": "Complete exact WIP and Reference coverage, admit only fundamental source-dependent conflicts, and keep every referral isolated.",
-      "suite_id": "alpha1-saw-rtc",
-      "suite_sha256": "62a2721e373bbf84c020f1262eb8278c94df8f207cd131d94847555ba759432b",
-      "suite_version": "1.1",
-      "validator_id": "sealed-semantic-contract-v1"
-    },
-    "saw-stc": {
-      "cases": [
-        {
-          "bundle_sha256": "67206bebd57cb169be3cc45a7222b822dfb8cd469190f59e0ac2014fd3dce926",
-          "case_id": "seeded-correspondence",
-          "case_kind": "POSITIVE",
-          "path": "system/evaluations/model-routing-alpha1/saw-stc/seeded-correspondence"
-        },
-        {
-          "bundle_sha256": "ec735b40dbe38948e12e340c130559065402bfbc42d22a57c7341e494f694cff",
-          "case_id": "complete-no-finding",
-          "case_kind": "ZERO_FINDING",
-          "path": "system/evaluations/model-routing-alpha1/saw-stc/complete-no-finding"
-        },
-        {
-          "bundle_sha256": "b543a17e708667ced08df9b3f042da752046c94ebd03591ef714bda7dd795ded",
-          "case_id": "reference-contamination",
-          "case_kind": "ADVERSARIAL",
-          "path": "system/evaluations/model-routing-alpha1/saw-stc/reference-contamination"
-        }
-      ],
-      "disqualifying_behavior": "Use Reference evidence, omit completion, or demote primary Source authority.",
-      "execution_class": "GOVERNED_SKILL",
-      "repetitions_per_case": 3,
-      "required_semantic_success": "Evaluate every planned WIP and primary Source coordinate.",
-      "suite_id": "alpha1-saw-stc",
-      "suite_sha256": "1c896bba410242439a92246ff443632274c3f35e67c37b3adeca59dd0491691c",
+      "suite_id": "alpha1-rtc-original-language-review",
+      "suite_sha256": "accb3752147d852159580b2c595126db1c8b123af4ac0e368e2a7e66ec4cd809",
       "suite_version": "1.0",
       "validator_id": "sealed-semantic-contract-v1"
     },
