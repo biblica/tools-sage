@@ -849,14 +849,15 @@ def test_uncommitted_retirement_interruption_keeps_audit_bytes(phase_store, phas
     assert len(retired) == 1 and retired[0].read_bytes() == orphan
 
 
+@pytest.mark.parametrize('orphan_name', ['output.json', '.receipt.json.pending_1.tmp'])
 @pytest.mark.parametrize('damage', ['source_symlink', 'unexpected', 'destination_symlink', 'hardlink', 'canonical'])
-def test_uncommitted_retirement_rejects_unsafe_paths(phase_store, phase_key, artifact, validator, tmp_path, damage):
+def test_uncommitted_retirement_rejects_unsafe_paths(phase_store, phase_key, artifact, validator, tmp_path, damage, orphan_name):
     """Retirement cannot move unexpected entries, linked files or unauthenticated canonical output."""
     import os
     checkpoints, output, receipt, validate_final = publication_fixture(phase_store, phase_key, artifact, validator)
     directory = phase_store.task_root / 'validation/nca-phases/publication'
     directory.mkdir(parents=True)
-    orphan = directory / 'output.json'
+    orphan = directory / orphan_name
     outside = tmp_path / 'outside'
     outside.mkdir()
     protected = outside / 'protected.json'
@@ -881,3 +882,38 @@ def test_uncommitted_retirement_rejects_unsafe_paths(phase_store, phase_key, art
     assert orphan.exists() and not (directory / 'manifest.json').exists()
     assert protected.read_bytes() == b'outside protected bytes'
     assert sorted(p.name for p in outside.iterdir()) == ['protected.json']
+
+
+@pytest.mark.parametrize('name', ['.output.json..tmp', '.output.json.a.b.tmp', '.output.json.a.tmp.bak',
+    '.model-evidence.json.a.tmp', '.output.JSON.a.tmp', 'output.json.a.tmp', '.output.json.a b.tmp',
+    '.ledger.json.a.tmp', '.receipt.json.a.tmpx', '.manifest.json.a.extra.tmp'])
+def test_publication_temporary_lookalikes_remain_unexpected(phase_store, phase_key, artifact, validator, name):
+    """Only exact known destination temporary names may be retained as interrupted diagnostics."""
+    checkpoints, output, receipt, validate_final = publication_fixture(phase_store, phase_key, artifact, validator)
+    directory = phase_store.task_root / 'validation/nca-phases/publication'
+    directory.mkdir(parents=True)
+    unexpected = directory / name
+    unexpected.write_bytes(b'untrusted lookalike')
+    with pytest.raises(ValidationError, match='Unexpected uncommitted publication entry'):
+        phase_store.prepare_publication(output, receipt, checkpoints=checkpoints,
+            validate_phase=lambda key, value: validator(value), validate_final=validate_final)
+    assert unexpected.read_bytes() == b'untrusted lookalike'
+    assert not (directory / 'manifest.json').exists()
+    assert not (directory.parent / 'abandoned-publications').exists()
+
+
+@pytest.mark.parametrize('destination', ['output.json', 'receipt.json', 'manifest.json'])
+@pytest.mark.parametrize('token', ['a', 'Portable_09-token'])
+def test_publication_temporary_token_has_no_private_length_dependency(phase_store, phase_key, artifact, validator, destination, token):
+    """The portable temporary grammar accepts opaque nonempty tokens without trusting their contents."""
+    checkpoints, output, receipt, validate_final = publication_fixture(phase_store, phase_key, artifact, validator)
+    directory = phase_store.task_root / 'validation/nca-phases/publication'
+    directory.mkdir(parents=True)
+    name = '.' + destination + '.' + token + '.tmp'
+    (directory / name).write_bytes(b'partial or altered write')
+    phase_store.prepare_publication(output, receipt, checkpoints=checkpoints,
+        validate_phase=lambda key, value: validator(value), validate_final=validate_final)
+    assert phase_store.recover_publication(checkpoints=checkpoints,
+        validate_phase=lambda key, value: validator(value), validate_final=validate_final) == output
+    retired, = directory.parent.glob('abandoned-publications/*/' + name)
+    assert retired.read_bytes() == b'partial or altered write'

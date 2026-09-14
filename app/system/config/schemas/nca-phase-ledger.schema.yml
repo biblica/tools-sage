@@ -29,6 +29,7 @@ controls:
   publication_staged_files: [output.json, receipt.json]
   uncommitted_publication_retention: validation/nca-phases/abandoned-publications/<attempt-id>/
   uncommitted_publication_authority: none
+  uncommitted_publication_temporary_fullmatch: '\.(?:output|receipt|manifest)\.json\.[A-Za-z0-9_-]+\.tmp'
   uncommitted_publication_recovery: retire_after_current_checkpoint_and_final_validation
   publication_destinations: [output/model-evidence.json, validation/llm-execution-receipt.json]
   publication_authority: current_controller_derivation_from_nonempty_revalidated_checkpoint_set
