@@ -27,6 +27,9 @@ controls:
   publication_manifest: validation/nca-phases/publication/manifest.json
   publication_required: [schema_version, task_fingerprint, checkpoints, files]
   publication_staged_files: [output.json, receipt.json]
+  uncommitted_publication_retention: validation/nca-phases/abandoned-publications/<attempt-id>/
+  uncommitted_publication_authority: none
+  uncommitted_publication_recovery: retire_after_current_checkpoint_and_final_validation
   publication_destinations: [output/model-evidence.json, validation/llm-execution-receipt.json]
   publication_authority: current_controller_derivation_from_nonempty_revalidated_checkpoint_set
   publication_hashes: both_exact_final_byte_payloads_before_either_canonical_write
@@ -41,4 +44,4 @@ controls:
   unknown_live_or_foreign_lock_owner: reject_without_reclaiming
   symlinks_and_path_escapes: prohibited
   model_write_authority: unchanged
-  optimized_run_dispatch: not_activated
+  optimized_run_dispatch: activated

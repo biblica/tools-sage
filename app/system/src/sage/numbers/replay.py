@@ -517,6 +517,38 @@ class PhaseStore:
         _require(result is not None, 'Final validator returned no accepted evidence')
         return result
 
+    def _retire_uncommitted_publication(self) -> None:
+        """Retain orphan payloads as diagnostics after fresh final validation under the ledger lock."""
+        _require(not any(self._path(path).exists() for path in (_OUTPUT, _RECEIPT)),
+                 'Partial final files lack publication authority')
+        source = self._path(_PHASE_ROOT + '/publication')
+        if not source.exists():
+            return
+        _require(source.is_dir(), 'Invalid publication directory')
+        children = list(source.iterdir())
+        if not children:
+            return
+        for child in children:
+            _require(child.name in {'output.json', 'receipt.json'}, 'Unexpected uncommitted publication entry')
+            path = self._path(f'{_PHASE_ROOT}/publication/{child.name}')
+            info = path.stat()
+            _require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'Invalid uncommitted publication file')
+        destination = self._path(f'{_PHASE_ROOT}/abandoned-publications/{uuid4().hex}')
+        _require(not destination.exists(), 'Abandoned publication identity already exists')
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        # One rename retains both payloads together. Neither these bytes nor the
+        # diagnostic directory can authorize publication; only the new manifest can.
+        os.replace(source, destination)
+        for parent in (destination.parent, source.parent):
+            try:
+                descriptor = os.open(parent, os.O_RDONLY)
+            except OSError:
+                continue
+            try:
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
+
     def prepare_publication(self, output: Mapping[str, object], receipt: Mapping[str, object], *,
                             checkpoints: Mapping[str, PhaseKey], validate_phase: Callable, validate_final: Callable) -> str:
         """Durably stage both canonical byte payloads and their checkpoint-bound manifest.
@@ -537,8 +569,10 @@ class PhaseStore:
             manifest_path = self._path(_PHASE_ROOT + '/publication/manifest.json')
             if manifest_path.exists():
                 _require(self._read(_PHASE_ROOT + '/publication/manifest.json') == manifest, 'Publication is immutable')
-            # Never replace an existing staged file, including an orphan from a
-            # preparation crash. An exact byte match can finish that preparation.
+            else:
+                self._retire_uncommitted_publication()
+            # Committed staged files remain immutable. Uncommitted payloads were
+            # retained separately only after current evidence and finals validated.
             for name, payload in payloads.items():
                 path = self._path(f'{_PHASE_ROOT}/publication/{name}.json')
                 if path.exists():
