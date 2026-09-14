@@ -62,7 +62,7 @@ def _configured_style(root: Path) -> bytes:
     return payload
 
 
-def _prepare_nca_workspace(root: Path) -> tuple[object, bytes]:
+def _prepare_nca_workspace(root: Path, *, content_state: str = "UNDER_REVIEW") -> tuple[object, bytes]:
     """Install qualified fixture resources and audited Project import identity."""
     profile_path = root / 'system/config/workflows/nca/profile.yml'
     profile = yaml.safe_load(profile_path.read_text())
@@ -89,7 +89,7 @@ def _prepare_nca_workspace(root: Path) -> tuple[object, bytes]:
         language_profile="en",
         profile_variant="bol-target",
         base_vrs_file="eng.vrs",
-        content_state="UNDER_REVIEW",
+        content_state=content_state,
         imported_at=IMPORT_TIME,
     )
     return load_ecosystem(root / "ecosystem.yml"), style_bytes
@@ -98,6 +98,42 @@ def _prepare_nca_workspace(root: Path) -> tuple[object, bytes]:
 def _route(monkeypatch: pytest.MonkeyPatch) -> None:
     """Replace provider readiness with one exact offline route identity."""
     monkeypatch.setattr("sage.nca._configured_nca_route", lambda _config: dict(ROUTE))
+
+
+def test_role_neutral_locked_project_runs_as_nca_wip_without_global_changes(make_workspace, monkeypatch):
+    """Selecting an imported Project grants only a read-only Job-local WIP role."""
+    from sage.nca import create_nca_task, execute_nca_task, finalize_nca_run
+    from sage.act_tasks import submit_act_task
+    from sage.numbers.execution import prepare_execution_inputs
+    from sage.project_inventory import project_registry_path
+    from .test_nca_tasks import _OfflineTasks
+    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    config, _ = _prepare_nca_workspace(root, content_state='LOCKED')
+    assert config.project('usWIP').content_state == 'LOCKED'
+    source = config.project('usWIP').path / '41MAT.SFM'
+    original_source = source.read_bytes()
+    registry = project_registry_path(root)
+    original_registry = registry.read_bytes()
+    _route(monkeypatch)
+    job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1')
+    runtime = load_ecosystem(job.runtime_settings_path)
+    assert runtime.project('usWIP').content_state == 'UNDER_REVIEW'
+    assert yaml.safe_load(job.runtime_profile_path.read_text())['permissions']['may_write_projects'] == []
+    run = create_nca_run(config, job_id=job.job_id, scope_value='MAT 1:1')
+    policy = load_nca_run_snapshot(run.root)
+    with pytest.raises(ValidationError) as caught:
+        prepare_execution_inputs(config, job, run, policy)
+    assert caught.value.code == 'NCA_WIP_SNAPSHOT_STALE'
+    prepare_execution_inputs(runtime, job, run, policy)
+    task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
+    task_path = Path(task['task_manifest_path'])
+    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
+    assert execute_nca_task(config, task_path)['status'] == 'EXECUTED'
+    assert submit_act_task(config, task_path)['status'] == 'FINALIZED'
+    assert finalize_nca_run(config, job_id=job.job_id, run_id=run.run_id)['status'] == 'COMPLETE'
+    assert load_ecosystem(root / 'ecosystem.yml').project('usWIP').content_state == 'LOCKED'
+    assert source.read_bytes() == original_source
+    assert registry.read_bytes() == original_registry
 
 
 def test_nca_identity_is_operator_workflow_but_not_analysis_workflow() -> None:

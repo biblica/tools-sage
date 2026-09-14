@@ -101,8 +101,8 @@ def validate_nca_job_prerequisites(config: EcosystemConfig, job: Job) -> NCAJobB
             code="NCA_JOB_BINDING_INVALID",
         )
     project = config.project(job.bindings["wip"])
-    if project.content_state != "UNDER_REVIEW":
-        raise ValidationError("NCA WIP must be UNDER_REVIEW", code="NCA_JOB_BINDING_INVALID")
+    # Prerequisites may use the role-neutral inventory configuration. The WIP
+    # binding establishes review authority; execution validates Job-local state.
     package = job.resources["numbers_package"]
     package_id = str(package.get("package_id") or "")
     bundle = resolve_reference_package(config, package_id)
