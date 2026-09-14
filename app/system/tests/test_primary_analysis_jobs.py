@@ -487,3 +487,48 @@ def test_discontinuous_stc_run_partitions_each_selected_portion(
     assert result["status"] == "PARTITIONED"
     assert result["requested_scope"] == "MAT 1; MAT 3"
     assert [unit["scope"] for unit in result["work_units"]] == ["MAT 1:1", "MAT 3:1"]
+
+
+def test_role_neutral_partial_project_can_create_present_book_rtc_task(package_root, make_workspace) -> None:
+    """A WIP binding after import must initialize and create a canonical task for present books."""
+    from sage.project_inventory import register_project, registered_project_records
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    register_project(
+        root, project_id="usNIRVv2", project_path=storage_layout(root).projects_root / "usNIRVv2",
+        language_code="en", base_vrs_file="eng.vrs", declared_books=("MAT", "MRK"),
+        imported_at=IMPORT_TIME,
+    )
+    # Shipped inactive workflow templates are unbound; the shared fixture binds
+    # them for legacy tests and those unrelated roles do not belong to this Job.
+    for workflow in ("bic", "saw", "stc", "nca"):
+        profile_path = root / "system" / "config" / "workflows" / workflow / "profile.yml"
+        profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
+        profile["bindings"] = {}
+        profile["permissions"]["may_write_projects"] = []
+        profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(tool="rtc", job_id="RTC-usNIRVv2_20260901", display_name="Partial draft", bindings={"wip": "usNIRVv2", "reference": "usNIVv2"})
+    assert job.wip_snapshot["project_status"] == "READY_WITH_WARNINGS"
+    assert job.wip_snapshot["books"] == ["MAT"]
+    assert any(row["code"] == "PROJECT_BOOK_MISSING" for row in job.wip_snapshot["warnings"])
+    runtime = load_ecosystem(store.ensure_runtime_files(job))
+    env = dict(os.environ, PYTHONPATH=str(package_root / "system/src"), PYTHONDONTWRITEBYTECODE="1")
+    initialized = subprocess.run(
+        [sys.executable, "-m", "sage.cli", "--settings", str(runtime.settings_path), "--json", "workspace", "initialize"],
+        env=env, text=True, capture_output=True, check=False, timeout=30,
+    )
+    assert initialized.returncode == 0, initialized.stdout + initialized.stderr
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1")
+    sealed = (run.root / "snapshot" / "SNAPSHOT.json").read_bytes()
+    task = create_act_task(
+        runtime, workflow="rtc", operation="rtc", output_project_id="usNIRVv2",
+        contemporary_source_id="usNIVv2", scope_value="MAT 1:1", auto_partition=False,
+        job_id=job.job_id, run_id=run.run_id,
+    )
+    manifest = json.loads(Path(task["manifest_path"]).read_text(encoding="utf-8"))
+    assert manifest["workflow"] == "rtc"
+    assert manifest["resource_bindings"]["WIP"] == "usNIRVv2"
+    assert runtime.project("usNIRVv2").scope.expected_books == ("MAT", "MRK")
+    assert registered_project_records(root)["usNIRVv2"]["scope"]["roles"] == []
+    assert (run.root / "snapshot" / "SNAPSHOT.json").read_bytes() == sealed

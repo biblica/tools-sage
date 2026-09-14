@@ -142,6 +142,7 @@ def register_project(
         raise ValidationError(f"Project folder not found: {path}", code="PROJECT_FOLDER_NOT_FOUND")
     sfm_books = detect_scripture_books(path)
     books = tuple(declared_books) if declared_books else sfm_books
+    missing_books = sorted(set(books) - set(sfm_books), key=BOOK_ORDER.__getitem__)
     if not sfm_books and not allow_empty:
         raise ValidationError(
             f"Project folder does not contain readable canonical Scripture .SFM files: {path}",
@@ -183,13 +184,17 @@ def register_project(
         },
         "detected_books": list(books),
         "sfm_books": list(sfm_books),
+        "missing_books": missing_books,
+        "coverage_status": "INCOMPLETE" if missing_books else "COMPLETE",
         "scope_summary": summarize_scope(books),
         "coverage_policy": coverage_policy.strip().upper(),
         "versification": {"base_file": base, "custom_file": "auto", **dict(versification_metadata or {})},
         "paratext_metadata": dict(paratext_metadata or {}),
         "allow_empty": bool(allow_empty),
         "code_metadata": parts.to_dict(),
-        "validation_status": "VALID" if books or allow_empty else "BLOCKED",
+        "validation_status": (
+            "READY_WITH_WARNINGS" if missing_books else ("VALID" if books or allow_empty else "BLOCKED")
+        ),
     }
     state["projects"][project_id] = record
     write_project_registry(root, state)

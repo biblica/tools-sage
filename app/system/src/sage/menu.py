@@ -6960,6 +6960,10 @@ class SageControlCenter:
             scope["testament"] = scope_testament(declared_books)
             scope["expected_books"] = list(declared_books)
         scope["roles"] = []
+        missing_books = [book for book in declared_books if book not in row.get("sfm_books", [])]
+        validation_status = "VALID" if row.get("status") == "READY" else str(row.get("status") or "WARNING")
+        if missing_books and validation_status in {"VALID", "WARNING", "READY_WITH_WARNINGS"}:
+            validation_status = "READY_WITH_WARNINGS"
         vrs = dict(record.get("versification") or {})
         parsed_vrs = dict(row.get("versification") or {})
         vrs.update({
@@ -6976,6 +6980,8 @@ class SageControlCenter:
                 "display_name": row.get("full_name") or project_id,
                 "detected_books": list(declared_books),
                 "sfm_books": list(row.get("sfm_books", [])),
+                "missing_books": missing_books,
+                "coverage_status": "INCOMPLETE" if missing_books else "COMPLETE",
                 "scope": scope,
                 "scope_summary": summarize_scope(declared_books),
                 "versification": vrs,
@@ -6986,7 +6992,7 @@ class SageControlCenter:
                     "language_iso_raw": row.get("language_iso_raw"),
                     "catalog_status": row.get("status"),
                 },
-                "validation_status": "VALID" if row.get("status") == "READY" else str(row.get("status") or "WARNING"),
+                "validation_status": validation_status,
             },
         )
 
@@ -7011,6 +7017,8 @@ class SageControlCenter:
             self.io.write(f"Versification:    {self._project_vrs_summary(vrs)}")
             self.io.write(f"Imported to SAGE: {project_import_date(record) or 'UNKNOWN'}")
             self.io.write(f"Status:           {record.get('validation_status','UNKNOWN')}")
+            if record.get("missing_books"):
+                self.io.write_info((("Missing books", ", ".join(record["missing_books"])),))
             action = self.io.choose(
                 "PROJECT ACTIONS",
                 (
@@ -7526,6 +7534,10 @@ class SageControlCenter:
             self.io.write(f"{created} - {row.get('full_name') or created}")
             record = registered_project_records(self.root).get(created, {})
             self.io.write(f"Imported to SAGE: {project_import_date(record) or 'UNKNOWN'}")
+            self.io.write_info((("Status", str(record.get("validation_status") or "UNKNOWN")),))
+            if record.get("missing_books"):
+                self.io.write_info((("Missing books", ", ".join(record["missing_books"])),))
+                self.io.write("Coverage is incomplete. WIP Jobs can run for present books.")
             return created
         except SageError as exc:
             self.show_error(exc)

@@ -25,6 +25,13 @@ controls:
     optional:
       paratext_metadata: [full_name, language_name, language_iso, language_iso_raw, catalog_status]
       sfm_books: actual_SFM_inventory
+      missing_books: declared_expected_books_without_SFM_files
+      coverage_status: [COMPLETE, INCOMPLETE]
+    incomplete_coverage:
+      import_status: READY_WITH_WARNINGS
+      preserves_declared_scope: true
+      wip_present_books_executable: true
+      locked_required_source_completeness: enforced
   reporting:
     language_configuration_owner: job_not_project
     project_reporting_fields: prohibited

@@ -527,6 +527,15 @@ def compile_project(
     if filename_validation["template"] is not None:
         resource_files.append(Path(filename_validation["settings_file"]))
     resource_hash = sha256_paths(resource_files, relative_to=project.path)
+    missing_books = sorted(selected_books - set(seen_books))
+    project_warnings.extend(
+        {
+            "code": "PROJECT_BOOK_MISSING",
+            "reference": book,
+            "message": f"Book {book} has no Scripture file; coverage is incomplete.",
+        }
+        for book in missing_books
+    )
     compiled_files_hash = sha256_paths(files, relative_to=project.path)
     status = "BLOCKED" if project_issues else ("READY_WITH_WARNINGS" if project_warnings else "READY")
     return {
@@ -561,6 +570,8 @@ def compile_project(
         "summary": {
             "files": len(file_results),
             "books": sorted(seen_books),
+            "missing_books": missing_books,
+            "coverage_status": "INCOMPLETE" if missing_books else "COMPLETE",
             "verse_units": total_verse_units,
             "atomic_coordinates": total_atomic,
             "sections": total_sections,
