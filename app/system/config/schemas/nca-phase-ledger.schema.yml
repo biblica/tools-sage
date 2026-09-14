@@ -33,6 +33,12 @@ controls:
   arbitrary_partial_output: rejected
   lock_order: [task_execution_lock, phase_ledger_lock]
   lock_path: locks/nca-phases.lock
+  lock_guard_path: locks/nca-phases.lock.guard
+  lock_guard_lifetime: persistent_inode_never_unlinked
+  lock_guard_ownership: nonblocking_os_advisory_lock_held_through_directory_release
+  lock_guard_platforms: [unix_fcntl_flock, windows_msvcrt_byte_range]
+  stale_lock_recovery: complete_same_operation_same_host_owner_proven_dead
+  unknown_live_or_foreign_lock_owner: reject_without_reclaiming
   symlinks_and_path_escapes: prohibited
   model_write_authority: unchanged
   optimized_run_dispatch: not_activated

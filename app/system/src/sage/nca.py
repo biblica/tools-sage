@@ -46,6 +46,8 @@ _CONTROLLER_ALLOWED_WRITES = (
     "validation/nca-phases/publication/receipt.json",
     "validation/nca-phases/publication/manifest.json",
     "locks/nca-phases.lock",
+    "locks/nca-phases.lock.guard",
+    "locks/execution.lock.guard",
 )
 
 

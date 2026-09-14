@@ -463,3 +463,226 @@ def test_explicit_response_route_conflicts_cannot_checkpoint(phase_store, phase_
     with pytest.raises(ValidationError):
         phase_store.commit(phase_key, changed, validate=validator)
     assert phase_store.lookup(phase_key, validate=validator) is None
+
+
+def test_dead_process_lock_does_not_prevent_checkpoint_resume(phase_store, phase_key, artifact, validator):
+    """An actual process exit leaves a provably stale lock that a fresh store recovers."""
+    import os
+    import subprocess
+    import sys
+    phase_store.commit(phase_key, artifact, validate=validator)
+    script = '''"""Leave a real phase lock behind after abrupt process termination."""
+import os
+from pathlib import Path
+import sys
+from sage.numbers.replay import PhaseStore
+store = PhaseStore(Path(sys.argv[1]), task_fingerprint=sys.argv[2])
+store._lock().acquire()
+os._exit(17)
+'''
+    env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[2] / 'src'),
+               PYTHONDONTWRITEBYTECODE='1', SAGE_DISABLE_OPERATIONAL_LOG='1')
+    result = subprocess.run([sys.executable, '-c', script, str(phase_store.task_root), phase_key.task_fingerprint],
+                            env=env, capture_output=True, text=True, timeout=15, check=False)
+    assert result.returncode == 17, result.stderr
+    assert (phase_store.task_root / 'locks/nca-phases.lock/owner.json').is_file()
+    resumed = replay_module().PhaseStore(phase_store.task_root, task_fingerprint=phase_key.task_fingerprint)
+    assert len(resumed.lookup(phase_key, validate=validator).accepted) == 2
+    assert not (phase_store.task_root / 'locks/nca-phases.lock').exists()
+
+
+@pytest.mark.parametrize('owner_kind', ['live', 'foreign', 'missing', 'invalid_json', 'not_object',
+    'missing_pid', 'string_pid', 'boolean_pid', 'zero_pid', 'negative_pid', 'missing_host',
+    'wrong_operation', 'invalid_timestamp', 'extra_field', 'duplicate_field', 'huge_pid'])
+def test_unproven_lock_ownership_is_never_reclaimed(phase_store, phase_key, validator, owner_kind):
+    """Live, foreign, malformed, and unpublished ownership cannot authorize lock removal."""
+    import os
+    import socket
+    from sage.errors import LockError
+    from sage.locking import utc_now
+    path = phase_store.task_root / 'locks/nca-phases.lock'
+    path.mkdir(parents=True)
+    owner = {'pid': os.getpid(), 'host': socket.gethostname(), 'operation': 'NCA_PHASE_LEDGER', 'acquired_utc': utc_now()}
+    if owner_kind == 'foreign':
+        owner.update(pid=99999999, host='different-host.invalid')
+    elif owner_kind == 'missing_pid':
+        owner.pop('pid')
+    elif owner_kind in {'string_pid', 'boolean_pid', 'zero_pid', 'negative_pid'}:
+        owner['pid'] = {'string_pid': '99999999', 'boolean_pid': True, 'zero_pid': 0, 'negative_pid': -1}[owner_kind]
+    elif owner_kind == 'missing_host':
+        owner.pop('host')
+    elif owner_kind == 'wrong_operation':
+        owner.update(pid=99999999, operation='ANOTHER_OPERATION')
+    elif owner_kind == 'invalid_timestamp':
+        owner.update(pid=99999999, acquired_utc='not-a-timestamp')
+    elif owner_kind == 'extra_field':
+        owner.update(pid=99999999, ambiguous=True)
+    elif owner_kind == 'huge_pid':
+        owner['pid'] = 10 ** 100
+    payload = json.dumps(owner)
+    if owner_kind == 'invalid_json':
+        payload = '{'
+    elif owner_kind == 'not_object':
+        payload = '[]'
+    elif owner_kind == 'duplicate_field':
+        payload = payload[:-1] + ', "pid": 99999999}'
+    if owner_kind != 'missing':
+        (path / 'owner.json').write_text(payload)
+    with pytest.raises(LockError):
+        phase_store.lookup(phase_key, validate=validator)
+    assert path.is_dir()
+    if owner_kind != 'missing':
+        assert (path / 'owner.json').read_text() == payload
+    else:
+        assert list(path.iterdir()) == []
+
+
+def test_competing_processes_recover_stale_lock_without_overlapping_sections(phase_store, phase_key):
+    """A process-held guard prevents simultaneous recoverers from removing a new live lock."""
+    import os
+    import subprocess
+    import sys
+    import time
+    module = replay_module()
+    assert hasattr(module, 'NcaWorkspaceLock'), 'safe NCA recovery lock is not available'
+    env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[2] / 'src'),
+               PYTHONDONTWRITEBYTECODE='1', SAGE_DISABLE_OPERATIONAL_LOG='1')
+    script = '''"""Run competing protected sections against one deliberately stale directory lock."""
+import os
+from pathlib import Path
+import sys
+import time
+from sage.errors import LockError
+from sage.numbers.replay import NcaWorkspaceLock
+root = Path(sys.argv[1])
+lock_path = root / 'locks/nca-phases.lock'
+if sys.argv[2] == 'crash':
+    NcaWorkspaceLock(lock_path, 'NCA_PHASE_LEDGER').acquire()
+    os._exit(17)
+class DelayedRecovery(NcaWorkspaceLock):
+    """Widen the stale-inspection race so an unguarded recovery would overlap."""
+    def _is_stale(self, owner):
+        """Delay after ownership inspection before the shared helper removes the directory."""
+        stale = super()._is_stale(owner)
+        if stale:
+            time.sleep(0.05)
+        return stale
+(root / ('ready-' + sys.argv[2])).write_text('ready')
+deadline = time.monotonic() + 15
+while not (root / 'start').exists():
+    if time.monotonic() > deadline:
+        raise RuntimeError('start timeout')
+    time.sleep(0.005)
+completed = 0
+while completed < 8:
+    try:
+        with DelayedRecovery(lock_path, 'NCA_PHASE_LEDGER'):
+            (root / 'critical').mkdir()
+            time.sleep(0.015)
+            (root / 'critical').rmdir()
+            completed += 1
+    except LockError:
+        time.sleep(0.005)
+    if time.monotonic() > deadline:
+        raise RuntimeError('lock progress timeout')
+print(completed)
+'''
+    crashed = subprocess.run([sys.executable, '-c', script, str(phase_store.task_root), 'crash'],
+                             env=env, capture_output=True, text=True, timeout=20, check=False)
+    assert crashed.returncode == 17, crashed.stderr
+    children = [subprocess.Popen([sys.executable, '-c', script, str(phase_store.task_root), str(index)],
+                env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for index in range(2)]
+    try:
+        deadline = time.monotonic() + 15
+        while not all((phase_store.task_root / f'ready-{index}').exists() for index in range(2)):
+            assert time.monotonic() < deadline, 'competing processes did not reach the start gate'
+            time.sleep(0.005)
+        (phase_store.task_root / 'start').write_text('go')
+        for child in children:
+            stdout, stderr = child.communicate(timeout=20)
+            assert child.returncode == 0, stderr
+            assert stdout.strip() == '8'
+    finally:
+        for child in children:
+            if child.poll() is None:
+                child.kill()
+                child.wait(timeout=5)
+    assert not (phase_store.task_root / 'critical').exists()
+    assert not (phase_store.task_root / 'locks/nca-phases.lock').exists()
+    assert (phase_store.task_root / 'locks/nca-phases.lock.guard').is_file()
+
+
+def test_guard_inode_persists_across_acquisitions(phase_store, phase_key, validator):
+    """Keeping one guard inode prevents unlocked replacements while another process holds it."""
+    phase_store.lookup(phase_key, validate=validator)
+    path = phase_store.task_root / 'locks/nca-phases.lock.guard'
+    assert path.is_file(), 'the process-held NCA guard is absent'
+    identity = path.stat().st_ino
+    phase_store.lookup(phase_key, validate=validator)
+    assert path.stat().st_ino == identity
+
+
+def test_guard_symlink_cannot_redirect_lock_io(phase_store, phase_key, validator, tmp_path):
+    """Persistent advisory guard files have the same task confinement as directory locks."""
+    outside = tmp_path / 'outside-guard'
+    outside.write_text('untouched')
+    path = phase_store.task_root / 'locks/nca-phases.lock.guard'
+    path.parent.mkdir()
+    path.symlink_to(outside)
+    with pytest.raises(ValidationError):
+        phase_store.lookup(phase_key, validate=validator)
+    assert outside.read_text() == 'untouched'
+
+
+def test_process_death_between_canonical_files_recovers_verified_publication(phase_store, phase_key, artifact, validator):
+    """A real publication process death releases its guard and preserves checkpoint authority."""
+    import os
+    import subprocess
+    import sys
+    checkpoints, output, receipt, validate_final = publication_fixture(phase_store, phase_key, artifact, validator)
+    phase_store.prepare_publication(output, receipt, checkpoints=checkpoints,
+        validate_phase=lambda key, value: validator(value), validate_final=validate_final)
+    script = '''"""Die after the output write while holding the actual publication lock."""
+import json
+import os
+from pathlib import Path
+import sys
+from sage.numbers import replay
+from sage.numbers.extraction import validate_batch_extraction_response
+from app.system.tests.numbers.test_batch_extraction import batch_fixture
+store = replay.PhaseStore(Path(sys.argv[1]), task_fingerprint=sys.argv[2])
+checkpoints = {identifier: replay.PhaseKey.from_dict(value) for identifier, value in json.loads(sys.argv[3]).items()}
+batch = batch_fixture()
+def validate_phase(key, artifact):
+    """Revalidate the real protected two-unit extraction and its local hashes."""
+    value = validate_batch_extraction_response(batch, json.loads(artifact['raw_response']))
+    assert dict(value.item_sha256) == artifact['item_sha256']
+    return value
+def validate_final(output, receipt, evidence):
+    """Reconcile the staged output against the revalidated accepted checkpoint evidence."""
+    assert set(evidence) == set(checkpoints)
+    expected = [identifier for value in evidence.values() for identifier in value.accepted]
+    assert output == {'accepted': expected}
+    assert receipt['task_fingerprint'] == sys.argv[2]
+    return output
+original = replay.atomic_write_bytes
+def crash(path, payload):
+    """Exit immediately after the first canonical file reaches durable storage."""
+    original(path, payload)
+    if path.name == 'model-evidence.json':
+        os._exit(17)
+replay.atomic_write_bytes = crash
+store.recover_publication(checkpoints=checkpoints, validate_phase=validate_phase, validate_final=validate_final)
+'''
+    env = dict(os.environ, PYTHONPATH=os.pathsep.join((str(Path(__file__).resolve().parents[2] / 'src'),
+               str(Path(__file__).resolve().parents[4]))), PYTHONDONTWRITEBYTECODE='1', SAGE_DISABLE_OPERATIONAL_LOG='1')
+    result = subprocess.run([sys.executable, '-c', script, str(phase_store.task_root), phase_key.task_fingerprint,
+        json.dumps({identifier: key.to_dict() for identifier, key in checkpoints.items()})],
+        env=env, capture_output=True, text=True, timeout=20, check=False)
+    assert result.returncode == 17, result.stderr
+    assert (phase_store.task_root / 'output/model-evidence.json').is_file()
+    assert not (phase_store.task_root / 'validation/llm-execution-receipt.json').exists()
+    resumed = replay_module().PhaseStore(phase_store.task_root, task_fingerprint=phase_key.task_fingerprint)
+    assert resumed.recover_publication(checkpoints=checkpoints,
+        validate_phase=lambda key, value: validator(value), validate_final=validate_final) == output
+    assert json.loads((phase_store.task_root / 'validation/llm-execution-receipt.json').read_text()) == receipt
