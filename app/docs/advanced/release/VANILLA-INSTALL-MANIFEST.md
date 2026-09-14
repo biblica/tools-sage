@@ -73,6 +73,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/release/ADMINISTRATIVE-AI-ROUTING-DESIGN.md`
 - `docs/advanced/release/HANDOVER.md`
 - `docs/advanced/release/IMPLEMENTATION-REPORT.md`
+- `docs/advanced/release/NCA-OPTIMIZATION-BENCHMARK.json`
+- `docs/advanced/release/NCA-OPTIMIZATION-QUALIFICATION.md`
 - `docs/advanced/release/NCA-QUALIFICATION.md`
 - `docs/advanced/release/NCA-REFERENCE-QUALIFICATION.json`
 - `docs/advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-DESIGN.md`
@@ -830,6 +832,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/__init__.py`
 - `system/tests/numbers/conftest.py`
 - `system/tests/numbers/fixtures`
+- `system/tests/numbers/fixtures/optimization-mat5.json`
 - `system/tests/numbers/fixtures/optimization-cases.json`
 - `system/tests/numbers/fixtures/reference`
 - `system/tests/numbers/fixtures/reference/lineage`
@@ -975,6 +978,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/bootstrap_python.sh`
 - `system/tools/bootstrap_runtime.py`
 - `system/tools/benchmark_nca_optimized.py`
+- `system/tools/benchmark_nca_live.py`
+- `system/tools/benchmark_nca_qualification.py`
 - `system/tools/benchmark_nca.py`
 - `system/tools/build_model_evaluation_cases.py`
 - `system/tools/build_release.py`
