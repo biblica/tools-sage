@@ -80,7 +80,7 @@ def reviewed_labels(path, inputs):
     return labels, baseline._sha256(content)
 
 
-def case_metrics(view, found, label):
+def case_metrics(view, found, label, *, numeric_assessment_enabled=True):
     """Compare exact typed values, roles and finding multiplicity without sharing source surfaces."""
     observed = [baseline._golden_expression(baseline._plain_expression(x)) for x in view.extraction.expressions]
     expected = [baseline._golden_expression(x) for x in label['expressions']]
@@ -88,6 +88,8 @@ def case_metrics(view, found, label):
     expected_counter = Counter(baseline._canonical_bytes(x) for x in expected)
     matched = sum((actual_counter & expected_counter).values())
     known = view.extraction.status == 'COMPLETE'
+    critical = bool(set(label['categories']) & CRITICAL_CATEGORIES)
+    available = not critical or (numeric_assessment_enabled and view.reading.semantic.outcome != 'NOT_ASSESSED')
     codes = sorted(x['code'] for x in found)
     actual_findings = [_plain({field: item[field] for field in FINDING_FIELDS}) for item in found]
     matches_findings = Counter(baseline._canonical_bytes(x) for x in actual_findings) == Counter(
@@ -97,9 +99,10 @@ def case_metrics(view, found, label):
         'extraction_recall': (matched / len(expected) if expected else 1.0) if known else None,
         'extraction_precision': (matched / len(observed) if observed else float(not expected)) if known else None,
         'exact_values_types_roles': observed == expected if known else None,
-        'finding_correctness': matches_findings and view.final_outcome == label['outcome'],
+        'finding_correctness': (matches_findings and view.final_outcome == label['outcome']) if available else None,
+        'finding_assessment_available': available,
         'outcome': view.final_outcome, 'finding_codes': codes,
-        'unresolved': not known or view.final_outcome in {'INSUFFICIENT_EVIDENCE', 'REFERENCE_NOT_INDEXED'},
+        'unresolved': not known or not available or view.final_outcome in {'INSUFFICIENT_EVIDENCE', 'REFERENCE_NOT_INDEXED'},
         'observed_findings_sha256': baseline._sha256(baseline._canonical_bytes(actual_findings)),
         'observed_extraction_sha256': baseline._sha256(baseline._canonical_bytes(observed)),
         'expected_extraction_sha256': baseline._sha256(baseline._canonical_bytes(expected))}
@@ -124,7 +127,8 @@ def run_strategy(config, inputs, labels, strategy, directory):
         'raw_response': x.raw_response, 'response_identity': _plain(x.response_identity)} for x in tasks.attempts]
     (directory / 'provider-evidence.json').write_text(json.dumps(raw, ensure_ascii=False, indent=2) + '\n')
     by_id = {x['unit_id']: x for x in labels['cases']}
-    metrics = [case_metrics(view, found, by_id[view.projected.target.unit_id]) for view, found in units]
+    metrics = [case_metrics(view, found, by_id[view.projected.target.unit_id],
+        numeric_assessment_enabled=inputs.policy['checks']['number_accuracy']) for view, found in units]
     return {'strategy': strategy, 'input_sha256': live_input_identity(inputs),
         'governance': governance(tasks, strategy), 'calls': summarize_calls(tuple(x.measurement for x in tasks.attempts)),
         'elapsed_ms': (perf_counter_ns() - started) // 1_000_000, 'coverage': _plain(result.coverage), 'cases': metrics,
@@ -167,6 +171,8 @@ def run_live(args):
     missing = sorted(CRITICAL_CATEGORIES - categories)
     complete = all(len(pair[strategy]['cases']) == len(labels['cases']) for pair in pairs for strategy in pair)
     observed = [case for pair in pairs for case in pair['optimized']['cases']]
+    unavailable = any(not case['finding_assessment_available'] for pair in pairs
+        for strategy in pair for case in pair[strategy]['cases'])
     accurate = all(case['exact_values_types_roles'] is True and case['finding_correctness'] and not case['unresolved'] for case in observed)
     regressions = [after['unit_id'] for pair in pairs for before, after in zip(
         sorted(pair['baseline']['cases'], key=lambda x: x['unit_id']), sorted(pair['optimized']['cases'], key=lambda x: x['unit_id']))
@@ -174,10 +180,11 @@ def run_live(args):
             before[field] is True and after[field] is not True for field in ('exact_values_types_roles', 'finding_correctness'))]
     code_sha, code_files = baseline._code_identity()
     return {'schema_version': '1.0', 'mode': 'live', 'strategy': 'paired', 'pairs': pairs,
-        'qualification_status': 'INCOMPLETE' if missing or not complete else ('PASS_SELECTED_CASES' if accurate and not regressions else 'FAIL'),
+        'qualification_status': 'INCOMPLETE' if missing or not complete or unavailable else ('PASS_SELECTED_CASES' if accurate and not regressions else 'FAIL'),
         'input_sha256': live_input_identity(inputs), 'labels_sha256': label_sha,
         'project': args.project, 'scope': args.scope, 'job_id': job.job_id, 'run_id': run.run_id,
         'style_sha256': policy['number_style']['sha256'], 'route': dict(policy['model_route']),
+        'qualification_limitations': ['CRITICAL_NUMERIC_ASSESSMENT_UNAVAILABLE'] if unavailable else [],
         'missing_critical_categories': missing, 'critical_regressions': regressions,
         'case_categories': {x['unit_id']: x['categories'] for x in labels['cases']},
         'code_sha256': code_sha, 'code_files': code_files, 'session_id': session.name,

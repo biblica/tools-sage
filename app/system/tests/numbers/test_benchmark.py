@@ -394,7 +394,8 @@ def test_qualification_faults_remain_bounded_without_false_pass(tmp_path, fault)
         assert not any(x['outcome'].startswith('PASS') for x in receipt['outcomes'])
 
 
-def test_live_entrypoint_requires_bound_reviewed_labels_and_runtime_output(make_workspace, monkeypatch, tmp_path):
+@pytest.mark.parametrize('scenario', ['ordinary', 'checks_off', 'critical_unassessed', 'critical_pass'])
+def test_live_entrypoint_requires_bound_reviewed_labels_and_runtime_output(make_workspace, monkeypatch, tmp_path, scenario):
     """A real live entrypoint uses sealed inputs and providers only after exact label validation."""
     import importlib
     from dataclasses import asdict
@@ -404,7 +405,23 @@ def test_live_entrypoint_requires_bound_reviewed_labels_and_runtime_output(make_
     from .test_nca_tasks import _EmptyTransport
     sys.path.insert(0, str(TOOL.parent))
     live = importlib.import_module('benchmark_nca_live')
-    _root, config, job, run = _run(make_workspace, monkeypatch)
+    from .test_nca_jobs import _prepare_nca_workspace, _route
+    from sage.nca import create_nca_job, create_nca_run
+    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    config, _style = _prepare_nca_workspace(root)
+    _route(monkeypatch)
+    # Exercise actual sealed check policy and source preparation for both unavailable boundaries.
+    scope = 'MAT 1'
+    if scenario in {'critical_pass', 'critical_unassessed'}:
+        verse = 1 if scenario == 'critical_pass' else 4
+        text = '3 men and 4 women.' if scenario == 'critical_pass' else 'The people rested.'
+        (config.project('usWIP').path / '41MAT.SFM').write_text(f'\\id MAT Fixture\n\\c 1\n\\p\n\\v {verse} {text}\n')
+        for name in ('eng.vrs', 'org.vrs'):
+            (root / 'system/resources/scripture' / name).write_text('MAT 1:4\n')
+        scope = f'MAT 1:{verse}'
+    job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1', style_selector='fixture-style/1')
+    run = create_nca_run(config, job_id=job.job_id, scope_value=scope, checks={
+        'number_accuracy': scenario != 'checks_off', 'presentation_consistency': True, 'footnote_review': False})
     inputs = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
     class LiveRecordedTasks(_OfflineTasks):
         """Use real phase execution for both versions with only the external response recorded."""
@@ -425,6 +442,35 @@ def test_live_entrypoint_requires_bound_reviewed_labels_and_runtime_output(make_
             from sage.executors import ProviderResponse
             self.calls.append(request)
             envelope = json.loads(request.prompt)
+            if scenario == 'critical_pass':
+                payload, phase = envelope['input'], envelope['phase']
+                version = '2.0' if envelope['task_version'].endswith('2.0') else '1.0'
+                def expression(text, surface, value, role, stream):
+                    """Provide literal number and referent evidence for the successful availability control."""
+                    start = text.index(surface)
+                    return {'expression_id': f'{stream}-{value}', 'stream_id': stream, 'surface': surface,
+                        'span': {'start': start, 'end': start + len(surface)}, 'values': [str(value)],
+                        'kind': 'CARDINAL', 'unit': None, 'qualifier': 'EXACT', 'role': role,
+                        'role_spans': [{'start': 0, 'end': len(text), 'surface': text}], 'representations': []}
+                text = '3 men and 4 women.'
+                if phase == 'EXTRACTION':
+                    key = 'input_id' if version == '2.0' else 'unit_id'
+                    raw = {'schema_version': version, 'phase': phase, 'work_units': [{
+                        key: item[key], 'status': 'COMPLETE', 'limitations': [], 'expressions': [
+                            expression(text, str(value), value, role, 'main') for value, role in ((3, 'men'), (4, 'women'))]}
+                        for item in payload['work_units']]}
+                    if version == '2.0':
+                        raw['batch_id'] = payload['batch_id']
+                else:
+                    source = payload['authority']['ol_text']
+                    raw = {'schema_version': version, 'phase': phase, 'unit_id': payload['unit_id'],
+                        'status': 'COMPLETE', 'limitations': [], 'source_expressions': [
+                            expression(source, surface, value, role, 'ol') for surface, value, role in
+                            (('three', 3, 'men'), ('four', 4, 'women'))],
+                        'target_roles': [{'expression_id': item['expression_id'], 'role': item['role'],
+                            'role_spans': [{'start': 0, 'end': len(text), 'surface': text}]}
+                            for item in payload['target']['expressions']]}
+                return ProviderResponse(provider='codex', model='gpt-test', reasoning_effort='high', content=json.dumps(raw), metadata={})
             if envelope['task_version'] == 'nca-extraction-1.0':
                 raw = {'schema_version': '1.0', 'phase': 'EXTRACTION', 'work_units': [
                     {'unit_id': x['unit_id'], 'status': 'COMPLETE', 'limitations': [], 'expressions': []}
@@ -434,10 +480,16 @@ def test_live_entrypoint_requires_bound_reviewed_labels_and_runtime_output(make_
 
     monkeypatch.setattr(live, 'NcaModelTasks', LiveRecordedTasks)
     monkeypatch.setattr(live, 'load_ecosystem', lambda path: config)
+    expected_expressions = [] if scenario != 'critical_pass' else [
+        {'surface': surface, 'span': span, 'values': [surface], 'kind': 'CARDINAL', 'unit': None,
+         'qualifier': 'EXACT', 'role': role, 'representations': []}
+        for surface, span, role in [('3', [0, 1], 'men'), ('4', [10, 11], 'women')]]
+    expected_outcome = 'INSUFFICIENT_EVIDENCE' if scenario == 'ordinary' else (
+        'PASS_AUTHORITY1' if scenario == 'critical_pass' else 'NOT_ASSESSED')
     labels = {'schema_version': '1.0', 'reviewed_by': 'Fixture operator', 'reviewed_at': '2026-09-14',
         'input_sha256': live.live_input_identity(inputs), 'cases': [
-            {'unit_id': x.target.unit_id, 'categories': ['ordinary'], 'expressions': [],
-             'outcome': 'INSUFFICIENT_EVIDENCE', 'finding_codes': [], 'findings': []} for x in inputs.projected_units]}
+            {'unit_id': x.target.unit_id, 'categories': ['ordinary'] if scenario == 'ordinary' else sorted(live.CRITICAL_CATEGORIES),
+             'expressions': expected_expressions, 'outcome': expected_outcome, 'finding_codes': [], 'findings': []} for x in inputs.projected_units]}
     path = tmp_path / 'labels.json'
     path.write_text(json.dumps(labels))
     destination = config.runtime_state_root / 'nca-benchmarks/test/receipt.json'
@@ -450,8 +502,11 @@ def test_live_entrypoint_requires_bound_reviewed_labels_and_runtime_output(make_
     receipt = json.loads(destination.read_text())
     assert len(receipt['pairs']) == 3
     assert len(LiveRecordedTransport.calls) > 0
-    assert receipt['qualification_status'] == 'INCOMPLETE'
-    assert set(receipt['missing_critical_categories']) == {'omission', 'extra_number', 'referent', 'bridge'}
+    assert receipt['qualification_status'] == ('PASS_SELECTED_CASES' if scenario == 'critical_pass' else 'INCOMPLETE')
+    assert set(receipt['missing_critical_categories']) == (live.CRITICAL_CATEGORIES if scenario == 'ordinary' else set())
+    if scenario in {'checks_off', 'critical_unassessed'}:
+        assert 'CRITICAL_NUMERIC_ASSESSMENT_UNAVAILABLE' in receipt['qualification_limitations']
+        assert all(case['finding_correctness'] is None for pair in receipt['pairs'] for case in pair['optimized']['cases'])
     assert {p.relative_to(run.root).as_posix(): p.read_bytes() for p in run.root.rglob('*') if p.is_file()} == before
     assert 'text' not in receipt and 'raw_response' not in receipt
     for pair in receipt['pairs']:
@@ -472,7 +527,8 @@ def test_live_finding_accuracy_binds_row_attribution_and_not_only_codes():
     from sage.numbers.models import Extraction
     sys.path.insert(0, str(TOOL.parent))
     live = importlib.import_module('benchmark_nca_live')
-    view = SimpleNamespace(extraction=Extraction((), 'COMPLETE'), final_outcome='REVIEW_NUMBER_MISSING')
+    view = SimpleNamespace(extraction=Extraction((), 'COMPLETE'), final_outcome='REVIEW_NUMBER_MISSING',
+        reading=SimpleNamespace(semantic=SimpleNamespace(outcome='REVIEW_NUMBER_MISSING')))
     expected = {'code': 'NCA_REVIEW_NUMBER_MISSING', 'category': 'ACCURACY', 'severity': 'REVIEW',
         'target_references': ['MAT 5:1', 'MAT 5:2'], 'western_references': ['MAT 5:1'],
         'ol_references': ['MAT 5:1'], 'selected_reading': 'OL', 'source_ids': ['SYNTHETIC-SOURCE'], 'evidence_ids': []}
