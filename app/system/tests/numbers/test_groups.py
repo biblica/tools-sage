@@ -175,8 +175,8 @@ def test_shifted_anchor_mapping_is_retained_and_used_for_notes(tmp_path):
     assert groups.attributed_notes(projected_units[0], ref) == ((note,), False)
 
 
-@pytest.mark.parametrize('presentation_only', [False, True])
-def test_optimized_bridge_uses_one_group_phase(package_root, tmp_path, presentation_only):
+@pytest.mark.parametrize(('presentation_only', 'unmatched'), [(False, False), (True, False), (False, True)])
+def test_optimized_bridge_uses_one_group_phase(package_root, tmp_path, presentation_only, unmatched):
     """Production orchestration extracts one bridge and attributes both coordinates."""
     from sage.numbers.execution import ExecutionInputs, build_inventory
     from sage.numbers.hybrid import evaluate
@@ -186,7 +186,12 @@ def test_optimized_bridge_uses_one_group_phase(package_root, tmp_path, presentat
     from .test_engine import style_profile
     from .test_model_tasks import RecordedExecutor, model_tasks
     group, extraction, response, bundle = bridge_case()
-    document = compile_usfm_text('\\id MAT\n\\c 5\n\\v 1-2 3 men and 4 women\n')
+    text = '3 men and 4 women' + (' and 5' if unmatched else '')
+    if unmatched:
+        extra = replace(expression_at(text, '5', 5, role='5', expression_id='t3', stream_id='main'), role=None, role_spans=())
+        extraction = replace(extraction, expressions=(*extraction.expressions, extra))
+        response['unmatched_target_ids'] = ['t3']
+    document = compile_usfm_text('\\id MAT\n\\c 5\n\\v 1-2 ' + text + '\n')
     target = replace(target_units(document, source_sha256='a' * 64)[0], unit_id=group.unit.target.unit_id)
     unit = replace(group.unit, target=target)
     policy = dict(check_policy(accuracy=not presentation_only, footnotes=False), schema_version='2.0', wip={'language': 'en'},
@@ -214,6 +219,18 @@ def test_optimized_bridge_uses_one_group_phase(package_root, tmp_path, presentat
     assert [c.final_outcome for c in result.groups[0].components] == ['PASS_AUTHORITY1'] * 2
     assert result.summary['units'] == 1 and result.summary['passes'] == result.summary['indexed_coordinates'] == 2
     assert result.metrics['accepted_phase_receipts'] == 2 and len(transport.requests) == 2
+    if unmatched:
+        from sage.numbers.results_v2 import numbers_result_document_v2
+        from sage.numbers.results import validate_numbers_result
+        from .test_results import provenance
+        receipts = {phase: [] for phase in ('EXTRACTION', 'CORRESPONDENCE', 'FOOTNOTE', 'GROUP_CORRESPONDENCE')}
+        for checkpoint in result.metrics['checkpoints']:
+            receipts[checkpoint['receipt']['phase']].append(checkpoint['receipt'])
+        raw = numbers_result_document_v2(result, provenance=provenance(), check_policy=inputs.policy, model_receipts=receipts)
+        assert validate_numbers_result(raw, expected_unit_ids=inputs.expected_unit_ids, allowed_evidence_ids=('SRC-1',)) == raw
+        assert raw['groups'][0]['unmatched_target_ids'] == ['t3']
+        assert raw['groups'][0]['extraction']['expressions'][-1]['role'] is None
+        assert raw['summary']['added_numbers'] == 1
 
 
 def result_case():
@@ -552,12 +569,14 @@ def test_evaluate_group_rebinds_direct_typed_correspondence(damage):
 
 def test_unmatched_quantity_is_a_parent_addition_without_inventing_a_row():
     """An extra target is counted once while both source rows retain their own passes."""
-    from sage.numbers.results_v2 import comparison_view, group_summary, group_findings
+    from sage.numbers.results_v2 import comparison_view, group_summary, group_findings, group_document, _typed_group
     result, checks = result_case()
     text = result.projected.target.main_text + ' and 5 children'
-    extra = expression_at(text, '5', 5, role='children', expression_id='t3', stream_id='main')
+    extra = replace(expression_at(text, '5', 5, role='children', expression_id='t3', stream_id='main'), role=None, role_spans=())
     result = replace(result, projected=replace(result.projected, target=replace(result.projected.target, main_text=text)),
         extraction=replace(result.extraction, expressions=(*result.extraction.expressions, extra)), unmatched_target_ids=('t3',))
+    result = _typed_group(group_document(result, checks=checks))
+    assert result.unmatched_target_ids == ('t3',) and result.extraction.expressions[-1].role is None
     assert comparison_view(result, checks=checks).final_outcome == 'REVIEW_NUMBER_ADDED'
     counts = group_summary((result,), checks=checks, findings_count=1)
     assert counts['passes'] == 2 and counts['added_numbers'] == counts['units'] == 1 and counts['expressions'] == 3
@@ -742,6 +761,9 @@ def test_partial_row_keeps_owned_expression_with_unresolved_roles():
     from sage.numbers.results_v2 import _validate_component_view, component_views
     for view in component_views(result):
         _validate_component_view(view, allowed={'SRC-1'}, checks=checks)
+    with pytest.raises(ValidationError):
+        replace(result, extraction=replace(result.extraction, expressions=(
+            replace(result.extraction.expressions[0], role=None, role_spans=()), result.extraction.expressions[1])))
 
 
 def test_unassessed_group_still_validates_retained_reference_context():
