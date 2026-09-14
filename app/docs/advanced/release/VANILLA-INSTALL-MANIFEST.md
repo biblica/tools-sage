@@ -237,6 +237,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/schemas/nca-check-policy.schema.yml`
 - `system/config/schemas/nca-extraction.schema.yml`
 - `system/config/schemas/nca-extraction-v2.schema.yml`
+- `system/config/schemas/nca-phase-ledger.schema.yml`
 - `system/config/schemas/number-style-profile.schema.yml`
 - `system/config/schemas/numbers-reference.schema.yml`
 - `system/config/schemas/numbers-result.schema.yml`
@@ -731,6 +732,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/policy.py`
 - `system/src/sage/numbers/projection.py`
 - `system/src/sage/numbers/reference.py`
+- `system/src/sage/numbers/replay.py`
 - `system/src/sage/numbers/resources.py`
 - `system/src/sage/numbers/results.py`
 - `system/src/sage/numbers/scope.py`
@@ -860,6 +862,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_reference.py`
 - `system/tests/numbers/test_reference_release.py`
 - `system/tests/numbers/test_reporting.py`
+- `system/tests/numbers/test_replay.py`
 - `system/tests/numbers/test_resources.py`
 - `system/tests/numbers/test_results.py`
 - `system/tests/numbers/test_scope.py`

@@ -630,5 +630,6 @@ def test_nca_controller_checkpoint_declarations_do_not_expand_model_authority(ma
         'validation/nca-phases/attempts/*.json', 'validation/nca-phases/ledger.json',
         'validation/nca-phases/publication/output.json', 'validation/nca-phases/publication/receipt.json',
         'validation/nca-phases/publication/manifest.json', 'validation/llm-execution-receipt.json',
-        'locks/nca-phases.lock', 'output/model-evidence.json'}
+        'locks/nca-phases.lock', 'locks/nca-phases.lock.guard', 'locks/execution.lock.guard',
+        'output/model-evidence.json'}
     assert not (Path(task['task_manifest_path']).parent / 'validation/nca-phases').exists()

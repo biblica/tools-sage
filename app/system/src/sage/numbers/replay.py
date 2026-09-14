@@ -9,15 +9,19 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass, fields
+from datetime import datetime
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
+import socket
+import stat
 from uuid import uuid4
 
 from sage.atomic import atomic_write_bytes, atomic_write_json
-from sage.errors import ValidationError
-from sage.locking import WorkspaceLock
+from sage.errors import LockError, ValidationError
+from sage.locking import WorkspaceLock, _process_exists
 from .model_tasks import ModelPhaseReceipt
 from .telemetry import CallMeasurement
 
@@ -213,6 +217,92 @@ def _validate_physical(key: PhaseKey, artifact: object) -> Mapping[str, object]:
     return value
 
 
+class NcaWorkspaceLock(WorkspaceLock):
+    """Guard NCA directory ownership with a persistent process-held advisory lock.
+
+    Callers authenticate/confine the path first. The sibling ``<name>.guard``
+    file is never unlinked: OS ownership releases automatically on process death,
+    while strict directory-owner evidence determines whether recovery is safe.
+    Hold this guard through directory release so competing recoverers cannot
+    delete a newly acquired directory. Acquisition remains nonblocking.
+    """
+
+    def __init__(self, path: Path, operation: str) -> None:
+        """Enable only strict NCA stale detection and retain the guard descriptor."""
+        super().__init__(path, operation, break_stale=True)
+        self.guard_path = path.with_name(path.name + '.guard')
+        self._guard_fd: int | None = None
+
+    def _existing_owner(self) -> dict[str, object]:
+        """Treat absent, symlinked, duplicate-key, or malformed owner records as unknown."""
+        if self.owner_file.is_symlink():
+            return {}
+        try:
+            owner = _decode(self.owner_file.read_bytes())
+        except (OSError, ValidationError):
+            return {}
+        return owner if isinstance(owner, dict) else {}
+
+    def _is_stale(self, owner: dict[str, object]) -> bool:
+        """Reclaim only a complete same-operation, same-host owner proven dead."""
+        if set(owner) != {'pid', 'host', 'operation', 'acquired_utc'}:
+            return False
+        if (type(owner['pid']) is not int or owner['pid'] <= 0
+                or owner['host'] != socket.gethostname() or owner['operation'] != self.operation
+                or not isinstance(owner['acquired_utc'], str)):
+            return False
+        try:
+            acquired = datetime.fromisoformat(owner['acquired_utc'])
+            return acquired.tzinfo is not None and not _process_exists(owner['pid'])
+        except (ValueError, OverflowError):
+            return False
+
+    def _close_guard(self) -> None:
+        """Release process-held ownership by closing without replacing its guard inode."""
+        if self._guard_fd is not None:
+            descriptor, self._guard_fd = self._guard_fd, None
+            os.close(descriptor)
+
+    def acquire(self) -> NcaWorkspaceLock:
+        """Serialize acquisition, strict stale recovery, and the entire protected section."""
+        if self._guard_fd is not None:
+            raise LockError('NCA lock is not reentrant')
+        _require(not self.path.is_symlink() and not self.guard_path.is_symlink(), 'Symlink in NCA lock path')
+        _require(all(not parent.is_symlink() for parent in self.path.parents), 'Symlink in NCA lock ancestor')
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            self._guard_fd = os.open(self.guard_path,
+                os.O_RDWR | os.O_CREAT | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_BINARY', 0), 0o600)
+            info = os.fstat(self._guard_fd)
+            _require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'Invalid NCA guard file')
+            if os.name == 'nt':
+                import msvcrt
+                # Windows byte-range locking can lock beyond EOF. Initialize its
+                # one persistent byte only after winning that range's ownership.
+                msvcrt.locking(self._guard_fd, msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(self._guard_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            if info.st_size == 0:
+                os.write(self._guard_fd, b'\0')
+                os.fsync(self._guard_fd)
+            super().acquire()
+        except OSError as exc:
+            self._close_guard()
+            raise LockError('NCA lock guard is held or unavailable') from exc
+        except BaseException:
+            self._close_guard()
+            raise
+        return self
+
+    def release(self) -> None:
+        """Release directory ownership before allowing another guard holder to enter."""
+        try:
+            super().release()
+        finally:
+            self._close_guard()
+
+
 class PhaseStore:
     """Serialize immutable attempts and accepted ledger membership inside one task."""
 
@@ -241,7 +331,8 @@ class PhaseStore:
         """Check all store ancestors before the existing lock helper can create paths."""
         for relative in (_PHASE_ROOT + '/attempts', _PHASE_ROOT + '/ledger.json', _PHASE_ROOT + '/publication'):
             self._path(relative)
-        return WorkspaceLock(self._path('locks/nca-phases.lock'), 'NCA_PHASE_LEDGER')
+        self._path('locks/nca-phases.lock.guard')
+        return NcaWorkspaceLock(self._path('locks/nca-phases.lock'), 'NCA_PHASE_LEDGER')
 
     def _read(self, relative: str) -> object:
         """Read only confined strict JSON evidence, translating storage failures."""
