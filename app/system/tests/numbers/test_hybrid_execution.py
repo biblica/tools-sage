@@ -319,6 +319,105 @@ def test_altered_orphan_never_authorizes_canonical_evidence(make_workspace, monk
         assert len(retained) == 1 and retained[0].read_bytes() == forged
 
 
+@pytest.mark.parametrize('destination', ['output.json', 'receipt.json', 'manifest.json'])
+@pytest.mark.parametrize('damage', [None, 'temporary_bytes', 'checkpoint'])
+def test_process_death_before_atomic_publication_replace_recovers(make_workspace, monkeypatch, destination, damage):
+    """Actual process death leaves helper temporaries without allowing them to authorize evidence."""
+    import hashlib
+    import json
+    import os
+    from pathlib import Path
+    import subprocess
+    import sys
+    from .test_nca_tasks import _run, _OfflineTasks
+    from sage.nca import create_nca_task, execute_nca_task
+    from sage.numbers.hybrid import CheckpointFailure
+    _root, config, job, run = _run(make_workspace, monkeypatch)
+    task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
+    path = Path(task['task_manifest_path'])
+    phases = path.parent / 'validation/nca-phases'
+    publication = phases / 'publication'
+    script = '''"""Exit without finally cleanup immediately before a publication temporary is installed."""
+import os
+from pathlib import Path
+import sys
+import pytest
+from sage import atomic
+from sage.nca import execute_nca_task
+from sage.registry import load_ecosystem
+from tests.numbers.test_nca_tasks import _OfflineTasks
+from tests.numbers.test_nca_jobs import _route
+manifest = Path(sys.argv[2])
+target = manifest.parent / 'validation/nca-phases/publication' / sys.argv[3]
+original = atomic.os.replace
+def die(source, destination):
+    """Leave the fully flushed atomic temporary and real dead-owner lock records."""
+    if destination == target:
+        os._exit(73)
+    return original(source, destination)
+with pytest.MonkeyPatch.context() as patch:
+    _route(patch)
+    patch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
+    patch.setattr(atomic.os, 'replace', die)
+    execute_nca_task(load_ecosystem(Path(sys.argv[1])), manifest)
+'''
+    env = dict(os.environ, PYTHONPATH=os.pathsep.join((str(Path(__file__).resolve().parents[2] / 'src'),
+        str(Path(__file__).resolve().parents[2]))), PYTHONDONTWRITEBYTECODE='1', SAGE_DISABLE_OPERATIONAL_LOG='1')
+    child = subprocess.run([sys.executable, '-c', script, str(config.settings_path), str(path), destination],
+        env=env, capture_output=True, text=True, timeout=30, check=False)
+    assert child.returncode == 73, child.stderr + child.stdout
+    temporary, = publication.glob('.' + destination + '.*.tmp')
+    assert not (publication / 'manifest.json').exists()
+    before = json.loads((temporary if destination == 'output.json' else publication / 'output.json').read_text())
+    ledger = json.loads((phases / 'ledger.json').read_text())
+    attempts = {p.name: p.read_bytes() for p in (phases / 'attempts').iterdir()}
+    assert ledger['failures'] and before['metrics']['failed_calls'] > 0
+    if damage in {'temporary_bytes', 'checkpoint'}:
+        temporary.write_bytes(b'altered temporary bytes are not authority')
+    staged = {p.name: p.read_bytes() for p in publication.iterdir()}
+    class NoRepeatedAccepted(_OfflineTasks):
+        """Allow fresh failed-phase retries while rejecting every repeated accepted extraction."""
+        def _execute_physical(self, phase, *args, **kwargs):
+            """An accepted checkpoint must supply its result without another physical request."""
+            assert phase != 'EXTRACTION', 'accepted provider call repeated'
+            return super()._execute_physical(phase, *args, **kwargs)
+    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', NoRepeatedAccepted)
+    if damage == 'checkpoint':
+        row = next(iter(ledger['entries'].values()))
+        attempt = phases / 'attempts' / (row['attempt_id'] + '.json')
+        value = json.loads(attempt.read_text())
+        value['artifact']['raw_response'] = '{}'
+        attempt.write_text(json.dumps(value))
+        with pytest.raises(CheckpointFailure):
+            execute_nca_task(config, path)
+        assert {p.name: p.read_bytes() for p in publication.iterdir()} == staged
+        assert not (phases / 'abandoned-publications').exists()
+        assert not (path.parent / 'output/model-evidence.json').exists()
+        assert not (path.parent / 'validation/llm-execution-receipt.json').exists()
+        return
+    assert execute_nca_task(config, path)['status'] == 'EXECUTED'
+    output = path.parent / 'output/model-evidence.json'
+    receipt = path.parent / 'validation/llm-execution-receipt.json'
+    after, final_receipt = json.loads(output.read_text()), json.loads(receipt.read_text())
+    assert output.read_bytes() == (publication / 'output.json').read_bytes()
+    assert receipt.read_bytes() == (publication / 'receipt.json').read_bytes()
+    assert final_receipt['output_sha256'] == {'output/model-evidence.json': hashlib.sha256(output.read_bytes()).hexdigest()}
+    assert final_receipt['phase_count'] == after['metrics']['accepted_phase_receipts']
+    assert final_receipt['provider_response_sha256'] == [row['response_sha256']
+        for rows in after['model_receipts'].values() for row in rows]
+    assert after['metrics']['checkpoint_reuse'] == before['metrics']['accepted_phase_receipts']
+    assert after['metrics']['checkpoints'] == before['metrics']['checkpoints']
+    assert all(call in after['metrics']['calls'] for call in before['metrics']['calls'])
+    assert all((phases / 'attempts' / name).read_bytes() == data for name, data in attempts.items())
+    after_ledger = json.loads((phases / 'ledger.json').read_text())
+    assert after_ledger['entries'] == ledger['entries']
+    assert after_ledger['failures'][:len(ledger['failures'])] == ledger['failures']
+    retired, = (phases / 'abandoned-publications').iterdir()
+    assert {p.name: p.read_bytes() for p in retired.iterdir()} == staged
+    for field in ('groups', 'findings', 'coverage', 'summary', 'model_receipts'):
+        assert after[field] == before[field]
+
+
 def test_failure_diagnostic_reader_authenticates_durable_membership(tmp_path):
     """Changing failure bytes cannot change reported physical attempts during publication replay."""
     import json

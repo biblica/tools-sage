@@ -529,7 +529,12 @@ class PhaseStore:
         if not children:
             return
         for child in children:
-            _require(child.name in {'output.json', 'receipt.json'}, 'Unexpected uncommitted publication entry')
+            # The shared atomic writer may leave its temporary after process death.
+            # Recognize only known destinations and an opaque portable token; no
+            # private tempfile length/alphabet or temporary bytes supply authority.
+            temporary = re.fullmatch(r'\.(?:output|receipt|manifest)\.json\.[A-Za-z0-9_-]+\.tmp', child.name)
+            _require(child.name in {'output.json', 'receipt.json'} or temporary is not None,
+                     'Unexpected uncommitted publication entry')
             path = self._path(f'{_PHASE_ROOT}/publication/{child.name}')
             info = path.stat()
             _require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'Invalid uncommitted publication file')
