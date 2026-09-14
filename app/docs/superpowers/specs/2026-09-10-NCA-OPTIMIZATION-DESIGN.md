@@ -129,7 +129,7 @@ Introduce extraction/result contract version 2.0 and a versioned optimization po
 
 Version 2.0 records parent WIP groups, separate reference rows and decisions, alignment status, per-expression ownership, phase receipt references, reused-checkpoint provenance, scope expansion, and derived metrics. Validate the same constraints for direct typed objects and serialized/replayed documents. Validate externally supplied expected-unit/evidence bounds; never let a new ledger declare its own completeness.
 
-Continue producing one report per Run, organized by WIP book and chapter. Put bridge findings at their exact range; show per-reference detail only where alignment supports it. A group crossing chapter boundaries has one primary entry and cross-references, not duplicated findings or counters. Preserve existing global finding IDs, raw machine codes, primary/secondary report-language behavior, and all existing handover counters. Add model-call/reuse and coverage metrics through the current localization catalogue.
+Continue producing one report per Run, organized by WIP book and chapter. Put bridge findings at their exact range; show per-reference detail only where alignment supports it. A group crossing chapter boundaries has one primary entry and cross-references, not duplicated findings or counters. Preserve existing global finding IDs, raw machine codes, primary/secondary report-language behavior, and all existing handover counters. Add model-call/reuse and coverage metrics through the current localization catalog.
 
 ## 5. Measurement and release gates
 
