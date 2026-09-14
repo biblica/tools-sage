@@ -173,12 +173,10 @@ class PhaseSession:
 
 def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, run_id: str) -> object:
     """Extract bounded complete scope once, then feed accepted evidence to typed comparison."""
-    from sage.evidence import EvidencePolicy
     from sage.references import parse_scope
     from sage.coverage import assess_coverage
     from sage.findings import assign_global_finding_ids
-    from .execution import build_inventory, reference_restrictions
-    from .batching import plan_batches
+    from .execution import build_inventory, plan_extraction, reference_restrictions
     from .extraction import _parsing_conventions
     from .model_tasks import extract_batch_with_retries
     from .models import Extraction, ProjectedUnit
@@ -192,9 +190,7 @@ def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, ru
     optimization = validate_optimization_policy(inputs.policy['optimization'])
     checks = inputs.policy['checks']
     inventory = build_inventory(inputs)
-    streams = tuple(x for x in inventory.stream_inputs if x.purpose == 'BODY' or checks['presentation_consistency'])
-    plan = plan_batches(streams, policy=EvidencePolicy.from_mapping(inputs.evidence_policy),
-                        max_units=optimization['extraction_batch_max_units'])
+    streams, plan = plan_extraction(inputs, inventory)
     session = PhaseSession(inputs, model_tasks, phase_store)
     model_tasks.configure_phase_execution(session.execute)
     model_tasks.phase_session = session
@@ -282,6 +278,6 @@ def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, ru
     metrics = dict(summarize_calls(measurements), accepted_phase_receipts=len(phases), checkpoint_reuse=len(session.reused),
         reused_checkpoint_ids=sorted(session.reused), batch_members=sum(len(x['accepted_input_ids']) for x in phases),
         calls=[asdict(x) for x in measurements], checkpoints=phases,
-        planning={'input_ids': [x.input_id for x in streams], 'blocked': blocked,
+        planning={'planned_extraction_calls': len(plan.batches), 'input_ids': [x.input_id for x in streams], 'blocked': blocked,
                   'missing_owner_ids': [x.target.unit_id for x in projected if x.target.unit_id not in by_owner]})
     return OptimizedRunResult(tuple(groups), findings, coverage, summary, metrics)

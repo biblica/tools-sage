@@ -139,3 +139,20 @@ def test_import_to_report_is_read_only_reproducible_and_explicit_about_limits(ma
     assert (report.read_bytes(), result.read_bytes()) == (report_bytes, result_bytes)
     assert _inventory(config.project('usWIP').path) == source_before
     assert _inventory(library) == package_before
+
+
+@pytest.fixture
+def document():
+    """Supply one Run with cross-boundary and missing coverage findings."""
+    from .test_reporting import chapter_document
+    return chapter_document()
+
+
+def test_chapter_sections_do_not_duplicate_cross_boundary_findings(document):
+    """Navigation copies cannot create additional canonical findings."""
+    from sage import nca_reporting
+    assert hasattr(nca_reporting, 'chapter_sections'), 'chapter navigation is missing'
+    sections = nca_reporting.chapter_sections(document)
+    primary_ids = [item for section in sections for item in section["finding_ids"]]
+    assert len(primary_ids) == len(set(primary_ids))
+    assert set(primary_ids) == {item["finding_id"] for item in document["findings"]}

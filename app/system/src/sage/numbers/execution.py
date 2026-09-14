@@ -219,3 +219,17 @@ def build_inventory(inputs: ExecutionInputs) -> ScopeInventory:
                   if any(inputs.bundle.lookup(ref) is not None for ref in unit.western_references)),
         tuple(value for purpose in ('BODY', 'NOTE_STYLE', 'HEADING_STYLE')
               for value in streams if value.purpose == purpose), inputs.requested_scope)
+
+
+def plan_extraction(inputs: ExecutionInputs, inventory: ScopeInventory | None = None):
+    """Share actual enabled-stream selection and routed-SFM planning with preflight."""
+    from sage.evidence import EvidencePolicy
+    from .batching import plan_batches
+    from .policy import validate_optimization_policy
+
+    inventory = inventory if inventory is not None else build_inventory(inputs)
+    optimization = validate_optimization_policy(inputs.policy['optimization'])
+    streams = tuple(value for value in inventory.stream_inputs
+                    if value.purpose == 'BODY' or inputs.policy['checks']['presentation_consistency'])
+    return streams, plan_batches(streams, policy=EvidencePolicy.from_mapping(inputs.evidence_policy),
+                                max_units=optimization['extraction_batch_max_units'])

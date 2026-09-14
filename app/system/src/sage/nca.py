@@ -535,6 +535,10 @@ def _execute_nca_task_locked(
         config, task_manifest
     )
     inputs = prepare_execution_inputs(runtime_config, job, run, policy)
+    preflight = {}
+    if dry_run:
+        from .nca_cli import scoped_preflight
+        preflight = {'preflight': scoped_preflight(inputs)}
     expected_ids = inputs.expected_unit_ids
     output_path = manifest_path.parent / "output/model-evidence.json"
     receipt_path = manifest_path.parent / "validation/llm-execution-receipt.json"
@@ -545,13 +549,14 @@ def _execute_nca_task_locked(
         receipt = _load_json(receipt_path, "NCA execution receipt")
         if receipt.get("output_sha256") != {"output/model-evidence.json": sha256_file(output_path)}:
             raise ValidationError("Existing NCA output differs from its execution receipt", code="EXECUTION_RECEIPT_OUTPUT_MISMATCH")
-        return {**receipt, "status": "EXECUTED", "receipt_path": str(receipt_path)}
+        return {**receipt, **preflight, "status": "EXECUTED", "receipt_path": str(receipt_path)}
     if output_path.exists() or receipt_path.exists():
         raise ValidationError("NCA task has partial execution artifacts", code="LLM_TASK_OUTPUT_NOT_EMPTY")
 
     route = policy["model_route"]
     if dry_run:
         return {
+            **preflight,
             "status": "READY_TO_EXECUTE",
             "task_id": manifest["task_id"],
             "skill_id": "nca-numbers",

@@ -402,11 +402,17 @@ def _validate_numbers_result_v2(document: Mapping[str, object], *, expected_unit
         _require(type(metrics[name]) is int and metrics[name] >= 0, 'Invalid exact phase counter')
     planning = metrics['planning']
     _require(isinstance(planning, Mapping), 'Invalid planning evidence')
-    _require_keys(planning, {'input_ids', 'blocked', 'missing_owner_ids'}, 'planning')
+    # Missing initial counts remain readable in historical v2 evidence. New
+    # publication compares this entire ledger with the freshly computed plan.
+    fields = {'input_ids', 'blocked', 'missing_owner_ids'}
+    _require(set(planning) in (fields, fields | {'planned_extraction_calls'}), 'Invalid planning fields')
     for name in ('input_ids', 'missing_owner_ids'):
         _require(isinstance(planning[name], list) and all(isinstance(x, str) and x for x in planning[name])
             and len(set(planning[name])) == len(planning[name]), 'Invalid planning identities')
     planned = set(planning['input_ids'])
+    if 'planned_extraction_calls' in planning:
+        count = planning['planned_extraction_calls']
+        _require(type(count) is int and 0 <= count <= len(planned), 'Invalid initial extraction call count')
     _require(all(re.fullmatch(r'input:[0-9a-f]{64}', x) for x in planned), 'Invalid planned input identity')
     blocked = planning['blocked']
     _require(isinstance(blocked, Mapping) and set(blocked) <= planned
