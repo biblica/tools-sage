@@ -390,6 +390,7 @@ def validate_static_ecosystem(
             "resolved_expected_books": list(expected_books),
             "observed_books": sorted(observed_books),
             "missing_books": missing_books,
+            "coverage_status": "INCOMPLETE" if missing_books else "COMPLETE",
             "unexpected_books": unexpected_books,
             "peripheral_books": peripheral_books,
         }
@@ -400,7 +401,14 @@ def validate_static_ecosystem(
             and observed_books
             and missing_books
         ):
-            errors.append(
+            # WIP completeness is advisory; locked references and required sources
+            # retain the declared-scope gate. Roles come from the active Job binding.
+            findings = (
+                warnings
+                if project.content_state == "UNDER_REVIEW" and "WIP" in project.scope.roles
+                else errors
+            )
+            findings.append(
                 f"Project {project_id} is missing books required by declared scope: "
                 + ", ".join(missing_books)
             )

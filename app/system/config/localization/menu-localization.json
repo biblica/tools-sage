@@ -3578,6 +3578,22 @@
       "fr": "Créer un Job NCA",
       "ru": "Создать Job NCA",
       "pt-BR": "Criar Job NCA"
+    },
+    "menu.missing.books": {
+      "en-US": "Missing books",
+      "en-GB": "Missing books",
+      "id": "Kitab yang belum tersedia",
+      "fr": "Livres manquants",
+      "ru": "Отсутствующие книги",
+      "pt-BR": "Livros ausentes"
+    },
+    "menu.incomplete.coverage.wip.present.books": {
+      "en-US": "Coverage is incomplete. WIP Jobs can run for present books.",
+      "en-GB": "Coverage is incomplete. WIP Jobs can run for present books.",
+      "id": "Cakupan belum lengkap. Job WIP dapat dijalankan untuk kitab yang tersedia.",
+      "fr": "La couverture est incomplète. Les Jobs WIP peuvent être exécutés pour les livres présents.",
+      "ru": "Охват неполный. Jobs WIP можно выполнять для имеющихся книг.",
+      "pt-BR": "A cobertura está incompleta. Os Jobs WIP podem ser executados para os livros presentes."
     }
   }
 }

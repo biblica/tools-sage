@@ -321,3 +321,75 @@ def test_daniel_org_coordinate_differences_are_advisory_when_eng_default_explain
         project,
         {"code": "EXPECTED_COORDINATE_MISSING", "reference": "MAT 1:4", "message": "missing"},
     )
+
+
+def test_partial_wip_scope_warns_without_blocking_initialization(package_root, make_workspace) -> None:
+    """Missing WIP books must remain visible without preventing present-book work."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    settings = root / "ecosystem.yml"
+    raw = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    raw["projects"]["usWIP"]["scope"]["expected_books"] = ["MAT", "MRK"]
+    settings.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+    config = load_ecosystem(settings)
+    static = validate_static_ecosystem(config, load_standard(root))
+    assert static["status"] == "READY_WITH_WARNINGS", static["errors"]
+    assert static["project_scopes"]["usWIP"]["missing_books"] == ["MRK"]
+    assert static["project_scopes"]["usWIP"]["coverage_status"] == "INCOMPLETE"
+    assert any("usWIP" in warning and "MRK" in warning for warning in static["warnings"])
+    result = _run_initialize(package_root, root)
+    assert result.returncode == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["projects"]["usWIP"]["status"] == "READY_WITH_WARNINGS"
+
+
+@pytest.mark.parametrize("project_id", ["usNIVv2", "GRK", "idKKHv0"])
+def test_partial_required_locked_source_stays_blocked(make_workspace, project_id) -> None:
+    """The WIP exception must not weaken reference or required-source completeness."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    settings = root / "ecosystem.yml"
+    raw = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    raw["projects"][project_id]["scope"]["expected_books"] = ["MAT", "MRK"]
+    settings.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+    static = validate_static_ecosystem(load_ecosystem(settings), load_standard(root))
+    assert static["status"] == "BLOCKED"
+    assert any(project_id in error and "MRK" in error for error in static["errors"])
+
+
+def test_mixed_requested_books_report_missing_without_fabricating_content(make_workspace) -> None:
+    """Mixed compilation keeps present content executable and absent-only scope unavailable."""
+    from dataclasses import replace
+    from sage.scripture import compile_project, compile_project_scope
+    from sage.references import parse_analysis_scope
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    config = load_ecosystem(root / "ecosystem.yml")
+    project = config.project("usWIP")
+    project = replace(project, scope=replace(project.scope, expected_books=("MAT", "MRK")))
+    result = compile_project(config, project, books={"MAT", "MRK"})
+    assert result["status"] == "READY_WITH_WARNINGS"
+    assert result["summary"]["books"] == ["MAT"]
+    assert result["summary"]["missing_books"] == ["MRK"]
+    assert result["summary"]["coverage_status"] == "INCOMPLETE"
+    assert any(warning["code"] == "PROJECT_BOOK_MISSING" and warning["reference"] == "MRK" for warning in result["warnings"])
+    absent = compile_project_scope(config, project, parse_analysis_scope("MRK 1"))
+    assert absent["status"] == "BLOCKED"
+    assert absent["issues"][0]["code"] == "REQUESTED_BOOKS_MISSING"
+    source = project.path / "41MAT.SFM"
+    source.write_text("\\id MAT\n\\c 1\n\\v 1 broken \\f*\n", encoding="utf-8")
+    malformed = compile_project(config, project, books={"MAT", "MRK"})
+    assert malformed["status"] == "BLOCKED"
+    assert malformed["issues"]
+
+
+def test_partial_wip_does_not_hide_missing_project_root(make_workspace) -> None:
+    """Incomplete WIP coverage cannot make an unavailable source root executable."""
+    from dataclasses import replace
+    from sage.scripture import compile_project
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    config = load_ecosystem(root / "ecosystem.yml")
+    project = config.project("usWIP")
+    project = replace(project, path=root / "missing-project")
+    result = compile_project(config, project, books={"MAT", "MRK"})
+    assert result["status"] == "BLOCKED"
+    assert result["issues"][0]["code"] == "PROJECT_ROOT_MISSING"

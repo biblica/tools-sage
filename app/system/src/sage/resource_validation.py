@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from .canon import resolve_expected_books
 from .project_inventory import detect_scripture_books, registered_project_records, summarize_scope
 from .registry import load_ecosystem
 from .storage import storage_layout
@@ -87,6 +88,10 @@ def validate_scripture_resources(
         else:
             project_errors.append("PROJECT_BASE_VRS_UNDECLARED")
 
+        expected_books = resolve_expected_books(config.project(project_id).scope)
+        missing_books = [book for book in expected_books if book not in detected]
+        if missing_books:
+            project_warnings.append("PROJECT_BOOK_MISSING")
         stored_books = tuple(str(item).upper() for item in record.get("detected_books", []) if str(item).strip())
         if detected and stored_books and detected != stored_books:
             project_warnings.append("PROJECT_SCOPE_CHANGED")
@@ -103,6 +108,8 @@ def validate_scripture_resources(
                 "stored_scope": record.get("scope_summary"),
                 "detected_scope": summarize_scope(detected),
                 "detected_books": list(detected),
+                "missing_books": missing_books,
+                "coverage_status": "INCOMPLETE" if missing_books else "COMPLETE",
                 "status": "BLOCKED" if project_errors else ("ATTENTION" if project_warnings else "READY"),
                 "errors": project_errors,
                 "warnings": project_warnings,

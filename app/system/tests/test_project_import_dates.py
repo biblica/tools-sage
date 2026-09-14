@@ -738,3 +738,54 @@ def test_classic_and_cli_run_status_render_project_import_dates(
     cli_output = capsys.readouterr().out
     assert "Project import: WIP usWIP / 20260829" in cli_output
     assert "Project import: REFERENCE usNIVv2 / 20260830" in cli_output
+
+
+def test_partial_project_import_and_refresh_preserve_scope_and_identity(make_workspace, monkeypatch) -> None:
+    """Import and refresh expose absent declared books without rewriting import identity."""
+    from sage.paratext_catalog import inspect_paratext_project
+    from sage.resource_validation import validate_scripture_resources
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    project_path = storage_layout(root).projects_root / "usNIRVv2"
+    (project_path / "settings.xml").write_text(
+        "<Settings><Language>English</Language><FullName>Draft</FullName>"
+        "<LanguageIsoCode>eng:::</LanguageIsoCode></Settings>", encoding="utf-8",
+    )
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root, settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["MAT MRK", ""]), output=output),
+        skip_setup=True, dry_run_provider=True,
+    )
+    monkeypatch.setattr(center, "_project_language_identification_menu", lambda row: True)
+    created = center._register_catalogue_row(inspect_paratext_project(project_path))
+    assert created == "usNIRVv2", output.getvalue()
+    before = registered_project_records(root)[created]
+    assert before["scope"]["expected_books"] == ["MAT", "MRK"]
+    assert before["scope"]["roles"] == []
+    assert before["enabled"] is False
+    assert before["missing_books"] == ["MRK"]
+    assert before["coverage_status"] == "INCOMPLETE"
+    assert before["validation_status"] == "READY_WITH_WARNINGS"
+    assert "Missing books" in output.getvalue() and "MRK" in output.getvalue()
+    status = next(row for row in validate_scripture_resources(root)["projects"] if row["project_id"] == created)
+    assert status["status"] == "ATTENTION"
+    assert status["missing_books"] == ["MRK"]
+    job = center.store.create_job(
+        tool="rtc", job_id=f"RTC-{created}_{before['imported_date']}",
+        display_name="Partial import history", bindings={"wip": created, "reference": "usNIVv2"},
+    )
+    run = center.store.create_run(job, operation="rtc", scope="MAT 1")
+    sealed_path = run.root / "snapshot" / "SNAPSHOT.json"
+    sealed_before = sealed_path.read_bytes()
+    incomplete = center._refresh_registered_from_catalog(created)
+    assert incomplete["missing_books"] == ["MRK"]
+    assert incomplete["validation_status"] == "READY_WITH_WARNINGS"
+    (project_path / "42MRK.SFM").write_text("\\id MRK\n\\c 1\n\\v 1 Present.\n", encoding="utf-8")
+    after = center._refresh_registered_from_catalog(created)
+    assert after["missing_books"] == []
+    assert after["coverage_status"] == "COMPLETE"
+    assert after["scope"] == before["scope"]
+    assert after["imported_utc"] == before["imported_utc"]
+    assert after["imported_date"] == before["imported_date"]
+    assert sealed_path.read_bytes() == sealed_before
