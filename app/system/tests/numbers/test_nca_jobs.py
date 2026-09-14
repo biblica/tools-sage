@@ -100,6 +100,23 @@ def _route(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("sage.nca._configured_nca_route", lambda _config: dict(ROUTE))
 
 
+def test_invalid_nca_scope_is_rejected_before_route_selection(make_workspace, monkeypatch):
+    """Direct NCA callers get a scope error before model probing or Run persistence."""
+    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    config, _ = _prepare_nca_workspace(root)
+    job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1')
+
+    def unexpected_route(_config):
+        """Detect model readiness work attempted before rejecting malformed input."""
+        pytest.fail('Invalid scope reached model route selection')
+
+    monkeypatch.setattr('sage.nca._configured_nca_route', unexpected_route)
+    with pytest.raises(ValidationError, match='Chapter must be positive'):
+        create_nca_run(config, job_id=job.job_id, scope_value='MAT 0')
+    assert JobStore(root, config.settings_path).active_run(job) is None
+    assert list((job.root / 'runs').glob('*')) == []
+
+
 @pytest.mark.parametrize('setup', ['existing_run', 'stale_receipt'])
 @pytest.mark.parametrize('scope', ['MAT 1:1', 'mat', 'Matthew 1:1'])
 def test_cli_creates_nca_task_without_generic_initialization(make_workspace, monkeypatch, capsys, setup, scope):
@@ -111,6 +128,14 @@ def test_cli_creates_nca_task_without_generic_initialization(make_workspace, mon
     _route(monkeypatch)
     job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1')
     run = create_nca_run(config, job_id=job.job_id, scope_value=scope)
+    expected = {'MAT 1:1': 'MAT 1:1', 'mat': 'MAT', 'Matthew 1:1': 'MAT 1:1'}[scope]
+    assert run.scope == expected
+    # Simulate a pre-normalization Run to retain real historical resume coverage.
+    for name in ('run.json', 'status.json'):
+        path = run.root / name
+        metadata = json.loads(path.read_text())
+        metadata['scope'] = scope
+        path.write_text(json.dumps(metadata))
     config = load_ecosystem(job.runtime_settings_path)
     options = ['--job-id', job.job_id, '--run-id', run.run_id]
     receipt = ecosystem_state_path(config.runtime_state_root)

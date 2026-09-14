@@ -308,6 +308,34 @@ def analysis_scope_portions(scope: AnalysisScope) -> tuple[ScriptureScope, ...]:
     return (scope,)
 
 
+def validate_scripture_scope(
+    value: str, *, workflow: str | None = None, operation: str | None = None,
+) -> AnalysisScope:
+    """Validate Run input and return canonical coordinates under shared workflow rules.
+
+    RTC/STC accept ordered, nonoverlapping portions in one book. Other operations
+    accept one contiguous scope. This validates syntax independently of WIP book
+    availability; effective VRS and coverage checks belong to resource planning.
+    """
+    if not isinstance(value, str) or not value.strip():
+        raise ValidationError("Scripture scope must not be empty")
+    workflow_id = (workflow or '').strip().lower()
+    operation_id = (operation or '').strip().lower()
+    if workflow_id in {'rtc', 'stc', 'saw'} and operation_id in {'', 'rtc', 'stc'}:
+        return parse_analysis_scope(value)
+    return parse_scope(value)
+
+
+def scripture_scopes_equal(
+    left: str, right: str, *, workflow: str | None = None, operation: str | None = None,
+) -> bool:
+    """Compare canonical requests without rewriting historical sealed scope text."""
+    return (
+        validate_scripture_scope(left, workflow=workflow, operation=operation).label()
+        == validate_scripture_scope(right, workflow=workflow, operation=operation).label()
+    )
+
+
 def expand_reference_atoms(values: str | Iterable[str]) -> tuple[VerseRef, ...]:
     """Expand verse/range labels into ordered atomic Scripture coordinates.
 

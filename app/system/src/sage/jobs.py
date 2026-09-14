@@ -21,6 +21,7 @@ from .errors import ConfigurationError, SageError, ValidationError
 from .job_snapshots import capture_wip_snapshot, seal_run_snapshot, verify_wip_snapshot
 from .locking import WorkspaceLock
 from .registry import EcosystemConfig, load_ecosystem
+from .references import scripture_scopes_equal, validate_scripture_scope
 from .resource_mounts import apply_resource_mounts
 from .project_inventory import (
     merge_registered_projects,
@@ -1792,6 +1793,9 @@ class JobStore:
                 code="NCA_RUN_SNAPSHOT_REQUIRED",
             )
 
+        canonical_scope = validate_scripture_scope(
+            scope, workflow=project.tool, operation=normalized_operation,
+        ).label()
         lock_path = project.controller_root / "locks" / "run-create.lock"
         with WorkspaceLock(lock_path, f"{project.tool.upper()}_RUN_CREATE"):
             if project.tool == "nca":
@@ -1846,7 +1850,7 @@ class JobStore:
                     "tool": project.tool,
                     "job_id": project.job_id,
                     "operation": normalized_operation,
-                    "scope": scope.strip(),
+                    "scope": canonical_scope,
                     "focus": focus.strip() if isinstance(focus, str) and focus.strip() else None,
                     "check_type": check_type.strip().upper() if isinstance(check_type, str) and check_type.strip() else None,
                     "status": "NEW",
@@ -1882,8 +1886,9 @@ class JobStore:
         """Abandon incomplete BIC analytical Runs for one scope and create a clean replacement."""
         if project.tool != "bic":
             raise ValidationError("Restart Scope is a BIC-only analytical operation")
+        scope = validate_scripture_scope(scope, workflow='bic').label()
         for run in self.list_runs(project, include_archived=False):
-            if run.operation == "bic" and run.scope == scope and run.status not in {"COMPLETE", "ARCHIVED", "ABANDONED"}:
+            if run.operation == "bic" and scripture_scopes_equal(run.scope, scope, workflow='bic') and run.status not in {"COMPLETE", "ARCHIVED", "ABANDONED"}:
                 self.update_run(run, status="ABANDONED", current_stage="ABANDONED")
         return self.create_run(project, operation="bic", scope=scope)
 

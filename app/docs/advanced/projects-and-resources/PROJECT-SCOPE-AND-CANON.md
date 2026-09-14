@@ -25,6 +25,27 @@ Adding a Project to SAGE includes an explicit scope confirmation. SAGE proposes 
 
 After import, the declared scope remains the authority boundary. A canonical `.SFM` file outside `scope.expected_books` is reported as out-of-scope inventory, retained in the whole-Project resource fingerprint, and excluded from USJ compilation and readiness. It does not block initialization; this permits early WIP material to coexist with the currently declared Project scope. To make that material operational, change the declared scope explicitly.
 
+## Scripture scope validation for Runs
+
+Menus, CLI input, task creation, and `JobStore.create_run` use the shared
+`sage.references.validate_scripture_scope` routine. It validates syntax and
+returns canonical coordinates: `ezr` becomes `EZR`, and `Ezra 01:02-03` becomes
+`EZR 1:2-3`. New Runs store that canonical scope. Invalid requests are rejected
+before Run directories or snapshots are created; NCA also validates before
+model route selection.
+
+RTC/STC allow nonoverlapping portions from one book, such as `1CH 5-6; 24`.
+BIC and NCA accept a single contiguous scope. The shared
+`scripture_scopes_equal` routine compares canonical requests when resuming or
+reusing Runs, preserving historical sealed text and rejecting changed coverage.
+Task containment and authorized work-unit checks remain enforced separately.
+
+Syntax validation does not depend on which WIP books have been submitted.
+Effective Project VRS and evidence planning still govern coordinate validity
+and available coverage. Missing WIP books remain reported as missing and do not
+block review of the other available books. Project import book sets (`OT`, `NT`,
+`FB`, and book unions) retain their separate project-scope grammar.
+
 ## Job roles
 
 Roles are assigned by a Job binding, not inferred from or persisted as intrinsic Project roles. RTC/STC binds `WIP` and `REFERENCE`; BIC binds `CONTENT_SOURCE`, `LEXICAL_DONOR`, and `GENERATED_TARGET`. Optional applicable `ORIGINAL_LANGUAGE_GREEK` / `ORIGINAL_LANGUAGE_HEBREW` bindings are also Job-scoped.

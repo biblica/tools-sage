@@ -111,6 +111,44 @@ def test_analysis_scope_normalizes_discontinuous_chapters_in_one_book() -> None:
     ]
 
 
+@pytest.mark.parametrize('workflow', ['bic', 'rtc', 'stc', 'nca'])
+@pytest.mark.parametrize('value,expected', [(' ezr ', 'EZR'), ('Ezra 01:02-03', 'EZR 1:2-3')])
+def test_shared_scope_validation_canonicalizes_workflow_input(workflow, value, expected):
+    """Every workflow accepts the same aliases, case and numeric spelling."""
+    from sage.references import validate_scripture_scope, scripture_scopes_equal
+    assert validate_scripture_scope(value, workflow=workflow).label() == expected
+    assert scripture_scopes_equal(value, expected, workflow=workflow)
+    assert not scripture_scopes_equal(value, 'EZR 2', workflow=workflow)
+
+
+@pytest.mark.parametrize('workflow', ['bic', 'rtc', 'stc', 'nca'])
+@pytest.mark.parametrize('value', ['', 'XYZ', 'EZR 0', 'EZR 3-1', 'EZR 1:5-2'])
+def test_shared_scope_validation_rejects_invalid_requests(workflow, value):
+    """Invalid syntax and reversed coordinates never become Run requests."""
+    from sage.errors import ValidationError
+    from sage.references import validate_scripture_scope
+    with pytest.raises(ValidationError):
+        validate_scripture_scope(value, workflow=workflow)
+
+
+@pytest.mark.parametrize('workflow,operation,allowed', [
+    ('rtc', 'rtc', True), ('stc', 'stc', True), ('saw', 'rtc', True),
+    ('bic', 'inspect', False), ('nca', 'numbers', False), ('saw', 'focused', False),
+])
+def test_shared_scope_validation_preserves_workflow_portion_rules(workflow, operation, allowed):
+    """Global normalization preserves RTC/STC portion support without broadening other tasks."""
+    from sage.errors import ValidationError
+    from sage.references import validate_scripture_scope
+    if allowed:
+        assert validate_scripture_scope('ezr 3; 1', workflow=workflow, operation=operation).label() == 'EZR 1; EZR 3'
+        for invalid in ['EZR 1-3; 2', 'EZR 1; NEH 1']:
+            with pytest.raises(ValidationError):
+                validate_scripture_scope(invalid, workflow=workflow, operation=operation)
+    else:
+        with pytest.raises(ValidationError):
+            validate_scripture_scope('ezr 3; 1', workflow=workflow, operation=operation)
+
+
 @pytest.mark.parametrize("value", ("MAT 1-2; 2", "MAT 1; MRK 1"))
 def test_analysis_scope_rejects_overlap_or_mixed_books(value: str) -> None:
     """One governed analysis Run cannot duplicate coverage or cross book authority."""

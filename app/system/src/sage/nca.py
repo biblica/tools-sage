@@ -27,7 +27,7 @@ from .numbers.policy import (
 )
 from .numbers.resources import resolve_reference_package
 from .numbers.style import resolve_style_profile
-from .references import parse_scope
+from .references import parse_scope, scripture_scopes_equal, validate_scripture_scope
 from .registry import EcosystemConfig
 from .runtime_paths import task_container
 from .storage import StorageError, declare_governed_path, resolve_persisted_path
@@ -128,6 +128,7 @@ def create_nca_run(
     checks: Mapping[str, object] | None = None,
 ) -> Run:
     """Atomically seal one NCA policy, WIP, package, style, and route snapshot."""
+    scope_value = validate_scripture_scope(scope_value, workflow='nca').label()
     store = _store(config)
     job = store.load_job(job_id, tool="nca")
     active = store.active_run(job)
@@ -265,7 +266,7 @@ def _create_nca_task_locked(
         )
     # Compare canonical coordinates while retaining the original sealed request
     # in Run metadata and task evidence (including existing lowercase scopes).
-    if run.operation != "numbers" or parse_scope(run.scope).label() != parse_scope(scope_value).label():
+    if run.operation != "numbers" or not scripture_scopes_equal(run.scope, scope_value, workflow='nca'):
         raise ValidationError(
             "NCA task scope must equal its sealed Run request",
             code="NCA_TASK_SCOPE_MISMATCH",
