@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the provider-free NCA baseline benchmark and write an exact receipt."""
+"""Measure versioned NCA strategies with synthetic or separately initiated live evidence."""
 
 from __future__ import annotations
 
@@ -39,6 +39,8 @@ from sage.numbers.models import (  # noqa: E402
     ReferenceRow,
     TargetUnit,
 )
+from sage.numbers.policy import _plain as _plain_evidence
+from sage.numbers.results import NCA_CAPABILITY_LIMITATION
 from sage.numbers.reference import load_reference  # noqa: E402
 from sage.numbers.telemetry import CallMeasurement, summarize_calls  # noqa: E402
 from sage.vrs import VerseRef  # noqa: E402
@@ -499,23 +501,12 @@ class _RecordedTransport:
 
 def _code_identity() -> tuple[str, dict[str, str]]:
     """Hash the exact implementation files that define this baseline measurement."""
-    paths = (
-        Path(__file__).resolve(),
-        Path(__file__).with_name("benchmark_nca_optimized.py"),
-        APP_ROOT / "system/src/sage/numbers/hybrid.py",
-        APP_ROOT / "system/src/sage/numbers/groups.py",
-        APP_ROOT / "system/src/sage/numbers/models.py",
-        APP_ROOT / "system/src/sage/numbers/projection.py",
-        APP_ROOT / "system/src/sage/numbers/models_v2.py",
-        APP_ROOT / "system/src/sage/numbers/results_v2.py",
-        APP_ROOT / "system/src/sage/numbers/replay.py",
-        APP_ROOT / "system/src/sage/numbers/execution.py",
-        APP_ROOT / "system/src/sage/numbers/batching.py",
-        APP_ROOT / "system/src/sage/numbers/engine.py",
-        APP_ROOT / "system/src/sage/numbers/extraction.py",
-        APP_ROOT / "system/src/sage/numbers/model_tasks.py",
-        APP_ROOT / "system/src/sage/numbers/telemetry.py",
-    )
+    paths = tuple(sorted(set(
+        list((APP_ROOT / "system/src/sage").rglob("*.py"))
+        + list((APP_ROOT / "system/tools").glob("benchmark_nca*.py"))
+        + list((APP_ROOT / "system/skills/nca-numbers").rglob("*.md"))
+        + list((APP_ROOT / "system/config").rglob("*.yml"))
+    )))
     files = {
         path.relative_to(APP_ROOT).as_posix(): _sha256(path.read_bytes())
         for path in paths
@@ -529,6 +520,7 @@ def _code_identity() -> tuple[str, dict[str, str]]:
 
 def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
     """Execute all literal cases through version-1 production evaluation APIs."""
+    from benchmark_nca_qualification import source_case, input_identity, governance, finding_diffs
     fixture_bytes, cases, reference_path = _load_cases(cases_path)
 
     reference_loads: list[int] = []
@@ -544,7 +536,7 @@ def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
     bundle = _build_reference_bundle(seed_bundle, cases)
 
     targets: dict[str, ProjectedUnit] = {
-        str(case["case_id"]): _target_case(case) for case in cases
+        str(case["case_id"]): source_case(case)[2] for case in cases
     }
     transport = _RecordedTransport(cases)
     policy = {
@@ -617,6 +609,7 @@ def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
                 outcomes.append(
                     {
                         "case_id": case_id,
+                        "findings": _plain_evidence(result.findings),
                         "expressions": [
                             _plain_expression(item) for item in actual.extraction.expressions
                         ],
@@ -668,23 +661,17 @@ def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
         }
         for item in outcomes
     ]
-    input_identity = [
-        {
-            "case_id": case["case_id"],
-            "language": case["language"],
-            "streams": case["streams"],
-            "western_references": case["western_references"],
-        }
-        for case in cases
-    ]
     code_sha256, code_files = _code_identity()
     return {
         "schema_version": "1.0",
         "benchmark_id": "nca-optimization-baseline-v1",
         "mode": "synthetic",
         "strategy": "baseline",
+        "live_status": "LIVE_MODEL_BENCHMARK_NOT_RUN", "sqs_status": "NOT_APPLIED",
+        "capability_limitations": NCA_CAPABILITY_LIMITATION,
         "case_count": len(cases),
-        "input_sha256": _sha256(_canonical_bytes(input_identity)),
+        "input_sha256": input_identity(cases, bundle.sha256, profile, policy["checks"]),
+        "governance": governance(tasks, "baseline"),
         "fixture_sha256": _sha256(fixture_bytes),
         "code_sha256": code_sha256,
         "code_files": code_files,
@@ -706,30 +693,52 @@ def run_synthetic_baseline(cases_path: Path) -> dict[str, object]:
         "execution_elapsed_ms": execution_elapsed_ms,
         "outcomes": outcomes,
         "semantic_outcome_diffs": semantic_diffs,
+        "finding_diffs": finding_diffs(cases, outcomes, "baseline"),
     }
 
 
 def _parser() -> argparse.ArgumentParser:
-    """Build the Task 1 CLI without advertising later optimized or live modes."""
+    """Expose synthetic strategies and explicit existing-snapshot live comparison selectors."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", default="synthetic")
     parser.add_argument("--strategy", default="baseline")
-    parser.add_argument("--cases", required=True, type=Path)
+    parser.add_argument("--cases", type=Path)
     parser.add_argument("--receipt", required=True, type=Path)
+    parser.add_argument("--fault", choices=("none", "transient", "malformed", "unsupported", "partial"), default="none")
+    parser.add_argument('--checkpoint-root', type=Path)
+    parser.add_argument('--resume-only', action='store_true')
+    parser.add_argument('--settings', type=Path)
+    parser.add_argument('--job')
+    parser.add_argument('--run')
+    parser.add_argument('--project')
+    parser.add_argument('--scope')
+    parser.add_argument('--labels', type=Path)
+    parser.add_argument('--repetitions', type=int, default=3)
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Validate CLI scope, execute the synthetic baseline, and atomically publish its receipt."""
+    """Validate the selected benchmark scope and atomically publish its evidence receipt."""
     parser = _parser()
     args = parser.parse_args(argv)
-    if args.mode != "synthetic":
+    if args.mode not in {"synthetic", "live"}:
         parser.error(f"unsupported benchmark mode: {args.mode}")
-    if args.strategy not in {"baseline", "optimized"}:
+    if args.strategy not in {"baseline", "optimized", "paired"}:
         parser.error(f"unsupported benchmark strategy: {args.strategy}")
-    if args.strategy == "optimized":
+    if (args.checkpoint_root or args.resume_only) and (args.mode != "synthetic" or args.strategy != "optimized" or args.resume_only and args.checkpoint_root is None):
+        parser.error("checkpoint flags require synthetic optimized mode and a checkpoint root for resume")
+    if args.mode == "live":
+        from benchmark_nca_live import run_live
+        receipt = run_live(args)
+    elif args.cases is None:
+        parser.error("synthetic mode requires --cases")
+    elif args.strategy == "paired":
+        from benchmark_nca_qualification import qualify_pair
         from benchmark_nca_optimized import run_synthetic_optimized
-        receipt = run_synthetic_optimized(args.cases.resolve())
+        receipt = qualify_pair(run_synthetic_baseline(args.cases.resolve()), run_synthetic_optimized(args.cases.resolve()))
+    elif args.strategy == "optimized":
+        from benchmark_nca_optimized import run_synthetic_optimized
+        receipt = run_synthetic_optimized(args.cases.resolve(), fault=args.fault, checkpoint_root=args.checkpoint_root, resume_only=args.resume_only)
     else:
         receipt = run_synthetic_baseline(args.cases.resolve())
     destination = args.receipt.expanduser().resolve()
@@ -741,7 +750,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     os.replace(staging, destination)
     print(json.dumps(receipt, ensure_ascii=False, sort_keys=True))
-    return 0
+    return 1 if receipt.get('qualification_status') == 'FAIL' else 0
 
 
 if __name__ == "__main__":
