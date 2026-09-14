@@ -27,3 +27,7 @@
 # Hash-pinned historical source text intentionally retains terminal whitespace semantics.
 /app/system/skills/consolidate/SKILL.md whitespace=-blank-at-eof
 /app/system/skills/consolidate/references/ORIGINAL-CONTRACT.md whitespace=-blank-at-eof
+
+# Hash-pinned NCA reference bytes must survive checkout unchanged on every host.
+# Empty trailing TSV fields and original terminal whitespace are source data.
+/app/system/resources/numbers/** -text whitespace=-blank-at-eol,-blank-at-eof

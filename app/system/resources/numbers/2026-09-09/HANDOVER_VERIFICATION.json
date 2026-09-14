@@ -1,0 +1,17 @@
+{
+  "handover": "SAGE_NUMBERS_REFERENCE_2026-09-09",
+  "status": "PASS",
+  "operator_index_rows": 6244,
+  "duplicate_western_keys": 0,
+  "critical_rows": 21,
+  "unit_conversion_rows": 12,
+  "ol_expression_rows": 6749,
+  "normalization_override_rows": 450,
+  "ol_token_coverage_rows": 341,
+  "provenance_source_rows": 38,
+  "unresolved_source_ids": 0,
+  "workbook_formula_count": 0,
+  "workbook_literal_error_cells": [],
+  "note": "Reference workbook still records inherited BASE_REGRESSION_GATE=PENDING_FINAL_RUN; this handover integrity PASS does not supersede that release gate.",
+  "source_handover": "SAGE_NUMBERS_CODEX_HANDOVER_0.02a1_2026-09-09"
+}

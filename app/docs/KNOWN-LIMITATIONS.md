@@ -21,3 +21,5 @@
 
 - RTC meaning review is intentionally partitioned to deterministic discourse units. Poetry units are operational structural chunks, not AI-inferred literary stanza analysis.
 - BIC conditional OL micro-checks are intentionally single-verse. A genuinely cross-verse linguistic dependency must be surfaced as an unresolved challenge rather than silently broadening provider Scripture context.
+
+- The bundled NCA NIV index omits numeric source continuations at NEH 7:73 (seventh month) and HAG 1:15 (second year). Its supplementary OL expression lineage is incomplete at 47 rows; authoritative operator values are retained. See the [bundled-reference validation](advanced/release/NCA-BUNDLED-REFERENCE-VALIDATION.md) for scope, note checks and source-readback evidence.

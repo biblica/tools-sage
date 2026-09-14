@@ -12,14 +12,13 @@ from sage.hashing import sha256_bytes
 from sage.jobs import Job, Run
 from sage.references import parse_scope
 from sage.registry import EcosystemConfig
-from sage.storage import storage_layout
 from sage.versification_service import VersificationService
 from sage.vrs import VerseRef
 
 from .models import ProjectedUnit, ReferenceBundle, TargetUnit, freeze
 from .policy import _inventory, load_nca_run_snapshot
 from .reference import REFERENCE_PARSER_VERSION
-from .resources import resolve_reference_package
+from .resources import reference_package_path, resolve_reference_package
 from .scope import project_scope
 from .style import load_style_profile
 from .target import extract_heading_units, target_units
@@ -85,14 +84,8 @@ class ExecutionInputs:
 
 
 def package_root(config: EcosystemConfig, package_id: str) -> Path:
-    """Return one confined imported numbers package directory for qualification."""
-    root = storage_layout(config.root).resources_root / "numbers"
-    path = (root / package_id).resolve()
-    try:
-        path.relative_to(root.resolve())
-    except ValueError as exc:
-        raise ValidationError("NCA package path escapes its resource root", code="EXTERNAL_PATH_ESCAPE") from exc
-    return path
+    """Locate the same Core/imported package used during Job qualification."""
+    return reference_package_path(config, package_id)
 
 
 def validate_reference_snapshot(config: EcosystemConfig, policy: Mapping[str, object], *, job: Job) -> ReferenceBundle:

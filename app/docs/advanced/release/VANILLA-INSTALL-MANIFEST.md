@@ -8,7 +8,7 @@ This is the complete governed `app/` directory/file inventory for a clean SAGE v
 
 No localdata runtime content is part of the source distribution. On first launch SAGE uses `<bundle>/localdata` by default, accepts a validated approved host CPython 3.12 when available, or installs the exact approved artifact at `localdata/.system/runtime/python` from the governed OS/CPU manifest. It always creates `localdata/.system/runtime/venv` from the pinned application dependency manifests.
 
-A vanilla source package contains no Operator Projects, Jobs, Runs, reports, local/candidate resources, plugins, machine settings, runtime state, caches, copied virtual environments, or developer-host metadata. The bundled Greek/Hebrew Scripture resources are approved Core resources and therefore remain under `system/resources/scripture/original-language/`.
+A vanilla source package contains no Operator Projects, Jobs, Runs, reports, local/candidate resources, plugins, machine settings, runtime state, caches, copied virtual environments, or developer-host metadata. The bundled Greek/Hebrew Scripture resources remain under `system/resources/scripture/original-language/`; the qualified NCA tables and original provenance are approved Core resources under `system/resources/numbers/`.
 
 This inventory is a release contract: package tests require it to match the clean source tree exactly.
 
@@ -73,6 +73,9 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/release/ADMINISTRATIVE-AI-ROUTING-DESIGN.md`
 - `docs/advanced/release/HANDOVER.md`
 - `docs/advanced/release/IMPLEMENTATION-REPORT.md`
+- `docs/advanced/release/NCA-BUNDLED-REFERENCE-VALIDATION.json`
+- `docs/advanced/release/NCA-BUNDLED-REFERENCE-VALIDATION.md`
+- `docs/advanced/release/NCA-BUNDLED-SOURCE-READBACK.json`
 - `docs/advanced/release/NCA-OPTIMIZATION-BENCHMARK.json`
 - `docs/advanced/release/NCA-OPTIMIZATION-QUALIFICATION.md`
 - `docs/advanced/release/NCA-QUALIFICATION.md`
@@ -157,6 +160,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/model-language-competency.yml`
 - `system/config/model-policy.yml`
 - `system/config/model-qualification-seeds.json`
+- `system/config/numbers-reference.json`
 - `system/config/profiles`
 - `system/config/profiles/grammar`
 - `system/config/profiles/grammar/README.md`
@@ -503,6 +507,30 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/requirements-tui.txt`
 - `system/requirements.txt`
 - `system/resources`
+- `system/resources/numbers`
+- `system/resources/numbers/2026-09-09`
+- `system/resources/numbers/2026-09-09/CHECKSUMS.sha256`
+- `system/resources/numbers/2026-09-09/FILE_MANIFEST.json`
+- `system/resources/numbers/2026-09-09/HANDOVER_VERIFICATION.json`
+- `system/resources/numbers/2026-09-09/README.md`
+- `system/resources/numbers/2026-09-09/provenance`
+- `system/resources/numbers/2026-09-09/provenance/ORIGINAL_CHECKSUMS.sha256`
+- `system/resources/numbers/2026-09-09/provenance/ORIGINAL_DISTRIBUTION.md`
+- `system/resources/numbers/2026-09-09/provenance/ORIGINAL_FILE_MANIFEST.json`
+- `system/resources/numbers/2026-09-09/provenance/ORIGINAL_HANDOVER_VERIFICATION.json`
+- `system/resources/numbers/2026-09-09/reference`
+- `system/resources/numbers/2026-09-09/reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv`
+- `system/resources/numbers/2026-09-09/reference/audit.tsv`
+- `system/resources/numbers/2026-09-09/reference/canonical_number_index.tsv`
+- `system/resources/numbers/2026-09-09/reference/eng_org_map_rules.txt`
+- `system/resources/numbers/2026-09-09/reference/footnote_guidance.tsv`
+- `system/resources/numbers/2026-09-09/reference/normalization_overrides.tsv`
+- `system/resources/numbers/2026-09-09/reference/ol_expression_audit.tsv`
+- `system/resources/numbers/2026-09-09/reference/ol_token_coverage_audit.tsv`
+- `system/resources/numbers/2026-09-09/reference/operator_rules.tsv`
+- `system/resources/numbers/2026-09-09/reference/provenance_sources.tsv`
+- `system/resources/numbers/2026-09-09/reference/textual_variant_registry.tsv`
+- `system/resources/numbers/2026-09-09/reference/unit_conversion_registry.tsv`
 - `system/resources/rwc`
 - `system/resources/rwc/README.md`
 - `system/resources/rwc/authority`
@@ -915,6 +943,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_batch_extraction.py`
 - `system/tests/numbers/test_batching.py`
 - `system/tests/numbers/test_benchmark.py`
+- `system/tests/numbers/test_bundled_reference.py`
 - `system/tests/numbers/test_compare.py`
 - `system/tests/numbers/test_engine.py`
 - `system/tests/numbers/test_execution_context.py`

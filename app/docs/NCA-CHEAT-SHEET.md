@@ -4,12 +4,12 @@
 
 ## Set up a Job
 
-1. Import and qualify the supplied reference archive. Its contents remain unchanged; qualification receipts are separate.
+1. SAGE includes the qualified NCA reference tables. A standard installation selects the bundled package automatically; no archive import is required. Review any reference diagnostics shown.
 2. Choose an onboarded WIP Project. Its language, script, recorded import date, and versification identify the input.
 3. Choose one compatible configured **Number Style Profile**. One candidate resolves automatically; multiple candidates require a choice. If none exists, configure a copy of `system/config/profiles/numbers/number-style-template.yml` and import it. The shipped draft is not an active guide.
 4. Review reference diagnostics and model routing. The independent Job is named `NCA-<Project>_<YYYYMMDD>`.
 
-The style profile is mandatory even with presentation OFF. Record all questionnaire areas, using `NOT_SPECIFIED` when the guide supplies no rule. Unspecified areas remain unassessed. Profiles use resolved localdata `inputs/styleguides/numbers`; packages use `inputs/resources/numbers`.
+The style profile is mandatory even with presentation OFF. Record all questionnaire areas, using `NOT_SPECIFIED` when the guide supplies no rule. Unspecified areas remain unassessed. Profiles use resolved localdata `inputs/styleguides/numbers`; additional imported packages use `inputs/resources/numbers`. The bundled reference remains read-only under Core `system/resources/numbers`.
 
 ## Choose Run checks
 
@@ -46,10 +46,9 @@ Reports retain the full handover counters, indexed/unindexed coverage, and compl
 Run from the application directory with the managed Python environment. Global `--settings` and `--json` options precede the domain.
 
 ```sh
-python -m sage.cli resource numbers import --archive /path/to/handover.zip
-python -m sage.cli resource numbers inspect --package PACKAGE_ID
+python -m sage.cli resource numbers inspect
 python -m sage.cli resource number-style import --path /path/to/configured-profile.yml
-python -m sage.cli task create --workflow nca --operation numbers --wip PROJECT_ID --scope "MAT 1:1-17" --numbers-package PACKAGE_ID --number-style PROFILE_ID/VERSION
+python -m sage.cli task create --workflow nca --operation numbers --wip PROJECT_ID --scope "MAT 1:1-17" --number-style PROFILE_ID/VERSION
 python -m sage.cli task execute --task /path/to/task-manifest.json --dry-run
 python -m sage.cli task execute --task /path/to/task-manifest.json
 python -m sage.cli task submit --task /path/to/task-manifest.json
@@ -62,3 +61,7 @@ Resource inspection is local. Model-dependent execution requires the configured 
 ## Optimization and qualification
 
 Full-scope bounded extraction, validated checkpoint reuse, attributed bridge comparison, and chapter reports are implemented. The [optimization design](superpowers/specs/2026-09-10-NCA-OPTIMIZATION-DESIGN.md) and [implementation plan](superpowers/plans/2026-09-10-NCA-OPTIMIZATION.md) record the contracts and remaining qualification work. Provider-free tests establish software behavior; they do not establish actual-model language accuracy, cost, or performance.
+
+The `--numbers-package` selector is optional for a new Job; omission selects the bundled Core reference. `resource numbers inspect` also defaults to the bundled reference. Use `resource numbers import --archive ...` only to add another qualified package.
+
+Final bundled-table validation, ambiguous-reading notes and known NIV continuation limits: [validation report](advanced/release/NCA-BUNDLED-REFERENCE-VALIDATION.md).

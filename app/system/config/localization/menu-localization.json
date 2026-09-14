@@ -3452,8 +3452,8 @@
       "pt-BR": "Pacote de referência NCA"
     },
     "menu.nca.reference.import": {
-      "en-US": "Import NCA reference archive",
-      "en-GB": "Import NCA reference archive",
+      "en-US": "Import additional NCA reference archive",
+      "en-GB": "Import additional NCA reference archive",
       "id": "Impor arsip referensi NCA",
       "fr": "Importer une archive de référence NCA",
       "ru": "Импортировать архив эталонных данных NCA",
