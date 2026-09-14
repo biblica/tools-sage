@@ -143,7 +143,7 @@ def test_create_nca_task_is_idempotent_and_registers_exact_sealed_coverage(
     _root, config, job, run = _run(make_workspace, monkeypatch)
 
     first = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value="MAT 1")
-    second = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value="MAT 1")
+    second = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value="matthew 01")
 
     assert first["task_manifest_path"] == second["task_manifest_path"]
     path = Path(str(first["task_manifest_path"]))

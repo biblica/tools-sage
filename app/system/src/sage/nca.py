@@ -263,7 +263,9 @@ def _create_nca_task_locked(
             "NCA task creation requires the active open Run",
             code="NCA_RUN_NOT_ACTIVE",
         )
-    if run.operation != "numbers" or run.scope != parse_scope(scope_value).label():
+    # Compare canonical coordinates while retaining the original sealed request
+    # in Run metadata and task evidence (including existing lowercase scopes).
+    if run.operation != "numbers" or parse_scope(run.scope).label() != parse_scope(scope_value).label():
         raise ValidationError(
             "NCA task scope must equal its sealed Run request",
             code="NCA_TASK_SCOPE_MISMATCH",
