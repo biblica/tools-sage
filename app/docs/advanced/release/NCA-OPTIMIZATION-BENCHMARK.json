@@ -77,7 +77,7 @@
     "system/config/schemas/nca-check-policy.schema.yml": "5cf8918aa93c5b7cceeb4913fd0548588f51413e4a39923248e14146c2c4243c",
     "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
     "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-    "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+    "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
     "system/config/schemas/number-style-profile.schema.yml": "e4dbe8859d85e7b642f3fa6c4cb320dc6ad25b70bbe02e9756958a1cb6ce90cf",
     "system/config/schemas/numbers-reference.schema.yml": "95e51eb0ceb0556885cf0da11b4cb42f45525eae30200769a42b4e868c7709a8",
     "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
@@ -164,7 +164,7 @@
     "system/src/sage/model_policy.py": "6e1561ae0f2f6a434351c44295ef9569b2799b36968599378479aaf79d6e164a",
     "system/src/sage/model_service.py": "9abdf58178328ff509caf0d6a42d26f5525a37a98b794abfed635041fb6e2b98",
     "system/src/sage/natural_language.py": "549cae70cdcb40ef4abeaa86cc3fdac75e6789374fe37f743f74c685b9d7d7fd",
-    "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+    "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
     "system/src/sage/nca_cli.py": "cc1abd4bf098b69b91889cc0d69a7001ac9fba0598c8947bd87223592f78b45d",
     "system/src/sage/nca_menu.py": "9625923683ad4347b4b786a15cc1a66e4366715425c2a73f306b1727d50c469c",
     "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
@@ -183,7 +183,7 @@
     "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
     "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
     "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-    "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+    "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
     "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
     "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
     "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -273,7 +273,7 @@
     "system/tools/benchmark_nca_optimized.py": "606c0401787378bfd2364f210fad5ae77567b5de7b7acd0cdfd8f5bab62df1f6",
     "system/tools/benchmark_nca_qualification.py": "9ad956e06904d6bb23531b1709478f2a5139b04cec11e9c01cb8d9f5aa3ff48e"
   },
-  "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+  "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
   "cold_process": {
     "initial": {
       "benchmark_id": "nca-optimization-hybrid-v2",
@@ -299,7 +299,7 @@
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 32,
       "checkpoint_reuse_events": 0,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "coverage_ledgers": [
         {
           "assessed_unit_ids": [
@@ -417,13 +417,13 @@
           ]
         }
       ],
-      "driver_elapsed_ms": 540,
+      "driver_elapsed_ms": 724,
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 339,
+      "execution_elapsed_ms": 558,
       "finding_diffs": [
         {
           "case_id": "mat-5-1",
@@ -748,18 +748,18 @@
       ],
       "fixture_sha256": "2d47edd75a2ac6ebcac20d9a920abb5e8606974f64fd2c29934ae4e41135a4fa",
       "governance": {
-        "contract_sha256": "bf87ed0bdc0d38214df686204921be5b709e2f0e6d482292c76347811b0286b8",
+        "contract_sha256": "efa5911a069d81a29248bffcaad313a011e00b42750c5121184f3b35daad151b",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -776,7 +776,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -839,7 +839,7 @@
         "profile_validation_count": 1,
         "profile_validation_elapsed_ms": 0,
         "reference_load_count": 1,
-        "reference_load_elapsed_ms": 5,
+        "reference_load_elapsed_ms": 4,
         "reference_package_sha256": "bdaed84bcbb375f55977706ef971170326dcb534783237d080f16232912a2f2d"
       },
       "mode": "synthetic",
@@ -1749,7 +1749,7 @@
           ]
         }
       ],
-      "process_elapsed_ms": 839,
+      "process_elapsed_ms": 1008,
       "resume": {
         "calls": {
           "elapsed_ms": 0,
@@ -1765,7 +1765,7 @@
           "reused_request_ids": [],
           "status_counts": {}
         },
-        "elapsed_ms": 182,
+        "elapsed_ms": 149,
         "equivalent_outcomes_and_coverage": true,
         "reuse_events": 36
       },
@@ -2279,7 +2279,7 @@
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 32,
       "checkpoint_reuse_events": 36,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "coverage_ledgers": [
         {
           "assessed_unit_ids": [
@@ -2397,13 +2397,13 @@
           ]
         }
       ],
-      "driver_elapsed_ms": 305,
+      "driver_elapsed_ms": 318,
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 145,
+      "execution_elapsed_ms": 150,
       "finding_diffs": [
         {
           "case_id": "mat-5-1",
@@ -2728,18 +2728,18 @@
       ],
       "fixture_sha256": "2d47edd75a2ac6ebcac20d9a920abb5e8606974f64fd2c29934ae4e41135a4fa",
       "governance": {
-        "contract_sha256": "4beb2c46021efbba65d667855d98f6679e94eafcd21f62e5497929f78de934d1",
+        "contract_sha256": "657697cae7f2b4b140b9f3ee1085593d8ba3758437f39a1f004a18f1c42ab715",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -2756,7 +2756,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -2808,7 +2808,7 @@
         "profile_validation_count": 1,
         "profile_validation_elapsed_ms": 0,
         "reference_load_count": 1,
-        "reference_load_elapsed_ms": 5,
+        "reference_load_elapsed_ms": 6,
         "reference_package_sha256": "bdaed84bcbb375f55977706ef971170326dcb534783237d080f16232912a2f2d"
       },
       "mode": "synthetic",
@@ -3718,7 +3718,7 @@
           ]
         }
       ],
-      "process_elapsed_ms": 609,
+      "process_elapsed_ms": 639,
       "resume": {
         "calls": {
           "elapsed_ms": 0,
@@ -3734,7 +3734,7 @@
           "reused_request_ids": [],
           "status_counts": {}
         },
-        "elapsed_ms": 142,
+        "elapsed_ms": 149,
         "equivalent_outcomes_and_coverage": true,
         "reuse_events": 36
       },
@@ -4254,13 +4254,13 @@
       },
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 32,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 38,
+      "execution_elapsed_ms": 56,
       "finding_diffs": [
         {
           "case_id": "mat-5-1",
@@ -4585,18 +4585,18 @@
       ],
       "fixture_sha256": "2d47edd75a2ac6ebcac20d9a920abb5e8606974f64fd2c29934ae4e41135a4fa",
       "governance": {
-        "contract_sha256": "aa0848a84255b06c0971bda8c3c653c4893b32284c1cfdcbbfb1f13529664bb2",
+        "contract_sha256": "a418b097c919b98622bc26c67d7e3163bbc4fb56b2116432facb2df7acf7fcd4",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -4613,7 +4613,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -4669,9 +4669,9 @@
       "live_status": "LIVE_MODEL_BENCHMARK_NOT_RUN",
       "local_loads": {
         "profile_validation_count": 64,
-        "profile_validation_elapsed_ms": 1,
+        "profile_validation_elapsed_ms": 2,
         "reference_load_count": 1,
-        "reference_load_elapsed_ms": 4,
+        "reference_load_elapsed_ms": 5,
         "reference_package_sha256": "bdaed84bcbb375f55977706ef971170326dcb534783237d080f16232912a2f2d"
       },
       "mode": "synthetic",
@@ -6131,7 +6131,7 @@
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 32,
       "checkpoint_reuse_events": 0,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "coverage_ledgers": [
         {
           "assessed_unit_ids": [
@@ -6249,13 +6249,13 @@
           ]
         }
       ],
-      "driver_elapsed_ms": 495,
+      "driver_elapsed_ms": 723,
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 337,
+      "execution_elapsed_ms": 443,
       "finding_diffs": [
         {
           "case_id": "mat-5-1",
@@ -6580,18 +6580,18 @@
       ],
       "fixture_sha256": "2d47edd75a2ac6ebcac20d9a920abb5e8606974f64fd2c29934ae4e41135a4fa",
       "governance": {
-        "contract_sha256": "bf87ed0bdc0d38214df686204921be5b709e2f0e6d482292c76347811b0286b8",
+        "contract_sha256": "efa5911a069d81a29248bffcaad313a011e00b42750c5121184f3b35daad151b",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -6608,7 +6608,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -6671,7 +6671,7 @@
         "profile_validation_count": 1,
         "profile_validation_elapsed_ms": 0,
         "reference_load_count": 1,
-        "reference_load_elapsed_ms": 4,
+        "reference_load_elapsed_ms": 6,
         "reference_package_sha256": "bdaed84bcbb375f55977706ef971170326dcb534783237d080f16232912a2f2d"
       },
       "mode": "synthetic",
@@ -7596,7 +7596,7 @@
           "reused_request_ids": [],
           "status_counts": {}
         },
-        "elapsed_ms": 137,
+        "elapsed_ms": 247,
         "equivalent_outcomes_and_coverage": true,
         "reuse_events": 36
       },
@@ -8116,126 +8116,126 @@
         "elapsed_ms": 0,
         "failed_calls": 120,
         "failure_request_ids": [
-          "955d542cc22942e2b18dadb735e3af81",
-          "50bb86e1af9d4135a5e3b7a9e5f8d3c3",
-          "3a2ec376709d49bc8dd04932bdd9897d",
-          "fb40846690c742629dc6b3afd2ea687f",
-          "3030f3cf9d1e442f820916be3966dd38",
-          "a0069be02ee94ed793a2641ca4d78e69",
-          "1257f07c00d443e6b1bfc03454ef2e14",
-          "7993a5f4a7bf4a0e8cb15a9f48511800",
-          "94d0952ea1ee43c6845d62f3f7b202ac",
-          "8b8ec4aa4bb644a5acbbd92e54d8f933",
-          "9e629497ebed42f780b26d95c9c9f403",
-          "4d127d4069734c6d8d9ec8e27819c51a",
-          "55e848b6b2e64c5aa74248d668f3f4a4",
-          "121ba22d19b64603acf58e9b3c2b6e29",
-          "b84cae409ac74fa1a8d95e90377e292c",
-          "d8cb5d1c26d5416e8d127bd842c661fe",
-          "459bd7c9d43d4e4f8838acc262727d79",
-          "f20b796ce473419bb7fd2aba8f6fa8e4",
-          "527cb3a09a3d4845937a77bb76ef67d7",
-          "32555aee706b424b9bd7e88f4f31d524",
-          "52b93fb7a24441f3baa205fe00fba1f1",
-          "d83ed4d28e6d4b28a63bcf5075186baa",
-          "95dbf2b95c4848fb881677e45d9191c3",
-          "6ce345b93e97407192b7c9636ff1dc6c",
-          "d1f313bf11ea43ada192ae72ee82f9e2",
-          "f90679217fd14b9896f156b22a1fe36f",
-          "18b1530a32f742f1b16e02a0dbee38ae",
-          "77ccb2afb5784536abfa6532c7444db8",
-          "ed4d54601c2d47149cfabf22753b05ad",
-          "be9a48beaeb14a3a985d8629e1181e20",
-          "bdd48dde86484aee9bd4581e45f3c8fa",
-          "ede39ec734db45f2815e47adc1b6bbf8",
-          "177f208cf71b46d8be4ed08fa0300dca",
-          "8da4db989c6b4cc98e44986ce4a18946",
-          "c47c1e152a2a440ca5669fa3cd831a0e",
-          "97f0af09e8114dd5852ce6095646f5de",
-          "6e4dd331a08e4c3292fffcf42459ec89",
-          "e8d140e5ac3d49bd859f7cebbfcdd3f0",
-          "717d85243f23407cb0dd095b5fb92593",
-          "3c38477d6310456c8abacbdbb24c8e37",
-          "ba9f7b88a6b6429d975069505339a668",
-          "e34d73708f8f4b38a603d538a49a8416",
-          "e9a7516eb0d14e24afdf2c3da54f2400",
-          "a9c8a570b4004fc6bc29a5fd1a0dda99",
-          "b4fd0cab3ff64765b32db22af1ef6cfb",
-          "1963cd4c09b846e4b2f36a0f57d07a57",
-          "0c2a8c1b89d3477eb46a625ec8485737",
-          "925c4f6a7b514114bf8fb513afae4cfe",
-          "8ac8f5800a5d4996bd1c909ace292af7",
-          "38237de13cb04f17aba2a61ba25f91ea",
-          "bf7d67f779a543f4a986208ab188c93e",
-          "20cbbc9b4a5647ceb6a8627f82501d47",
-          "e2fbbd44024d4ab386e37bf6ade2b534",
-          "7a5cbca839ff459cbdaede5203708178",
-          "690380169ec1420197643868bda311a4",
-          "ba6854ac816a42ec81a65d61ce3d918c",
-          "c4a0ebc61bfe43c58f1016e894473128",
-          "7cce648ba7534e72aefaa57a37ece45d",
-          "636821dd20c04e3391d1a0f7acaf59d4",
-          "3d8963aa85024e35a4770d93ac284085",
-          "fc194290acfb48368fdaa856048094ce",
-          "33663d014a1e43998ffce8f7e9be631f",
-          "b840ba73db2f4a23bbeed2435e23151c",
-          "98f64e70918c49c2b44f9dce8d4aafd0",
-          "457c957367064988987c51aa2a058634",
-          "fda1b217b0494555b78a449fbd076298",
-          "78555fd03fec4d0da156fbdcf458394a",
-          "836e6128c68c4033bb6f1dbca745d8b2",
-          "41afe6677e994f92b11939bddc51a698",
-          "544ef2b8842f442ebf99d154ab5bb32e",
-          "2c93171dd2d3470298bb8222c4ac17bb",
-          "a2e37effc99d465f8a180451aacd6362",
-          "0e401928d0544c0b8aa451d264362f15",
-          "40bca0448dbb4e5db667bae886dfe185",
-          "4c6cec370e7142f7a3cbe4934a8296c7",
-          "30cd6ee91db648108a94346b7543f5aa",
-          "a04f85395e634559bd79e705e4492a3e",
-          "7dd698c9ad384448948962ac2dec616a",
-          "4fac0c46cefe4ce1959c87f0548ab670",
-          "c8cd9595dc974cef96ed781de30a09d3",
-          "82dc1238d975417c8bb77019f3b73fe6",
-          "e71a3b34a9fb4ba58611c70780a7c060",
-          "926f49501b3141149b989db6f3666438",
-          "f69fac241862443ca2213b8de2082ab8",
-          "f90d136ea446475f99b3d4fb8f9fb8f9",
-          "eecadfa765514b9e85d61fe30afa3f1e",
-          "0b3312f594cd4d65b9577dcb189372dc",
-          "eb20efd810e74747934e41f9c4095516",
-          "384d2eeded5444a49f10bfa15bdf8a62",
-          "864c34e257f1452580f4f1dbeb572477",
-          "f7489153247a422a98fee9ee258e9ab0",
-          "d5a9f6cef60047ae8a75d84958139388",
-          "89ed469ac5e3497397704f577a41e4af",
-          "d71cce7e66834851b91620caf2bcdaac",
-          "49e656cffd8146af8bb98dc424280714",
-          "3697f61f11ab41da83a5720323d2cabe",
-          "468f6fbf2647474a9fdc869ff6acc9ca",
-          "91b255675ac549219030ea87e7e6938e",
-          "3a7bade51cd14f20abed9c522ff76a6d",
-          "f564111338d04893aeddf92b5ffae697",
-          "c13291cabc16410986a4ae372451980d",
-          "f6cab37d8e9a4a0bbd9c105b09d2b516",
-          "f7a3a67074b34f43818d7aa53eed917f",
-          "1c3e88e33ebc4234aa67668805464567",
-          "d0878a7362ae49339e820961c3305a23",
-          "4712fd940c504bf4bc201ae949932b3d",
-          "a1624ea05b93428fb093b7f577a425d7",
-          "19f155efa6a24917b22a15125a6be122",
-          "cce2d29d6183470e883ab8d15b603860",
-          "dd13829362a7462d842410084eafa3cb",
-          "34faf1e269f848f7a7e3af4740a743cf",
-          "66ae0d557f874b21a382173f15940b2e",
-          "3be082c4e43a44e88f15843603fc2e4a",
-          "64861955bc744118af2830016c4229c1",
-          "14f3f3fcc0044330a96f470a0e63f7a6",
-          "59fad86107ef48ca81625726722a329c",
-          "eb991636e1e54ce6bc59af3ebddffb53",
-          "94957f4b879d4cf082f1b7fe620d8092",
-          "a1d4161e1b534c16b0200e6fb9e0b66c",
-          "88f28df295384d50a0abfdd8160c7103"
+          "e438412915b14e6f9d85bf75c6b2255e",
+          "91d7034444db41b2bd959e95e54afea6",
+          "7c302ad3d1fe440eabb2dcda802bccf5",
+          "407cf095ce1f430191aa51e9bc80501b",
+          "a6fdf7b5c2e9440ca47652b74c481003",
+          "0a62432d9e9c4cf1b4a34fc7c9f2cffb",
+          "4bac2b546064415e9a1809bd34622982",
+          "e35d420ffd61468682a672fc48d217d0",
+          "dbb9467a061d40dcafc9680a202a5a42",
+          "8852ed3dd8214bfdac2b28d1a86fe429",
+          "6a4eab1248464b50acfd58cbc85495ca",
+          "4d99e07bbe9c42649971cfd715b356ed",
+          "7cdbce7742c24a81a265d058db32b4a5",
+          "c4636b19a993491a989959b2a63aaebd",
+          "7522fded8e3e4a5a94b589911732b451",
+          "704f7525158e46e6839dae86aa9bbab6",
+          "d99ec922687d42729ab7e71e309849aa",
+          "91eeb834cd9a4053837a47c4e51c3434",
+          "9eac91076eff4b52a45e38a566253d4d",
+          "62950be38e514ec29fd02a0a6179b58a",
+          "6b8ed5853868464c8c0380575ff94dd0",
+          "44ac1538f2254792b4ba5f80dcf83092",
+          "b42dae5cd090429ca7193d6bf97b586c",
+          "de1c7487d4d0440984ca57ba40b47bf4",
+          "6c43f056b6f7439b847629bf546f6a8f",
+          "3094c84976a9431d8eb70e4baab0b987",
+          "29261ad8a29147af8d79e95d760ce13c",
+          "9c3a63ba72604307a0c581c4cd957560",
+          "9ee9502daed44ee7b55cfea7ff7db4e3",
+          "3aa143c6b0f541bdbb42403f01d4bba8",
+          "56b471c48c604b399370cc308b030382",
+          "2985b104fa6045aebad402ccb663823d",
+          "5ca1ef93431b4b649782922833adb5e8",
+          "f92bc8117fa149c9bc692d5a1abb7828",
+          "4cbb8e2ce50d456f9a36a31f899bd9bc",
+          "2f7c35655102423886245f0984e55227",
+          "59b6ad12afcb4a49bae28654cd637a4d",
+          "ddf65a2211b44d1c99878bb23a6ed3fc",
+          "4edc23c2c11148a2bfdff302c9633954",
+          "a8c13fec18b04086b360f04228be118d",
+          "87e1d668647544a5b61e5a2f0c8bb858",
+          "d0ead96ee43543a8b8184c7be67e0968",
+          "9d3e28f90b7a47eabb5c713e25cffac8",
+          "e222553ce04948e6999d749cd843ed38",
+          "3955ef82ad97447c8cc99ef7ea50a8d0",
+          "e96f5e8b2bc44215ab4175e72b561d5f",
+          "3153af04ff674a0fad45ad772f428542",
+          "e1d10ed658c645f8b189f9b4900a96a6",
+          "d7c0b49c9c294f269ec4dd4c9295a259",
+          "13ea1ae329f643c2b725ea84a7091ee0",
+          "d4e5b2ce4b7c4b62ac09f3108d06daf8",
+          "f138c608d2244d26847513c180eb0d52",
+          "512d89b34d5a403da471df105e8efdb6",
+          "248ec38d9ab042d79376b3eb1cd2d3b5",
+          "5bea177f730a4d8e97335396f52f9dff",
+          "e4a19541ba904066960fc43d7657d6bc",
+          "520f8e74584e48999dd57b6d7f99c4dd",
+          "70df36202d634912a859ef2777b419b9",
+          "a93b9288af9f449d926085e05befe6d4",
+          "a89592fc70744b8fa92c88cb12c64da8",
+          "17c6b28bba5b4466be9ec1eedbe254f0",
+          "c1d9adfb84964e67bc6469c63f62860e",
+          "38f7d0035a9d4b5296fa18dbca61e878",
+          "de23e6b0fb1743b6a701f69d137d5509",
+          "8c92c06207bf47eca2d9b29f8ddc573a",
+          "f2049d3f09a94d9ca19f4ebc3692da17",
+          "4b1f97fb85574e428e7c8639dcfdb927",
+          "f5003c93d381435187c1e7940b33b2c3",
+          "7c0d6ab9b5e148bba7a51237d658fae8",
+          "3dcb69d11b244f27aa2724be079de609",
+          "b96d33b6cbeb40a78890f26038140ac6",
+          "e9424ea7186646bfa3e7a7bf13f21bd8",
+          "c94d161170224616ad1c02d4ee1c7711",
+          "c5ecf9579d924dc3ba0b9c98270e738e",
+          "b8b364b3edb14cbf8f46c885dc0dd427",
+          "59945758b191477986021cee7828cd29",
+          "50089b7ada7248a4948ae0787a36b8ea",
+          "ebfb3c25a0ae4fc6b1426e8d08441df2",
+          "3ceef3b837ba4d8ab774d6d6bec7e038",
+          "a1c60a69302b40beb519198e659d30b5",
+          "b01e337d54e24fd1ba73a1dcf9f6facd",
+          "dd84a08a4862497aa5f5595c26871ebd",
+          "b476e29b504a46c3b76d8363cee80a83",
+          "aa8df0af17044497a7511c795680c161",
+          "60c5d655b1e5462baf0ba5a81bea4a46",
+          "980b783172de4cb7853c4eb3bae82398",
+          "77c817ad73a34519906607bd38497383",
+          "38af4e274ecd4075a277aae78a03977b",
+          "55f82d8bd82846a08825b8ee6ffe5bd6",
+          "e771e9a543bf4b7c9e161c4840c6e4f2",
+          "f27b1c605df640a3a9b230d5429e8987",
+          "2a655bf399674cffb41d0159e374d94e",
+          "b715fd8a64644620b7d137a3323146b4",
+          "eb3e74e494844026826071dd21e3a2a4",
+          "2384baff1f414c37936d1282c11667e1",
+          "c56fef461ac9425585f0dceb7f8617e2",
+          "c70dc9b1a03b4f2abe1203aec8e54c37",
+          "3c2c35e4c6b84f2886ca58e020d05187",
+          "83696e9e4a7a4730b311bf3654d59ad3",
+          "e0248d4018c84bbe871c41c94cc5dfa5",
+          "9fbbc972cdb840a88f8b00cf473ba5d7",
+          "d63c181fcff348b58639fb259dff7ee0",
+          "8461987d97bb4c7fb4b9ca13dba65453",
+          "662cb8885ac84ae78ce8518968aa062d",
+          "d9c44c485dee4836940af455bc15ca0b",
+          "379f3ecbe6c549a9b7a50d070909593d",
+          "ae27fed093ea4e2c86a4717e3ed28468",
+          "56a5fe9da310457497e924154f2a52a8",
+          "abb22ec87d4846359d3c2c01624a9ec1",
+          "799e6f219cc44490a6572ac82d49c805",
+          "a3bc009ab4bb49e3a80bf22331476e3e",
+          "e3ddd9de4690402fa2536d8de4bde67a",
+          "9eb839f5b48449ee9778ab0e2fd5e417",
+          "f5072ed7a5934a67b151ce15becdc754",
+          "2efca5e66c1b49d8923709044ca05ca1",
+          "0e8e328cbf8847a599fee25e246d3d59",
+          "6578897430d04e46a24337af48aabcee",
+          "e77cc544a0b9477884c3e31c7b1a7a74",
+          "8285da9a022e4cf9a1acd3e8443cd2a7",
+          "658324bfb22e40abb6025493139ef506"
         ],
         "input_tokens": null,
         "output_tokens": null,
@@ -8254,7 +8254,7 @@
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 32,
       "checkpoint_reuse_events": 0,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "coverage_ledgers": [
         {
           "assessed_unit_ids": [
@@ -8373,13 +8373,13 @@
           ]
         }
       ],
-      "driver_elapsed_ms": 7115,
+      "driver_elapsed_ms": 8339,
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 867,
+      "execution_elapsed_ms": 1301,
       "finding_diffs": [
         {
           "case_id": "mat-5-1",
@@ -8896,18 +8896,18 @@
       ],
       "fixture_sha256": "2d47edd75a2ac6ebcac20d9a920abb5e8606974f64fd2c29934ae4e41135a4fa",
       "governance": {
-        "contract_sha256": "cec87560ee7a39a403a8571cc88c72757b831dc2124ed733c24ecf63feb2c053",
+        "contract_sha256": "a9c2c3186b10fab8804ca9e4c9778de2b52d9148ee945c27d117a6ae97f737e1",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -8924,7 +8924,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -8982,7 +8982,7 @@
         "profile_validation_count": 1,
         "profile_validation_elapsed_ms": 0,
         "reference_load_count": 1,
-        "reference_load_elapsed_ms": 4,
+        "reference_load_elapsed_ms": 6,
         "reference_package_sha256": "bdaed84bcbb375f55977706ef971170326dcb534783237d080f16232912a2f2d"
       },
       "mode": "synthetic",
@@ -10091,7 +10091,7 @@
           "reused_request_ids": [],
           "status_counts": {}
         },
-        "elapsed_ms": 6216,
+        "elapsed_ms": 7008,
         "equivalent_outcomes_and_coverage": true,
         "reuse_events": 0
       },
@@ -10657,7 +10657,7 @@
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 32,
       "checkpoint_reuse_events": 0,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "coverage_ledgers": [
         {
           "assessed_unit_ids": [
@@ -10776,13 +10776,13 @@
           ]
         }
       ],
-      "driver_elapsed_ms": 78,
+      "driver_elapsed_ms": 76,
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 37,
+      "execution_elapsed_ms": 38,
       "finding_diffs": [
         {
           "case_id": "mat-5-1",
@@ -11299,18 +11299,18 @@
       ],
       "fixture_sha256": "2d47edd75a2ac6ebcac20d9a920abb5e8606974f64fd2c29934ae4e41135a4fa",
       "governance": {
-        "contract_sha256": "cec87560ee7a39a403a8571cc88c72757b831dc2124ed733c24ecf63feb2c053",
+        "contract_sha256": "a9c2c3186b10fab8804ca9e4c9778de2b52d9148ee945c27d117a6ae97f737e1",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -11327,7 +11327,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -11385,7 +11385,7 @@
         "profile_validation_count": 1,
         "profile_validation_elapsed_ms": 0,
         "reference_load_count": 1,
-        "reference_load_elapsed_ms": 4,
+        "reference_load_elapsed_ms": 3,
         "reference_package_sha256": "bdaed84bcbb375f55977706ef971170326dcb534783237d080f16232912a2f2d"
       },
       "mode": "synthetic",
@@ -12494,7 +12494,7 @@
           "reused_request_ids": [],
           "status_counts": {}
         },
-        "elapsed_ms": 23,
+        "elapsed_ms": 24,
         "equivalent_outcomes_and_coverage": true,
         "reuse_events": 4
       },
@@ -13043,7 +13043,7 @@
         "elapsed_ms": 0,
         "failed_calls": 1,
         "failure_request_ids": [
-          "d3f34798cc7b4783b7d735a6f906852f"
+          "7953b47f4d6a4dc4be1a3a1adbe37330"
         ],
         "input_tokens": null,
         "output_tokens": null,
@@ -13064,7 +13064,7 @@
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 32,
       "checkpoint_reuse_events": 0,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "coverage_ledgers": [
         {
           "assessed_unit_ids": [
@@ -13182,13 +13182,13 @@
           ]
         }
       ],
-      "driver_elapsed_ms": 492,
+      "driver_elapsed_ms": 762,
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 330,
+      "execution_elapsed_ms": 467,
       "finding_diffs": [
         {
           "case_id": "mat-5-1",
@@ -13513,18 +13513,18 @@
       ],
       "fixture_sha256": "2d47edd75a2ac6ebcac20d9a920abb5e8606974f64fd2c29934ae4e41135a4fa",
       "governance": {
-        "contract_sha256": "bf87ed0bdc0d38214df686204921be5b709e2f0e6d482292c76347811b0286b8",
+        "contract_sha256": "efa5911a069d81a29248bffcaad313a011e00b42750c5121184f3b35daad151b",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -13541,7 +13541,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -13604,7 +13604,7 @@
         "profile_validation_count": 1,
         "profile_validation_elapsed_ms": 0,
         "reference_load_count": 1,
-        "reference_load_elapsed_ms": 4,
+        "reference_load_elapsed_ms": 5,
         "reference_package_sha256": "bdaed84bcbb375f55977706ef971170326dcb534783237d080f16232912a2f2d"
       },
       "mode": "synthetic",
@@ -14529,7 +14529,7 @@
           "reused_request_ids": [],
           "status_counts": {}
         },
-        "elapsed_ms": 139,
+        "elapsed_ms": 262,
         "equivalent_outcomes_and_coverage": true,
         "reuse_events": 36
       },
@@ -15047,7 +15047,7 @@
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 32,
       "checkpoint_reuse_events": 0,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "coverage_ledgers": [
         {
           "assessed_unit_ids": [
@@ -15166,13 +15166,13 @@
           ]
         }
       ],
-      "driver_elapsed_ms": 79,
+      "driver_elapsed_ms": 75,
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 37,
+      "execution_elapsed_ms": 36,
       "finding_diffs": [
         {
           "case_id": "mat-5-1",
@@ -15689,18 +15689,18 @@
       ],
       "fixture_sha256": "2d47edd75a2ac6ebcac20d9a920abb5e8606974f64fd2c29934ae4e41135a4fa",
       "governance": {
-        "contract_sha256": "cec87560ee7a39a403a8571cc88c72757b831dc2124ed733c24ecf63feb2c053",
+        "contract_sha256": "a9c2c3186b10fab8804ca9e4c9778de2b52d9148ee945c27d117a6ae97f737e1",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -15717,7 +15717,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -15775,7 +15775,7 @@
         "profile_validation_count": 1,
         "profile_validation_elapsed_ms": 0,
         "reference_load_count": 1,
-        "reference_load_elapsed_ms": 4,
+        "reference_load_elapsed_ms": 3,
         "reference_package_sha256": "bdaed84bcbb375f55977706ef971170326dcb534783237d080f16232912a2f2d"
       },
       "mode": "synthetic",
@@ -16884,7 +16884,7 @@
           "reused_request_ids": [],
           "status_counts": {}
         },
-        "elapsed_ms": 25,
+        "elapsed_ms": 24,
         "equivalent_outcomes_and_coverage": true,
         "reuse_events": 4
       },
@@ -17428,7 +17428,20 @@
       "transport_boundary": "sage.executors.ProviderRequest"
     }
   },
+  "first_scoped_review": {
+    "addressed_findings": [
+      "I1",
+      "M1",
+      "M2"
+    ],
+    "residual_findings": [
+      "F1"
+    ],
+    "reviewed_commit": "25c3fcc8af9cc630062291d02625625ee745af7d",
+    "verdict": "NOT_APPROVED"
+  },
   "fix_base_commit": "04559e5a855d887a92342c379323c29112d0b09a",
+  "fix_gate_implementation_commit": "93fe80837145af022b5c1e13e820afffc4992fba",
   "fix_gates": [
     {
       "command": [
@@ -17495,7 +17508,7 @@
     "system/tests/numbers/fixtures/registered-readings.json": "b1c02ac465ab795158ff5e66f48c3a949f48aab823650362eb938f4e95aeb4c8",
     "system/tests/numbers/fixtures/registered-units.json": "d813f5f50368c7e8dde7dc01375efdd8b2ea9c42fbf001a680c28553cde22822"
   },
-  "implementation_commit": "93fe80837145af022b5c1e13e820afffc4992fba",
+  "implementation_commit": "ec3e46fad44d0375ad7d33f948d28df4863632a0",
   "initial_final_review": {
     "findings": [
       "I1",
@@ -17529,13 +17542,13 @@
       },
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 12,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 15,
+      "execution_elapsed_ms": 24,
       "finding_diffs": [
         {
           "case_id": "ordinary_numeric",
@@ -17698,18 +17711,18 @@
       ],
       "fixture_sha256": "aa4a9a438d1b25fe78d09bd2c2755e47fb50433bf1fd4201e3641c67a3acec32",
       "governance": {
-        "contract_sha256": "aa0848a84255b06c0971bda8c3c653c4893b32284c1cfdcbbfb1f13529664bb2",
+        "contract_sha256": "a418b097c919b98622bc26c67d7e3163bbc4fb56b2116432facb2df7acf7fcd4",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -17726,7 +17739,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -17782,7 +17795,7 @@
       "live_status": "LIVE_MODEL_BENCHMARK_NOT_RUN",
       "local_loads": {
         "profile_validation_count": 24,
-        "profile_validation_elapsed_ms": 0,
+        "profile_validation_elapsed_ms": 1,
         "reference_load_count": 1,
         "reference_load_elapsed_ms": 4,
         "reference_package_sha256": "bdaed84bcbb375f55977706ef971170326dcb534783237d080f16232912a2f2d"
@@ -18544,7 +18557,7 @@
       "capability_limitations": "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied.",
       "case_count": 12,
       "checkpoint_reuse_events": 0,
-      "code_sha256": "a856f4673aee807aa1a694c80fa5af80f2bfe88b1c9d6d835388a9a230aaf78a",
+      "code_sha256": "37828dd7356d609a73224affefb5a1e97fa985638a477cbc5c0857edc52d3af7",
       "coverage_ledgers": [
         {
           "assessed_unit_ids": [
@@ -18621,13 +18634,13 @@
           ]
         }
       ],
-      "driver_elapsed_ms": 202,
+      "driver_elapsed_ms": 269,
       "environment": {
         "implementation": "CPython",
         "platform": "macOS-26.6.2-arm64-arm-64bit",
         "python": "3.12.4"
       },
-      "execution_elapsed_ms": 122,
+      "execution_elapsed_ms": 153,
       "finding_diffs": [
         {
           "case_id": "ordinary_numeric",
@@ -18782,18 +18795,18 @@
       ],
       "fixture_sha256": "aa4a9a438d1b25fe78d09bd2c2755e47fb50433bf1fd4201e3641c67a3acec32",
       "governance": {
-        "contract_sha256": "2e00fce691c815ca5714516c0862bbc70601dbc15588f5ec887c8e8235e4ccc4",
+        "contract_sha256": "502ace529e803bb40d5ad19dd44baa3da1de47be4a2c28cdb1d9d4dd06a2e32d",
         "installed_manifest": {
           "files": {
             "system/config/schemas/nca-check-policy-v2.schema.yml": "f433e77b7688c19a75bc9d76c449b5e253e882d2119906f5e2b04795ce0fc8bd",
             "system/config/schemas/nca-extraction-v2.schema.yml": "8a49c09c028ab46bd950cc12bd7be485dcb00bd8200592d2ce5307385a266393",
             "system/config/schemas/nca-extraction.schema.yml": "fe4d96498df29be066f02702745baecf746f5e214300b735eb2d1a6b283e3040",
-            "system/config/schemas/nca-phase-ledger.schema.yml": "3c9574e5d3a049529bca6569bb0bcbd37dbb51022071ae601ff92735cb74c4ab",
+            "system/config/schemas/nca-phase-ledger.schema.yml": "dc5bc90c09c2d0479c1228d8bea70539847680780594db72dc5585c8b4f196ec",
             "system/config/schemas/numbers-result-v2.schema.yml": "127bddb59c2b53667a616e23f2e750df1a42b7e43751c06045b254c2e3c2e353",
             "system/config/workflows/nca/profile.yml": "e9caa792fbf5e04f460462a9feb7a491e96bb22b06f492504ac4fe32f443c178",
             "system/skills/nca-numbers/SKILL.md": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
             "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md": "fb910a3a313c6483954b2720064a934de1b9dbcd44579f9c6782fadfe08c6742",
-            "system/src/sage/nca.py": "23050705422c213adb1cb5cddc91cba856b6f5119ee0fd7ea28feda1bf5fb40b",
+            "system/src/sage/nca.py": "f52ccdfba9ec55af75bb5cf5932d597b78abb7c27657f6014897f140ba4e1eaf",
             "system/src/sage/nca_reporting.py": "3a3a61ef50c79dd90c7ba0069e3bc49186ae3bb89ada591e0d109ccd09ab2315",
             "system/src/sage/numbers/__init__.py": "85c34aa1f831fa5883cc86005e1e1eb21e14e25c8bf9813126b95aff59cd57f5",
             "system/src/sage/numbers/batching.py": "6aa04d01198f3eab768b4dbbc7a66a41252404a5ff3802935f8d9fb57b265c31",
@@ -18810,7 +18823,7 @@
             "system/src/sage/numbers/policy.py": "997d8cb27dac7db92e1a86721c2c0c63a5443dbc910d6f708389646539ab5710",
             "system/src/sage/numbers/projection.py": "6bc17393429920e7a054ad794334813eb6565b98fbdc1ad2f37ee04e92a2d28b",
             "system/src/sage/numbers/reference.py": "1f6b4f7ab4b1cc7f93224155157f1e1880dc6b81dac8b1a868e218fa90373779",
-            "system/src/sage/numbers/replay.py": "b98a075287931886b56baa5643554e35bb179a19f0698168bcdabb3224e74ef1",
+            "system/src/sage/numbers/replay.py": "9d5ed45ad7eb2ace9897673074fc1f29556d145c48ce1964ee349e758cb2d46b",
             "system/src/sage/numbers/resources.py": "cade8fe764a900d97c6738e9d547a294aed996a7fcff93a8281297aaf5248c5f",
             "system/src/sage/numbers/results.py": "65f3f8bfaa0a709aec441711026cf0890d1d5a90f6f56a71f29000de91ceb10c",
             "system/src/sage/numbers/results_v2.py": "336487423d34238e533d7369774ba98d60ee117ce01b6aaae1b154b7389907e8",
@@ -19388,7 +19401,7 @@
           "reused_request_ids": [],
           "status_counts": {}
         },
-        "elapsed_ms": 59,
+        "elapsed_ms": 89,
         "equivalent_outcomes_and_coverage": true,
         "reuse_events": 13
       },
@@ -19605,7 +19618,7 @@
     }
   },
   "live_status": "LIVE_MODEL_BENCHMARK_NOT_RUN",
-  "measurement_elapsed_ms": 10503,
+  "measurement_elapsed_ms": 12583,
   "native_checks": {
     "actual": "macOS arm64 / CPython 3.12.4",
     "python_3_10": "GRAMMAR_ONLY",
@@ -19704,9 +19717,53 @@
       "log_sha256": "f80aa727a56e16b8f19144158bc3b0e6a1cda183eacede8d06a26fdd9e15a4b2"
     }
   ],
+  "residual_base_commit": "25c3fcc8af9cc630062291d02625625ee745af7d",
+  "residual_fix": "Recognize only exact output/receipt/manifest atomic temporary names with nonempty portable ASCII tokens, retaining confined single-link regular files as non-authoritative diagnostics after unchanged current evidence validation.",
+  "residual_gates": [
+    {
+      "command": [
+        "python",
+        "system/tools/validate_schemas.py"
+      ],
+      "elapsed_seconds": 0.376,
+      "exit_code": 0,
+      "log_sha256": "e924029daac32ae512a0cfd964b73a794cf1456deedb87979f75737b7bed3b6c"
+    },
+    {
+      "command": [
+        "python",
+        "system/tools/validate_package.py"
+      ],
+      "elapsed_seconds": 0.949,
+      "exit_code": 0,
+      "log_sha256": "459b5793281180098c58fe9e0182d2b60755077d0baff3c31a797c82f3d7989f"
+    },
+    {
+      "command": [
+        "python",
+        "system/tools/deep_audit.py",
+        ".",
+        "--mode",
+        "source"
+      ],
+      "elapsed_seconds": 8.371,
+      "exit_code": 0,
+      "log_sha256": "a5687de10a39e0c8d5c717f7ff7430e6f7bffdc15698d260d05060d54e21e206"
+    }
+  ],
+  "residual_qualification_scope": "Current covering tests, regenerated provider-free benchmarks and source/metadata gates supplement the historical 1944-test full suite at 93fe808; no new full repository suite was run for this bounded filename/declaration correction.",
+  "residual_tests": {
+    "benchmark_tests": 35,
+    "covering_log_sha256": "4ce29571e3092183cd0983d1f0802e8e08ea6fecfff2cc92229bb93ad563eba5",
+    "covering_tests": "219 passed in 81.10s",
+    "identity_proof_sha256": "eea3b247256dc4e744401bb22e0040aa678ea01597914cabda5a90fceec1c466",
+    "new_full_repository_suite_run": false,
+    "portable_process_death_cases": 9
+  },
+  "residual_verification_status": "PENDING",
   "review_status": "WITH_FIXES",
   "schema_version": "1.0",
-  "scoped_review_status": "PENDING",
+  "scoped_review_status": "NOT_APPROVED",
   "sqs_status": "NOT_APPLIED",
   "task_base_commit": "1067c172c80e71f650b9d7b436e6f9fa5e1cabe4"
 }
