@@ -47,13 +47,9 @@ governed_skills:
     execution_class: GOVERNED_SKILL
   nca-numbers:
     execution_class: GOVERNED_SKILL
-  saw-rtc:
+  rtc-focused-check:
     execution_class: GOVERNED_SKILL
-  saw-stc:
-    execution_class: GOVERNED_SKILL
-  saw-focused-check:
-    execution_class: GOVERNED_SKILL
-  saw-original-language-review:
+  rtc-original-language-review:
     execution_class: GOVERNED_SKILL
 governed_subtasks:
   secondary-language-rendering:

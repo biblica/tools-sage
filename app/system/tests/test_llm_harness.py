@@ -27,7 +27,7 @@ from sage.llm_tasks import (
 )
 from sage.model_policy import recommend_model
 from sage.routing_override import set_global_override
-from sage.skill_routing import capability_fingerprint
+from sage.skill_routing import capability_fingerprint, skill_contract_sha256
 from sage.skill_routing import resolve_skill_route
 from sage.registry import load_ecosystem
 from sage.resource_mounts import mounts_path, set_resource_mount
@@ -161,7 +161,7 @@ def _qualify_test_route(root: Path, *, skill_id: str, model: str, reasoning_id: 
             "capability_fingerprint": capability_fingerprint(capability),
             "reasoning_id": reasoning_id,
             "skill_id": skill_id,
-            "skill_sha256": skills["skills"][skill_id]["adapted_sha256"],
+            "skill_sha256": skill_contract_sha256(skills["skills"][skill_id]),
             "suite_id": f"alpha1-{skill_id}",
             "suite_sha256": suite_sha256,
             "policy_version": "alpha1-1",
@@ -597,7 +597,7 @@ def test_clear_spanish_saw_narrative_gets_one_english_correction_retry(
     (task / "ACT.md").write_text("# Governed task\nReturn bounded findings.\n", encoding="utf-8")
     manifest = {
         "task_id": "synthetic-saw-language-1",
-        "skill_id": "saw-focused-check",
+        "skill_id": "rtc-focused-check",
         "task_fingerprint": "language-fingerprint",
         "execution_mode": "SAGE_GOVERNED_TASK_V1",
         "workflow": "saw",
@@ -636,7 +636,7 @@ def test_clear_spanish_saw_narrative_gets_one_english_correction_retry(
     atomic_write_json(manifest_path, manifest)
     _qualify_test_route(
         root,
-        skill_id="saw-focused-check",
+        skill_id="rtc-focused-check",
         model="gpt-5.6-sol",
         reasoning_id="high",
     )

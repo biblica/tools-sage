@@ -228,6 +228,7 @@ class SkillBinding:
     original_sha256: str
     adapted_sha256: str
     qualification_status: str
+    shared_references: tuple[Path, ...] = ()
 
 
 def _relative(root: Path, path: Path) -> str:
@@ -309,6 +310,23 @@ def load_skill_registry(root: Path) -> dict[tuple[str, str], SkillBinding]:
         key = (workflow, operation)
         if key in result:
             raise ConfigurationError(f"Duplicate Skill binding for {workflow}/{operation}")
+        shared_references: list[Path] = []
+        shared_items = item.get("shared_references", [])
+        if not isinstance(shared_items, list):
+            raise ConfigurationError(f"Skill {skill_id} shared_references must be a list")
+        for shared_item in shared_items:
+            shared_item = require_mapping(shared_item, f"Skill {skill_id} shared reference")
+            shared_path = (root / require_string(shared_item.get("file"), "shared reference file")).resolve()
+            try:
+                shared_path.relative_to(root.resolve())
+                shared_path.relative_to((root / "system/skills/global/references").resolve())
+            except ValueError as exc:
+                raise ConfigurationError(f"Skill {skill_id} shared reference escapes global references") from exc
+            if not shared_path.is_file() or sha256_file(shared_path) != shared_item.get("sha256"):
+                raise ConfigurationError(f"Skill {skill_id} shared reference is missing or its hash does not match")
+            if shared_path in shared_references:
+                raise ConfigurationError(f"Skill {skill_id} contains a duplicate shared reference")
+            shared_references.append(shared_path)
         binding = SkillBinding(
             skill_id=skill_id,
             workflow=workflow,
@@ -332,6 +350,7 @@ def load_skill_registry(root: Path) -> dict[tuple[str, str], SkillBinding]:
             qualification_status=require_string(
                 item.get("qualification_status"), f"skills[{skill_id!r}].qualification_status"
             ).upper(),
+            shared_references=tuple(shared_references),
         )
         try:
             binding.original_file.relative_to(root.resolve())
@@ -347,16 +366,7 @@ def load_skill_registry(root: Path) -> dict[tuple[str, str], SkillBinding]:
             raise ConfigurationError(f"Skill {skill_id} original source hash does not match")
         if sha256_file(binding.path) != binding.adapted_sha256:
             raise ConfigurationError(f"Skill {skill_id} adapted Skill hash does not match")
-        routed_texts = [binding.path]
-        reference_root = binding.path.parent / "references"
-        if reference_root.is_dir():
-            routed_texts.extend(
-                item for item in sorted(reference_root.iterdir())
-                if item.is_file()
-                and not item.name.upper().startswith("ORIGINAL-")
-                and not item.name.upper().startswith("LEGACY-")
-                and item.name.upper() != "RUN-RTC.MD"
-            )
+        routed_texts = _skill_files(binding)
         forbidden_contracts = {
             "system/tools/bic.py": "obsolete BIC script command",
             "./saw run": "obsolete SAW controller command",
@@ -383,6 +393,11 @@ def load_skill_registry(root: Path) -> dict[tuple[str, str], SkillBinding]:
             raise ConfigurationError(f"Skill {skill_id} qualification_status is not VALIDATED")
         result[key] = binding
 
+    # Persisted SAW Jobs use the current owning contracts, not duplicate Skills.
+    for operation in ("rtc", "stc"):
+        if (operation, operation) in result:
+            result[("saw", operation)] = result[(operation, operation)]
+
     missing = {
         (workflow, operation)
         for workflow, operations in ACT_OPERATIONS.items()
@@ -406,6 +421,7 @@ def _skill_files(skill: SkillBinding) -> list[Path]:
             and not path.name.upper().startswith("LEGACY-")
             and path.name.upper() != "RUN-RTC.MD"
         )
+    files.extend(skill.shared_references)
     return files
 
 

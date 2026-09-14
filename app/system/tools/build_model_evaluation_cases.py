@@ -49,25 +49,13 @@ CASE_INVENTORY: dict[str, tuple[tuple[str, str], ...]] = {
         ("complete-no-number", "ZERO_FINDING"),
         ("fabricated-span", "ADVERSARIAL"),
     ),
-    # Compatibility-only suites retained for sealed pre-RTC/STC receipts.
-    "saw-rtc": (
-        ("seeded-variance", "POSITIVE"),
-        ("aligned-pair", "ZERO_FINDING"),
-        ("false-ol-referral", "ADVERSARIAL"),
-        ("fundamental-polarity", "POSITIVE"),
-        ("participant-identity", "POSITIVE"),
-    ),
-    "saw-stc": (
-        ("seeded-correspondence", "POSITIVE"),
-        ("complete-no-finding", "ZERO_FINDING"),
-        ("reference-contamination", "ADVERSARIAL"),
-    ),
-    "saw-focused-check": (
+    # Parked RTC helper suites for legacy bounded operations.
+    "rtc-focused-check": (
         ("bounded-answer", "POSITIVE"),
         ("bounded-zero-result", "ZERO_FINDING"),
         ("question-expansion", "ADVERSARIAL"),
     ),
-    "saw-original-language-review": (
+    "rtc-original-language-review": (
         ("greek-single-item", "POSITIVE"),
         ("hebrew-no-change", "ZERO_FINDING"),
         ("multi-item-contamination", "ADVERSARIAL"),
@@ -99,19 +87,11 @@ SKILL_CRITERIA: dict[str, tuple[str, str]] = {
         "Return exact numeric evidence for the named phase; only target inventory may share one bounded multi-input review item.",
         "Fabricate numeric evidence, accept missing or invalid batch coverage, combine independent adjudications or note assessments, supply expected values to target extraction, select authority, or upgrade uncertainty.",
     ),
-    "saw-rtc": (
-        "Complete exact WIP and Reference coverage, admit only fundamental source-dependent conflicts, and keep every referral isolated.",
-        "Change coverage, refer nuance or equivalent wording, miss an admitted polarity/participant conflict, or finalize a referred dispute.",
-    ),
-    "saw-stc": (
-        "Evaluate every planned WIP and primary Source coordinate.",
-        "Use Reference evidence, omit completion, or demote primary Source authority.",
-    ),
-    "saw-focused-check": (
+    "rtc-focused-check": (
         "Answer only the sealed question from the bounded WIP and Reference evidence.",
         "Expand scope, use original-language Scripture, or perform general RTC.",
     ),
-    "saw-original-language-review": (
+    "rtc-original-language-review": (
         "Resolve exactly one item against the correct Greek or Hebrew primary authority.",
         "Combine items, use the wrong testament authority, or import unrelated context.",
     ),
@@ -124,10 +104,8 @@ POSITIVE_DECISIONS = {
     "rtc": "VARIANCE_FOUND",
     "stc": "CORRESPONDENCE_ISSUE_FOUND",
     "nca-numbers": "NUMERIC_EVIDENCE_VALIDATED",
-    "saw-rtc": "VARIANCE_FOUND",
-    "saw-stc": "CORRESPONDENCE_ISSUE_FOUND",
-    "saw-focused-check": "QUESTION_ANSWERED",
-    "saw-original-language-review": "OL_DECISION_MADE",
+    "rtc-focused-check": "QUESTION_ANSWERED",
+    "rtc-original-language-review": "OL_DECISION_MADE",
 }
 
 RTC_CASE_SEMANTICS: dict[str, dict[str, Any]] = {
@@ -203,7 +181,7 @@ def _case_artifacts(skill_id: str, case_id: str, case_kind: str) -> dict[str, by
     ]
     rtc_semantics = (
         RTC_CASE_SEMANTICS.get(case_id)
-        if skill_id in {"rtc", "saw-rtc"}
+        if skill_id == "rtc"
         else None
     )
     if rtc_semantics is not None:
@@ -278,10 +256,10 @@ def _case_artifacts(skill_id: str, case_id: str, case_kind: str) -> dict[str, by
             ),
             *(
                 [
-                    f"For {'SAW RTC' if skill_id == 'saw-rtc' else 'RTC'}, admit an original-language referral only for a fundamental incompatible core proposition in a closed conflict class when routed non-source evidence cannot settle it.",
+                    "For RTC, admit an original-language referral only for a fundamental incompatible core proposition in a closed conflict class when routed non-source evidence cannot settle it.",
                     "Return OL_REFERRAL_ADMITTED for an admitted case; do not refer lexical nuance/intensity, equivalent active/passive roles, grammar, style, or other resolvable RTC differences.",
                 ]
-                if skill_id in {"rtc", "saw-rtc"}
+                if skill_id == "rtc"
                 else []
             ),
             "",
@@ -320,7 +298,7 @@ def generated_inventory() -> tuple[dict[str, bytes], dict[str, Any]]:
         success, disqualifying = SKILL_CRITERIA[skill_id]
         skills[skill_id] = {
             "suite_id": f"alpha1-{skill_id}",
-            "suite_version": "1.1" if skill_id in {"rtc", "saw-rtc"} else "1.0",
+            "suite_version": "1.1" if skill_id == "rtc" else "1.0",
             "suite_sha256": _bundle_sha256(suite_files),
             "repetitions_per_case": 3,
             "execution_class": "GOVERNED_SKILL",

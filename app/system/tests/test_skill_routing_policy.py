@@ -9,6 +9,8 @@ import shutil
 from pathlib import Path
 
 import yaml
+
+from sage.skill_routing import skill_contract_sha256
 import pytest
 
 from sage.model_policy import load_model_policy, recommend_model
@@ -25,10 +27,8 @@ REGISTERED_SKILLS = (
     "rtc",
     "stc",
     "nca-numbers",
-    "saw-rtc",
-    "saw-stc",
-    "saw-focused-check",
-    "saw-original-language-review",
+    "rtc-focused-check",
+    "rtc-original-language-review",
 )
 
 
@@ -70,13 +70,13 @@ def test_schema_gate_rejects_an_unowned_registered_skill(package_root: Path, tmp
     copy = tmp_path / "SAGE"
     shutil.copytree(package_root, copy)
     ownership = _ownership_fixture()
-    del ownership["governed_skills"]["saw-stc"]  # type: ignore[index]
+    del ownership["governed_skills"]["stc"]  # type: ignore[index]
     _write_yaml(copy / "system/config/execution-ownership.yml", ownership)
 
     result = validate_schema_contracts(copy)
 
     assert result["status"] == "BLOCKED"
-    assert "execution-ownership.yml missing registered Skill ownership: saw-stc" in result["errors"]
+    assert "execution-ownership.yml missing registered Skill ownership: stc" in result["errors"]
 
 
 def test_schema_gate_rejects_model_routing_on_deterministic_work(package_root: Path, tmp_path: Path) -> None:
@@ -116,7 +116,7 @@ def test_schema_gate_requires_exact_registered_skill_route_keys(package_root: Pa
                 "execution_class": "GOVERNED_SKILL",
             }
             for skill_id in REGISTERED_SKILLS
-            if skill_id != "saw-stc"
+            if skill_id != "stc"
         },
     }
     _write_yaml(policy_path, policy)
@@ -124,7 +124,7 @@ def test_schema_gate_requires_exact_registered_skill_route_keys(package_root: Pa
     result = validate_schema_contracts(copy)
 
     assert result["status"] == "BLOCKED"
-    assert "model-policy.yml missing registered Skill routes: saw-stc" in result["errors"]
+    assert "model-policy.yml missing registered Skill routes: stc" in result["errors"]
 
 
 def test_shipped_skill_route_keys_equal_the_registered_skill_inventory(package_root: Path) -> None:
@@ -174,7 +174,7 @@ def _route_workspace(package_root: Path, tmp_path: Path, skill_id: str) -> tuple
     policy["skill_routes"][skill_id]["suite_sha256"] = suite_sha256
     _write_yaml(policy_path, policy)
     skills = json.loads((root / "system/config/skills.json").read_text(encoding="utf-8"))
-    return root, skills["skills"][skill_id]["adapted_sha256"], suite_sha256
+    return root, skill_contract_sha256(skills["skills"][skill_id]), suite_sha256
 
 
 def _capability(
@@ -263,7 +263,7 @@ def test_model_capability_fingerprint_changes_with_native_effort_order() -> None
 def test_resolver_returns_an_exact_qualified_skill_route(package_root: Path, tmp_path: Path) -> None:
     """Exact live capability and evidence identity must produce an operational route."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability()
     fingerprint = routing.capability_fingerprint(capability)
     _write_seed(
@@ -272,17 +272,17 @@ def test_resolver_returns_an_exact_qualified_skill_route(package_root: Path, tmp
         capability=capability,
         fingerprint=fingerprint,
         reasoning_id="medium",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
 
-    route = routing.resolve_skill_route(root, "saw-rtc", [_status("codex", capability)])
+    route = routing.resolve_skill_route(root, "rtc", [_status("codex", capability)])
 
     assert route.identity.provider == "codex"
     assert route.identity.model_id == "gpt-5.6-sol"
     assert route.identity.reasoning_id == "medium"
-    assert route.identity.skill_id == "saw-rtc"
+    assert route.identity.skill_id == "rtc"
     assert route.availability == "AVAILABLE"
     assert route.qualification == "RECOMMENDED"
     assert route.routing_mode == "AUTOMATIC"
@@ -297,7 +297,7 @@ def test_resolver_accepts_a_replaceable_qualification_evidence_repository(
 ) -> None:
     """Routing depends on a repository API, allowing a verified service cache to replace files."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability()
     requested_skills: list[str] = []
 
@@ -312,9 +312,9 @@ def test_resolver_accepts_a_replaceable_qualification_evidence_repository(
                 "model_id": capability.model,
                 "capability_fingerprint": routing.capability_fingerprint(capability),
                 "reasoning_id": "medium",
-                "skill_id": "saw-rtc",
+                "skill_id": "rtc",
                 "skill_sha256": skill_sha256,
-                "suite_id": "alpha1-saw-rtc",
+                "suite_id": "alpha1-rtc",
                 "suite_sha256": suite_sha256,
                 "policy_version": "alpha1-1",
                 "qualification_status": "QUALIFIED",
@@ -326,12 +326,12 @@ def test_resolver_accepts_a_replaceable_qualification_evidence_repository(
 
     route = routing.resolve_skill_route(
         root,
-        "saw-rtc",
+        "rtc",
         [_status("codex", capability)],
         evidence_repository=ServiceCacheRepository(),
     )
 
-    assert requested_skills == ["saw-rtc"]
+    assert requested_skills == ["rtc"]
     assert route.identity.model_id == capability.model
     assert route.identity.reasoning_id == "medium"
     assert route.evidence_sha256 == "d" * 64
@@ -340,7 +340,7 @@ def test_resolver_accepts_a_replaceable_qualification_evidence_repository(
 def test_resolver_marks_changed_skill_evidence_stale(package_root: Path, tmp_path: Path) -> None:
     """A seed bound to another Skill hash must not become an executable route."""
     routing = _routing_module()
-    root, _skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, _skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability()
     _write_seed(
         root,
@@ -348,13 +348,13 @@ def test_resolver_marks_changed_skill_evidence_stale(package_root: Path, tmp_pat
         capability=capability,
         fingerprint=routing.capability_fingerprint(capability),
         reasoning_id="medium",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256="c" * 64,
         suite_sha256=suite_sha256,
     )
 
     with pytest.raises(ValidationError) as caught:
-        routing.resolve_skill_route(root, "saw-rtc", [_status("codex", capability)])
+        routing.resolve_skill_route(root, "rtc", [_status("codex", capability)])
 
     assert caught.value.code == "SKILL_ROUTE_EVIDENCE_STALE"
 
@@ -362,7 +362,7 @@ def test_resolver_marks_changed_skill_evidence_stale(package_root: Path, tmp_pat
 def test_resolver_rejects_a_qualified_but_unavailable_route(package_root: Path, tmp_path: Path) -> None:
     """Qualified evidence must not hide current provider unavailability."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability()
     _write_seed(
         root,
@@ -370,13 +370,13 @@ def test_resolver_rejects_a_qualified_but_unavailable_route(package_root: Path, 
         capability=capability,
         fingerprint=routing.capability_fingerprint(capability),
         reasoning_id="medium",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
 
     with pytest.raises(ValidationError) as caught:
-        routing.resolve_skill_route(root, "saw-rtc", [_status("codex", capability, ready=False)])
+        routing.resolve_skill_route(root, "rtc", [_status("codex", capability, ready=False)])
 
     assert caught.value.code == "PROVIDER_ROUTE_UNAVAILABLE"
 
@@ -384,7 +384,7 @@ def test_resolver_rejects_a_qualified_but_unavailable_route(package_root: Path, 
 def test_resolver_uses_provider_default_without_a_reasoning_control(package_root: Path, tmp_path: Path) -> None:
     """Providers with no effort control must expose one provider-default route candidate."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability(model="claude-fixture", efforts=(), default=None)
     _write_seed(
         root,
@@ -392,12 +392,12 @@ def test_resolver_uses_provider_default_without_a_reasoning_control(package_root
         capability=capability,
         fingerprint=routing.capability_fingerprint(capability),
         reasoning_id="provider-default",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
 
-    route = routing.resolve_skill_route(root, "saw-rtc", [_status("claude", capability)])
+    route = routing.resolve_skill_route(root, "rtc", [_status("claude", capability)])
 
     assert route.identity.reasoning_id == "provider-default"
 
@@ -405,7 +405,7 @@ def test_resolver_uses_provider_default_without_a_reasoning_control(package_root
 def test_resolver_accepts_provider_native_non_sage_effort_names(package_root: Path, tmp_path: Path) -> None:
     """A future provider's native effort IDs must not be forced into the Codex scale."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability(model="grok-fixture", efforts=("fast", "deliberate"), default="fast")
     _write_seed(
         root,
@@ -413,12 +413,12 @@ def test_resolver_accepts_provider_native_non_sage_effort_names(package_root: Pa
         capability=capability,
         fingerprint=routing.capability_fingerprint(capability),
         reasoning_id="fast",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
 
-    route = routing.resolve_skill_route(root, "saw-rtc", [_status("grok", capability)])
+    route = routing.resolve_skill_route(root, "rtc", [_status("grok", capability)])
 
     assert route.identity.reasoning_id == "fast"
 
@@ -429,9 +429,9 @@ def test_resolver_uses_medium_provisionally_when_no_evidence_exists(
 ) -> None:
     """Removing the Alpha no-data branch must return the obsolete no-qualified-route error."""
     routing = _routing_module()
-    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
 
-    route = routing.resolve_skill_route(root, "saw-rtc", [_status("codex", _capability())])
+    route = routing.resolve_skill_route(root, "rtc", [_status("codex", _capability())])
 
     assert route.identity.provider == "codex"
     assert route.identity.model_id == "gpt-5.6-sol"
@@ -448,9 +448,9 @@ def test_resolver_uses_qualification_data_instead_of_no_data_medium(
 ) -> None:
     """Ignoring current data must leave automatic routing on the no-data Medium fallback."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability()
-    provisional = routing.resolve_skill_route(root, "saw-rtc", [_status("codex", capability)])
+    provisional = routing.resolve_skill_route(root, "rtc", [_status("codex", capability)])
     assert provisional.identity.reasoning_id == "medium"
     assert provisional.selection_mode == "PROVISIONAL_PROVIDER_DEFAULT"
 
@@ -460,11 +460,11 @@ def test_resolver_uses_qualification_data_instead_of_no_data_medium(
         capability=capability,
         fingerprint=routing.capability_fingerprint(capability),
         reasoning_id="high",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
-    qualified = routing.resolve_skill_route(root, "saw-rtc", [_status("codex", capability)])
+    qualified = routing.resolve_skill_route(root, "rtc", [_status("codex", capability)])
     assert qualified.identity.reasoning_id == "high"
     assert qualified.qualification == "RECOMMENDED"
     assert qualified.selection_mode == "EXACT_SKILL_QUALIFICATION"
@@ -482,7 +482,7 @@ def test_resolver_blocks_known_adverse_evidence_instead_of_using_provisional(
 ) -> None:
     """Dropping an adverse-evidence branch must incorrectly make a tested bad route executable."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability()
     _write_seed(
         root,
@@ -490,14 +490,14 @@ def test_resolver_blocks_known_adverse_evidence_instead_of_using_provisional(
         capability=capability,
         fingerprint=routing.capability_fingerprint(capability),
         reasoning_id="medium",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
         status=qualification_status,
     )
 
     with pytest.raises(ValidationError) as caught:
-        routing.resolve_skill_route(root, "saw-rtc", [_status("codex", capability)])
+        routing.resolve_skill_route(root, "rtc", [_status("codex", capability)])
 
     assert caught.value.code == reason_code
 
@@ -508,13 +508,13 @@ def test_resolver_uses_medium_without_a_release_state_gate(
 ) -> None:
     """A true no-data state must use Medium independently of release phase."""
     routing = _routing_module()
-    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     standard_path = root / "system/config/sage-standard.json"
     standard = json.loads(standard_path.read_text(encoding="utf-8"))
     standard["release"]["status"] = "RELEASE_CANDIDATE"
     standard_path.write_text(json.dumps(standard, indent=2) + "\n", encoding="utf-8")
 
-    route = routing.resolve_skill_route(root, "saw-rtc", [_status("codex", _capability())])
+    route = routing.resolve_skill_route(root, "rtc", [_status("codex", _capability())])
 
     assert route.identity.reasoning_id == "medium"
     assert route.qualification == "PROVISIONAL_UNQUALIFIED"
@@ -582,7 +582,7 @@ def test_model_service_exposes_recommendation_by_exact_skill(
 ) -> None:
     """Operator services must request a registered Skill rather than a workflow profile."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability()
     status = _status("codex", capability)
     _write_seed(
@@ -591,17 +591,17 @@ def test_model_service_exposes_recommendation_by_exact_skill(
         capability=capability,
         fingerprint=routing.capability_fingerprint(capability),
         reasoning_id="medium",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
     service = ModelService(root)
     monkeypatch.setattr(service, "probe", lambda *_args, **_kwargs: (status, None))
 
-    result = service.recommendation_for_skill("saw-rtc")
+    result = service.recommendation_for_skill("rtc")
 
     assert result["status"] == "RECOMMENDED"
-    assert result["skill_id"] == "saw-rtc"
+    assert result["skill_id"] == "rtc"
     assert result["provider"] == "codex"
     assert result["model_id"] == "gpt-5.6-sol"
     assert result["reasoning_id"] == "medium"
@@ -612,7 +612,7 @@ def test_model_service_lists_qualified_and_provisional_skills_separately(
 ) -> None:
     """Folding provisional rows into qualified status must make the truthful counts fail."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability()
     status = _status("codex", capability)
     _write_seed(
@@ -621,7 +621,7 @@ def test_model_service_lists_qualified_and_provisional_skills_separately(
         capability=capability,
         fingerprint=routing.capability_fingerprint(capability),
         reasoning_id="medium",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
@@ -634,10 +634,10 @@ def test_model_service_lists_qualified_and_provisional_skills_separately(
     assert result["status"] == "READY_PROVISIONAL"
     assert result["qualified_skills"] == 1
     assert result["provisional_skills"] == len(REGISTERED_SKILLS) - 1
-    assert rows["saw-rtc"]["qualification"] == "RECOMMENDED"
-    assert rows["saw-stc"]["qualification"] == "PROVISIONAL_UNQUALIFIED"
-    assert rows["saw-stc"]["selection_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
-    assert rows["saw-stc"]["reason_code"] is None
+    assert rows["rtc"]["qualification"] == "RECOMMENDED"
+    assert rows["stc"]["qualification"] == "PROVISIONAL_UNQUALIFIED"
+    assert rows["stc"]["selection_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert rows["stc"]["reason_code"] is None
 
 
 def test_available_model_catalog_lists_exact_qualified_skill_routes(
@@ -645,7 +645,7 @@ def test_available_model_catalog_lists_exact_qualified_skill_routes(
 ) -> None:
     """Catalog rows must expose exact Skill/reasoning evidence without becoming a selector."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     capability = _capability()
     status = _status("codex", capability)
     _write_seed(
@@ -654,7 +654,7 @@ def test_available_model_catalog_lists_exact_qualified_skill_routes(
         capability=capability,
         fingerprint=routing.capability_fingerprint(capability),
         reasoning_id="medium",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
@@ -666,7 +666,7 @@ def test_available_model_catalog_lists_exact_qualified_skill_routes(
     assert result["selected_model"] is None
     assert result["models"][0]["qualified_skill_routes"] == [
         {
-            "skill_id": "saw-rtc",
+            "skill_id": "rtc",
             "reasoning_id": "medium",
             "qualification": "RECOMMENDED",
             "evidence_sha256": "b" * 64,
@@ -674,7 +674,7 @@ def test_available_model_catalog_lists_exact_qualified_skill_routes(
     ]
     assert {
         item["skill_id"] for item in result["models"][0]["provisional_skill_routes"]
-    } == set(REGISTERED_SKILLS) - {"saw-rtc"}
+    } == set(REGISTERED_SKILLS) - {"rtc"}
     assert all(
         item["qualification"] == "PROVISIONAL_UNQUALIFIED"
         and item["evidence_sha256"] is None
@@ -688,12 +688,12 @@ def test_model_service_reports_no_data_route_as_provisional(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Hard-coding recommendation status must mislabel an unqualified no-data route."""
-    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     service = ModelService(root)
     status = _status("codex", _capability())
     monkeypatch.setattr(service, "probe", lambda *_args, **_kwargs: (status, None))
 
-    result = service.recommendation_for_skill("saw-rtc")
+    result = service.recommendation_for_skill("rtc")
 
     assert result["status"] == "PROVISIONAL_UNQUALIFIED"
     assert result["qualification"] == "PROVISIONAL_UNQUALIFIED"
@@ -728,7 +728,7 @@ def test_release_provider_preference_breaks_only_otherwise_equal_route_ties(
 ) -> None:
     """Changing the declared final tie-break must deterministically change an equal route choice."""
     routing = _routing_module()
-    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "saw-rtc")
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
     a_capability = _capability(model="a-model")
     z_capability = _capability(model="z-model")
     _write_seed(
@@ -737,7 +737,7 @@ def test_release_provider_preference_breaks_only_otherwise_equal_route_ties(
         capability=z_capability,
         fingerprint=routing.capability_fingerprint(z_capability),
         reasoning_id="medium",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
@@ -749,7 +749,7 @@ def test_release_provider_preference_breaks_only_otherwise_equal_route_ties(
         capability=a_capability,
         fingerprint=routing.capability_fingerprint(a_capability),
         reasoning_id="medium",
-        skill_id="saw-rtc",
+        skill_id="rtc",
         skill_sha256=skill_sha256,
         suite_sha256=suite_sha256,
     )
@@ -762,10 +762,30 @@ def test_release_provider_preference_breaks_only_otherwise_equal_route_ties(
     policy["release_preference"] = {"providers": ["z-provider", "a-provider"]}
     _write_yaml(policy_path, policy)
 
-    first = routing.resolve_skill_route(root, "saw-rtc", statuses)
+    first = routing.resolve_skill_route(root, "rtc", statuses)
     policy["release_preference"] = {"providers": ["a-provider", "z-provider"]}
     _write_yaml(policy_path, policy)
-    second = routing.resolve_skill_route(root, "saw-rtc", statuses)
+    second = routing.resolve_skill_route(root, "rtc", statuses)
 
     assert first.identity.provider == "z-provider"
     assert second.identity.provider == "a-provider"
+
+
+def test_shared_rule_change_invalidates_model_qualification(package_root: Path, tmp_path: Path) -> None:
+    """Changing a pinned global contract invalidates qualification even with the same entrypoint."""
+    routing = _routing_module()
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
+    capability = _capability()
+    _write_seed(
+        root, provider="codex", capability=capability,
+        fingerprint=routing.capability_fingerprint(capability), reasoning_id="medium",
+        skill_id="rtc", skill_sha256=skill_sha256, suite_sha256=suite_sha256,
+    )
+    assert routing.resolve_skill_route(root, "rtc", [_status("codex", capability)]).qualification == "RECOMMENDED"
+    path = root / "system/config/skills.json"
+    registry = json.loads(path.read_text())
+    registry["skills"]["rtc"]["shared_references"][0]["sha256"] = "e" * 64
+    path.write_text(json.dumps(registry))
+    with pytest.raises(ValidationError) as caught:
+        routing.resolve_skill_route(root, "rtc", [_status("codex", capability)])
+    assert caught.value.code == "SKILL_ROUTE_EVIDENCE_STALE"

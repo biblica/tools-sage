@@ -541,8 +541,8 @@ def parse_skill_frontmatter(path: Path) -> dict[str, Any]:
 def check_all_skills(root: Path, errors: list[str], counts: dict[str, int]) -> None:
     """Validate every provider-neutral routed Skill and its active references."""
     paths = sorted((root / "system" / "skills").glob("*/SKILL.md"))
-    if len(paths) != 10:
-        errors.append(f"Expected 10 governed analytical Skill files, found {len(paths)}")
+    if len(paths) != 8:
+        errors.append(f"Expected 8 governed analytical Skill files, found {len(paths)}")
     forbidden_context = {
         "Cline": "provider-specific Cline instruction",
         "SWITCH TO ACT MODE": "obsolete mode-switch instruction",
@@ -804,8 +804,6 @@ def check_skill_registry(root: Path, errors: list[str], counts: dict[str, int]) 
         ("rtc", "rtc"),
         ("stc", "stc"),
         ("nca", "numbers"),
-        ("saw", "rtc"),
-        ("saw", "stc"),
         ("saw", "focused"),
         ("saw", "ol"),
     }
@@ -829,6 +827,12 @@ def check_skill_registry(root: Path, errors: list[str], counts: dict[str, int]) 
                 errors.append(f"Original Skill/prompt hash mismatch: {skill_id}")
             if str(item.get("qualification_status", "")).upper() != "VALIDATED":
                 errors.append(f"Skill qualification is not VALIDATED: {skill_id}")
+            for shared in item.get("shared_references", []):
+                shared_path = (root / shared["file"]).resolve()
+                shared_path.relative_to(root.resolve())
+                shared_path.relative_to((root / "system/skills/global/references").resolve())
+                if not shared_path.is_file() or sha256_file(shared_path) != shared["sha256"]:
+                    errors.append(f"Shared Skill reference is missing or changed: {skill_id}: {shared['file']}")
         except Exception as exc:  # noqa: BLE001
             errors.append(f"Invalid Skill registry row {skill_id}: {exc}")
     if operations != expected:

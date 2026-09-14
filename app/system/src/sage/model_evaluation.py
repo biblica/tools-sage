@@ -13,7 +13,7 @@ from .errors import ConfigurationError, ValidationError
 from .executors import ProviderRequest, ProviderResponse, ProviderStatus, make_executor
 from .llm_settings import load_llm_settings
 from .model_policy import load_model_policy
-from .skill_routing import capability_fingerprint
+from .skill_routing import capability_fingerprint, skill_contract_sha256
 from .storage import storage_layout
 
 
@@ -230,7 +230,7 @@ def _validate_attempt(
     reviewed = value.get("reviewed_item_ids")
     expected_reviewed = expected.get("expected_reviewed_item_ids")
     if reviewed != expected_reviewed:
-        if str(case["skill_id"]) == "saw-original-language-review":
+        if str(case["skill_id"]) == "rtc-original-language-review":
             hard_errors.append("Original-language evaluation requires exactly one reviewed item")
         else:
             hard_errors.append("Reviewed item identity differs from the sealed case")
@@ -270,12 +270,12 @@ def _response_route_errors(
 
 
 def _skill_sha256(root: Path, skill_id: str) -> str:
-    """Return the exact adapted Skill hash from the registered Skill inventory."""
+    """Return the registered entrypoint and shared-contract qualification identity."""
     registry = _load_object(root / "system/config/skills.json", "Skill registry")
     skill = (registry.get("skills") or {}).get(skill_id)
     if not isinstance(skill, dict) or not skill.get("adapted_sha256"):
         raise ConfigurationError(f"Unknown registered Skill: {skill_id}")
-    return str(skill["adapted_sha256"])
+    return skill_contract_sha256(skill)
 
 
 def _receipt_path(

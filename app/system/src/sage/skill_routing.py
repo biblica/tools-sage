@@ -28,6 +28,26 @@ def _canonical_sha256(value: Mapping[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def skill_contract_sha256(skill: Mapping[str, Any]) -> str:
+    """Bind qualification to the entrypoint and every declared shared instruction."""
+    adapted = str(skill["adapted_sha256"])
+    shared = skill.get("shared_references", [])
+    if not shared:
+        return adapted
+    if not isinstance(shared, list) or any(
+        not isinstance(item, dict) or not item.get("file") or not item.get("sha256")
+        for item in shared
+    ):
+        raise ConfigurationError("Skill shared_references must contain pinned file records")
+    return _canonical_sha256({
+        "adapted_sha256": adapted,
+        "shared_references": [
+            {"file": item["file"], "sha256": item["sha256"]}
+            for item in sorted(shared, key=lambda item: item["file"])
+        ],
+    })
+
+
 def capability_fingerprint(capability: ModelCapability) -> str:
     """Bind the provider-reported capability fields that can affect route behavior."""
     return _canonical_sha256(
@@ -179,7 +199,7 @@ def _skill_identity(root: Path, skill_id: str) -> tuple[str, dict[str, Any], dic
             f"Registered Skill identity is unavailable: {skill_id}",
             code="NO_QUALIFIED_SKILL_ROUTE",
         )
-    return str(skill["adapted_sha256"]), policy, route_policy
+    return skill_contract_sha256(skill), policy, route_policy
 
 
 def _capability_rows(

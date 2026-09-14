@@ -35,7 +35,7 @@ def frontmatter(path: Path) -> dict[str, str]:
 def test_all_skills_have_consistent_frontmatter() -> None:
     """Verify that all skills have consistent frontmatter."""
     paths = sorted(SKILLS.glob("*/SKILL.md"))
-    assert len(paths) == 10
+    assert len(paths) == 8
     for path in paths:
         data = frontmatter(path)
         assert set(data) == {"name", "description"}
@@ -51,7 +51,7 @@ def test_all_skills_have_consistent_frontmatter() -> None:
 def test_registered_skill_hashes_match_current_and_original_files() -> None:
     """Verify that registered skill hashes match current and original files."""
     document = json.loads((ROOT / "system" / "config" / "skills.json").read_text(encoding="utf-8"))
-    assert len(document["skills"]) == 10
+    assert len(document["skills"]) == 8
     for skill_id, item in document["skills"].items():
         assert skill_id
         assert sha256(ROOT / item["file"]) == item["adapted_sha256"]
@@ -352,9 +352,9 @@ def test_beta2_current_operator_grammar_is_consistent() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     handover = (ROOT / "docs" / "advanced" / "release" / "HANDOVER.md").read_text(encoding="utf-8")
     human = (ROOT / "docs" / "advanced" / "architecture" / "HUMAN-OUTPUT-AND-LOGGING.md").read_text(encoding="utf-8")
-    saw_skill = (ROOT / "system" / "skills" / "saw-rtc" / "SKILL.md").read_text(encoding="utf-8")
-    focused_skill = (ROOT / "system" / "skills" / "saw-focused-check" / "SKILL.md").read_text(encoding="utf-8")
-    ol_skill = (ROOT / "system" / "skills" / "saw-ol-review" / "SKILL.md").read_text(encoding="utf-8")
+    saw_skill = (ROOT / "system" / "skills" / "rtc" / "SKILL.md").read_text(encoding="utf-8")
+    focused_skill = (ROOT / "system" / "skills" / "rtc-focused-check" / "SKILL.md").read_text(encoding="utf-8")
+    ol_skill = (ROOT / "system" / "skills" / "rtc-original-language-review" / "SKILL.md").read_text(encoding="utf-8")
     localization = json.loads((ROOT / "system" / "config" / "localization" / "menu-localization.json").read_text(encoding="utf-8"))
     strings = localization.get("strings", localization)
 
@@ -369,7 +369,7 @@ def test_beta2_current_operator_grammar_is_consistent() -> None:
     assert "source-provenance adjudication" in saw_skill
     assert "Never emit an OL request for grammar, readability, punctuation, spelling, USFM/structure, style, or ordinary consistency defects." in saw_skill
     assert "When the policy is `PROHIBITED`, emit no `ol_review_requests`" in saw_skill
-    assert "# SAW Targeted Check" in focused_skill
+    assert "# RTC Targeted Check" in focused_skill
     assert "normal benchmark" not in ol_skill
     assert strings["menu.focused.check"]["en-US"] == "Targeted Check"
     assert strings["menu.start.focused.check"]["en-US"] == "Start Targeted Check"
@@ -692,7 +692,7 @@ def test_representative_documented_commands_parse() -> None:
         ["project", "target-history", "--job", "BIC_idKKHv0-usNIVv2-usBOLx1", "--scope", "3JN 1:1-15"],
         ["project", "revert-target-scope", "--job", "BIC_idKKHv0-usNIVv2-usBOLx1", "--scope", "3JN 1:1-15"],
         ["model", "routes"],
-        ["model", "recommend", "--skill", "saw-rtc"],
+        ["model", "recommend", "--skill", "rtc"],
         [
             "model", "override", "set", "--provider", "codex", "--model", "MODEL_ID",
             "--capability-fingerprint", "a" * 64, "--reasoning", "medium",
