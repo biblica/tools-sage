@@ -817,3 +817,67 @@ os._exit(17)
         if child.poll() is None:
             child.kill()
             child.wait(timeout=5)
+
+
+@pytest.mark.parametrize('window', ['before', 'after'])
+def test_uncommitted_retirement_interruption_keeps_audit_bytes(phase_store, phase_key, artifact, validator, monkeypatch, window):
+    """An interrupted directory retirement preserves orphan history and remains restartable."""
+    checkpoints, output, receipt, validate_final = publication_fixture(phase_store, phase_key, artifact, validator)
+    directory = phase_store.task_root / 'validation/nca-phases/publication'
+    directory.mkdir(parents=True)
+    orphan = b'original uncommitted output'
+    (directory / 'output.json').write_bytes(orphan)
+    module = replay_module()
+    original = module.os.replace
+    def interrupt(source, destination):
+        """Crash on either side of the atomic retirement without splitting its files."""
+        if source == directory and window == 'before':
+            raise RuntimeError('retirement interrupted')
+        original(source, destination)
+        if source == directory and window == 'after':
+            raise RuntimeError('retirement interrupted')
+    monkeypatch.setattr(module.os, 'replace', interrupt)
+    with pytest.raises(RuntimeError, match='retirement interrupted'):
+        phase_store.prepare_publication(output, receipt, checkpoints=checkpoints,
+            validate_phase=lambda key, value: validator(value), validate_final=validate_final)
+    monkeypatch.setattr(module.os, 'replace', original)
+    phase_store.prepare_publication(output, receipt, checkpoints=checkpoints,
+        validate_phase=lambda key, value: validator(value), validate_final=validate_final)
+    assert phase_store.recover_publication(checkpoints=checkpoints,
+        validate_phase=lambda key, value: validator(value), validate_final=validate_final) == output
+    retired = list(directory.parent.glob('abandoned-publications/*/output.json'))
+    assert len(retired) == 1 and retired[0].read_bytes() == orphan
+
+
+@pytest.mark.parametrize('damage', ['source_symlink', 'unexpected', 'destination_symlink', 'hardlink', 'canonical'])
+def test_uncommitted_retirement_rejects_unsafe_paths(phase_store, phase_key, artifact, validator, tmp_path, damage):
+    """Retirement cannot move unexpected entries, linked files or unauthenticated canonical output."""
+    import os
+    checkpoints, output, receipt, validate_final = publication_fixture(phase_store, phase_key, artifact, validator)
+    directory = phase_store.task_root / 'validation/nca-phases/publication'
+    directory.mkdir(parents=True)
+    orphan = directory / 'output.json'
+    outside = tmp_path / 'outside'
+    outside.mkdir()
+    protected = outside / 'protected.json'
+    protected.write_bytes(b'outside protected bytes')
+    if damage == 'source_symlink':
+        orphan.symlink_to(protected)
+    elif damage == 'hardlink':
+        os.link(protected, orphan)
+    else:
+        orphan.write_bytes(b'uncommitted bytes')
+    if damage == 'unexpected':
+        (directory / 'unexpected.json').write_text('{}')
+    elif damage == 'destination_symlink':
+        (directory.parent / 'abandoned-publications').symlink_to(outside, target_is_directory=True)
+    elif damage == 'canonical':
+        canonical = phase_store.task_root / 'output/model-evidence.json'
+        canonical.parent.mkdir()
+        canonical.write_bytes(b'unauthenticated canonical bytes')
+    with pytest.raises(ValidationError):
+        phase_store.prepare_publication(output, receipt, checkpoints=checkpoints,
+            validate_phase=lambda key, value: validator(value), validate_final=validate_final)
+    assert orphan.exists() and not (directory / 'manifest.json').exists()
+    assert protected.read_bytes() == b'outside protected bytes'
+    assert sorted(p.name for p in outside.iterdir()) == ['protected.json']

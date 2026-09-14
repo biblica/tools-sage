@@ -572,3 +572,15 @@ def test_cold_process_requalifies_inputs_and_reuses_valid_checkpoints(tmp_path):
     assert before['outcomes'] == after['outcomes']
     assert before['input_sha256'] == after['input_sha256']
     assert after['checkpoint_reuse_events'] == 36
+
+
+@pytest.mark.parametrize(('mode', 'strategy'), [('synthetic', 'baseline'), ('synthetic', 'paired'), ('live', 'optimized')])
+def test_fault_cli_rejects_unsupported_dispatch_before_work(tmp_path, mode, strategy):
+    """A requested fault must never silently turn into an ordinary or live benchmark."""
+    receipt = tmp_path / 'unexpected.json'
+    completed = subprocess.run([sys.executable, str(TOOL), '--mode', mode, '--strategy', strategy,
+        '--fault', 'transient', '--cases', str(tmp_path / 'absent.json'), '--receipt', str(receipt)],
+        capture_output=True, text=True)
+    assert completed.returncode == 2
+    assert 'fault injection requires synthetic optimized mode' in completed.stderr
+    assert not receipt.exists()

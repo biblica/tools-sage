@@ -725,6 +725,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error(f"unsupported benchmark mode: {args.mode}")
     if args.strategy not in {"baseline", "optimized", "paired"}:
         parser.error(f"unsupported benchmark strategy: {args.strategy}")
+    if args.fault != "none" and (args.mode != "synthetic" or args.strategy != "optimized"):
+        parser.error("fault injection requires synthetic optimized mode")
     if (args.checkpoint_root or args.resume_only) and (args.mode != "synthetic" or args.strategy != "optimized" or args.resume_only and args.checkpoint_root is None):
         parser.error("checkpoint flags require synthetic optimized mode and a checkpoint root for resume")
     if args.mode == "live":

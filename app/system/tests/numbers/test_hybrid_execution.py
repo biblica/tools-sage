@@ -195,8 +195,11 @@ def test_no_admitted_checkpoint_marks_run_failed_with_full_scope_diagnostics(mak
     assert not (path.parent / 'output/model-evidence.json').exists()
 
 
-def test_recovery_after_output_publication_interruption_makes_no_new_provider_call(make_workspace, monkeypatch):
-    """A staged output survives interruption and recovers its exact missing execution receipt."""
+@pytest.mark.parametrize('window', ['staged_output', 'staged_receipt', 'manifest', 'canonical_output'])
+def test_canonical_publication_interruption_rebuilds_only_uncommitted_evidence(make_workspace, monkeypatch, window):
+    """Every publication crash window reconciles canonical bytes without repeating accepted phases."""
+    import hashlib
+    import json
     from pathlib import Path
     from .test_nca_tasks import _run, _OfflineTasks
     from sage.nca import create_nca_task, execute_nca_task
@@ -204,26 +207,116 @@ def test_recovery_after_output_publication_interruption_makes_no_new_provider_ca
     _root, config, job, run = _run(make_workspace, monkeypatch)
     task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
     path = Path(task['task_manifest_path'])
+    phase_root = path.parent / 'validation/nca-phases'
+    publication = phase_root / 'publication'
+    output = path.parent / 'output/model-evidence.json'
+    receipt = path.parent / 'validation/llm-execution-receipt.json'
+    target = {'staged_output': publication / 'output.json', 'staged_receipt': publication / 'receipt.json',
+        'manifest': publication / 'manifest.json', 'canonical_output': output}[window]
+    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
+    original_bytes, original_json = replay.atomic_write_bytes, replay.atomic_write_json
+    def interrupt_bytes(destination, payload):
+        """Interrupt immediately after the selected durable payload write."""
+        original_bytes(destination, payload)
+        if destination == target:
+            raise RuntimeError('publication interrupted')
+    def interrupt_json(destination, payload):
+        """Interrupt immediately after the manifest establishes publication authority."""
+        original_json(destination, payload)
+        if destination == target:
+            raise RuntimeError('publication interrupted')
+    monkeypatch.setattr(replay, 'atomic_write_bytes', interrupt_bytes)
+    monkeypatch.setattr(replay, 'atomic_write_json', interrupt_json)
+    with pytest.raises(RuntimeError, match='publication interrupted'):
+        execute_nca_task(config, path)
+    staged = {p.name: p.read_bytes() for p in publication.iterdir()}
+    before = json.loads(staged['output.json'])
+    attempts = {p.name: p.read_bytes() for p in (phase_root / 'attempts').iterdir()}
+    ledger = json.loads((phase_root / 'ledger.json').read_text())
+    assert ledger['failures'] and before['metrics']['failed_calls'] > 0
+    monkeypatch.setattr(replay, 'atomic_write_bytes', original_bytes)
+    monkeypatch.setattr(replay, 'atomic_write_json', original_json)
+    committed = window in {'manifest', 'canonical_output'}
+    class NoRepeatedAccepted(_OfflineTasks):
+        """Permit only previously failed phases during an uncommitted fresh execution."""
+        def _execute_physical(self, phase, *args, **kwargs):
+            """Reject repeated accepted extraction and all post-manifest physical calls."""
+            assert not committed and phase != 'EXTRACTION', 'accepted provider call repeated'
+            return super()._execute_physical(phase, *args, **kwargs)
+    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', NoRepeatedAccepted)
+    result = execute_nca_task(config, path)
+    assert result['status'] == 'EXECUTED'
+    after = json.loads(output.read_text())
+    final_receipt = json.loads(receipt.read_text())
+    assert output.read_bytes() == (publication / 'output.json').read_bytes()
+    assert receipt.read_bytes() == (publication / 'receipt.json').read_bytes()
+    assert final_receipt['output_sha256'] == {'output/model-evidence.json': hashlib.sha256(output.read_bytes()).hexdigest()}
+    assert final_receipt['phase_count'] == after['metrics']['accepted_phase_receipts']
+    assert final_receipt['provider_response_sha256'] == [row['response_sha256']
+        for rows in after['model_receipts'].values() for row in rows]
+    assert after['metrics']['checkpoints'] == before['metrics']['checkpoints']
+    assert all(call in after['metrics']['calls'] for call in before['metrics']['calls'])
+    assert all((phase_root / 'attempts' / name).read_bytes() == data for name, data in attempts.items())
+    after_ledger = json.loads((phase_root / 'ledger.json').read_text())
+    assert after_ledger['entries'] == ledger['entries']
+    assert after_ledger['failures'][:len(ledger['failures'])] == ledger['failures']
+    if committed:
+        assert {p.name: p.read_bytes() for p in publication.iterdir()} == staged
+        assert not (phase_root / 'abandoned-publications').exists()
+    else:
+        assert after['metrics']['checkpoint_reuse'] == before['metrics']['accepted_phase_receipts']
+        retired = list((phase_root / 'abandoned-publications').iterdir())
+        assert len(retired) == 1
+        assert {p.name: p.read_bytes() for p in retired[0].iterdir()} == staged
+    for field in ('groups', 'findings', 'coverage', 'summary', 'model_receipts'):
+        assert after[field] == before[field]
+
+
+@pytest.mark.parametrize('invalid_checkpoint', [False, True])
+def test_altered_orphan_never_authorizes_canonical_evidence(make_workspace, monkeypatch, invalid_checkpoint):
+    """Orphan bytes are retained as diagnostics and cannot override current checkpoint validation."""
+    import json
+    from pathlib import Path
+    from .test_nca_tasks import _run, _OfflineTasks
+    from sage.nca import create_nca_task, execute_nca_task
+    from sage.numbers import replay
+    from sage.numbers.hybrid import CheckpointFailure
+    _root, config, job, run = _run(make_workspace, monkeypatch)
+    task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
+    path = Path(task['task_manifest_path'])
+    phases = path.parent / 'validation/nca-phases'
+    orphan = phases / 'publication/output.json'
     monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
     original = replay.atomic_write_bytes
     def interrupt(destination, payload):
-        """Interrupt after writing canonical model evidence, before its paired receipt."""
+        """Leave accepted checkpoints with no committed publication manifest."""
         original(destination, payload)
-        if destination == path.parent / 'output/model-evidence.json':
-            raise RuntimeError('publication interrupted')
+        if destination == orphan:
+            raise RuntimeError('preparation interrupted')
     monkeypatch.setattr(replay, 'atomic_write_bytes', interrupt)
-    with pytest.raises(RuntimeError, match='publication interrupted'):
+    with pytest.raises(RuntimeError, match='preparation interrupted'):
         execute_nca_task(config, path)
-    before = (path.parent / 'output/model-evidence.json').read_bytes()
     monkeypatch.setattr(replay, 'atomic_write_bytes', original)
-    class NoCalls(_OfflineTasks):
-        """Reject any completion call while reconstructing a prepared publication."""
-        def _execute_physical(self, *args, **kwargs):
-            """A committed publication must replay accepted phases, not invoke transport."""
-            raise AssertionError('unexpected completion call')
-    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', NoCalls)
-    assert execute_nca_task(config, path)['status'] == 'EXECUTED'
-    assert (path.parent / 'output/model-evidence.json').read_bytes() == before
+    forged = b'{"summary":{"passes":999},"untrusted":true}'
+    orphan.write_bytes(forged)
+    if invalid_checkpoint:
+        ledger = json.loads((phases / 'ledger.json').read_text())
+        row = next(iter(ledger['entries'].values()))
+        attempt = phases / 'attempts' / (row['attempt_id'] + '.json')
+        value = json.loads(attempt.read_text())
+        value['artifact']['raw_response'] = '{}'
+        attempt.write_text(json.dumps(value))
+        with pytest.raises(CheckpointFailure):
+            execute_nca_task(config, path)
+        assert orphan.read_bytes() == forged
+        assert not (phases / 'abandoned-publications').exists()
+        assert not (path.parent / 'output/model-evidence.json').exists()
+        assert not (path.parent / 'validation/llm-execution-receipt.json').exists()
+    else:
+        assert execute_nca_task(config, path)['status'] == 'EXECUTED'
+        assert (path.parent / 'output/model-evidence.json').read_bytes() != forged
+        retained = list((phases / 'abandoned-publications').glob('*/output.json'))
+        assert len(retained) == 1 and retained[0].read_bytes() == forged
 
 
 def test_failure_diagnostic_reader_authenticates_durable_membership(tmp_path):
