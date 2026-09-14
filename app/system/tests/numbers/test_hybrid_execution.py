@@ -480,6 +480,16 @@ def test_note_and_heading_numbers_never_become_body_accuracy_candidates(make_wor
     if not presentation:
         assert heading.extraction.status == 'UNSUPPORTED'
         assert 'PRESENTATION_CHECK_DISABLED' in heading.limitations
+    from sage.nca import _provenance
+    from sage.numbers.results_v2 import numbers_result_document_v2
+    from sage.numbers.results import validate_numbers_result
+    receipts = {phase: [] for phase in ('EXTRACTION', 'CORRESPONDENCE', 'FOOTNOTE', 'GROUP_CORRESPONDENCE')}
+    for checkpoint in result.metrics['checkpoints']:
+        receipts[checkpoint['receipt']['phase']].append(checkpoint['receipt'])
+    serialized = numbers_result_document_v2(result, provenance=_provenance(job, run, inputs.policy),
+        check_policy=inputs.policy, model_receipts=receipts)
+    assert validate_numbers_result(serialized, expected_unit_ids=inputs.expected_unit_ids,
+        allowed_evidence_ids=tuple(inputs.bundle.provenance)) == serialized
 
 
 def test_missing_wip_remains_unsupported_and_visible_in_final_scope(make_workspace, monkeypatch):

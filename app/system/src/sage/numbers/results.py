@@ -775,6 +775,7 @@ def _validate_findings(
     *,
     units: list[Mapping[str, Any]],
     checks: Mapping[str, bool],
+    unit_checks: Mapping[str, Mapping[str, bool]] | None = None,
 ) -> list[Mapping[str, Any]]:
     """Require exact findings bound to their owning unit decisions and references."""
     if not isinstance(value, list):
@@ -839,7 +840,10 @@ def _validate_findings(
             raise _error("NCA footnote finding disagrees with its unit.", "NCA_RESULT_FINDING_INVALID")
         actual[(unit["unit_id"], category, row["code"], rule_id, span)] += 1
         rows.append(row)
-    if actual != _expected_finding_signatures(units, checks):
+    expected: Counter[tuple[object, ...]] = Counter()
+    for unit in units:
+        expected.update(_expected_finding_signatures([unit], checks if unit_checks is None else unit_checks[unit['unit_id']]))
+    if actual != expected:
         raise _error("NCA findings do not derive from enabled unit decisions.", "NCA_RESULT_FINDING_INVALID")
     try:
         validate_global_finding_ids([dict(row) for row in rows])
