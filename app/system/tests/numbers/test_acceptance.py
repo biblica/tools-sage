@@ -71,12 +71,19 @@ class _NumericTasks(_OfflineTasks):
 
 
 @pytest.mark.parametrize('unsupported', [False, True])
-def test_import_to_report_is_read_only_reproducible_and_explicit_about_limits(make_workspace, monkeypatch, tmp_path, unsupported):
+@pytest.mark.parametrize('topology', ['single', 'chapters'])
+def test_import_to_report_is_read_only_reproducible_and_explicit_about_limits(make_workspace, monkeypatch, tmp_path, unsupported, topology):
     """A full canonical operator flow seals evidence and reports limited assessment honestly."""
     root = make_workspace(configured=True, qualification_status='VALIDATED')
     config, style_bytes = _prepare_nca_workspace(root)
+    if topology == 'chapters':
+        for name in ('eng.vrs', 'org.vrs'):
+            (root / 'system/resources/scripture' / name).write_text('MAT 1:3 2:1\n', encoding='utf-8')
     scripture = config.project('usWIP').path / '41MAT.SFM'
-    scripture.write_text('\\id MAT Fixture\n\\c 1\n\\p\n\\v 1 3 men and 4 women.\n', encoding='utf-8')
+    source = '\\id MAT Fixture\n\\c 1\n\\p\n\\v 1 3 men and 4 women.\n'
+    if topology == 'chapters':
+        source += '\\c 2\n\\p\n\\v 1 3 men and 4 women.\n'
+    scripture.write_text(source, encoding='utf-8')
     source_before = _inventory(config.project('usWIP').path)
     library = storage_layout(root).resources_root / 'numbers'
     shutil.rmtree(library / 'SYNTHETIC_NCA_REFERENCE_1')
@@ -109,7 +116,7 @@ def test_import_to_report_is_read_only_reproducible_and_explicit_about_limits(ma
     package_before = _inventory(library)
     command('resource', 'number-style', 'import', '--path', str(profile_source))
     created = command('task', 'create', '--workflow', 'nca', '--operation', 'numbers', '--wip', 'usWIP',
-                      '--scope', 'MAT 1:1', '--numbers-package', imported['package_id'], '--number-style', 'fixture-style/1')
+                      '--scope', 'MAT 1:1' if topology == 'single' else 'MAT 1:1-2:1', '--numbers-package', imported['package_id'], '--number-style', 'fixture-style/1')
     manifest = created['task_manifest_path']
     assert command('task', 'execute', '--task', manifest)['status'] == 'EXECUTED'
     completed = command('task', 'submit', '--task', manifest)
@@ -120,7 +127,18 @@ def test_import_to_report_is_read_only_reproducible_and_explicit_about_limits(ma
     assert document['limitations']['capability'] == NCA_CAPABILITY_LIMITATION
     assert NCA_CAPABILITY_LIMITATION in report.read_text(encoding='utf-8')
     assert document['limitations']['sqs_confidence_checks_applied'] is False
-    assert len(document['groups']) == 1
+    assert len(document['groups']) == (1 if topology == 'single' else 4)
+    if topology == 'chapters':
+        from sage.nca_reporting import chapter_sections
+        from sage.numbers.results_v2 import validate_numbers_result_v2
+        task_identity = json.loads(Path(manifest).read_text())
+        validate_numbers_result_v2(document, expected_unit_ids=tuple(task_identity['expected_unit_ids']),
+            allowed_evidence_ids=tuple(task_identity['allowed_evidence_ids']))
+        sections = chapter_sections(document)
+        assert {x['chapter'] for x in sections if x['book'] == 'MAT'} == {1, 2}
+        primary = [item for section in sections for item in section['finding_ids']]
+        assert len(primary) == len(set(primary)) == len(document['findings'])
+        assert any(x['projection']['status'] == 'UNMAPPED' for x in document['groups'])
     unit = document['groups'][0]['components'][0]
     assert unit['final_outcome'] == ('INSUFFICIENT_EVIDENCE' if unsupported else 'PASS_AUTHORITY1')
     assert unit['footnote']['status'] == ('NOT_ASSESSED' if unsupported else 'NOT_REQUIRED')

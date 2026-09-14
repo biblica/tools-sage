@@ -377,7 +377,7 @@ class PhaseStore:
         return NcaWorkspaceLock(self._path('locks/nca-phases.lock'), 'NCA_PHASE_LEDGER')
 
     def _read(self, relative: str) -> object:
-        """Read only confined strict JSON evidence, translating storage failures."""
+        """Read only confined strict JSON evidence, normalizing storage failures."""
         try:
             return _decode(self._path(relative).read_bytes())
         except OSError as exc:

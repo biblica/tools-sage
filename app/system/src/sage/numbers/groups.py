@@ -197,7 +197,7 @@ def evaluate_group(reference_group: ReferenceGroup, extraction: Extraction, corr
         label = ref.label()
         _require(bundle.lookup(ref) == row, 'Group row differs from qualified bundle')
         evidence = correspondence.rows.get(label)
-        limits = correspondence.limitations
+        limits = correspondence.limitations + (() if evidence is None else evidence.limitations)
         source = () if evidence is None else evidence.source_expressions
         if row is None:
             reading = ReadingDecision('UNSUPPORTED', SemanticDecision('REFERENCE_NOT_INDEXED',

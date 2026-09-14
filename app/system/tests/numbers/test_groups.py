@@ -783,3 +783,15 @@ def test_direct_reference_group_cannot_replace_registered_context_authority():
     evidence = groups.validate_group_correspondence(group, extraction, response)
     with pytest.raises(ValidationError):
         groups.evaluate_group(group, extraction, evidence, bundle=bundle, checks=check_policy()['checks'])
+
+
+def test_partial_row_keeps_its_specific_limitation_in_component():
+    """Row-specific uncertainty survives group evaluation into canonical component evidence."""
+    group, extraction, response, bundle = bridge_case()
+    response.update(status='PARTIAL', limitations=['GROUP_UNCERTAIN'])
+    response['rows']['MAT 5:2'].update(status='PARTIAL', limitations=['ROW_REFERENT_UNCLEAR'])
+    evidence = groups.validate_group_correspondence(group, extraction, response)
+    components = groups.evaluate_group(group, extraction, evidence, bundle=bundle, checks=check_policy()['checks'])
+    assert 'ROW_REFERENT_UNCLEAR' in components[1].limitations
+    assert 'ROW_REFERENT_UNCLEAR' not in components[0].limitations
+    assert components[1].final_outcome == 'INSUFFICIENT_EVIDENCE'
