@@ -160,9 +160,9 @@ def project_units(
             status = "AMBIGUOUS"
         else:
             status = "READY"
-        mapping = {ref.label(): tuple(sorted(row.label() for row in (
+        mapping = {ref.label(): tuple(row.label() for row in sorted(
             {ref} if direct else set().union(*(western_for(atom) for atom in target_schema.local_to_canonical(ref)))
-        ) if row in western)) for ref in target.target_references}
+        ) if row in western) for ref in target.target_references}
         results.append(ProjectedUnit(target, tuple(sorted(western)), tuple(sorted(canonical)), precision, status, mapping))
         covered.update(western)
     for ref in sorted(set(expected_western_references) - covered):

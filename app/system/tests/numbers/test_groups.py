@@ -253,6 +253,17 @@ def test_typed_group_rejects_row_evidence_mutations(damage):
             replace(result, components=(result.components[0], component))
 
 
+@pytest.mark.parametrize('missing', ['role', 'role_spans'])
+def test_complete_typed_group_requires_target_role_evidence(missing):
+    """Complete bridge passes cannot retain a target with unresolved role evidence."""
+    result, _checks = result_case()
+    target = result.extraction.expressions[0]
+    target = replace(target, role=None, role_spans=()) if missing == 'role' else replace(target, role_spans=())
+    with pytest.raises(ValidationError):
+        replace(result, extraction=replace(result.extraction,
+            expressions=(target, result.extraction.expressions[1])))
+
+
 def test_one_to_many_note_anchor_cannot_satisfy_disclosure():
     """A broad anchor preserves unknown note attribution rather than authorizing both rows."""
     from sage.numbers.models import TargetNote
@@ -714,6 +725,8 @@ def test_partial_row_keeps_owned_expression_with_unresolved_roles():
     from sage.numbers.engine import _result_reference_context
     from sage.numbers.results_v2 import group_document, _typed_group
     group, extraction, response, bundle = bridge_case()
+    extraction = replace(extraction, expressions=(extraction.expressions[0],
+        replace(extraction.expressions[1], role=None, role_spans=())))
     response.update(status='PARTIAL', limitations=['UNRESOLVED_ROLE'])
     response['rows']['MAT 5:2'].update(status='PARTIAL', limitations=['UNRESOLVED_ROLE'], target_roles=[])
     response['rows']['MAT 5:2']['source_expressions'][0].update(role=None, role_spans=[])

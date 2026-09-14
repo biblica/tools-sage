@@ -1,6 +1,8 @@
 """NCA Western lookup preserves equivalence groups and absent coverage."""
 from pathlib import Path
 
+import pytest
+
 from sage.numbers.models import ReferenceBundle, ReferenceRow, TargetUnit
 from sage.numbers.projection import project_units
 from sage.vrs import VerseRef, parse_vrs_file
@@ -175,3 +177,17 @@ def test_projection_rejects_unqualified_reference_bundle(tmp_path):
     with pytest.raises(ValidationError) as exc:
         project_units((unit('MAT', 1, 1),), target_schema=eng, western_schema=eng, bundle=reference)
     assert exc.value.code == 'NCA_REFERENCE_NOT_QUALIFIED'
+
+
+@pytest.mark.parametrize(('mapping', 'expected'), [
+    ('MAT 1:1 = MAT 1:9-10\n', (VerseRef('MAT', 1, 9), VerseRef('MAT', 1, 10))),
+    ('MAT 1:1 = MAT 9:1\nMAT 1:1 = MAT 10:1\n', (VerseRef('MAT', 9, 1), VerseRef('MAT', 10, 1))),
+])
+def test_target_mapping_retains_numeric_western_order(tmp_path, mapping, expected):
+    """One target mapping orders two-digit verses and chapters by their coordinates."""
+    eng = schema(tmp_path, 'eng.vrs', 'MAT 1:10 9:1 10:1\n')
+    target = schema(tmp_path, 'custom.vrs', 'MAT 1:1\n' + mapping)
+    projected, = project_units((unit('MAT', 1, 1),), target_schema=target, western_schema=eng)
+    assert projected.western_references == expected
+    assert projected.target_western_mapping == {'MAT 1:1': tuple(ref.label() for ref in expected)}
+    assert projected.status == 'READY'

@@ -134,7 +134,8 @@ def _validate_group_evidence(group: GroupResult) -> None:
     note_pairs = set()
     target_spans = []
     for expression in group.extraction.expressions:
-        _eid, span = _validate_expression(_expression_document(expression), role_required=False,
+        _eid, span = _validate_expression(_expression_document(expression),
+            role_required=len(group.reference_rows) > 1 and group.alignment_status == 'COMPLETE',
             target_text=group.projected.target.main_text, expected_stream='main')
         _require(not any(a < span[1] and span[0] < b for a, b in target_spans), 'Overlapping target evidence')
         target_spans.append(span)
