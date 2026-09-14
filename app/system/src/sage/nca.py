@@ -48,6 +48,7 @@ _CONTROLLER_ALLOWED_WRITES = (
     "locks/nca-phases.lock",
     "locks/nca-phases.lock.guard",
     "locks/execution.lock.guard",
+    "validation/nca-execution-failure.json",
 )
 
 
@@ -333,6 +334,10 @@ def _create_nca_task_locked(
             "evidence_class": PROCESS_CONTROL,
         },
     ]
+    if policy['schema_version'] == '2.0':
+        governance.extend({'path': relative, 'sha256': digest, 'evidence_class': PROCESS_CONTROL}
+                          for relative, digest in policy['phase_contracts']['files'].items()
+                          if relative != _relative(runtime_config.root, skill.path))
     seed = sha256_bytes(
         json.dumps(
             {
@@ -410,7 +415,7 @@ def _create_nca_task_locked(
             "conditional_reads": [],
             "allowed_writes": ["output/model-evidence.json"],
             "controller_allowed_writes": list(_CONTROLLER_ALLOWED_WRITES),
-            "output_grammar": "NCA_MODEL_EVIDENCE_1.0",
+            "output_grammar": "NCA_MODEL_EVIDENCE_2.0" if policy["schema_version"] == "2.0" else "NCA_MODEL_EVIDENCE_1.0",
             "narrative_language": {
                 "tag": job.primary_report_language,
                 "authority": "CANONICAL_REPORT_NARRATIVE",
@@ -506,7 +511,10 @@ def execute_nca_task(
 ) -> Mapping[str, object]:
     """Execute phased model interpretation against one sealed NCA task."""
     path = task_manifest.expanduser().resolve()
-    with WorkspaceLock(path.parent / "locks" / "execution.lock", "NCA_TASK_EXECUTION"):
+    _path, _manifest, _runtime, _job, _run, policy = _validate_task(config, path)
+    from .numbers.replay import NcaWorkspaceLock
+    lock_class = NcaWorkspaceLock if policy['schema_version'] == '2.0' else WorkspaceLock
+    with lock_class(path.parent / "locks" / "execution.lock", "NCA_TASK_EXECUTION"):
         return _execute_nca_task_locked(
             config,
             path,
@@ -530,6 +538,9 @@ def _execute_nca_task_locked(
     expected_ids = inputs.expected_unit_ids
     output_path = manifest_path.parent / "output/model-evidence.json"
     receipt_path = manifest_path.parent / "validation/llm-execution-receipt.json"
+    if policy['schema_version'] == '2.0' and not dry_run:
+        return _execute_optimized_task(manifest_path, manifest, runtime_config, job, run, policy, inputs,
+                                       timeout_seconds=timeout_seconds)
     if output_path.is_file() and receipt_path.is_file():
         receipt = _load_json(receipt_path, "NCA execution receipt")
         if receipt.get("output_sha256") != {"output/model-evidence.json": sha256_file(output_path)}:
@@ -580,7 +591,7 @@ def _execute_nca_task_locked(
         result,
         provenance=_provenance(job, run, policy),
         check_policy=policy,
-        model_receipts=recording.receipts,
+        model_receipts={k: v for k, v in recording.receipts.items() if k != "GROUP_CORRESPONDENCE"},
     )
     validate_numbers_result(
         document,
@@ -706,7 +717,7 @@ def _validated_finalized_task(
     )
     path, manifest, reopened_runtime, reopened_job, reopened_run, _policy = _validate_task(
         config,
-        manifest_path,
+        manifest_path, historical=run.status == "COMPLETE",
     )
     validate_reference_snapshot(reopened_runtime, _policy, job=reopened_job)
     if (
@@ -830,8 +841,8 @@ def submit_nca_task(
     destination = output_path.parent.parent / "validation/numbers-result.json"
     atomic_write_json(destination, normalized)
     return normalized, {
-        "format": "NCA_NUMBERS_RESULT_1.0",
-        "unit_count": len(normalized["units"]),
+        "format": "NCA_NUMBERS_RESULT_" + normalized["schema_version"],
+        "unit_count": len(normalized["groups" if normalized["schema_version"] == "2.0" else "units"]),
         "finding_count": len(normalized["findings"]),
         "coverage": normalized["coverage"]["coverage"],
     }
@@ -847,6 +858,7 @@ class _RecordingModelTasks:
             "EXTRACTION": [],
             "CORRESPONDENCE": [],
             "FOOTNOTE": [],
+            "GROUP_CORRESPONDENCE": [],
         }
 
     def _call(self, method: str, *args: object, **kwargs: object) -> object:
@@ -858,6 +870,23 @@ class _RecordingModelTasks:
             raise ValidationError("NCA model phase lacks a validated receipt", code="NCA_MODEL_RECEIPT_INVALID")
         self.receipts[phase].append(receipt.to_dict())
         return result
+
+    @property
+    def attempts(self) -> tuple[object, ...]:
+        """Expose actual failed and successful physical requests from the pinned router."""
+        return self._tasks.attempts
+
+    def configure_phase_execution(self, executor: object) -> None:
+        """Bind the checkpoint executor to the underlying physical phase boundary."""
+        self._tasks.configure_phase_execution(executor)
+
+    def extract_batch(self, *args: object, **kwargs: object) -> object:
+        """Forward one target-only batch; the checkpoint ledger owns accepted receipts."""
+        return self._call('extract_batch', *args, **kwargs)
+
+    def correspond_group(self, *args: object, **kwargs: object) -> object:
+        """Reserve explicit group receipt aggregation for the group adjudication phase."""
+        return self._call('correspond_group', *args, **kwargs)
 
     def extract(self, *args: object, **kwargs: object) -> object:
         """Execute and record one target extraction phase."""
@@ -918,7 +947,7 @@ def _created_task_result(path: Path, manifest: Mapping[str, object]) -> dict[str
 
 
 def _validate_task(
-    config: EcosystemConfig, task_manifest: Path
+    config: EcosystemConfig, task_manifest: Path, *, historical: bool = False
 ) -> tuple[Path, dict[str, Any], EcosystemConfig, Job, Run, Mapping[str, object]]:
     """Revalidate trusted ACT control, manifest, inputs, and sealed Run identities."""
     path = task_manifest.expanduser().resolve()
@@ -949,19 +978,29 @@ def _validate_task(
     identity = {key: value for key, value in manifest.items() if key not in {"task_id", "task_root", "submit_commands", "task_fingerprint", "created_utc"}}
     if manifest.get("task_fingerprint") != control.get("task_fingerprint") or _fingerprint(identity) != manifest.get("task_fingerprint"):
         raise ValidationError("NCA task fingerprint is invalid", code="ACT_INPUT_STALE")
+    historical = historical and run.status == 'COMPLETE' and control.get('status') == 'FINALIZED'
     for field in ("governance_inputs", "allowed_reads"):
         for item in manifest.get(field, []):
             if not isinstance(item, Mapping):
                 raise ValidationError("NCA task input allowlist is invalid", code="NCA_TASK_INVALID")
             input_path = resolve_persisted_path(runtime.root, str(item.get("path") or ""), "NCA task input")
+            if historical and field == 'governance_inputs' and str(item.get('path', '')).startswith('system/'):
+                continue
             if not input_path.is_file() or sha256_file(input_path) != item.get("sha256"):
                 raise ValidationError("NCA task input changed after creation", code="ACT_INPUT_STALE")
     policy = load_nca_run_snapshot(run.root)
     model_contract = policy.get("model_contract")
     if not isinstance(model_contract, Mapping):
         raise ValidationError("NCA model contract is missing", code="NCA_RUN_SNAPSHOT_INVALID")
-    if sha256_file(runtime.root / "system/skills/nca-numbers/SKILL.md") != model_contract.get("skill_sha256") or sha256_file(runtime.root / "system/config/schemas/nca-extraction.schema.yml") != model_contract.get("structured_response_schema_sha256"):
-        raise ValidationError("NCA model contract changed after Run creation", code="NCA_MODEL_ROUTE_CHANGED")
+    if not historical:
+        schema = 'nca-extraction-v2.schema.yml' if policy['schema_version'] == '2.0' else 'nca-extraction.schema.yml'
+        if (sha256_file(runtime.root / 'system/skills/nca-numbers/SKILL.md') != model_contract.get('skill_sha256')
+                or sha256_file(runtime.root / 'system/config/schemas' / schema) != model_contract.get('structured_response_schema_sha256')):
+            raise ValidationError('NCA model contract changed after Run creation', code='NCA_MODEL_ROUTE_CHANGED')
+        if policy['schema_version'] == '2.0':
+            from .numbers.policy import phase_contract_manifest
+            if phase_contract_manifest(runtime.root, policy['model_route']) != policy['phase_contracts']:
+                raise ValidationError('NCA phase contract changed after Run creation', code='NCA_MODEL_ROUTE_CHANGED')
     return path, manifest, runtime, job, run, policy
 
 
@@ -992,13 +1031,15 @@ def _execution_receipt(
     receipts: Mapping[str, list[dict[str, object]]],
     output_path: Path,
     started: str,
+    output_bytes: bytes | None = None,
 ) -> dict[str, object]:
     """Build the shared schema-2.0 execution receipt from actual NCA phase calls."""
-    phases = [row for name in ("EXTRACTION", "CORRESPONDENCE", "FOOTNOTE") for row in receipts[name]]
+    phases = [row for name in ("EXTRACTION", "CORRESPONDENCE", "FOOTNOTE", "GROUP_CORRESPONDENCE") for row in receipts.get(name, [])]
     canonical = json.dumps(receipts, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return {
         "schema_version": "2.0",
         "task_id": manifest["task_id"],
+        "task_fingerprint": manifest["task_fingerprint"],
         "skill_id": "nca-numbers",
         "execution_mode": "SAGE_GOVERNED_TASK_V1",
         "route_id": route_identity.get("route_id"),
@@ -1029,7 +1070,7 @@ def _execution_receipt(
         "handoff_measurements": [],
         "response_sha256": sha256_bytes(canonical),
         "provider_response_sha256": [str(row["response_sha256"]) for row in phases],
-        "output_sha256": {"output/model-evidence.json": sha256_file(output_path)},
+        "output_sha256": {"output/model-evidence.json": sha256_bytes(output_bytes) if output_bytes is not None else sha256_file(output_path)},
         "provider_metadata": {"phase_receipts": len(phases)},
         "model_policy": dict(route_identity),
         "policy": {
@@ -1040,3 +1081,83 @@ def _execution_receipt(
             "live_provider_catalog_required": True,
         },
     }
+
+
+def _execute_optimized_task(path: Path, manifest: Mapping[str, object], config: EcosystemConfig,
+    job: Job, run: Run, policy: Mapping[str, object], inputs: object, *, timeout_seconds: int) -> Mapping[str, object]:
+    """Publish v2 only after durable phase admission and exact checkpoint/final reconciliation."""
+    from .numbers.engine import evaluate_optimized_run
+    from .numbers.model_tasks import NcaModelTasks
+    from .numbers.replay import PhaseStore
+    from .numbers.results_v2 import numbers_result_document_v2, validate_numbers_result_v2
+    from .numbers.policy import _plain
+    store = PhaseStore(path.parent, task_fingerprint=str(manifest['task_fingerprint']))
+    output_path = path.parent / 'output/model-evidence.json'
+    receipt_path = path.parent / 'validation/llm-execution-receipt.json'
+    publication = path.parent / 'validation/nca-phases/publication/manifest.json'
+    if (output_path.exists() or receipt_path.exists()) and not publication.exists():
+        raise ValidationError('Partial NCA output has no publication authority', code='LLM_TASK_OUTPUT_NOT_EMPTY')
+    tasks = NcaModelTasks(config, expected_route_id=str(policy['model_route']['route_id']), timeout_seconds=timeout_seconds)
+    if dict(tasks.route_snapshot) != dict(policy['model_route']):
+        raise ValidationError('NCA model route differs from sealed Run', code='NCA_MODEL_ROUTE_CHANGED')
+    recording = _RecordingModelTasks(tasks)
+    recording.phase_resume_only = publication.exists()
+    started = _utc_now()
+    result = evaluate_optimized_run(inputs, model_tasks=recording, phase_store=store, run_id=run.run_id)
+    session = recording.phase_session
+    if not session.checkpoints:
+        failure = {'status': 'FAILED', 'task_id': manifest['task_id'], 'task_fingerprint': manifest['task_fingerprint'],
+            'code': 'NCA_NO_ADMITTED_PHASE_EVIDENCE', 'expected_unit_ids': list(inputs.expected_unit_ids),
+            'coverage': _plain(result.coverage), 'metrics': _plain(result.metrics), 'completed_utc': _utc_now()}
+        atomic_write_json(path.parent / 'validation/nca-execution-failure.json', failure)
+        _store(config)._update_run_for_job(job, run, status='FAILED', result='FAILED',
+            current_stage='MODEL_INTERPRETATION', result_reason='NCA_NO_ADMITTED_PHASE_EVIDENCE')
+        raise ValidationError('NCA Run failed without admitted model evidence; scope diagnostics are retained', code='NCA_MODEL_PROVIDER_FAILED')
+    receipts = {phase: [] for phase in ('EXTRACTION', 'CORRESPONDENCE', 'FOOTNOTE', 'GROUP_CORRESPONDENCE')}
+    for checkpoint in result.metrics['checkpoints']:
+        receipts[checkpoint['receipt']['phase']].append(_plain(checkpoint['receipt']))
+    document = numbers_result_document_v2(result, provenance=_provenance(job, run, policy), check_policy=policy, model_receipts=receipts)
+    expected_ids, allowed_ids = inputs.expected_unit_ids, tuple(manifest['allowed_evidence_ids'])
+    validate_numbers_result_v2(document, expected_unit_ids=expected_ids, allowed_evidence_ids=allowed_ids)
+    from dataclasses import asdict
+    durable_calls = [_plain(asdict(call)) for call in session.durable_calls()]
+    def validate_final(output, receipt, evidence):
+        """Reconcile staged decisions with freshly replayed typed phase evidence and current scope."""
+        accepted = validate_numbers_result_v2(output, expected_unit_ids=expected_ids, allowed_evidence_ids=allowed_ids)
+        for field in ('groups', 'findings', 'coverage', 'summary', 'check_policy', 'provenance', 'model_receipts'):
+            if accepted[field] != document[field]:
+                raise ValidationError('Staged NCA evidence differs from current phase replay', code='NCA_RESULT_EVIDENCE_INVALID')
+        if accepted['metrics']['calls'] != durable_calls:
+            raise ValidationError('Staged physical calls differ from durable attempt evidence', code='NCA_RESULT_EVIDENCE_INVALID')
+        if accepted['metrics']['planning'] != document['metrics']['planning']:
+            raise ValidationError('Staged planning coverage differs', code='NCA_RESULT_COVERAGE_INVALID')
+        if not publication.exists() and accepted['metrics']['reused_checkpoint_ids'] != document['metrics']['reused_checkpoint_ids']:
+            raise ValidationError('Staged reuse events differ from this execution', code='NCA_RESULT_EVIDENCE_INVALID')
+        checkpoints = {x['checkpoint_id']: x for x in accepted['metrics']['checkpoints']}
+        for cid, key in session.checkpoints.items():
+            artifact = session.artifacts[key.identity]
+            expected_checkpoint = {'checkpoint_id': cid, 'key': key.to_dict(), 'receipt': _plain(artifact['receipt']),
+                'request_id': artifact['request_id'], 'accepted_input_ids': sorted(artifact['item_sha256'])}
+            if checkpoints.get(cid) != expected_checkpoint:
+                raise ValidationError('Staged checkpoint request association differs', code='NCA_RESULT_EVIDENCE_INVALID')
+        for cid, key in session.checkpoints.items():
+            current = session.validate_phase(key, session.artifacts[key.identity])
+            if evidence.get(cid) != current:
+                raise ValidationError('NCA publication phase evidence differs', code='NCA_RESULT_EVIDENCE_INVALID')
+        if {x['checkpoint_id'] for x in accepted['metrics']['checkpoints']} != set(evidence):
+            raise ValidationError('NCA publication checkpoint ledger differs', code='NCA_RESULT_EVIDENCE_INVALID')
+        phases = [row for rows in receipts.values() for row in rows]
+        if receipt.get('phase_count') != len(phases) or receipt.get('provider_response_sha256') != [row['response_sha256'] for row in phases]:
+            raise ValidationError('NCA execution receipt phase aggregation differs', code='NCA_RESULT_RECEIPT_INVALID')
+        return accepted
+    if publication.exists():
+        store.recover_publication(checkpoints=session.checkpoints, validate_phase=session.validate_phase, validate_final=validate_final)
+        receipt = _load_json(receipt_path, 'NCA execution receipt')
+    else:
+        output_bytes = (json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True) + '\n').encode('utf-8')
+        receipt = _execution_receipt(manifest, route_identity=dict(tasks.route_identity), receipts=receipts,
+            output_path=output_path, output_bytes=output_bytes, started=started)
+        store.prepare_publication(document, receipt, checkpoints=session.checkpoints,
+            validate_phase=session.validate_phase, validate_final=validate_final)
+        store.recover_publication(checkpoints=session.checkpoints, validate_phase=session.validate_phase, validate_final=validate_final)
+    return dict(receipt, status='EXECUTED', receipt_path=str(receipt_path))

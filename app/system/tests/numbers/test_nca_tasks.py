@@ -50,7 +50,10 @@ class _Receipt:
         }
 
 
-class _OfflineTasks:
+from sage.numbers.model_tasks import NcaModelTasks as _RealModelTasks
+
+
+class _OfflineTasks(_RealModelTasks):
     """Return conservative typed extraction without contacting a model provider."""
 
     route_snapshot = {
@@ -81,6 +84,13 @@ class _OfflineTasks:
 
     def __init__(self, *_args, expected_route_id: str | None = None, **_kwargs) -> None:
         """Require execution to reopen the exact route sealed by the Run."""
+        self._config = _args[0]
+        self._timeout_seconds = 600
+        self._attempts = []
+        self._route = SimpleNamespace(identity=SimpleNamespace(provider='codex', model_id='gpt-test', reasoning_id='high', route_id='nca-route-fixture'),
+            routing_mode='AUTOMATIC', qualification='QUALIFIED')
+        self._provider_status = None
+        self._executor = _EmptyTransport()
         if expected_route_id != "nca-route-fixture":
             raise AssertionError("execution did not pin the sealed route")
 
@@ -92,7 +102,23 @@ class _OfflineTasks:
 
     def correspond(self, *_args, **_kwargs):
         """Leave correspondence unresolved so output reports limited evidence."""
+        if getattr(self, '_phase_executor', None) is not None:
+            return super().correspond(*_args, **_kwargs)
         raise ValidationError("offline fixture has no correspondence", code="NCA_MODEL_PROVIDER_FAILED")
+
+
+class _EmptyTransport:
+    """Return recorded no-number extraction at the physical provider boundary."""
+
+    def execute(self, request):
+        """Keep canonical tests provider-free while producing real bytes and measurements."""
+        from sage.executors.base import ProviderResponse
+        payload = json.loads(request.prompt)['input']
+        if payload['phase'] != 'EXTRACTION':
+            raise ValidationError('offline fixture has no correspondence', code='NCA_MODEL_PROVIDER_FAILED')
+        raw = {'schema_version': '2.0', 'phase': 'EXTRACTION', 'batch_id': payload['batch_id'],
+            'work_units': [{'input_id': x['input_id'], 'status': 'COMPLETE', 'limitations': [], 'expressions': []} for x in payload['work_units']]}
+        return ProviderResponse(provider='codex', content=json.dumps(raw), model='gpt-test', reasoning_effort='high', metadata={})
 
 
 def _run(make_workspace, monkeypatch: pytest.MonkeyPatch):
@@ -185,7 +211,7 @@ def test_shared_execute_submit_and_finalize_use_nca_result_contract(
     assert executed["status"] == "EXECUTED"
     assert executed["provider"] == "codex"
     assert submitted["status"] == "FINALIZED"
-    assert submitted["validation"]["format"] == "NCA_NUMBERS_RESULT_1.0"
+    assert submitted["validation"]["format"] == "NCA_NUMBERS_RESULT_2.0"
     resumed = execute_task(config, task_manifest=path)
     assert resumed["status"] == "EXECUTED"
     result = Path(str(finalized["result_path"]))
@@ -290,27 +316,31 @@ def test_unindexed_target_number_remains_in_lifecycle_coverage(
         config, job_id=job.job_id, run_id=run.run_id, scope_value="MAT 1"
     )
 
-    class UnindexedTasks(_OfflineTasks):
-        """Extract the fixture numeral at MAT 1:2, absent from the package index."""
+    class NumberTransport(_EmptyTransport):
+        """Supply literal numeral evidence at the actual extraction transport boundary."""
 
-        def extract(self, unit, *, language: str, style_profile):
-            """Return one exact target expression only for the unindexed fixture verse."""
-            if "Verse 2." in unit.main_text:
-                start = unit.main_text.index("2")
-                extraction = Extraction(
-                    (
-                        NumericExpression(
-                            (Fraction(2),),
-                            "CARDINAL",
-                            "2",
-                            (start, start + 1),
-                            expression_id=f"{unit.unit_id}:2",
-                        ),
-                    ),
-                    "COMPLETE",
-                )
-                return SimpleNamespace(value=extraction, receipt=_Receipt("EXTRACTION"))
-            return super().extract(unit, language=language, style_profile=style_profile)
+        def execute(self, request):
+            """Bind the observed numeral in the unindexed fixture to its exact local span."""
+            from dataclasses import replace
+            response = super().execute(request)
+            payload = json.loads(request.prompt)['input']
+            raw = json.loads(response.content)
+            for supplied, returned in zip(payload['work_units'], raw['work_units']):
+                if 'Verse 2.' in supplied['text']:
+                    start = supplied['text'].index('2')
+                    returned['expressions'] = [{'expression_id': 'target-2', 'stream_id': supplied['stream_id'],
+                        'surface': '2', 'span': {'start': start, 'end': start + 1}, 'values': ['2'],
+                        'kind': 'CARDINAL', 'unit': None, 'qualifier': 'EXACT', 'role': None,
+                        'role_spans': [], 'representations': []}]
+            return replace(response, content=json.dumps(raw))
+
+    class UnindexedTasks(_OfflineTasks):
+        """Use the real phase validator for an unindexed numeral."""
+
+        def __init__(self, *args, **kwargs):
+            """Replace only the external transport with recorded literal evidence."""
+            super().__init__(*args, **kwargs)
+            self._executor = NumberTransport()
 
     monkeypatch.setattr("sage.numbers.model_tasks.NcaModelTasks", UnindexedTasks)
     path = Path(str(created["task_manifest_path"]))
@@ -319,8 +349,9 @@ def test_unindexed_target_number_remains_in_lifecycle_coverage(
     document = json.loads(Path(str(submitted["result_path"])).read_text(encoding="utf-8"))
 
     verse_two = next(
-        unit for unit in document["units"] if unit["projection"]["target_references"] == ["MAT 1:2"]
+        unit for unit in document["groups"] if unit["projection"]["target_references"] == ["MAT 1:2"]
     )
+    verse_two = verse_two["components"][0]
     assert verse_two["final_outcome"] == "REFERENCE_NOT_INDEXED"
     assert any(finding["code"] == "NCA_REFERENCE_NOT_INDEXED" for finding in document["findings"])
 
@@ -341,8 +372,9 @@ def test_unindexed_empty_target_is_screened_without_a_finding(
     document = json.loads(Path(str(submitted["result_path"])).read_text(encoding="utf-8"))
 
     verse_two = next(
-        unit for unit in document["units"] if unit["projection"]["target_references"] == ["MAT 1:2"]
+        unit for unit in document["groups"] if unit["projection"]["target_references"] == ["MAT 1:2"]
     )
+    verse_two = verse_two["components"][0]
     assert verse_two["final_outcome"] == "NOT_ASSESSED"
     assert verse_two["reading"]["semantic"]["outcome"] == "NOT_ASSESSED"
     assert verse_two["footnote"]["status"] == "NOT_REQUIRED"
@@ -373,11 +405,11 @@ def test_concurrent_execution_invokes_one_provider_pipeline(
             type(self).instances += 1
             super().__init__(*args, **kwargs)
 
-        def extract(self, unit, *, language: str, style_profile):
+        def _execute_physical(self, *args, **kwargs):
             """Hold the provider boundary open until the competing call is rejected."""
             entered.set()
             assert release.wait(timeout=10)
-            return super().extract(unit, language=language, style_profile=style_profile)
+            return super()._execute_physical(*args, **kwargs)
 
     monkeypatch.setattr("sage.numbers.model_tasks.NcaModelTasks", BlockingTasks)
     completed: list[object] = []
@@ -541,11 +573,11 @@ def test_restart_cannot_overtake_inflight_task_execution(
     class BlockingTasks(_OfflineTasks):
         """Hold the provider phase open across the restart attempt."""
 
-        def extract(self, unit, *, language: str, style_profile):
+        def _execute_physical(self, *args, **kwargs):
             """Signal execution ownership and wait for the restart assertion."""
             entered.set()
             assert release.wait(timeout=10)
-            return super().extract(unit, language=language, style_profile=style_profile)
+            return super()._execute_physical(*args, **kwargs)
 
     monkeypatch.setattr("sage.numbers.model_tasks.NcaModelTasks", BlockingTasks)
     completed: list[object] = []
@@ -631,5 +663,5 @@ def test_nca_controller_checkpoint_declarations_do_not_expand_model_authority(ma
         'validation/nca-phases/publication/output.json', 'validation/nca-phases/publication/receipt.json',
         'validation/nca-phases/publication/manifest.json', 'validation/llm-execution-receipt.json',
         'locks/nca-phases.lock', 'locks/nca-phases.lock.guard', 'locks/execution.lock.guard',
-        'output/model-evidence.json'}
+        'output/model-evidence.json', 'validation/nca-execution-failure.json'}
     assert not (Path(task['task_manifest_path']).parent / 'validation/nca-phases').exists()

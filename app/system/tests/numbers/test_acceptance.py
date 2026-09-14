@@ -26,34 +26,48 @@ def _inventory(root: Path) -> dict[str, str]:
             for path in root.rglob('*') if path.is_file()}
 
 
-class _NumericTasks(_OfflineTasks):
-    """Supply validated synthetic phase evidence at the provider boundary."""
+class _NumericTransport:
+    """Return literal numeric evidence through the real phase validation and recording boundary."""
 
+    def execute(self, request):
+        """Emit exact v2 spans for target extraction and independent OL correspondence."""
+        from sage.executors.base import ProviderResponse
+        payload = json.loads(request.prompt)['input']
+        phase = payload['phase']
+        def expression(text, surface, number, role, stream):
+            """Name a numeric surface and its independently bounded referent evidence."""
+            start = text.index(surface)
+            return {'expression_id': f'{stream}-{number}', 'stream_id': stream, 'surface': surface,
+                'span': {'start': start, 'end': start + len(surface)}, 'values': [str(number)],
+                'kind': 'CARDINAL', 'unit': None, 'qualifier': 'EXACT', 'role': role,
+                'role_spans': [{'start': 0, 'end': len(text), 'surface': text}], 'representations': []}
+        if phase == 'EXTRACTION':
+            _NumericTasks.calls += 1
+            raw = {'schema_version': '2.0', 'phase': phase, 'batch_id': payload['batch_id'], 'work_units': [
+                {'input_id': x['input_id'], 'status': 'UNSUPPORTED' if _NumericTasks.unsupported else 'COMPLETE',
+                 'limitations': ['Fixture language understanding unavailable'] if _NumericTasks.unsupported else [],
+                 'expressions': [] if _NumericTasks.unsupported else [expression(x['text'], str(number), number, role, x['stream_id'])
+                    for number, role in ((3, 'men'), (4, 'women'))]} for x in payload['work_units']]}
+        else:
+            text = payload['authority']['ol_text']
+            assert text == 'three and four'
+            target = payload['target']['text']
+            raw = {'schema_version': '2.0', 'phase': phase, 'unit_id': payload['unit_id'], 'status': 'COMPLETE', 'limitations': [],
+                'source_expressions': [expression(text, surface, number, role, 'ol') for number, surface, role in ((3, 'three', 'men'), (4, 'four', 'women'))],
+                'target_roles': [{'expression_id': x['expression_id'], 'role': x['role'], 'role_spans': [
+                    {'start': 0, 'end': len(target), 'surface': target}]} for x in payload['target']['expressions']]}
+        return ProviderResponse(provider='codex', model='gpt-test', reasoning_effort='high', content=json.dumps(raw), metadata={})
+
+
+class _NumericTasks(_OfflineTasks):
+    """Use recorded transport while retaining production extraction/correspondence validators."""
     calls = 0
     unsupported = False
 
-    def extract(self, unit, *, language, style_profile):
-        """Interpret only target content, without any expected OL or NIV values."""
-        type(self).calls += 1
-        assert language == 'en' and style_profile
-        if self.unsupported:
-            value = Extraction((), 'UNSUPPORTED', ('Fixture language understanding unavailable',))
-        else:
-            expressions = tuple(NumericExpression((Fraction(number),), 'CARDINAL', str(number),
-                (unit.main_text.index(str(number)), unit.main_text.index(str(number)) + 1), role=role,
-                expression_id=f'target-{number}', role_spans=((0, len(unit.main_text)),))
-                for number, role in ((3, 'men'), (4, 'women')))
-            value = Extraction(expressions, 'COMPLETE')
-        return SimpleNamespace(value=value, receipt=_Receipt('EXTRACTION'))
-
-    def correspond(self, unit, target, reference, *, reading_context=None):
-        """Bind independently typed OL expressions to the target referents."""
-        assert reference.ol_text == 'three and four'
-        source = tuple(NumericExpression((Fraction(number),), 'CARDINAL', surface,
-            (reference.ol_text.index(surface), reference.ol_text.index(surface) + len(surface)),
-            role=role, expression_id=f'ol-{number}', stream_id='ol', role_spans=((0, len(reference.ol_text)),))
-            for number, surface, role in ((3, 'three', 'men'), (4, 'four', 'women')))
-        return SimpleNamespace(value=CorrespondenceEvidence(source, target, 'COMPLETE'), receipt=_Receipt('CORRESPONDENCE'))
+    def __init__(self, *args, **kwargs):
+        """Replace only the external completion boundary with literal fixture responses."""
+        super().__init__(*args, **kwargs)
+        self._executor = _NumericTransport()
 
 
 @pytest.mark.parametrize('unsupported', [False, True])
@@ -106,8 +120,8 @@ def test_import_to_report_is_read_only_reproducible_and_explicit_about_limits(ma
     assert document['limitations']['capability'] == NCA_CAPABILITY_LIMITATION
     assert NCA_CAPABILITY_LIMITATION in report.read_text(encoding='utf-8')
     assert document['limitations']['sqs_confidence_checks_applied'] is False
-    assert len(document['units']) == 1
-    unit = document['units'][0]
+    assert len(document['groups']) == 1
+    unit = document['groups'][0]['components'][0]
     assert unit['final_outcome'] == ('INSUFFICIENT_EVIDENCE' if unsupported else 'PASS_AUTHORITY1')
     assert unit['footnote']['status'] == ('NOT_ASSESSED' if unsupported else 'NOT_REQUIRED')
     assert document['model_receipts']['EXTRACTION']

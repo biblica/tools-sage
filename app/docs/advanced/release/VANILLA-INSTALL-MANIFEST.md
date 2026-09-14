@@ -234,12 +234,14 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/schemas/model-qualification-seeds.schema.yml`
 - `system/config/schemas/model-routing-override-receipt.schema.yml`
 - `system/config/schemas/model-routing-override.schema.yml`
+- `system/config/schemas/nca-check-policy-v2.schema.yml`
 - `system/config/schemas/nca-check-policy.schema.yml`
 - `system/config/schemas/nca-extraction.schema.yml`
 - `system/config/schemas/nca-extraction-v2.schema.yml`
 - `system/config/schemas/nca-phase-ledger.schema.yml`
 - `system/config/schemas/number-style-profile.schema.yml`
 - `system/config/schemas/numbers-reference.schema.yml`
+- `system/config/schemas/numbers-result-v2.schema.yml`
 - `system/config/schemas/numbers-result.schema.yml`
 - `system/config/schemas/ol-authority-profile.schema.yml`
 - `system/config/schemas/original-language-resources.schema.yml`
@@ -727,13 +729,16 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/execution.py`
 - `system/src/sage/numbers/extraction.py`
 - `system/src/sage/numbers/footnotes.py`
+- `system/src/sage/numbers/hybrid.py`
 - `system/src/sage/numbers/model_tasks.py`
 - `system/src/sage/numbers/models.py`
+- `system/src/sage/numbers/models_v2.py`
 - `system/src/sage/numbers/policy.py`
 - `system/src/sage/numbers/projection.py`
 - `system/src/sage/numbers/reference.py`
 - `system/src/sage/numbers/replay.py`
 - `system/src/sage/numbers/resources.py`
+- `system/src/sage/numbers/results_v2.py`
 - `system/src/sage/numbers/results.py`
 - `system/src/sage/numbers/scope.py`
 - `system/src/sage/numbers/style.py`
@@ -852,6 +857,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_execution_context.py`
 - `system/tests/numbers/test_extraction.py`
 - `system/tests/numbers/test_footnotes.py`
+- `system/tests/numbers/test_hybrid_execution.py`
 - `system/tests/numbers/test_model_tasks.py`
 - `system/tests/numbers/test_nca_cli.py`
 - `system/tests/numbers/test_nca_jobs.py`
@@ -864,6 +870,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_reporting.py`
 - `system/tests/numbers/test_replay.py`
 - `system/tests/numbers/test_resources.py`
+- `system/tests/numbers/test_results_v2.py`
 - `system/tests/numbers/test_results.py`
 - `system/tests/numbers/test_scope.py`
 - `system/tests/numbers/test_style.py`
@@ -965,6 +972,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/bootstrap_python.ps1`
 - `system/tools/bootstrap_python.sh`
 - `system/tools/bootstrap_runtime.py`
+- `system/tools/benchmark_nca_optimized.py`
 - `system/tools/benchmark_nca.py`
 - `system/tools/build_model_evaluation_cases.py`
 - `system/tools/build_release.py`

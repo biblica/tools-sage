@@ -64,6 +64,17 @@ def _configured_style(root: Path) -> bytes:
 
 def _prepare_nca_workspace(root: Path) -> tuple[object, bytes]:
     """Install qualified fixture resources and audited Project import identity."""
+    profile_path = root / 'system/config/workflows/nca/profile.yml'
+    profile = yaml.safe_load(profile_path.read_text())
+    profile['optimization_policy'] = yaml.safe_load((Path(__file__).resolve().parents[2] / 'config/workflows/nca/profile.yml').read_text())['optimization_policy']
+    profile_path.write_text(yaml.safe_dump(profile))
+    source = Path(__file__).resolve().parents[2] / 'src/sage'
+    destination = root / 'system/src/sage'
+    destination.mkdir(parents=True, exist_ok=True)
+    for name in ('nca.py', 'nca_reporting.py'):
+        shutil.copy2(source / name, destination / name)
+    shutil.copytree(source / 'numbers', destination / 'numbers', dirs_exist_ok=True,
+                    ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
     package = storage_layout(root).resources_root / "numbers/SYNTHETIC_NCA_REFERENCE_1"
     package.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(REFERENCE_FIXTURE, package)

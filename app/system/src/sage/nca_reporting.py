@@ -189,7 +189,8 @@ def render_nca_report(
     coverage = _mapping(document.get("coverage"), "coverage")
     summary = _mapping(document.get("summary"), "summary")
     findings = document.get("findings")
-    units = document.get("units")
+    is_v2 = document.get("schema_version") == "2.0"
+    units = document.get("groups" if is_v2 else "units")
     if not isinstance(findings, (list, tuple)) or not isinstance(units, (list, tuple)):
         raise ValidationError(
             "NCA report units or findings are malformed.", code="NCA_RESULT_SCHEMA_INVALID"
@@ -269,6 +270,20 @@ def render_nca_report(
         ]
     )
     for raw_unit in units:
+        if is_v2:
+            group = _mapping(raw_unit, 'group')
+            projection = _mapping(group.get('projection'), 'group projection')
+            lines.extend([f"### `{group['unit_id']}`", '',
+                f"- {text('report.nca.target_reference')}: {_joined(projection.get('target_references'))}",
+                f"- {text('report.nca.western_reference')}: {_joined(projection.get('western_references'))}",
+                f"- Alignment: `{group['alignment_status']}`",
+                f"- Target expressions: {_expressions(group['extraction']['expressions'])}", ''])
+            for component in group['components']:
+                lines.extend([f"- `{component['western_reference']}` / OL `{component['ol_reference']}`: `{component['final_outcome']}`",
+                    f"  - {text('report.nca.source_expressions')}: {_expressions(component['source_expressions'])}",
+                    f"  - {text('report.nca.footnote_status')}: `{component['footnote']['status']}`"])
+            lines.extend(['', *[f'- `{limit}`' for limit in group['limitations']], ''])
+            continue
         unit = _mapping(raw_unit, "unit")
         projection = _mapping(unit.get("projection"), "unit projection")
         reading = _mapping(unit.get("reading"), "unit reading")
