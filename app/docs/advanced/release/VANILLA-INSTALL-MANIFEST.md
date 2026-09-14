@@ -729,6 +729,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/execution.py`
 - `system/src/sage/numbers/extraction.py`
 - `system/src/sage/numbers/footnotes.py`
+- `system/src/sage/numbers/groups.py`
 - `system/src/sage/numbers/hybrid.py`
 - `system/src/sage/numbers/model_tasks.py`
 - `system/src/sage/numbers/models.py`
@@ -857,6 +858,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_execution_context.py`
 - `system/tests/numbers/test_extraction.py`
 - `system/tests/numbers/test_footnotes.py`
+- `system/tests/numbers/test_groups.py`
 - `system/tests/numbers/test_hybrid_execution.py`
 - `system/tests/numbers/test_model_tasks.py`
 - `system/tests/numbers/test_nca_cli.py`

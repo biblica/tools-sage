@@ -336,6 +336,7 @@ def _response_expression(
 class _RecordedTransport:
     """Return fixture responses at the real provider boundary and measure sealed requests."""
 
+    # Literal fixture authorities stay separate from the model response and request ledger.
     provider_id = "codex"
 
     def __init__(self, cases: Sequence[Mapping[str, object]]) -> None:
@@ -502,6 +503,9 @@ def _code_identity() -> tuple[str, dict[str, str]]:
         Path(__file__).resolve(),
         Path(__file__).with_name("benchmark_nca_optimized.py"),
         APP_ROOT / "system/src/sage/numbers/hybrid.py",
+        APP_ROOT / "system/src/sage/numbers/groups.py",
+        APP_ROOT / "system/src/sage/numbers/models.py",
+        APP_ROOT / "system/src/sage/numbers/projection.py",
         APP_ROOT / "system/src/sage/numbers/models_v2.py",
         APP_ROOT / "system/src/sage/numbers/results_v2.py",
         APP_ROOT / "system/src/sage/numbers/replay.py",

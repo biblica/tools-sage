@@ -13,7 +13,8 @@ def test_group_parent_extraction_is_owned_once_and_nested_rows_are_frozen():
     assert importlib.util.find_spec('sage.numbers.models_v2') is not None, 'typed group result is missing'
     from sage.numbers.models_v2 import ComponentResult, GroupResult
     old = complete_run_result().units[0]
-    row = dict(old.reference_index[0], context=old.reference_context)
+    row = dict(old.reference_index[0], context=old.reference_context, provenance={
+        'ol_source_ids': old.reading.source_ids, 'guidance_source_ids': (), 'unit_source_ids': ()})
     component = ComponentResult(old.projected.western_references[0], old.ol_references[0],
         ('target-1',), old.source_expressions, old.reading, old.footnote,
         old.final_outcome, old.limitations)
