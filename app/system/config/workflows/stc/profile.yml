@@ -29,7 +29,6 @@ evidence_policies:
 permissions:
   may_write_projects: []
   may_write_target: false
-  may_write_reference: false
   may_write_original_language: false
   may_write_bic_memory: false
 state_model:
