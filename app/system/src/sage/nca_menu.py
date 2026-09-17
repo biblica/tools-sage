@@ -189,8 +189,23 @@ def continue_run(center, job, run):
     return run
 
 
+_PREFLIGHT_SCREEN_LIMIT = 5
+
+
+def _bounded_preflight_value(value):
+    """Cap a list/dict preflight field for the screen; the file always keeps the full value."""
+    if isinstance(value, list) and len(value) > _PREFLIGHT_SCREEN_LIMIT:
+        return [*value[:_PREFLIGHT_SCREEN_LIMIT], f"... and {len(value) - _PREFLIGHT_SCREEN_LIMIT} more"], True
+    if isinstance(value, dict) and len(value) > _PREFLIGHT_SCREEN_LIMIT:
+        head = dict(list(value.items())[:_PREFLIGHT_SCREEN_LIMIT])
+        head[f"... and {len(value) - _PREFLIGHT_SCREEN_LIMIT} more"] = "SEE FULL PREFLIGHT FILE"
+        return head, True
+    return value, False
+
+
 def show_preflight(center, job, result) -> None:
-    """Display controller-derived sealed scope estimates without reloading Job resources."""
+    """Display a screen-bounded preflight summary; the unbounded detail is written to a file."""
+    from sage.atomic import atomic_write_json
     from sage.nca_reporting import _exact
     from sage.human_output import catalogue_text
 
@@ -198,6 +213,8 @@ def show_preflight(center, job, result) -> None:
     plan = result.get('preflight', {})
     center.io.write(text('report.nca.preflight'))
     if plan:
+        plan_path = job.controller_state_root / "last-preflight.json"
+        atomic_write_json(plan_path, plan)
         values = (
             ('input_language', f"{plan.get('language')}; {plan.get('script')}"),
             ('requested_scope', plan.get('requested_scope')),
@@ -214,8 +231,13 @@ def show_preflight(center, job, result) -> None:
             ('scope_expansion', plan.get('scope_expansions')),
             ('limitations', plan.get('limitations')),
         )
+        truncated = False
         for key, value in values:
-            center.io.write(f"{text('report.nca.' + key)}: {_exact(value)}")
+            bounded, was_cut = _bounded_preflight_value(value)
+            truncated = truncated or was_cut
+            center.io.write(f"{text('report.nca.' + key)}: {_exact(bounded)}")
+        if truncated:
+            center.io.write(f"Full preflight detail: {plan_path}")
     center.io.write(f"{text('report.nca.model_identity')}: {result.get('provider', 'NOT RECORDED')}/{result.get('model', 'NOT RECORDED')}")
     center.io.write(text('report.nca.planning_notice'))
     center.io.write(text('report.nca.capability_limitation'))
