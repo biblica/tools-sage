@@ -122,7 +122,7 @@ def _response_expression_schema(stream_id: str) -> dict[str, object]:
         "required": required,
         "properties": {
             "expression_id": {"type": "string", "minLength": 1},
-            "stream_id": {"const": stream_id},
+            "stream_id": {"type": "string", "const": stream_id},
             "surface": {"type": "string", "minLength": 1},
             "span": _response_span_schema(),
             "values": {"type": "array", "minItems": 1, "items": rational},
@@ -198,7 +198,6 @@ _SCHEMAS: dict[str, dict[str, object]] = {
                         "status": {"enum": sorted(EXTRACTION_STATUSES)},
                         "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}},
                         "expressions": {"type": "array", "items": _response_expression_schema("main")},
-                        "confidence": {"type": "number"},
                     },
                 },
             },
@@ -227,7 +226,6 @@ _SCHEMAS: dict[str, dict[str, object]] = {
             "registered_status": {"enum": sorted(EXTRACTION_STATUSES)},
             "registered_limitations": {"type": "array", "items": {"type": "string", "minLength": 1}},
             "registered_expressions": {"type": "array", "items": _response_expression_schema("registered")},
-            "confidence": {"type": "number"},
         },
     },
     "FOOTNOTE": {
@@ -254,7 +252,6 @@ _SCHEMAS: dict[str, dict[str, object]] = {
             "outcome": {"enum": sorted(FOOTNOTE_OUTCOMES)},
             "limitations": {"type": "array", "items": {"type": "string"}},
             "evidence": {"type": "array", "items": _note_evidence_schema()},
-            "confidence": {"type": "number"},
         },
     },
 }
@@ -993,6 +990,11 @@ class NcaModelTasks:
                     "LLM_RESPONSE_ROUTE_MISMATCH", "NCA_MODEL_ROUTE_CHANGED", "PROVIDER_ROUTE_UNAVAILABLE"
                 }:
                     raise
+                if str(exc).startswith("invalid_json_schema"):
+                    raise _model_error(
+                        f"NCA {phase.lower()} request schema was rejected by the provider: {exc}",
+                        "NCA_MODEL_SCHEMA_INVALID",
+                    ) from exc
                 raise _model_error(f"NCA {phase.lower()} provider request failed: {exc}",
                                    "NCA_MODEL_PROVIDER_FAILED") from exc
             finally:
@@ -1070,6 +1072,12 @@ class NcaModelTasks:
         version = "2.0" if getattr(self, "_phase_executor", None) is not None else "1.0"
         schema = deepcopy(_SCHEMAS["CORRESPONDENCE"])
         schema["properties"]["schema_version"]["const"] = version
+        registered_fields = ("registered_status", "registered_limitations", "registered_expressions")
+        if reading_context is None:
+            for field in registered_fields:
+                schema["properties"].pop(field, None)
+        else:
+            schema["required"] = [*schema["required"], *registered_fields]
         payload: Mapping[str, object] = {
             "schema_version": version,
             "phase": "CORRESPONDENCE",
@@ -1164,7 +1172,6 @@ def _batch_response_schema() -> dict[str, object]:
     item = rows["items"]
     item["required"][0] = "input_id"
     item["properties"]["input_id"] = item["properties"].pop("unit_id")
-    item["properties"].pop("confidence")
     item["properties"]["expressions"]["items"]["properties"]["stream_id"] = {"type": "string", "minLength": 1}
     return schema
 
