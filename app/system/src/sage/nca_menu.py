@@ -5,10 +5,20 @@ from pathlib import Path
 
 from sage.errors import ValidationError
 from sage.registry import load_ecosystem
-from sage.references import validate_scripture_scope
 from sage.nca_cli import CHECK_LABELS, inspect_numbers_package
 from sage.numbers.resources import import_reference, reference_package_candidates
 from sage.numbers.style import import_style_profile, style_profile_candidates
+
+# Data-integrity violations detected while executing a sealed NCA task (a
+# corrupted or tampered checkpoint, an output that no longer matches its
+# execution receipt). These must remain hard failures -- a soft, resumable
+# framing (the default for provider/transient failures) would misrepresent
+# a detected integrity breach as an ordinary retryable hiccup.
+NCA_INTEGRITY_FAILURE_CODES = frozenset({
+    'LLM_TASK_OUTPUT_NOT_EMPTY',
+    'NCA_PHASE_CHECKPOINT_INVALID',
+    'EXECUTION_RECEIPT_OUTPUT_MISMATCH',
+})
 
 
 def choose_style(center, project) -> str | None:
@@ -135,29 +145,48 @@ def start_run(center, job) -> None:
         return
     config = load_ecosystem(center.store.settings_path)
     run = create_nca_run(config, job_id=job.job_id, scope_value=scope, checks=checks)
-    continue_run(center, job, run)
+    center.continue_run(job, run)
 
 
-def continue_run(center, job, run) -> None:
-    """Resume sealed NCA inputs and checks without consulting mutable Job defaults."""
-    scope = run.scope
-    task = center.controller(job, ['task', 'create', '--workflow', 'nca', '--operation', 'numbers',
-                                  '--wip', job.bindings['wip'], '--scope', scope,
-                                  '--job-id', job.job_id, '--run-id', run.run_id])
-    manifest = str(task.get('task_manifest') or task.get('task_manifest_path') or '')
-    if not manifest:
-        raise ValidationError('NCA task creation did not return its manifest.', code='NCA_TASK_MANIFEST_MISSING')
-    arguments = ['task', 'execute', '--task', manifest]
-    preflight = center.controller(job, arguments + ['--dry-run'])
-    show_preflight(center, job, preflight)
-    result = preflight
-    if not center.dry_run_provider and preflight.get('status') == 'READY_TO_EXECUTE':
-        result = center.controller(job, arguments)
-    center.io.write(f"NCA execution: {result.get('status', 'UNKNOWN')}")
-    if not center.dry_run_provider and result.get('status') == 'EXECUTED':
-        finalized = center.controller(job, ['task', 'submit', '--task', manifest])
-        center.io.write(f"NCA report: {finalized.get('report_path') or finalized.get('status', 'UNKNOWN')}")
-    center.io.pause()
+def continue_run(center, job, run):
+    """Resume the sealed NCA task through the same governed helpers BIC/RTC/STC use."""
+    tasks = center._tasks_by_operation(run)
+    numbers_tasks = tasks.get('numbers', [])
+    if not numbers_tasks:
+        run, result = center._create_task(job, run, 'numbers', scope=run.scope)
+        if result.get('status') in {'PARTITIONED', 'COMPOSITE'}:
+            raise ValidationError(
+                'NCA does not support partitioned or composite task creation.',
+                code='NCA_TASK_PARTITIONING_UNSUPPORTED',
+            )
+        manifest = str(result.get('manifest_path') or '')
+        if not manifest:
+            raise ValidationError('NCA task creation did not return its manifest.', code='NCA_TASK_MANIFEST_MISSING')
+        manifest_path = center._manifest_path(manifest)
+    else:
+        manifest_path, _manifest, state = numbers_tasks[-1]
+        if state == 'FINALIZED':
+            center.io.write('NCA Run is already complete.')
+            center.io.pause()
+            return center.store.update_run(run, status='COMPLETE', current_stage='COMPLETE')
+
+    def preview(preflight: dict) -> bool:
+        """Show the sealed preflight and gate real execution on its readiness."""
+        show_preflight(center, job, preflight)
+        return preflight.get('status') == 'READY_TO_EXECUTE'
+
+    # NCA's execute step is itself idempotent (it recognizes and safely resumes
+    # partially-published output), so unlike BIC/RTC/STC it must always be tried
+    # rather than gated on _task_state's generic "output file already exists"
+    # shortcut, which would otherwise skip straight to submission and never let a
+    # partially-published run finish publishing.
+    executed = center._launch_task(
+        job, run, manifest_path, preview=preview, raise_codes=NCA_INTEGRITY_FAILURE_CODES,
+    )
+    if executed and center._task_state(manifest_path)[0] == 'OUTPUT_READY':
+        run = center._submit_task(job, run, manifest_path)
+        run = center.store.update_run(run, status='COMPLETE', current_stage='COMPLETE')
+    return run
 
 
 def show_preflight(center, job, result) -> None:
@@ -210,7 +239,7 @@ def job_menu(center, job) -> None:
                 start_run(center, job)
             else:
                 center.io.write(f'Resuming NCA Run: {run.run_id}')
-                continue_run(center, job, run)
+                center.continue_run(job, run)
         elif choice == '2':
             center.reports_menu(job)
         elif choice == '3':

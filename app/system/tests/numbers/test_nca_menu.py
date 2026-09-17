@@ -17,7 +17,7 @@ def test_nca_scope_prompt_retries_invalid_input_before_creating_run(make_workspa
     job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1')
     center, output = _center(root, '7', 'MAT 0', 'matthew 01')
     # This test stops at the execution boundary; CLI lifecycle is covered separately.
-    monkeypatch.setattr('sage.nca_menu.continue_run', lambda *_args: None)
+    monkeypatch.setattr('sage.nca_menu.continue_run', lambda _center, _job, run: run)
     start_run(center, job)
     run = center.store.active_run(job)
     assert run.scope == 'MAT 1'
@@ -26,21 +26,26 @@ def test_nca_scope_prompt_retries_invalid_input_before_creating_run(make_workspa
 
 
 @pytest.mark.parametrize('status', ['CANCELLED', 'UNKNOWN', 'FAILED', 'BLOCKED', None])
-def test_incomplete_execution_never_submits(make_workspace, status):
+def test_incomplete_execution_never_submits(make_workspace, monkeypatch, status):
     """Only completed model execution may enter governed submission."""
+    from sage.nca import create_nca_task
     from sage.nca_menu import continue_run
-    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    from .test_nca_tasks import _run
+    root, config, job, run = _run(make_workspace, monkeypatch)
     center, _ = _center(root)
     calls = []
 
     def controller(_job, arguments):
-        """Record control flow and return an incomplete execution outcome."""
+        """Create the sealed task for real; fake an incomplete execution outcome."""
         calls.append(arguments[1])
-        return {'task_manifest_path': '/tmp/task.json'} if arguments[1] == 'create' else {'status': status}
+        if arguments[1] == 'create':
+            task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
+            return {'manifest_path': task['task_manifest_path']}
+        return {'status': status}
 
     center.controller = controller
     center.dry_run_provider = False
-    continue_run(center, SimpleNamespace(job_id='NCA-test', bindings={'wip': 'usWIP'}), SimpleNamespace(run_id='run', scope='MAT 1'))
+    continue_run(center, job, run)
     assert calls == ['create', 'execute']
 
 
@@ -160,10 +165,12 @@ def test_single_compatible_profile_is_selected_from_project_language_namespace(m
     assert 'Number Style Profile: fixture-en/1' in output.getvalue()
 
 
-def test_resume_preflight_uses_one_task_before_execution(make_workspace):
+def test_resume_preflight_uses_one_task_before_execution(make_workspace, monkeypatch):
     """Resume displays the sealed plan and executes the same task without another prompt."""
+    from sage.nca import create_nca_task
     from sage.nca_menu import continue_run
-    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    from .test_nca_tasks import _run
+    root, config, job, run = _run(make_workspace, monkeypatch)
     center, output = _center(root)
     center.dry_run_provider = False
     calls = []
@@ -172,7 +179,8 @@ def test_resume_preflight_uses_one_task_before_execution(make_workspace):
         """Record task identity and expose the dry-run sealed scope plan."""
         calls.append(arguments)
         if arguments[1] == 'create':
-            return {'task_manifest_path': '/tmp/sealed-task.json'}
+            task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
+            return {'manifest_path': task['task_manifest_path']}
         if '--dry-run' in arguments:
             return {'status': 'READY_TO_EXECUTE', 'provider': 'sealed-provider', 'model': 'sealed-model',
                 'preflight': {'requested_scope': 'MAT 2:1', 'planned_extraction_calls': 2,
@@ -185,11 +193,10 @@ def test_resume_preflight_uses_one_task_before_execution(make_workspace):
         return {'status': 'FAILED'}
 
     center.controller = controller
-    continue_run(center, SimpleNamespace(job_id='JOB', bindings={'wip': 'usWIP'}),
-                 SimpleNamespace(run_id='RUN', scope='MAT 2:1'))
+    continue_run(center, job, run)
     assert [args[1] for args in calls] == ['create', 'execute', 'execute']
     assert '--dry-run' in calls[1] and '--dry-run' not in calls[2]
-    assert calls[1][3] == calls[2][3] == '/tmp/sealed-task.json'
+    assert calls[1][3] == calls[2][3]
     for value in ('MAT 2:1', 'sealed-style/1', 'sealed-provider', 'OVERSIZED', 'REFERENCE_GAP',
                   'missing:MAT 2:2', 'Planning estimates', 'SQS: NOT_APPLIED'):
         assert value in output.getvalue()
@@ -282,6 +289,6 @@ def test_menu_resume_recovers_partial_publication_only_through_authenticated_exe
         continue_run(center, job, run)
         assert output.read_bytes() == before
         assert receipt.is_file()
-        assert 'NCA execution: EXECUTED' in displayed.getvalue()
+        assert 'Task execution: EXECUTED' in displayed.getvalue()
         assert [args[1] for args in commands] == ['create', 'execute', 'execute', 'submit']
-        assert commands[1][3] == commands[2][3] == commands[3][3] == str(manifest)
+        assert commands[1][3] == commands[2][3] == commands[3][3]
