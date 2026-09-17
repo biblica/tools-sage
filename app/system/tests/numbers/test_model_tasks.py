@@ -253,6 +253,20 @@ def validated_target(target: TargetUnit) -> Extraction:
     return validate_extraction_response(target, extraction_response(target))
 
 
+def assert_strict_provider_schema(schema):
+    """Check provider schema requirements that ordinary JSON Schema permits omitting."""
+    assert 'type' in schema or 'anyOf' in schema or 'const' in schema or 'enum' in schema, schema
+    if schema.get('type') == 'object':
+        assert schema.get('additionalProperties') is False
+        assert set(schema.get('required', ())) == set(schema['properties'])
+        for child in schema['properties'].values():
+            assert_strict_provider_schema(child)
+    if schema.get('type') == 'array':
+        assert_strict_provider_schema(schema['items'])
+    for child in schema.get('anyOf', ()):
+        assert_strict_provider_schema(child)
+
+
 def object_schemas(value: object):
     """Yield every nested object schema from one provider response contract."""
     if not isinstance(value, dict):
@@ -353,16 +367,21 @@ def test_each_phase_request_uses_a_closed_exact_evidence_schema(package_root: Pa
         for request in transport.requests
         for node in object_schemas(request.schema)
     )
+    from jsonschema import Draft202012Validator
+    for request, response in zip(transport.requests,
+        [extraction_response(target), correspondence_response(target), footnote_response(target)]):
+        assert_strict_provider_schema(request.schema)
+        Draft202012Validator(request.schema).validate(response)
     extraction_item = (
         transport.requests[0].schema["properties"]["work_units"]["items"]
         ["properties"]["expressions"]["items"]
     )
-    assert extraction_item["properties"]["stream_id"] == {"const": "main"}
+    assert extraction_item["properties"]["stream_id"] == {"type": "string", "const": "main"}
     assert extraction_item["properties"]["values"]["items"]["pattern"] == (
         r"^-?(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?$"
     )
     source_item = transport.requests[1].schema["properties"]["source_expressions"]["items"]
-    assert source_item["properties"]["stream_id"] == {"const": "ol"}
+    assert source_item["properties"]["stream_id"] == {"type": "string", "const": "ol"}
     note_item = transport.requests[2].schema["properties"]["evidence"]["items"]
     assert set(note_item["required"]) == {"note_id", "surface", "span"}
 
@@ -682,6 +701,9 @@ def test_extract_batch_has_one_target_only_capsule_and_exact_parent_receipt(pack
     assert hasattr(tasks, 'extract_batch'), 'one-call batch extraction is not implemented'
     result = tasks.extract_batch(batch, parsing_conventions={'ol_values': ['318'], 'registry_present': True})
     assert len(transport.requests) == 1
+    assert_strict_provider_schema(transport.requests[0].schema)
+    from jsonschema import Draft202012Validator
+    Draft202012Validator(transport.requests[0].schema).validate(json.loads(raw_text))
     prompt = json.loads(transport.requests[0].prompt)
     assert prompt['task_version'] == result.receipt.task_version == 'nca-extraction-2.0'
     assert prompt['input']['routed_sfm'] == batch.routed_sfm
@@ -824,6 +846,32 @@ def test_route_mismatch_does_not_retry_or_split(package_root):
         bounded_extract(model_tasks(package_root, transport), batch)
     assert exc.value.code == 'LLM_RESPONSE_ROUTE_MISMATCH'
     assert len(transport.requests) == 1
+
+
+def test_invalid_provider_schema_does_not_retry_or_split(package_root):
+    """An invalid response schema cannot be repaired by splitting target text."""
+    from .test_batch_extraction import batch_fixture
+    transport = RecordedExecutor([RuntimeError('invalid_json_schema: schema must have a type key')])
+    tasks = model_tasks(package_root, transport)
+    with pytest.raises(ValidationError) as caught:
+        bounded_extract(tasks, batch_fixture())
+    assert caught.value.code == 'NCA_MODEL_SCHEMA_INVALID'
+    assert len(transport.requests) == 1
+    assert tasks.attempts[0].measurement.status == 'NCA_MODEL_SCHEMA_INVALID'
+
+
+def test_registered_reading_request_has_only_required_applicable_fields(package_root):
+    """Registered evidence is requested only when its separate context is supplied."""
+    from jsonschema import Draft202012Validator
+    target = unit()
+    response = add_registered_response(correspondence_response(target))
+    transport = RecordedExecutor([response])
+    tasks = model_tasks(package_root, transport)
+    tasks.correspond(target, validated_target(target), row(), reading_context=registered_context())
+    schema = transport.requests[0].schema
+    assert_strict_provider_schema(schema)
+    Draft202012Validator(schema).validate(response)
+    assert 'registered_status' in schema['required']
 
 
 def test_retry_then_split_accepts_recorded_children_on_the_pinned_route(package_root):

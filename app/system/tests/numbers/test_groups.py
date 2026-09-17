@@ -114,6 +114,10 @@ def test_group_phase_is_one_real_checkpointed_request(package_root, tmp_path):
     assert result.receipt.task_version == 'nca-group-correspondence-2.0'
     assert len(transport.requests) == len(session.durable_calls()) == 1
     assert len(session.reused) == 1
+    from .test_model_tasks import assert_strict_provider_schema
+    from jsonschema import Draft202012Validator
+    assert_strict_provider_schema(transport.requests[0].schema)
+    Draft202012Validator(transport.requests[0].schema).validate(response)
 
 
 def test_partial_group_retains_resolved_row_and_unresolved_ids():
