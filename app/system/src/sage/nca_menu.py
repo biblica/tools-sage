@@ -130,9 +130,8 @@ def start_run(center, job) -> None:
     checks = choose_checks(center, job)
     if checks is None:
         return
-    scope = center.io.text('Scripture scope', required=False,
-                          validator=lambda value: validate_scripture_scope(value, workflow='nca').label()).strip()
-    if not scope:
+    scope = center._select_scripture_scope(job, primary_binding='wip')
+    if scope is None:
         return
     config = load_ecosystem(center.store.settings_path)
     run = create_nca_run(config, job_id=job.job_id, scope_value=scope, checks=checks)
