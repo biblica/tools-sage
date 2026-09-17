@@ -68,3 +68,13 @@ Machine results must carry an explicit limitation and record that SQS checks wer
 Record shared SQS confidence checks in the NCA roadmap. Obtain its actual specification when implementing that future feature, then map its service interface, assessment states, threshold ownership, review/retry policy and versioning. No SQS specification is required to complete the current NCA design or proceed with its implementation.
 
 The inspected repository contains `model_language_competency.py`, a general evidence registry. It is not a substitute for the future SQS per-task checks. The current version uses capability disclosure rather than inventing that missing service.
+
+## Related: Language Profile capture (2026-09-17)
+
+Captured here alongside SQS as another piece of forward-looking, currently-unimplemented capability work tracked in the same "future functionality" spirit.
+
+Current state: `app/system/config/schemas/language-profile-registry.schema.yml` already requires only `script` (ISO 15924, four-letter code) and the canonical BCP-47 language tag itself (which already carries region, e.g. `pt-BR`, `fr-011`, `ti-ER`) per profile namespace. Everything else about a language (display name, spoken regions/countries) is not hand-authored per profile — it is already sourced from the bundled `app/system/data/iso-639-3.json` and `iso-3166-1.json` reference snapshots and resolved at render time via `iso_language()`/`resolve_country()` in `act_outputs.py`.
+
+Open question raised: should "sourced from official online repos" mean a periodically-refreshed bundled snapshot (consistent with the existing iso-639-3/iso-3166-1 approach, and with this project's deterministic, offline-capable design — no-network installs, reproducible reports), or live runtime queries against IANA/CLDR/Ethnologue? The former preserves determinism; the latter would introduce a network dependency and non-determinism risk that conflicts with how the rest of SAGE is built. Recommendation: keep the bundled-snapshot approach — capture only script + BCP-47 tag per project language, derive the rest from a periodically-refreshed local reference bundle, refreshed at release-build time rather than queried live.
+
+Not yet resolved: how many languages/profiles the "build language profile list" TODO actually needs to cover (sizing not yet done).
