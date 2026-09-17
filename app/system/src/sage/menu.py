@@ -2741,169 +2741,6 @@ class SageControlCenter:
                 elif choice == "6":
                     self.recovery_menu(project)
 
-    def saw_menu(self) -> None:
-        """Open sealed legacy analysis Jobs through the compatibility-only menu."""
-        while True:
-            report = self.store.discover_report("saw", include_archived=True)
-            active_id = self.store.active_jobs().get("saw")
-            active, active_issue = self._active_job_from_report(report, active_id)
-            active_label = active.job_id if active else active_issue.job_id if active_issue else "NONE"
-            if active_issue is not None:
-                active_label += " [ACTION NEEDED]"
-            context: list[str] = [f"Active Job                   {active_label}"]
-            if active is not None or active_issue is not None:
-                context.extend([
-                    f"WIP                          {active.bindings.get('wip') if active else 'CHECK REQUIRED'}",
-                    f"REFERENCE                    {active.bindings.get('reference') if active else 'CHECK REQUIRED'}",
-                ])
-                options = (
-                    ("1", "Open active legacy analysis Job"),
-                    ("2", "Choose active legacy analysis Job"),
-                    ("3", "Add legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>"),
-                    ("4", "Manage legacy analysis Jobs"),
-                    ("5", "Reports and history"),
-                    ("6", "Recovery and diagnostics"),
-                    ("7", "Maintain Job storage"),
-                    ("B", "Back"),
-                )
-            else:
-                options = (
-                    ("1", "Choose active legacy analysis Job"),
-                    ("2", "Add legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>"),
-                    ("3", "Manage legacy analysis Jobs"),
-                    ("4", "Reports and history"),
-                    ("5", "Recovery and diagnostics"),
-                    ("6", "Maintain Job storage"),
-                    ("B", "Back"),
-                )
-            choice = self.io.choose("LEGACY ANALYSIS", options, context=tuple(context))
-            if choice == "B":
-                return
-            if active is not None or active_issue is not None:
-                if choice == "1":
-                    selected = active
-                    if active_issue is not None:
-                        selected = self._present_job_action_needed(active_issue, offer_onboarding=True)
-                        if selected is not None:
-                            self.store.set_active_job("saw", selected.job_id)
-                    if selected is not None:
-                        self._saw_job_menu(selected)
-                elif choice == "2":
-                    selected = self.choose_job("saw")
-                    if selected is not None:
-                        self._saw_job_menu(selected)
-                elif choice == "3":
-                    selected = self.create_job_wizard("saw")
-                    if isinstance(selected, Job):
-                        self._saw_job_menu(selected)
-                elif choice == "4":
-                    self.job_management_menu("saw")
-                elif choice == "5":
-                    if active is not None:
-                        self.reports_menu(active)
-                    elif active_issue is not None:
-                        self._present_job_action_needed(active_issue, offer_onboarding=True)
-                elif choice == "6":
-                    if active is not None:
-                        self.recovery_menu(active)
-                    elif active_issue is not None:
-                        self._present_job_action_needed(active_issue, offer_onboarding=True)
-                elif choice == "7":
-                    self.job_storage_maintenance_menu("saw")
-            else:
-                if choice == "1":
-                    selected = self.choose_job("saw")
-                    if selected is not None:
-                        self._saw_job_menu(selected)
-                elif choice == "2":
-                    selected = self.create_job_wizard("saw")
-                    if isinstance(selected, Job):
-                        self._saw_job_menu(selected)
-                elif choice == "3":
-                    self.job_management_menu("saw")
-                elif choice in {"4", "5"}:
-                    selected = self.choose_job("saw")
-                    if selected is not None:
-                        if choice == "4":
-                            self.reports_menu(selected)
-                        else:
-                            self.recovery_menu(selected)
-                elif choice == "6":
-                    self.job_storage_maintenance_menu("saw")
-
-    def _saw_job_menu(self, project: Job) -> None:
-        """Run checks on one selected sealed legacy Job."""
-        while True:
-            project = self.store.active_job("saw") or project
-            run = self.store.active_run(project)
-            self.io.write()
-            self.io.write(f"LEGACY ANALYSIS JOB - {project.job_id}")
-            self.io.write("-" * 72)
-            self.io.write(f"WIP                          {project.bindings.get('wip')}")
-            self.io.write(f"REFERENCE                    {project.bindings.get('reference')}")
-            self.io.write()
-            self._write_job_ai_routing("saw", run)
-            if run is None:
-                self.io.write("Active Run                   NONE")
-                options = (
-                    ("1", "Run Reference Text Comparison (RTC)"),
-                    ("2", "Run Source Text Correspondence (STC)"),
-                    ("3", "Run Targeted Check"),
-                    ("4", "Run Original-Language Review"),
-                    ("5", "Reports and exports"),
-                    ("6", "Recovery and diagnostics"),
-                    ("B", "Back"),
-                )
-            else:
-                self.io.write("Active Run")
-                self.io.write(f"  Run                        {run.run_id}")
-                self.io.write(f"  Check                      {self._saw_operation_label(run.operation)}")
-                self.io.write(f"  Scope                      {run.scope}")
-                self.io.write(f"  Task                       {run.current_stage}")
-                self.io.write(f"  Status                     {run.status}")
-                options = (
-                    ("1", "Continue active Run"),
-                    ("2", "Run Reference Text Comparison (RTC)"),
-                    ("3", "Run Source Text Correspondence (STC)"),
-                    ("4", "Run Targeted Check"),
-                    ("5", "Run Original-Language Review"),
-                    ("6", "Reports and exports"),
-                    ("7", "Recovery and diagnostics"),
-                    ("B", "Back"),
-                )
-            choice = self.io.choose(
-                "LEGACY ANALYSIS CHECKS",
-                options,
-                blank_before=("5",) if run is None else ("6",),
-            )
-            if choice == "B":
-                return
-            if run is None:
-                if choice == "5":
-                    self.reports_menu(project)
-                elif choice == "6":
-                    self.recovery_menu(project)
-                else:
-                    {"1": lambda: self.start_saw_run(project, "rtc"),
-                     "2": lambda: self.start_saw_run(project, "stc"),
-                     "3": lambda: self.start_saw_run(project, "focused"),
-                     "4": lambda: self.start_saw_run(project, "ol")}[choice]()
-            else:
-                if choice == "1":
-                    self.continue_run(project, run)
-                elif choice == "2":
-                    self.start_saw_run(project, "rtc")
-                elif choice == "3":
-                    self.start_saw_run(project, "stc")
-                elif choice == "4":
-                    self.start_saw_run(project, "focused")
-                elif choice == "5":
-                    self.start_saw_run(project, "ol")
-                elif choice == "6":
-                    self.reports_menu(project)
-                elif choice == "7":
-                    self.recovery_menu(project)
-
     @staticmethod
     def _saw_operation_label(operation: str) -> str:
         """Return the pre-release Operator label while preserving stable machine operation IDs."""
@@ -5068,9 +4905,7 @@ class SageControlCenter:
                     repaired = self._present_job_action_needed(active_issue, offer_onboarding=True)
                     if repaired is not None:
                         self.store.set_active_job(tool, repaired.job_id)
-                        if tool == "saw":
-                            self._saw_job_menu(repaired)
-                        elif tool in {"rtc", "stc"}:
+                        if tool in {"rtc", "stc"}:
                             self.analysis_job_menu(repaired)
                         elif tool == 'nca':
                             self.nca_job_menu(repaired)
@@ -5079,8 +4914,6 @@ class SageControlCenter:
                 elif active is None:
                     self.io.write(f"No active {tool_label} Job. Choose or add one first.")
                     self.io.pause()
-                elif tool == "saw":
-                    self._saw_job_menu(active)
                 elif tool in {"rtc", "stc"}:
                     self.analysis_job_menu(active)
                 elif tool == 'nca':
