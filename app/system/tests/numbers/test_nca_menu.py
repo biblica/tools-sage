@@ -61,12 +61,17 @@ def test_shared_nca_snapshot_and_frozen_tui_navigation(make_workspace):
     assert TOP_LEVEL_SECTIONS[-1].view_id == 'configure'
 
 
-def test_run_preflight_shows_reference_and_language_capability(make_workspace):
+def test_run_preflight_shows_reference_and_language_capability(make_workspace, monkeypatch):
     """Readiness reports scoped evidence without traversing a whole reference package."""
     from sage.nca_menu import show_preflight
+    from .test_nca_jobs import _prepare_nca_workspace, _route
+    from sage.nca import create_nca_job
     root = make_workspace(configured=True, qualification_status='VALIDATED')
+    config, _ = _prepare_nca_workspace(root)
+    _route(monkeypatch)
+    job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1')
     center, output = _center(root)
-    show_preflight(center, SimpleNamespace(), {'preflight': {
+    show_preflight(center, job, {'preflight': {
         'language': 'en', 'script': 'Latn', 'indexed_coordinates': 1,
         'reference_expectations': ['MAT 1:1'], 'requested_scope': 'MAT 1:1'}})
     assert 'en; Latn' in output.getvalue()
@@ -289,6 +294,6 @@ def test_menu_resume_recovers_partial_publication_only_through_authenticated_exe
         continue_run(center, job, run)
         assert output.read_bytes() == before
         assert receipt.is_file()
-        assert 'Task execution: EXECUTED' in displayed.getvalue()
+        assert 'NUMBERS / nca-numbers / VALIDATING' in displayed.getvalue()
         assert [args[1] for args in commands] == ['create', 'execute', 'execute', 'submit']
         assert commands[1][3] == commands[2][3] == commands[3][3]

@@ -3481,14 +3481,12 @@ class SageControlCenter:
             self.io.pause()
             return False
         if not getattr(self, "_compact_saw_progress", False):
+            snapshot = self.ui_service.run_progress_snapshot(project, run)
+            self.io.write(snapshot["line"])
+            self.io.write(snapshot["activity"])
             if isinstance(result, dict):
-                self.io.write(f"Task execution: {result.get('status', 'UNKNOWN')}")
-                self.io.write(f"Provider: {result.get('provider', 'unknown')}")
-                self.io.write(f"Model: {result.get('model') or 'provider default'}")
-                if result.get("reasoning_effort"):
-                    self.io.write(f"Reasoning: {result.get('reasoning_effort')}")
-                if result.get("selection_mode"):
-                    self.io.write(f"Selection: {result.get('selection_mode')}")
+                self.io.write(f"Provider: {result.get('provider', 'unknown')} / "
+                              f"Model: {result.get('model') or 'provider default'}")
                 if result.get("receipt_path"):
                     self.io.write(f"Receipt: {result['receipt_path']}")
             self.io.write(f"ACT: {manifest_path.parent / 'ACT.md'}")
