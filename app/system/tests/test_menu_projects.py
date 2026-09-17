@@ -433,7 +433,7 @@ def test_guided_first_run_setup_records_missing_project_root_with_ready_test_ai(
     assert "BETA - PRE-RELEASE" in rendered
 
 
-def test_global_footer_is_rendered_for_main_bic_and_saw(make_workspace) -> None:
+def test_global_footer_is_rendered_for_main_bic_and_rtc(make_workspace) -> None:
     """The common horizontal navigation footer is present across workflow menus."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
@@ -446,11 +446,11 @@ def test_global_footer_is_rendered_for_main_bic_and_saw(make_workspace) -> None:
     )
 
     center.bic_menu()
-    center.saw_menu()
+    center.analysis_menu("rtc")
 
     rendered = output.getvalue()
     assert "BIC JOBS" in rendered
-    assert "LEGACY ANALYSIS" in rendered
+    assert "Reference Text Comparison (RTC)" in rendered
     assert rendered.count("A. Back   B. Main menu   C. Exit SAGE") == 2
     assert rendered.count("D. Language   E. Help   F. Status") == 2
 
@@ -476,29 +476,6 @@ def test_active_job_marker_is_rendered_once_in_management_list(make_workspace) -
     assert f"{saw.job_id} - {saw.display_name} [ACTIVE]" in rendered
     assert "[ACTIVE] [ACTIVE]" not in rendered
 
-
-def test_job_management_can_open_the_active_saw_job(make_workspace) -> None:
-    """Changing the active marker must lead to an explicit operational entry action."""
-    root = make_workspace(configured=True, qualification_status="VALIDATED")
-    store, projects = _bootstrap(root)
-    saw = next(project for project in projects if project.tool == "saw")
-    store.set_active_job("saw", None)
-    output = io.StringIO()
-    center = SageControlCenter(
-        sage_root=root,
-        settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["2", "1", "1", "a", "a"]), output=output),
-        skip_setup=True,
-        dry_run_provider=True,
-    )
-
-    center.job_management_menu("saw")
-
-    rendered = output.getvalue()
-    assert "Open active LEGACY ANALYSIS JOB" in rendered
-    assert f"{saw.job_id} - {saw.display_name} [ACTIVE]" in rendered
-    assert f"LEGACY ANALYSIS JOB - {saw.job_id}" in rendered
-    assert "Run Reference Text Comparison (RTC)" in rendered
 
 
 def test_job_management_uses_the_same_open_active_grammar_for_bic(make_workspace) -> None:
@@ -636,7 +613,7 @@ def test_bic_and_saw_entry_menus_preserve_invalid_active_job_as_action_needed(ma
             dry_run_provider=True,
         )
 
-        (center.bic_menu if tool == "bic" else center.saw_menu)()
+        (center.bic_menu if tool == "bic" else lambda: center.job_management_menu("saw"))()
 
         rendered = output.getvalue()
         assert job.job_id in rendered
@@ -795,105 +772,12 @@ def test_help_and_status_return_to_the_invoking_menu(make_workspace) -> None:
     assert rendered.count("BIC JOBS") >= 3
 
 
-def test_saw_flow_selects_job_then_exposes_checks_and_back_is_hierarchical(make_workspace) -> None:
-    """SAW navigation is setup/select -> selected Job checks -> Back -> SAW setup/select."""
-    root = make_workspace(configured=True, qualification_status="VALIDATED")
-    store, projects = _bootstrap(root)
-    saw = next(project for project in projects if project.tool == "saw")
-    store.set_active_job("saw", None)
-    output = io.StringIO()
-    center = SageControlCenter(
-        sage_root=root,
-        settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["1", "1", "a", "a"]), output=output),
-        skip_setup=True,
-        dry_run_provider=True,
-    )
-
-    center.saw_menu()
-
-    rendered = output.getvalue()
-    assert "LEGACY ANALYSIS" in rendered
-    assert "Choose active JOB [LEGACY ANALYSIS]" in rendered
-    assert f"LEGACY ANALYSIS JOB - {saw.job_id}" in rendered
-    assert "Active Run                   NONE" in rendered
-    assert "Run Reference Text Comparison (RTC)" in rendered
-    assert "Run Targeted Check" in rendered
-    assert "Run Original-Language Review" in rendered
-    assert "LEGACY ANALYSIS RUN OPTIONS" not in rendered
-    assert rendered.count("A. Back") >= 2
-
-
-def test_completed_saw_run_is_history_not_an_active_menu_run(make_workspace) -> None:
-    """A completed SAW Run must not expose the Continue active Run action."""
-    root = make_workspace(configured=True, qualification_status="VALIDATED")
-    store, projects = _bootstrap(root)
-    saw = next(project for project in projects if project.tool == "saw")
-    run = store.create_run(saw, operation="rtc", scope="EXO 1-2")
-    completed = store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
-    pointer = saw.controller_state_root / "active-run.json"
-    pointer.parent.mkdir(parents=True, exist_ok=True)
-    pointer.write_text(
-        json.dumps({"schema_version": "1.0", "run_id": completed.run_id}),
-        encoding="utf-8",
-    )
-    output = io.StringIO()
-    center = SageControlCenter(
-        sage_root=root,
-        settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["a"]), output=output),
-        skip_setup=True,
-        dry_run_provider=True,
-    )
-
-    center._saw_job_menu(saw)
-
-    rendered = output.getvalue()
-    assert "Active Run                   NONE" in rendered
-    assert "Continue active Run" not in rendered
-    assert "Run Reference Text Comparison (RTC)" in rendered
-    assert not pointer.exists()
-
-
-def test_saw_job_menu_visually_separates_work_from_administration(make_workspace) -> None:
-    """Use the shared blank-line convention without adding section headings."""
-    root = make_workspace(configured=True, qualification_status="VALIDATED")
-    store, projects = _bootstrap(root)
-    saw = next(project for project in projects if project.tool == "saw")
-    output = io.StringIO()
-    center = SageControlCenter(
-        sage_root=root,
-        settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["a"]), output=output),
-        skip_setup=True,
-        dry_run_provider=True,
-    )
-
-    center._saw_job_menu(saw)
-
-    rendered = output.getvalue()
-    assert "  4. Run Original-Language Review\n\n  5. Reports and exports" in rendered
-
-    store.create_run(saw, operation="rtc", scope="JHN 1")
-    output.seek(0)
-    output.truncate(0)
-    center.io.input_func = ScriptedInput(["a"])
-
-    center._saw_job_menu(saw)
-
-    rendered = output.getvalue()
-    assert "  5. Run Original-Language Review\n\n  6. Reports and exports" in rendered
-    assert "WORK\n" not in rendered
-    assert "ADMINISTRATION\n" not in rendered
-
-
-def test_saw_job_menu_displays_current_skill_model_and_reasoning_route(
+def test_job_ai_routing_displays_current_skill_model_and_reasoning_route(
     make_workspace, monkeypatch
 ) -> None:
     """The Job view identifies routing mode and the exact recommended Skill route."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
-    store, projects = _bootstrap(root)
-    saw = next(project for project in projects if project.tool == "saw")
+    _bootstrap(root)
 
     class Service:
         """Return deterministic route status without a live provider dependency."""
@@ -928,7 +812,7 @@ def test_saw_job_menu_displays_current_skill_model_and_reasoning_route(
         skip_setup=True,
         dry_run_provider=False,
     )
-    center._saw_job_menu(saw)
+    center._write_job_ai_routing("saw", None)
     rendered = output.getvalue()
     assert "AI Routing                   AUTOMATIC" in rendered
     assert "Current recommendation" in rendered
@@ -1078,7 +962,7 @@ def test_reports_and_recovery_are_owned_by_workflow_or_sage_maintenance(make_wor
 
     center.bic_menu()
     center.io.input_func = ScriptedInput(["a"])
-    center.saw_menu()
+    center.analysis_menu("rtc")
     center.io.input_func = ScriptedInput(["a"])
     assert center.system_configuration_menu() == "BACK"
     center.io.input_func = ScriptedInput(["a"])
