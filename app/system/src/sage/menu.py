@@ -3592,23 +3592,46 @@ class SageControlCenter:
         manifest_path: Path,
         *,
         pause: bool = True,
+        preview: Callable[[dict[str, Any]], bool] | None = None,
+        raise_codes: frozenset[str] | None = None,
     ) -> bool:
-        """Execute one sealed task and report whether provider output is ready."""
+        """Execute one sealed task and report whether provider output is ready.
+
+        When `preview` is supplied, a dry-run preflight is requested first and shown
+        through it; the sealed task executes for real only when it returns True (and
+        the global dry-run provider mode is not active). Existing callers that omit
+        `preview` keep their exact prior behavior.
+
+        `raise_codes` names SageError codes that must propagate rather than being
+        caught and recorded as a resumable task-local issue -- for failures (such as
+        detected data-integrity violations) where a soft, retry-oriented framing
+        would be misleading.
+        """
         declared_manifest = declare_governed_path(self.root, manifest_path, "task manifest")
         arguments = ["task", "execute", "--task", declared_manifest]
         self.runtime_status.current_job = project.job_id
         self.runtime_status.current_project = project.output_project
         self.runtime_status.current_run = run.run_id
         self.runtime_status.stage = run.current_stage
-        if self.dry_run_provider:
-            arguments.append("--dry-run")
+        ready = True
         try:
             self._ensure_codex_execution_transport()
-            result = self._run_with_status(
-                f"Running governed {project.tool.upper()} task...",
-                lambda: self.controller(project, arguments),
-            )
+            if preview is not None:
+                preflight = self._run_with_status(
+                    f"Planning governed {project.tool.upper()} task...",
+                    lambda: self.controller(project, [*arguments, "--dry-run"]),
+                )
+                ready = bool(preview(preflight if isinstance(preflight, dict) else {})) and not self.dry_run_provider
+                result = preflight
+            if preview is None or ready:
+                execute_arguments = [*arguments, "--dry-run"] if self.dry_run_provider else arguments
+                result = self._run_with_status(
+                    f"Running governed {project.tool.upper()} task...",
+                    lambda: self.controller(project, execute_arguments),
+                )
         except SageError as exc:
+            if raise_codes and exc.code in raise_codes:
+                raise
             self._record_execution_issue(
                 project,
                 run,
@@ -3634,7 +3657,7 @@ class SageControlCenter:
             self.io.write(f"ACT: {manifest_path.parent / 'ACT.md'}")
         if pause:
             self.io.pause()
-        return True
+        return ready if preview is not None else True
 
     def _submit_task(
         self,
@@ -3651,6 +3674,8 @@ class SageControlCenter:
         status = str(result.get("status", "SUBMITTED")) if isinstance(result, dict) else "SUBMITTED"
         if not getattr(self, "_compact_saw_progress", False):
             self.io.write(f"Task submission: {status}")
+            if isinstance(result, dict) and result.get("report_path"):
+                self.io.write(f"Report: {result['report_path']}")
         return self.store.update_run(run, status=status)
 
     def _task_action(
@@ -3658,11 +3683,16 @@ class SageControlCenter:
         project: Job,
         run: Run,
         manifest_path: Path,
+        *,
+        preview: Callable[[dict[str, Any]], bool] | None = None,
+        raise_codes: frozenset[str] | None = None,
     ) -> tuple[Run, bool]:
         """Advance one task; provider/output interruptions remain task-local and resumable."""
         state, manifest = self._task_state(manifest_path)
         if state == "TASK_CREATED":
-            if not self._launch_task(project, run, manifest_path, pause=False):
+            if not self._launch_task(
+                project, run, manifest_path, pause=False, preview=preview, raise_codes=raise_codes
+            ):
                 return run, False
             executed_state, _ = self._task_state(manifest_path)
             if executed_state == "OUTPUT_READY":
@@ -3810,12 +3840,11 @@ class SageControlCenter:
     def continue_run(self, project: Job, run: Run) -> None:
         """Implement `continue run` in the deterministic terminal control flow."""
         try:
-            if project.tool == 'nca':
-                from .nca_menu import continue_run
-                continue_run(self, project, run)
-                return
             self.ensure_initialized(project)
-            if project.tool == "bic":
+            if project.tool == 'nca':
+                from .nca_menu import continue_run as _continue_nca
+                run = _continue_nca(self, project, run)
+            elif project.tool == "bic":
                 run = self._continue_bic(project, run)
             else:
                 run = self._continue_saw(project, run)

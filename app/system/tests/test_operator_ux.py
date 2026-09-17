@@ -670,7 +670,7 @@ def test_continue_executes_and_submits_the_same_task_without_second_menu_round_t
         lambda _path: (next(states), {"operation": "rtc"}),
     )
 
-    def fake_launch(_job, _run, _path, *, pause=True):
+    def fake_launch(_job, _run, _path, *, pause=True, preview=None, raise_codes=None):
         """Record that continuation suppresses the intermediate pause."""
         launches.append(pause)
         return True
