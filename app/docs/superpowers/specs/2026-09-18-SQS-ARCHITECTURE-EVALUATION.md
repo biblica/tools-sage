@@ -69,6 +69,8 @@ Recovered source copied unmodified into `services/sqs/`. Fresh venv (Python 3.12
 
 Plan Task 1 (provider/execution-channel onboarding contract) implemented and verified in a follow-up pass: `execution-channel-descriptor.schema.json` added, `seed/execution-channels/codex-workspace.yml` registered as the first descriptor, `execution_channel` added to `Qualification` and the 1.1 bundle schema as provenance (not identity-key) evidence, `jsonschema` promoted from a missing dev dependency to a core one, and a cross-catalog consistency test added. **93 passed** (88 + 5 new).
 
+9. **No proactive service-availability check is currently implementable for `codex_workspace`.** Researched live (plan Task 6a): a real remaining-allowance signal exists (Codex CLI's interactive `/status`, backed by `GET https://chatgpt.com/backend-api/wham/usage`, authenticated via `~/.codex/auth.json`), but there is no supported non-interactive way to query it — confirmed by an open, unresolved upstream issue, [openai/codex#10233](https://github.com/openai/codex/issues/10233). SAGE also never reads Codex's OAuth token directly by design (`executors/codex_cli.py` only ever shells out to the installed `codex` binary's own subcommands), so calling that endpoint directly from SAGE would break that abstraction even if it weren't TUI-only. Reactive detection (§5 item 6's rate-limit handling) is the only mechanism available until this ships upstream.
+
 ## 8. Open items deferred beyond this evaluation
 
 - Reapplying the post-snapshot hardening ledger (rollback protection, negative tombstones, Ed25519 verification, outbox-first discovery, ordered endpoint failover) as real, tested code — none of it currently exists as code anywhere.
