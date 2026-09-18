@@ -48,6 +48,17 @@ WORKSPACE_ONLY_TOP = {
     "localdata",
     ".pytest_cache",
     ".git",
+    ".claude",
+    ".superpowers",
+    "TODO.md",
+    # SQS is a separate service/repository (see docs/superpowers/specs/
+    # 2026-09-18-SQS-ARCHITECTURE-EVALUATION.md, locked decision 4); its
+    # source is staged in-tree here pending an eventual sibling-repo split,
+    # but it is never part of the SAGE client distribution.
+    "services",
+    # Scratch location for uploaded reference material inspected during
+    # analysis; never governed source or a release artifact.
+    "externaldata",
 }
 RESOURCE_SOURCE_FILES = {
     "app/system/resources/scripture/README.md",
