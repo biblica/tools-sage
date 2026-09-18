@@ -14,7 +14,7 @@ def seeded_client(tmp_path):
     repo.save_profile(profile)
     repo.save_model(model)
     repo.save_qualification(Qualification(
-        provider_family="openai", model_id="gpt-x", model_capability_fingerprint="a" * 64,
+        provider_family="openai", execution_channel="codex_workspace", model_id="gpt-x", model_capability_fingerprint="a" * 64,
         profile_id="uk-UA", profile_identity_sha256=profile.evaluation_identity_sha256,
         capability="GRAMMAR_ANALYSIS", status="QUALIFIED", minimum_reasoning="medium",
         quality_score=.96, reliability_score=.98, confidence="HIGH", value="HIGH", evidence_basis="MEASURED",

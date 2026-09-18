@@ -21,10 +21,11 @@ def claim_next_planned_test(repo: Repository) -> dict[str, Any] | None:
 
 
 class Worker:
-    def __init__(self, repo: Repository, *, provider, pack_dir: Path):
+    def __init__(self, repo: Repository, *, provider, pack_dir: Path, execution_channel: str):
         self.repo = repo
         self.provider = provider
         self.pack_dir = Path(pack_dir)
+        self.execution_channel = execution_channel
 
     def run_once(self) -> bool:
         item = claim_next_planned_test(self.repo)
@@ -58,6 +59,7 @@ class Worker:
                 run=result,
                 evidence_basis=EvidenceBasis.CONFIRMED if str(item.get("scope", "FULL")) == "CONFIRMATION" else EvidenceBasis.MEASURED,
                 route_value="HIGH",
+                execution_channel=self.execution_channel,
             )
             self.repo.save_evaluation_attempt(run_id, {
                 "minimum_reasoning": result.minimum_reasoning,
@@ -92,15 +94,24 @@ class Worker:
         return processed
 
 
-def drain(repo: Repository, *, provider=None, pack_dir: Path | None = None) -> int:
+def drain(repo: Repository, *, provider=None, pack_dir: Path | None = None, execution_channel: str | None = None) -> int:
     if provider is None:
+        # NOTE: this default path is the api_key execution channel (raw OpenAI API
+        # key), which SAGE's governed policy currently prohibits -- SAGE hosts must
+        # pass an explicit provider/execution_channel for the codex_workspace
+        # channel instead. This default is only exercised directly against SQS
+        # (e.g. ADMIN-driven qualification runs), never reachable from SAGE.
         api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY is required on the worker host")
         provider = OpenAIProvider(api_key)
     if pack_dir is None:
         pack_dir = Path(os.environ.get("SQS_PACK_DIR", "/etc/sage-sqs/evaluation-packs"))
-    Worker(repo, provider=provider, pack_dir=pack_dir).drain()
+    if execution_channel is None:
+        execution_channel = os.environ.get("SQS_EXECUTION_CHANNEL")
+        if not execution_channel:
+            raise RuntimeError("SQS_EXECUTION_CHANNEL is required on the worker host")
+    Worker(repo, provider=provider, pack_dir=pack_dir, execution_channel=execution_channel).drain()
     return 0
 
 

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "tools-sage-sqs"
 version = "0.02a1"
 requires-python = ">=3.12"
-dependencies = ["cryptography", "fastapi", "pydantic", "PyYAML", "uvicorn"]
+dependencies = ["cryptography", "fastapi", "jsonschema", "pydantic", "PyYAML", "uvicorn"]
 
 [project.optional-dependencies]
 dev = ["pytest"]

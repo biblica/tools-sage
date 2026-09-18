@@ -43,6 +43,7 @@ def _seed(repo: Repository) -> None:
     repo.save_model(model)
     repo.save_qualification(Qualification(
         provider_family="openai",
+        execution_channel="codex_workspace",
         model_id=model.model_id,
         model_capability_fingerprint=model.capability_fingerprint,
         profile_id=profile.profile_id,

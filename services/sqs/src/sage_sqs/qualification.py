@@ -77,7 +77,7 @@ def recompute_route_values(routes: Iterable[CandidateRoute]) -> dict[str, str]:
 
 def synthesize_qualification(*, model: ModelRecord, profile: LanguageProfile, capability: str,
                              run: PlannedRunResult, evidence_basis: EvidenceBasis | str,
-                             route_value: str) -> Qualification:
+                             route_value: str, execution_channel: str) -> Qualification:
     status = QualificationStatus.QUALIFIED if run.minimum_reasoning is not None else QualificationStatus.NOT_QUALIFIED
     confidence = derive_confidence(
         scope=run.scope,
@@ -89,6 +89,7 @@ def synthesize_qualification(*, model: ModelRecord, profile: LanguageProfile, ca
     basis = evidence_basis.value if isinstance(evidence_basis, EvidenceBasis) else str(evidence_basis)
     evidence = {
         "provider_family": model.provider_family,
+        "execution_channel": execution_channel,
         "model_id": model.model_id,
         "model_capability_fingerprint": model.capability_fingerprint,
         "profile_id": profile.profile_id,
@@ -104,6 +105,7 @@ def synthesize_qualification(*, model: ModelRecord, profile: LanguageProfile, ca
     }
     return Qualification(
         provider_family=model.provider_family,
+        execution_channel=execution_channel,
         model_id=model.model_id,
         model_capability_fingerprint=model.capability_fingerprint,
         profile_id=profile.profile_id,

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sqs.sage.local/schema/execution-channel-descriptor.json",
+  "title": "SQS Execution Channel Descriptor",
+  "description": "How a governed host actually reaches a provider_family's models. Distinct from provider_family (the model vendor): a qualification is keyed on the model itself so it never needs re-testing just because the access channel changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "execution_channel",
+    "provider_family",
+    "display_name",
+    "provisioning_model",
+    "capability_classes",
+    "reasoning_tier_taxonomy"
+  ],
+  "properties": {
+    "execution_channel": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Open identifier for the access channel, e.g. 'codex_workspace'. Not an enum of two -- new channels to the same or a different provider_family will appear."
+    },
+    "provider_family": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The model vendor this channel reaches, e.g. 'openai'. Multiple execution channels may share the same provider_family."
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provisioning_model": {
+      "type": "string",
+      "minLength": 1,
+      "description": "How the channel is provisioned, e.g. 'workspace' (org-managed seats, uniform entitlement across staff) or 'api_key' (per-integration credential). Open string, not an enum of two."
+    },
+    "capability_classes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "reasoning_tier_taxonomy": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier for which reasoning-tier taxonomy this channel's models report against (matches a provider_family's tier-mapping convention)."
+    },
+    "availability_check": {
+      "type": "object",
+      "description": "Reserved for the service-availability check (SQS integration plan Task 6a). Optional until that task defines its shape.",
+      "additionalProperties": true
+    }
+  }
+}
