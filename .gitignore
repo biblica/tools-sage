@@ -3,12 +3,15 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.claude/settings.local.json
 
 # SAGE app is source-only. Runtime/operator data lives in the portable bundle's
 # ignored localdata directory (or an explicitly selected external data home).
 /localdata/*
 !/localdata/README.md
 /.venv/
+services/sqs/.venv/
+services/sqs/var/
 /cache/
 /state/
 /workspace_data/

@@ -1,0 +1,23 @@
+schema_version: '1.0'
+profile_id: ha-NG
+display_name: Hausa (Nigeria)
+status: DRAFT
+revision: 1
+tier: 3
+cluster: hausa
+identity:
+  iso_639_1: ha
+  iso_639_3: hau
+  script: Latn
+  region: NG
+capabilities:
+- GRAMMAR_ANALYSIS
+- SEMANTIC_REWRITE
+profile_build:
+  source: SAGE_0.02A1_SEED_CATALOG
+  sage_profile_available_in_reference_snapshot: true
+  exact_profile_confirmation_required: true
+  evaluation_pack_state: READY
+admin_review:
+  required: true
+  issues: []
