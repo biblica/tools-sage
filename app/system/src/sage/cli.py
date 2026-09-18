@@ -75,6 +75,9 @@ from .llm_tasks import execute_task
 from .llm_settings import load_llm_settings
 from .model_service import ModelService
 from .executors import PROVIDER_IDS
+from .sqs_cache import SqsBundleRejected, SqsCache
+from .sqs_client import SqsTransportError, fetch_bundle, resolve_endpoints
+from .sqs_discovery import flush_outbox
 from .natural_language import append_request_log, interpret_request
 from .init_remediation import run_guided_init_remediation, run_targeted_init_remediation
 from .operator_overrides import clear_operator_overrides
@@ -1929,6 +1932,55 @@ def command_model_refresh(args: argparse.Namespace) -> int:
     print(f"Models: {result['model_count']}")
     if result.get("catalog_cache"):
         print(f"Catalog cache: {result['catalog_cache']}")
+    return 0
+
+
+def command_model_sqs_sync(args: argparse.Namespace) -> int:
+    """Flush queued SQS discoveries and refresh the validated local qualification cache.
+
+    Governed task execution never calls this path -- this command is the only
+    place SAGE talks to the SQS control plane over the network. A failure here
+    leaves the previous validated cache (if any) untouched and reports CACHE
+    or NONE rather than raising, so it is always safe to run.
+    """
+    config, _ = _load(args)
+    layout = storage_layout(config.root)
+    config_path = config.root / "system" / "config" / "sqs.yml"
+    state_dir = layout.state_root / "sqs"
+    outbox_path = state_dir / "sqs-discovery-outbox.json"
+
+    cache = SqsCache.from_config(state_dir, config_path)
+    endpoints = resolve_endpoints()
+    flush_result = flush_outbox(outbox_path, endpoints)
+
+    error: str | None = None
+    if not endpoints:
+        error = "No SQS endpoint configured (SAGE_SQS_URLS/SAGE_SQS_URL)"
+    else:
+        try:
+            cache.accept_bundle(fetch_bundle(endpoints))
+        except (SqsTransportError, SqsBundleRejected) as exc:
+            error = str(exc)
+
+    current = cache.load_current()
+    source = "NONE" if current is None else ("REMOTE" if error is None else "CACHE")
+    result = {
+        "source": source,
+        "discoveries_sent": flush_result.sent,
+        "discoveries_remaining": flush_result.remaining,
+        "bundle_revision": current.get("bundle_revision") if current else None,
+        "error": error,
+    }
+    if args.json:
+        _print_json(result)
+        return 0
+    print("SQS SYNC")
+    print(f"Source: {result['source']}")
+    print(f"Discoveries sent: {result['discoveries_sent']}, remaining queued: {result['discoveries_remaining']}")
+    if result["bundle_revision"] is not None:
+        print(f"Bundle revision: {result['bundle_revision']}")
+    if error:
+        print(f"Note: {error}")
     return 0
 
 
@@ -4710,6 +4762,11 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     model_list = model_actions.add_parser("list", help="List live models, reasoning levels, and SAGE qualification")
     model_list.add_argument("--provider", choices=PROVIDER_IDS, required=True)
     model_list.set_defaults(handler=command_model_list)
+    model_sqs_sync = model_actions.add_parser(
+        "sqs-sync",
+        help="Flush queued SQS discoveries and refresh the validated local qualification cache",
+    )
+    model_sqs_sync.set_defaults(handler=command_model_sqs_sync)
     model_recommend = model_actions.add_parser("recommend", help="Recommend one exact qualified route for a registered Skill")
     model_recommend.add_argument("--skill", required=True)
     model_recommend.set_defaults(handler=command_model_recommend)
