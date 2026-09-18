@@ -1063,6 +1063,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_sqs_client.py`
 - `system/tests/test_sqs_discovery.py`
 - `system/tests/test_sqs_qualification.py`
+- `system/tests/test_sqs_sync_cli.py`
 - `system/tests/test_standard_vrs_resources.py`
 - `system/tests/test_stc.py`
 - `system/tests/test_stc_registration.py`
