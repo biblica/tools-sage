@@ -80,6 +80,15 @@ Not an SQS transport concern (that's Task 3's endpoint failover, for SAGE↔SQS 
 - [ ] Write the test from Task 1 on the SAGE side too: a provider present in SQS's catalog but not SAGE's allowlist (or vice versa) fails closed with a clear error, never silently permits or silently drops the provider.
 - [ ] Document the onboarding procedure (one short doc): what changes when a new provider is added, and where.
 
+## Task 6a — Service availability / allowance checking (included allowance today, API credit later)
+
+Distinct from Task 3a (reacting to a 429 mid-call): this is a proactive "is this connection currently usable" check, generalized per access mode via the Task 1 provider-descriptor catalog rather than special-cased to `codex`.
+
+- [ ] Research, don't assume: does OpenAI's `chatgpt.com` web-session auth (what `codex`'s workspace/personal accounts both use) expose any queryable remaining-included-allowance signal today — a header, a status endpoint, anything — or is exhaustion only observable by hitting it (a 429)? Record the answer before designing around it.
+- [ ] Add an `availability_check` field to the Task 1 provider-descriptor schema: how SAGE determines current usability for a given provider + access mode. Each access mode gets its own check strategy — included-allowance and API-credit are different systems (session-based quota vs. an actual OpenAI platform billing/usage query), not one mechanism with two labels.
+- [ ] Surface current availability per governed provider (e.g. via `sage model status` or existing model-service diagnostics) so an operator or task can know before committing to a run, not just discover it via a failed call.
+- [ ] A future API-credit access mode is a new provider-descriptor entry with its own `availability_check` (per Task 1's onboarding contract), added when that mode is actually enabled — not a special case bolted onto `codex` now. Enabling API-key/API-credit access itself stays out of scope here: `llm_settings.py`'s `openai_api_keys: PROHIBITED` is an explicit current policy and changing it is a separate decision, not implied by adding this check architecture.
+
 ## Task 7 — Acceptance gates
 
 Reuse and adapt the recovered `05_ACCEPTANCE_TESTS/ACCEPTANCE_GATES.md` categories (current SAGE preservation, SQS source, publication trust/cache, transport/failover, discovery, routing authority, real local Mac socket test, packaging), re-verified against the actual integrated tree at completion — not assumed from the historical pack.
