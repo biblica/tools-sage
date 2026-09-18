@@ -115,6 +115,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/plans/2026-09-09-NCA-IMPLEMENTATION.md`
 - `docs/superpowers/plans/2026-09-10-NCA-OPTIMIZATION.md`
 - `docs/superpowers/plans/2026-09-14-NCA-NUMBER-USAGE.md`
+- `docs/superpowers/plans/2026-09-18-SQS-INTEGRATION-PLAN.md`
 - `docs/superpowers/specs`
 - `docs/superpowers/specs/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
 - `docs/superpowers/specs/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS-DESIGN.md`
@@ -127,6 +128,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/specs/2026-09-09-NCA-SQS-INTEGRATION.md`
 - `docs/superpowers/specs/2026-09-09-NCA-STYLE-QUESTIONNAIRE.md`
 - `docs/superpowers/specs/2026-09-10-NCA-OPTIMIZATION-DESIGN.md`
+- `docs/superpowers/specs/2026-09-18-SQS-ARCHITECTURE-EVALUATION.md`
 - `docs/windows`
 - `docs/windows/CHEAT-SHEET.md`
 - `docs/windows/ERRORS.md`
@@ -892,6 +894,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/sfm_slicer.py`
 - `system/src/sage/skill_routing.py`
 - `system/src/sage/source_coverage.py`
+- `system/src/sage/sqs_cache.py`
 - `system/src/sage/stage_reset.py`
 - `system/src/sage/standard.py`
 - `system/src/sage/state.py`
@@ -1050,6 +1053,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_sfm_slicer.py`
 - `system/tests/test_skill_migration.py`
 - `system/tests/test_skill_routing_policy.py`
+- `system/tests/test_sqs_cache.py`
 - `system/tests/test_standard_vrs_resources.py`
 - `system/tests/test_stc.py`
 - `system/tests/test_stc_registration.py`

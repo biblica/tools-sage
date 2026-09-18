@@ -54,16 +54,18 @@ Implements spec decision 5. Not hypothetical: SQS's 20 seeded languages vs. SAGE
 
 ## Task 3 — Reapply post-snapshot hardening (test-first; real implementation, not porting)
 
-One sub-task per hardening-ledger item, each as its own failing-test-then-implementation cycle:
+**Sequencing correction**: every item below describes bundle-*consumer*-side behavior (SAGE's future `sqs_client.py`, Task 4), not anything that belongs in `services/sqs/`. There is nothing to harden on the producer side for these items. Built the cache/validation core first, independent of transport, since it's fully testable without real network I/O; transport-layer items (endpoint failover, loopback exception, outbox discovery) come next as part of Task 4's actual client.
 
-- [ ] Publication digest + Ed25519 signature verification on the bundle consumer side.
-- [ ] Monotonic authority/epoch/revision enforcement; rollback rejection.
-- [ ] Current + previous known-good cache generation rotation; missing metadata must not lower the rollback floor.
-- [ ] Torn bundle/metadata pair rejection (identity-pair validation).
-- [ ] Durable negative-evidence tombstones, independent of normal cache staleness; crash-between-writes fails closed.
-- [ ] Ordered endpoint failover (`SAGE_SQS_URLS` list, `SAGE_SQS_URL` single-endpoint compatibility override): failover on connection/5xx only, never on 4xx/contract/signature rejection.
-- [ ] Loopback-only HTTP exception (`127.0.0.1`, `localhost`, loopback IPv6) with explicit proxy bypass; non-loopback endpoints require HTTPS.
-- [ ] Outbox-first discovery: SAGE queues metadata locally and never blocks task execution on delivery; explicit sync flushes and SQS deduplicates.
+- [x] Publication digest + Ed25519 signature verification on the bundle consumer side. Implemented in `app/system/src/sage/sqs_cache.py` (`verify_bundle_digest`, `verify_bundle_signature`, exact canonical byte-for-byte mirror of `services/sqs/src/sage_sqs/publisher.py`'s `canonical_bundle_bytes`/`canonical_bundle_sha256` — must stay in sync or every check spuriously fails).
+- [x] Monotonic authority/epoch/revision enforcement; rollback rejection. `GenerationIdentity.is_newer_than`: epoch takes priority over revision; a different `authority_id` is rejected outright (authority rotation is a separate, not-yet-designed trust decision, out of scope here).
+- [x] Current + previous known-good cache generation rotation; missing metadata must not lower the rollback floor. `SqsCache.rollback_floor()` reads both current and previous, taking the max — a lost/corrupt current legitimately falls back to whatever previous still holds, never to "no floor recorded." Tested by actually deleting the current file and proving a replay-level bundle is still rejected while a genuinely newer one is still accepted.
+- [x] Torn bundle/metadata pair rejection (identity-pair validation). **Design choice, not in the original plan**: bundle and its acceptance metadata are one atomically-replaced JSON file, not two separate files — this makes a torn pair impossible by construction (a half-written file fails JSON-decode on read, treated as absent) rather than needing bespoke two-file pairing validation.
+- [x] Durable negative-evidence tombstones, independent of normal cache staleness; crash-between-writes fails closed. Tombstones commit (atomic replace) *before* the new generation rotates in — verified by a test that monkeypatches a crash between those two writes and confirms, on a fresh `SqsCache` instance over the same state dir, the tombstone is already in effect while `current` is still the old generation. Absence of a qualification row never clears a tombstone; only an explicit newer `QUALIFIED` row for the exact same route does.
+- [x] 14 tests in `app/system/tests/test_sqs_cache.py`, all green, including two genuine test-construction bugs caught and fixed during this pass (a bad assumption about what the rollback floor should be after losing `current`, and building a signed-bundle fixture in the wrong field order relative to how the real `Publisher` computes its digest).
+- [x] Fixed a real defect in the process: 4 new/changed files under `app/` initially broke this repo's own documentation-contract (every procedure needs a docstring ending in `.!?`` or backtick), vanilla-install-manifest (every shipped file must be listed), and release-builder (`services/` and `externaldata/` were unclassified top-level source roots) tests. All fixed — `services`/`externaldata` added to `WORKSPACE_ONLY_TOP` in `build_release.py` with a comment explaining why, manifest updated, docstrings added. Full suite reverified green throughout (see Task 3 commit).
+- [ ] Ordered endpoint failover (`SAGE_SQS_URLS` list, `SAGE_SQS_URL` single-endpoint compatibility override): failover on connection/5xx only, never on 4xx/contract/signature rejection. Not yet built — belongs in Task 4's `sqs_client.py`.
+- [ ] Loopback-only HTTP exception (`127.0.0.1`, `localhost`, loopback IPv6) with explicit proxy bypass; non-loopback endpoints require HTTPS. Not yet built. Note: `executors/http.py` already has `validate_local_endpoint` for local providers (Ollama) with the same loopback-allowlist pattern — reuse/adapt rather than reinventing.
+- [ ] Outbox-first discovery: SAGE queues metadata locally and never blocks task execution on delivery; explicit sync flushes and SQS deduplicates. Not yet built.
 
 ## Task 3a — Provider rate-limit handling (independent gap, surfaced by this evaluation)
 
