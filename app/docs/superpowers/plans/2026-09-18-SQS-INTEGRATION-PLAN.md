@@ -101,10 +101,10 @@ This is not just a missing mapping table: `skill_routing._record_identity_matche
 
 ## Task 6 — Provider and language onboarding in practice
 
-- [ ] Extend `llm_settings.py`'s governed-provider allowlist to be validated against the same execution-channel descriptor catalog introduced in Task 1, rather than being an independent hardcoded list.
-- [ ] Extend SAGE's language-profile loading (`registry.py`) to be checkable against SQS's language catalog from Task 1b, surfacing (not silently absorbing) any profile that's routable in SAGE but unqualified/unknown in SQS.
-- [ ] Write the Task 1 and Task 1b cross-catalog consistency tests on the SAGE side too: a provider or language present in SQS's catalog but not SAGE's (or vice versa) fails closed with a clear error, never silently permits or silently drops it.
-- [ ] Document both onboarding procedures (one short doc each, or one doc with two sections): what changes when a new provider is added, what changes when a new language is added, and where.
+- [x] `app/system/src/sage/sqs_provider_coverage.py`: cross-checks SAGE's real governed-provider allowlist (`build_policy.ENABLED_AUTOMATED_PROVIDER_IDS`, currently exactly `("codex",)`) against SQS's execution-channel descriptor catalog via an explicit `SAGE_PROVIDER_TO_EXECUTION_CHANNEL` mapping (ids differ by design: `codex` ↔ `codex_workspace`). Fails closed on either side missing an entry. 5 tests, verified against the real current catalogs (currently consistent) plus two synthetic-drift tests proving it actually catches problems.
+- [x] `app/system/src/sage/sqs_language_coverage.py`: SAGE-side echo of Task 1b's SQS-side consistency check — reads the same shared manifest and SAGE's real grammar-profile directory directly, so a SAGE-only contributor who never runs the SQS test suite still catches onboarding drift. 5 tests, all passing against the real current, already-reconciled state.
+- [x] Both new checks documented as not importing `sage_sqs`'s Python package at all (reads YAML directly via a relative path, same caveat as Task 1b about the eventual sibling-repo split) — these are, and are meant to remain, separate services with no code-level dependency between them.
+- [x] Wrote [2026-09-18-SQS-ONBOARDING-PROCEDURES.md](../specs/2026-09-18-SQS-ONBOARDING-PROCEDURES.md): one doc, two sections (provider, language), each listing every file that must change together and which test on which side catches a miss. Explicitly notes what it does *not* cover — per Task 5's finding, even a fully onboarded provider/language pair has no live route to attach to yet.
 
 ## Task 6a — Service availability / allowance checking (included allowance today, API credit later)
 
