@@ -129,6 +129,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/specs/2026-09-09-NCA-STYLE-QUESTIONNAIRE.md`
 - `docs/superpowers/specs/2026-09-10-NCA-OPTIMIZATION-DESIGN.md`
 - `docs/superpowers/specs/2026-09-18-SQS-ARCHITECTURE-EVALUATION.md`
+- `docs/superpowers/specs/2026-09-18-SQS-ONBOARDING-PROCEDURES.md`
 - `docs/windows`
 - `docs/windows/CHEAT-SHEET.md`
 - `docs/windows/ERRORS.md`
@@ -901,6 +902,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/sqs_client.py`
 - `system/src/sage/sqs_discovery.py`
 - `system/src/sage/sqs_evidence_repository.py`
+- `system/src/sage/sqs_language_coverage.py`
+- `system/src/sage/sqs_provider_coverage.py`
 - `system/src/sage/sqs_qualification.py`
 - `system/src/sage/stage_reset.py`
 - `system/src/sage/standard.py`
@@ -1064,6 +1067,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_sqs_client.py`
 - `system/tests/test_sqs_discovery.py`
 - `system/tests/test_sqs_evidence_repository.py`
+- `system/tests/test_sqs_language_coverage.py`
+- `system/tests/test_sqs_provider_coverage.py`
 - `system/tests/test_sqs_qualification.py`
 - `system/tests/test_sqs_sync_cli.py`
 - `system/tests/test_standard_vrs_resources.py`
