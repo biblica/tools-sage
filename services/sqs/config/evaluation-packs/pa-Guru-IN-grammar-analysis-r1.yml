@@ -1,0 +1,114 @@
+schema_version: '1.0'
+pack_id: pa-Guru-IN-grammar-analysis-r1
+profile_id: pa-Guru-IN
+capability: GRAMMAR_ANALYSIS
+revision: 1
+review_state: READY
+content_provenance: SQS_0.02A1_STRUCTURAL_CONTRACT_FIXTURES
+policy:
+  critical_case_failure: FAIL_REASONING_LEVEL
+  repeat_confirmation_cases: 2
+  minimum_quality: 1.0
+cases:
+- case_id: PAGURUIN-GA-001
+  diagnostic_class: meaning_preservation
+  critical: true
+  priority: 100
+  confirmation: true
+  input: Controlled SQS structural fixture for exact profile pa-Guru-IN. Evaluate
+    diagnostic class meaning_preservation. Return JSON with finding.material (boolean)
+    and finding.relation (string). Do not report a material finding when the fixture
+    indicates no issue.
+  expected:
+    finding.material: true
+    finding.relation: meaning_preservation
+  expected_constraints:
+  - materiality must match the controlled fixture
+  - diagnostic relation must match the controlled fixture
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: PAGURUIN-GA-002
+  diagnostic_class: negation_scope
+  critical: true
+  priority: 90
+  confirmation: true
+  input: Controlled SQS structural fixture for exact profile pa-Guru-IN. Evaluate
+    diagnostic class negation_scope. Return JSON with finding.material (boolean) and
+    finding.relation (string). Do not report a material finding when the fixture indicates
+    no issue.
+  expected:
+    finding.material: true
+    finding.relation: negation_scope
+  expected_constraints:
+  - materiality must match the controlled fixture
+  - diagnostic relation must match the controlled fixture
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: PAGURUIN-GA-003
+  diagnostic_class: participant_reference
+  critical: true
+  priority: 80
+  confirmation: false
+  input: Controlled SQS structural fixture for exact profile pa-Guru-IN. Evaluate
+    diagnostic class participant_reference. Return JSON with finding.material (boolean)
+    and finding.relation (string). Do not report a material finding when the fixture
+    indicates no issue.
+  expected:
+    finding.material: true
+    finding.relation: participant_reference
+  expected_constraints:
+  - materiality must match the controlled fixture
+  - diagnostic relation must match the controlled fixture
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: PAGURUIN-GA-004
+  diagnostic_class: morphology_syntax_agreement
+  critical: false
+  priority: 70
+  confirmation: false
+  input: Controlled SQS structural fixture for exact profile pa-Guru-IN. Evaluate
+    diagnostic class morphology_syntax_agreement. Return JSON with finding.material
+    (boolean) and finding.relation (string). Do not report a material finding when
+    the fixture indicates no issue.
+  expected:
+    finding.material: true
+    finding.relation: morphology_syntax_agreement
+  expected_constraints:
+  - materiality must match the controlled fixture
+  - diagnostic relation must match the controlled fixture
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: PAGURUIN-GA-005
+  diagnostic_class: clause_relationship_ambiguity
+  critical: false
+  priority: 60
+  confirmation: false
+  input: Controlled SQS structural fixture for exact profile pa-Guru-IN. Evaluate
+    diagnostic class clause_relationship_ambiguity. Return JSON with finding.material
+    (boolean) and finding.relation (string). Do not report a material finding when
+    the fixture indicates no issue.
+  expected:
+    finding.material: true
+    finding.relation: clause_relationship_ambiguity
+  expected_constraints:
+  - materiality must match the controlled fixture
+  - diagnostic relation must match the controlled fixture
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: PAGURUIN-GA-006
+  diagnostic_class: zero_finding
+  critical: true
+  priority: 50
+  confirmation: true
+  input: Controlled SQS structural fixture for exact profile pa-Guru-IN. Evaluate
+    diagnostic class zero_finding. Return JSON with finding.material (boolean) and
+    finding.relation (string). Do not report a material finding when the fixture indicates
+    no issue.
+  expected:
+    finding.material: false
+    finding.relation: none
+  expected_constraints:
+  - materiality must match the controlled fixture
+  - diagnostic relation must match the controlled fixture
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60

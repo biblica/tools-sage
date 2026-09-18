@@ -1,0 +1,23 @@
+schema_version: '1.0'
+profile_id: id-ID
+display_name: Indonesian (Indonesia)
+status: DRAFT
+revision: 1
+tier: 2
+cluster: indonesian
+identity:
+  iso_639_1: id
+  iso_639_3: ind
+  script: Latn
+  region: ID
+capabilities:
+- GRAMMAR_ANALYSIS
+- SEMANTIC_REWRITE
+profile_build:
+  source: SAGE_0.02A1_SEED_CATALOG
+  sage_profile_available_in_reference_snapshot: true
+  exact_profile_confirmation_required: true
+  evaluation_pack_state: READY
+admin_review:
+  required: true
+  issues: []

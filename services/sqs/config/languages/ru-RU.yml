@@ -1,0 +1,25 @@
+schema_version: '1.0'
+profile_id: ru-RU
+display_name: Russian (Russia)
+status: DRAFT
+revision: 1
+tier: 1
+cluster: east-slavic
+identity:
+  iso_639_1: ru
+  iso_639_3: rus
+  script: Cyrl
+  region: RU
+capabilities:
+- GRAMMAR_ANALYSIS
+- SEMANTIC_REWRITE
+profile_build:
+  source: SAGE_0.02A1_SEED_CATALOG
+  sage_profile_available_in_reference_snapshot: false
+  exact_profile_confirmation_required: true
+  evaluation_pack_state: READY
+admin_review:
+  required: true
+  issues:
+  - SAGE_0.02ALPHA1_GRAMMAR_PROFILE_ABSENT
+  - SAGE_0.02ALPHA1_LANGUAGE_IDENTITY_ABSENT

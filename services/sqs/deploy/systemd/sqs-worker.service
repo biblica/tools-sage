@@ -1,0 +1,16 @@
+[Unit]
+Description=SAGE Qualification Service evaluation worker drain
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=sqs
+Group=sqs
+WorkingDirectory=/opt/tools-sage-sqs
+EnvironmentFile=/etc/sage-sqs/sqs-worker.env
+ExecStart=/opt/tools-sage-sqs/.venv/bin/sqs-worker --drain
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/sage-sqs
