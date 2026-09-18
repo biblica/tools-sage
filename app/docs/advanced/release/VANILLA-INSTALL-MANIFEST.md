@@ -895,6 +895,9 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/skill_routing.py`
 - `system/src/sage/source_coverage.py`
 - `system/src/sage/sqs_cache.py`
+- `system/src/sage/sqs_client.py`
+- `system/src/sage/sqs_discovery.py`
+- `system/src/sage/sqs_qualification.py`
 - `system/src/sage/stage_reset.py`
 - `system/src/sage/standard.py`
 - `system/src/sage/state.py`
@@ -1054,6 +1057,9 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_skill_migration.py`
 - `system/tests/test_skill_routing_policy.py`
 - `system/tests/test_sqs_cache.py`
+- `system/tests/test_sqs_client.py`
+- `system/tests/test_sqs_discovery.py`
+- `system/tests/test_sqs_qualification.py`
 - `system/tests/test_standard_vrs_resources.py`
 - `system/tests/test_stc.py`
 - `system/tests/test_stc_registration.py`
