@@ -30,11 +30,23 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
+import yaml
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 from .atomic import atomic_write_json
 from .errors import ValidationError
+
+_SQS_CONFIG_REQUIRED_FIELDS = ("schema_version", "trusted_authority_id", "require_signature", "trusted_signing_keys")
+
+
+def load_sqs_config(config_path: Path) -> dict[str, Any]:
+    """Load and minimally validate config/sqs.yml's operator-configured trust settings."""
+    payload = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+    missing = [field for field in _SQS_CONFIG_REQUIRED_FIELDS if field not in payload]
+    if missing:
+        raise ValidationError(f"sqs.yml missing required fields: {', '.join(missing)}", code="SQS_CONFIG_INVALID")
+    return payload
 
 _CURRENT_FILENAME = "sqs-cache-current.json"
 _PREVIOUS_FILENAME = "sqs-cache-previous.json"
@@ -139,6 +151,17 @@ class SqsCache:
         self.trusted_authority_id = trusted_authority_id
         self.trusted_signing_keys = dict(trusted_signing_keys or {})
         self.require_signature = require_signature
+
+    @classmethod
+    def from_config(cls, state_dir: Path, config_path: Path) -> "SqsCache":
+        """Build an SqsCache from config/sqs.yml's operator-configured trust settings."""
+        config = load_sqs_config(config_path)
+        return cls(
+            state_dir,
+            trusted_authority_id=str(config["trusted_authority_id"]),
+            trusted_signing_keys=config.get("trusted_signing_keys") or {},
+            require_signature=bool(config["require_signature"]),
+        )
 
     # -- paths -----------------------------------------------------------
     @property

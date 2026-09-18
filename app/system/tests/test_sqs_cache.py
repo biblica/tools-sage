@@ -7,10 +7,12 @@ from pathlib import Path
 import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
+from sage.errors import ValidationError
 from sage.sqs_cache import (
     SqsBundleRejected,
     SqsCache,
     canonical_bundle_sha256,
+    load_sqs_config,
     verify_bundle_signature,
 )
 
@@ -246,3 +248,31 @@ def test_valid_signature_is_accepted_and_tampering_is_rejected(tmp_path: Path):
     with pytest.raises(SqsBundleRejected) as excinfo:
         SqsCache(tmp_path / "other", trusted_authority_id="biblica-sqs-production", trusted_signing_keys=trusted_keys, require_signature=True).accept_bundle(tampered)
     assert excinfo.value.code == "SQS_BUNDLE_SIGNATURE_INVALID"
+
+
+def test_load_sqs_config_reads_the_real_shipped_config():
+    """config/sqs.yml, as actually shipped, loads and carries the required fields."""
+    config_path = Path(__file__).resolve().parents[1] / "config" / "sqs.yml"
+    config = load_sqs_config(config_path)
+    assert config["trusted_authority_id"] == "biblica-sqs-production"
+    assert config["require_signature"] is False
+    assert config["trusted_signing_keys"] == {}
+
+
+def test_load_sqs_config_rejects_a_config_missing_required_fields(tmp_path: Path):
+    """A config file missing a required field raises rather than silently defaulting."""
+    config_path = tmp_path / "sqs.yml"
+    config_path.write_text("schema_version: '1.0'\n", encoding="utf-8")
+    with pytest.raises(ValidationError) as excinfo:
+        load_sqs_config(config_path)
+    assert excinfo.value.code == "SQS_CONFIG_INVALID"
+
+
+def test_sqs_cache_from_config_builds_a_working_cache(tmp_path: Path):
+    """SqsCache.from_config wires the real shipped config into a working cache."""
+    config_path = Path(__file__).resolve().parents[1] / "config" / "sqs.yml"
+    cache = SqsCache.from_config(tmp_path, config_path)
+    assert cache.trusted_authority_id == "biblica-sqs-production"
+    assert cache.require_signature is False
+    cache.accept_bundle(_bundle())  # proves the constructed cache is actually usable
+    assert cache.load_current()["bundle_revision"] == 1

@@ -152,6 +152,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/bic-protected-verb-selection-pin.json`
 - `system/config/contracts`
 - `system/config/contracts/bic-verb-selection-policy.yml`
+- `system/config/contracts/sqs-bundle.schema.json`
 - `system/config/execution-ownership.yml`
 - `system/config/languages`
 - `system/config/languages/competency.yml`
@@ -269,12 +270,14 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/schemas/semantic-index-contract.schema.yml`
 - `system/config/schemas/skill-evaluation-contracts.schema.yml`
 - `system/config/schemas/skill-registry.schema.yml`
+- `system/config/schemas/sqs.schema.yml`
 - `system/config/schemas/structure-planning.schema.yml`
 - `system/config/schemas/transaction-journal.schema.yml`
 - `system/config/schemas/work-unit-manifest.schema.yml`
 - `system/config/schemas/workflow-profile.schema.yml`
 - `system/config/skill-evaluation-contracts.json`
 - `system/config/skills.json`
+- `system/config/sqs.yml`
 - `system/config/structure-planning.yml`
 - `system/config/workflows`
 - `system/config/workflows/bic`
