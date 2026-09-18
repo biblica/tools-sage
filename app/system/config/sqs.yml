@@ -1,0 +1,9 @@
+schema_version: '1.0'
+# Operational note: biblica-sqs-production is the authority_id used throughout
+# the recovered SQS source's own test fixtures. Confirm it against the real,
+# deployed SQS instance's actual authority_id before any production sync --
+# it is carried forward here as the working value, not independently verified
+# against a live deployment.
+trusted_authority_id: biblica-sqs-production
+require_signature: false
+trusted_signing_keys: {}

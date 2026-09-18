@@ -57,6 +57,7 @@ SCHEMA_OWNERS: dict[str, str] = {
     "semantic-index-contract.schema.yml": "system/src/sage/semantic/indexes.py",
     "skill-registry.schema.yml": "system/src/sage/act_tasks.py",
     "skill-evaluation-contracts.schema.yml": "system/src/sage/model_evaluation.py",
+    "sqs.schema.yml": "system/src/sage/sqs_cache.py",
     "structure-planning.schema.yml": "system/src/sage/structure_policy.py",
     "transaction-journal.schema.yml": "system/src/sage/transactions.py",
     "work-unit-manifest.schema.yml": "system/src/sage/work_units.py",
