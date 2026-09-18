@@ -72,7 +72,7 @@ Plan Task 1 (provider/execution-channel onboarding contract) implemented and ver
 
 - Reapplying the post-snapshot hardening ledger (rollback protection, negative tombstones, Ed25519 verification, outbox-first discovery, ordered endpoint failover) as real, tested code — none of it currently exists as code anywhere.
 - Fixing `contracts/openapi.yaml` to match the real, tested discovery/bundle contract.
-- Fixing the `runtime.py` import-time side effect and pinning dependencies for deterministic setup (the `jsonschema` half of this is now done, per §5 item 7 above).
+- ~~Fixing the `runtime.py` import-time side effect and pinning dependencies for deterministic setup~~ — done (plan Task 2): `runtime.py` now exposes a `create_app_from_env()` factory instead of a module-level global; dependencies pinned to exact versions verified against a fresh-venv install (98/98).
 - Building a `codex_workspace` provider adapter (§5 item 7) — required before any real qualification run, not just hand-constructed evidence, can carry that label truthfully.
 - The sibling-repo split (decision 4 above defers, does not cancel, this).
 - NCA's own consumption of SQS confidence checks remains future functionality per [2026-09-09-NCA-SQS-INTEGRATION.md](2026-09-09-NCA-SQS-INTEGRATION.md), unchanged by this document.

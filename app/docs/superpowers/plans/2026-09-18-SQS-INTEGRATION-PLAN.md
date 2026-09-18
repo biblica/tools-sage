@@ -48,9 +48,9 @@ Implements spec decision 5. Not hypothetical: SQS's 20 seeded languages vs. SAGE
 ## Task 2 — Fix the defects found during recovery
 
 - [x] Add `jsonschema` as a dependency (done as part of Task 1: it's a core runtime dependency now, not just `dev`, since `execution_channels.py` needs it outside tests).
-- [ ] Change `runtime.py` so opening the database is an explicit call inside `create_runtime_app`/a real entrypoint function, not a module-level global executed on import. Keep the `SQS_DB_PATH`/`SQS_CONFIG_ROOT` env vars as the configuration mechanism, but only read/act on them when the app is actually being constructed (uvicorn entrypoint, test fixture), not whenever the module is imported.
-- [ ] Pin dependency versions in `pyproject.toml` (or a lockfile) against what's actually verified working in this session, per the hardening ledger's "dependency set is locked for deterministic Mac setup" requirement.
-- [ ] Re-run the full suite after each fix; each must independently stay green.
+- [x] `runtime.py`'s module-level `app = create_runtime_app(...)` global (opened a database and bootstrapped the catalog on every import, against hardcoded FHS paths) replaced with a `create_app_from_env()` factory function, only called when the app is actually being constructed. Verified: `import sage_sqs.runtime` now succeeds with **no env vars set at all** and no side effect. `deploy/systemd/sqs-api.service`'s `ExecStart` updated to uvicorn's `--factory` invocation (`sage_sqs.runtime:create_app_from_env --factory`); confirmed via grep this was the only reference to the old `runtime:app` target anywhere in the tree.
+- [x] Pinned exact dependency versions in `pyproject.toml` against what's actually verified working this session (`cryptography==50.0.1`, `fastapi==0.141.1`, `jsonschema==4.26.0`, `pydantic==2.13.5`, `PyYAML==6.0.3`, `uvicorn==0.53.0`; dev-only `pytest==9.1.1`, `httpx2==2.13.0` — the latter needed transitively by `starlette.testclient`, test-only, not runtime). Verified by installing into a **completely fresh venv** from the pinned `pyproject.toml` alone and running the full suite: 98/98 passed, proving the pin set is actually sufficient and deterministic, not just descriptive of what happened to already be installed.
+- [x] Full suite re-verified green after every change, including from the fresh-venv pinned install: 98/98 throughout.
 
 ## Task 3 — Reapply post-snapshot hardening (test-first; real implementation, not porting)
 
