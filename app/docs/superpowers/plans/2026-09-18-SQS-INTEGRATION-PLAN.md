@@ -31,6 +31,15 @@ Implements spec decision 1 (extensible provider identity).
 - [ ] Write a cross-catalog consistency test: any `provider_family` appearing in a published bundle must exist in the provider-descriptor catalog, and (once Task 6 exists) in SAGE's governed-provider allowlist. Fail closed — an unregistered provider in a bundle is a hard error, not a warning.
 - [ ] Update `evaluation/planner.py`/`domain.py` fingerprint canonicalization if it assumed `"openai"` anywhere literal (grep first; report findings before changing).
 
+## Task 1b — Language onboarding contract (new; symmetric to Task 1)
+
+Implements spec decision 5. Not hypothetical: SQS's 20 seeded languages vs. SAGE's 44 live grammar profiles already have a 27/5 mismatch (spec §5 item 7) — this task closes an existing gap, not just a future-proofing exercise.
+
+- [ ] Define the onboarding action precisely: adding a language to SAGE (a new `config/profiles/grammar/<tag>/` directory + registry entry) and adding it to SQS (a `seed/languages/<tag>.yml` + `config/evaluation-packs/<tag>-{grammar-analysis,semantic-rewrite}-r1.yml` pair) are one coordinated change, not two independently-timed ones.
+- [ ] Reconcile the existing 27/5 mismatch as real work: for the 27 uncovered SAGE profiles, either onboard them into SQS (seed + evaluation packs) or explicitly record them as intentionally not-yet-qualified (`UNASSESSED`, consistent with SAGE's existing policy vocabulary — not silently missing). For the 5 SQS languages with no matching SAGE profile (`es-ES`, `pa-Arab-PK`, `pa-Guru-IN`, `pt-PT`, `sw-CD`), confirm whether each should map onto an existing SAGE profile under a different tag, be added as a new SAGE profile, or be retired from SQS's seed set as stale — don't assume; check each one.
+- [ ] Write a cross-catalog consistency test analogous to Task 1's: a language profile referenced in an SQS bundle qualification must exist in SAGE's registry (by the same identity — profile_id/BCP-47 tag), and vice versa for any SAGE profile expected to be governed-routable. Fail closed on drift, don't silently degrade to provisional routing without recording why.
+- [ ] Qualification testing itself keeps the existing monotonic boundary-search / single `minimum_reasoning` threshold design per spec decision 6 — this task is about which (model × language × capability) combinations get tested at all, not how each one is tested.
+
 ## Task 2 — Fix the defects found during recovery
 
 - [ ] Add `jsonschema` to `pyproject.toml`'s `dev` extra.
@@ -74,11 +83,12 @@ Not an SQS transport concern (that's Task 3's endpoint failover, for SAGE↔SQS 
 - [ ] Include SQS publication/tier provenance in existing execution receipts.
 - [ ] Migrate (don't delete) legacy tests that mutate local qualification seeds to instead construct SQS positive/negative publication fixtures.
 
-## Task 6 — Provider onboarding in practice
+## Task 6 — Provider and language onboarding in practice
 
 - [ ] Extend `llm_settings.py`'s governed-provider allowlist to be validated against the same provider-descriptor catalog introduced in Task 1, rather than being an independent hardcoded list.
-- [ ] Write the test from Task 1 on the SAGE side too: a provider present in SQS's catalog but not SAGE's allowlist (or vice versa) fails closed with a clear error, never silently permits or silently drops the provider.
-- [ ] Document the onboarding procedure (one short doc): what changes when a new provider is added, and where.
+- [ ] Extend SAGE's language-profile loading (`registry.py`) to be checkable against SQS's language catalog from Task 1b, surfacing (not silently absorbing) any profile that's routable in SAGE but unqualified/unknown in SQS.
+- [ ] Write the Task 1 and Task 1b cross-catalog consistency tests on the SAGE side too: a provider or language present in SQS's catalog but not SAGE's (or vice versa) fails closed with a clear error, never silently permits or silently drops it.
+- [ ] Document both onboarding procedures (one short doc each, or one doc with two sections): what changes when a new provider is added, what changes when a new language is added, and where.
 
 ## Task 6a — Service availability / allowance checking (included allowance today, API credit later)
 
