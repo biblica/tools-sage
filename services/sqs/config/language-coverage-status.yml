@@ -1,0 +1,91 @@
+schema_version: '1.0'
+description: >
+  Coordinated onboarding status for every language profile known to either
+  SAGE (app/system/config/profiles/grammar/) or SQS (seed/languages/). This
+  is the enforcement mechanism for "language onboarding is a coordinated
+  action, symmetric to provider onboarding" (SQS integration plan Task 1b):
+  a profile_id present in one catalog but absent from this manifest fails
+  the cross-catalog consistency test, so drift must be explicitly recorded,
+  never silent.
+status_meanings:
+  ONBOARDED: SAGE has the profile and SQS has seed + evaluation-pack coverage.
+  SAGE_ONLY_UNASSESSED: SAGE routes this profile; SQS has no qualification
+    coverage yet. Governed routing sees this as UNASSESSED per SAGE's
+    existing model-policy vocabulary (model-policy.yml's
+    unknown_route_status), not silently missing. Closing this requires
+    authoring real seed/languages/<tag>.yml + evaluation-pack content,
+    which needs linguistic subject-matter review, not fabrication -- left
+    as an open follow-up per profile, not attempted here.
+  SQS_ONLY_PENDING_SAGE_PROFILE: SQS was seeded with this language (the
+    original 20-language draft set) but SAGE has not onboarded a matching
+    profile, so no SAGE consumer exists for this qualification data yet.
+    Each case below has a note explaining why it is not simply a tag
+    mismatch with an existing SAGE profile.
+profiles:
+  # --- Onboarded on both sides (20) ---
+  de-DE: {status: ONBOARDED}
+  en-GB: {status: ONBOARDED}
+  en-US: {status: ONBOARDED}
+  es-419: {status: ONBOARDED}
+  fr-011: {status: ONBOARDED}
+  fr-FR: {status: ONBOARDED}
+  ha-NG: {status: ONBOARDED}
+  hi-IN: {status: ONBOARDED}
+  id-ID: {status: ONBOARDED}
+  ml-IN: {status: ONBOARDED}
+  pt-BR: {status: ONBOARDED}
+  ru-RU: {status: ONBOARDED}
+  sw-KE: {status: ONBOARDED}
+  uk-UA: {status: ONBOARDED}
+  yo-NG: {status: ONBOARDED}
+  # --- SQS-seeded, no matching SAGE profile (5) ---
+  es-ES:
+    status: SQS_ONLY_PENDING_SAGE_PROFILE
+    note: European Spanish. SAGE has es-419 (Latin America) and es-MX
+      (Mexico) instead -- a distinct regional variant, not an alias.
+  pa-Arab-PK:
+    status: SQS_ONLY_PENDING_SAGE_PROFILE
+    note: Punjabi in Arabic/Shahmukhi script (Pakistan). SAGE has no
+      Punjabi profile in either script today.
+  pa-Guru-IN:
+    status: SQS_ONLY_PENDING_SAGE_PROFILE
+    note: Punjabi in Gurmukhi script (India). SAGE has no Punjabi profile
+      in either script today.
+  pt-PT:
+    status: SQS_ONLY_PENDING_SAGE_PROFILE
+    note: European Portuguese. SAGE has pt-419 instead -- a distinct
+      regional variant, not an alias.
+  sw-CD:
+    status: SQS_ONLY_PENDING_SAGE_PROFILE
+    note: Congo Swahili (Kingwana). SAGE has sw-TZ and sw-KE instead --
+      a distinct dialect, not an alias.
+  # --- SAGE profiles with no SQS qualification coverage (27) ---
+  am-ET: {status: SAGE_ONLY_UNASSESSED}
+  ar-015: {status: SAGE_ONLY_UNASSESSED}
+  ar-145: {status: SAGE_ONLY_UNASSESSED}
+  ar-EG: {status: SAGE_ONLY_UNASSESSED}
+  ar-SA: {status: SAGE_ONLY_UNASSESSED}
+  bn-BD: {status: SAGE_ONLY_UNASSESSED}
+  ceb-PH: {status: SAGE_ONLY_UNASSESSED}
+  es-BR: {status: SAGE_ONLY_UNASSESSED}
+  es-MX: {status: SAGE_ONLY_UNASSESSED}
+  fa-IR: {status: SAGE_ONLY_UNASSESSED}
+  fil-PH: {status: SAGE_ONLY_UNASSESSED}
+  ha-NE: {status: SAGE_ONLY_UNASSESSED}
+  it-IT: {status: SAGE_ONLY_UNASSESSED}
+  ln-CD: {status: SAGE_ONLY_UNASSESSED}
+  ms-MY: {status: SAGE_ONLY_UNASSESSED}
+  ne-NP: {status: SAGE_ONLY_UNASSESSED}
+  prs-AF: {status: SAGE_ONLY_UNASSESSED}
+  pt-419: {status: SAGE_ONLY_UNASSESSED}
+  sw-TZ: {status: SAGE_ONLY_UNASSESSED}
+  th-TH: {status: SAGE_ONLY_UNASSESSED}
+  ti-ER: {status: SAGE_ONLY_UNASSESSED}
+  ti-ET: {status: SAGE_ONLY_UNASSESSED}
+  tl-PH: {status: SAGE_ONLY_UNASSESSED}
+  tpi-PG: {status: SAGE_ONLY_UNASSESSED}
+  tr-TR: {status: SAGE_ONLY_UNASSESSED}
+  ur-PK: {status: SAGE_ONLY_UNASSESSED}
+  vi-VN: {status: SAGE_ONLY_UNASSESSED}
+  zh-CN: {status: SAGE_ONLY_UNASSESSED}
+  zh-TW: {status: SAGE_ONLY_UNASSESSED}
