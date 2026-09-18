@@ -1,7 +1,9 @@
 schema_version: '1.0'
 provider_family: openai
-execution_provider_aliases:
-- codex
+# Execution channels that reach this provider_family's models are described
+# separately in seed/execution-channels/*.yml (see codex-workspace.yml), not
+# here -- this file is the model vendor's catalog only, unaffected by which
+# channel a governed host uses to reach it.
 snapshot_date: '2026-08-30'
 source: OpenAI public model documentation snapshot; refresh through ADMIN when provider
   metadata changes
@@ -58,5 +60,6 @@ models:
 notes:
 - Provider hierarchy and price are planning priors, never qualification evidence.
 - A model must be ADMIN-approved before SQS evaluates or publishes it.
-- Current SAGE runtime provider codex maps to SQS provider_family openai for qualification
-  only.
+- SAGE's current codex_workspace execution channel (seed/execution-channels/codex-workspace.yml)
+  reaches this provider_family's models; qualification is keyed on the model itself,
+  so a future second channel to these same models does not require re-qualification.

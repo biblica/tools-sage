@@ -206,6 +206,7 @@
         "additionalProperties": false,
         "required": [
           "provider_family",
+          "execution_channel",
           "model_id",
           "model_capability_fingerprint",
           "profile_id",
@@ -226,6 +227,10 @@
         ],
         "properties": {
           "provider_family": {
+            "type": "string",
+            "minLength": 1
+          },
+          "execution_channel": {
             "type": "string",
             "minLength": 1
           },

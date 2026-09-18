@@ -90,6 +90,34 @@ class LanguageProfile:
 
 
 @dataclass(frozen=True)
+class ExecutionChannelDescriptor:
+    """How a governed host actually reaches a provider_family's models.
+
+    Distinct from provider_family (the model vendor): a qualification is keyed on
+    the model itself so it never needs re-testing just because the access channel
+    changes, while execution_channel records which channel actually produced the
+    evidence.
+    """
+
+    execution_channel: str
+    provider_family: str
+    display_name: str
+    provisioning_model: str
+    capability_classes: tuple[str, ...]
+    reasoning_tier_taxonomy: str
+
+    def public_dict(self) -> dict[str, Any]:
+        return {
+            "execution_channel": self.execution_channel,
+            "provider_family": self.provider_family,
+            "display_name": self.display_name,
+            "provisioning_model": self.provisioning_model,
+            "capability_classes": list(self.capability_classes),
+            "reasoning_tier_taxonomy": self.reasoning_tier_taxonomy,
+        }
+
+
+@dataclass(frozen=True)
 class ReasoningTier:
     native_id: str
     ordinal: int
@@ -166,6 +194,7 @@ class ModelRecord:
 @dataclass(frozen=True)
 class Qualification:
     provider_family: str
+    execution_channel: str
     model_id: str
     model_capability_fingerprint: str
     profile_id: str

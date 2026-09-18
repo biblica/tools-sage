@@ -96,7 +96,7 @@ def test_synthesize_qualification_keeps_metrics_distinct():
     result = run_planned_test(pack=sample_pack(), provider=provider, model=sample_model(), starting_reasoning="medium")
     q = synthesize_qualification(
         model=sample_model(), profile=sample_profile(), capability="GRAMMAR_ANALYSIS", run=result,
-        evidence_basis=EvidenceBasis.MEASURED, route_value="HIGH",
+        evidence_basis=EvidenceBasis.MEASURED, route_value="HIGH", execution_channel="codex_workspace",
     )
     assert q.status == QualificationStatus.QUALIFIED
     assert q.minimum_reasoning == "medium"

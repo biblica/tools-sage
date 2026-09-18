@@ -19,7 +19,7 @@ def setup_repo(tmp_path):
 
 def qualification(profile, model, reasoning="medium"):
     return Qualification(
-        provider_family="openai", model_id=model.model_id, model_capability_fingerprint=model.capability_fingerprint,
+        provider_family="openai", execution_channel="codex_workspace", model_id=model.model_id, model_capability_fingerprint=model.capability_fingerprint,
         profile_id=profile.profile_id, profile_identity_sha256=profile.evaluation_identity_sha256,
         capability="GRAMMAR_ANALYSIS", status="QUALIFIED", minimum_reasoning=reasoning,
         quality_score=.96, reliability_score=.98, confidence="HIGH", value="HIGH", evidence_basis="MEASURED",

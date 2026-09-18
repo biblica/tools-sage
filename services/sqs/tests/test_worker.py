@@ -67,7 +67,7 @@ def test_claim_is_transactional_and_marks_running(tmp_path):
 def test_worker_does_not_reexecute_completed_test(tmp_path):
     repo = setup_repo(tmp_path)
     item = repo.queue_test({"profile_id": "en-US", "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium"})
-    worker = Worker(repo, provider=FakeProvider(), pack_dir=pack_dir())
+    worker = Worker(repo, provider=FakeProvider(), pack_dir=pack_dir(), execution_channel="codex_workspace")
     assert worker.run_once() is True
     worker.run_once()  # may process newly replanned work, but never this completed row again
     assert repo.attempt_count(item["id"]) == 1
@@ -80,14 +80,14 @@ def test_worker_honors_queued_predecessor_start(tmp_path):
     repo = setup_repo(tmp_path)
     repo.queue_test({"profile_id": "en-US", "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "high"})
     provider = FakeProvider({"high": True, "medium": False, "low": False})
-    Worker(repo, provider=provider, pack_dir=pack_dir()).run_once()
+    Worker(repo, provider=provider, pack_dir=pack_dir(), execution_channel="codex_workspace").run_once()
     assert provider.calls[0] == "high"
 
 
 def test_worker_failure_creates_attention_and_preserves_prior_evidence(tmp_path):
     repo = setup_repo(tmp_path)
     repo.queue_test({"profile_id": "en-US", "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium"})
-    worker = Worker(repo, provider=FakeProvider(error=RuntimeError("provider down")), pack_dir=pack_dir())
+    worker = Worker(repo, provider=FakeProvider(error=RuntimeError("provider down")), pack_dir=pack_dir(), execution_channel="codex_workspace")
     assert worker.run_once() is True
     assert repo.list_attention()[0]["category"] == "EVALUATION_FAILURE"
     assert repo.publishable_qualifications() == []
@@ -99,7 +99,7 @@ def test_successful_worker_replans_remaining_exact_candidate(tmp_path):
     second = ModelRecord("openai", "gpt-y", "APPROVED", 1, ("low", "medium", "high"), "e" * 64, 3.0, 15.0, 3, 3)
     repo.save_model(second)
     repo.queue_test({"provider_family": "openai", "profile_id": "en-US", "model_id": first.model_id, "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium", "scope": "FULL"})
-    worker = Worker(repo, provider=FakeProvider(), pack_dir=pack_dir())
+    worker = Worker(repo, provider=FakeProvider(), pack_dir=pack_dir(), execution_channel="codex_workspace")
     assert worker.run_once() is True
     pending = repo.db.connection.execute("SELECT payload_json FROM evaluation_runs WHERE status='PENDING'").fetchall()
     assert len(pending) == 1

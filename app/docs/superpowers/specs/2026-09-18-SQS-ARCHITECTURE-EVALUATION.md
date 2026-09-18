@@ -60,14 +60,19 @@ The original design docs (`docs/ARCHITECTURE.md`, `DATA_MODEL.md`, `EVALUATION_A
 5. **Language onboarding is a coordinated action, symmetric to provider onboarding** (plan Task 1b): adding a language profile to SAGE's registry and adding it to SQS's qualification catalog (seed + evaluation packs) happen together, not independently. Closing the existing 27/5 mismatch (§5 item 7) is itself the first piece of implementation work, not just a design principle to apply going forward.
 6. **Qualification keeps the existing monotonic boundary-search design.** SQS's `evaluate_boundary`/`_boundary_search` (tests ≤2 of the 3 reasoning levels, publishes a single `minimum_reasoning` threshold per model/language/capability, assuming `low ≤ medium ≤ high`) stays as-is. The alternative — testing and publishing independent ability at every reasoning level — was considered and explicitly declined: it would roughly double or triple qualification test volume across 44+ languages for protection against a regression pattern (higher reasoning performing worse) that has not been observed to be a real risk here.
 
+7. **No code can yet truthfully produce a `codex_workspace`-labeled qualification.** Implementing decision 1 (execution_channel) made this precise rather than implicit: `worker.py`'s only real provider adapter (`OpenAIProvider`, used by `drain()`'s default path) is built around a raw `OPENAI_API_KEY` — the `api_key` channel, not `codex_workspace`. There is no adapter today that executes a qualification test through a Codex workspace account. The schema/domain model can now record which channel produced a qualification, but nothing can yet produce a `codex_workspace` one from a real run.
+
 ## 7. Verification performed this session
 
 Recovered source copied unmodified into `services/sqs/`. Fresh venv (Python 3.12), `pip install -e ".[dev]"`, plus `jsonschema` (missing from the extra) and `httpx2` (required by the ambient newer `starlette`). With `SQS_DB_PATH`/`SQS_CONFIG_ROOT` pointed at writable local paths (required because of the import-time side effect in `runtime.py`, §5 item 5): **88 passed**, matching the handover's claim exactly.
+
+Plan Task 1 (provider/execution-channel onboarding contract) implemented and verified in a follow-up pass: `execution-channel-descriptor.schema.json` added, `seed/execution-channels/codex-workspace.yml` registered as the first descriptor, `execution_channel` added to `Qualification` and the 1.1 bundle schema as provenance (not identity-key) evidence, `jsonschema` promoted from a missing dev dependency to a core one, and a cross-catalog consistency test added. **93 passed** (88 + 5 new).
 
 ## 8. Open items deferred beyond this evaluation
 
 - Reapplying the post-snapshot hardening ledger (rollback protection, negative tombstones, Ed25519 verification, outbox-first discovery, ordered endpoint failover) as real, tested code — none of it currently exists as code anywhere.
 - Fixing `contracts/openapi.yaml` to match the real, tested discovery/bundle contract.
-- Fixing the `runtime.py` import-time side effect and the missing `jsonschema` dev dependency, and pinning dependencies for deterministic setup.
+- Fixing the `runtime.py` import-time side effect and pinning dependencies for deterministic setup (the `jsonschema` half of this is now done, per §5 item 7 above).
+- Building a `codex_workspace` provider adapter (§5 item 7) — required before any real qualification run, not just hand-constructed evidence, can carry that label truthfully.
 - The sibling-repo split (decision 4 above defers, does not cancel, this).
 - NCA's own consumption of SQS confidence checks remains future functionality per [2026-09-09-NCA-SQS-INTEGRATION.md](2026-09-09-NCA-SQS-INTEGRATION.md), unchanged by this document.

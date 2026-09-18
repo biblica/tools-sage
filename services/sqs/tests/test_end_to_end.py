@@ -63,7 +63,7 @@ def test_discovery_to_published_qualification(tmp_path):
     admin.approve_tier_mapping("gpt-5.6-terra")
     admin.approve_model("gpt-5.6-terra")
     admin.queue_evaluation(model_id="gpt-5.6-terra", profile_id="en-US", capability="GRAMMAR_ANALYSIS")
-    Worker(repo, provider=PassingProvider(), pack_dir=root / "config" / "evaluation-packs").drain(max_items=4)
+    Worker(repo, provider=PassingProvider(), pack_dir=root / "config" / "evaluation-packs", execution_channel="codex_workspace").drain(max_items=4)
     admin.publish_bundle()
 
     rows = client.get("/qualifications?profile_id=en-US&capability=GRAMMAR_ANALYSIS&model_id=gpt-5.6-terra").json()

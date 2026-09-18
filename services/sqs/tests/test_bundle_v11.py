@@ -23,7 +23,7 @@ def test_new_publications_are_1_1_and_include_approved_native_tier_mapping(tmp_p
     )
     m = ModelRecord('other','model-x','APPROVED',1,('basic','standard','deep','extreme'),'abc',1,2, reasoning_tiers=tiers, tier_mapping_revision=1)
     repo.save_model(m)
-    q = Qualification('other','model-x',m.capability_fingerprint,p.profile_id,p.evaluation_identity_sha256,'GRAMMAR_ANALYSIS','QUALIFIED','medium',0.9,0.9,'HIGH','HIGH','MEASURED',0.01,'2026-08-31T00:00:00Z','e'*64, minimum_native_reasoning='standard', tier_mapping_fingerprint=m.tier_mapping_fingerprint)
+    q = Qualification('other','test-channel','model-x',m.capability_fingerprint,p.profile_id,p.evaluation_identity_sha256,'GRAMMAR_ANALYSIS','QUALIFIED','medium',0.9,0.9,'HIGH','HIGH','MEASURED',0.01,'2026-08-31T00:00:00Z','e'*64, minimum_native_reasoning='standard', tier_mapping_fingerprint=m.tier_mapping_fingerprint)
     repo.save_qualification(q)
     bundle = Publisher(repo, authority_id='a', publication_epoch=1, output_paths=[]).publish(actor='ADMIN')
     assert bundle['schema_version'] == '1.1'
@@ -42,7 +42,7 @@ def test_not_qualified_uses_null_canonical_and_native_reasoning(tmp_path: Path):
     p = _profile(); repo.save_profile(p)
     m = ModelRecord('openai','m','APPROVED',1,('low','medium','high'),'f'*64,1,2)
     repo.save_model(m)
-    q = Qualification('openai','m',m.capability_fingerprint,p.profile_id,p.evaluation_identity_sha256,'GRAMMAR_ANALYSIS','NOT_QUALIFIED',None,0.1,1.0,'HIGH','LOW','MEASURED',0.01,'2026-08-31T00:00:00Z','e'*64)
+    q = Qualification('openai','codex_workspace','m',m.capability_fingerprint,p.profile_id,p.evaluation_identity_sha256,'GRAMMAR_ANALYSIS','NOT_QUALIFIED',None,0.1,1.0,'HIGH','LOW','MEASURED',0.01,'2026-08-31T00:00:00Z','e'*64)
     repo.save_qualification(q)
     bundle = Publisher(repo, authority_id='a', publication_epoch=1, output_paths=[]).publish(actor='ADMIN')
     qual = bundle['qualifications'][0]
