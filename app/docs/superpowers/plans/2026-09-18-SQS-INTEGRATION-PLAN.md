@@ -51,6 +51,14 @@ One sub-task per hardening-ledger item, each as its own failing-test-then-implem
 - [ ] Loopback-only HTTP exception (`127.0.0.1`, `localhost`, loopback IPv6) with explicit proxy bypass; non-loopback endpoints require HTTPS.
 - [ ] Outbox-first discovery: SAGE queues metadata locally and never blocks task execution on delivery; explicit sync flushes and SQS deduplicates.
 
+## Task 3a — Provider rate-limit handling (independent gap, surfaced by this evaluation)
+
+Not an SQS transport concern (that's Task 3's endpoint failover, for SAGE↔SQS traffic). This is the existing, pre-dating SAGE↔`codex` provider call path, which currently has **no** 429/`Retry-After` handling at all (confirmed empty grep across `executors/http.py`, `llm_tasks.py`, `model_service.py`). Usage allowance is confirmed to differ between workspace and personal `codex` accounts (both authenticate identically via `chatgpt.com` web sign-in, so SAGE cannot distinguish which kind a session is at auth time); a rate-limited session fails a governed task outright today. Not required to unblock SQS integration itself, but should land before real qualification runs are exercised (Task 7's local socket test, Task 9's server runtime) against live accounts.
+
+- [ ] Add typed handling for 429/`Retry-After` in the provider call layer, distinct from a hard transport failure.
+- [ ] Decide and implement a bounded backoff/retry policy for rate-limit responses specifically (not for other error classes — that stays as today's fail-fast behavior per SAGE's existing design).
+- [ ] Do not attempt to detect workspace-vs-personal account type — the shared `chatgpt.com` auth flow gives no signal to distinguish them; handle by response code, not by inferred account type.
+
 ## Task 4 — SAGE-side integration units (self-contained, test-first)
 
 - [ ] `app/system/config/sqs.yml`, `app/system/config/schemas/sqs.schema.yml`, `app/system/config/contracts/sqs-bundle-1.1.schema.json` (mirroring the corrected SQS-side schema from Task 1/2).
