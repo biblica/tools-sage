@@ -6596,6 +6596,40 @@ class SageControlCenter:
             f"{result['registered_skill_count']} registered Skills."
         )
 
+    def _model_evaluate_menu(self, service: ModelService) -> None:
+        """Generate qualification evidence by running sealed synthetic Skill suites live.
+
+        This is a deliberate reversal of SAGE's earlier operator contract, which kept
+        Skill-route evaluation to maintainer/release CLI tooling only (see
+        SKILL-ROUTING-AND-MODEL-QUALIFICATION.md). Operators may now trigger it here so
+        Advanced routing override has qualification evidence to offer; it still never
+        selects a model by itself -- it only produces evidence for that separate step.
+        """
+        settings = service.settings()
+        provider = str(settings.get("selected_provider") or "codex")
+        self.io.write("Evaluate new or changed models")
+        self.io.write(f"Runs SAGE's sealed synthetic Skill suites against live {provider} models to")
+        self.io.write("produce qualification evidence for Advanced routing override.")
+        self.io.write("This makes real provider calls and can take a long time across a full catalog.")
+        if not self.io.confirm(
+            f"Evaluate every registered Skill against every available {provider} model now?",
+            default=False,
+        ):
+            return
+        with self.io.working("Evaluating models against sealed Skill suites"):
+            result = service.evaluate_catalog_routes(provider=provider)
+        self.io.write(f"Evaluation: {result['status']}")
+        self.io.write(f"Provider: {result['provider']}")
+        self.io.write(f"Skill readiness: {result['ready_skills']}/{result['total_skills']}")
+        for row in result.get("skills", []):
+            route = row.get("recommended_route") or {}
+            detail = (
+                f"{route.get('model_id')} / {route.get('reasoning_id')}"
+                if route
+                else str(row.get("reason_code") or "NOT_QUALIFIED")
+            )
+            self.io.write(f"- {row['skill_id']}: {row['qualification_status']} — {detail}")
+
     def _model_test_selected(self, service: ModelService) -> dict[str, Any]:
         """Run and return the explicit structured connectivity test for the selected provider."""
         if self.dry_run_provider:
@@ -6792,17 +6826,18 @@ class SageControlCenter:
             if selection_checked and not ai.get("ready") and ai.get("diagnostic"):
                 self.io.write(f"{'Status detail':<28}{ai.get('diagnostic')}")
             elif not selection_checked:
-                self.io.write(f"{'Status detail':<28}Choose 7 to check the current configuration")
+                self.io.write(f"{'Status detail':<28}Choose 8 to check the current configuration")
 
             self.io.write_menu_header("AI settings", major=False)
             self.io.write_menu_item(1, "Change provider")
             self.io.write_menu_item(2, "Available provider models")
             self.io.write_menu_item(3, "Skill routing recommendations")
             self.io.write_menu_item(4, "Advanced routing override")
+            self.io.write_menu_item(5, "Evaluate new or changed models")
             self.io.write_menu_header("Provider management", major=False)
-            self.io.write_menu_item(5, "Connect OpenAI and ChatGPT")
-            self.io.write_menu_item(6, "Configure Local AI")
-            self.io.write_menu_item(7, "Check LLM connection")
+            self.io.write_menu_item(6, "Connect OpenAI and ChatGPT")
+            self.io.write_menu_item(7, "Configure Local AI")
+            self.io.write_menu_item(8, "Check LLM connection")
             self.io.write_menu_footer(include_back=True)
             value = self.io.read("Choose: ").strip().casefold()
             if value == "a":
@@ -6832,17 +6867,19 @@ class SageControlCenter:
                     self._model_routing_override_menu(service)
                     selection_checked = False
                 elif value == "5":
+                    self._model_evaluate_menu(service)
+                elif value == "6":
                     self._model_connect_chatgpt(service)
                     selection_checked = False
-                elif value == "6":
-                    self.local_admin_assistant_menu()
                 elif value == "7":
+                    self.local_admin_assistant_menu()
+                elif value == "8":
                     with self.io.working("Checking LLM connection"):
                         ai = self._model_test_selected(service)
                         catalog = self._load_ai_model_catalog(service, ai)
                     selection_checked = True
                 else:
-                    self.io.write("Invalid choice. Choose 1-7 or a footer action.")
+                    self.io.write("Invalid choice. Choose 1-8 or a footer action.")
                     continue
             except SageError as exc:
                 self.show_error(exc)
