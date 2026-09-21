@@ -49,14 +49,15 @@ _PASS_OUTCOMES = frozenset(
 
 
 def candidate_group_ids(inventory: ScopeInventory, extractions: Mapping[str, Extraction]) -> frozenset[str]:
-    """Union expected rows with detected or unresolved body owners without shrinking scope."""
-    candidates = set(inventory.expected_groups)
-    for unit in inventory.projected_units:
-        extraction = extractions.get(unit.target.unit_id)
-        if (extraction is None or extraction.status != "COMPLETE"
-                or any(item.stream_id == "main" for item in extraction.expressions)):
-            candidates.add(unit.target.unit_id)
-    return frozenset(candidates)
+    """Return the indexed units NCA actually evaluates, unaffected by their extraction outcome.
+
+    Unindexed units are never planned for extraction (see build_inventory's indexed-only
+    filter), so a missing or incomplete extraction there is the deliberate no-data-scan
+    outcome, not a coverage gap -- only indexed units (`inventory.expected_groups`) can ever
+    become candidates. `extractions` is accepted for interface stability with callers that
+    still pass it, but no longer changes this result.
+    """
+    return frozenset(inventory.expected_groups)
 
 
 def _checks(policy: Mapping[str, object]) -> Mapping[str, bool]:
@@ -440,30 +441,22 @@ def _evaluate_prepared_unit(
                 reading = _unsupported_reading("MERGED_ALIGNMENT_UNAVAILABLE")
                 limitations.append("Merged Western alignment is unavailable.")
             elif not rows:
-                if extraction.status == "COMPLETE" and extraction.expressions:
-                    reading = ReadingDecision(
-                        "UNSUPPORTED",
-                        SemanticDecision(
-                            "REFERENCE_NOT_INDEXED",
-                            reason_codes=("WESTERN_REFERENCE_NOT_INDEXED",),
-                        ),
-                        "NONE",
-                        None,
-                        (),
-                    )
-                elif extraction.status == "COMPLETE":
-                    reading = ReadingDecision(
-                        "UNASSESSED",
-                        SemanticDecision(
-                            "NOT_ASSESSED",
-                            reason_codes=("NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED",),
-                        ),
-                        "NONE",
-                        None,
-                        (),
-                    )
-                else:
-                    reading = _unsupported_reading("REFERENCE_OR_EXTRACTION_UNAVAILABLE")
+                # Unindexed single-row coordinates are never extracted (see build_inventory):
+                # NCA finds incorrectly reported or missing numbers where a number is already
+                # known to be expected, not undiscovered numbers outside the reference package's
+                # coverage. That is left to human proofreaders/consultants and to the correlation
+                # checks RTC/STC already run, so this is an unconditional, expected non-finding
+                # rather than a conditional read of what an extraction attempt happened to find.
+                reading = ReadingDecision(
+                    "UNASSESSED",
+                    SemanticDecision(
+                        "NOT_ASSESSED",
+                        reason_codes=("NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED",),
+                    ),
+                    "NONE",
+                    None,
+                    (),
+                )
             else:
                 reference_context = _result_reference_context(rows[0], bundle)
                 reading, correspondence_limitations, source_expressions = _identify_reading(

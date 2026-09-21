@@ -109,8 +109,13 @@ def test_fully_excluded_scope_cannot_become_empty_all_clear(tmp_path):
     assert caught.value.code == 'NCA_SCOPE_OUTSIDE_VRS'
 
 
-def test_inventory_keeps_full_expected_ledger_and_missing_unindexed_scope(tmp_path):
-    """Scope inventory comes from projection coverage, never detected or indexed numbers."""
+def test_inventory_keeps_full_expected_ledger_but_extracts_only_indexed_scope(tmp_path):
+    """Scope coverage ledger spans the full scope; extraction streams cover only indexed rows.
+
+    NCA finds incorrectly reported or missing numbers where a number is already known to be
+    expected -- it does not scan unindexed coordinates for undiscovered numbers, so verse 2
+    (unindexed) contributes no stream even though it has real body content.
+    """
     from sage.numbers.execution import ExecutionInputs, build_inventory
     from sage.numbers.target import target_units
     from sage.usj import compile_usfm_text
@@ -129,9 +134,8 @@ def test_inventory_keeps_full_expected_ledger_and_missing_unindexed_scope(tmp_pa
     assert inventory.expected_references == tuple(VerseRef('MAT', 1, verse) for verse in range(1, 4))
     assert inventory.projected_units == prepared.projected_units
     assert inventory.expected_groups == frozenset({projected[0].target.unit_id})
-    assert {value.owner_unit_id for value in inventory.stream_inputs if value.purpose == 'BODY'} == {
-        unit.target.unit_id for unit in projected if unit.target.target_references}
-    assert len(inventory.stream_inputs) == 2
+    assert {value.owner_unit_id for value in inventory.stream_inputs if value.purpose == 'BODY'} == inventory.expected_groups
+    assert len(inventory.stream_inputs) == 1
     assert projected[-1].target.unit_id == 'missing:MAT 1:3'
     assert projected[-1].status == 'UNMAPPED'
 
@@ -187,7 +191,8 @@ def test_registered_missing_inventory_keeps_notes_once_at_their_physical_source(
     mapping = tmp_path / 'mapping.txt'
     mapping.write_text('NEH 7:1 = NEH 7:1\n')
     absence = VerseRef('NEH', 7, 68)
-    reference = bundle((absence, None))
+    physical_source = VerseRef('NEH', 7, 69)
+    reference = bundle((absence, None), (physical_source, 'NEH 7:69'))
     projected, expected = project_scope(target_units(source, source_sha256='0' * 64),
         scope=parse_scope('NEH 7:68-69'), target_schema=target, western_schema=target,
         bundle=reference, mapping_path=mapping)
@@ -195,8 +200,9 @@ def test_registered_missing_inventory_keeps_notes_once_at_their_physical_source(
         tuple(value.target.unit_id for value in projected), expected, {'0' * 64: source}, 'NEH 7:68-69')
     inventory = build_inventory(prepared)
     missing = next(value for value in inventory.projected_units if not value.target.target_references)
+    physical = next(value for value in inventory.projected_units if value.target.target_references)
     assert missing.status == 'REGISTERED_ABSENCE' and missing.target.notes
-    assert inventory.expected_groups == frozenset({missing.target.unit_id})
+    assert inventory.expected_groups == frozenset({missing.target.unit_id, physical.target.unit_id})
     assert [value.purpose for value in inventory.stream_inputs] == ['BODY', 'NOTE_STYLE']
     note = inventory.stream_inputs[1]
     assert note.target_references == (absence,)
@@ -215,7 +221,9 @@ def test_inventory_groups_offset_purposes_for_bounded_note_batching(tmp_path):
     target = schema(tmp_path, 'eng.vrs', 'MAT 1:8\n')
     mapping = tmp_path / 'mapping.txt'
     mapping.write_text('MAT 1:1 = MAT 1:1\n')
-    reference = bundle((VerseRef('MAT', 1, 1), 'MAT 1:1'))
+    # Every verse is indexed here (unlike other scope tests) because this test's own concern
+    # is bounded batching across many streams, not indexed-only extraction selection.
+    reference = bundle(*((VerseRef('MAT', 1, verse), f'MAT 1:{verse}') for verse in range(1, 9)))
     projected, expected = project_scope(target_units(source, source_sha256='0' * 64),
         scope=parse_scope('MAT 1'), target_schema=target, western_schema=target,
         bundle=reference, mapping_path=mapping)

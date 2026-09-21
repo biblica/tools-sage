@@ -307,10 +307,15 @@ def test_execute_rejects_full_route_drift_before_any_model_phase(
     assert DriftedTasks.calls == 0
 
 
-def test_unindexed_target_number_remains_in_lifecycle_coverage(
+def test_unindexed_target_scope_is_never_extracted_or_flagged(
     make_workspace, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Scoped target numbers outside the package index produce visible evidence findings."""
+    """Scoped coordinates outside the package index are never extracted or flagged as findings.
+
+    NCA finds incorrectly reported or missing numbers where a number is already known to be
+    expected; it does not scan unindexed coordinates for undiscovered numbers, so even a
+    transport that would supply real numeral evidence here is never actually invoked.
+    """
     _root, config, job, run = _run(make_workspace, monkeypatch)
     created = create_nca_task(
         config, job_id=job.job_id, run_id=run.run_id, scope_value="MAT 1"
@@ -352,8 +357,8 @@ def test_unindexed_target_number_remains_in_lifecycle_coverage(
         unit for unit in document["groups"] if unit["projection"]["target_references"] == ["MAT 1:2"]
     )
     verse_two = verse_two["components"][0]
-    assert verse_two["final_outcome"] == "REFERENCE_NOT_INDEXED"
-    assert any(finding["code"] == "NCA_REFERENCE_NOT_INDEXED" for finding in document["findings"])
+    assert verse_two["final_outcome"] == "NOT_ASSESSED"
+    assert not any(finding["code"] == "NCA_REFERENCE_NOT_INDEXED" for finding in document["findings"])
 
 
 def test_unindexed_empty_target_is_screened_without_a_finding(
