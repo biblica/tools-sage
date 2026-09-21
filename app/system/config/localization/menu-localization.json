@@ -3219,6 +3219,38 @@
       "ru": "Очистить переопределение",
       "pt-BR": "Limpar substituição"
     },
+    "menu.clear.no.data.default": {
+      "en-US": "Clear no-data default",
+      "en-GB": "Clear no-data default",
+      "id": "Hapus default tanpa data",
+      "fr": "Effacer le réglage par défaut sans données",
+      "ru": "Очистить значение по умолчанию для состояния без данных",
+      "pt-BR": "Limpar padrão sem dados"
+    },
+    "menu.set.no.data.default.model.reasoning": {
+      "en-US": "Set no-data default model/reasoning",
+      "en-GB": "Set no-data default model/reasoning",
+      "id": "Atur model/penalaran default tanpa data",
+      "fr": "Définir le modèle/raisonnement par défaut sans données",
+      "ru": "Задать модель и уровень рассуждения по умолчанию для состояния без данных",
+      "pt-BR": "Definir modelo/raciocínio padrão sem dados"
+    },
+    "menu.live.provider.models": {
+      "en-US": "Live provider models",
+      "en-GB": "Live provider models",
+      "id": "Model penyedia langsung",
+      "fr": "Modèles de fournisseur en direct",
+      "ru": "Актуальные модели провайдера",
+      "pt-BR": "Modelos de provedor em tempo real"
+    },
+    "menu.evaluate.new.or.changed.models": {
+      "en-US": "Evaluate new or changed models",
+      "en-GB": "Evaluate new or changed models",
+      "id": "Evaluasi model baru atau yang berubah",
+      "fr": "Évaluer les modèles nouveaux ou modifiés",
+      "ru": "Оценить новые или изменённые модели",
+      "pt-BR": "Avaliar modelos novos ou alterados"
+    },
     "menu.provider.reasoning": {
       "en-US": "Provider reasoning",
       "en-GB": "Provider reasoning",

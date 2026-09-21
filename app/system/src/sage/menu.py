@@ -6529,7 +6529,7 @@ class SageControlCenter:
             )
 
     def _model_routing_override_menu(self, service: ModelService) -> None:
-        """Inspect, clear, or set the explicitly advanced exact-route override."""
+        """Inspect, clear, or set the exact-route override or the no-data default."""
         state = service.routing_override_status()
         self.io.write(f"Routing mode: {state['routing_mode']}")
         override = state.get("override")
@@ -6544,15 +6544,39 @@ class SageControlCenter:
                 f"Qualified Skill coverage: {override.get('qualified_skill_count', 0)}/"
                 f"{override.get('registered_skill_count', 0)}"
             )
+        provisional_state = service.provisional_override_status()
+        provisional_override = provisional_state.get("override")
+        if isinstance(provisional_override, dict):
+            selection = dict(provisional_override.get("selection") or {})
+            self.io.write(
+                "No-data default (Operator-pinned): "
+                f"{selection.get('provider')} / {selection.get('model_id')} / "
+                f"{selection.get('reasoning_id')}"
+            )
+        else:
+            self.io.write("No-data default: POLICY DEFAULT")
         choice = self.io.choose(
             "Advanced routing override",
-            (("1", "Set qualified exact route"), ("2", "Clear override"), ("B", "Back")),
+            (
+                ("1", "Set qualified exact route"),
+                ("2", "Clear override"),
+                ("3", "Set no-data default model/reasoning"),
+                ("4", "Clear no-data default"),
+                ("B", "Back"),
+            ),
         )
         if choice == "B":
             return
         if choice == "2":
             cleared = service.clear_global_override()
             self.io.write(f"Routing mode: {cleared['routing_mode']}")
+            return
+        if choice == "3":
+            self._model_provisional_override_menu(service)
+            return
+        if choice == "4":
+            cleared = service.clear_provisional_override()
+            self.io.write(f"No-data default: {cleared['routing_mode']}")
             return
         catalog = service.list_models("codex")
         candidates: list[dict[str, Any]] = []
@@ -6595,6 +6619,42 @@ class SageControlCenter:
             f"Override enabled for {result['qualified_skill_count']}/"
             f"{result['registered_skill_count']} registered Skills."
         )
+
+    def _model_provisional_override_menu(self, service: ModelService) -> None:
+        """Interrogate the live provider catalog and let the Operator pin the no-data default.
+
+        Unlike the exact-route override, this never requires qualification evidence -- it only
+        needs the chosen model/reasoning to be live right now, since it is exactly the fallback
+        used when no Skill has any qualification evidence at all.
+        """
+        provider = "codex"
+        catalog = service.list_models(provider)
+        models = [row for row in catalog.get("models", []) if row.get("reasoning_efforts")]
+        if not models:
+            self.io.write(f"No live {provider} models with reported native reasoning are available.")
+            return
+        model_choice = self.io.choose(
+            "Live provider models",
+            tuple(
+                (str(index), f"{row['model']} ({', '.join(row['reasoning_efforts'])})")
+                for index, row in enumerate(models, 1)
+            ),
+        )
+        row = models[int(model_choice) - 1]
+        reasoning_choice = self.io.choose(
+            f"Native reasoning for {row['model']}",
+            tuple((str(index), value) for index, value in enumerate(row["reasoning_efforts"], 1)),
+        )
+        reasoning_id = row["reasoning_efforts"][int(reasoning_choice) - 1]
+        if not self.io.confirm(
+            f"Set the no-data default to {provider} / {row['model']} / {reasoning_id}?",
+            default=False,
+        ):
+            return
+        result = service.set_provisional_override(
+            {"provider": provider, "model_id": row["model"], "reasoning_id": reasoning_id}
+        )
+        self.io.write(f"No-data default: {result['routing_mode']} — {provider} / {row['model']} / {reasoning_id}")
 
     def _model_evaluate_menu(self, service: ModelService) -> None:
         """Generate qualification evidence by running sealed synthetic Skill suites live.

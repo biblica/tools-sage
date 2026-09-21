@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, replace
+from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Protocol, Sequence
 
+from .atomic import atomic_write_json
 from .errors import ConfigurationError, ValidationError
 from .executors.base import ModelCapability, ProviderStatus
 from .model_policy import load_model_policy
@@ -459,12 +461,154 @@ def qualified_skill_routes(
     )
 
 
+def provisional_override_path(root: Path) -> Path:
+    """Return the separate Operator-owned no-data default override path."""
+    return storage_layout(root).config_root / "model-provisional-override.json"
+
+
+def _provisional_receipt_root(root: Path) -> Path:
+    """Return the immutable local audit-receipt directory for no-data default changes."""
+    return storage_layout(root).state_root / "model-provisional-overrides"
+
+
+def _provisional_selection(value: Mapping[str, Any]) -> dict[str, str]:
+    """Normalize and validate one provider/model/reasoning no-data default selection."""
+    required = ("provider", "model_id", "reasoning_id")
+    result = {field: str(value.get(field) or "").strip() for field in required}
+    missing = [field for field, item in result.items() if not item]
+    if missing:
+        raise ConfigurationError("Provisional default selection is missing: " + ", ".join(missing))
+    return result
+
+
+def load_provisional_override(root: Path) -> dict[str, Any] | None:
+    """Load and validate the Operator's pinned no-data default when present."""
+    path = provisional_override_path(root)
+    if not path.is_file():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ConfigurationError(f"Invalid model provisional override: {path}: {exc}") from exc
+    if not isinstance(value, dict) or value.get("schema_version") != "1.0":
+        raise ConfigurationError("Model provisional override must use schema_version 1.0")
+    if value.get("routing_mode") != "PROVISIONAL_OVERRIDE":
+        raise ConfigurationError("Model provisional override routing_mode must be PROVISIONAL_OVERRIDE")
+    value["selection"] = _provisional_selection(value.get("selection") or {})
+    return value
+
+
+def _live_provisional_candidate(
+    statuses: Sequence[ProviderStatus],
+    selection: Mapping[str, str],
+    prohibited_by_provider: Mapping[str, Any],
+) -> tuple[ProviderStatus, ModelCapability, str] | None:
+    """Return the live capability matching one pinned no-data selection, or None."""
+    prohibited = {str(value) for value in prohibited_by_provider.get(selection["provider"], [])}
+    if selection["reasoning_id"] in prohibited:
+        return None
+    for status, capability, fingerprint in _capability_rows(statuses):
+        if not status.available or not status.ready or capability.hidden:
+            continue
+        if status.provider != selection["provider"] or capability.model != selection["model_id"]:
+            continue
+        native_reasoning = capability.reasoning_efforts or ("provider-default",)
+        if selection["reasoning_id"] not in native_reasoning:
+            continue
+        return status, capability, fingerprint
+    return None
+
+
+def set_provisional_override(
+    root: Path,
+    *,
+    selection: Mapping[str, Any],
+    statuses: Sequence[ProviderStatus],
+) -> dict[str, Any]:
+    """Pin the Operator's chosen live model/reasoning for the true no-data fallback state."""
+    normalized = _provisional_selection(selection)
+    policy = load_model_policy(root)
+    prohibited_by_provider = policy["provisional_routing"]["prohibited_reasoning_by_provider"]
+    if _live_provisional_candidate(statuses, normalized, prohibited_by_provider) is None:
+        raise ValidationError(
+            "Selected model/reasoning is not currently available from the provider",
+            code="PROVISIONAL_OVERRIDE_NOT_AVAILABLE",
+        )
+    previous = load_provisional_override(root)
+    now = datetime.now(timezone.utc)
+    created_utc = now.isoformat(timespec="microseconds").replace("+00:00", "Z")
+    payload = {
+        "schema_version": "1.0",
+        "routing_mode": "PROVISIONAL_OVERRIDE",
+        "selection": normalized,
+        "created_utc": created_utc,
+    }
+    path = provisional_override_path(root)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write_json(path, payload)
+    receipt_root = _provisional_receipt_root(root)
+    receipt_root.mkdir(parents=True, exist_ok=True)
+    receipt = {
+        "schema_version": "1.0",
+        "action": "CHANGE" if previous else "ENABLE",
+        "previous_mode": "PROVISIONAL_OVERRIDE" if previous else "PROVISIONAL_PROVIDER_DEFAULT",
+        "routing_mode": "PROVISIONAL_OVERRIDE",
+        "selection": normalized,
+        "created_utc": created_utc,
+    }
+    digest = hashlib.sha256(
+        json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()[:12]
+    stamp = now.strftime("%Y%m%dT%H%M%S%fZ")
+    receipt_path = receipt_root / f"{stamp}-{str(receipt['action']).lower()}-{digest}.json"
+    atomic_write_json(receipt_path, receipt)
+    return {**payload, "override_path": str(path), "receipt_path": str(receipt_path)}
+
+
+def clear_provisional_override(root: Path) -> dict[str, Any]:
+    """Restore the release-governed no-data default while retaining an audit receipt."""
+    previous = load_provisional_override(root)
+    path = provisional_override_path(root)
+    path.unlink(missing_ok=True)
+    now = datetime.now(timezone.utc)
+    created_utc = now.isoformat(timespec="microseconds").replace("+00:00", "Z")
+    receipt_root = _provisional_receipt_root(root)
+    receipt_root.mkdir(parents=True, exist_ok=True)
+    receipt = {
+        "schema_version": "1.0",
+        "action": "CLEAR",
+        "previous_mode": "PROVISIONAL_OVERRIDE" if previous else "PROVISIONAL_PROVIDER_DEFAULT",
+        "routing_mode": "PROVISIONAL_PROVIDER_DEFAULT",
+        "selection": previous.get("selection") if previous else None,
+        "created_utc": created_utc,
+    }
+    digest = hashlib.sha256(
+        json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()[:12]
+    stamp = now.strftime("%Y%m%dT%H%M%S%fZ")
+    receipt_path = receipt_root / f"{stamp}-clear-{digest}.json"
+    atomic_write_json(receipt_path, receipt)
+    return {
+        "routing_mode": "PROVISIONAL_PROVIDER_DEFAULT",
+        "override_path": str(path),
+        "receipt_path": str(receipt_path),
+    }
+
+
+def provisional_override_status(root: Path) -> dict[str, Any]:
+    """Return the local no-data default override state without probing a provider."""
+    override = load_provisional_override(root)
+    if override is None:
+        return {"routing_mode": "PROVISIONAL_PROVIDER_DEFAULT", "override": None}
+    return {"routing_mode": "PROVISIONAL_OVERRIDE", "override": override}
+
+
 def _provisional_skill_route(
     root: Path,
     skill_id: str,
     statuses: Sequence[ProviderStatus],
 ) -> SkillRoute:
-    """Return one deterministic Medium route for a true no-data Skill state."""
+    """Return the Operator's pinned no-data default, or one deterministic Medium route."""
     skill_sha256, policy, route_policy = _skill_identity(root, skill_id)
     provisional = policy["provisional_routing"]
     preferred_providers = [
@@ -480,6 +624,40 @@ def _provisional_skill_route(
             "provisional_routing": provisional,
         }
     )
+
+    override = load_provisional_override(root)
+    if override is not None:
+        selection = override["selection"]
+        live = _live_provisional_candidate(statuses, selection, prohibited_by_provider)
+        if live is None:
+            raise ValidationError(
+                f"Operator no-data default is not currently available for {skill_id}",
+                code="PROVISIONAL_OVERRIDE_NOT_AVAILABLE",
+            )
+        status, capability, fingerprint = live
+        identity = RouteIdentity(
+            provider=status.provider,
+            model_id=capability.model,
+            capability_fingerprint=fingerprint,
+            reasoning_id=selection["reasoning_id"],
+            skill_id=skill_id,
+            skill_sha256=skill_sha256,
+            suite_id=str(route_policy.get("suite_id") or ""),
+            suite_sha256=str(route_policy.get("suite_sha256") or ""),
+            policy_version=str(policy.get("qualification_policy_version") or ""),
+        )
+        return SkillRoute(
+            identity=identity,
+            availability="AVAILABLE",
+            qualification=str(provisional["no_data_qualification_status"]),
+            routing_mode="PROVISIONAL_OVERRIDE",
+            evidence_sha256=None,
+            selection_mode="USER_PROVISIONAL_OVERRIDE",
+            routing_basis_sha256=routing_basis_sha256,
+            provider_runtime_version=status.version,
+            model_identity_strength=capability.identity_strength,
+            cost_class=capability.cost_class,
+        )
 
     for status, capability, fingerprint in _capability_rows(statuses):
         if not status.available or not status.ready or capability.hidden:

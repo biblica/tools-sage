@@ -250,3 +250,30 @@ def test_model_service_applies_override_mode_to_each_skill_status(
     assert rows["rtc"]["selection_mode"] == "USER_OVERRIDE"
     assert rows["stc"]["reason_code"] == "GLOBAL_OVERRIDE_NOT_QUALIFIED_FOR_SKILL"
     assert cleared["routing_mode"] == "AUTOMATIC"
+
+
+def test_model_service_wraps_the_no_data_default_override(
+    package_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The menu-facing service API must pin, report, and clear the no-data default."""
+    root = tmp_path / "provisional" / "app"
+    shutil.copytree(package_root, root)
+    status = _status(_capability())
+    service = ModelService(root)
+    monkeypatch.setattr(service, "probe", lambda *_args, **_kwargs: (status, None))
+
+    baseline = service.provisional_override_status()
+    pinned = service.set_provisional_override(
+        {"provider": "codex", "model_id": "gpt-5.6-sol", "reasoning_id": "high"}
+    )
+    active = service.provisional_override_status()
+    route = resolve_skill_route(root, "rtc", [status])
+    cleared = service.clear_provisional_override()
+
+    assert baseline["routing_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert pinned["routing_mode"] == "PROVISIONAL_OVERRIDE"
+    assert active["override"]["selection"]["reasoning_id"] == "high"
+    assert route.identity.reasoning_id == "high"
+    assert route.routing_mode == "PROVISIONAL_OVERRIDE"
+    assert cleared["routing_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert service.provisional_override_status()["routing_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"

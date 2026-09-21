@@ -40,6 +40,11 @@ from .routing_override import (
     resolve_routing_mode,
     set_global_override as persist_routing_override,
 )
+from .skill_routing import (
+    clear_provisional_override as clear_provisional_routing_override,
+    provisional_override_status as read_provisional_override_status,
+    set_provisional_override as persist_provisional_override,
+)
 
 
 class ModelService:
@@ -327,6 +332,22 @@ class ModelService:
         if override is None:
             return {"routing_mode": "AUTOMATIC", "override": None}
         return {"routing_mode": "GLOBAL_OVERRIDE", "override": override}
+
+    def set_provisional_override(self, selection: dict[str, Any]) -> dict[str, Any]:
+        """Pin the Operator's chosen live model/reasoning for the true no-data fallback state."""
+        return persist_provisional_override(
+            self.root,
+            selection=selection,
+            statuses=self._routing_statuses(),
+        )
+
+    def clear_provisional_override(self) -> dict[str, Any]:
+        """Restore the release-governed no-data default and return the local audit receipt."""
+        return clear_provisional_routing_override(self.root)
+
+    def provisional_override_status(self) -> dict[str, Any]:
+        """Return the local no-data default override state without probing a provider."""
+        return read_provisional_override_status(self.root)
 
     def evaluate_skill_route(
         self,

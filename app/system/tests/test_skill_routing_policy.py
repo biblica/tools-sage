@@ -442,6 +442,53 @@ def test_resolver_uses_medium_provisionally_when_no_evidence_exists(
     assert route.routing_basis_sha256 is not None
 
 
+def test_operator_provisional_override_replaces_the_no_data_default(
+    package_root: Path,
+    tmp_path: Path,
+) -> None:
+    """An Operator-pinned no-data default must win over the release policy default."""
+    routing = _routing_module()
+    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
+    statuses = [_status("codex", _capability())]
+
+    routing.set_provisional_override(
+        root,
+        selection={"provider": "codex", "model_id": "gpt-5.6-sol", "reasoning_id": "high"},
+        statuses=statuses,
+    )
+    route = routing.resolve_skill_route(root, "rtc", statuses)
+
+    assert route.identity.reasoning_id == "high"
+    assert route.routing_mode == "PROVISIONAL_OVERRIDE"
+    assert route.selection_mode == "USER_PROVISIONAL_OVERRIDE"
+    assert routing.provisional_override_status(root)["routing_mode"] == "PROVISIONAL_OVERRIDE"
+
+    routing.clear_provisional_override(root)
+    reverted = routing.resolve_skill_route(root, "rtc", statuses)
+
+    assert reverted.identity.reasoning_id == "medium"
+    assert reverted.selection_mode == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert routing.provisional_override_status(root)["routing_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+
+
+def test_operator_provisional_override_rejects_an_unavailable_selection(
+    package_root: Path,
+    tmp_path: Path,
+) -> None:
+    """Pinning a model/reasoning that is not currently live must fail closed."""
+    routing = _routing_module()
+    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
+    statuses = [_status("codex", _capability())]
+
+    with pytest.raises(ValidationError) as excinfo:
+        routing.set_provisional_override(
+            root,
+            selection={"provider": "codex", "model_id": "gpt-9-nonexistent", "reasoning_id": "high"},
+            statuses=statuses,
+        )
+    assert excinfo.value.code == "PROVISIONAL_OVERRIDE_NOT_AVAILABLE"
+
+
 def test_resolver_uses_qualification_data_instead_of_no_data_medium(
     package_root: Path,
     tmp_path: Path,
