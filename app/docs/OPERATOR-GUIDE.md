@@ -80,16 +80,29 @@ Language Profiles are maintained under **Scripture Projects > Language Profiles*
 Startup also treats the workflow AI provider as a prerequisite: it checks installation,
 authentication, and the configured provider without generating analytical model output. Normal Setup
 does not select one global model or reasoning level. **Configure AI** exposes the provider connection,
-the read-only model catalog, exact per-Skill recommendations, a separately audited advanced override,
-sealed model evaluation, Local AI, and the explicit **Check LLM connection** action.
+the read-only model catalog, exact per-Skill recommendations, separately audited advanced overrides,
+Operator-triggered model evaluation, Local AI, and the explicit **Check LLM connection** action.
 
-Provider readiness and Skill readiness are distinct. Routing has one manual state plus two automatic
-substates: an audited exact `USER_OVERRIDE`; `AUTOMATIC / DATA`, which uses current exact
-qualification evidence; and `AUTOMATIC / NO DATA`, which uses Codex native `medium` as the truthful
-`PROVISIONAL_UNQUALIFIED` fallback in every release state. Stale, failed, unreliable, unsupported, or unavailable
-routes still fail closed before Scripture evidence is sent. Job menus show current routes when
-idle and actual execution-receipt routes for active attempts. Direct task provider/model/reasoning
-flags cannot bypass this routing boundary.
+Provider readiness and Skill readiness are distinct. Routing has two manual override states plus two
+automatic substates. The exact `USER_OVERRIDE` is set under **Configure AI > Advanced routing
+override > Set qualified exact route**; it pins one exact provider/model/native-reasoning route and
+requires current qualification evidence for at least one registered Skill. The no-data
+`PROVISIONAL_OVERRIDE` is set under **Configure AI > Advanced routing override > Set no-data default
+model/reasoning**; it interrogates the live provider catalog and lets the Operator pin the
+model/native-reasoning pair used whenever a Skill has no qualification evidence at all, needing only
+a currently live selection rather than qualification evidence, and it fails closed with
+`PROVISIONAL_OVERRIDE_NOT_AVAILABLE` if the pinned choice stops being live. Each override clears
+independently (**Clear override** / **Clear no-data default**) and is unaffected by clearing the
+other. `AUTOMATIC / DATA` uses current exact qualification evidence; `AUTOMATIC / NO DATA` uses the
+Operator's pinned `PROVISIONAL_OVERRIDE` when one is set, or otherwise the release policy's default
+reasoning per provider (Codex native `medium` unless changed), as the truthful
+`PROVISIONAL_UNQUALIFIED` fallback in every release state. Qualification evidence itself comes from
+**Configure AI > Evaluate new or changed models** (Operator-triggered, with an explicit confirmation
+naming the real provider calls and possible long runtime) or the equivalent `sage model evaluate` CLI
+command. Stale, failed, unreliable, unsupported, or unavailable routes still fail closed before
+Scripture evidence is sent. Job menus show current routes when idle and actual execution-receipt
+routes for active attempts. Direct task provider/model/reasoning flags cannot bypass this routing
+boundary.
 
 Startup displays an empty valid inventory as **No SAGE Projects added yet**. The corresponding machine-record state is `READY_EMPTY`; it does not mean workstation configuration is complete. Until the Paratext Projects root is configured and available, startup and the complete system check report `INCOMPLETE` with `PROJECTS_ROOT_NOT_CONFIGURED` or `PROJECTS_ROOT_NOT_FOUND`.
 
