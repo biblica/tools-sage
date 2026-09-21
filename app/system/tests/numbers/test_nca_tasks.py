@@ -136,6 +136,107 @@ def _run(make_workspace, monkeypatch: pytest.MonkeyPatch):
     return root, config, job, run
 
 
+def _add_indexed_row(
+    package_root: Path, *, book: str, chapter: int, verse: int,
+    ol_text: str, ol_values: str, niv_text: str, niv_values: str,
+) -> None:
+    """Extend one already-copied workspace reference package with one more indexed row.
+
+    Mutates only the caller's own temp-workspace copy of the fixture package -- never the
+    committed source fixture -- so it never affects any other test's reference data.
+    """
+    import csv
+    import hashlib
+    import json as json_module
+
+    ol_ref = f"{book} {chapter}:{verse}"
+
+    def add_row(name: str, row: dict[str, str]) -> None:
+        """Append one row to the named reference table in this workspace copy."""
+        path = package_root / "reference" / name
+        with path.open(encoding="utf-8-sig", newline="") as source:
+            rows = list(csv.DictReader(source, delimiter="\t"))
+            fields = list(rows[0].keys())
+        rows.append(row)
+        with path.open("w", encoding="utf-8", newline="") as target:
+            writer = csv.DictWriter(target, fieldnames=fields, delimiter="\t", lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+
+    add_row("SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv", {
+        "BK": book, "CH": str(chapter), "VS": str(verse), "OL_REF": ol_ref, "LANG": "GRK",
+        "OL_TEXT": ol_text, "OL_VALUES": ol_values, "NIV_TEXT": niv_text, "NIV_VALUES": niv_values,
+        "MATCH_STATUS": "PASS_EXACT", "VARIANT_CLASS": "NONE", "SCHOLARSHIP_STATUS": "",
+        "TARGET_DEFAULT": f"OL: {ol_values}",
+        "TARGET_VALIDATION_RULE": "PASS when target semantic numeric value(s) equal OL; NIV confirms the same value(s).",
+        "ALT_READING_STATUS": "NONE", "FOOTNOTE_IF_TARGET_FOLLOWS_OL": "NONE",
+        "FOOTNOTE_IF_TARGET_FOLLOWS_ALT": "N/A", "OPERATOR_GUIDANCE": "Use OL",
+        "TEXTUAL_CRITICAL_NOTE": "No textual-critical issue is registered.",
+        "SOURCE_IDS": "SRC-1", "SOURCE_URLS": "https://example.test/source",
+    })
+    add_row("canonical_number_index.tsv", {
+        "BK": book, "CH": str(chapter), "VS": str(verse), "OL_REF": ol_ref, "LANG": "GRK",
+        "OL_TEXT": ol_text, "OL_VALUES": ol_values, "NIV_TEXT": niv_text, "NIV_VALUES": niv_values,
+        "AUTHORITY_BASIS": "OL_PRIMARY_NUMERIC", "MATCH_STATUS": "PASS_EXACT",
+        "VARIANT_CLASS": "NONE", "SCHOLARSHIP_STATUS": "",
+        "TEXTUAL_CRITICAL_NOTE": "No textual-critical issue is registered.",
+    })
+    add_row("ol_expression_audit.tsv", {
+        "OL_REF": ol_ref, "LANG": "GRK", "EXPR_NO": "1", "TOKEN_POS": "1",
+        "SOURCE_EXPRESSION": ol_text.split()[0], "DIGIT_VALUE": ol_values,
+        "ORIGIN": "TEST", "OL_TEXT": ol_text,
+    })
+    handover_path = package_root / "HANDOVER_VERIFICATION.json"
+    handover = json_module.loads(handover_path.read_text(encoding="utf-8"))
+    handover["operator_index_rows"] += 1
+    handover["ol_expression_rows"] += 1
+    handover_path.write_text(json_module.dumps(handover, indent=2) + "\n", encoding="utf-8")
+
+    manifest_path = package_root / "FILE_MANIFEST.json"
+    manifest = json_module.loads(manifest_path.read_text(encoding="utf-8"))
+    inventory = []
+    for row in manifest["files"]:
+        payload = (package_root / row["path"]).read_bytes()
+        inventory.append({**row, "bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest()})
+    manifest["files"] = inventory
+    manifest_path.write_text(json_module.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    paths = [manifest_path, *(package_root / row["path"] for row in inventory)]
+    lines = [
+        f"{hashlib.sha256(path.read_bytes()).hexdigest()}  ./{path.relative_to(package_root).as_posix()}"
+        for path in paths
+    ]
+    (package_root / "CHECKSUMS.sha256").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _run_with_extra_indexed_verse(
+    make_workspace, monkeypatch: pytest.MonkeyPatch, *,
+    book: str = "MAT", chapter: int = 1, verse: int = 2,
+    ol_text: str = "two men", ol_values: str = "2", niv_text: str = "two men", niv_values: str = "2",
+):
+    """Create one sealed NCA Job/Run whose reference package indexes one extra coordinate.
+
+    Only this call's own temp workspace copy is extended -- the committed
+    SYNTHETIC_NCA_REFERENCE_1 fixture on disk, and every other test using the plain
+    `_run()` helper, are completely unaffected.
+    """
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    config, _style_bytes = _prepare_nca_workspace(root)
+    _route(monkeypatch)
+    package_root = storage_layout(root).resources_root / "numbers/SYNTHETIC_NCA_REFERENCE_1"
+    _add_indexed_row(
+        package_root, book=book, chapter=chapter, verse=verse,
+        ol_text=ol_text, ol_values=ol_values, niv_text=niv_text, niv_values=niv_values,
+    )
+    job = create_nca_job(
+        config,
+        wip="usWIP",
+        package_id="SYNTHETIC_NCA_REFERENCE_1",
+        style_selector="fixture-style/1",
+    )
+    run = create_nca_run(config, job_id=job.job_id, scope_value="MAT 1")
+    return root, config, job, run
+
+
 def test_create_nca_task_is_idempotent_and_registers_exact_sealed_coverage(
     make_workspace, monkeypatch: pytest.MonkeyPatch
 ) -> None:

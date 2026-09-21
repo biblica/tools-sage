@@ -451,32 +451,23 @@ def test_failure_diagnostic_reader_authenticates_durable_membership(tmp_path):
 
 
 @pytest.mark.parametrize('damage', [
-    'calls', 'request_id', 'members', 'key',
-    pytest.param('planned_calls', marks=pytest.mark.xfail(
-        reason='The shared SYNTHETIC_NCA_REFERENCE_1 fixture now indexes only MAT 1:1, so '
-               'build_inventory plans exactly one real extraction input for the standard '
-               'MAT 1 scope; planned_extraction_calls == len(input_ids) == 1 honestly, so '
-               'forging it to len(input_ids) is a no-op that changes nothing to catch. '
-               'Needs a fixture (or dedicated reference package) with 2+ indexed MAT 1 '
-               'coordinates that batch together so the forged and honest values genuinely '
-               'differ; not attempted here because it requires re-deriving the shared '
-               'fixture package\'s cross-validated content (canonical_number_index.tsv '
-               'agreement, HANDOVER_VERIFICATION.json counts) and checksums '
-               '(CHECKSUMS.sha256, FILE_MANIFEST.json) exactly.',
-        strict=True,
-    )),
+    'calls', 'request_id', 'members', 'key', 'planned_calls',
     'missing_planned_calls',
 ])
 def test_publication_rejects_self_consistent_metrics_forgery(make_workspace, monkeypatch, damage):
     """Recomputed aggregate counters cannot authorize an invented physical request association."""
     from copy import deepcopy
     from pathlib import Path
-    from .test_nca_tasks import _run, _OfflineTasks
+    from .test_nca_tasks import _run_with_extra_indexed_verse, _OfflineTasks
     from sage.nca import create_nca_task, execute_nca_task
     from sage.numbers.replay import PhaseStore
     from sage.numbers.telemetry import summarize_calls
     from sage.errors import ValidationError
-    _root, config, job, run = _run(make_workspace, monkeypatch)
+    # MAT 1:1 (fixture default) and MAT 1:2 (added here) are both indexed and batch
+    # together, so planned_extraction_calls (batch count) genuinely differs from
+    # len(input_ids) (stream count) -- required for the 'planned_calls' forgery below
+    # to actually change anything an honest recomputation would catch.
+    _root, config, job, run = _run_with_extra_indexed_verse(make_workspace, monkeypatch)
     task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
     path = Path(task['task_manifest_path'])
     monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
@@ -763,29 +754,17 @@ def test_new_snapshot_uses_governed_batch_cap_and_rejects_unsupported_concurrenc
         build_nca_run_snapshot(config, job, checks=sealed['checks'], route=sealed['model_route'])
 
 
-@pytest.mark.xfail(
-    reason='The shared SYNTHETIC_NCA_REFERENCE_1 fixture now indexes only MAT 1:1, so '
-           'build_inventory plans exactly one real extraction input for the standard MAT 1 '
-           'scope -- there is no second valid sibling left in the same batch to keep intact '
-           'while this singleton is corrupted, so the run now fails closed with '
-           'NCA_MODEL_PROVIDER_FAILED (no admitted phase evidence) before publication is '
-           'even attempted, instead of reaching the mixed-batch publication/interruption '
-           'path this test exercises. Needs a fixture (or dedicated reference package) with '
-           '2+ indexed MAT 1 coordinates that batch together; not attempted here because it '
-           'requires re-deriving the shared fixture package\'s cross-validated content '
-           '(canonical_number_index.tsv agreement, HANDOVER_VERIFICATION.json counts) and '
-           'checksums (CHECKSUMS.sha256, FILE_MANIFEST.json) exactly.',
-    strict=True,
-)
 def test_mixed_terminal_invalid_batch_publication_replays_exact_failure_evidence(make_workspace, monkeypatch):
     """A mixed published result must preserve the terminal invalid member's reason after interruption."""
     import json
     from pathlib import Path
     from dataclasses import replace
-    from .test_nca_tasks import _run, _OfflineTasks, _EmptyTransport
+    from .test_nca_tasks import _run_with_extra_indexed_verse, _OfflineTasks, _EmptyTransport
     from sage.nca import create_nca_task, execute_nca_task
     from sage.numbers import replay
-    _root, config, job, run = _run(make_workspace, monkeypatch)
+    # MAT 1:1 (fixture default) and MAT 1:2 (added here) are both indexed and batch
+    # together, giving this test a genuine valid sibling alongside the corrupted member.
+    _root, config, job, run = _run_with_extra_indexed_verse(make_workspace, monkeypatch)
     task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
     path = Path(task['task_manifest_path'])
     class InvalidMember(_EmptyTransport):
@@ -795,8 +774,8 @@ def test_mixed_terminal_invalid_batch_publication_replays_exact_failure_evidence
             response = super().execute(request)
             payload = json.loads(request.prompt)['input']
             raw = json.loads(response.content)
-            # MAT 1:1 is the only indexed verse in this fixture, so it's the only one
-            # build_inventory ever plans a stream for; that's the singleton to corrupt.
+            # MAT 1:1 and MAT 1:2 are the indexed verses in this fixture and batch together;
+            # corrupt one while the other stays a valid sibling in the same batch.
             for supplied, result in zip(payload['work_units'], raw['work_units']):
                 if 'Verse 1.' in supplied['text']:
                     result['expressions'] = [{'invented': True}]
