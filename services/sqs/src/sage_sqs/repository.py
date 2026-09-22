@@ -212,6 +212,32 @@ class Repository:
         self.db.connection.commit()
         return {"id": run_id, "status": "PENDING", **payload}
 
+    def list_pending_evaluations(self) -> list[dict[str, Any]]:
+        rows = self.db.connection.execute(
+            "SELECT id,payload_json FROM evaluation_runs WHERE status='PENDING' ORDER BY created_utc,id"
+        ).fetchall()
+        items = []
+        for row in rows:
+            payload = json.loads(row["payload_json"])
+            items.append({
+                "id": row["id"],
+                "provider_family": payload.get("provider_family", "openai"),
+                "profile_id": payload["profile_id"],
+                "model_id": payload["model_id"],
+                "capability": payload["capability"],
+                "reasoning": payload.get("reasoning", "medium"),
+                "scope": payload.get("scope", "FULL"),
+            })
+        return items
+
+    def evaluation_run(self, run_id: str) -> dict[str, Any] | None:
+        row = self.db.connection.execute(
+            "SELECT id,status,payload_json FROM evaluation_runs WHERE id=?", (run_id,)
+        ).fetchone()
+        if row is None:
+            return None
+        return {"id": row["id"], "status": row["status"], **json.loads(row["payload_json"])}
+
     def claim_next_evaluation(self) -> dict[str, Any] | None:
         conn = self.db.connection
         conn.execute("BEGIN IMMEDIATE")

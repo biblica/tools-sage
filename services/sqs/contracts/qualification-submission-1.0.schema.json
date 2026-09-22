@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sqs.sage.local/schema/qualification-submission-1.0.json",
+  "title": "SQS Qualification Submission",
+  "description": "File dropped by an ADMIN-run SAGE client into the SQS incoming/ directory over SSH/SCP, describing one completed planned evaluation. Staged as a QUALIFICATION_SUBMISSION attention item pending explicit ADMIN review -- never published directly.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "run_id", "submitted_by", "submitted_at", "qualification", "attempt"],
+  "properties": {
+    "schema": {"const": "sage-sqs-qualification-submission-1.0"},
+    "run_id": {"type": "string", "minLength": 1},
+    "submitted_by": {"type": "string", "minLength": 1},
+    "submitted_at": {"type": "string", "minLength": 1},
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_family", "execution_channel", "model_id", "model_capability_fingerprint",
+        "profile_id", "profile_identity_sha256", "capability", "status", "minimum_reasoning",
+        "quality_score", "reliability_score", "confidence", "value", "evidence_basis",
+        "estimated_unit_cost_usd", "evaluated_at", "evidence_sha256",
+        "minimum_native_reasoning", "tier_mapping_fingerprint"
+      ],
+      "properties": {
+        "provider_family": {"type": "string", "minLength": 1},
+        "execution_channel": {"type": "string", "minLength": 1},
+        "model_id": {"type": "string", "minLength": 1},
+        "model_capability_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "profile_id": {"type": "string", "minLength": 1},
+        "profile_identity_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "capability": {"type": "string", "minLength": 1},
+        "status": {"enum": ["QUALIFIED", "NOT_QUALIFIED", "UNASSESSED"]},
+        "minimum_reasoning": {"type": ["string", "null"]},
+        "quality_score": {"type": "number"},
+        "reliability_score": {"type": "number"},
+        "confidence": {"enum": ["HIGH", "MEDIUM", "LOW"]},
+        "value": {"enum": ["HIGH", "MEDIUM", "LOW"]},
+        "evidence_basis": {"enum": ["MEASURED", "CONFIRMED"]},
+        "estimated_unit_cost_usd": {"type": "number"},
+        "evaluated_at": {"type": "string", "minLength": 1},
+        "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "minimum_native_reasoning": {"type": ["string", "null"]},
+        "tier_mapping_fingerprint": {"type": ["string", "null"]}
+      }
+    },
+    "attempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_reasoning", "quality_score", "reliability_score",
+        "total_input_tokens", "total_output_tokens", "estimated_unit_cost_usd", "reasoning_runs"
+      ],
+      "properties": {
+        "minimum_reasoning": {"type": ["string", "null"]},
+        "quality_score": {"type": "number"},
+        "reliability_score": {"type": "number"},
+        "total_input_tokens": {"type": "integer"},
+        "total_output_tokens": {"type": "integer"},
+        "estimated_unit_cost_usd": {"type": "number"},
+        "reasoning_runs": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

@@ -58,6 +58,10 @@ def create_app(repo: Repository) -> FastAPI:
             rows = [row for row in rows if row.get("status") == status]
         return rows
 
+    @app.get("/planned-evaluations")
+    def planned_evaluations() -> list[dict]:
+        return repo.list_pending_evaluations()
+
     @app.get("/bundle")
     def bundle(request: Request, response: Response):
         value = published()

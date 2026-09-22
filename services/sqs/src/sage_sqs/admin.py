@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Callable
 
 from .db import Database
+from .domain import Qualification
 from .publisher import Publisher
 from .providers.openai_provider import load_openai_catalog, sync_provider_catalog
 from .repository import Repository
@@ -182,6 +183,25 @@ class AdminApp:
         self.repo.audit("ADMIN", "REVOKE_QUALIFICATION", {
             "provider_family": provider_family, "model_id": model_id, "profile_id": profile_id, "capability": capability,
         })
+
+    def review_qualification_submission(self, attention_key: str, *, decision: str) -> None:
+        if decision not in ("APPROVE", "REJECT"):
+            raise ValueError("INVALID_DECISION")
+        row = next((item for item in self.repo.list_attention() if item["attention_key"] == attention_key), None)
+        if row is None or row["category"] != "QUALIFICATION_SUBMISSION":
+            raise ValueError("UNKNOWN_SUBMISSION")
+        payload = row["payload"]
+        run_id = str(payload["run_id"])
+        if decision == "REJECT":
+            self.repo.fail_evaluation(run_id, "SUBMISSION_REJECTED")
+            self.repo.resolve_attention(attention_key)
+            self.repo.audit("ADMIN", "REJECT_QUALIFICATION_SUBMISSION", {"run_id": run_id, "attention_key": attention_key})
+            return
+        self.repo.save_qualification(Qualification(**payload["qualification"]))
+        self.repo.save_evaluation_attempt(run_id, payload["attempt"])
+        self.repo.complete_evaluation(run_id)
+        self.repo.resolve_attention(attention_key)
+        self.repo.audit("ADMIN", "APPROVE_QUALIFICATION_SUBMISSION", {"run_id": run_id, "attention_key": attention_key})
 
     def publish_bundle(self) -> dict:
         return self.publisher.publish(actor="ADMIN")
