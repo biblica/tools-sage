@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import getpass
 import json
 import os
 import platform
@@ -75,9 +76,17 @@ from .llm_tasks import execute_task
 from .llm_settings import load_llm_settings
 from .model_service import ModelService
 from .executors import PROVIDER_IDS
-from .sqs_cache import SqsBundleRejected, SqsCache
-from .sqs_client import SqsTransportError, fetch_bundle, resolve_endpoints
+from .sqs_cache import SqsBundleRejected, SqsCache, load_sqs_config
+from .sqs_client import SqsTransportError, fetch_bundle, fetch_planned_evaluations, resolve_endpoints
 from .sqs_discovery import flush_outbox
+from .sqs_submission_key import submission_key_status
+from .sqs_submission_flow import (
+    PlannedEvaluationNotRunnable,
+    SqsSubmissionUploadError,
+    prepare_submission,
+    upload_submission_file,
+    write_submission_file,
+)
 from .natural_language import append_request_log, interpret_request
 from .init_remediation import run_guided_init_remediation, run_targeted_init_remediation
 from .operator_overrides import clear_operator_overrides
@@ -1981,6 +1990,106 @@ def command_model_sqs_sync(args: argparse.Namespace) -> int:
         print(f"Bundle revision: {result['bundle_revision']}")
     if error:
         print(f"Note: {error}")
+    return 0
+
+
+def command_sqs_list(args: argparse.Namespace) -> int:
+    """List pending SQS qualification work from the configured SQS endpoint(s).
+
+    Read-only: this fetches the plain, non-exclusive GET /planned-evaluations
+    list -- it never claims or reserves any of the listed work.
+    """
+    _load(args)
+    endpoints = resolve_endpoints()
+    if not endpoints:
+        raise ValidationError("No SQS endpoint configured (SAGE_SQS_URLS/SAGE_SQS_URL)", code="SQS_NO_ENDPOINT_CONFIGURED")
+    rows = fetch_planned_evaluations(endpoints)
+    if args.json:
+        _print_json(rows)
+        return 0
+    if not rows:
+        print("No pending SQS qualification work.")
+        return 0
+    print("PENDING SQS QUALIFICATION WORK")
+    for row in rows:
+        print(
+            f"{row['id']}  {row['model_id']:<24} {row['profile_id']:<8} {row['capability']:<20} "
+            f"reasoning={row.get('reasoning', 'medium')} scope={row.get('scope', 'FULL')}"
+        )
+    return 0
+
+
+def command_sqs_submit(args: argparse.Namespace) -> int:
+    """Run one pending SQS qualification locally through Codex and submit it for ADMIN review.
+
+    Never publishes anything itself: the uploaded file is staged server-side
+    as a QUALIFICATION_SUBMISSION attention item awaiting an explicit ADMIN
+    APPROVE/REJECT decision (see the SQS Codex-workspace provider plan).
+    """
+    config, _ = _load(args)
+    layout = storage_layout(config.root)
+    sqs_config_path = config.root / "system" / "config" / "sqs.yml"
+    state_dir = layout.state_root / "sqs"
+
+    endpoints = resolve_endpoints()
+    if not endpoints:
+        raise ValidationError("No SQS endpoint configured (SAGE_SQS_URLS/SAGE_SQS_URL)", code="SQS_NO_ENDPOINT_CONFIGURED")
+
+    key_status = submission_key_status(state_dir)
+    if not key_status.exists:
+        raise ValidationError(
+            "No SQS submission key generated on this host yet; run SAGE MAINTENANCE > SQS submission key first",
+            code="SQS_SUBMISSION_KEY_MISSING",
+        )
+
+    sqs_config = load_sqs_config(sqs_config_path)
+    submission_config = sqs_config.get("submission") or {}
+
+    cache = SqsCache.from_config(state_dir, sqs_config_path)
+    bundle = cache.load_current()
+    if bundle is None:
+        raise ValidationError(
+            "No validated local SQS bundle cached yet; run `sage model sqs-sync` first",
+            code="SQS_NO_CACHED_BUNDLE",
+        )
+
+    rows = fetch_planned_evaluations(endpoints)
+    row = next((item for item in rows if str(item["id"]) == args.run_id), None)
+    if row is None:
+        raise ValidationError(f"Unknown or no-longer-pending run id: {args.run_id}", code="SQS_UNKNOWN_RUN_ID")
+
+    pack_dir = Path(config.root).resolve().parent / "services" / "sqs" / "config" / "evaluation-packs"
+    submission = prepare_submission(
+        planned_evaluation=row,
+        bundle=bundle,
+        pack_dir=pack_dir,
+        sage_root=config.root,
+        submitted_by=args.submitted_by or getpass.getuser(),
+    )
+    submission_path = write_submission_file(submission, state_dir / "submissions")
+    upload_submission_file(
+        submission_path,
+        ssh_host=str(submission_config.get("ssh_host", "")),
+        ssh_port=int(submission_config.get("ssh_port", 22)),
+        ssh_user=str(submission_config.get("ssh_user", "sqs-uploader")),
+        remote_incoming_dir=str(submission_config.get("remote_incoming_dir", "/var/lib/sage-sqs/incoming")),
+        private_key_path=key_status.private_key_path,
+    )
+    result = {
+        "run_id": args.run_id,
+        "status": "SUBMITTED",
+        "qualification_status": submission["qualification"]["status"],
+        "minimum_reasoning": submission["qualification"]["minimum_reasoning"],
+    }
+    if args.json:
+        _print_json(result)
+        return 0
+    print("SQS SUBMISSION UPLOADED")
+    print(f"Run: {result['run_id']}")
+    print(f"Qualification status: {result['qualification_status']}")
+    if result["minimum_reasoning"]:
+        print(f"Minimum reasoning: {result['minimum_reasoning']}")
+    print("Awaiting ADMIN review on the SQS server before it is published.")
     return 0
 
 
@@ -4812,6 +4921,18 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     model_test.add_argument("--reasoning")
     model_test.add_argument("--timeout", type=int, default=120)
     model_test.set_defaults(handler=command_model_test)
+
+    sqs = subparsers.add_parser("sqs", help="ADMIN-run local SQS Codex-workspace qualification vetting")
+    sqs_actions = sqs.add_subparsers(dest="sqs_command", required=True)
+    sqs_list = sqs_actions.add_parser("list", help="List pending SQS qualification work (read-only, does not claim anything)")
+    sqs_list.set_defaults(handler=command_sqs_list)
+    sqs_submit = sqs_actions.add_parser(
+        "submit",
+        help="Run one pending SQS qualification locally through Codex and submit it for ADMIN review",
+    )
+    sqs_submit.add_argument("--run-id", required=True, help="Run id from `sage sqs list`")
+    sqs_submit.add_argument("--submitted-by", help="Operator identity recorded on the submission; defaults to the OS user")
+    sqs_submit.set_defaults(handler=command_sqs_submit)
 
     task = subparsers.add_parser("task", help="Create, execute, or submit one governed SAGE task")
     task_actions = task.add_subparsers(dest="task_command", required=True)

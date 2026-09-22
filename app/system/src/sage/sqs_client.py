@@ -149,3 +149,13 @@ def fetch_bundle(endpoints: list[str], *, timeout: int = 10) -> dict[str, Any]:
 def post_discovery(endpoints: list[str], payload: dict[str, Any], *, timeout: int = 10) -> Any:
     """POST /discoveries with ordered endpoint failover."""
     return request_with_failover(endpoints, "/discoveries", method="POST", payload=payload, timeout=timeout)
+
+
+def fetch_planned_evaluations(endpoints: list[str], *, timeout: int = 10) -> list[dict[str, Any]]:
+    """GET /planned-evaluations with ordered endpoint failover.
+
+    A plain, non-exclusive list of pending qualification work -- unlike the
+    server's own claim_next_evaluation(), fetching this list never marks
+    anything RUNNING.
+    """
+    return request_with_failover(endpoints, "/planned-evaluations", timeout=timeout)

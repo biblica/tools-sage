@@ -241,14 +241,26 @@ plus metadata-only discovery intake."* Two real gaps follow from that:
       The work-queue read endpoint's contract is just `list_pending_evaluations()`'s plain dict
       shape (`id`, `provider_family`, `profile_id`, `model_id`, `capability`, `reasoning`,
       `scope`) -- no separate schema file was judged necessary for a GET response this shaped.
-- [ ] Design the SAGE-side surface: a menu action and/or CLI command (matching existing patterns
-      like `sage model sqs-sync`) that lists pending work via `GET /planned-evaluations`, runs it
-      through the now-built `ProviderAdapter` bridge (see below) plus
-      `sage_sqs.evaluation.runner.run_planned_test`/`sage_sqs.qualification.synthesize_qualification`,
-      writes the result as a `qualification-submission-1.0` file, and SCPs it to the configured
-      `submission.remote_incoming_dir` using the generated keypair. None of this transport/
-      orchestration layer exists yet -- only its two prerequisites (the bridge, and the keypair)
-      are built.
+- [x] SAGE-side surface, built and test-first covered: `sage sqs list` (`GET /planned-evaluations`
+      via the new `fetch_planned_evaluations` transport function, read-only) and
+      `sage sqs submit --run-id <id>` (matching the `sage model sqs-sync` CLI precedent -- not
+      wired into an interactive menu, since this is a scripted ADMIN power-user action, same as
+      `sqs-sync` itself). `sage.sqs_submission_flow.prepare_submission` is the orchestration core:
+      looks up the model/profile from the already-cached, already-validated local bundle
+      (`SqsCache.load_current()` -- reusing Task 4's trust validation, no new network trust
+      surface), loads the exact evaluation pack from the sibling `services/sqs/config/
+      evaluation-packs/` checkout, runs it through `run_planned_test` with the Codex-workspace
+      bridge, and synthesizes the qualification -- all pure/duck-typed against the bundle's public
+      dict shape (`_BundleProfile`/`_BundleModel`), never reconstructing full `sage_sqs` domain
+      objects. `write_submission_file` writes it atomically; `upload_submission_file` SCPs it with
+      `BatchMode=yes` (fails fast/closed on auth or host-key failure rather than hanging on a
+      prompt with no terminal to reach -- normal host-key verification still applies, deliberately
+      not disabled). `sqs submit` fails closed with its own distinct `reason_code` at every
+      prerequisite gap (no endpoint, no generated key, no cached bundle, unknown run id), verified
+      by real subprocess CLI tests; the full run-through-Codex happy path is verified at the
+      Python level with a `FakeProvider`, matching this project's established precedent for
+      Codex-touching tests (a live, authenticated Codex CLI is not something a test suite can
+      depend on).
 - [x] `sage_sqs` as a dependency of SAGE, resolved by investigation, not by assumption: it is
       **not** a pip dependency. Its full package needs `fastapi`/`pydantic`/`uvicorn` (SQS's own
       HTTP server, irrelevant to SAGE), but the narrow slice the bridge actually needs --
