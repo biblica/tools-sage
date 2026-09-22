@@ -12,6 +12,7 @@ from sage.sqs_client import (
     SqsTransportError,
     fetch_bundle,
     fetch_health,
+    fetch_planned_evaluations,
     post_discovery,
     resolve_endpoints,
     validate_sqs_endpoint,
@@ -109,6 +110,15 @@ def test_fetch_health_and_bundle_succeed_against_a_real_local_server():
     try:
         assert fetch_health([_url(httpd)])["status"] == "OK"
         assert fetch_bundle([_url(httpd)])["bundle_revision"] == 1
+    finally:
+        httpd.shutdown()
+
+
+def test_fetch_planned_evaluations_succeeds_against_a_real_local_server():
+    """The work-queue list endpoint reaches the server and returns its scripted response."""
+    httpd = _server({"/planned-evaluations": (200, [{"id": "run-1", "model_id": "gpt-x"}])})
+    try:
+        assert fetch_planned_evaluations([_url(httpd)])[0]["id"] == "run-1"
     finally:
         httpd.shutdown()
 
