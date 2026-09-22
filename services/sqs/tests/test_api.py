@@ -50,3 +50,16 @@ def test_bundle_etag_supports_not_modified(tmp_path):
 def test_no_v1_route_exists(tmp_path):
     client = seeded_client(tmp_path)
     assert client.get("/v1/bundle").status_code == 404
+
+
+def test_planned_evaluations_lists_pending_work_without_claiming_it(tmp_path):
+    repo = Repository(Database.open(tmp_path / "sqs.db"))
+    item = repo.queue_test({"profile_id": "uk-UA", "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium"})
+    client = TestClient(create_app(repo))
+    response = client.get("/planned-evaluations")
+    assert response.status_code == 200
+    assert response.json() == [{
+        "id": item["id"], "provider_family": "openai", "profile_id": "uk-UA",
+        "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium", "scope": "FULL",
+    }]
+    assert repo.evaluation_status(item["id"]) == "PENDING"

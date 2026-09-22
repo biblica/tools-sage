@@ -1,10 +1,15 @@
+from dataclasses import asdict
 from pathlib import Path
+
+import pytest
 
 from sage_sqs.admin import AdminApp
 from sage_sqs.db import Database
-from sage_sqs.domain import LanguageProfile, ModelRecord
+from sage_sqs.domain import LanguageProfile, ModelRecord, Qualification
+from sage_sqs.ingest import stage_submission
 from sage_sqs.publisher import Publisher
 from sage_sqs.repository import Repository
+from test_ingest import _submission
 
 
 def setup(tmp_path):
@@ -58,6 +63,53 @@ def test_admin_publish_is_explicit_and_audited(tmp_path):
     assert bundle["bundle_revision"] == 1
     row = repo.db.connection.execute("SELECT action FROM audit_events ORDER BY id DESC LIMIT 1").fetchone()
     assert row[0] == "PUBLISH_BUNDLE"
+
+
+def test_admin_cannot_manually_construct_qualifications(tmp_path):
+    _, app = setup(tmp_path)
+    assert not hasattr(app, "set_qualification_status")
+    assert not hasattr(app, "enter_qualification")
+
+
+def test_admin_approving_a_submission_publishes_the_measured_result(tmp_path):
+    repo, app = setup(tmp_path)
+    app.approve_profile("en-US")
+    app.approve_model("gpt-x")
+    item = app.queue_evaluation(model_id="gpt-x", profile_id="en-US", capability="GRAMMAR_ANALYSIS")
+    identity = repo.latest_profile("en-US").evaluation_identity_sha256
+    receipt = stage_submission(repo, _submission(item["id"], profile_identity_sha256=identity))
+
+    app.review_qualification_submission(receipt.attention_key, decision="APPROVE")
+
+    assert repo.evaluation_status(item["id"]) == "COMPLETED"
+    assert repo.attempt_count(item["id"]) == 1
+    assert repo.list_attention() == []
+    published = repo.publishable_qualifications()
+    assert len(published) == 1
+    assert published[0].model_id == "gpt-x"
+    assert published[0].status == "QUALIFIED"
+    row = repo.db.connection.execute("SELECT action FROM audit_events ORDER BY id DESC LIMIT 1").fetchone()
+    assert row[0] == "APPROVE_QUALIFICATION_SUBMISSION"
+
+
+def test_admin_rejecting_a_submission_fails_the_run_and_never_publishes(tmp_path):
+    repo, app = setup(tmp_path)
+    app.approve_profile("en-US")
+    app.approve_model("gpt-x")
+    item = app.queue_evaluation(model_id="gpt-x", profile_id="en-US", capability="GRAMMAR_ANALYSIS")
+    receipt = stage_submission(repo, _submission(item["id"]))
+
+    app.review_qualification_submission(receipt.attention_key, decision="REJECT")
+
+    assert repo.evaluation_status(item["id"]) == "FAILED"
+    assert repo.list_attention() == []
+    assert repo.publishable_qualifications() == []
+
+
+def test_review_qualification_submission_rejects_an_unknown_attention_key(tmp_path):
+    _, app = setup(tmp_path)
+    with pytest.raises(ValueError):
+        app.review_qualification_submission("QUALIFICATION_SUBMISSION:missing", decision="APPROVE")
 
 
 def test_admin_provider_refresh_invalidates_changed_fingerprint(tmp_path):

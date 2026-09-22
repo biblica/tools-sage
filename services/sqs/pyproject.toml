@@ -24,6 +24,7 @@ dev = ["pytest==9.1.1", "httpx2==2.13.0"]
 sqs-admin = "sage_sqs.admin:main"
 sqs-worker = "sage_sqs.worker:main"
 sqs-publish = "sage_sqs.publisher:main"
+sqs-ingest = "sage_sqs.ingest:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

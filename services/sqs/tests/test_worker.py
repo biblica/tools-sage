@@ -64,6 +64,25 @@ def test_claim_is_transactional_and_marks_running(tmp_path):
     assert claim_next_planned_test(repo) is None
 
 
+def test_list_pending_evaluations_is_read_only(tmp_path):
+    repo = setup_repo(tmp_path)
+    item = repo.queue_test({"profile_id": "en-US", "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium"})
+    pending = repo.list_pending_evaluations()
+    assert pending == [{
+        "id": item["id"], "provider_family": "openai", "profile_id": "en-US",
+        "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium", "scope": "FULL",
+    }]
+    assert repo.evaluation_status(item["id"]) == "PENDING"
+    assert repo.list_pending_evaluations() == pending  # calling it again does not claim or mutate
+
+
+def test_list_pending_evaluations_excludes_running_and_completed(tmp_path):
+    repo = setup_repo(tmp_path)
+    repo.queue_test({"profile_id": "en-US", "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium"})
+    claim_next_planned_test(repo)
+    assert repo.list_pending_evaluations() == []
+
+
 def test_worker_does_not_reexecute_completed_test(tmp_path):
     repo = setup_repo(tmp_path)
     item = repo.queue_test({"profile_id": "en-US", "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium"})
