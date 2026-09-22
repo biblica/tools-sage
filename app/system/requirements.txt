@@ -5,3 +5,9 @@ PyYAML==6.0.3
 openpyxl==3.1.5
 et_xmlfile==2.0.0
 certifi==2026.7.22
+# Ed25519 bundle-digest/signature verification (sqs_cache.py) and the SQS
+# qualification-submission SSH keypair (sqs_submission_key.py). Pinned to
+# match services/sqs/pyproject.toml's own cryptography pin.
+cryptography==50.0.1
+cffi==2.1.1
+pycparser==3.0
