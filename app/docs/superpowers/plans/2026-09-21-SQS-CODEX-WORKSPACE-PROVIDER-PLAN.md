@@ -223,10 +223,16 @@ plus metadata-only discovery intake."* Two real gaps follow from that:
       `authorized_keys` provisioning, scoped only to `incoming/`, no shell) is a deployment-time
       manual step, not code -- nothing to build there beyond documenting it when the server is
       actually provisioned.
-- [ ] Client side: add the SQS submission SSH keypair to `system_configuration_menu`'s **SAGE
-      MAINTENANCE** menu
-      and to `sqs.yml`/`sqs.schema.yml`; a connection/auth failure raised as its own distinct,
-      clearly reported error rather than a generic transfer failure.
+- [x] Client side, built and test-first covered: `sage.sqs_submission_key` generates/rotates a
+      dedicated Ed25519 keypair via the already-pinned `cryptography` library (private key
+      written 0600, public key is a standard OpenSSH line the admin hands to whoever operates the
+      SQS server); wired into `system_configuration_menu`'s **SAGE MAINTENANCE** menu as item 7,
+      `_sqs_submission_key_menu()`, with an explicit typed `ROTATE` confirmation before replacing
+      a live key. `sqs.yml`/`sqs.schema.yml` gained an optional `submission` section (`ssh_host`,
+      `ssh_port`, `ssh_user`, `remote_incoming_dir`) for the non-secret SCP/SFTP target -- the
+      private key itself never lives in that file, only in localdata's SQS state directory.
+      Still open: the actual SCP/SFTP upload call (the "submits the result" half of the SAGE-side
+      surface item below) and its own connection/auth-failure error code -- not yet built.
 - [x] Contracts: `contracts/qualification-submission-1.0.schema.json` defines the incoming-result
       file's payload (`schema`, `run_id`, `submitted_by`, `submitted_at`, full `qualification`
       dict, `attempt` diagnostics), mirroring `contracts/discovery.schema.json`'s versioned-schema
@@ -236,12 +242,42 @@ plus metadata-only discovery intake."* Two real gaps follow from that:
       shape (`id`, `provider_family`, `profile_id`, `model_id`, `capability`, `reasoning`,
       `scope`) -- no separate schema file was judged necessary for a GET response this shaped.
 - [ ] Design the SAGE-side surface: a menu action and/or CLI command (matching existing patterns
-      like `sage model sqs-sync`) that lists/claims pending work, runs it through the
-      `ProviderAdapter` bridge over `CodexCLIExecutor`, and submits the result.
-- [ ] Confirm `sage_sqs` as a formal library dependency of SAGE (version pinning, how it's
-      installed into SAGE's own venv) -- this is new: SAGE has never depended on `sage_sqs`
-      code before, only talked to the SQS *service* over HTTP.
-- [ ] Write the `ProviderAdapter` bridge over `CodexCLIExecutor`, test-first.
+      like `sage model sqs-sync`) that lists pending work via `GET /planned-evaluations`, runs it
+      through the now-built `ProviderAdapter` bridge (see below) plus
+      `sage_sqs.evaluation.runner.run_planned_test`/`sage_sqs.qualification.synthesize_qualification`,
+      writes the result as a `qualification-submission-1.0` file, and SCPs it to the configured
+      `submission.remote_incoming_dir` using the generated keypair. None of this transport/
+      orchestration layer exists yet -- only its two prerequisites (the bridge, and the keypair)
+      are built.
+- [x] `sage_sqs` as a dependency of SAGE, resolved by investigation, not by assumption: it is
+      **not** a pip dependency. Its full package needs `fastapi`/`pydantic`/`uvicorn` (SQS's own
+      HTTP server, irrelevant to SAGE), but the narrow slice the bridge actually needs --
+      `sage_sqs.evaluation.runner`, `sage_sqs.qualification`, `sage_sqs.domain`,
+      `sage_sqs.providers.base`/`openai_provider` -- was confirmed by a real import in an
+      environment with none of those three packages installed to need only stdlib plus the
+      already-pinned `PyYAML`. `sage.sqs_provider_bridge.ensure_sage_sqs_importable()` adds the
+      sibling `services/sqs/src` checkout path to `sys.path` at runtime, the in-process analogue
+      of the existing `system/src` sibling-path precedent in `menu.py`'s `controller()`. Real
+      remaining caveat, not resolved here: this assumes `services/sqs` ships alongside `app/` on
+      hosts that run SQS vetting -- not verified against a fully portable, code-signed SAGE Core
+      bundle that might omit it.
+- [x] `sage.sqs_provider_bridge.CodexWorkspaceProviderAdapter`, test-first covered: implements
+      `sage_sqs`'s `ProviderAdapter.execute(*, model_id, reasoning, prompt)` over SAGE's own
+      `CodexCLIExecutor.execute()` in-process (zero duplication, inherits Task 3a's bounded
+      rate-limit retry for free), using a permissive `{"type": "object"}` output schema since
+      `sage_sqs` validates response shape itself rather than needing provider-side schema
+      constraint. Known, explicitly flagged gap (not fabricated): `CodexCLIExecutor` never runs
+      `codex exec --json`, deliberately -- its rate-limit detection depends on plain-text
+      stdout/stderr, and adding `--json` risks changing that on the failure path too (confirmed
+      by `codex_cli.py`'s own module comment), so this bridge reports `input_tokens`/
+      `output_tokens` as `None` rather than fabricating numbers; `sage_sqs.evaluation.runner`
+      already treats `None` as zero cost/usage rather than raising. Capturing real Codex token
+      usage safely is a separate, not-yet-scoped follow-up.
+- [x] `system/requirements.txt` gained `cryptography==50.0.1`, `cffi==2.1.1`, `pycparser==3.0` --
+      a real, pre-existing gap found during this work: `sqs_cache.py` (Task 4) already imported
+      `cryptography` for Ed25519 bundle-signature verification, but it was never added to SAGE's
+      pinned, `--no-deps` runtime manifest, so a fresh bootstrap install would have failed to
+      import it. Fixed as part of adding the second real consumer (`sqs_submission_key.py`).
 
 ## Appendix: headless-server research, kept for reference, not currently on the critical path
 

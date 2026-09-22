@@ -2051,6 +2051,14 @@
       "ru": "Системные действия",
       "pt-BR": "Ações do sistema"
     },
+    "menu.sqs.submission.key": {
+      "en-US": "SQS submission key",
+      "en-GB": "SQS submission key",
+      "id": "kunci pengiriman SQS",
+      "fr": "clé de soumission SQS",
+      "ru": "ключ отправки SQS",
+      "pt-BR": "chave de envio SQS"
+    },
     "menu.sage.data.folders": {
       "en-US": "SAGE data folders",
       "en-GB": "SAGE data folders",

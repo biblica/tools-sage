@@ -62,6 +62,7 @@ from .interface_localization import (
 from .language_codes import canonical_language_tag, canonical_regional_language_tag, canonical_script_code
 from .model_service import ModelService
 from .executors.codex_cli import CodexCLIExecutor
+from .sqs_submission_key import generate_submission_keypair, submission_key_status
 from .references import parse_analysis_scope, parse_scope, validate_scripture_scope
 from .scripture import VERSIFICATION_ADVISORY_CODES, compile_project_scope, is_default_vrs_compatible_issue
 from .resource_mounts import (
@@ -1261,6 +1262,7 @@ class SageControlCenter:
                     ("4", "Run system checks"),
                     ("5", "Resource Status Report"),
                     ("6", "System actions"),
+                    ("7", "SQS submission key"),
                     ("B", "Back"), ("H", "Main menu"), ("X", "Exit SAGE"),
                 ),
             )
@@ -1275,6 +1277,8 @@ class SageControlCenter:
                 elif choice == "5": self._show_resource_status_report()
                 elif choice == "6":
                     self.system_actions_menu()
+                elif choice == "7":
+                    self._sqs_submission_key_menu()
             except SageError as exc:
                 self.show_error(exc)
 
@@ -1286,6 +1290,50 @@ class SageControlCenter:
         )
         self.io.write()
         self.io.write(render_resource_status_report(report).rstrip())
+        self.io.pause()
+
+    def _sqs_submission_key_menu(self) -> None:
+        """Show and manage the local SQS qualification-submission SSH keypair.
+
+        This key authenticates SCP/SFTP uploads of ADMIN-run qualification
+        results into the SQS server's incoming/ directory -- it is unrelated
+        to the model-provider auth handled by the Configure AI menu. The
+        private key never leaves this host; only the public key is ever
+        shown, for the admin to hand to whoever operates the SQS server.
+        """
+        state_dir = storage_layout(self.root).state_root / "sqs"
+        status = submission_key_status(state_dir)
+        self.io.write()
+        self.io.write("SQS SUBMISSION KEY")
+        self.io.write("=" * 72)
+        if not status.exists:
+            self.io.write("No submission key has been generated on this host yet.")
+            if self.io.confirm("Generate a new SQS submission keypair now?", default=True):
+                status = generate_submission_keypair(state_dir)
+                self.io.write("Submission keypair generated.")
+            else:
+                self.io.pause()
+                return
+        self.io.write_info((
+            ("Fingerprint", status.fingerprint),
+            ("Public key", status.public_key),
+            ("Private key path", operator_path(self.root, status.private_key_path)),
+        ))
+        self.io.write()
+        self.io.write("Hand only the public key above to whoever operates the SQS server, to")
+        self.io.write("append to the dedicated sqs-uploader account's authorized_keys.")
+        if self.io.confirm("Rotate this key (generate a new one, replacing it)?", default=False):
+            typed = self.io.text("Type ROTATE to confirm replacing the existing submission key")
+            if typed != "ROTATE":
+                self.io.write("Rotation cancelled; confirmation text did not match.")
+                self.io.pause()
+                return
+            status = generate_submission_keypair(state_dir, force=True)
+            self.io.write("Submission keypair rotated.")
+            self.io.write_info((
+                ("Fingerprint", status.fingerprint),
+                ("Public key", status.public_key),
+            ))
         self.io.pause()
 
     def _wipe_all_job_data_menu(self) -> None:
