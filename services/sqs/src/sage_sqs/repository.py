@@ -41,21 +41,27 @@ class Repository:
         self.db.connection.commit()
 
     def save_qualification(self, qualification: Qualification) -> None:
-        self.db.connection.execute(
-            "DELETE FROM qualifications WHERE provider_family=? AND model_id=? AND profile_id=? AND capability=?",
-            (qualification.provider_family, qualification.model_id, qualification.profile_id, qualification.capability),
-        )
-        self.db.connection.execute(
-            "INSERT INTO qualifications(provider_family,model_id,profile_id,capability,payload_json) VALUES(?,?,?,?,?)",
-            (
-                qualification.provider_family,
-                qualification.model_id,
-                qualification.profile_id,
-                qualification.capability,
-                _json(asdict(qualification)),
-            ),
-        )
-        self.db.connection.commit()
+        conn = self.db.connection
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            conn.execute(
+                "DELETE FROM qualifications WHERE provider_family=? AND model_id=? AND profile_id=? AND capability=?",
+                (qualification.provider_family, qualification.model_id, qualification.profile_id, qualification.capability),
+            )
+            conn.execute(
+                "INSERT INTO qualifications(provider_family,model_id,profile_id,capability,payload_json) VALUES(?,?,?,?,?)",
+                (
+                    qualification.provider_family,
+                    qualification.model_id,
+                    qualification.profile_id,
+                    qualification.capability,
+                    _json(asdict(qualification)),
+                ),
+            )
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
 
     def active_profiles(self) -> list[LanguageProfile]:
         rows = self.db.connection.execute(
@@ -125,30 +131,33 @@ class Repository:
     def record_discovery(self, payload: dict[str, Any]) -> str:
         canonical = _json(payload)
         digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-        row = self.db.connection.execute("SELECT observation_count FROM discoveries WHERE fingerprint=?", (digest,)).fetchone()
-        if row:
-            self.db.connection.execute("UPDATE discoveries SET observation_count=observation_count+1 WHERE fingerprint=?", (digest,))
-        else:
-            self.db.connection.execute("INSERT INTO discoveries(fingerprint,payload_json,observation_count) VALUES(?,?,1)", (digest, canonical))
+        # A single atomic upsert -- not a read-then-branch -- so two concurrent
+        # discoveries for the same fingerprint can never both see "not found"
+        # and both attempt an INSERT against fingerprint's PRIMARY KEY.
+        self.db.connection.execute(
+            "INSERT INTO discoveries(fingerprint,payload_json,observation_count) VALUES(?,?,1) "
+            "ON CONFLICT(fingerprint) DO UPDATE SET observation_count=observation_count+1",
+            (digest, canonical),
+        )
         self.db.connection.commit()
         return digest
 
     def upsert_attention(self, *, attention_key: str, category: str, severity: str,
                          summary: str, payload: dict[str, Any]) -> None:
         now = _utc_now()
-        row = self.db.connection.execute(
-            "SELECT observation_count FROM attention_items WHERE attention_key=?", (attention_key,)
-        ).fetchone()
-        if row:
-            self.db.connection.execute(
-                "UPDATE attention_items SET observation_count=observation_count+1,last_seen_utc=?,severity=?,summary=?,payload_json=? WHERE attention_key=?",
-                (now, severity, summary, _json(payload), attention_key),
-            )
-        else:
-            self.db.connection.execute(
-                "INSERT INTO attention_items(attention_key,category,severity,status,summary,payload_json,observation_count,first_seen_utc,last_seen_utc) VALUES(?,?,?,?,?,?,1,?,?)",
-                (attention_key, category, severity, "OPEN", summary, _json(payload), now, now),
-            )
+        # A single atomic upsert -- not a read-then-branch -- so two concurrent
+        # observations of the same attention_key can never both see "not
+        # found" and both attempt an INSERT against its PRIMARY KEY. category,
+        # status, and first_seen_utc are deliberately left untouched on
+        # conflict, matching the prior UPDATE branch's behavior exactly.
+        self.db.connection.execute(
+            "INSERT INTO attention_items(attention_key,category,severity,status,summary,payload_json,observation_count,first_seen_utc,last_seen_utc) "
+            "VALUES(?,?,?,?,?,?,1,?,?) "
+            "ON CONFLICT(attention_key) DO UPDATE SET "
+            "observation_count=observation_count+1,last_seen_utc=excluded.last_seen_utc,"
+            "severity=excluded.severity,summary=excluded.summary,payload_json=excluded.payload_json",
+            (attention_key, category, severity, "OPEN", summary, _json(payload), now, now),
+        )
         self.db.connection.commit()
 
     def list_attention(self, *, status: str = "OPEN") -> list[dict[str, Any]]:

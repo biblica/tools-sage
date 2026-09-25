@@ -243,7 +243,20 @@ class AdminApp:
             self.repo.resolve_attention(attention_key)
             self.repo.audit("ADMIN", "REJECT_QUALIFICATION_SUBMISSION", {"run_id": run_id, "attention_key": attention_key})
             return
-        self.repo.save_qualification(Qualification(**payload["qualification"]))
+        qualification = Qualification(**payload["qualification"])
+        # publishable_qualifications() silently drops any row whose identity
+        # fingerprints don't match the CURRENT profile/model records -- if
+        # either was revised between when this submission was prepared and
+        # now, approving it here would look successful but the result would
+        # never actually publish, with no signal to ADMIN. Re-check the same
+        # identity the publish-time filter checks, and fail closed instead.
+        profile = self.repo.latest_profile(qualification.profile_id)
+        if profile is None or profile.evaluation_identity_sha256 != qualification.profile_identity_sha256:
+            raise ValueError("SUBMISSION_PROFILE_IDENTITY_STALE")
+        model = self.repo.latest_model(qualification.provider_family, qualification.model_id)
+        if model is None or model.capability_fingerprint != qualification.model_capability_fingerprint:
+            raise ValueError("SUBMISSION_MODEL_FINGERPRINT_STALE")
+        self.repo.save_qualification(qualification)
         self.repo.save_evaluation_attempt(run_id, payload["attempt"])
         self.repo.complete_evaluation(run_id)
         self.repo.resolve_attention(attention_key)

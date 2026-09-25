@@ -95,6 +95,46 @@ def test_admin_approving_a_submission_publishes_the_measured_result(tmp_path):
     assert row[0] == "APPROVE_QUALIFICATION_SUBMISSION"
 
 
+def test_admin_approving_a_submission_fails_closed_when_the_profile_identity_is_stale(tmp_path):
+    """If the profile is revised between submission and approval, APPROVE must not silently succeed."""
+    repo, app = setup(tmp_path)
+    app.approve_profile("en-US")
+    app.approve_model("gpt-x")
+    item = app.queue_evaluation(model_id="gpt-x", profile_id="en-US", capability="GRAMMAR_ANALYSIS")
+    identity = repo.latest_profile("en-US").evaluation_identity_sha256
+    receipt = stage_submission(repo, _submission(item["id"], profile_identity_sha256=identity))
+
+    # Profile revised (new tier/revision -> new evaluation_identity_sha256) after the
+    # submission was prepared but before ADMIN gets to approve it.
+    repo.save_profile(LanguageProfile("en-US", "English", "ACTIVE", 2, 3, "english", "en", "eng", "Latn", "US"))
+
+    with pytest.raises(ValueError):
+        app.review_qualification_submission(receipt.attention_key, decision="APPROVE")
+
+    assert repo.evaluation_status(item["id"]) == "PENDING"
+    assert repo.publishable_qualifications() == []
+
+
+def test_admin_approving_a_submission_fails_closed_when_the_model_fingerprint_is_stale(tmp_path):
+    """If the model's catalog metadata is revised between submission and approval, APPROVE must not silently succeed."""
+    repo, app = setup(tmp_path)
+    app.approve_profile("en-US")
+    app.approve_model("gpt-x")
+    item = app.queue_evaluation(model_id="gpt-x", profile_id="en-US", capability="GRAMMAR_ANALYSIS")
+    identity = repo.latest_profile("en-US").evaluation_identity_sha256
+    receipt = stage_submission(repo, _submission(item["id"], profile_identity_sha256=identity))
+
+    # Model catalog metadata changes (new capability_fingerprint) after the submission
+    # was prepared but before ADMIN approves it.
+    repo.save_model(ModelRecord("openai", "gpt-x", "APPROVED", 2, ("low", "medium", "high"), "d" * 64, 2.0, 12.0, 2, 2))
+
+    with pytest.raises(ValueError):
+        app.review_qualification_submission(receipt.attention_key, decision="APPROVE")
+
+    assert repo.evaluation_status(item["id"]) == "PENDING"
+    assert repo.publishable_qualifications() == []
+
+
 def test_admin_rejecting_a_submission_fails_the_run_and_never_publishes(tmp_path):
     repo, app = setup(tmp_path)
     app.approve_profile("en-US")

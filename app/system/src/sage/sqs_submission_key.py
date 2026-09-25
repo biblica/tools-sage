@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
-import stat
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -83,7 +83,12 @@ def generate_submission_keypair(state_dir: Path, *, force: bool = False) -> Subm
         encoding=serialization.Encoding.OpenSSH,
         format=serialization.PublicFormat.OpenSSH,
     )
-    private_path.write_bytes(private_bytes)
-    private_path.chmod(stat.S_IRUSR | stat.S_IWUSR)
+    # Open with the restrictive mode set at creation time, not write-then-chmod --
+    # there must be no window where the private key exists world/group-readable.
+    fd = os.open(private_path, os.O_CREAT | os.O_WRONLY | os.O_TRUNC, 0o600)
+    try:
+        os.write(fd, private_bytes)
+    finally:
+        os.close(fd)
     public_path.write_text(f"{public_bytes.decode('ascii')} {_COMMENT}\n", encoding="utf-8")
     return submission_key_status(state_dir)
