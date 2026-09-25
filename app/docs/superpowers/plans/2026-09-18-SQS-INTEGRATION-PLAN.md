@@ -1,0 +1,199 @@
+# SQS integration implementation plan
+
+**Goal:** Bring SQS (SAGE Qualification Service) from recovered-but-uncommitted source into a working, tested, extensible sibling service under version control, then layer it into SAGE's existing model-routing policy as the evidence source, without disturbing SAGE's current, tested behavior.
+
+**Spec:** [2026-09-18-SQS-ARCHITECTURE-EVALUATION.md](../specs/2026-09-18-SQS-ARCHITECTURE-EVALUATION.md) (read first — it records the gap analysis and locked decisions this plan implements) and [2026-09-09-NCA-SQS-INTEGRATION.md](../specs/2026-09-09-NCA-SQS-INTEGRATION.md) (NCA's own SQS consumption stays future/deferred, unaffected by this plan).
+
+**Tech stack:** `services/sqs/` is an independent Python 3.12+ package (`tools-sage-sqs`: fastapi, pydantic, PyYAML, uvicorn, cryptography) with its own venv, versioned separately from the SAGE app. SAGE-side integration uses SAGE's existing Python runtime plus a new direct `cryptography` dependency.
+
+## Global constraints
+
+- Do not weaken SAGE's current routing/harness/versification/provenance test baseline at any step.
+- Do not restore "legacy" behavior (hand-seeded qualification, single hardcoded provider) to make old tests pass; migrate the tests instead.
+- Provider identity is an open catalog (spec §6.1) — never hardcode a second, independently-maintained provider list.
+- Every hardening-ledger item (rollback protection, negative tombstones, Ed25519, outbox-first discovery, endpoint failover) must be implemented test-first; none of it survived as code from the prior effort, so there is nothing to "port" for these items specifically.
+- Governed SAGE task execution must never make a synchronous SQS network call; only explicit `sage model sqs-sync` talks to SQS over the network.
+
+## Task 0 — Recover a durable, verified baseline (done)
+
+- [x] Copy `recoverable_v11_source/` into `services/sqs/` in this repository, unmodified.
+- [x] Stand up a local venv, install deps (+ `jsonschema`, missing from the `dev` extra), confirm 88/88 tests pass with `SQS_DB_PATH`/`SQS_CONFIG_ROOT` pointed at writable local paths.
+- [x] Record the real defects found (`pyproject.toml` missing `jsonschema`, `runtime.py` import-time side effect against hardcoded FHS paths, unpinned deps) in the spec rather than silently fixing them as part of "just recovering."
+- [ ] Commit this checkpoint before any modification, so "unmodified recovered baseline, 88/88" is a real, inspectable git commit.
+
+## Task 1 — Provider/execution-channel onboarding contract (new; not in the original plan)
+
+Implements spec decision 1 (two-field provider identity: `provider_family` = model vendor, stays `"openai"`; `execution_channel` = access mode, new). This finishes what `seed/openai-provider.yml`'s own unused `execution_provider_aliases` field and prose note already intended, rather than introducing a competing concept.
+
+- [x] Add `services/sqs/contracts/execution-channel-descriptor.schema.json`: `{execution_channel, provider_family, display_name, provisioning_model, capability_classes[], reasoning_tier_taxonomy}` (+ reserved optional `availability_check` for Task 6a). `execution_channel` is an open string — not an enum of two, since new channels will appear, possibly to the same model vendor.
+- [x] Add `services/sqs/seed/execution-channels/codex-workspace.yml` as the first descriptor: `execution_channel: codex_workspace`, `provider_family: openai`, `provisioning_model: workspace`. Left `seed/openai-provider.yml`'s model catalog as-is; replaced its dead `execution_provider_aliases: [codex]` field (never read by the loader) and stale prose note with a cross-reference to the new descriptor file.
+- [x] Added `services/sqs/src/sage_sqs/execution_channels.py`: schema-validated loader (`load_execution_channel_descriptor`/`load_execution_channel_catalog`/`known_execution_channels`), fails closed on a duplicate `execution_channel` across seed files. `jsonschema` moved from a missing dev-only dependency to a core runtime dependency in `pyproject.toml` (this module needs it outside tests too) — also closes part of Task 2's dependency gap.
+- [x] Added `execution_channel` (required) to `Qualification` in `domain.py` and to `qualifications[]` in `contracts/sqs-bundle.schema.json` (1.1). **Correction from an earlier draft of this plan**: `execution_channel` is provenance evidence (which channel produced this qualification's evidence), not part of the qualification's identity key — the key stays `(provider_family, model_id, profile_id, capability)` exactly as before, unchanged in `repository.py`'s `save_qualification`/`evaluation/lifecycle.py` (confirmed by grep — nothing elsewhere assumed a different key shape). Adding it to the key would contradict the entire reason for splitting the fields: a model qualifies once regardless of access channel.
+- [x] `contracts/sqs-bundle-1.0.schema.json` stays `provider_family: const "openai"` (still correct under the two-field model) — no change made.
+- [x] `synthesize_qualification` (`qualification.py`) now takes `execution_channel` and includes it in the evidence dict hashed into `evidence_sha256`; `Worker` (`worker.py`) requires an explicit `execution_channel` at construction (no default — fails closed) and threads it through; `drain()`'s CLI entrypoint reads `SQS_EXECUTION_CHANNEL`, raising if unset, mirroring the existing `OPENAI_API_KEY` fail-loud pattern. `ModelRecord.catalog_fingerprint` correctly stays unchanged (vendor/model identity only, no channel) — applying the same "no channel in key" reasoning.
+- [x] Cross-catalog consistency test added (`tests/test_execution_channels.py`): a published bundle's `execution_channel` values must all exist in the seeded descriptor catalog; proven to actually catch drift, not just vacuously pass. The SAGE-side half of this check (Task 6) is not yet implemented — SAGE has no `sqs_client.py` to check from yet (Task 4).
+- [x] Full suite re-verified green after every change: 93/93 (88 original + 5 new).
+- [ ] **New finding while implementing this task, not yet fixed**: `worker.py`'s `drain()` default path (`provider is None`) constructs `OpenAIProvider(os.environ["OPENAI_API_KEY"])` — the only real, working provider adapter in this codebase is built around a raw API key, i.e. the `api_key` execution channel, not `codex_workspace`. There is no adapter that can actually execute a qualification test through a Codex workspace account. Recording `execution_channel: codex_workspace` on a qualification is now structurally possible, but no code path can yet *produce* one truthfully from a real run — only from hand-constructed evidence (as the tests do) or from a run actually made through the `api_key` channel mislabeled as `codex_workspace`. A `CodexWorkspaceProvider` adapter (however SAGE actually shells out to/authenticates with Codex) is required before any real qualification run can be trusted to carry that label. Planned, not yet implemented: [2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md](2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md) (no Task 9 exists in this document; that plan proposes making this its own tracked task once its open questions are answered).
+
+## Task 1b — Language onboarding contract (new; symmetric to Task 1)
+
+Implements spec decision 5. Not hypothetical: SQS's 20 seeded languages vs. SAGE's 44 live grammar profiles already have a 27/5 mismatch (spec §5 item 7) — this task closes an existing gap, not just a future-proofing exercise.
+
+- [x] Defined the onboarding action precisely, implemented as `services/sqs/config/language-coverage-status.yml`: a checked-in manifest recording every profile_id known to either catalog with an explicit status (`ONBOARDED`, `SAGE_ONLY_UNASSESSED`, `SQS_ONLY_PENDING_SAGE_PROFILE`). Adding a language to either side without updating this manifest now fails the consistency test below — that's what "one coordinated change" means in practice.
+- [x] Reconciled the existing 27/5 mismatch as real, checked work — **without fabricating any language content**: this task builds the onboarding *mechanism*, not new evaluation packs or grammar profiles, which need real linguistic subject-matter review to author correctly. Checked each of the 5 SQS-only languages individually rather than assuming: none are tag mismatches with an existing SAGE profile — `es-ES` (European Spanish, distinct from SAGE's `es-419`/`es-MX` Latin-American variants), `pt-PT` (European Portuguese, distinct from `pt-419`), `sw-CD` (Congo Swahili/Kingwana, distinct from `sw-TZ`/`sw-KE`), and `pa-Arab-PK`/`pa-Guru-IN` (Punjabi in Arabic/Shahmukhi and Gurmukhi script respectively — SAGE has no Punjabi profile in either script). All 5 recorded `SQS_ONLY_PENDING_SAGE_PROFILE` with the reasoning above, kept rather than deleted (deleting real seed/evaluation-pack content someone deliberately authored is a bigger, harder-to-reverse call than flagging it pending). All 27 SAGE-only profiles recorded `SAGE_ONLY_UNASSESSED`. Whether to actually author the missing 5 SAGE profiles or the missing 27 SQS evaluation-pack sets is a product-prioritization and content-authoring decision, left open here.
+- [x] Wrote the cross-catalog consistency test (`src/sage_sqs/language_coverage.py` + `tests/test_language_onboarding.py`): every SQS-seeded language and every SAGE grammar profile must have a manifest entry with a valid status for that catalog; `ONBOARDED` must be backed by a real entry on both sides (catches a profile silently removed from either side); a manifest entry matching neither catalog is flagged stale. Proven to actually catch drift (three dedicated tests construct broken states and assert the violation), not just pass vacuously on the current, already-consistent state (98/98 total, up from 93).
+- [ ] **Noted fragility, not yet resolved**: `language_coverage.py` locates SAGE's grammar-profile directory via a relative filesystem path (`services/sqs` colocated with `app/` in this monorepo). Once the sibling-repo split (spec decision 4) happens, this check needs a different mechanism — SAGE exporting a checked-in profile-id list, or a live registry query — not a relative path assumption. Flagged in the module docstring; not solved now since the split itself is still deferred.
+- [ ] Qualification testing itself keeps the existing monotonic boundary-search / single `minimum_reasoning` threshold design per spec decision 6 — this task is about which (model × language × capability) combinations get tested at all, not how each one is tested.
+
+## Task 2 — Fix the defects found during recovery
+
+- [x] Add `jsonschema` as a dependency (done as part of Task 1: it's a core runtime dependency now, not just `dev`, since `execution_channels.py` needs it outside tests).
+- [x] `runtime.py`'s module-level `app = create_runtime_app(...)` global (opened a database and bootstrapped the catalog on every import, against hardcoded FHS paths) replaced with a `create_app_from_env()` factory function, only called when the app is actually being constructed. Verified: `import sage_sqs.runtime` now succeeds with **no env vars set at all** and no side effect. `deploy/systemd/sqs-api.service`'s `ExecStart` updated to uvicorn's `--factory` invocation (`sage_sqs.runtime:create_app_from_env --factory`); confirmed via grep this was the only reference to the old `runtime:app` target anywhere in the tree.
+- [x] Pinned exact dependency versions in `pyproject.toml` against what's actually verified working this session (`cryptography==50.0.1`, `fastapi==0.141.1`, `jsonschema==4.26.0`, `pydantic==2.13.5`, `PyYAML==6.0.3`, `uvicorn==0.53.0`; dev-only `pytest==9.1.1`, `httpx2==2.13.0` — the latter needed transitively by `starlette.testclient`, test-only, not runtime). Verified by installing into a **completely fresh venv** from the pinned `pyproject.toml` alone and running the full suite: 98/98 passed, proving the pin set is actually sufficient and deterministic, not just descriptive of what happened to already be installed.
+- [x] Full suite re-verified green after every change, including from the fresh-venv pinned install: 98/98 throughout.
+
+## Task 3 — Reapply post-snapshot hardening (test-first; real implementation, not porting)
+
+**Sequencing correction**: every item below describes bundle-*consumer*-side behavior (SAGE's future `sqs_client.py`, Task 4), not anything that belongs in `services/sqs/`. There is nothing to harden on the producer side for these items. Built the cache/validation core first, independent of transport, since it's fully testable without real network I/O; transport-layer items (endpoint failover, loopback exception, outbox discovery) come next as part of Task 4's actual client.
+
+- [x] Publication digest + Ed25519 signature verification on the bundle consumer side. Implemented in `app/system/src/sage/sqs_cache.py` (`verify_bundle_digest`, `verify_bundle_signature`, exact canonical byte-for-byte mirror of `services/sqs/src/sage_sqs/publisher.py`'s `canonical_bundle_bytes`/`canonical_bundle_sha256` — must stay in sync or every check spuriously fails).
+- [x] Monotonic authority/epoch/revision enforcement; rollback rejection. `GenerationIdentity.is_newer_than`: epoch takes priority over revision; a different `authority_id` is rejected outright (authority rotation is a separate, not-yet-designed trust decision, out of scope here).
+- [x] Current + previous known-good cache generation rotation; missing metadata must not lower the rollback floor. `SqsCache.rollback_floor()` reads both current and previous, taking the max — a lost/corrupt current legitimately falls back to whatever previous still holds, never to "no floor recorded." Tested by actually deleting the current file and proving a replay-level bundle is still rejected while a genuinely newer one is still accepted.
+- [x] Torn bundle/metadata pair rejection (identity-pair validation). **Design choice, not in the original plan**: bundle and its acceptance metadata are one atomically-replaced JSON file, not two separate files — this makes a torn pair impossible by construction (a half-written file fails JSON-decode on read, treated as absent) rather than needing bespoke two-file pairing validation.
+- [x] Durable negative-evidence tombstones, independent of normal cache staleness; crash-between-writes fails closed. Tombstones commit (atomic replace) *before* the new generation rotates in — verified by a test that monkeypatches a crash between those two writes and confirms, on a fresh `SqsCache` instance over the same state dir, the tombstone is already in effect while `current` is still the old generation. Absence of a qualification row never clears a tombstone; only an explicit newer `QUALIFIED` row for the exact same route does.
+- [x] 14 tests in `app/system/tests/test_sqs_cache.py`, all green, including two genuine test-construction bugs caught and fixed during this pass (a bad assumption about what the rollback floor should be after losing `current`, and building a signed-bundle fixture in the wrong field order relative to how the real `Publisher` computes its digest).
+- [x] Fixed a real defect in the process: 4 new/changed files under `app/` initially broke this repo's own documentation-contract (every procedure needs a docstring ending in `.!?`` or backtick), vanilla-install-manifest (every shipped file must be listed), and release-builder (`services/` and `externaldata/` were unclassified top-level source roots) tests. All fixed — `services`/`externaldata` added to `WORKSPACE_ONLY_TOP` in `build_release.py` with a comment explaining why, manifest updated, docstrings added. Full suite reverified green throughout (see Task 3 commit).
+- [x] Ordered endpoint failover (`SAGE_SQS_URLS` list, `SAGE_SQS_URL` single-endpoint compatibility override): failover on connection/5xx only, never on 4xx/contract/signature rejection. Built in Task 4's `sqs_client.py` (`resolve_endpoints`/`request_with_failover`), 15 tests against a real local server.
+- [x] Loopback-only HTTP exception (`127.0.0.1`, `localhost`, loopback IPv6) with explicit proxy bypass; non-loopback endpoints require HTTPS. Built in Task 4's `sqs_client.py` (`validate_sqs_endpoint`/`_opener_for`) — did reuse the pattern from `executors/http.py`'s `validate_local_endpoint` as noted, adapted for the loopback-OR-HTTPS rule instead of loopback-only.
+- [x] Outbox-first discovery: SAGE queues metadata locally and never blocks task execution on delivery; explicit sync flushes and SQS deduplicates. Built in Task 4's `sqs_discovery.py` (`queue_discovery`/`flush_outbox`).
+
+## Task 3a — Provider rate-limit handling (independent gap, surfaced by this evaluation)
+
+Not an SQS transport concern (that's Task 3's endpoint failover, for SAGE↔SQS traffic). This is the existing, pre-dating SAGE↔`codex` provider call path, which currently has **no** 429/`Retry-After` handling at all (confirmed empty grep across `executors/http.py`, `llm_tasks.py`, `model_service.py`). Usage allowance is confirmed to differ between workspace and personal `codex` accounts (both authenticate identically via `chatgpt.com` web sign-in, so SAGE cannot distinguish which kind a session is at auth time); a rate-limited session fails a governed task outright today. Not required to unblock SQS integration itself, but should land before real qualification runs are exercised (Task 7's local socket test, Task 9's server runtime) against live accounts.
+
+- [x] **Researched, not assumed, then implemented.** `codex` is invoked as a subprocess, not raw HTTP (`executors/codex_cli.py`), so there is no HTTP 429 to catch — a rate-limit surfaces as `codex exec` exiting with code 1 and known plain-text failure shapes (SAGE's invocation doesn't use `--json`, so there's no structured error event either). Confirmed via live web search: `"You've hit your usage limit ... try again at <time>"` for plan/workspace quota exhaustion, and `"Rate limit reached for <model> ... Please try again in <N>s."` for a short per-model token rate limit — both real, quoted message shapes, not fabricated. Added `CodexCLIExecutor._classify_rate_limit()` (pattern-matches both shapes, extracts whichever retry hint is present) and wired it into `execute_prevalidated`'s failure branch: a rate-limit-shaped failure now raises the distinct `CODEX_RATE_LIMITED` code with the classification in `details`, instead of the generic `LLM_PROVIDER_EXECUTION_FAILED` every other failure still raises. 5 new tests using the exact quoted real message text; confirmed no regression across every `codex_cli.py`-adjacent test file (105 tests).
+- [x] **Bounded backoff/retry implemented, scoped to avoid the big latency-budget decision rather than make it.** The wait-and-resend loop was added self-contained inside `CodexCLIExecutor.execute_prevalidated` itself (its single `_run_governed` call site), not in `llm_tasks.py`'s large task-orchestration function -- that function's phase tracking, receipt fields, and existing content-based "language correction" retry are untouched. Only `TOKEN_RATE_LIMIT` (the short per-model token limit, reporting a `retry_after_seconds` in the seconds range) ever auto-retries, exactly once, and only when the reported wait is at or below a 30-second ceiling (`_TOKEN_RATE_LIMIT_AUTO_RETRY_CEILING_SECONDS`); `USAGE_LIMIT` (plan/workspace quota exhaustion, `retry_at` can be hours or days out) never auto-retries -- that remains today's fail-fast behavior, since waiting that long synchronously inside a governed task is exactly the bigger decision this task still doesn't make unilaterally. A retry that is itself rate-limited still fails closed with `CODEX_RATE_LIMITED` rather than looping again. 4 new tests (auto-retry succeeds, auto-retry exhausted still fails closed, usage-limit never retries, over-ceiling token limit never retries) plus the original 5, all passing; full codex-adjacent suite (36 tests) reverified green.
+- [ ] Do not attempt to detect workspace-vs-personal account type — the shared `chatgpt.com` auth flow gives no signal to distinguish them; handle by response code, not by inferred account type.
+
+## Task 4 — SAGE-side integration units (self-contained, test-first)
+
+- [x] Added direct `cryptography==50.0.1` to SAGE's runtime dependencies (done in the Task 3 commit; needed by `sqs_cache.py`'s Ed25519 verification, not inherited from a shared SQS venv).
+- [x] `app/system/src/sage/sqs_client.py`: ordered endpoint failover (`SAGE_SQS_URLS` list, `SAGE_SQS_URL` single override), loopback-HTTP/non-loopback-HTTPS exception, explicit proxy bypass for loopback. Failover triggers only on connection failure or 5xx; a 4xx stops immediately and is raised, never silently tried against another endpoint. 15 tests, all against a **real local loopback HTTP server** (not mocks) — including proving a bogus configured proxy doesn't break a loopback request, and that failover actually reaches a second endpoint after the first is unreachable/5xx.
+- [x] `app/system/src/sage/sqs_discovery.py`: outbox-first discovery. `queue_discovery` is purely local (doesn't even accept an endpoint argument, structurally cannot make a network call); `flush_outbox` is the only thing that sends, keeps failed entries queued rather than dropping them, and is resilient to a partial/no-endpoint flush. Payload shape built and tested against the **real, tested** `services/sqs/contracts/discovery.schema.json` (structurally, without adding an undeclared `jsonschema` dependency to this package — no other test here uses it and it isn't declared in `pyproject.toml`), not the stale `openapi.yaml`. 10 tests.
+- [x] **Corrected an assumption from the architecture evaluation**: `capability_fingerprint` in a MODEL discovery is *not* the same computation as SQS's `ModelRecord.catalog_fingerprint` (which needs `capability_rank`/`cost_rank`/pricing SAGE cannot know for a model it's merely observing). Confirmed by reading `services/sqs/src/sage_sqs/discoveries.py::accept_discovery`: the server stores the fingerprint as opaque metadata for ADMIN review with no formula validation, so a SAGE-only identity fingerprint over the fields it can truthfully know (`provider_family`, `model_id`, `reasoning_levels`) is correct, not a mismatch to fix.
+- [x] `app/system/src/sage/sqs_qualification.py`: read-only lookup mapping (provider_family, model_id, profile_id, capability) to `QUALIFIED`/`NOT_QUALIFIED`/`UNASSESSED` — deliberately the same three-way vocabulary `model-policy.yml`'s `unknown_route_status` already uses, so Task 5 has a status to plug straight in. Checks the durable tombstone first (safe, since `_commit_tombstones` already applies any newer explicit positive requalification before this ever runs), falls back to the current bundle's own qualification rows, and reports `UNASSESSED` if neither says anything. `execution_channel` is surfaced as provenance on the result but deliberately not part of route identity — confirmed by a test that two different channels for the same route are not treated as different routes. 6 tests, all passing.
+- [x] `app/system/config/sqs.yml` (`trusted_authority_id`, `require_signature`, `trusted_signing_keys` — the fields `SqsCache` needs), `app/system/config/schemas/sqs.schema.yml` (registered in `schema_validation.py`'s `SCHEMA_OWNERS`, owner `sqs_cache.py`), `app/system/config/contracts/sqs-bundle.schema.json` (copy of the corrected 1.1 schema from Task 1 — renamed from an initial `sqs-bundle-1.1.schema.json`: the literal dot in "1.1" failed `deep_audit.py`'s kebab-case filename check, and matching `services/sqs`'s own convention, the unversioned name is already "current"/1.1, `-1.0` is only used for the superseded version). Added `SqsCache.from_config(state_dir, config_path)` + `load_sqs_config()` to wire the file into a working cache. 3 new tests, including one that loads the actual shipped `config/sqs.yml`. Bumped `test_schema_validation.py`'s hardcoded schema/owner counts (52→53).
+- [x] `sage model sqs-sync` CLI command (`command_model_sqs_sync` in `cli.py`, wired under the existing `model` subcommand family next to `status`/`refresh`/`list`): flushes queued discoveries via `sqs_discovery.flush_outbox`, refreshes/validates publication via `sqs_client.fetch_bundle` + `sqs_cache.SqsCache.from_config(...).accept_bundle`, reports `REMOTE`/`CACHE`/`NONE` plus discovery counts and any error — this is the only place in SAGE that calls `sqs_client`/network SQS transport; nothing else does, so "no synchronous network path from normal task execution" holds structurally, not just by convention. State lives under `storage_layout(config.root).state_root / "sqs"`. 3 end-to-end tests invoking the real public CLI via subprocess (matching this repo's own `_initialize`-style convention), including a genuine two-sync sequence: first sync against a real local server reports `REMOTE` and caches the bundle, second sync against an unreachable endpoint reports `CACHE` from the prior sync rather than crashing.
+
+**Process note**: `VANILLA-INSTALL-MANIFEST.md` is a shared file with unrelated pre-existing uncommitted work (grammar-profile/locale-data additions from an earlier session). To avoid bundling that into this task's commits, each addition here was staged as a minimal git blob (`git hash-object` + `update-index --cacheinfo`) rather than committing the whole file. First attempt at this for the client/discovery/qualification round only updated the staged blob, not the actual working-tree file the project's own tests read from — caught immediately by `test_vanilla_install_manifest_matches_source_tree` before committing, fixed by applying the same insertions to the real file directly. Both must be kept in sync by hand with this technique; a real risk if repeated without re-verifying against the actual file each time.
+
+## Task 5 — Layer SQS into existing SAGE routing (spec decision 2: evidence source, not replacement)
+
+**Blocked on a structural mismatch discovered while starting this task, resolved by explicit decision: build the extension seam only, leave it unwired.**
+
+SAGE's real routing evidence (`skill_routing.py`) has **no language dimension at all**. A qualification record is matched on `(provider, model_id, capability_fingerprint, reasoning_id, skill_id, skill_sha256, suite_id, suite_sha256, policy_version)` — "does this model pass Skill X's fixed synthetic test suite," the same question regardless of what language a project is in. The 8 currently registered Skills (`bic-inspect`, `bic-rewrite`, `bic-self-check`, `rtc`, `stc`, `nca-numbers`, `rtc-focused-check`, `rtc-original-language-review`, per `config/skills.json`) have no correspondence to SQS's `GRAMMAR_ANALYSIS`/`SEMANTIC_REWRITE` capability taxonomy at all.
+
+This is not just a missing mapping table: `skill_routing._record_identity_matches` requires an **exact** `skill_sha256`/`suite_sha256` match — proof a route passed *that specific registered Skill's* qualification suite. SQS evidence was never tested against any SAGE Skill's suite; it was tested against SQS's own grammar/semantic-rewrite evaluation packs, keyed on a language profile SAGE's routing identity has no field for. There is no legitimate `skill_sha256`/`suite_sha256` this could attach to — fabricating one to satisfy the exact-match check would be forging evidence, not bridging a gap. Real routing integration requires SAGE's routing identity model to gain a language-profile dimension first, which is a separate, larger, deliberately-deferred design decision (declined for this session; option preserved for later: "design the language-aware routing extension").
+
+- [x] Added `app/system/src/sage/sqs_evidence_repository.py`: `SqsQualificationEvidenceRepository`, structurally shaped to `skill_routing.QualificationEvidenceRepository`'s protocol (`records_for_skill(skill_id) -> Sequence[Mapping]`), backed by a real `SqsCache`. **Deliberately always returns an empty sequence** — not "empty until a mapping exists," per the reasoning above. Documented plainly in the module docstring so a future implementer doesn't mistake this for an oversight to fill in without first resolving the routing-identity gap.
+- [x] Proven to plug into the real `skill_routing.qualified_skill_routes(..., evidence_repository=...)` seam without any shape/compatibility error — against a real registered Skill and workspace fixture, it behaves exactly like an empty built-in repository would (`NO_QUALIFIED_SKILL_ROUTE`), never a different kind of failure. 3 tests.
+- [ ] Not attempted, per the decision above: extending `model_policy.py`/`model_evaluation.py` to consume this evidence live, mapping SQS reasoning bands onto SAGE's `reasoning_effort` concept, receipt provenance, and migrating legacy qualification-seed tests. All require the language-dimension design decision first.
+
+## Task 6 — Provider and language onboarding in practice
+
+- [x] `app/system/src/sage/sqs_provider_coverage.py`: cross-checks SAGE's real governed-provider allowlist (`build_policy.ENABLED_AUTOMATED_PROVIDER_IDS`, currently exactly `("codex",)`) against SQS's execution-channel descriptor catalog via an explicit `SAGE_PROVIDER_TO_EXECUTION_CHANNEL` mapping (ids differ by design: `codex` ↔ `codex_workspace`). Fails closed on either side missing an entry. 5 tests, verified against the real current catalogs (currently consistent) plus two synthetic-drift tests proving it actually catches problems.
+- [x] `app/system/src/sage/sqs_language_coverage.py`: SAGE-side echo of Task 1b's SQS-side consistency check — reads the same shared manifest and SAGE's real grammar-profile directory directly, so a SAGE-only contributor who never runs the SQS test suite still catches onboarding drift. 5 tests, all passing against the real current, already-reconciled state.
+- [x] Both new checks documented as not importing `sage_sqs`'s Python package at all (reads YAML directly via a relative path, same caveat as Task 1b about the eventual sibling-repo split) — these are, and are meant to remain, separate services with no code-level dependency between them.
+- [x] Wrote [2026-09-18-SQS-ONBOARDING-PROCEDURES.md](../specs/2026-09-18-SQS-ONBOARDING-PROCEDURES.md): one doc, two sections (provider, language), each listing every file that must change together and which test on which side catches a miss. Explicitly notes what it does *not* cover — per Task 5's finding, even a fully onboarded provider/language pair has no live route to attach to yet.
+
+## Task 6a — Service availability / allowance checking (included allowance today, API credit later)
+
+Distinct from Task 3a (reacting to a 429 mid-call): this is a proactive "is this connection currently usable" check, generalized per execution channel via the Task 1 descriptor catalog rather than special-cased to `codex_workspace`.
+
+- [x] **Researched via live web search, not assumed.** A real, queryable remaining-allowance signal exists: Codex CLI's interactive `/status` command surfaces "Rate Limits Remaining: 5h 96%, Weekly 94%" (a rolling 5-hour window and a weekly window, each with a remaining percentage and reset time), backed by `GET https://chatgpt.com/backend-api/wham/usage`, authenticated with the OAuth bearer token from `~/.codex/auth.json` plus a `ChatGPT-Account-Id` header. **But there is currently no supported non-interactive/scriptable way to retrieve it**: confirmed by an open, unresolved upstream issue, [openai/codex#10233 "Non-interactive codex status (JSON/headless replacement for /status)"](https://github.com/openai/codex/issues/10233) — `/status` is TUI-only today. SAGE also never reads Codex's OAuth token directly by design (`llm_settings.py`'s `openai_api_keys: PROHIBITED`; `executors/codex_cli.py` only ever shells out to the installed `codex` binary's own subcommands, e.g. `codex login status`, never touches `~/.codex/auth.json` or OpenAI's backend directly) — calling the `wham/usage` endpoint straight from SAGE would break that same abstraction even if it weren't rate-limited to the interactive TUI.
+- [x] **Conclusion: no proactive availability check is currently implementable for `codex_workspace`.** Reactive detection (Task 3a's 429/`Retry-After` handling) is the only mechanism available until OpenAI ships a non-interactive equivalent of `/status` (tracked upstream at #10233) or exposes it through a `codex` subcommand SAGE can shell out to. Not attempted as code — building a proactive check against an interface that doesn't exist would be exactly the kind of unverified fabrication this plan has avoided elsewhere.
+- [x] `availability_check` added as a reserved, optional field on the execution-channel descriptor schema back in Task 1 (`contracts/execution-channel-descriptor.schema.json`); left unset on `codex-workspace.yml`'s seed rather than populated with a guess, with a comment pointing at this finding and the upstream issue.
+- [ ] Once #10233 (or an equivalent) ships upstream, revisit: add a real `availability_check` shape for `codex_workspace`, surface it via `sage model status`, and only then design the future API-credit channel's own check (`llm_settings.py`'s `openai_api_keys: PROHIBITED` remains the separate, unmade policy decision that would need to precede enabling that channel at all).
+
+## Task 7 — Acceptance gates
+
+Reuse and adapt the recovered `05_ACCEPTANCE_TESTS/ACCEPTANCE_GATES.md` categories (current SAGE preservation, SQS source, publication trust/cache, transport/failover, discovery, routing authority, real local Mac socket test, packaging), re-verified against the actual integrated tree at completion — not assumed from the historical pack.
+
+Superseded/extended by two later, separately-planned efforts, both now built and committed to `0.02a3` (not yet pushed as of this writing):
+[2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md](2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md)
+(admin-run local Codex-workspace vetting client: `GET /planned-evaluations`, the
+`QUALIFICATION_SUBMISSION` ingest/review flow, the SSH submission keypair, the
+`ProviderAdapter` bridge, `sage sqs list`/`sage sqs submit`) and
+[2026-09-23-LANGUAGE-PROFILE-VALIDATION-REQUEST-PLAN.md](2026-09-23-LANGUAGE-PROFILE-VALIDATION-REQUEST-PLAN.md)
+(the `LANGUAGE_VALIDATION_REQUEST` discovery kind, seed-profile scaffolding,
+`GET /language-requests/{profile_id}` status). All code-level acceptance gates
+from both are green (133/133 SQS-side, 2221/2221 app-side as of the last full run).
+
+**What still separates "code is done and tested" from "ready for a real alpha run"** —
+gathered here since this is the acceptance-gate task, not scattered across the
+sub-plans:
+
+- [ ] **Nothing is deployed anywhere yet.** A server needs to be provisioned, the
+      package installed to `/opt/tools-sage-sqs/.venv` (the path the systemd units
+      hardcode), and `/etc/sage-sqs/` populated from `services/sqs/seed/*` --
+      `runtime.py`'s `create_app_from_env()` auto-bootstraps from that config root
+      on startup, but nothing copies the seed content into it, and no deployment
+      doc exists walking through this.
+- [ ] Install/enable the systemd units, including `sqs-ingest` + its timer, which
+      has never run outside pytest.
+- [ ] TLS/reverse proxy for any non-loopback endpoint (`Caddyfile.example` is a
+      template, not a live config); `sqs_client.py` refuses plain HTTP otherwise.
+- [ ] Create the dedicated `sqs-uploader` system account, scoped only to
+      `incoming/` (deliberately manual, per the Codex-workspace plan's own
+      decision -- still not actually done).
+- [ ] Pre-populate `known_hosts` on every admin machine for the server's SSH host
+      key before first use -- the SCP upload runs with `BatchMode=yes`, so it
+      fails closed on an unrecognized host key rather than prompting.
+- [ ] Each alpha-testing SAGE host needs `SAGE_SQS_URL` configured, and an ADMIN
+      needs to generate its submission keypair via the new MAINTENANCE menu item
+      and hand the public key to whoever runs the server.
+- [ ] Decide, don't just default: `require_signature: false` is the current
+      client default; confirm that's intentional for alpha, not an oversight.
+      `trusted_authority_id: biblica-sqs-production` in `sqs.yml` is still
+      flagged in its own comment as carried forward from the recovered fixtures,
+      never independently verified against a live deployment.
+- [ ] **Content, not code**: evaluation-pack coverage today is 40 packs across 20
+      languages (2 capabilities each); the shared coverage manifest lists 30 SAGE
+      grammar profiles with zero SQS qualification coverage at all. Closing any
+      of those requires real linguistic authorship, which the
+      language-validation-request flow is built to surface demand for, not to
+      automate. `seed/openai-provider.yml` is snapshotted 2026-08-30 -- worth an
+      ADMIN refresh before alpha so runs test the actual current model lineup.
+- [ ] **The one real dry run that has never happened.** Every test this session
+      stubs Codex (`FakeProvider`) and stubs `scp` (an injected runner). Nobody
+      has run the actual pipeline for real: a live Codex CLI call, a real
+      evaluation pack, a real SCP upload to a real server, a real ADMIN
+      review/approve, a real publish. This is the highest-value thing left to
+      *do*, not build -- it is the only way to catch integration issues the
+      mocked tests structurally cannot.
+- [ ] Confirmed, not fixed (explicitly out of scope, tracked separately): Codex
+      CLI token usage is never captured, so `codex_workspace` qualifications
+      always report `$0` estimated cost; the `services/sqs`-ships-alongside-`app/`
+      sibling-path assumption is unverified against a real packaged SAGE Core
+      release build; qualification results still do not feed SAGE's actual task
+      routing (Task 5's gap above), so alpha can validate the vetting *pipeline*,
+      not "does this change real routing" -- that needs the separate,
+      deliberately-deferred language-aware routing design first.
+
+## Task 8 — Release/versioning
+
+- [ ] Update `VERSIONING-POLICY.md` and `TODO.md` once SQS reaches a real milestone (e.g. Task 4 complete) — do not mark it done prematurely; both currently correctly say SQS is unimplemented.
+- [ ] Decide, once `services/sqs/` is stable, whether to split it into `biblica/tools-sage-sqs` (spec decision 4 defers this, doesn't cancel it).
+
+## Status
+
+Tasks 0–6a complete (verified, tested, committed to `0.02a3`). Task 5 deliberately
+stops at the extension seam per its own recorded decision. Task 6a concludes no
+proactive availability check is currently buildable and documents why, rather
+than leaving the item silently open. Task 7 is now a real, current gap list (see
+above) rather than the placeholder it was when this line last said "not
+started" -- the code-level acceptance gates it names are green; the deployment,
+content, and live-dry-run gates are not yet done. Task 8 (release/versioning)
+not started: `VERSIONING-POLICY.md`/`TODO.md` still correctly say SQS is
+unimplemented and should stay that way until Task 7's real gaps close, not just
+its code-level ones.

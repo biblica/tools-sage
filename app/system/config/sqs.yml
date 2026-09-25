@@ -1,0 +1,19 @@
+schema_version: '1.0'
+# Operational note: biblica-sqs-production is the authority_id used throughout
+# the recovered SQS source's own test fixtures. Confirm it against the real,
+# deployed SQS instance's actual authority_id before any production sync --
+# it is carried forward here as the working value, not independently verified
+# against a live deployment.
+trusted_authority_id: biblica-sqs-production
+require_signature: false
+trusted_signing_keys: {}
+# Qualification-submission SSH target. Left unconfigured (empty ssh_host) on a
+# fresh install -- the operator fills this in once the SQS server's dedicated
+# sqs-uploader account exists. The submission private key itself is never
+# stored here; it is generated locally into localdata's SQS state directory
+# via SAGE MAINTENANCE > SQS submission key.
+submission:
+  ssh_host: ''
+  ssh_port: 22
+  ssh_user: sqs-uploader
+  remote_incoming_dir: /var/lib/sage-sqs/incoming

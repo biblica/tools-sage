@@ -62,6 +62,9 @@ from .interface_localization import (
 from .language_codes import canonical_language_tag, canonical_regional_language_tag, canonical_script_code
 from .model_service import ModelService
 from .executors.codex_cli import CodexCLIExecutor
+from .sqs_submission_key import generate_submission_keypair, submission_key_status
+from .sqs_client import SqsTransportError, fetch_language_request_status, resolve_endpoints
+from .sqs_discovery import build_language_validation_request, queue_discovery
 from .references import parse_analysis_scope, parse_scope, validate_scripture_scope
 from .scripture import VERSIFICATION_ADVISORY_CODES, compile_project_scope, is_default_vrs_compatible_issue
 from .resource_mounts import (
@@ -571,6 +574,20 @@ def _json_file(path: Path) -> dict[str, Any]:
 def _relative(root: Path, path: Path) -> str:
     """Implement ` relative` in the deterministic terminal control flow."""
     return operator_path(root, path)
+
+
+def _unassessed_competency_tags(assessments: Sequence[dict[str, Any]]) -> list[tuple[str, str]]:
+    """Return (canonical_tag, language) pairs for competency rows with no registry evidence yet.
+
+    UNASSESSED here is model_language_competency.py's own registry status
+    (a live self-probe axis) -- a reasonable trigger point for offering SQS
+    validation, not the same data as SQS's qualification catalog.
+    """
+    return [
+        (str(item["canonical_tag"]), str(item.get("language") or item["canonical_tag"]))
+        for item in assessments
+        if str(item.get("tier") or "") == "UNASSESSED" and item.get("canonical_tag")
+    ]
 
 
 class SageControlCenter:
@@ -1261,6 +1278,7 @@ class SageControlCenter:
                     ("4", "Run system checks"),
                     ("5", "Resource Status Report"),
                     ("6", "System actions"),
+                    ("7", "SQS submission key"),
                     ("B", "Back"), ("H", "Main menu"), ("X", "Exit SAGE"),
                 ),
             )
@@ -1275,6 +1293,8 @@ class SageControlCenter:
                 elif choice == "5": self._show_resource_status_report()
                 elif choice == "6":
                     self.system_actions_menu()
+                elif choice == "7":
+                    self._sqs_submission_key_menu()
             except SageError as exc:
                 self.show_error(exc)
 
@@ -1286,6 +1306,50 @@ class SageControlCenter:
         )
         self.io.write()
         self.io.write(render_resource_status_report(report).rstrip())
+        self.io.pause()
+
+    def _sqs_submission_key_menu(self) -> None:
+        """Show and manage the local SQS qualification-submission SSH keypair.
+
+        This key authenticates SCP/SFTP uploads of ADMIN-run qualification
+        results into the SQS server's incoming/ directory -- it is unrelated
+        to the model-provider auth handled by the Configure AI menu. The
+        private key never leaves this host; only the public key is ever
+        shown, for the admin to hand to whoever operates the SQS server.
+        """
+        state_dir = storage_layout(self.root).state_root / "sqs"
+        status = submission_key_status(state_dir)
+        self.io.write()
+        self.io.write("SQS SUBMISSION KEY")
+        self.io.write("=" * 72)
+        if not status.exists:
+            self.io.write("No submission key has been generated on this host yet.")
+            if self.io.confirm("Generate a new SQS submission keypair now?", default=True):
+                status = generate_submission_keypair(state_dir)
+                self.io.write("Submission keypair generated.")
+            else:
+                self.io.pause()
+                return
+        self.io.write_info((
+            ("Fingerprint", status.fingerprint),
+            ("Public key", status.public_key),
+            ("Private key path", operator_path(self.root, status.private_key_path)),
+        ))
+        self.io.write()
+        self.io.write("Hand only the public key above to whoever operates the SQS server, to")
+        self.io.write("append to the dedicated sqs-uploader account's authorized_keys.")
+        if self.io.confirm("Rotate this key (generate a new one, replacing it)?", default=False):
+            typed = self.io.text("Type ROTATE to confirm replacing the existing submission key")
+            if typed != "ROTATE":
+                self.io.write("Rotation cancelled; confirmation text did not match.")
+                self.io.pause()
+                return
+            status = generate_submission_keypair(state_dir, force=True)
+            self.io.write("Submission keypair rotated.")
+            self.io.write_info((
+                ("Fingerprint", status.fingerprint),
+                ("Public key", status.public_key),
+            ))
         self.io.pause()
 
     def _wipe_all_job_data_menu(self) -> None:
@@ -1589,13 +1653,73 @@ class SageControlCenter:
             rel = dict(relationships.get(tag) or {})
             base = str(rel.get("parent") or tag.split("-",1)[0])
             identity = dict(dict(registry_cfg.get("identities") or {}).get(base) or {})
-            rows.append({"canonical_tag": tag, "language": str(rel.get("name") or identity.get("name") or tag), "region": str(rel.get("region") or ""), "script": namespace.script})
+            language_code = str(identity.get("iso_639_1") or identity.get("iso_639_3") or base)
+            rows.append({
+                "canonical_tag": tag, "language": str(rel.get("name") or identity.get("name") or tag),
+                "region": str(rel.get("region") or ""), "script": namespace.script, "language_code": language_code,
+            })
         if not rows:
             self.io.write("No non-baseline configured languages require a competency lookup.")
             return
         with self.io.working("Loading competency evidence for configured languages", ellipsis=False):
             result = ModelService(self.root).lookup_language_competency(rows, provider="codex")
         self._write_language_competency_evidence(result)
+        self._offer_sqs_language_validation(result, {row["canonical_tag"]: row for row in rows})
+
+    def _offer_sqs_language_validation(self, result: dict[str, Any], rows_by_tag: dict[str, dict[str, str]]) -> None:
+        """Best-effort: for UNASSESSED competency rows, show SQS validation status and offer to request it.
+
+        Never blocks or fails the competency check itself -- if SQS is not
+        configured, or is unreachable, this section is simply skipped or
+        shows UNREACHABLE per row, matching the existing sqs-sync philosophy
+        of never blocking governed work on SQS availability.
+        """
+        assessments = list(result.get("assessments") or [])
+        if result.get("assessment"):
+            assessments = [dict(result["assessment"])]
+        candidates = _unassessed_competency_tags(assessments)
+        if not candidates:
+            return
+        endpoints = resolve_endpoints()
+        if not endpoints:
+            return
+        self.io.write()
+        self.io.write("SQS QUALIFICATION VALIDATION")
+        self.io.write("-" * 72)
+        offerable: list[tuple[str, str, str]] = []
+        for tag, language in candidates:
+            for capability in ("GRAMMAR_ANALYSIS", "SEMANTIC_REWRITE"):
+                try:
+                    status = fetch_language_request_status(endpoints, profile_id=tag, capability=capability)["status"]
+                except SqsTransportError:
+                    status = "UNREACHABLE"
+                self.io.write(f"{language:<24}{tag:<10}{capability:<18}{status}")
+                if status == "NOT_REQUESTED":
+                    offerable.append((tag, language, capability))
+        if not offerable:
+            return
+        self.io.write()
+        if not self.io.confirm("Request SQS validation for one of these?", default=False):
+            return
+        options = tuple(
+            (str(index + 1), f"{language} [{tag}] - {capability}")
+            for index, (tag, language, capability) in enumerate(offerable)
+        )
+        choice = self.io.choose("REQUEST SQS VALIDATION", (*options, ("B", "Back")))
+        if choice == "B":
+            return
+        tag, language, capability = offerable[int(choice) - 1]
+        row = rows_by_tag[tag]
+        from . import __version__
+
+        discovery = build_language_validation_request(
+            profile_id=tag, language_code=row["language_code"], script=row["script"], region=row["region"],
+            capability=capability, sage_version=__version__,
+        )
+        outbox_path = storage_layout(self.root).state_root / "sqs" / "sqs-discovery-outbox.json"
+        queue_discovery(outbox_path, discovery)
+        self.io.write(f"Queued SQS validation request for {language} [{tag}] - {capability}.")
+        self.io.write("It will be sent on the next `sage model sqs-sync`.")
 
     def configure_languages_menu(self) -> None:
         """Configure explicit Language Profile relationships, namespaces, and model competency."""
@@ -2741,169 +2865,6 @@ class SageControlCenter:
                 elif choice == "6":
                     self.recovery_menu(project)
 
-    def saw_menu(self) -> None:
-        """Open sealed legacy analysis Jobs through the compatibility-only menu."""
-        while True:
-            report = self.store.discover_report("saw", include_archived=True)
-            active_id = self.store.active_jobs().get("saw")
-            active, active_issue = self._active_job_from_report(report, active_id)
-            active_label = active.job_id if active else active_issue.job_id if active_issue else "NONE"
-            if active_issue is not None:
-                active_label += " [ACTION NEEDED]"
-            context: list[str] = [f"Active Job                   {active_label}"]
-            if active is not None or active_issue is not None:
-                context.extend([
-                    f"WIP                          {active.bindings.get('wip') if active else 'CHECK REQUIRED'}",
-                    f"REFERENCE                    {active.bindings.get('reference') if active else 'CHECK REQUIRED'}",
-                ])
-                options = (
-                    ("1", "Open active legacy analysis Job"),
-                    ("2", "Choose active legacy analysis Job"),
-                    ("3", "Add legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>"),
-                    ("4", "Manage legacy analysis Jobs"),
-                    ("5", "Reports and history"),
-                    ("6", "Recovery and diagnostics"),
-                    ("7", "Maintain Job storage"),
-                    ("B", "Back"),
-                )
-            else:
-                options = (
-                    ("1", "Choose active legacy analysis Job"),
-                    ("2", "Add legacy analysis JOB <WIP PROJECT, REFERENCE PROJECT>"),
-                    ("3", "Manage legacy analysis Jobs"),
-                    ("4", "Reports and history"),
-                    ("5", "Recovery and diagnostics"),
-                    ("6", "Maintain Job storage"),
-                    ("B", "Back"),
-                )
-            choice = self.io.choose("LEGACY ANALYSIS", options, context=tuple(context))
-            if choice == "B":
-                return
-            if active is not None or active_issue is not None:
-                if choice == "1":
-                    selected = active
-                    if active_issue is not None:
-                        selected = self._present_job_action_needed(active_issue, offer_onboarding=True)
-                        if selected is not None:
-                            self.store.set_active_job("saw", selected.job_id)
-                    if selected is not None:
-                        self._saw_job_menu(selected)
-                elif choice == "2":
-                    selected = self.choose_job("saw")
-                    if selected is not None:
-                        self._saw_job_menu(selected)
-                elif choice == "3":
-                    selected = self.create_job_wizard("saw")
-                    if isinstance(selected, Job):
-                        self._saw_job_menu(selected)
-                elif choice == "4":
-                    self.job_management_menu("saw")
-                elif choice == "5":
-                    if active is not None:
-                        self.reports_menu(active)
-                    elif active_issue is not None:
-                        self._present_job_action_needed(active_issue, offer_onboarding=True)
-                elif choice == "6":
-                    if active is not None:
-                        self.recovery_menu(active)
-                    elif active_issue is not None:
-                        self._present_job_action_needed(active_issue, offer_onboarding=True)
-                elif choice == "7":
-                    self.job_storage_maintenance_menu("saw")
-            else:
-                if choice == "1":
-                    selected = self.choose_job("saw")
-                    if selected is not None:
-                        self._saw_job_menu(selected)
-                elif choice == "2":
-                    selected = self.create_job_wizard("saw")
-                    if isinstance(selected, Job):
-                        self._saw_job_menu(selected)
-                elif choice == "3":
-                    self.job_management_menu("saw")
-                elif choice in {"4", "5"}:
-                    selected = self.choose_job("saw")
-                    if selected is not None:
-                        if choice == "4":
-                            self.reports_menu(selected)
-                        else:
-                            self.recovery_menu(selected)
-                elif choice == "6":
-                    self.job_storage_maintenance_menu("saw")
-
-    def _saw_job_menu(self, project: Job) -> None:
-        """Run checks on one selected sealed legacy Job."""
-        while True:
-            project = self.store.active_job("saw") or project
-            run = self.store.active_run(project)
-            self.io.write()
-            self.io.write(f"LEGACY ANALYSIS JOB - {project.job_id}")
-            self.io.write("-" * 72)
-            self.io.write(f"WIP                          {project.bindings.get('wip')}")
-            self.io.write(f"REFERENCE                    {project.bindings.get('reference')}")
-            self.io.write()
-            self._write_job_ai_routing("saw", run)
-            if run is None:
-                self.io.write("Active Run                   NONE")
-                options = (
-                    ("1", "Run Reference Text Comparison (RTC)"),
-                    ("2", "Run Source Text Correspondence (STC)"),
-                    ("3", "Run Targeted Check"),
-                    ("4", "Run Original-Language Review"),
-                    ("5", "Reports and exports"),
-                    ("6", "Recovery and diagnostics"),
-                    ("B", "Back"),
-                )
-            else:
-                self.io.write("Active Run")
-                self.io.write(f"  Run                        {run.run_id}")
-                self.io.write(f"  Check                      {self._saw_operation_label(run.operation)}")
-                self.io.write(f"  Scope                      {run.scope}")
-                self.io.write(f"  Task                       {run.current_stage}")
-                self.io.write(f"  Status                     {run.status}")
-                options = (
-                    ("1", "Continue active Run"),
-                    ("2", "Run Reference Text Comparison (RTC)"),
-                    ("3", "Run Source Text Correspondence (STC)"),
-                    ("4", "Run Targeted Check"),
-                    ("5", "Run Original-Language Review"),
-                    ("6", "Reports and exports"),
-                    ("7", "Recovery and diagnostics"),
-                    ("B", "Back"),
-                )
-            choice = self.io.choose(
-                "LEGACY ANALYSIS CHECKS",
-                options,
-                blank_before=("5",) if run is None else ("6",),
-            )
-            if choice == "B":
-                return
-            if run is None:
-                if choice == "5":
-                    self.reports_menu(project)
-                elif choice == "6":
-                    self.recovery_menu(project)
-                else:
-                    {"1": lambda: self.start_saw_run(project, "rtc"),
-                     "2": lambda: self.start_saw_run(project, "stc"),
-                     "3": lambda: self.start_saw_run(project, "focused"),
-                     "4": lambda: self.start_saw_run(project, "ol")}[choice]()
-            else:
-                if choice == "1":
-                    self.continue_run(project, run)
-                elif choice == "2":
-                    self.start_saw_run(project, "rtc")
-                elif choice == "3":
-                    self.start_saw_run(project, "stc")
-                elif choice == "4":
-                    self.start_saw_run(project, "focused")
-                elif choice == "5":
-                    self.start_saw_run(project, "ol")
-                elif choice == "6":
-                    self.reports_menu(project)
-                elif choice == "7":
-                    self.recovery_menu(project)
-
     @staticmethod
     def _saw_operation_label(operation: str) -> str:
         """Return the pre-release Operator label while preserving stable machine operation IDs."""
@@ -3592,23 +3553,46 @@ class SageControlCenter:
         manifest_path: Path,
         *,
         pause: bool = True,
+        preview: Callable[[dict[str, Any]], bool] | None = None,
+        raise_codes: frozenset[str] | None = None,
     ) -> bool:
-        """Execute one sealed task and report whether provider output is ready."""
+        """Execute one sealed task and report whether provider output is ready.
+
+        When `preview` is supplied, a dry-run preflight is requested first and shown
+        through it; the sealed task executes for real only when it returns True (and
+        the global dry-run provider mode is not active). Existing callers that omit
+        `preview` keep their exact prior behavior.
+
+        `raise_codes` names SageError codes that must propagate rather than being
+        caught and recorded as a resumable task-local issue -- for failures (such as
+        detected data-integrity violations) where a soft, retry-oriented framing
+        would be misleading.
+        """
         declared_manifest = declare_governed_path(self.root, manifest_path, "task manifest")
         arguments = ["task", "execute", "--task", declared_manifest]
         self.runtime_status.current_job = project.job_id
         self.runtime_status.current_project = project.output_project
         self.runtime_status.current_run = run.run_id
         self.runtime_status.stage = run.current_stage
-        if self.dry_run_provider:
-            arguments.append("--dry-run")
+        ready = True
         try:
             self._ensure_codex_execution_transport()
-            result = self._run_with_status(
-                f"Running governed {project.tool.upper()} task...",
-                lambda: self.controller(project, arguments),
-            )
+            if preview is not None:
+                preflight = self._run_with_status(
+                    f"Planning governed {project.tool.upper()} task...",
+                    lambda: self.controller(project, [*arguments, "--dry-run"]),
+                )
+                ready = bool(preview(preflight if isinstance(preflight, dict) else {})) and not self.dry_run_provider
+                result = preflight
+            if preview is None or ready:
+                execute_arguments = [*arguments, "--dry-run"] if self.dry_run_provider else arguments
+                result = self._run_with_status(
+                    f"Running governed {project.tool.upper()} task...",
+                    lambda: self.controller(project, execute_arguments),
+                )
         except SageError as exc:
+            if raise_codes and exc.code in raise_codes:
+                raise
             self._record_execution_issue(
                 project,
                 run,
@@ -3621,20 +3605,18 @@ class SageControlCenter:
             self.io.pause()
             return False
         if not getattr(self, "_compact_saw_progress", False):
+            snapshot = self.ui_service.run_progress_snapshot(project, run)
+            self.io.write(snapshot["line"])
+            self.io.write(snapshot["activity"])
             if isinstance(result, dict):
-                self.io.write(f"Task execution: {result.get('status', 'UNKNOWN')}")
-                self.io.write(f"Provider: {result.get('provider', 'unknown')}")
-                self.io.write(f"Model: {result.get('model') or 'provider default'}")
-                if result.get("reasoning_effort"):
-                    self.io.write(f"Reasoning: {result.get('reasoning_effort')}")
-                if result.get("selection_mode"):
-                    self.io.write(f"Selection: {result.get('selection_mode')}")
+                self.io.write(f"Provider: {result.get('provider', 'unknown')} / "
+                              f"Model: {result.get('model') or 'provider default'}")
                 if result.get("receipt_path"):
                     self.io.write(f"Receipt: {result['receipt_path']}")
             self.io.write(f"ACT: {manifest_path.parent / 'ACT.md'}")
         if pause:
             self.io.pause()
-        return True
+        return ready if preview is not None else True
 
     def _submit_task(
         self,
@@ -3651,6 +3633,8 @@ class SageControlCenter:
         status = str(result.get("status", "SUBMITTED")) if isinstance(result, dict) else "SUBMITTED"
         if not getattr(self, "_compact_saw_progress", False):
             self.io.write(f"Task submission: {status}")
+            if isinstance(result, dict) and result.get("report_path"):
+                self.io.write(f"Report: {result['report_path']}")
         return self.store.update_run(run, status=status)
 
     def _task_action(
@@ -3658,11 +3642,16 @@ class SageControlCenter:
         project: Job,
         run: Run,
         manifest_path: Path,
+        *,
+        preview: Callable[[dict[str, Any]], bool] | None = None,
+        raise_codes: frozenset[str] | None = None,
     ) -> tuple[Run, bool]:
         """Advance one task; provider/output interruptions remain task-local and resumable."""
         state, manifest = self._task_state(manifest_path)
         if state == "TASK_CREATED":
-            if not self._launch_task(project, run, manifest_path, pause=False):
+            if not self._launch_task(
+                project, run, manifest_path, pause=False, preview=preview, raise_codes=raise_codes
+            ):
                 return run, False
             executed_state, _ = self._task_state(manifest_path)
             if executed_state == "OUTPUT_READY":
@@ -3810,12 +3799,11 @@ class SageControlCenter:
     def continue_run(self, project: Job, run: Run) -> None:
         """Implement `continue run` in the deterministic terminal control flow."""
         try:
-            if project.tool == 'nca':
-                from .nca_menu import continue_run
-                continue_run(self, project, run)
-                return
             self.ensure_initialized(project)
-            if project.tool == "bic":
+            if project.tool == 'nca':
+                from .nca_menu import continue_run as _continue_nca
+                run = _continue_nca(self, project, run)
+            elif project.tool == "bic":
                 run = self._continue_bic(project, run)
             else:
                 run = self._continue_saw(project, run)
@@ -5039,9 +5027,7 @@ class SageControlCenter:
                     repaired = self._present_job_action_needed(active_issue, offer_onboarding=True)
                     if repaired is not None:
                         self.store.set_active_job(tool, repaired.job_id)
-                        if tool == "saw":
-                            self._saw_job_menu(repaired)
-                        elif tool in {"rtc", "stc"}:
+                        if tool in {"rtc", "stc"}:
                             self.analysis_job_menu(repaired)
                         elif tool == 'nca':
                             self.nca_job_menu(repaired)
@@ -5050,8 +5036,6 @@ class SageControlCenter:
                 elif active is None:
                     self.io.write(f"No active {tool_label} Job. Choose or add one first.")
                     self.io.pause()
-                elif tool == "saw":
-                    self._saw_job_menu(active)
                 elif tool in {"rtc", "stc"}:
                     self.analysis_job_menu(active)
                 elif tool == 'nca':

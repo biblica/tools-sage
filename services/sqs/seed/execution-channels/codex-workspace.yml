@@ -1,0 +1,28 @@
+execution_channel: codex_workspace
+provider_family: openai
+display_name: OpenAI Codex workspace account
+provisioning_model: workspace
+capability_classes:
+- GRAMMAR_ANALYSIS
+- SEMANTIC_REWRITE
+reasoning_tier_taxonomy: openai-2026
+notes:
+- All staff authenticate via the organization's OpenAI Codex workspace accounts
+  (a generic https://chatgpt.com/ web sign-in), never a personal API key. Every
+  seat draws on the same org-managed entitlement, confirmed as the first binding
+  for this catalog.
+- Auth is confirmed tested working for both workspace and personal ChatGPT
+  accounts; only usage allowance (rate limit/quota) is confirmed to differ
+  between them, not model or reasoning-tier capability. The auth flow gives no
+  signal to distinguish which kind of account a session is using.
+- This channel and a future direct api_key channel would reach the same
+  provider_family (openai) models; qualification stays keyed on the model, not
+  the channel, so onboarding a second channel to this provider_family does not
+  require re-qualifying already-qualified models.
+- availability_check is deliberately left unset -- no non-interactive way exists
+  today to query remaining included allowance for this channel. Codex CLI's
+  interactive /status command surfaces it (5-hour/weekly rolling windows via
+  https://chatgpt.com/backend-api/wham/usage), but there is no scriptable
+  equivalent (see https://github.com/openai/codex/issues/10233, open/unresolved),
+  and SAGE never reads Codex's OAuth token directly by design. Revisit once
+  that issue ships or an equivalent codex subcommand exists.

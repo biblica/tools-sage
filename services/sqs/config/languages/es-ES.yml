@@ -1,0 +1,24 @@
+schema_version: '1.0'
+profile_id: es-ES
+display_name: Spanish (Spain)
+status: DRAFT
+revision: 1
+tier: 1
+cluster: spanish
+identity:
+  iso_639_1: es
+  iso_639_3: spa
+  script: Latn
+  region: ES
+capabilities:
+- GRAMMAR_ANALYSIS
+- SEMANTIC_REWRITE
+profile_build:
+  source: SAGE_0.02A1_SEED_CATALOG
+  sage_profile_available_in_reference_snapshot: false
+  exact_profile_confirmation_required: true
+  evaluation_pack_state: READY
+admin_review:
+  required: true
+  issues:
+  - SAGE_0.02ALPHA1_GRAMMAR_PROFILE_ABSENT

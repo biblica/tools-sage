@@ -1,0 +1,11 @@
+[Unit]
+Description=Run SQS qualification-submission ingest every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+Persistent=true
+Unit=sqs-ingest.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,21 @@
+schema_id: sage-sqs-1.0
+required:
+  - schema_version
+  - trusted_authority_id
+  - require_signature
+  - trusted_signing_keys
+controls:
+  schema_version: '1.0'
+  trusted_authority_id: pinned_operator_configured_authority
+  require_signature: explicit_boolean
+  trusted_signing_keys: key_id_to_base64_raw_ed25519_public_key_mapping
+  qualification_key: provider_family_model_id_profile_id_capability
+  execution_channel: provenance_only_not_identity
+  # submission is optional -- absent or empty ssh_host means "not yet
+  # configured", not invalid. Holds only the non-secret SCP/SFTP target; the
+  # generated private key itself never lives in this file.
+  submission:
+    ssh_host: operator_configured_hostname_or_empty
+    ssh_port: tcp_port_default_22
+    ssh_user: dedicated_restricted_uploader_account
+    remote_incoming_dir: absolute_path_on_the_sqs_server

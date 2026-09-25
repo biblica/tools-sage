@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sqs.sage.local/schema/discovery-1.0.json",
+  "title": "SQS Discovery Request",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "sage_version", "observed"],
+      "properties": {
+        "kind": {"const": "LANGUAGE_PROFILE"},
+        "sage_version": {"type": "string", "minLength": 1},
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["profile_id", "language_code", "script", "region"],
+          "properties": {
+            "profile_id": {"type": "string", "minLength": 1},
+            "language_code": {"type": "string", "minLength": 1},
+            "script": {"type": "string"},
+            "region": {"type": "string"}
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "sage_version", "observed"],
+      "properties": {
+        "kind": {"const": "LANGUAGE_VALIDATION_REQUEST"},
+        "sage_version": {"type": "string", "minLength": 1},
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["profile_id", "language_code", "script", "region", "capability"],
+          "properties": {
+            "profile_id": {"type": "string", "minLength": 1},
+            "language_code": {"type": "string", "minLength": 1},
+            "script": {"type": "string"},
+            "region": {"type": "string"},
+            "capability": {"enum": ["GRAMMAR_ANALYSIS", "SEMANTIC_REWRITE"]}
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "sage_version", "observed"],
+      "properties": {
+        "kind": {"const": "MODEL"},
+        "sage_version": {"type": "string", "minLength": 1},
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider_family", "model_id", "capability_fingerprint", "reasoning_levels"],
+          "properties": {
+            "provider_family": {"const": "openai"},
+            "model_id": {"type": "string", "minLength": 1},
+            "capability_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "reasoning_levels": {"type": "array", "items": {"enum": ["low", "medium", "high"]}, "minItems": 1, "uniqueItems": true}
+          }
+        }
+      }
+    }
+  ]
+}

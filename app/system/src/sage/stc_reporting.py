@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from .act_outputs import (
+    _report_label,
     aggregate_execution_routes,
     render_execution_section,
     render_plain_text_from_markdown,
@@ -124,13 +125,12 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
     )
 
     lines = [
-        "# Source Text Correspondence (STC) Report",
+        "# " + _report_label(document, "report.stc_action_report"),
         "",
         f"- WIP Project: `{wip_name}` (`{wip_id}`)",
         f"- Original-language authority: `{ol_id}`",
-        "- REFERENCE Project: `NOT USED`",
-        f"- Scope: `{document.get('scope', '')}`",
-        f"- Coverage: `COMPLETE` ({len(coverage)} coordinates)",
+        f"- {_report_label(document, 'label.scope')}: `{document.get('scope', '')}`",
+        f"- {_report_label(document, 'label.coverage')}: `{comparison_status}` ({len(coverage)} coordinates)",
         f"- Source comparison: `{comparison_status}`",
         f"- Report languages: `{primary}`" + (f"; `{secondary}`" if secondary else ""),
     ]
@@ -167,9 +167,9 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
                 f"- `{row.get('reference', '')}` | `{row.get('source_project_id', '')}` | "
                 f"`{row.get('code', 'SOURCE_TEXT_ISSUE')}` — {row.get('message', '')}"
             )
-    lines.extend(["", "## Findings", ""])
+    lines.extend(["", "## " + _report_label(document, "report.actionable_findings"), ""])
     if not findings:
-        lines.append("No governed STC findings were reported. All planned STC review items completed.")
+        lines.append(_report_label(document, "message.no_actionable_findings"))
     for position, finding in enumerate(findings):
         finding_id = str(finding.get("finding_id") or "STC finding")
         secondary_row = secondary_rows.get(finding_id) if secondary else None

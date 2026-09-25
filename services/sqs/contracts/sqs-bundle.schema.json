@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sqs.sage.local/schema/bundle-1.1.json",
+  "title": "SQS Bundle 1.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "service_version",
+    "authority_id",
+    "publication_epoch",
+    "bundle_revision",
+    "generated_at",
+    "profiles",
+    "models",
+    "qualifications",
+    "bundle_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.1"
+    },
+    "service_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "publication_epoch": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "bundle_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "profile_id",
+          "display_name",
+          "tier",
+          "cluster",
+          "script",
+          "region",
+          "revision",
+          "evaluation_identity_sha256"
+        ],
+        "properties": {
+          "profile_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tier": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "cluster": {
+            "type": "string",
+            "minLength": 1
+          },
+          "script": {
+            "type": "string",
+            "minLength": 1
+          },
+          "region": {
+            "type": "string",
+            "minLength": 1
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evaluation_identity_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider_family",
+          "model_id",
+          "reasoning_levels",
+          "capability_rank",
+          "cost_rank",
+          "input_usd_per_mtok",
+          "output_usd_per_mtok",
+          "capability_fingerprint",
+          "reasoning_tiers",
+          "tier_mapping_revision",
+          "tier_mapping_fingerprint"
+        ],
+        "properties": {
+          "provider_family": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reasoning_levels": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "capability_rank": {
+            "type": "integer"
+          },
+          "cost_rank": {
+            "type": "integer"
+          },
+          "input_usd_per_mtok": {
+            "type": "number",
+            "minimum": 0
+          },
+          "output_usd_per_mtok": {
+            "type": "number",
+            "minimum": 0
+          },
+          "capability_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "reasoning_tiers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "native_id",
+                "ordinal",
+                "canonical_band",
+                "tier_class"
+              ],
+              "properties": {
+                "native_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ordinal": {
+                  "type": "integer"
+                },
+                "canonical_band": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high",
+                    null
+                  ]
+                },
+                "tier_class": {
+                  "enum": [
+                    "OFF",
+                    "ROUTINE",
+                    "PREMIUM",
+                    "UNUSED"
+                  ]
+                }
+              }
+            }
+          },
+          "tier_mapping_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "tier_mapping_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "qualifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider_family",
+          "execution_channel",
+          "model_id",
+          "model_capability_fingerprint",
+          "profile_id",
+          "profile_identity_sha256",
+          "capability",
+          "status",
+          "minimum_reasoning",
+          "quality_score",
+          "reliability_score",
+          "confidence",
+          "value",
+          "evidence_basis",
+          "estimated_unit_cost_usd",
+          "evaluated_at",
+          "evidence_sha256",
+          "minimum_native_reasoning",
+          "tier_mapping_fingerprint"
+        ],
+        "properties": {
+          "provider_family": {
+            "type": "string",
+            "minLength": 1
+          },
+          "execution_channel": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model_capability_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "profile_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "profile_identity_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "capability": {
+            "enum": [
+              "GRAMMAR_ANALYSIS",
+              "SEMANTIC_REWRITE"
+            ]
+          },
+          "status": {
+            "enum": [
+              "QUALIFIED",
+              "NOT_QUALIFIED"
+            ]
+          },
+          "minimum_reasoning": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              null
+            ]
+          },
+          "quality_score": {
+            "type": "number"
+          },
+          "reliability_score": {
+            "type": "number"
+          },
+          "confidence": {
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ]
+          },
+          "value": {
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ]
+          },
+          "evidence_basis": {
+            "enum": [
+              "MEASURED",
+              "CONFIRMED"
+            ]
+          },
+          "estimated_unit_cost_usd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "evaluated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "evidence_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "minimum_native_reasoning": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tier_mapping_fingerprint": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "NOT_QUALIFIED"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "minimum_reasoning": {
+                  "type": "null"
+                },
+                "minimum_native_reasoning": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "QUALIFIED"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "minimum_reasoning": {
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "minimum_native_reasoning": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tier_mapping_fingerprint": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "bundle_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "signature_algorithm": {
+      "const": "Ed25519"
+    },
+    "signing_key_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "signature_ed25519": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "dependentRequired": {
+    "signature_algorithm": [
+      "signing_key_id",
+      "signature_ed25519"
+    ],
+    "signing_key_id": [
+      "signature_algorithm",
+      "signature_ed25519"
+    ],
+    "signature_ed25519": [
+      "signature_algorithm",
+      "signing_key_id"
+    ]
+  }
+}

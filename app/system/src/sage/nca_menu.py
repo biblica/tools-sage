@@ -5,10 +5,20 @@ from pathlib import Path
 
 from sage.errors import ValidationError
 from sage.registry import load_ecosystem
-from sage.references import validate_scripture_scope
 from sage.nca_cli import CHECK_LABELS, inspect_numbers_package
 from sage.numbers.resources import import_reference, reference_package_candidates
 from sage.numbers.style import import_style_profile, style_profile_candidates
+
+# Data-integrity violations detected while executing a sealed NCA task (a
+# corrupted or tampered checkpoint, an output that no longer matches its
+# execution receipt). These must remain hard failures -- a soft, resumable
+# framing (the default for provider/transient failures) would misrepresent
+# a detected integrity breach as an ordinary retryable hiccup.
+NCA_INTEGRITY_FAILURE_CODES = frozenset({
+    'LLM_TASK_OUTPUT_NOT_EMPTY',
+    'NCA_PHASE_CHECKPOINT_INVALID',
+    'EXECUTION_RECEIPT_OUTPUT_MISMATCH',
+})
 
 
 def choose_style(center, project) -> str | None:
@@ -130,39 +140,72 @@ def start_run(center, job) -> None:
     checks = choose_checks(center, job)
     if checks is None:
         return
-    scope = center.io.text('Scripture scope', required=False,
-                          validator=lambda value: validate_scripture_scope(value, workflow='nca').label()).strip()
-    if not scope:
+    scope = center._select_scripture_scope(job, primary_binding='wip')
+    if scope is None:
         return
     config = load_ecosystem(center.store.settings_path)
     run = create_nca_run(config, job_id=job.job_id, scope_value=scope, checks=checks)
-    continue_run(center, job, run)
+    center.continue_run(job, run)
 
 
-def continue_run(center, job, run) -> None:
-    """Resume sealed NCA inputs and checks without consulting mutable Job defaults."""
-    scope = run.scope
-    task = center.controller(job, ['task', 'create', '--workflow', 'nca', '--operation', 'numbers',
-                                  '--wip', job.bindings['wip'], '--scope', scope,
-                                  '--job-id', job.job_id, '--run-id', run.run_id])
-    manifest = str(task.get('task_manifest') or task.get('task_manifest_path') or '')
-    if not manifest:
-        raise ValidationError('NCA task creation did not return its manifest.', code='NCA_TASK_MANIFEST_MISSING')
-    arguments = ['task', 'execute', '--task', manifest]
-    preflight = center.controller(job, arguments + ['--dry-run'])
-    show_preflight(center, job, preflight)
-    result = preflight
-    if not center.dry_run_provider and preflight.get('status') == 'READY_TO_EXECUTE':
-        result = center.controller(job, arguments)
-    center.io.write(f"NCA execution: {result.get('status', 'UNKNOWN')}")
-    if not center.dry_run_provider and result.get('status') == 'EXECUTED':
-        finalized = center.controller(job, ['task', 'submit', '--task', manifest])
-        center.io.write(f"NCA report: {finalized.get('report_path') or finalized.get('status', 'UNKNOWN')}")
-    center.io.pause()
+def continue_run(center, job, run):
+    """Resume the sealed NCA task through the same governed helpers BIC/RTC/STC use."""
+    tasks = center._tasks_by_operation(run)
+    numbers_tasks = tasks.get('numbers', [])
+    if not numbers_tasks:
+        run, result = center._create_task(job, run, 'numbers', scope=run.scope)
+        if result.get('status') in {'PARTITIONED', 'COMPOSITE'}:
+            raise ValidationError(
+                'NCA does not support partitioned or composite task creation.',
+                code='NCA_TASK_PARTITIONING_UNSUPPORTED',
+            )
+        manifest = str(result.get('manifest_path') or '')
+        if not manifest:
+            raise ValidationError('NCA task creation did not return its manifest.', code='NCA_TASK_MANIFEST_MISSING')
+        manifest_path = center._manifest_path(manifest)
+    else:
+        manifest_path, _manifest, state = numbers_tasks[-1]
+        if state == 'FINALIZED':
+            center.io.write('NCA Run is already complete.')
+            center.io.pause()
+            return center.store.update_run(run, status='COMPLETE', current_stage='COMPLETE')
+
+    def preview(preflight: dict) -> bool:
+        """Show the sealed preflight and gate real execution on its readiness."""
+        show_preflight(center, job, preflight)
+        return preflight.get('status') == 'READY_TO_EXECUTE'
+
+    # NCA's execute step is itself idempotent (it recognizes and safely resumes
+    # partially-published output), so unlike BIC/RTC/STC it must always be tried
+    # rather than gated on _task_state's generic "output file already exists"
+    # shortcut, which would otherwise skip straight to submission and never let a
+    # partially-published run finish publishing.
+    executed = center._launch_task(
+        job, run, manifest_path, preview=preview, raise_codes=NCA_INTEGRITY_FAILURE_CODES,
+    )
+    if executed and center._task_state(manifest_path)[0] == 'OUTPUT_READY':
+        run = center._submit_task(job, run, manifest_path)
+        run = center.store.update_run(run, status='COMPLETE', current_stage='COMPLETE')
+    return run
+
+
+_PREFLIGHT_SCREEN_LIMIT = 5
+
+
+def _bounded_preflight_value(value):
+    """Cap a list/dict preflight field for the screen; the file always keeps the full value."""
+    if isinstance(value, list) and len(value) > _PREFLIGHT_SCREEN_LIMIT:
+        return [*value[:_PREFLIGHT_SCREEN_LIMIT], f"... and {len(value) - _PREFLIGHT_SCREEN_LIMIT} more"], True
+    if isinstance(value, dict) and len(value) > _PREFLIGHT_SCREEN_LIMIT:
+        head = dict(list(value.items())[:_PREFLIGHT_SCREEN_LIMIT])
+        head[f"... and {len(value) - _PREFLIGHT_SCREEN_LIMIT} more"] = "SEE FULL PREFLIGHT FILE"
+        return head, True
+    return value, False
 
 
 def show_preflight(center, job, result) -> None:
-    """Display controller-derived sealed scope estimates without reloading Job resources."""
+    """Display a screen-bounded preflight summary; the unbounded detail is written to a file."""
+    from sage.atomic import atomic_write_json
     from sage.nca_reporting import _exact
     from sage.human_output import catalogue_text
 
@@ -170,6 +213,8 @@ def show_preflight(center, job, result) -> None:
     plan = result.get('preflight', {})
     center.io.write(text('report.nca.preflight'))
     if plan:
+        plan_path = job.controller_state_root / "last-preflight.json"
+        atomic_write_json(plan_path, plan)
         values = (
             ('input_language', f"{plan.get('language')}; {plan.get('script')}"),
             ('requested_scope', plan.get('requested_scope')),
@@ -186,8 +231,13 @@ def show_preflight(center, job, result) -> None:
             ('scope_expansion', plan.get('scope_expansions')),
             ('limitations', plan.get('limitations')),
         )
+        truncated = False
         for key, value in values:
-            center.io.write(f"{text('report.nca.' + key)}: {_exact(value)}")
+            bounded, was_cut = _bounded_preflight_value(value)
+            truncated = truncated or was_cut
+            center.io.write(f"{text('report.nca.' + key)}: {_exact(bounded)}")
+        if truncated:
+            center.io.write(f"Full preflight detail: {plan_path}")
     center.io.write(f"{text('report.nca.model_identity')}: {result.get('provider', 'NOT RECORDED')}/{result.get('model', 'NOT RECORDED')}")
     center.io.write(text('report.nca.planning_notice'))
     center.io.write(text('report.nca.capability_limitation'))
@@ -211,7 +261,7 @@ def job_menu(center, job) -> None:
                 start_run(center, job)
             else:
                 center.io.write(f'Resuming NCA Run: {run.run_id}')
-                continue_run(center, job, run)
+                center.continue_run(job, run)
         elif choice == '2':
             center.reports_menu(job)
         elif choice == '3':

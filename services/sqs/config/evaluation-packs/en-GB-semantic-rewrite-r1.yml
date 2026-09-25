@@ -1,0 +1,120 @@
+schema_version: '1.0'
+pack_id: en-GB-semantic-rewrite-r1
+profile_id: en-GB
+capability: SEMANTIC_REWRITE
+revision: 1
+review_state: READY
+content_provenance: SQS_0.02A1_STRUCTURAL_CONTRACT_FIXTURES
+policy:
+  critical_case_failure: FAIL_REASONING_LEVEL
+  repeat_confirmation_cases: 2
+  minimum_quality: 1.0
+cases:
+- case_id: ENGB-SR-001
+  diagnostic_class: proposition_participant_preservation
+  critical: true
+  priority: 100
+  confirmation: true
+  input: Controlled SQS structural fixture for exact profile en-GB. Evaluate semantic
+    rewrite diagnostic class proposition_participant_preservation. Return JSON with
+    rewrite.changed, rewrite.preserved, and rewrite.authorized_only as booleans.
+  expected:
+    rewrite.changed: true
+    rewrite.preserved: true
+    rewrite.authorized_only: true
+  expected_constraints:
+  - change decision must match the controlled fixture
+  - protected meaning/content must be preserved
+  - only authorized changes may be introduced
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: ENGB-SR-002
+  diagnostic_class: authorized_fix_only
+  critical: true
+  priority: 90
+  confirmation: true
+  input: Controlled SQS structural fixture for exact profile en-GB. Evaluate semantic
+    rewrite diagnostic class authorized_fix_only. Return JSON with rewrite.changed,
+    rewrite.preserved, and rewrite.authorized_only as booleans.
+  expected:
+    rewrite.changed: true
+    rewrite.preserved: true
+    rewrite.authorized_only: true
+  expected_constraints:
+  - change decision must match the controlled fixture
+  - protected meaning/content must be preserved
+  - only authorized changes may be introduced
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: ENGB-SR-003
+  diagnostic_class: protected_content
+  critical: true
+  priority: 80
+  confirmation: false
+  input: Controlled SQS structural fixture for exact profile en-GB. Evaluate semantic
+    rewrite diagnostic class protected_content. Return JSON with rewrite.changed,
+    rewrite.preserved, and rewrite.authorized_only as booleans.
+  expected:
+    rewrite.changed: true
+    rewrite.preserved: true
+    rewrite.authorized_only: true
+  expected_constraints:
+  - change decision must match the controlled fixture
+  - protected meaning/content must be preserved
+  - only authorized changes may be introduced
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: ENGB-SR-004
+  diagnostic_class: register_constraints
+  critical: false
+  priority: 70
+  confirmation: false
+  input: Controlled SQS structural fixture for exact profile en-GB. Evaluate semantic
+    rewrite diagnostic class register_constraints. Return JSON with rewrite.changed,
+    rewrite.preserved, and rewrite.authorized_only as booleans.
+  expected:
+    rewrite.changed: true
+    rewrite.preserved: true
+    rewrite.authorized_only: true
+  expected_constraints:
+  - change decision must match the controlled fixture
+  - protected meaning/content must be preserved
+  - only authorized changes may be introduced
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: ENGB-SR-005
+  diagnostic_class: no_introduced_claims_omissions
+  critical: true
+  priority: 60
+  confirmation: false
+  input: Controlled SQS structural fixture for exact profile en-GB. Evaluate semantic
+    rewrite diagnostic class no_introduced_claims_omissions. Return JSON with rewrite.changed,
+    rewrite.preserved, and rewrite.authorized_only as booleans.
+  expected:
+    rewrite.changed: true
+    rewrite.preserved: true
+    rewrite.authorized_only: true
+  expected_constraints:
+  - change decision must match the controlled fixture
+  - protected meaning/content must be preserved
+  - only authorized changes may be introduced
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60
+- case_id: ENGB-SR-006
+  diagnostic_class: no_change
+  critical: true
+  priority: 50
+  confirmation: true
+  input: Controlled SQS structural fixture for exact profile en-GB. Evaluate semantic
+    rewrite diagnostic class no_change. Return JSON with rewrite.changed, rewrite.preserved,
+    and rewrite.authorized_only as booleans.
+  expected:
+    rewrite.changed: false
+    rewrite.preserved: true
+    rewrite.authorized_only: true
+  expected_constraints:
+  - change decision must match the controlled fixture
+  - protected meaning/content must be preserved
+  - only authorized changes may be introduced
+  estimated_input_tokens: 140
+  estimated_output_tokens: 60

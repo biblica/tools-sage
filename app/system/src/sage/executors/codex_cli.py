@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import queue
+import re
 import shutil
 import subprocess
 import tempfile
@@ -22,6 +23,25 @@ from .base import (
     ProviderStatus,
     ReasoningEffortOption,
 )
+
+# Confirmed real Codex CLI failure message shapes (not assumed): plan/workspace
+# quota exhaustion reads "You've hit your usage limit ... try again at <time>";
+# a short per-model token rate limit reads "Rate limit reached for <model> ...
+# Please try again in <N>s." Both are exit-code-1, plain-text failures -- SAGE's
+# `codex exec` invocation does not use --json, so there is no structured error
+# event to parse instead.
+_USAGE_LIMIT_PATTERN = re.compile(r"usage limit", re.IGNORECASE)
+_TOKEN_RATE_LIMIT_PATTERN = re.compile(r"rate limit (?:reached|exceeded)", re.IGNORECASE)
+_RETRY_SECONDS_PATTERN = re.compile(r"try again in\s+([\d.]+)\s*s", re.IGNORECASE)
+_RETRY_AT_PATTERN = re.compile(r"try again at\s+([^.\n]+)", re.IGNORECASE)
+# Integration plan Task 3a: only the short per-model TOKEN_RATE_LIMIT case ever gets an
+# automatic wait-and-resend -- its own reported window is seconds, not hours. USAGE_LIMIT's
+# `retry_at` can be hours or days out (plan/workspace quota exhaustion), so it always fails
+# fast today; waiting that long synchronously inside a governed task is a separate, larger
+# latency-budget decision this task does not make. One retry only, bounded to a small ceiling,
+# so a worst-case wait stays small and predictable rather than silently compounding.
+_TOKEN_RATE_LIMIT_AUTO_RETRY_CEILING_SECONDS = 30.0
+_TOKEN_RATE_LIMIT_MAX_AUTO_RETRIES = 1
 
 
 class CodexCLIExecutor:
@@ -285,6 +305,22 @@ class CodexCLIExecutor:
         if len(detail) > limit:
             detail = "[earlier Codex output omitted]\n" + detail[-limit:]
         return detail or "Codex returned a non-zero status without a diagnostic."
+
+    @staticmethod
+    def _classify_rate_limit(text: str) -> dict[str, Any] | None:
+        """Return a rate-limit classification for known usage/rate-limit failure text, or None."""
+        if _USAGE_LIMIT_PATTERN.search(text):
+            seconds_match = _RETRY_SECONDS_PATTERN.search(text)
+            at_match = _RETRY_AT_PATTERN.search(text)
+            return {
+                "kind": "USAGE_LIMIT",
+                "retry_after_seconds": float(seconds_match.group(1)) if seconds_match else None,
+                "retry_at": at_match.group(1).strip() if at_match else None,
+            }
+        if _TOKEN_RATE_LIMIT_PATTERN.search(text):
+            seconds_match = _RETRY_SECONDS_PATTERN.search(text)
+            return {"kind": "TOKEN_RATE_LIMIT", "retry_after_seconds": float(seconds_match.group(1)) if seconds_match else None, "retry_at": None}
+        return None
 
     @staticmethod
     def installation_guidance() -> str:
@@ -944,18 +980,40 @@ class CodexCLIExecutor:
             if selected_model:
                 args.extend(["--model", selected_model])
             args.append("-")
-            try:
-                completed = self._run_governed(args, timeout=request.timeout_seconds, input_text=request.prompt, cwd=root)
-            except subprocess.TimeoutExpired as exc:
-                raise ValidationError(
-                    f"Codex execution exceeded {request.timeout_seconds} seconds",
-                    code="LLM_PROVIDER_TIMEOUT",
-                ) from exc
-            if completed.returncode != 0:
-                error = self._execution_failure_detail(
-                    completed.stderr or completed.stdout,
-                    request.prompt,
-                )
+            for attempt in range(_TOKEN_RATE_LIMIT_MAX_AUTO_RETRIES + 1):
+                try:
+                    completed = self._run_governed(args, timeout=request.timeout_seconds, input_text=request.prompt, cwd=root)
+                except subprocess.TimeoutExpired as exc:
+                    raise ValidationError(
+                        f"Codex execution exceeded {request.timeout_seconds} seconds",
+                        code="LLM_PROVIDER_TIMEOUT",
+                    ) from exc
+                if completed.returncode == 0:
+                    break
+                raw_failure = completed.stderr or completed.stdout
+                error = self._execution_failure_detail(raw_failure, request.prompt)
+                rate_limit = self._classify_rate_limit(raw_failure)
+                if rate_limit is not None:
+                    retry_after = rate_limit.get("retry_after_seconds")
+                    can_auto_retry = (
+                        rate_limit["kind"] == "TOKEN_RATE_LIMIT"
+                        and attempt < _TOKEN_RATE_LIMIT_MAX_AUTO_RETRIES
+                        and retry_after is not None
+                        and 0 <= retry_after <= _TOKEN_RATE_LIMIT_AUTO_RETRY_CEILING_SECONDS
+                    )
+                    if can_auto_retry:
+                        time.sleep(retry_after)
+                        continue
+                    raise ValidationError(
+                        f"Codex execution was rate-limited: {error}",
+                        code="CODEX_RATE_LIMITED",
+                        next_action=(
+                            "This is a usage/rate limit, not a task failure. Wait for the reported "
+                            "reset window before retrying; SAGE only retries automatically for a "
+                            "short, bounded per-model token rate limit."
+                        ),
+                        details=rate_limit,
+                    )
                 raise ValidationError(
                     f"Codex execution failed: {error}",
                     code="LLM_PROVIDER_EXECUTION_FAILED",

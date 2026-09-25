@@ -8,9 +8,10 @@ from typing import Any, Mapping
 from .config import load_yaml
 from .errors import ValidationError
 from .language_codes import canonical_language_tag
-from .project_inventory import project_code_policy, register_project
-from .registry import load_ecosystem
+from .project_inventory import detect_scripture_books, project_code_policy, register_project, scope_testament
+from .registry import EcosystemConfig, load_ecosystem
 from .resource_mounts import load_resource_mount_state
+from .scripture import detect_incomplete_portions
 
 _ROLE_PROFILE_EQUIVALENTS = {
     "GENERATED_TARGET": {"GENERATED_TARGET", "TARGET"},
@@ -42,6 +43,29 @@ def compatible_language_options(settings_path: Path, role: str) -> tuple[tuple[s
         elif not required_variant:
             values.append((code, None))
     return tuple(values)
+
+
+def _detect_portions_if_partial(
+    config: EcosystemConfig, *, project_path: Path, base_vrs_file: str, declared_books: tuple[str, ...] | None,
+) -> dict[str, dict[str, tuple[int, ...]]] | None:
+    """Run incomplete-portion detection only for a partial (PORTIONS-scope) import.
+
+    Best-effort and additive: a failure resolving the base VRS, or compiling
+    a book file (e.g. a WIP export with invalid encoding -- compile_usfm_file
+    raises a raw UnicodeDecodeError/UnicodeError for that, not a
+    ValidationError) at this early, pre-ecosystem-wiring stage degrades to no
+    portions data rather than blocking the Project import. The existing
+    task-execution pipeline still validates the effective VRS and file
+    encoding later once the Project has a role.
+    """
+    sfm_books = detect_scripture_books(project_path)
+    books = tuple(declared_books) if declared_books else sfm_books
+    if scope_testament(books) != "PORTIONS":
+        return None
+    try:
+        return detect_incomplete_portions(project_path=project_path, base_vrs_file=base_vrs_file, config=config)
+    except (ValidationError, UnicodeError, OSError):
+        return None
 
 
 def register_external_scripture_resource(
@@ -84,6 +108,9 @@ def register_external_scripture_resource(
             "Original-language resources are configured through governed @GRK/@HEB aliases, not by adding them as ordinary SAGE Projects",
             code="OL_RESOURCE_REGISTRATION_FORBIDDEN",
         )
+    incomplete_portions = _detect_portions_if_partial(
+        load_ecosystem(settings), project_path=external_path, base_vrs_file=base_vrs_file, declared_books=declared_books,
+    )
     register_project(
         sage_root,
         project_id=project_id,
@@ -101,6 +128,7 @@ def register_external_scripture_resource(
         declared_books=declared_books,
         paratext_metadata=paratext_metadata,
         versification_metadata=versification_metadata,
+        incomplete_portions=incomplete_portions,
     )
 
 
@@ -155,6 +183,10 @@ def register_catalogued_scripture_project(
         "ldml_evidence": catalogue_row.get("ldml_evidence", []),
         "catalog_status": catalogue_row.get("status"),
     }
+    declared_books = tuple(str(book) for book in catalogue_row.get("books", []))
+    incomplete_portions = _detect_portions_if_partial(
+        config, project_path=project_path, base_vrs_file=base_file, declared_books=declared_books,
+    )
     register_project(
         root,
         project_id=project_id,
@@ -169,7 +201,7 @@ def register_catalogued_scripture_project(
         allow_empty=False,
         coverage_policy="CONFIGURED_BOOKS_COMPLETE",
         type_codes=project_code_policy(load_yaml(settings)),
-        declared_books=tuple(str(book) for book in catalogue_row.get("books", [])),
+        declared_books=declared_books,
         paratext_metadata=paratext_meta,
         versification_metadata={
             "custom_file": str(vrs_meta.get("file") or "auto"),
@@ -179,6 +211,7 @@ def register_catalogued_scripture_project(
             "base_description": vrs_meta.get("base_description"),
             "metadata_status": vrs_meta.get("metadata_status"),
         },
+        incomplete_portions=incomplete_portions,
     )
     set_resource_mount(
         root,

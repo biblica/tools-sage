@@ -1,0 +1,11 @@
+[Unit]
+Description=Run SQS evaluation worker every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+Persistent=true
+Unit=sqs-worker.service
+
+[Install]
+WantedBy=timers.target

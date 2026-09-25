@@ -1,0 +1,449 @@
+openapi: 3.1.0
+info:
+  title: SAGE Qualification Service
+  version: 0.02a1
+  description: Public metadata/evidence API for SAGE hosts.
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      responses:
+        '200':
+          description: Health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+  /profiles:
+    get:
+      operationId: listProfiles
+      responses:
+        '200':
+          description: Active profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfileSummary'
+  /profiles/{profile_id}:
+    get:
+      operationId: getProfile
+      parameters:
+      - name: profile_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileSummary'
+        '404':
+          description: Unknown profile
+  /models:
+    get:
+      operationId: listModels
+      responses:
+        '200':
+          description: Approved model catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model'
+  /qualifications:
+    get:
+      operationId: listQualifications
+      parameters:
+      - name: profile_id
+        in: query
+        schema:
+          type: string
+      - name: capability
+        in: query
+        schema:
+          $ref: '#/components/schemas/Capability'
+      - name: model_id
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          $ref: '#/components/schemas/QualificationStatus'
+      responses:
+        '200':
+          description: Measured/confirmed qualification rows
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Qualification'
+  /bundle:
+    get:
+      operationId: getBundle
+      responses:
+        '200':
+          description: Current published bundle
+          headers:
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '304':
+          description: Not modified
+  /discoveries:
+    post:
+      operationId: createDiscovery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscoveryRequest'
+      responses:
+        '202':
+          description: Accepted/deduplicated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryResponse'
+        '400':
+          description: Invalid or prohibited payload
+components:
+  schemas:
+    Capability:
+      type: string
+      enum:
+      - GRAMMAR_ANALYSIS
+      - SEMANTIC_REWRITE
+    QualificationStatus:
+      type: string
+      enum:
+      - QUALIFIED
+      - NOT_QUALIFIED
+      - UNASSESSED
+    Confidence:
+      type: string
+      enum:
+      - HIGH
+      - MEDIUM
+      - LOW
+    Value:
+      type: string
+      enum:
+      - HIGH
+      - MEDIUM
+      - LOW
+    Health:
+      type: object
+      required:
+      - status
+      - service_version
+      - bundle_revision
+      properties:
+        status:
+          type: string
+          enum:
+          - OK
+          - DEGRADED
+        service_version:
+          type: string
+        bundle_revision:
+          type: integer
+          minimum: 0
+    ProfileSummary:
+      type: object
+      required:
+      - profile_id
+      - display_name
+      - tier
+      - cluster
+      - script
+      - region
+      - revision
+      properties:
+        profile_id:
+          type: string
+        display_name:
+          type: string
+        tier:
+          type: integer
+          minimum: 1
+        cluster:
+          type: string
+        script:
+          type: string
+        region:
+          type: string
+        revision:
+          type: integer
+          minimum: 1
+    Model:
+      type: object
+      required:
+      - provider_family
+      - model_id
+      - reasoning_levels
+      - capability_rank
+      - cost_rank
+      - reasoning_tiers
+      - tier_mapping_revision
+      - tier_mapping_fingerprint
+      properties:
+        provider_family:
+          type: string
+        model_id:
+          type: string
+        reasoning_levels:
+          type: array
+          items:
+            type: string
+        capability_rank:
+          type: integer
+        cost_rank:
+          type: integer
+        input_usd_per_mtok:
+          type: number
+        output_usd_per_mtok:
+          type: number
+        capability_fingerprint:
+          type: string
+        reasoning_tiers:
+          type: array
+          items:
+            type: object
+            required:
+            - native_id
+            - ordinal
+            - canonical_band
+            - tier_class
+            properties:
+              native_id:
+                type: string
+              ordinal:
+                type: integer
+              canonical_band:
+                type:
+                - string
+                - 'null'
+                enum:
+                - low
+                - medium
+                - high
+                - null
+              tier_class:
+                type: string
+                enum:
+                - 'OFF'
+                - ROUTINE
+                - PREMIUM
+                - UNUSED
+        tier_mapping_revision:
+          type: integer
+          minimum: 1
+        tier_mapping_fingerprint:
+          type: string
+    Qualification:
+      type: object
+      required:
+      - provider_family
+      - model_id
+      - profile_id
+      - capability
+      - status
+      - confidence
+      - value
+      - evidence_basis
+      - evaluated_at
+      - evidence_sha256
+      - minimum_native_reasoning
+      - tier_mapping_fingerprint
+      properties:
+        provider_family:
+          type: string
+        model_id:
+          type: string
+        profile_id:
+          type: string
+        capability:
+          $ref: '#/components/schemas/Capability'
+        status:
+          $ref: '#/components/schemas/QualificationStatus'
+        minimum_reasoning:
+          type:
+          - string
+          - 'null'
+          enum:
+          - low
+          - medium
+          - high
+          - null
+        quality_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        reliability_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        confidence:
+          $ref: '#/components/schemas/Confidence'
+        value:
+          $ref: '#/components/schemas/Value'
+        evidence_basis:
+          type: string
+          enum:
+          - MEASURED
+          - CONFIRMED
+        estimated_unit_cost_usd:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+        evaluated_at:
+          type: string
+          format: date-time
+        evidence_sha256:
+          type: string
+        minimum_native_reasoning:
+          type:
+          - string
+          - 'null'
+        tier_mapping_fingerprint:
+          type:
+          - string
+          - 'null'
+    Bundle:
+      type: object
+      required:
+      - schema_version
+      - service_version
+      - publication_epoch
+      - authority_id
+      - bundle_revision
+      - generated_at
+      - profiles
+      - models
+      - qualifications
+      - bundle_sha256
+      properties:
+        schema_version:
+          type: string
+          const: '1.1'
+        service_version:
+          type: string
+        bundle_revision:
+          type: integer
+        generated_at:
+          type: string
+          format: date-time
+        profiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileSummary'
+        models:
+          type: array
+          items:
+            $ref: '#/components/schemas/Model'
+        qualifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Qualification'
+        bundle_sha256:
+          type: string
+        authority_id:
+          type: string
+        publication_epoch:
+          type: integer
+          minimum: 1
+    DiscoveryRequest:
+      oneOf:
+      - type: object
+        required:
+        - kind
+        - sage_version
+        - observed
+        properties:
+          kind:
+            const: language
+          sage_version:
+            type: string
+          observed:
+            type: object
+            required:
+            - profile_id
+            - language_code
+            - script
+            - region
+            properties:
+              profile_id:
+                type: string
+              language_code:
+                type: string
+              script:
+                type: string
+              region:
+                type: string
+            additionalProperties: false
+        additionalProperties: false
+      - type: object
+        required:
+        - kind
+        - sage_version
+        - observed
+        properties:
+          kind:
+            const: model
+          sage_version:
+            type: string
+          observed:
+            type: object
+            required:
+            - execution_provider
+            - provider_family
+            - model_id
+            - capability_fingerprint
+            - reasoning_levels
+            properties:
+              execution_provider:
+                type: string
+              provider_family:
+                type: string
+              model_id:
+                type: string
+              capability_fingerprint:
+                type: string
+              reasoning_levels:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+        additionalProperties: false
+    DiscoveryResponse:
+      type: object
+      required:
+      - discovery_id
+      - status
+      - observation_count
+      properties:
+        discovery_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - PENDING_REVIEW
+          - KNOWN
+          - IGNORED
+        observation_count:
+          type: integer
+          minimum: 1
