@@ -118,3 +118,20 @@ def test_ingest_incoming_directory_moves_invalid_files_to_rejected_without_touch
     assert outcomes[0]["status"] == "REJECTED"
     assert (rejected / "garbage.json").exists()
     assert repo.list_attention() == []
+
+
+def test_ingest_incoming_directory_survives_an_unreadable_entry_and_processes_the_rest(tmp_path):
+    """An OSError reading one entry (e.g. a stray directory matching *.json) never aborts the whole batch."""
+    repo = setup_repo(tmp_path)
+    item = repo.queue_test({"profile_id": "en-US", "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium"})
+    incoming, processed, rejected = tmp_path / "incoming", tmp_path / "processed", tmp_path / "rejected"
+    incoming.mkdir()
+    (incoming / "a-not-a-file.json").mkdir()  # reading this raises IsADirectoryError (an OSError)
+    (incoming / "b-result.json").write_text(json.dumps(_submission(item["id"])), encoding="utf-8")
+
+    outcomes = ingest_incoming_directory(repo, incoming_dir=incoming, processed_dir=processed, rejected_dir=rejected)
+
+    outcomes_by_file = {row["file"]: row for row in outcomes}
+    assert outcomes_by_file["a-not-a-file.json"]["status"] == "REJECTED"
+    assert outcomes_by_file["b-result.json"]["status"] == "STAGED"
+    assert (processed / "b-result.json").exists()
