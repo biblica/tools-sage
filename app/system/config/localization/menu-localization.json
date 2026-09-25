@@ -2059,6 +2059,14 @@
       "ru": "ключ отправки SQS",
       "pt-BR": "chave de envio SQS"
     },
+    "menu.request.sqs.validation": {
+      "en-US": "Request SQS validation",
+      "en-GB": "Request SQS validation",
+      "id": "Minta validasi SQS",
+      "fr": "Demander une validation SQS",
+      "ru": "Запросить проверку SQS",
+      "pt-BR": "Solicitar validação SQS"
+    },
     "menu.sage.data.folders": {
       "en-US": "SAGE data folders",
       "en-GB": "SAGE data folders",

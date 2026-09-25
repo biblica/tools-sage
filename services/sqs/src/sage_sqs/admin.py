@@ -10,6 +10,8 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Callable
 
+import yaml
+
 from .db import Database
 from .domain import Qualification
 from .publisher import Publisher
@@ -153,6 +155,50 @@ class AdminApp:
             "models_changed": sum(1 for row in rows if row.changed),
         })
         return rows
+
+    def draft_language_profile_seed(self, *, profile_id: str, language_code: str, script: str,
+                                    region: str, requested_capability: str, seed_dir: Path) -> Path:
+        """Write a seed/languages/<profile_id>.yml identity stub from a validation request.
+
+        Only the identity fields observable from the request are filled in.
+        tier, cluster, iso_639_3, and display_name are left as explicit
+        placeholders that fail validate_profile() until ADMIN sets them --
+        those are business/linguistic judgment calls, not something this
+        console fabricates. Never overwrites an existing seed file.
+        """
+        seed_dir = Path(seed_dir)
+        path = seed_dir / f"{profile_id}.yml"
+        if path.exists():
+            raise ValueError("SEED_FILE_ALREADY_EXISTS")
+        seed_dir.mkdir(parents=True, exist_ok=True)
+        stub = {
+            "schema_version": "1.0",
+            "profile_id": profile_id,
+            "display_name": profile_id,
+            "status": "DRAFT",
+            "revision": 1,
+            "tier": 0,
+            "cluster": "",
+            "identity": {
+                "iso_639_1": language_code,
+                "iso_639_3": "",
+                "script": script,
+                "region": region,
+            },
+            "capabilities": ["GRAMMAR_ANALYSIS", "SEMANTIC_REWRITE"],
+            "profile_build": {
+                "source": "LANGUAGE_VALIDATION_REQUEST",
+                "sage_profile_available_in_reference_snapshot": True,
+                "exact_profile_confirmation_required": True,
+                "evaluation_pack_state": "BUILD_REQUIRED",
+            },
+            "admin_review": {"required": True, "issues": []},
+        }
+        path.write_text(yaml.safe_dump(stub, sort_keys=False), encoding="utf-8")
+        self.repo.audit("ADMIN", "DRAFT_LANGUAGE_PROFILE_SEED", {
+            "profile_id": profile_id, "requested_capability": requested_capability, "path": str(path),
+        })
+        return path
 
     def queue_evaluation(self, *, model_id: str, profile_id: str, capability: str,
                          reasoning: str = "medium", scope: str = "FULL", force: bool = False) -> dict:

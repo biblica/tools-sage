@@ -57,3 +57,35 @@ def test_language_discovery_is_exact_metadata_only(tmp_path):
         },
     }
     assert client.post("/discoveries", json=payload).status_code == 202
+
+
+def test_language_validation_request_is_accepted(tmp_path):
+    client = _client(tmp_path)
+    payload = {
+        "kind": "LANGUAGE_VALIDATION_REQUEST",
+        "sage_version": "0.02a1",
+        "observed": {
+            "profile_id": "sw-CD",
+            "language_code": "sw",
+            "script": "Latn",
+            "region": "CD",
+            "capability": "GRAMMAR_ANALYSIS",
+        },
+    }
+    assert client.post("/discoveries", json=payload).status_code == 202
+
+
+def test_language_validation_request_rejects_an_unsupported_capability(tmp_path):
+    client = _client(tmp_path)
+    payload = {
+        "kind": "LANGUAGE_VALIDATION_REQUEST",
+        "sage_version": "0.02a1",
+        "observed": {
+            "profile_id": "sw-CD",
+            "language_code": "sw",
+            "script": "Latn",
+            "region": "CD",
+            "capability": "TRANSLATION",
+        },
+    }
+    assert client.post("/discoveries", json=payload).status_code == 400

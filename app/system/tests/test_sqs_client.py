@@ -12,6 +12,7 @@ from sage.sqs_client import (
     SqsTransportError,
     fetch_bundle,
     fetch_health,
+    fetch_language_request_status,
     fetch_planned_evaluations,
     post_discovery,
     resolve_endpoints,
@@ -119,6 +120,20 @@ def test_fetch_planned_evaluations_succeeds_against_a_real_local_server():
     httpd = _server({"/planned-evaluations": (200, [{"id": "run-1", "model_id": "gpt-x"}])})
     try:
         assert fetch_planned_evaluations([_url(httpd)])[0]["id"] == "run-1"
+    finally:
+        httpd.shutdown()
+
+
+def test_fetch_language_request_status_succeeds_against_a_real_local_server():
+    """The language-request status endpoint reaches the server with the capability query param."""
+    httpd = _server({
+        "/language-requests/sw-CD?capability=GRAMMAR_ANALYSIS": (200, {
+            "profile_id": "sw-CD", "capability": "GRAMMAR_ANALYSIS", "status": "REQUESTED",
+        }),
+    })
+    try:
+        result = fetch_language_request_status([_url(httpd)], profile_id="sw-CD", capability="GRAMMAR_ANALYSIS")
+        assert result["status"] == "REQUESTED"
     finally:
         httpd.shutdown()
 

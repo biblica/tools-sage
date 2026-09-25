@@ -28,6 +28,27 @@
       "additionalProperties": false,
       "required": ["kind", "sage_version", "observed"],
       "properties": {
+        "kind": {"const": "LANGUAGE_VALIDATION_REQUEST"},
+        "sage_version": {"type": "string", "minLength": 1},
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["profile_id", "language_code", "script", "region", "capability"],
+          "properties": {
+            "profile_id": {"type": "string", "minLength": 1},
+            "language_code": {"type": "string", "minLength": 1},
+            "script": {"type": "string"},
+            "region": {"type": "string"},
+            "capability": {"enum": ["GRAMMAR_ANALYSIS", "SEMANTIC_REWRITE"]}
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "sage_version", "observed"],
+      "properties": {
         "kind": {"const": "MODEL"},
         "sage_version": {"type": "string", "minLength": 1},
         "observed": {

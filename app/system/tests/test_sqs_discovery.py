@@ -10,6 +10,7 @@ import pytest
 
 from sage.sqs_discovery import (
     build_language_profile_discovery,
+    build_language_validation_request,
     build_model_discovery,
     discovery_capability_fingerprint,
     flush_outbox,
@@ -66,6 +67,17 @@ def test_language_profile_discovery_matches_the_real_tested_wire_contract():
     )
     _assert_matches_schema_variant(discovery, _discovery_schema())
     assert discovery["kind"] == "LANGUAGE_PROFILE"
+
+
+def test_language_validation_request_matches_the_real_tested_wire_contract():
+    """A built LANGUAGE_VALIDATION_REQUEST discovery matches every required field in SQS's actual enforced schema."""
+    discovery = build_language_validation_request(
+        profile_id="sw-KE", language_code="sw", script="Latn", region="KE",
+        capability="GRAMMAR_ANALYSIS", sage_version="0.02a3",
+    )
+    _assert_matches_schema_variant(discovery, _discovery_schema())
+    assert discovery["kind"] == "LANGUAGE_VALIDATION_REQUEST"
+    assert discovery["observed"]["capability"] == "GRAMMAR_ANALYSIS"
 
 
 def test_capability_fingerprint_is_stable_and_order_independent():
