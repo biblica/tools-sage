@@ -290,6 +290,39 @@ class Repository:
         row = self.db.connection.execute("SELECT COUNT(*) FROM evaluation_attempts WHERE run_id=?", (run_id,)).fetchone()
         return int(row[0])
 
+    def language_request_status(self, *, profile_id: str, capability: str) -> str:
+        """Return one coarse, derived status for a language validation request.
+
+        Checks the most advanced evidence first: a published qualification
+        (QUALIFIED/NOT_QUALIFIED) outranks an in-flight test run, which
+        outranks a merely-existing profile row, which outranks an open
+        request. Reveals nothing beyond this one enum -- no project or host
+        identity, matching the trust boundary every other public read
+        already keeps.
+        """
+        published = self.current_published_bundle()
+        if published is not None:
+            for row in published.get("qualifications") or []:
+                if row.get("profile_id") == profile_id and row.get("capability") == capability:
+                    return str(row.get("status"))
+        run = self.db.connection.execute(
+            "SELECT 1 FROM evaluation_runs WHERE status IN ('PENDING','RUNNING') "
+            "AND json_extract(payload_json,'$.profile_id')=? AND json_extract(payload_json,'$.capability')=? LIMIT 1",
+            (profile_id, capability),
+        ).fetchone()
+        if run is not None:
+            return "TESTING_IN_PROGRESS"
+        if self.latest_profile(profile_id) is not None:
+            return "PROFILE_IN_PROGRESS"
+        request = self.db.connection.execute(
+            "SELECT 1 FROM attention_items WHERE category='LANGUAGE_VALIDATION_REQUEST' AND status='OPEN' "
+            "AND json_extract(payload_json,'$.observed.profile_id')=? AND json_extract(payload_json,'$.observed.capability')=? LIMIT 1",
+            (profile_id, capability),
+        ).fetchone()
+        if request is not None:
+            return "REQUESTED"
+        return "NOT_REQUESTED"
+
     def record_planner_event(self, *, disposition: str, reason_code: str, payload: dict[str, Any]) -> None:
         self.db.connection.execute(
             "INSERT INTO planner_events(created_utc,disposition,reason_code,payload_json) VALUES(?,?,?,?)",

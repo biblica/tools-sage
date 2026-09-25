@@ -117,6 +117,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/plans/2026-09-14-NCA-NUMBER-USAGE.md`
 - `docs/superpowers/plans/2026-09-18-SQS-INTEGRATION-PLAN.md`
 - `docs/superpowers/plans/2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md`
+- `docs/superpowers/plans/2026-09-23-LANGUAGE-PROFILE-VALIDATION-REQUEST-PLAN.md`
 - `docs/superpowers/specs`
 - `docs/superpowers/specs/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
 - `docs/superpowers/specs/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS-DESIGN.md`
@@ -1072,6 +1073,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_sqs_discovery.py`
 - `system/tests/test_sqs_evidence_repository.py`
 - `system/tests/test_sqs_language_coverage.py`
+- `system/tests/test_sqs_language_validation_menu.py`
 - `system/tests/test_sqs_provider_bridge.py`
 - `system/tests/test_sqs_provider_coverage.py`
 - `system/tests/test_sqs_qualification.py`

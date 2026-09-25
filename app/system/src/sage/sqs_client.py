@@ -159,3 +159,14 @@ def fetch_planned_evaluations(endpoints: list[str], *, timeout: int = 10) -> lis
     anything RUNNING.
     """
     return request_with_failover(endpoints, "/planned-evaluations", timeout=timeout)
+
+
+def fetch_language_request_status(endpoints: list[str], *, profile_id: str, capability: str, timeout: int = 10) -> dict[str, Any]:
+    """GET /language-requests/{profile_id}?capability=... with ordered endpoint failover.
+
+    A live, on-demand call -- deliberately not cached via the bundle sync,
+    since this reflects a specific operator's in-progress request rather
+    than the public catalog every SAGE host shares.
+    """
+    query = urllib.parse.urlencode({"capability": capability})
+    return request_with_failover(endpoints, f"/language-requests/{urllib.parse.quote(profile_id)}?{query}", timeout=timeout)

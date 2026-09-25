@@ -3,10 +3,13 @@ from pathlib import Path
 
 import pytest
 
+import yaml
+
 from sage_sqs.admin import AdminApp
 from sage_sqs.db import Database
 from sage_sqs.domain import LanguageProfile, ModelRecord, Qualification
 from sage_sqs.ingest import stage_submission
+from sage_sqs.profile_validation import validate_profile
 from sage_sqs.publisher import Publisher
 from sage_sqs.repository import Repository
 from test_ingest import _submission
@@ -135,3 +138,48 @@ def test_admin_provider_refresh_invalidates_changed_fingerprint(tmp_path):
     assert rows[0].changed is True
     assert repo.latest_model("openai", "gpt-x").revision == 2
     assert repo.latest_model("openai", "gpt-x").status == "REVIEW_REQUIRED"
+
+
+def test_draft_language_profile_seed_writes_an_identity_stub(tmp_path):
+    repo, app = setup(tmp_path)
+    seed_dir = tmp_path / "seed" / "languages"
+    path = app.draft_language_profile_seed(
+        profile_id="sw-CD", language_code="sw", script="Latn", region="CD",
+        requested_capability="GRAMMAR_ANALYSIS", seed_dir=seed_dir,
+    )
+    assert path == seed_dir / "sw-CD.yml"
+    stub = yaml.safe_load(path.read_text(encoding="utf-8"))
+    assert stub["profile_id"] == "sw-CD"
+    assert stub["identity"] == {"iso_639_1": "sw", "iso_639_3": "", "script": "Latn", "region": "CD"}
+    assert stub["capabilities"] == ["GRAMMAR_ANALYSIS", "SEMANTIC_REWRITE"]
+    assert stub["profile_build"]["evaluation_pack_state"] == "BUILD_REQUIRED"
+    row = repo.db.connection.execute("SELECT action FROM audit_events ORDER BY id DESC LIMIT 1").fetchone()
+    assert row[0] == "DRAFT_LANGUAGE_PROFILE_SEED"
+
+
+def test_draft_language_profile_seed_refuses_to_overwrite_an_existing_file(tmp_path):
+    _, app = setup(tmp_path)
+    seed_dir = tmp_path / "seed" / "languages"
+    app.draft_language_profile_seed(
+        profile_id="sw-CD", language_code="sw", script="Latn", region="CD",
+        requested_capability="GRAMMAR_ANALYSIS", seed_dir=seed_dir,
+    )
+    with pytest.raises(ValueError):
+        app.draft_language_profile_seed(
+            profile_id="sw-CD", language_code="sw", script="Latn", region="CD",
+            requested_capability="SEMANTIC_REWRITE", seed_dir=seed_dir,
+        )
+
+
+def test_draft_language_profile_seed_still_requires_admin_judgment_to_pass_validation(tmp_path):
+    """The scaffolded stub fails validate_profile() until ADMIN sets tier/cluster/iso_639_3 -- it never fabricates those."""
+    _, app = setup(tmp_path)
+    seed_dir = tmp_path / "seed" / "languages"
+    path = app.draft_language_profile_seed(
+        profile_id="sw-CD", language_code="sw", script="Latn", region="CD",
+        requested_capability="GRAMMAR_ANALYSIS", seed_dir=seed_dir,
+    )
+    stub = yaml.safe_load(path.read_text(encoding="utf-8"))
+    issues = {issue.code for issue in validate_profile(stub)}
+    assert "INVALID_TIER" in issues
+    assert "MISSING_CLUSTER" in issues

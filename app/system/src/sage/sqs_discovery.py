@@ -67,6 +67,29 @@ def build_language_profile_discovery(*, profile_id: str, language_code: str, scr
     }
 
 
+def build_language_validation_request(*, profile_id: str, language_code: str, script: str, region: str,
+                                      capability: str, sage_version: str) -> dict[str, Any]:
+    """Build one LANGUAGE_VALIDATION_REQUEST discovery payload in the exact tested wire shape.
+
+    Distinct from build_language_profile_discovery: this is a deliberate
+    operator action ("a real project needs this now"), not passive
+    telemetry, and it names the one exact capability that project needs --
+    never the whole profile -- so ADMIN is never implicitly committed to
+    authoring evaluation-pack content nobody has asked for yet.
+    """
+    return {
+        "kind": "LANGUAGE_VALIDATION_REQUEST",
+        "sage_version": sage_version,
+        "observed": {
+            "profile_id": profile_id,
+            "language_code": language_code,
+            "script": script,
+            "region": region,
+            "capability": capability,
+        },
+    }
+
+
 def queue_discovery(outbox_path: Path, discovery: dict[str, Any]) -> None:
     """Append one discovery to the local outbox; never makes a network call."""
     entries = load_outbox(outbox_path)

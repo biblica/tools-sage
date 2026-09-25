@@ -25,6 +25,11 @@ def validate_discovery(payload: Any) -> dict[str, Any]:
     if kind == "LANGUAGE_PROFILE":
         if set(observed) != {"profile_id", "language_code", "script", "region"}:
             raise ValueError("INVALID_DISCOVERY")
+    elif kind == "LANGUAGE_VALIDATION_REQUEST":
+        if set(observed) != {"profile_id", "language_code", "script", "region", "capability"}:
+            raise ValueError("INVALID_DISCOVERY")
+        if observed.get("capability") not in {"GRAMMAR_ANALYSIS", "SEMANTIC_REWRITE"}:
+            raise ValueError("INVALID_DISCOVERY")
     elif kind == "MODEL":
         if set(observed) != {"provider_family", "model_id", "reasoning_levels", "capability_fingerprint"}:
             raise ValueError("INVALID_DISCOVERY")

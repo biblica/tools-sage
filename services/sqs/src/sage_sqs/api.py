@@ -62,6 +62,14 @@ def create_app(repo: Repository) -> FastAPI:
     def planned_evaluations() -> list[dict]:
         return repo.list_pending_evaluations()
 
+    @app.get("/language-requests/{profile_id}")
+    def language_request(profile_id: str, capability: str) -> dict:
+        return {
+            "profile_id": profile_id,
+            "capability": capability,
+            "status": repo.language_request_status(profile_id=profile_id, capability=capability),
+        }
+
     @app.get("/bundle")
     def bundle(request: Request, response: Response):
         value = published()

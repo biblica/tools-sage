@@ -63,6 +63,8 @@ from .language_codes import canonical_language_tag, canonical_regional_language_
 from .model_service import ModelService
 from .executors.codex_cli import CodexCLIExecutor
 from .sqs_submission_key import generate_submission_keypair, submission_key_status
+from .sqs_client import SqsTransportError, fetch_language_request_status, resolve_endpoints
+from .sqs_discovery import build_language_validation_request, queue_discovery
 from .references import parse_analysis_scope, parse_scope, validate_scripture_scope
 from .scripture import VERSIFICATION_ADVISORY_CODES, compile_project_scope, is_default_vrs_compatible_issue
 from .resource_mounts import (
@@ -572,6 +574,20 @@ def _json_file(path: Path) -> dict[str, Any]:
 def _relative(root: Path, path: Path) -> str:
     """Implement ` relative` in the deterministic terminal control flow."""
     return operator_path(root, path)
+
+
+def _unassessed_competency_tags(assessments: Sequence[dict[str, Any]]) -> list[tuple[str, str]]:
+    """Return (canonical_tag, language) pairs for competency rows with no registry evidence yet.
+
+    UNASSESSED here is model_language_competency.py's own registry status
+    (a live self-probe axis) -- a reasonable trigger point for offering SQS
+    validation, not the same data as SQS's qualification catalog.
+    """
+    return [
+        (str(item["canonical_tag"]), str(item.get("language") or item["canonical_tag"]))
+        for item in assessments
+        if str(item.get("tier") or "") == "UNASSESSED" and item.get("canonical_tag")
+    ]
 
 
 class SageControlCenter:
@@ -1637,13 +1653,73 @@ class SageControlCenter:
             rel = dict(relationships.get(tag) or {})
             base = str(rel.get("parent") or tag.split("-",1)[0])
             identity = dict(dict(registry_cfg.get("identities") or {}).get(base) or {})
-            rows.append({"canonical_tag": tag, "language": str(rel.get("name") or identity.get("name") or tag), "region": str(rel.get("region") or ""), "script": namespace.script})
+            language_code = str(identity.get("iso_639_1") or identity.get("iso_639_3") or base)
+            rows.append({
+                "canonical_tag": tag, "language": str(rel.get("name") or identity.get("name") or tag),
+                "region": str(rel.get("region") or ""), "script": namespace.script, "language_code": language_code,
+            })
         if not rows:
             self.io.write("No non-baseline configured languages require a competency lookup.")
             return
         with self.io.working("Loading competency evidence for configured languages", ellipsis=False):
             result = ModelService(self.root).lookup_language_competency(rows, provider="codex")
         self._write_language_competency_evidence(result)
+        self._offer_sqs_language_validation(result, {row["canonical_tag"]: row for row in rows})
+
+    def _offer_sqs_language_validation(self, result: dict[str, Any], rows_by_tag: dict[str, dict[str, str]]) -> None:
+        """Best-effort: for UNASSESSED competency rows, show SQS validation status and offer to request it.
+
+        Never blocks or fails the competency check itself -- if SQS is not
+        configured, or is unreachable, this section is simply skipped or
+        shows UNREACHABLE per row, matching the existing sqs-sync philosophy
+        of never blocking governed work on SQS availability.
+        """
+        assessments = list(result.get("assessments") or [])
+        if result.get("assessment"):
+            assessments = [dict(result["assessment"])]
+        candidates = _unassessed_competency_tags(assessments)
+        if not candidates:
+            return
+        endpoints = resolve_endpoints()
+        if not endpoints:
+            return
+        self.io.write()
+        self.io.write("SQS QUALIFICATION VALIDATION")
+        self.io.write("-" * 72)
+        offerable: list[tuple[str, str, str]] = []
+        for tag, language in candidates:
+            for capability in ("GRAMMAR_ANALYSIS", "SEMANTIC_REWRITE"):
+                try:
+                    status = fetch_language_request_status(endpoints, profile_id=tag, capability=capability)["status"]
+                except SqsTransportError:
+                    status = "UNREACHABLE"
+                self.io.write(f"{language:<24}{tag:<10}{capability:<18}{status}")
+                if status == "NOT_REQUESTED":
+                    offerable.append((tag, language, capability))
+        if not offerable:
+            return
+        self.io.write()
+        if not self.io.confirm("Request SQS validation for one of these?", default=False):
+            return
+        options = tuple(
+            (str(index + 1), f"{language} [{tag}] - {capability}")
+            for index, (tag, language, capability) in enumerate(offerable)
+        )
+        choice = self.io.choose("REQUEST SQS VALIDATION", (*options, ("B", "Back")))
+        if choice == "B":
+            return
+        tag, language, capability = offerable[int(choice) - 1]
+        row = rows_by_tag[tag]
+        from . import __version__
+
+        discovery = build_language_validation_request(
+            profile_id=tag, language_code=row["language_code"], script=row["script"], region=row["region"],
+            capability=capability, sage_version=__version__,
+        )
+        outbox_path = storage_layout(self.root).state_root / "sqs" / "sqs-discovery-outbox.json"
+        queue_discovery(outbox_path, discovery)
+        self.io.write(f"Queued SQS validation request for {language} [{tag}] - {capability}.")
+        self.io.write("It will be sent on the next `sage model sqs-sync`.")
 
     def configure_languages_menu(self) -> None:
         """Configure explicit Language Profile relationships, namespaces, and model competency."""

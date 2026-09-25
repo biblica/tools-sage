@@ -37,8 +37,17 @@ def test_discovery_contract_matches_wire_vocabulary():
         "sage_version": "0.02a1",
         "observed": {"profile_id": "sw-CD", "language_code": "sw", "script": "Latn", "region": "CD"},
     }
+    validation_request = {
+        "kind": "LANGUAGE_VALIDATION_REQUEST",
+        "sage_version": "0.02a1",
+        "observed": {
+            "profile_id": "sw-CD", "language_code": "sw", "script": "Latn", "region": "CD",
+            "capability": "GRAMMAR_ANALYSIS",
+        },
+    }
     jsonschema.validate(model, schema)
     jsonschema.validate(language, schema)
+    jsonschema.validate(validation_request, schema)
 
 
 def test_qualification_submission_contract_matches_wire_vocabulary():

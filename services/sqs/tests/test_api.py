@@ -63,3 +63,21 @@ def test_planned_evaluations_lists_pending_work_without_claiming_it(tmp_path):
         "model_id": "gpt-x", "capability": "GRAMMAR_ANALYSIS", "reasoning": "medium", "scope": "FULL",
     }]
     assert repo.evaluation_status(item["id"]) == "PENDING"
+
+
+def test_language_request_status_reflects_the_published_qualification(tmp_path):
+    client = seeded_client(tmp_path)
+    response = client.get("/language-requests/uk-UA", params={"capability": "GRAMMAR_ANALYSIS"})
+    assert response.status_code == 200
+    assert response.json() == {"profile_id": "uk-UA", "capability": "GRAMMAR_ANALYSIS", "status": "QUALIFIED"}
+
+
+def test_language_request_status_is_not_requested_for_an_unknown_profile(tmp_path):
+    client = seeded_client(tmp_path)
+    response = client.get("/language-requests/xx-XX", params={"capability": "GRAMMAR_ANALYSIS"})
+    assert response.json()["status"] == "NOT_REQUESTED"
+
+
+def test_language_request_status_requires_a_capability_query_param(tmp_path):
+    client = seeded_client(tmp_path)
+    assert client.get("/language-requests/uk-UA").status_code == 422
