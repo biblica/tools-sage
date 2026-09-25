@@ -1016,6 +1016,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_guided_remediation.py`
 - `system/tests/test_hardening_and_segmentation.py`
 - `system/tests/test_human_output.py`
+- `system/tests/test_incomplete_portions.py`
 - `system/tests/test_job_data_reset.py`
 - `system/tests/test_job_snapshots.py`
 - `system/tests/test_language_specificity_policy.py`

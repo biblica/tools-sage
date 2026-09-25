@@ -129,6 +129,7 @@ def register_project(
     paratext_metadata: Mapping[str, Any] | None = None,
     versification_metadata: Mapping[str, Any] | None = None,
     imported_at: datetime | None = None,
+    incomplete_portions: Mapping[str, Mapping[str, tuple[int, ...]]] | None = None,
 ) -> dict[str, Any]:
     """Add one role-neutral Scripture Project to SAGE and return its stored record."""
     project_id = project_id.strip()
@@ -143,6 +144,15 @@ def register_project(
     sfm_books = detect_scripture_books(path)
     books = tuple(declared_books) if declared_books else sfm_books
     missing_books = sorted(set(books) - set(sfm_books), key=BOOK_ORDER.__getitem__)
+    portions = {
+        book: {"complete": tuple(value.get("complete") or ()), "incomplete": tuple(value.get("incomplete") or ())}
+        for book, value in (incomplete_portions or {}).items()
+    }
+    fully_incomplete_books = {book for book, value in portions.items() if not value["complete"]}
+    # Exclude books with real, unusable (fully incomplete) content from the declared
+    # scope -- this never blocks the import; it only keeps SAGE from claiming a book is
+    # available for governed work before any of it actually has real content.
+    scope_books = tuple(book for book in books if book not in fully_incomplete_books) or books
     if not sfm_books and not allow_empty:
         raise ValidationError(
             f"Project folder does not contain readable canonical Scripture .SFM files: {path}",
@@ -177,16 +187,20 @@ def register_project(
         "kind": kind.strip().upper(),
         "content_state": content_state.strip().upper(),
         "scope": {
-            "testament": scope_testament(books),
+            "testament": scope_testament(scope_books),
             "canon": "PROTESTANT_66",
-            "expected_books": list(books) if books else ["MAT"],
+            "expected_books": list(scope_books) if scope_books else ["MAT"],
             "roles": [],
         },
         "detected_books": list(books),
         "sfm_books": list(sfm_books),
         "missing_books": missing_books,
         "coverage_status": "INCOMPLETE" if missing_books else "COMPLETE",
-        "scope_summary": summarize_scope(books),
+        "scope_summary": summarize_scope(scope_books),
+        "incomplete_portions": {
+            book: {"complete": list(value["complete"]), "incomplete": list(value["incomplete"])}
+            for book, value in portions.items()
+        },
         "coverage_policy": coverage_policy.strip().upper(),
         "versification": {"base_file": base, "custom_file": "auto", **dict(versification_metadata or {})},
         "paratext_metadata": dict(paratext_metadata or {}),
