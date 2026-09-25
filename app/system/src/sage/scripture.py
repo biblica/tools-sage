@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 from .atomic import atomic_write_json
 from .canon import PERIPHERAL_BOOKS, resolve_expected_books
@@ -16,7 +16,7 @@ from .paratext_filenames import peek_book_code as _peek_book_code, select_script
 from .sections import section_index_from_usj
 from .structure_policy import load_structure_policy
 from .usj import USJ_COMPILER, compile_usfm_file, parse_usj_units
-from .vrs import VerseRef, VersificationSchema
+from .vrs import VerseRef, VersificationSchema, parse_vrs_file
 from .versification_service import VersificationService
 from .references import AnalysisScope, BOOK_ORDER, ScriptureScope, analysis_scope_portions
 
@@ -253,6 +253,91 @@ def validate_usj_document(
         "warnings": warnings,
         "status": "BLOCKED" if issues else ("READY_WITH_WARNINGS" if warnings else "READY"),
     }
+
+
+_CHAPTER_REFERENCE_RE = re.compile(r"^\S+\s+(\d+):")
+
+
+def incomplete_chapters(validation: Mapping[str, Any]) -> tuple[int, ...]:
+    """Return chapters containing at least one empty-visible-body verse.
+
+    Distinct from a MISSING coordinate (absent from the file entirely -- see
+    EXPECTED_COORDINATE_MISSING/EXPECTED_CHAPTER_MISSING) and a DOUBTFUL/
+    excluded reading (never expected in the first place per the effective
+    VRS's exclusions, so it never produces this warning): this is a verse
+    marker that exists with no real body text behind it. Conservative by
+    design -- even one such verse disqualifies its whole containing chapter
+    as a usable portion.
+    """
+    disqualified: set[int] = set()
+    for warning in validation.get("warnings") or ():
+        if warning.get("code") != "EMPTY_VISIBLE_BODY":
+            continue
+        match = _CHAPTER_REFERENCE_RE.match(str(warning.get("reference") or ""))
+        if match:
+            disqualified.add(int(match.group(1)))
+    return tuple(sorted(disqualified))
+
+
+def complete_chapters(validation: Mapping[str, Any]) -> tuple[int, ...]:
+    """Return the subset of chapters_present with no empty-visible-body verse -- the real, usable portions."""
+    disqualified = set(incomplete_chapters(validation))
+    return tuple(
+        chapter for chapter in validation.get("chapters_present") or ()
+        if chapter not in disqualified
+    )
+
+
+def _resolve_import_time_base_vrs(project_path: Path, base_vrs_file: str, config: EcosystemConfig) -> Path:
+    """Resolve the base VRS file for a Project not yet wired into ecosystem.yml.
+
+    Deliberately narrower than resolve_project_vrs_paths/load_project_vrs:
+    it uses only the base VRS, never a project-local custom.vrs override,
+    because this runs at import time, before any Job/role binding gives the
+    Project a resolved ProjectSpec. The full effective VRS (including any
+    custom override) is still validated later through the existing
+    task-execution pipeline once the Project has one.
+    """
+    wanted = base_vrs_file.casefold()
+    if project_path.is_dir():
+        for candidate in project_path.iterdir():
+            if candidate.is_file() and not candidate.is_symlink() and candidate.name.casefold() == wanted:
+                return candidate
+    configured = config.base_vrs_files.get(wanted)
+    if configured is None:
+        raise ValidationError(f"Base VRS file not found: {base_vrs_file}", code="BASE_VRS_FILE_NOT_FOUND")
+    return configured
+
+
+def detect_incomplete_portions(
+    *, project_path: Path, base_vrs_file: str, config: EcosystemConfig,
+) -> dict[str, dict[str, tuple[int, ...]]]:
+    """Detect real per-book complete/incomplete chapter coverage at Project import time.
+
+    Runs before the Project is wired into ecosystem.yml, using only the base
+    VRS (see _resolve_import_time_base_vrs). Returns one entry per detected
+    book file: {"complete": (...), "incomplete": (...)} chapter numbers. A
+    book with no complete chapters at all has real, unusable content --
+    callers exclude it from scope, they do not block the import over it.
+    """
+    base_path = _resolve_import_time_base_vrs(project_path, base_vrs_file, config)
+    schema = parse_vrs_file(
+        base_path, schema_id=base_vrs_file, canonical_id=config.canonical_versification,
+        source_label=f"base:{base_path.name}",
+    )
+    result: dict[str, dict[str, tuple[int, ...]]] = {}
+    files, _ = select_scripture_files(project_path)
+    for path in files:
+        book = _peek_book_code(path)
+        if book is None:
+            continue
+        usj = compile_usfm_file(path)
+        validation = validate_usj_document(usj, schema, coverage_policy="PRESENT_CHAPTERS_ONLY")
+        result[book] = {
+            "complete": complete_chapters(validation),
+            "incomplete": incomplete_chapters(validation),
+        }
+    return result
 
 
 def _cache_key(source_hash: str, structure_policy_sha256: str) -> str:
