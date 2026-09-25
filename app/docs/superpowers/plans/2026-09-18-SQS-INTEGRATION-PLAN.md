@@ -33,7 +33,7 @@ Implements spec decision 1 (two-field provider identity: `provider_family` = mod
 - [x] `synthesize_qualification` (`qualification.py`) now takes `execution_channel` and includes it in the evidence dict hashed into `evidence_sha256`; `Worker` (`worker.py`) requires an explicit `execution_channel` at construction (no default — fails closed) and threads it through; `drain()`'s CLI entrypoint reads `SQS_EXECUTION_CHANNEL`, raising if unset, mirroring the existing `OPENAI_API_KEY` fail-loud pattern. `ModelRecord.catalog_fingerprint` correctly stays unchanged (vendor/model identity only, no channel) — applying the same "no channel in key" reasoning.
 - [x] Cross-catalog consistency test added (`tests/test_execution_channels.py`): a published bundle's `execution_channel` values must all exist in the seeded descriptor catalog; proven to actually catch drift, not just vacuously pass. The SAGE-side half of this check (Task 6) is not yet implemented — SAGE has no `sqs_client.py` to check from yet (Task 4).
 - [x] Full suite re-verified green after every change: 93/93 (88 original + 5 new).
-- [ ] **New finding while implementing this task, not yet fixed**: `worker.py`'s `drain()` default path (`provider is None`) constructs `OpenAIProvider(os.environ["OPENAI_API_KEY"])` — the only real, working provider adapter in this codebase is built around a raw API key, i.e. the `api_key` execution channel, not `codex_workspace`. There is no adapter that can actually execute a qualification test through a Codex workspace account. Recording `execution_channel: codex_workspace` on a qualification is now structurally possible, but no code path can yet *produce* one truthfully from a real run — only from hand-constructed evidence (as the tests do) or from a run actually made through the `api_key` channel mislabeled as `codex_workspace`. A `CodexWorkspaceProvider` adapter (however SAGE actually shells out to/authenticates with Codex) is required before any real qualification run can be trusted to carry that label. Tracked for Task 4/9, not solved here.
+- [ ] **New finding while implementing this task, not yet fixed**: `worker.py`'s `drain()` default path (`provider is None`) constructs `OpenAIProvider(os.environ["OPENAI_API_KEY"])` — the only real, working provider adapter in this codebase is built around a raw API key, i.e. the `api_key` execution channel, not `codex_workspace`. There is no adapter that can actually execute a qualification test through a Codex workspace account. Recording `execution_channel: codex_workspace` on a qualification is now structurally possible, but no code path can yet *produce* one truthfully from a real run — only from hand-constructed evidence (as the tests do) or from a run actually made through the `api_key` channel mislabeled as `codex_workspace`. A `CodexWorkspaceProvider` adapter (however SAGE actually shells out to/authenticates with Codex) is required before any real qualification run can be trusted to carry that label. Planned, not yet implemented: [2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md](2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md) (no Task 9 exists in this document; that plan proposes making this its own tracked task once its open questions are answered).
 
 ## Task 1b — Language onboarding contract (new; symmetric to Task 1)
 
@@ -119,6 +119,67 @@ Distinct from Task 3a (reacting to a 429 mid-call): this is a proactive "is this
 
 Reuse and adapt the recovered `05_ACCEPTANCE_TESTS/ACCEPTANCE_GATES.md` categories (current SAGE preservation, SQS source, publication trust/cache, transport/failover, discovery, routing authority, real local Mac socket test, packaging), re-verified against the actual integrated tree at completion — not assumed from the historical pack.
 
+Superseded/extended by two later, separately-planned efforts, both now built and committed to `0.02a3` (not yet pushed as of this writing):
+[2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md](2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md)
+(admin-run local Codex-workspace vetting client: `GET /planned-evaluations`, the
+`QUALIFICATION_SUBMISSION` ingest/review flow, the SSH submission keypair, the
+`ProviderAdapter` bridge, `sage sqs list`/`sage sqs submit`) and
+[2026-09-23-LANGUAGE-PROFILE-VALIDATION-REQUEST-PLAN.md](2026-09-23-LANGUAGE-PROFILE-VALIDATION-REQUEST-PLAN.md)
+(the `LANGUAGE_VALIDATION_REQUEST` discovery kind, seed-profile scaffolding,
+`GET /language-requests/{profile_id}` status). All code-level acceptance gates
+from both are green (133/133 SQS-side, 2221/2221 app-side as of the last full run).
+
+**What still separates "code is done and tested" from "ready for a real alpha run"** —
+gathered here since this is the acceptance-gate task, not scattered across the
+sub-plans:
+
+- [ ] **Nothing is deployed anywhere yet.** A server needs to be provisioned, the
+      package installed to `/opt/tools-sage-sqs/.venv` (the path the systemd units
+      hardcode), and `/etc/sage-sqs/` populated from `services/sqs/seed/*` --
+      `runtime.py`'s `create_app_from_env()` auto-bootstraps from that config root
+      on startup, but nothing copies the seed content into it, and no deployment
+      doc exists walking through this.
+- [ ] Install/enable the systemd units, including `sqs-ingest` + its timer, which
+      has never run outside pytest.
+- [ ] TLS/reverse proxy for any non-loopback endpoint (`Caddyfile.example` is a
+      template, not a live config); `sqs_client.py` refuses plain HTTP otherwise.
+- [ ] Create the dedicated `sqs-uploader` system account, scoped only to
+      `incoming/` (deliberately manual, per the Codex-workspace plan's own
+      decision -- still not actually done).
+- [ ] Pre-populate `known_hosts` on every admin machine for the server's SSH host
+      key before first use -- the SCP upload runs with `BatchMode=yes`, so it
+      fails closed on an unrecognized host key rather than prompting.
+- [ ] Each alpha-testing SAGE host needs `SAGE_SQS_URL` configured, and an ADMIN
+      needs to generate its submission keypair via the new MAINTENANCE menu item
+      and hand the public key to whoever runs the server.
+- [ ] Decide, don't just default: `require_signature: false` is the current
+      client default; confirm that's intentional for alpha, not an oversight.
+      `trusted_authority_id: biblica-sqs-production` in `sqs.yml` is still
+      flagged in its own comment as carried forward from the recovered fixtures,
+      never independently verified against a live deployment.
+- [ ] **Content, not code**: evaluation-pack coverage today is 40 packs across 20
+      languages (2 capabilities each); the shared coverage manifest lists 30 SAGE
+      grammar profiles with zero SQS qualification coverage at all. Closing any
+      of those requires real linguistic authorship, which the
+      language-validation-request flow is built to surface demand for, not to
+      automate. `seed/openai-provider.yml` is snapshotted 2026-08-30 -- worth an
+      ADMIN refresh before alpha so runs test the actual current model lineup.
+- [ ] **The one real dry run that has never happened.** Every test this session
+      stubs Codex (`FakeProvider`) and stubs `scp` (an injected runner). Nobody
+      has run the actual pipeline for real: a live Codex CLI call, a real
+      evaluation pack, a real SCP upload to a real server, a real ADMIN
+      review/approve, a real publish. This is the highest-value thing left to
+      *do*, not build -- it is the only way to catch integration issues the
+      mocked tests structurally cannot.
+- [ ] Confirmed, not fixed (explicitly out of scope, tracked separately): Codex
+      CLI token usage is never captured, so `codex_workspace` qualifications
+      always report `$0` estimated cost; the `services/sqs`-ships-alongside-`app/`
+      sibling-path assumption is unverified against a real packaged SAGE Core
+      release build; qualification results still do not feed SAGE's actual task
+      routing (Task 5's gap above), so alpha can validate the vetting *pipeline*,
+      not "does this change real routing" -- that needs the separate,
+      deliberately-deferred language-aware routing design first.
+
 ## Task 8 — Release/versioning
 
 - [ ] Update `VERSIONING-POLICY.md` and `TODO.md` once SQS reaches a real milestone (e.g. Task 4 complete) — do not mark it done prematurely; both currently correctly say SQS is unimplemented.
@@ -126,4 +187,13 @@ Reuse and adapt the recovered `05_ACCEPTANCE_TESTS/ACCEPTANCE_GATES.md` categori
 
 ## Status
 
-Task 0 in progress (baseline recovered and verified; commit pending). Tasks 1–8 not started.
+Tasks 0–6a complete (verified, tested, committed to `0.02a3`). Task 5 deliberately
+stops at the extension seam per its own recorded decision. Task 6a concludes no
+proactive availability check is currently buildable and documents why, rather
+than leaving the item silently open. Task 7 is now a real, current gap list (see
+above) rather than the placeholder it was when this line last said "not
+started" -- the code-level acceptance gates it names are green; the deployment,
+content, and live-dry-run gates are not yet done. Task 8 (release/versioning)
+not started: `VERSIONING-POLICY.md`/`TODO.md` still correctly say SQS is
+unimplemented and should stay that way until Task 7's real gaps close, not just
+its code-level ones.
