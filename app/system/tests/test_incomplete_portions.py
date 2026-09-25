@@ -190,3 +190,86 @@ def test_register_catalogued_scripture_project_skips_detection_for_a_complete_im
 
     record = registered_project_records(root)["tstfull"]
     assert record["incomplete_portions"] == {}
+
+
+def test_register_catalogued_scripture_project_survives_a_badly_encoded_book_file(make_workspace, tmp_path):
+    """A WIP book file with invalid encoding degrades detection gracefully instead of crashing the import.
+
+    compile_usfm_file raises a raw UnicodeDecodeError for this, not a
+    ValidationError -- the import must still succeed.
+    """
+    from sage.project_inventory import registered_project_records
+    from sage.resource_registration import register_catalogued_scripture_project
+
+    root = make_workspace()
+    project = tmp_path / "tstbad"
+    project.mkdir()
+    (project / "41MAT.SFM").write_text("\\id MAT\n\\c 1\n\\v 1 One.\n", encoding="utf-8")
+    (project / "42MRK.SFM").write_bytes(b"\\id MRK\n\\c 1\n\\v 1 bad\xff text.\n")
+
+    row = {
+        "project_code": "tstbad",
+        "path": str(project),
+        "language_iso": "en",
+        "full_name": "Test Bad Encoding",
+        "books": ["MAT", "MRK"],
+        "versification": {"base_file": "eng.vrs"},
+    }
+    register_catalogued_scripture_project(root / "ecosystem.yml", catalogue_row=row)
+
+    record = registered_project_records(root)["tstbad"]
+    assert record["incomplete_portions"] == {}
+    assert record["sfm_books"] == ["MAT", "MRK"]
+
+
+def test_register_external_scripture_resource_excludes_incomplete_books(make_workspace, tmp_path):
+    """The external-registration path (menu.py's import flow) also runs and applies detection."""
+    from sage.project_inventory import registered_project_records
+    from sage.resource_registration import register_external_scripture_resource
+
+    root = make_workspace()
+    project = tmp_path / "tstext"
+    project.mkdir()
+    (project / "41MAT.SFM").write_text("\\id MAT\n\\c 1\n\\v 1 One.\n", encoding="utf-8")
+    (project / "42MRK.SFM").write_text("\\id MRK\n\\c 1\n\\v 1 \n", encoding="utf-8")
+
+    register_external_scripture_resource(
+        root / "ecosystem.yml",
+        project_id="tstext",
+        language_code="en",
+        profile_variant=None,
+        role=None,
+        base_vrs_file="eng.vrs",
+        external_path=project,
+        declared_books=("MAT", "MRK"),
+    )
+
+    record = registered_project_records(root)["tstext"]
+    assert record["scope"]["expected_books"] == ["MAT"]
+    assert record["incomplete_portions"]["MRK"]["incomplete"] == [1]
+
+
+def test_register_external_scripture_resource_survives_a_badly_encoded_book_file(make_workspace, tmp_path):
+    """The external-registration path also degrades gracefully on invalid encoding, never crashing import."""
+    from sage.project_inventory import registered_project_records
+    from sage.resource_registration import register_external_scripture_resource
+
+    root = make_workspace()
+    project = tmp_path / "tsxbad"
+    project.mkdir()
+    (project / "41MAT.SFM").write_text("\\id MAT\n\\c 1\n\\v 1 One.\n", encoding="utf-8")
+    (project / "42MRK.SFM").write_bytes(b"\\id MRK\n\\c 1\n\\v 1 bad\xff text.\n")
+
+    register_external_scripture_resource(
+        root / "ecosystem.yml",
+        project_id="tsxbad",
+        language_code="en",
+        profile_variant=None,
+        role=None,
+        base_vrs_file="eng.vrs",
+        external_path=project,
+        declared_books=("MAT", "MRK"),
+    )
+
+    record = registered_project_records(root)["tsxbad"]
+    assert record["incomplete_portions"] == {}
