@@ -50,10 +50,13 @@ def _detect_portions_if_partial(
 ) -> dict[str, dict[str, tuple[int, ...]]] | None:
     """Run incomplete-portion detection only for a partial (PORTIONS-scope) import.
 
-    Best-effort and additive: a failure resolving the base VRS at this early,
-    pre-ecosystem-wiring stage degrades to no portions data rather than
-    blocking the Project import -- the existing task-execution pipeline
-    still validates the effective VRS later once the Project has a role.
+    Best-effort and additive: a failure resolving the base VRS, or compiling
+    a book file (e.g. a WIP export with invalid encoding -- compile_usfm_file
+    raises a raw UnicodeDecodeError/UnicodeError for that, not a
+    ValidationError) at this early, pre-ecosystem-wiring stage degrades to no
+    portions data rather than blocking the Project import. The existing
+    task-execution pipeline still validates the effective VRS and file
+    encoding later once the Project has a role.
     """
     sfm_books = detect_scripture_books(project_path)
     books = tuple(declared_books) if declared_books else sfm_books
@@ -61,7 +64,7 @@ def _detect_portions_if_partial(
         return None
     try:
         return detect_incomplete_portions(project_path=project_path, base_vrs_file=base_vrs_file, config=config)
-    except ValidationError:
+    except (ValidationError, UnicodeError, OSError):
         return None
 
 
