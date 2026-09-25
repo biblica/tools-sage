@@ -102,8 +102,15 @@ def ingest_incoming_directory(repo: Repository, *, incoming_dir: Path, processed
                 "file": path.name, "status": "STAGED",
                 "run_id": receipt.run_id, "attention_key": receipt.attention_key,
             })
-        except (SubmissionValidationError, json.JSONDecodeError, UnicodeDecodeError) as exc:
-            os.replace(path, rejected_dir / path.name)
+        except (SubmissionValidationError, json.JSONDecodeError, UnicodeDecodeError, OSError) as exc:
+            # OSError included deliberately: this is an unattended, timer-driven batch
+            # (see the module docstring) -- one unreadable or mid-transfer file (a
+            # permission mismatch after SCP, or a concurrent scan racing a delete)
+            # must never abort the whole run and lose every outcome already recorded.
+            try:
+                os.replace(path, rejected_dir / path.name)
+            except OSError:
+                pass
             outcomes.append({"file": path.name, "status": "REJECTED", "reason": str(exc)})
     return outcomes
 
