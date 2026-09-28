@@ -51,7 +51,8 @@ from .ollama_policy import (
     SAGE_LOCAL_ADMIN_SOURCE_SHA256,
 )
 from .iso_languages import iso_language, regional_profile_candidates, preferred_operational_primary
-from .language_identification import resolve_country, resolve_country_input
+from .locale_data import resolve_locale_facts
+from .language_identification import merge_ldml_locale_conventions, resolve_country, resolve_country_input
 from .language_profiles import ensure_language_profile_namespace, language_profile_status
 from .rtc_policy import default_rtc_policy, write_run_policy_snapshot
 from .interface_localization import (
@@ -1477,6 +1478,33 @@ class SageControlCenter:
             self.io.write("No Language Profiles are configured.")
         return rows
 
+    def _locale_reference_lines(
+        self, tag: str, *, namespace_override: dict[str, dict[str, str]] | None = None,
+        ldml_conventions: dict[str, dict[str, str]] | None = None,
+    ) -> list[str]:
+        """Render a short CLDR-sourced number/punctuation/date-time preview for one language tag."""
+        facts = resolve_locale_facts(tag=tag, namespace_override=namespace_override, ldml_conventions=ldml_conventions)
+        numbers, punctuation, datetime_facts = facts["numbers"], facts["punctuation"], facts["datetime"]
+        lines: list[str] = []
+        if numbers:
+            lines.append(
+                f"{'Locale reference (CLDR)':<28}digits {numbers.get('digits', '0-9')}, "
+                f"decimal '{numbers.get('decimal_separator', '?')}', group '{numbers.get('group_separator', '?')}' "
+                f"[{numbers.get('source', '?')}]"
+            )
+        if punctuation:
+            quotes = f"{punctuation.get('quote_start', '?')} {punctuation.get('quote_end', '?')}"
+            if punctuation.get("alt_quote_start"):
+                quotes += f" / {punctuation['alt_quote_start']} {punctuation.get('alt_quote_end', '?')}"
+            lines.append(f"{'':<28}quotes {quotes} [{punctuation.get('source', '?')}]")
+        if datetime_facts:
+            lines.append(
+                f"{'':<28}date order {datetime_facts.get('date_field_order', '?')}, "
+                f"{datetime_facts.get('calendar', '?')} calendar, {datetime_facts.get('hour_cycle', '?')} "
+                f"[{datetime_facts.get('source', '?')}]"
+            )
+        return lines
+
     def _language_profile_detail(self, tag: str) -> None:
         """Open one language identity or regional working profile with its dependencies."""
         registry_cfg, relationship_cfg, _ = self._language_ui_config()
@@ -1557,6 +1585,7 @@ class SageControlCenter:
             f"{'Parent':<28}{parent_display}",
             f"{'Script':<28}{namespace.script}",
             f"{'Model competency':<28}{competency.get(tag, 'NOT CHECKED')}",
+            *self._locale_reference_lines(tag, namespace_override=namespace.locale_overrides),
             "",
             "Bound Projects",
             "-" * 72,
@@ -6513,7 +6542,7 @@ class SageControlCenter:
             )
 
     def _model_routing_override_menu(self, service: ModelService) -> None:
-        """Inspect, clear, or set the explicitly advanced exact-route override."""
+        """Inspect, clear, or set the exact-route override or the no-data default."""
         state = service.routing_override_status()
         self.io.write(f"Routing mode: {state['routing_mode']}")
         override = state.get("override")
@@ -6528,15 +6557,39 @@ class SageControlCenter:
                 f"Qualified Skill coverage: {override.get('qualified_skill_count', 0)}/"
                 f"{override.get('registered_skill_count', 0)}"
             )
+        provisional_state = service.provisional_override_status()
+        provisional_override = provisional_state.get("override")
+        if isinstance(provisional_override, dict):
+            selection = dict(provisional_override.get("selection") or {})
+            self.io.write(
+                "No-data default (Operator-pinned): "
+                f"{selection.get('provider')} / {selection.get('model_id')} / "
+                f"{selection.get('reasoning_id')}"
+            )
+        else:
+            self.io.write("No-data default: POLICY DEFAULT")
         choice = self.io.choose(
             "Advanced routing override",
-            (("1", "Set qualified exact route"), ("2", "Clear override"), ("B", "Back")),
+            (
+                ("1", "Set qualified exact route"),
+                ("2", "Clear override"),
+                ("3", "Set no-data default model/reasoning"),
+                ("4", "Clear no-data default"),
+                ("B", "Back"),
+            ),
         )
         if choice == "B":
             return
         if choice == "2":
             cleared = service.clear_global_override()
             self.io.write(f"Routing mode: {cleared['routing_mode']}")
+            return
+        if choice == "3":
+            self._model_provisional_override_menu(service)
+            return
+        if choice == "4":
+            service.clear_provisional_override()
+            self.io.write("No-data default: POLICY DEFAULT")
             return
         catalog = service.list_models("codex")
         candidates: list[dict[str, Any]] = []
@@ -6579,6 +6632,82 @@ class SageControlCenter:
             f"Override enabled for {result['qualified_skill_count']}/"
             f"{result['registered_skill_count']} registered Skills."
         )
+
+    def _model_provisional_override_menu(self, service: ModelService) -> None:
+        """Interrogate the live provider catalog and let the Operator pin the no-data default.
+
+        Unlike the exact-route override, this never requires qualification evidence -- it only
+        needs the chosen model/reasoning to be live right now, since it is exactly the fallback
+        used when no Skill has any qualification evidence at all.
+        """
+        provider = "codex"
+        catalog = service.list_models(provider)
+        # A row only carries capability_fingerprint when it came from a live model_capabilities
+        # entry -- reasoning_efforts itself may legitimately be empty when the provider doesn't
+        # report native reasoning levels for that model. set_provisional_override's own
+        # _live_provisional_candidate() already falls back to "provider-default" reasoning in
+        # that case, so the picker must offer the same models it does, not fewer.
+        models = [row for row in catalog.get("models", []) if row.get("capability_fingerprint")]
+        if not models:
+            self.io.write(f"No live {provider} models are available.")
+            return
+        model_choice = self.io.choose(
+            "Live provider models",
+            tuple(
+                (str(index), f"{row['model']} ({', '.join(row['reasoning_efforts']) or 'provider-default'})")
+                for index, row in enumerate(models, 1)
+            ),
+        )
+        row = models[int(model_choice) - 1]
+        reasoning_options = list(row["reasoning_efforts"]) or ["provider-default"]
+        reasoning_choice = self.io.choose(
+            f"Native reasoning for {row['model']}",
+            tuple((str(index), value) for index, value in enumerate(reasoning_options, 1)),
+        )
+        reasoning_id = reasoning_options[int(reasoning_choice) - 1]
+        if not self.io.confirm(
+            f"Set the no-data default to {provider} / {row['model']} / {reasoning_id}?",
+            default=False,
+        ):
+            return
+        result = service.set_provisional_override(
+            {"provider": provider, "model_id": row["model"], "reasoning_id": reasoning_id}
+        )
+        self.io.write(f"No-data default: {result['routing_mode']} — {provider} / {row['model']} / {reasoning_id}")
+
+    def _model_evaluate_menu(self, service: ModelService) -> None:
+        """Generate qualification evidence by running sealed synthetic Skill suites live.
+
+        This is a deliberate reversal of SAGE's earlier operator contract, which kept
+        Skill-route evaluation to maintainer/release CLI tooling only (see
+        SKILL-ROUTING-AND-MODEL-QUALIFICATION.md). Operators may now trigger it here so
+        Advanced routing override has qualification evidence to offer; it still never
+        selects a model by itself -- it only produces evidence for that separate step.
+        """
+        settings = service.settings()
+        provider = str(settings.get("selected_provider") or "codex")
+        self.io.write("Evaluate new or changed models")
+        self.io.write(f"Runs SAGE's sealed synthetic Skill suites against live {provider} models to")
+        self.io.write("produce qualification evidence for Advanced routing override.")
+        self.io.write("This makes real provider calls and can take a long time across a full catalog.")
+        if not self.io.confirm(
+            f"Evaluate every registered Skill against every available {provider} model now?",
+            default=False,
+        ):
+            return
+        with self.io.working("Evaluating models against sealed Skill suites"):
+            result = service.evaluate_catalog_routes(provider=provider)
+        self.io.write(f"Evaluation: {result['status']}")
+        self.io.write(f"Provider: {result['provider']}")
+        self.io.write(f"Skill readiness: {result['ready_skills']}/{result['total_skills']}")
+        for row in result.get("skills", []):
+            route = row.get("recommended_route") or {}
+            detail = (
+                f"{route.get('model_id')} / {route.get('reasoning_id')}"
+                if route
+                else str(row.get("reason_code") or "NOT_QUALIFIED")
+            )
+            self.io.write(f"- {row['skill_id']}: {row['qualification_status']} — {detail}")
 
     def _model_test_selected(self, service: ModelService) -> dict[str, Any]:
         """Run and return the explicit structured connectivity test for the selected provider."""
@@ -6776,17 +6905,18 @@ class SageControlCenter:
             if selection_checked and not ai.get("ready") and ai.get("diagnostic"):
                 self.io.write(f"{'Status detail':<28}{ai.get('diagnostic')}")
             elif not selection_checked:
-                self.io.write(f"{'Status detail':<28}Choose 7 to check the current configuration")
+                self.io.write(f"{'Status detail':<28}Choose 8 to check the current configuration")
 
             self.io.write_menu_header("AI settings", major=False)
             self.io.write_menu_item(1, "Change provider")
             self.io.write_menu_item(2, "Available provider models")
             self.io.write_menu_item(3, "Skill routing recommendations")
             self.io.write_menu_item(4, "Advanced routing override")
+            self.io.write_menu_item(5, "Evaluate new or changed models")
             self.io.write_menu_header("Provider management", major=False)
-            self.io.write_menu_item(5, "Connect OpenAI and ChatGPT")
-            self.io.write_menu_item(6, "Configure Local AI")
-            self.io.write_menu_item(7, "Check LLM connection")
+            self.io.write_menu_item(6, "Connect OpenAI and ChatGPT")
+            self.io.write_menu_item(7, "Configure Local AI")
+            self.io.write_menu_item(8, "Check LLM connection")
             self.io.write_menu_footer(include_back=True)
             value = self.io.read("Choose: ").strip().casefold()
             if value == "a":
@@ -6816,17 +6946,19 @@ class SageControlCenter:
                     self._model_routing_override_menu(service)
                     selection_checked = False
                 elif value == "5":
+                    self._model_evaluate_menu(service)
+                elif value == "6":
                     self._model_connect_chatgpt(service)
                     selection_checked = False
-                elif value == "6":
-                    self.local_admin_assistant_menu()
                 elif value == "7":
+                    self.local_admin_assistant_menu()
+                elif value == "8":
                     with self.io.working("Checking LLM connection"):
                         ai = self._model_test_selected(service)
                         catalog = self._load_ai_model_catalog(service, ai)
                     selection_checked = True
                 else:
-                    self.io.write("Invalid choice. Choose 1-7 or a footer action.")
+                    self.io.write("Invalid choice. Choose 1-8 or a footer action.")
                     continue
             except SageError as exc:
                 self.show_error(exc)
@@ -7419,12 +7551,14 @@ class SageControlCenter:
                     if compatible:
                         options.append(("2", "Choose existing compatible Language Profile"))
                     options.append(("B", "Back"))
+                    ldml_conventions = merge_ldml_locale_conventions(row.get("ldml_locale_conventions") or ())
                     picked = self.io.choose("LANGUAGE PROFILE", tuple(options), context=(
                         f"Language                      {selected.get('name')}",
                         f"ISO                           {iso_display}",
                         f"Primary audience country      {primary_country.get('name')}",
                         f"BCP-47                        {tag}",
                         "Language Profile              NOT CONFIGURED",
+                        *self._locale_reference_lines(tag, ldml_conventions=ldml_conventions),
                     ))
                     if picked == "B":
                         continue

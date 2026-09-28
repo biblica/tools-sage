@@ -250,3 +250,111 @@ def test_model_service_applies_override_mode_to_each_skill_status(
     assert rows["rtc"]["selection_mode"] == "USER_OVERRIDE"
     assert rows["stc"]["reason_code"] == "GLOBAL_OVERRIDE_NOT_QUALIFIED_FOR_SKILL"
     assert cleared["routing_mode"] == "AUTOMATIC"
+
+
+def test_model_service_wraps_the_no_data_default_override(
+    package_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The menu-facing service API must pin, report, and clear the no-data default."""
+    root = tmp_path / "provisional" / "app"
+    shutil.copytree(package_root, root)
+    status = _status(_capability())
+    service = ModelService(root)
+    monkeypatch.setattr(service, "probe", lambda *_args, **_kwargs: (status, None))
+
+    baseline = service.provisional_override_status()
+    pinned = service.set_provisional_override(
+        {"provider": "codex", "model_id": "gpt-5.6-sol", "reasoning_id": "high"}
+    )
+    active = service.provisional_override_status()
+    route = resolve_skill_route(root, "rtc", [status])
+    cleared = service.clear_provisional_override()
+
+    assert baseline["routing_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert pinned["routing_mode"] == "PROVISIONAL_OVERRIDE"
+    assert active["override"]["selection"]["reasoning_id"] == "high"
+    assert route.identity.reasoning_id == "high"
+    assert route.routing_mode == "PROVISIONAL_OVERRIDE"
+    assert cleared["routing_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+    assert service.provisional_override_status()["routing_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
+
+
+def test_provisional_override_menu_offers_a_live_model_with_no_reported_reasoning(
+    package_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The no-data-default picker must not dead-end just because the provider didn't report
+    native reasoning levels for a live model -- set_provisional_override's own
+    _live_provisional_candidate() already accepts "provider-default" for exactly this case,
+    so the menu must offer the same model rather than filtering it out first.
+    """
+    import io as io_module
+
+    from sage.menu import MenuIO, SageControlCenter, ScriptedInput
+
+    root = tmp_path / "provisional-menu" / "app"
+    shutil.copytree(package_root, root)
+    capability = ModelCapability(
+        id="gpt-5-codex",
+        model="gpt-5-codex",
+        display_name="GPT-5 Codex",
+        supported_reasoning_efforts=(),
+        default_reasoning_effort=None,
+        is_default=True,
+        identity_strength="ALIASED",
+        cost_class="STANDARD",
+    )
+    status = _status(capability)
+    service = ModelService(root)
+    monkeypatch.setattr(service, "probe", lambda *_args, **_kwargs: (status, None))
+
+    output = io_module.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["1", "1", "y"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    center._model_provisional_override_menu(service)
+
+    rendered = output.getvalue()
+    assert "No live" not in rendered
+    assert "No-data default: PROVISIONAL_OVERRIDE" in rendered
+    status_after = service.provisional_override_status()
+    assert status_after["routing_mode"] == "PROVISIONAL_OVERRIDE"
+    assert status_after["override"]["selection"]["reasoning_id"] == "provider-default"
+
+
+def test_routing_override_menu_reports_the_reset_in_the_same_words_as_the_status_header(
+    package_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Clearing the no-data default must confirm using the same 'POLICY DEFAULT' label the
+    menu's own status header uses for that state -- not the raw internal routing_mode string,
+    which reads like an error and made a working reset look like it had failed."""
+    import io as io_module
+
+    from sage.menu import MenuIO, SageControlCenter, ScriptedInput
+
+    root = tmp_path / "provisional-clear-menu" / "app"
+    shutil.copytree(package_root, root)
+    status = _status(_capability())
+    service = ModelService(root)
+    monkeypatch.setattr(service, "probe", lambda *_args, **_kwargs: (status, None))
+    service.set_provisional_override({"provider": "codex", "model_id": "gpt-5.6-sol", "reasoning_id": "high"})
+
+    output = io_module.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["4"]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+
+    center._model_routing_override_menu(service)
+
+    rendered = output.getvalue()
+    assert "No-data default: POLICY DEFAULT" in rendered
+    assert "PROVISIONAL_PROVIDER_DEFAULT" not in rendered
+    assert service.provisional_override_status()["routing_mode"] == "PROVISIONAL_PROVIDER_DEFAULT"
