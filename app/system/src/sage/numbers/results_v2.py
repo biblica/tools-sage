@@ -385,8 +385,12 @@ def _validate_numbers_result_v2(document: Mapping[str, object], *, expected_unit
         outside = [r for r in refs if not scope.contains(reference(r))]
         if outside:
             expansions.append({'unit_id': g['unit_id'], 'included_target_references': outside, 'western_references': g['projection']['western_references']})
-        if g['projection']['precision'] != 'STYLE_STREAM' and (any(r['status'] != 'UNINDEXED' for r in g['reference_rows'])
-                or g['extraction']['status'] != 'COMPLETE' or any(e['stream_id'] == 'main' for e in g['extraction']['expressions'])):
+        # A wholly unindexed unit is never planned for extraction (build_inventory's
+        # indexed-only filter), so its incomplete/absent extraction is the deliberate
+        # no-data-scan outcome, not a coverage gap -- only an at-least-partially indexed
+        # unit can become a candidate.
+        if (g['projection']['precision'] != 'STYLE_STREAM'
+                and any(r['status'] != 'UNINDEXED' for r in g['reference_rows'])):
             candidates.append(g['unit_id'])
     _require(coverage['scope_expansions'] == expansions and coverage['candidate_group_ids'] == sorted(candidates), 'Scope ledger differs', 'NCA_RESULT_COVERAGE_INVALID')
     metrics, receipts = document['metrics'], document['model_receipts']
