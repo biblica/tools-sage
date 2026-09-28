@@ -9,6 +9,7 @@ import subprocess
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeoutError
 from contextlib import contextmanager
 from threading import Event, Lock, Thread
 from dataclasses import dataclass, field
@@ -591,6 +592,12 @@ def _unassessed_competency_tags(assessments: Sequence[dict[str, Any]]) -> list[t
     ]
 
 
+# Grace period given to an operator-terminated controller subprocess to exit after a
+# graceful terminate() before either escalation path (controller()'s own no-tty retry,
+# or _run_with_status's interactive tty poll loop) forces a kill().
+_CONTROLLER_TERMINATE_GRACE_SECONDS = 5.0
+
+
 class SageControlCenter:
     """Operate BIC, RTC, and STC from one deterministic terminal menu."""
 
@@ -626,8 +633,29 @@ class SageControlCenter:
         # catalog readiness alone do not prove the WebSocket sampling channel works.
         self._codex_transport_verified_until = 0.0
         self._compact_saw_progress = False
+        # State for terminating an actively-running controller subprocess on operator
+        # request (Ctrl-C) -- see _request_active_controller_termination().
+        self._active_controller_process: subprocess.Popen | None = None
+        self._controller_termination_requested = False
 
     # ---------- Controller bridge ----------
+
+    def _request_active_controller_termination(self, *, escalate: bool = False) -> None:
+        """Ask the in-flight controller subprocess to stop; escalate to a hard kill on request.
+
+        Safe to call from a different thread than the one running controller() -- this is
+        exactly how the interactive tty spinner path in _run_with_status uses it, since its
+        polling loop (and hence the operator's Ctrl-C) runs on the main thread while the
+        controller subprocess call itself runs on a background pool thread.
+        """
+        self._controller_termination_requested = True
+        process = self._active_controller_process
+        if process is None or process.poll() is not None:
+            return
+        if escalate:
+            process.kill()
+        else:
+            process.terminate()
 
     def controller(self, project: Job, arguments: Sequence[str]) -> Any:
         """Run one canonical controller command against a Job-scoped config."""
@@ -653,30 +681,56 @@ class SageControlCenter:
         env["PYTHONPATH"] = (
             core_path if not existing_pythonpath else os.pathsep.join((core_path, existing_pythonpath))
         )
-        completed = subprocess.run(
+        process = subprocess.Popen(
             command,
             cwd=self.root,
             env=env,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
             encoding="utf-8",
             errors="strict",
-            check=False,
         )
-        text = completed.stdout.strip()
+        self._controller_termination_requested = False
+        self._active_controller_process = process
+        try:
+            try:
+                stdout, stderr = process.communicate()
+            except KeyboardInterrupt:
+                # Operator pressed Ctrl-C while this thread itself was blocked on the
+                # child (the no-tty / non-interactive path; the interactive tty spinner
+                # instead catches the interrupt in _run_with_status's polling loop, on
+                # the main thread, and calls _request_active_controller_termination
+                # directly since this thread runs on a background pool thread there).
+                self._request_active_controller_termination()
+                try:
+                    stdout, stderr = process.communicate(timeout=_CONTROLLER_TERMINATE_GRACE_SECONDS)
+                except subprocess.TimeoutExpired:
+                    self._request_active_controller_termination(escalate=True)
+                    stdout, stderr = process.communicate()
+        finally:
+            self._active_controller_process = None
+        if self._controller_termination_requested:
+            raise ValidationError(
+                "Run terminated by operator request before the controller command completed.",
+                code="CONTROLLER_RUN_TERMINATED",
+                details={"command": command},
+            )
+        returncode = process.returncode
+        text = stdout.strip()
         payload: Any = None
         if text:
             try:
                 payload = json.loads(text)
             except json.JSONDecodeError:
                 payload = {"status": "UNPARSEABLE_OUTPUT", "stdout": text}
-        if completed.returncode != 0:
+        if returncode != 0:
             details = payload if isinstance(payload, dict) else {}
             reported_errors = [str(value) for value in details.get("errors", [])]
             message = str(
                 details.get("message")
                 or ("; ".join(reported_errors) if reported_errors else "")
-                or completed.stderr.strip()
+                or stderr.strip()
                 or "Controller command failed"
             )
             blocked = str(details.get("state") or "").upper() == "BLOCKED"
@@ -689,9 +743,9 @@ class SageControlCenter:
                 next_action=(str(details.get("next_action")) if details.get("next_action") else None),
                 details={
                     "command": command,
-                    "returncode": completed.returncode,
+                    "returncode": returncode,
                     "payload": details,
-                    "stderr": completed.stderr.strip(),
+                    "stderr": stderr.strip(),
                 },
             )
         return payload
@@ -1188,12 +1242,28 @@ class SageControlCenter:
             future = pool.submit(action)
             try:
                 self.io.status(f"{message} {frames[frame]}")
+                interrupted = False
                 while not future.done():
-                    time.sleep(0.12)
+                    try:
+                        time.sleep(0.12)
+                    except KeyboardInterrupt:
+                        # The operator's Ctrl-C lands here, on the main thread, while the
+                        # controller subprocess call itself runs on the pool thread above --
+                        # ask it to stop rather than letting this bare interrupt crash the
+                        # whole interactive session.
+                        interrupted = True
+                        self._request_active_controller_termination()
+                        break
                     if future.done():
                         break
                     frame = (frame + 1) % len(frames)
                     self.io.status(f"{message} {frames[frame]}")
+                if interrupted:
+                    try:
+                        return future.result(timeout=_CONTROLLER_TERMINATE_GRACE_SECONDS)
+                    except FutureTimeoutError:
+                        self._request_active_controller_termination(escalate=True)
+                        return future.result()
                 return future.result()
             finally:
                 self.io.clear_status()
@@ -3622,6 +3692,13 @@ class SageControlCenter:
         except SageError as exc:
             if raise_codes and exc.code in raise_codes:
                 raise
+            if exc.code == "CONTROLLER_RUN_TERMINATED":
+                # A deliberate operator stop, not a fault -- skip the fault-diagnostic
+                # report entirely so the audit trail doesn't read like something crashed.
+                self.io.write("Run terminated by operator request.")
+                self.io.write(f"Task remains resumable: {manifest_path}")
+                self.io.pause()
+                return False
             self._record_execution_issue(
                 project,
                 run,

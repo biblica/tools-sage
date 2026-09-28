@@ -5,6 +5,7 @@ from __future__ import annotations
 import io
 import json
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -41,10 +42,8 @@ def test_controller_surfaces_blocking_validation_errors_and_next_action(make_wor
     }
     monkeypatch.setattr(center.store, "ensure_runtime_files", lambda _job: job.runtime_settings_path)
     monkeypatch.setattr(
-        "sage.menu.subprocess.run",
-        lambda *args, **kwargs: subprocess.CompletedProcess(
-            args[0], 2, stdout=json.dumps(payload), stderr=""
-        ),
+        "sage.menu.subprocess.Popen",
+        lambda *args, **kwargs: _FakePopen(stdout=json.dumps(payload), stderr="", returncode=2),
     )
 
     with pytest.raises(ValidationError) as caught:
@@ -939,6 +938,50 @@ def test_codex_transport_preflight_is_cached_for_partitioned_work(make_workspace
     assert calls == [True]
 
 
+class _FakePopen:
+    """Stand in for subprocess.Popen across the controller()-termination test suite."""
+
+    def __init__(
+        self,
+        *,
+        stdout: str = "",
+        stderr: str = "",
+        returncode: int = 0,
+        communicate_side_effects: list[object] | None = None,
+    ) -> None:
+        """Configure the canned communicate()/poll() behavior this fake process reports."""
+        self._stdout = stdout
+        self._stderr = stderr
+        self.returncode = returncode
+        self._communicate_side_effects = list(communicate_side_effects or [])
+        self.terminate_calls = 0
+        self.kill_calls = 0
+        self.communicate_calls = 0
+        self._alive = True
+
+    def communicate(self, timeout: float | None = None):
+        """Return the canned (stdout, stderr) pair, or raise the next queued side effect."""
+        self.communicate_calls += 1
+        if self._communicate_side_effects:
+            effect = self._communicate_side_effects.pop(0)
+            if isinstance(effect, BaseException):
+                raise effect
+        self._alive = False
+        return self._stdout, self._stderr
+
+    def poll(self):
+        """Report None while still alive, matching subprocess.Popen.poll()'s contract."""
+        return None if self._alive else self.returncode
+
+    def terminate(self) -> None:
+        """Record a graceful-stop request without actually killing anything real."""
+        self.terminate_calls += 1
+
+    def kill(self) -> None:
+        """Record an escalated hard-kill request without actually killing anything real."""
+        self.kill_calls += 1
+
+
 def test_controller_child_forces_utf8_json_transport(make_workspace, monkeypatch) -> None:
     """Controller subprocesses exchange Unicode JSON through explicit UTF-8 pipes on Windows and POSIX."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
@@ -946,14 +989,15 @@ def test_controller_child_forces_utf8_json_transport(make_workspace, monkeypatch
     job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
     center = _center(root, [])
     captured: dict[str, object] = {}
+    fake_process = _FakePopen(stdout='{"text":"Українська"}', stderr="", returncode=0)
 
-    def fake_run(args, **kwargs):
+    def fake_popen(args, **kwargs):
         """Capture the controller subprocess options and return one Unicode JSON response."""
         captured.update(kwargs)
-        return subprocess.CompletedProcess(args, 0, stdout='{"text":"Українська"}', stderr="")
+        return fake_process
 
     monkeypatch.setattr(center.store, "ensure_runtime_files", lambda _job: job.runtime_settings_path)
-    monkeypatch.setattr("sage.menu.subprocess.run", fake_run)
+    monkeypatch.setattr("sage.menu.subprocess.Popen", fake_popen)
     payload = center.controller(job, ["workspace", "status"])
 
     assert payload["text"] == "Українська"
@@ -963,6 +1007,181 @@ def test_controller_child_forces_utf8_json_transport(make_workspace, monkeypatch
     assert isinstance(env, dict)
     assert env["PYTHONIOENCODING"] == "utf-8"
     assert env["PYTHONUTF8"] == "1"
+
+
+def test_controller_terminates_the_child_and_raises_a_defined_error_on_operator_interrupt(
+    make_workspace, monkeypatch
+) -> None:
+    """A Ctrl-C while controller() itself blocks on communicate() must stop the child and
+    raise one defined, catchable error -- not let a bare KeyboardInterrupt propagate."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    center = _center(root, [])
+    fake_process = _FakePopen(communicate_side_effects=[KeyboardInterrupt()])
+    monkeypatch.setattr(center.store, "ensure_runtime_files", lambda _job: job.runtime_settings_path)
+    monkeypatch.setattr("sage.menu.subprocess.Popen", lambda *args, **kwargs: fake_process)
+
+    with pytest.raises(ValidationError) as caught:
+        center.controller(job, ["task", "execute", "--task", "x"])
+
+    assert caught.value.code == "CONTROLLER_RUN_TERMINATED"
+    assert fake_process.terminate_calls == 1
+    assert fake_process.kill_calls == 0
+    assert fake_process.communicate_calls == 2
+    assert center._active_controller_process is None
+
+
+def test_controller_escalates_to_kill_when_the_child_ignores_terminate(
+    make_workspace, monkeypatch
+) -> None:
+    """If the terminated child doesn't exit within the grace period, controller() must
+    escalate to a hard kill rather than hang waiting for it indefinitely."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    center = _center(root, [])
+    fake_process = _FakePopen(
+        communicate_side_effects=[KeyboardInterrupt(), subprocess.TimeoutExpired(cmd="x", timeout=5)]
+    )
+    monkeypatch.setattr(center.store, "ensure_runtime_files", lambda _job: job.runtime_settings_path)
+    monkeypatch.setattr("sage.menu.subprocess.Popen", lambda *args, **kwargs: fake_process)
+
+    with pytest.raises(ValidationError) as caught:
+        center.controller(job, ["task", "execute", "--task", "x"])
+
+    assert caught.value.code == "CONTROLLER_RUN_TERMINATED"
+    assert fake_process.terminate_calls == 1
+    assert fake_process.kill_calls == 1
+    assert fake_process.communicate_calls == 3
+
+
+def test_launch_task_treats_operator_termination_as_resumable_not_a_fault(
+    make_workspace, monkeypatch
+) -> None:
+    """An operator-terminated task must read as a deliberate stop, not a crash -- no
+    fault-diagnostic report, a plain message, and the task manifest left resumable."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="JUD 1")
+    center = _center(root, [])
+
+    def fake_controller(_job, _arguments):
+        """Simulate controller() having just detected an operator-requested termination."""
+        raise ValidationError(
+            "Run terminated by operator request before the controller command completed.",
+            code="CONTROLLER_RUN_TERMINATED",
+        )
+
+    monkeypatch.setattr(center, "controller", fake_controller)
+    recorded: list[object] = []
+    monkeypatch.setattr(center, "_record_execution_issue", lambda *a, **k: recorded.append((a, k)))
+
+    ready = center._launch_task(job, run, run.root / "tasks" / "does-not-matter.json", pause=False)
+
+    assert ready is False
+    assert recorded == []
+    rendered = center.io.output.getvalue()
+    assert "Run terminated by operator request." in rendered
+    assert "Task remains resumable:" in rendered
+
+
+def test_interactive_spinner_terminates_the_active_controller_process_on_operator_interrupt(
+    make_workspace, monkeypatch
+) -> None:
+    """A real Ctrl-C during the interactive tty spinner must stop the live controller
+    subprocess (tracked via _active_controller_process) rather than crash the session."""
+
+    class TTYBuffer(io.StringIO):
+        """Advertise interactive-terminal output so _run_with_status takes the poll-loop path."""
+
+        def isatty(self) -> bool:
+            """Report an interactive output stream."""
+            return True
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    center = _center(root, [])
+    center.io = MenuIO(input_func=ScriptedInput([]), output=TTYBuffer())
+    fake_process = _FakePopen()
+    center._active_controller_process = fake_process
+    real_sleep = time.sleep
+    call_count = {"n": 0}
+
+    def flaky_sleep(_seconds):
+        """Raise KeyboardInterrupt on the very first spinner tick, simulating operator Ctrl-C."""
+        call_count["n"] += 1
+        if call_count["n"] == 1:
+            raise KeyboardInterrupt
+        real_sleep(0.01)
+
+    def action():
+        """Simulate controller() noticing the termination request and raising its error."""
+        deadline = time.monotonic() + 2
+        while fake_process.terminate_calls == 0 and time.monotonic() < deadline:
+            real_sleep(0.01)
+        raise ValidationError(
+            "Run terminated by operator request before the controller command completed.",
+            code="CONTROLLER_RUN_TERMINATED",
+        )
+
+    monkeypatch.setattr("sage.menu.time.sleep", flaky_sleep)
+
+    with pytest.raises(ValidationError) as caught:
+        center._run_with_status("Running governed task...", action)
+
+    assert caught.value.code == "CONTROLLER_RUN_TERMINATED"
+    assert fake_process.terminate_calls == 1
+    assert fake_process.kill_calls == 0
+
+
+def test_interactive_spinner_escalates_to_kill_if_the_process_does_not_stop_in_time(
+    make_workspace, monkeypatch
+) -> None:
+    """If the terminated child never finishes within the grace period, the interactive
+    poll loop must escalate to a hard kill rather than hang forever."""
+
+    class TTYBuffer(io.StringIO):
+        """Advertise interactive-terminal output so _run_with_status takes the poll-loop path."""
+
+        def isatty(self) -> bool:
+            """Report an interactive output stream."""
+            return True
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    center = _center(root, [])
+    center.io = MenuIO(input_func=ScriptedInput([]), output=TTYBuffer())
+    fake_process = _FakePopen()
+    center._active_controller_process = fake_process
+    real_sleep = time.sleep
+    call_count = {"n": 0}
+
+    def flaky_sleep(_seconds):
+        """Raise KeyboardInterrupt on the very first spinner tick, simulating operator Ctrl-C."""
+        call_count["n"] += 1
+        if call_count["n"] == 1:
+            raise KeyboardInterrupt
+        real_sleep(0.01)
+
+    def action():
+        """Simulate a child that ignores the graceful terminate() and only stops on kill()."""
+        deadline = time.monotonic() + 2
+        while fake_process.kill_calls == 0 and time.monotonic() < deadline:
+            real_sleep(0.01)
+        raise ValidationError(
+            "Run terminated by operator request before the controller command completed.",
+            code="CONTROLLER_RUN_TERMINATED",
+        )
+
+    monkeypatch.setattr("sage.menu.time.sleep", flaky_sleep)
+    monkeypatch.setattr("sage.menu._CONTROLLER_TERMINATE_GRACE_SECONDS", 0.05)
+
+    with pytest.raises(ValidationError) as caught:
+        center._run_with_status("Running governed task...", action)
+
+    assert caught.value.code == "CONTROLLER_RUN_TERMINATED"
+    assert fake_process.terminate_calls == 1
+    assert fake_process.kill_calls == 1
 
 
 def test_working_spinner_is_visible_for_non_tty_output() -> None:
