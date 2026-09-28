@@ -118,6 +118,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/plans/2026-09-18-SQS-INTEGRATION-PLAN.md`
 - `docs/superpowers/plans/2026-09-21-SQS-CODEX-WORKSPACE-PROVIDER-PLAN.md`
 - `docs/superpowers/plans/2026-09-23-LANGUAGE-PROFILE-VALIDATION-REQUEST-PLAN.md`
+- `docs/superpowers/plans/2026-09-28-NCA-BATCH-SIZE-OPTIMIZATION-PLAN.md`
 - `docs/superpowers/specs`
 - `docs/superpowers/specs/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
 - `docs/superpowers/specs/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS-DESIGN.md`

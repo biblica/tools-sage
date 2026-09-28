@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import replace
 from collections import Counter
 import json
+import math
 
 import benchmark_nca as baseline
 from sage.numbers.policy import _plain, phase_contract_manifest
@@ -83,8 +84,12 @@ def qualify_pair(before, after):
         'one_qualification': after['local_loads']['reference_load_count'] == after['local_loads']['profile_validation_count'] == 1,
         'zero_resume_calls': after['resume']['calls']['provider_calls'] == 0,
         'identical_resume_semantics': after['resume']['equivalent_outcomes_and_coverage']}
-    if before['case_count'] == 32:
-        gates['four_batches'] = optimized == 4
+    cap = after.get('extraction_batch_max_units')
+    if cap:
+        # Exact only because this fixture is one contiguous book/chapter/language/purpose/
+        # conventions run (see plan_batches): a fixture crossing any such boundary would
+        # need *more* batches than this cap-only packing minimum, never fewer.
+        gates['batches_match_configured_cap'] = optimized == math.ceil(before['case_count'] / cap)
     return {'schema_version': '1.0', 'mode': 'synthetic', 'strategy': 'paired',
         'qualification_status': 'PASS' if all(gates.values()) else 'FAIL', 'gates': gates,
         'baseline': before, 'optimized': after, 'live_status': 'LIVE_MODEL_BENCHMARK_NOT_RUN',

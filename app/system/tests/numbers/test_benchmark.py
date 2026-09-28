@@ -372,6 +372,42 @@ def test_paired_qualification_uses_complete_equal_inputs_and_real_transport(tmp_
     assert receipt['sqs_status'] == 'NOT_APPLIED'
 
 
+def test_shipped_production_cap_matches_the_qualified_measurement():
+    """Guard against silent drift between the shipped default and what was measured/qualified
+    in test_paired_qualification_at_the_shipped_production_cap_collapses_to_one_batch."""
+    import yaml
+    from sage.numbers.policy import validate_optimization_policy
+    profile = yaml.safe_load(
+        (Path(__file__).resolve().parents[3] / 'system/config/workflows/nca/profile.yml').read_text()
+    )
+    assert validate_optimization_policy(profile['optimization_policy'])['extraction_batch_max_units'] == 220
+
+
+def test_paired_qualification_at_the_shipped_production_cap_collapses_to_one_batch(tmp_path):
+    """The shipped `extraction_batch_max_units: 220` (system/config/workflows/nca/profile.yml)
+    must fold this single-chapter 32-unit fixture into one extraction call, with the exact
+    same golden/finding/coverage guarantees cap=8 already had -- the batch-size change is a
+    pure efficiency win, not a semantic one. See docs/superpowers/plans/
+    2026-09-28-NCA-BATCH-SIZE-OPTIMIZATION-PLAN.md.
+    """
+    receipt_path = tmp_path / 'paired-220.json'
+    completed = subprocess.run([sys.executable, str(TOOL), '--strategy', 'paired', '--batch-cap', '220',
+        '--cases', str(FIXTURE.with_name('optimization-mat5.json')), '--receipt', str(receipt_path)],
+        capture_output=True, text=True, check=False)
+    assert completed.returncode == 0, completed.stderr
+    receipt = json.loads(receipt_path.read_text())
+    assert receipt['qualification_status'] == 'PASS'
+    assert receipt['gates']['batches_match_configured_cap'] is True
+    before, after = receipt['baseline'], receipt['optimized']
+    assert before['calls']['phase_counts']['EXTRACTION'] == 32
+    assert after['calls']['phase_counts']['EXTRACTION'] == 1
+    assert after['extraction_batch_max_units'] == 220
+    assert after['calls']['request_bytes'] < before['calls']['request_bytes']
+    assert all(x['coverage_status'] in {'COMPLETE', 'COMPLETE_WITH_RESTRICTIONS'} for x in after['outcomes'])
+    assert receipt['live_status'] == 'LIVE_MODEL_BENCHMARK_NOT_RUN'
+    assert receipt['sqs_status'] == 'NOT_APPLIED'
+
+
 @pytest.mark.parametrize('fault', ['transient', 'malformed', 'unsupported', 'partial'])
 def test_qualification_faults_remain_bounded_without_false_pass(tmp_path, fault):
     """Failed physical requests remain counted and accepted uncertainty is never retried to pass."""
@@ -390,6 +426,34 @@ def test_qualification_faults_remain_bounded_without_false_pass(tmp_path, fault)
         assert receipt['calls']['failed_calls'] == 1
         assert all(x['matches_expressions'] for x in receipt['semantic_outcome_diffs'])
     else:
+        assert receipt['calls']['failed_calls'] > 0
+        assert not any(x['outcome'].startswith('PASS') for x in receipt['outcomes'])
+
+
+@pytest.mark.parametrize('fault', ['transient', 'malformed', 'unsupported', 'partial'])
+def test_qualification_faults_remain_bounded_at_the_shipped_production_cap(tmp_path, fault):
+    """Re-derive (not assume) the worst-case bisection-retry attempt bound at the raised
+    cap: one batch instead of four means bisecting one 32-leaf tree (2*32-1=63 nodes)
+    instead of four separate 8-leaf trees (4*(2*8-1)=60 nodes) -- a larger single batch
+    costs slightly *more* worst-case retries on total failure, not fewer. See
+    docs/superpowers/plans/2026-09-28-NCA-BATCH-SIZE-OPTIMIZATION-PLAN.md Task 2.
+    """
+    receipt_path = tmp_path / 'fault-220.json'
+    completed = subprocess.run([sys.executable, str(TOOL), '--strategy', 'optimized', '--fault', fault,
+        '--batch-cap', '220', '--cases', str(FIXTURE.with_name('optimization-mat5.json')),
+        '--receipt', str(receipt_path)], capture_output=True, text=True, check=False)
+    assert completed.returncode == 0, completed.stderr
+    receipt = json.loads(receipt_path.read_text())
+    assert receipt['calls']['phase_counts']['EXTRACTION'] <= 2 * (2 * 32 - 1)
+    assert receipt['resume']['calls']['provider_calls'] == 0
+    if fault in {'unsupported', 'partial'}:
+        assert receipt['calls']['phase_counts']['EXTRACTION'] == 1
+        assert not any(x['outcome'].startswith('PASS') for x in receipt['outcomes'])
+    elif fault == 'transient':
+        assert receipt['calls']['failed_calls'] == 1
+        assert all(x['matches_expressions'] for x in receipt['semantic_outcome_diffs'])
+    else:
+        assert receipt['calls']['phase_counts']['EXTRACTION'] == 126  # empirically measured, matches 2*(2*32-1)
         assert receipt['calls']['failed_calls'] > 0
         assert not any(x['outcome'].startswith('PASS') for x in receipt['outcomes'])
 

@@ -42,6 +42,48 @@ def test_eight_unit_batches_cover_the_scope_once(stream_inputs, evidence_policy)
     assert plan == plan_batches(stream_inputs, policy=evidence_policy, max_units=8)
 
 
+def test_configured_cap_covers_the_scope_once_at_any_size(stream_inputs, evidence_policy):
+    """The shipped cap must keep the same coverage/identity guarantees the old cap=8 had."""
+    from sage.numbers.batching import plan_batches
+    from sage.numbers.policy import validate_optimization_policy
+    import yaml
+    from pathlib import Path
+    profile = yaml.safe_load(
+        (Path(__file__).resolve().parents[3] / "system/config/workflows/nca/profile.yml").read_text()
+    )
+    configured_cap = validate_optimization_policy(profile["optimization_policy"])["extraction_batch_max_units"]
+    plan = plan_batches(stream_inputs, policy=evidence_policy, max_units=configured_cap)
+    assert not plan.blocked
+    assert [x.input_id for b in plan.batches for x in b.inputs] == [x.input_id for x in stream_inputs]
+    assert plan == plan_batches(stream_inputs, policy=evidence_policy, max_units=configured_cap)
+
+
+def test_uncapped_batch_size_is_governed_by_the_real_sizer_not_an_artificial_truncation(evidence_policy):
+    """Task 1 measurement: `extraction_batch_max_units` must not be the binding constraint
+    once raised past a token-cheap corpus's real needs -- `plan_sfm_work_units`'s own
+    hard limits are. Proves the pre-truncation this plan removes was the actual bottleneck.
+    """
+    from sage.numbers.batching import plan_batches
+    from sage.numbers.transport import make_stream_input
+    from sage.vrs import VerseRef
+
+    large = tuple(
+        make_stream_input(
+            owner_unit_id=f"MAT 5:{v}", stream_id="main", purpose="BODY",
+            target_references=(VerseRef("MAT", 5, v),),
+            records=(EvidenceRecord("MAT", 5, v, v, {}, f"\\v {v} Three men."),),
+            text="Three men.", source_sha256="0" * 64, language="en", conventions={},
+        )
+        for v in range(1, 221)
+    )
+    truncated = plan_batches(large, policy=evidence_policy, max_units=8)
+    untruncated = plan_batches(large, policy=evidence_policy, max_units=100_000)
+    assert len(truncated.batches) == 28  # ceil(220 / 8)
+    assert len(untruncated.batches) < len(truncated.batches)
+    assert not untruncated.blocked
+    assert [x.input_id for b in untruncated.batches for x in b.inputs] == [x.input_id for x in large]
+
+
 def test_wide_bridge_counts_as_one_input_but_keeps_atomic_hard_limit(stream_inputs, evidence_policy):
     """The input cap must never turn a ten-verse bridge into an eight-verse failure."""
     from sage.numbers.transport import make_stream_input
