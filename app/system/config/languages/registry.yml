@@ -90,3 +90,108 @@ identities:
     iso_639_3: ukr
     type: language
     script: Cyrl
+  sw:
+    name: Swahili
+    iso_639_1: sw
+    iso_639_3: swa
+    type: macrolanguage
+    script: Latn
+  ru:
+    name: Russian
+    iso_639_1: ru
+    iso_639_3: rus
+    type: language
+    script: Cyrl
+  zh:
+    name: Chinese
+    iso_639_1: zh
+    iso_639_3: zho
+    type: macrolanguage
+    script: Hans
+  ms:
+    name: Malay
+    iso_639_1: ms
+    iso_639_3: msa
+    type: macrolanguage
+    script: Latn
+  th:
+    name: Thai
+    iso_639_1: th
+    iso_639_3: tha
+    type: language
+    script: Thai
+  vi:
+    name: Vietnamese
+    iso_639_1: vi
+    iso_639_3: vie
+    type: language
+    script: Latn
+  fil:
+    name: Filipino
+    iso_639_3: fil
+    type: language
+    script: Latn
+  tl:
+    name: Tagalog
+    iso_639_1: tl
+    iso_639_3: tgl
+    type: language
+    script: Latn
+  ceb:
+    name: Cebuano
+    iso_639_3: ceb
+    type: language
+    script: Latn
+  ur:
+    name: Urdu
+    iso_639_1: ur
+    iso_639_3: urd
+    type: language
+    script: Arab
+  bn:
+    name: Bengali
+    iso_639_1: bn
+    iso_639_3: ben
+    type: language
+    script: Beng
+  ne:
+    name: Nepali
+    iso_639_1: ne
+    iso_639_3: nep
+    type: language
+    script: Deva
+  tr:
+    name: Turkish
+    iso_639_1: tr
+    iso_639_3: tur
+    type: language
+    script: Latn
+  tpi:
+    name: Tok Pisin
+    iso_639_3: tpi
+    type: language
+    script: Latn
+  ln:
+    name: Lingala
+    iso_639_1: ln
+    iso_639_3: lin
+    type: language
+    script: Latn
+  it:
+    name: Italian
+    iso_639_1: it
+    iso_639_3: ita
+    type: language
+    script: Latn
+  ml:
+    name: Malayalam
+    iso_639_1: ml
+    iso_639_3: mal
+    type: language
+    script: Mlym
+  yo:
+    name: Yoruba
+    iso_639_1: yo
+    iso_639_3: yor
+    type: language
+    script: Latn

@@ -10,6 +10,12 @@ required_per_alias_namespace:
 variant_required_fields:
   - file
   - role
+optional_per_concrete_namespace:
+  - locale_overrides
+locale_override_fields:
+  numbers: [numbering_system, digits, decimal_separator, group_separator, grouping_style]
+  punctuation: [quote_start, quote_end, alt_quote_start, alt_quote_end]
+  datetime: [date_field_order, calendar, hour_cycle]
 constraints:
   language_tag: preferred_bcp47_form
   script: iso15924_four_letter_code

@@ -311,10 +311,14 @@ def test_vanilla_install_contains_governed_regional_starter_grammar() -> None:
     """Ship the governed regional WIP starter library and register regional keys only."""
     grammar_root = ROOT / "system" / "config" / "profiles" / "grammar"
     regional = {
-        "am-ET", "ar-145", "ar-SA", "de-DE", "en-GB", "en-US",
-        "es-419", "es-BR", "fa-IR", "fr-011", "fr-FR", "ha-NE",
-        "ha-NG", "hi-IN", "id-ID", "pt-419", "pt-BR", "ti-ER",
-        "ti-ET", "uk-UA",
+        "am-ET", "ar-015", "ar-145", "ar-EG", "ar-SA", "bn-BD",
+        "ceb-PH", "de-DE", "en-GB", "en-US", "es-419", "es-BR",
+        "es-MX", "fa-IR", "fil-PH", "fr-011", "fr-FR", "ha-NE",
+        "ha-NG", "hi-IN", "id-ID", "it-IT", "ln-CD", "ml-IN",
+        "ms-MY", "ne-NP", "prs-AF", "pt-419", "pt-BR", "ru-RU",
+        "sw-KE", "sw-TZ", "th-TH", "ti-ER", "ti-ET", "tl-PH",
+        "tpi-PG", "tr-TR", "uk-UA", "ur-PK", "vi-VN", "yo-NG",
+        "zh-CN", "zh-TW",
     }
     payloads = {path.parent.name for path in grammar_root.glob("*/wip.yml") if "-" in path.parent.name}
     assert payloads == regional

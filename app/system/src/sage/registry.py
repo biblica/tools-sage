@@ -36,6 +36,11 @@ WORKFLOW_IDS = CURRENT_WORKFLOW_IDS | LEGACY_WORKFLOW_IDS
 PROFILE_ROLES = PROJECT_ROLE_VALUES | {"TARGET"}
 CONTENT_STATES = {"LOCKED", "UNDER_REVIEW"}
 VARIANT_ID_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+LOCALE_OVERRIDE_FIELDS = {
+    "numbers": frozenset({"numbering_system", "digits", "decimal_separator", "group_separator", "grouping_style"}),
+    "punctuation": frozenset({"quote_start", "quote_end", "alt_quote_start", "alt_quote_end"}),
+    "datetime": frozenset({"date_field_order", "calendar", "hour_cycle"}),
+}
 
 
 @dataclass(frozen=True)
@@ -74,6 +79,7 @@ class LanguageProfileSpec:
     variants: dict[str, LanguageProfileVariantSpec]
     profile_language: str
     profile_alias: str | None
+    locale_overrides: dict[str, dict[str, str]]
 
 
 @dataclass(frozen=True)
@@ -276,10 +282,33 @@ def _external_project_path(
     return raw.resolve()
 
 
+def _parse_locale_overrides(item: dict[str, Any], code: str) -> dict[str, dict[str, str]]:
+    """Parse the optional, additive per-namespace locale-facts override block."""
+    raw = require_mapping(item.get("locale_overrides", {}), f"language_profiles.{code}.locale_overrides")
+    result: dict[str, dict[str, str]] = {}
+    for group, fields in raw.items():
+        allowed = LOCALE_OVERRIDE_FIELDS.get(group)
+        if allowed is None:
+            raise ConfigurationError(
+                f"language_profiles.{code}.locale_overrides has unknown group: {group}"
+            )
+        group_fields = require_mapping(fields, f"language_profiles.{code}.locale_overrides.{group}")
+        unknown = sorted(set(group_fields) - allowed)
+        if unknown:
+            raise ConfigurationError(
+                f"language_profiles.{code}.locale_overrides.{group} has unknown fields: {', '.join(unknown)}"
+            )
+        result[group] = {
+            str(key): require_string(value, f"language_profiles.{code}.locale_overrides.{group}.{key}")
+            for key, value in group_fields.items()
+        }
+    return result
+
+
 def _parse_language_profiles(data: dict[str, Any], root: Path) -> dict[str, LanguageProfileSpec]:
     """Parse concrete profile namespaces, then explicit ISO-to-profile aliases."""
     concrete: dict[str, LanguageProfileSpec] = {}
-    aliases: dict[str, tuple[str, str]] = {}
+    aliases: dict[str, tuple[str, str, dict[str, dict[str, str]]]] = {}
     for raw_code, raw_value in data.items():
         code = canonical_language_tag(str(raw_code), f"language_profiles.{raw_code}")
         if code != str(raw_code):
@@ -303,7 +332,7 @@ def _parse_language_profiles(data: dict[str, Any], root: Path) -> dict[str, Lang
                 raise ConfigurationError(
                     f"language_profiles.{code} cannot define variants as well as profile_alias"
                 )
-            aliases[code] = (script, alias)
+            aliases[code] = (script, alias, _parse_locale_overrides(item, code))
             continue
         variants_raw = require_mapping(
             item.get("variants", {}),
@@ -347,6 +376,7 @@ def _parse_language_profiles(data: dict[str, Any], root: Path) -> dict[str, Lang
             variants=variants,
             profile_language=code,
             profile_alias=None,
+            locale_overrides=_parse_locale_overrides(item, code),
         )
     if not concrete:
         raise ConfigurationError("language_profiles must register at least one language code")
@@ -361,7 +391,7 @@ def _parse_language_profiles(data: dict[str, Any], root: Path) -> dict[str, Lang
             chain = " -> ".join((*trail, code))
             raise ConfigurationError(f"Circular language profile alias: {chain}")
         try:
-            script, target_code = aliases[code]
+            script, target_code, own_locale_overrides = aliases[code]
         except KeyError as exc:
             raise ConfigurationError(f"Unknown language profile alias target: {code}") from exc
         if target_code not in concrete and target_code not in aliases:
@@ -380,6 +410,7 @@ def _parse_language_profiles(data: dict[str, Any], root: Path) -> dict[str, Lang
             variants=dict(target.variants),
             profile_language=target.profile_language,
             profile_alias=target_code,
+            locale_overrides=own_locale_overrides or target.locale_overrides,
         )
         return result[code]
 

@@ -4,7 +4,6 @@ profiles:
   en-US: {parent: en, region: US, name: US English}
   fa-IR: {parent: fa, region: IR, name: Persian - Iran}
   pes-IR: {parent: pes, region: IR, name: Iranian Persian}
-  prs-AF: {parent: prs, region: AF, name: Dari}
   id-ID: {parent: id, region: ID, name: Indonesian - Indonesia}
   ti-ER: {parent: ti, region: ER, name: Tigrinya - Eritrea}
   ti-ET: {parent: ti, region: ET, name: Tigrinya - Ethiopia}
@@ -22,3 +21,27 @@ profiles:
   ar-145: {parent: ar, region: '145', name: Arabic - Western Asia}
   hi-IN: {parent: hi, region: IN, name: Hindi - India}
   uk-UA: {parent: uk, region: UA, name: Ukrainian - Ukraine}
+  es-MX: {parent: es, region: MX, name: Spanish - Mexico}
+  sw-KE: {parent: sw, region: KE, name: Swahili - Kenya}
+  sw-TZ: {parent: sw, region: TZ, name: Swahili - Tanzania}
+  ru-RU: {parent: ru, region: RU, name: Russian - Russia}
+  zh-CN: {parent: zh, region: CN, name: Chinese - China}
+  zh-TW: {parent: zh, region: TW, name: Chinese - Taiwan}
+  ms-MY: {parent: ms, region: MY, name: Malay - Malaysia}
+  th-TH: {parent: th, region: TH, name: Thai - Thailand}
+  vi-VN: {parent: vi, region: VN, name: Vietnamese - Vietnam}
+  fil-PH: {parent: fil, region: PH, name: Filipino - Philippines}
+  tl-PH: {parent: tl, region: PH, name: Tagalog - Philippines}
+  ceb-PH: {parent: ceb, region: PH, name: Cebuano - Philippines}
+  ur-PK: {parent: ur, region: PK, name: Urdu - Pakistan}
+  bn-BD: {parent: bn, region: BD, name: Bengali - Bangladesh}
+  ne-NP: {parent: ne, region: NP, name: Nepali - Nepal}
+  tr-TR: {parent: tr, region: TR, name: Turkish - Turkey}
+  tpi-PG: {parent: tpi, region: PG, name: Tok Pisin - PNG}
+  ln-CD: {parent: ln, region: CD, name: Lingala - DR Congo}
+  it-IT: {parent: it, region: IT, name: Italian - Italy}
+  prs-AF: {parent: prs, region: AF, name: Dari - Afghanistan}
+  ml-IN: {parent: ml, region: IN, name: Malayalam - India}
+  ar-EG: {parent: ar, region: EG, name: Arabic - Egypt}
+  ar-015: {parent: ar, region: '015', name: Arabic - North Africa}
+  yo-NG: {parent: yo, region: NG, name: Yoruba - Nigeria}

@@ -18,7 +18,7 @@ from .project_codes import parse_project_code
 from .project_inventory import detect_scripture_books
 from .paratext_filenames import find_settings_file, select_scripture_files
 from .iso_languages import resolve_paratext_language
-from .language_identification import estimate_language_identity, parse_ldml_identity
+from .language_identification import estimate_language_identity, parse_ldml_identity, parse_ldml_locale_conventions
 from .resource_mounts import normalize_operator_path
 
 SCHEMA_VERSION = "2.0"
@@ -230,9 +230,12 @@ def inspect_paratext_project(project_path: Path) -> dict[str, Any]:
         project_prefix=code.get("paratext_language_code"),
     )
     ldml_rows: list[dict[str, Any]] = []
+    ldml_locale_rows: list[dict[str, Any]] = []
     for ldml_path in sorted(path.glob("*.ldml"), key=lambda item: item.name.casefold()):
         try:
             ldml_rows.append(parse_ldml_identity(ldml_path))
+            # Best-effort project-curated number/quotation conventions; never blocks import.
+            ldml_locale_rows.append(parse_ldml_locale_conventions(ldml_path))
         except ValidationError as exc:
             warnings.append(exc.code)
     identification = estimate_language_identity(
@@ -270,6 +273,7 @@ def inspect_paratext_project(project_path: Path) -> dict[str, Any]:
         "primary_audience_country": dict(identification.get("primary_country") or {}).get("code"),
         "language_profile_tag": identification.get("bcp47_candidate"),
         "ldml_evidence": ldml_rows,
+        "ldml_locale_conventions": ldml_locale_rows,
         "code_metadata": code,
         "canon_books": list(canon_books),
         "sfm_books": list(sfm_books),

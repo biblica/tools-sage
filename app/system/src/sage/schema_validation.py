@@ -364,6 +364,30 @@ def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> l
                     errors.append(
                         f"ecosystem.yml.language_profiles.{language}.variants.{variant_id} missing: {', '.join(missing)}"
                     )
+        locale_overrides = record.get("locale_overrides") if isinstance(record, dict) else None
+        if locale_overrides is not None:
+            allowed_groups = language_schema.get("locale_override_fields", {})
+            if not isinstance(locale_overrides, dict):
+                errors.append(f"ecosystem.yml.language_profiles.{language}.locale_overrides must be a mapping")
+            else:
+                for group, fields in locale_overrides.items():
+                    if group not in allowed_groups:
+                        errors.append(
+                            f"ecosystem.yml.language_profiles.{language}.locale_overrides has unknown group: {group}"
+                        )
+                        continue
+                    if not isinstance(fields, dict):
+                        errors.append(
+                            f"ecosystem.yml.language_profiles.{language}.locale_overrides.{group} must be a mapping"
+                        )
+                        continue
+                    allowed_fields = {str(item) for item in allowed_groups.get(group, [])}
+                    unknown = sorted(set(fields) - allowed_fields)
+                    if unknown:
+                        errors.append(
+                            f"ecosystem.yml.language_profiles.{language}.locale_overrides.{group} has unknown fields: "
+                            f"{', '.join(unknown)}"
+                        )
 
     evaluation_schema = schemas["evaluation-set.schema.yml"]
     for set_id, record in (ecosystem.get("evaluation_sets") or {}).items():
