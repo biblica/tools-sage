@@ -46,10 +46,8 @@
       "streams": {"body": "Seven lamps.", "notes": [], "headings": []},
       "western_references": ["MAT 5:4"],
       "reference_rows": [],
-      "finding_labels": {"baseline": [{"code": "NCA_REFERENCE_NOT_INDEXED", "category": "EVIDENCE", "western_references": ["MAT 5:4"]}], "optimized": [{"code": "NCA_REFERENCE_NOT_INDEXED", "category": "EVIDENCE", "western_references": ["MAT 5:4"]}]},
-      "expected": {"expressions": [
-        {"surface": "Seven", "span": [0, 5], "values": ["7"], "kind": "CARDINAL", "unit": null, "qualifier": "EXACT", "role": "lamps"}
-      ], "baseline_outcome": "REFERENCE_NOT_INDEXED", "optimized_outcome": "REFERENCE_NOT_INDEXED", "baseline_uncertainty": ["WESTERN_REFERENCE_NOT_INDEXED"], "optimized_uncertainty": ["WESTERN_REFERENCE_NOT_INDEXED"], "bridge_result_new_behavior": false}
+      "finding_labels": {"baseline": [], "optimized": []},
+      "expected": {"expressions": [], "baseline_outcome": "NOT_ASSESSED", "optimized_outcome": "NOT_ASSESSED", "baseline_uncertainty": ["NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED"], "optimized_uncertainty": ["NO_NUMERIC_CONTENT_REFERENCE_NOT_REQUIRED"], "bridge_result_new_behavior": false}
     },
     {
       "case_id": "registered_absence",

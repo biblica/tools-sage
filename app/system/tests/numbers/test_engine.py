@@ -388,8 +388,13 @@ def test_registered_alternate_with_missing_note_requires_review():
     assert result.final_outcome == "REVIEW_MISSING_FOOTNOTE"
 
 
-def test_unindexed_target_number_is_visible_reference_gap():
-    """A target number outside the authoritative index cannot be silently skipped."""
+def test_unindexed_target_number_is_a_deliberate_non_finding():
+    """A target number outside the authoritative index is a screened non-finding, not a gap flag.
+
+    NCA finds incorrectly reported or missing numbers where a number is already known to be
+    expected; discovering numbers in verses the reference package never indexed is left to
+    human proofreaders/consultants and the correlation checks RTC/STC already run.
+    """
     ref = VerseRef("MAT", 1, 2)
     bundle = ReferenceBundle("fixture", "b" * 64, {}, {}, {}, {}, {}, "QUALIFIED")
     tasks = ol_tasks("7 men", value=7)
@@ -400,7 +405,7 @@ def test_unindexed_target_number_is_visible_reference_gap():
         check_policy=check_policy(), model_tasks=tasks,
     )
 
-    assert result.final_outcome == "REFERENCE_NOT_INDEXED"
+    assert result.final_outcome == "NOT_ASSESSED"
     assert tasks.correspond_calls == 0
 
 

@@ -194,7 +194,15 @@ class ScopeInventory:
 
 
 def build_inventory(inputs: ExecutionInputs) -> ScopeInventory:
-    """Reuse the attempt's project_scope result without loading or qualifying again."""
+    """Reuse the attempt's project_scope result without loading or qualifying again.
+
+    NCA finds incorrectly reported or missing numbers where a number is already known to be
+    expected -- it does not run an inverse discovery scan for numbers in verses the reference
+    package never indexed (that belongs to human proofreaders/consultants and the correlation
+    checks RTC/STC already run). Extraction is therefore planned only for coordinates the
+    reference package indexes; `expected_references`/`projected_units` still describe the full
+    declared scope so coverage can be reported honestly.
+    """
     from .extraction import _parsing_conventions
     from .transport import streams_for_target
 
@@ -205,7 +213,9 @@ def build_inventory(inputs: ExecutionInputs) -> ScopeInventory:
         target = projected.target
         # Missing placeholders remain coverage, even when a nearby physical note
         # is also associated with that absence by the projection authority.
-        if target.target_references:
+        if target.target_references and any(
+            inputs.bundle.lookup(ref) is not None for ref in projected.western_references
+        ):
             streams.extend(streams_for_target(target, inputs.source_documents[target.source_sha256],
                 language=language, conventions=conventions))
     for target in inputs.style_units:
