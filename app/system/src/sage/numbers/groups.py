@@ -255,8 +255,10 @@ def group_response_schema(group: ReferenceGroup) -> Mapping[str, object]:
                 schema['properties'].pop(field, None)
         schema['required'] = list(schema['properties'])
         row_schemas[label] = schema
-    properties = {'schema_version': {'const': '2.0'}, 'phase': {'const': 'GROUP_CORRESPONDENCE'},
-        'unit_id': {'const': group.unit.target.unit_id}, 'status': {'enum': ['COMPLETE', 'PARTIAL', 'UNAVAILABLE']},
+    properties = {'schema_version': {'type': 'string', 'const': '2.0'},
+        'phase': {'type': 'string', 'const': 'GROUP_CORRESPONDENCE'},
+        'unit_id': {'type': 'string', 'const': group.unit.target.unit_id},
+        'status': {'type': 'string', 'enum': ['COMPLETE', 'PARTIAL', 'UNAVAILABLE']},
         'limitations': strings, 'unmatched_target_ids': strings, 'unresolved_target_ids': strings,
         'assignments': {'type': 'object', 'additionalProperties': False, 'required': labels,
                         'properties': {label: strings for label in labels}},

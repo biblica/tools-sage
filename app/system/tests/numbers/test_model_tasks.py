@@ -254,8 +254,15 @@ def validated_target(target: TargetUnit) -> Extraction:
 
 
 def assert_strict_provider_schema(schema):
-    """Check provider schema requirements that ordinary JSON Schema permits omitting."""
-    assert 'type' in schema or 'anyOf' in schema or 'const' in schema or 'enum' in schema, schema
+    """Check provider schema requirements that ordinary JSON Schema permits omitting.
+
+    OpenAI's structured-output validator rejects any (sub)schema lacking an explicit
+    'type', even one that already narrows values via 'const'/'enum' -- confirmed live:
+    a bare {"const": "1.0"} was rejected with "schema must have a 'type' key" on a real
+    NCA extraction call, despite this same assertion previously treating 'const'/'enum'
+    as sufficient on their own. Do not reintroduce that permissiveness.
+    """
+    assert 'type' in schema or 'anyOf' in schema, schema
     if schema.get('type') == 'object':
         assert schema.get('additionalProperties') is False
         assert set(schema.get('required', ())) == set(schema['properties'])
