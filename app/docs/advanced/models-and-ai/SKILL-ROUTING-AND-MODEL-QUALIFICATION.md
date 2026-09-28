@@ -68,8 +68,9 @@ Scripture handoff merely because their inputs originated in model output.
 Normal Setup owns provider connection and enablement only. It does not ask the Operator to choose a
 model or reasoning level. SAGE discovers the enabled provider's current model catalog and resolves
 the exact provider/model/native-reasoning route for the `skill_id` when a governed task is executed.
-The audited global override is the one manual state. Automatic mode uses current qualification data,
-or always uses Codex native `medium` with `PROVISIONAL_UNQUALIFIED` in a true no-data state.
+The audited global override is the one manual routing-selection state. Automatic mode uses current
+qualification data, or always uses Codex native `medium` with `PROVISIONAL_UNQUALIFIED` in a true
+no-data state.
 
 The normal mode is `AUTOMATIC`. `Configure AI` exposes five distinct concerns:
 
@@ -82,6 +83,12 @@ The normal mode is `AUTOMATIC`. `Configure AI` exposes five distinct concerns:
 The available-model view is informational. It shows provider-reported model identity, native
 reasoning settings, availability, and per-Skill qualification evidence. It is not a normal model
 selection menu.
+
+Evaluate new or changed models is Operator-triggered from `Configure AI`, not maintainer/release-CLI
+-only: it runs the same sealed synthetic Skill suites against the currently connected provider's
+live catalog to produce qualification evidence, after an explicit confirmation naming the real
+provider calls and possible long runtime. It does not itself select a model for any Skill -- it only
+produces the qualification evidence that Advanced routing override then has available to offer.
 
 Provider readiness and Skill readiness are separate. A connected provider can be ready while one
 or more Skills have no executable route. Startup may continue when the provider connection is
@@ -316,8 +323,9 @@ remain valid and continue to display their recorded legacy selection mode.
 The CLI follows the same boundary:
 
 - provider connect, status, refresh, catalog, and recommendations remain normal Operator surfaces;
-- sealed route evaluation remains explicit maintainer/release CLI tooling because full catalog
-  benchmarking can take hours;
+- sealed route evaluation (`sage model evaluate`) is available both as CLI tooling and as
+  `Configure AI > Evaluate new or changed models`; either surface requires explicit confirmation
+  because full catalog benchmarking can take hours and makes real provider calls;
 - ordinary model/reasoning selection becomes automatic Skill routing;
 - an explicit global override moves to an advanced command and creates the same audit receipt as the
   menu;

@@ -30,9 +30,10 @@ one global model or reasoning level. **Configure AI** exposes:
 2. Available provider models
 3. Skill routing recommendations
 4. Advanced routing override
-5. Connect OpenAI and ChatGPT
-6. Configure Local AI
-7. Check LLM connection
+5. Evaluate new or changed models
+6. Connect OpenAI and ChatGPT
+7. Configure Local AI
+8. Check LLM connection
 
 Available models are informational. Skill recommendations show availability and qualification
 independently for every registered Skill. **Check LLM connection** is the explicit minimal generation
@@ -40,9 +41,10 @@ test. Merely opening a Job, reading a recommendation, or changing an override do
 evidence to a model.
 
 Startup verifies provider installation and authentication without generating analytical output. A
-ready provider does not imply that every Skill is ready. In every release state, a true no-data Skill uses the
-governed Medium fallback; stale, failed, unreliable, unsupported, or unavailable states still fail
-closed before Scripture evidence is sent.
+ready provider does not imply that every Skill is ready. In every release state, a true no-data Skill
+uses the governed Medium fallback, or the Operator's pinned no-data default when one is set (see
+[Operator-pinned no-data default](#operator-pinned-no-data-default)); stale, failed, unreliable,
+unsupported, or unavailable states still fail closed before Scripture evidence is sent.
 
 ## Exact per-Skill routing
 
@@ -63,7 +65,9 @@ exact route is evaluated again.
 
 Automatic routing uses current `RECOMMENDED` or `QUALIFIED` evidence when it exists. In a true
 no-data state, the universal policy selects Codex native `medium` and labels it
-`PROVISIONAL_UNQUALIFIED`; Medium is not thereby tested or qualified. The model cannot qualify or
+`PROVISIONAL_UNQUALIFIED`, unless the Operator has pinned a different no-data default (see
+[Operator-pinned no-data default](#operator-pinned-no-data-default)); either way the model is not
+thereby tested or qualified. The model cannot qualify or
 recommend itself: sealed synthetic responses pass through deterministic production validators. Every Skill has
 an explicit positive, zero-finding, and adversarial inventory, extended where a Skill has additional semantic boundary criteria; each case is repeated three times. Any hard
 contract failure is `FAILED`; inconsistent repetitions are `UNRELIABLE`; all required assertions and
@@ -85,12 +89,14 @@ provider's advertised reasoning settings in provider order and stops at the firs
 setting. Most tested settings perform nine isolated attempts. RTC performs fifteen because its five-case suite adds fundamental polarity and participant-identity referral boundaries. `--comparison` explicitly continues through every advertised setting. A provider without a
 reasoning control is evaluated once as `provider-default`.
 
-Evaluation must not use Operator Jobs, Projects, reports, or Scripture. It is an explicit maintainer
-qualification activity and is never run by pytest, package validation, startup, or a normal Job.
-Because a full catalog benchmark can take hours, `model evaluate` is maintainer/release CLI tooling
-and is not offered in normal Configure AI. Operators should receive reviewed qualification seeds or,
-in a future release, a locally verified signed-registry cache; normal setup must not require a local
-benchmark.
+Evaluation must not use Operator Jobs, Projects, reports, or Scripture. It is never run by pytest,
+package validation, startup, or a normal Job. Because a full catalog benchmark can take hours and
+makes real provider calls, `model evaluate` requires an explicit confirmation naming that cost either
+way it is invoked: as maintainer/release CLI tooling, or as the Operator-triggered **Configure AI >
+Evaluate new or changed models** menu action, which wraps the same `evaluate_catalog_routes`/
+`evaluate_skill_route` machinery. Neither surface is required before a normal Job runs; a true
+no-data state still routes through the governed Medium fallback (or the Operator's pinned no-data
+default) until qualification evidence exists.
 Local receipts become immediately eligible for deterministic routing only while every bound identity
 still reconciles. Building a possible Core seed is a separate, explicit review action:
 
@@ -104,17 +110,19 @@ source change are required for Core promotion.
 
 ## Routing precedence
 
-SAGE has one manual state and two automatic substates:
+SAGE has two manual override states and two automatic substates:
 
 | State | Selection |
 |---|---|
 | `USER_OVERRIDE` | Use the existing audited exact override when it remains available and qualified for the Skill |
 | `AUTOMATIC / DATA` | Use the deterministic recommendation from current exact qualification data |
-| `AUTOMATIC / NO DATA` | Always use provider-native `medium` under the universal no-data policy |
+| `AUTOMATIC / NO DATA` | Use the Operator's pinned `PROVISIONAL_OVERRIDE` no-data default when one is set and still live, otherwise the release policy's provider-native default (`medium` unless changed) |
 
 Current failed, unreliable, stale, unavailable, hidden, or prohibited routes do not become no-data
-fallback candidates. Configure AI shows the automatic/no-data policy default beside the existing
-Advanced routing override; there is no second manual preference layer.
+fallback candidates, whether the candidate comes from the release policy default or an Operator-pinned
+`PROVISIONAL_OVERRIDE`. `USER_OVERRIDE` still takes precedence over both: it requires qualification
+evidence and is unaffected by the no-data pin, since the no-data pin only ever applies in a true
+no-data state.
 
 ## Advanced global override
 
@@ -135,6 +143,32 @@ not silently fall back.
 
 Legacy normal model/reasoning selection is not an execution surface. Direct `task execute` model,
 provider, reasoning, and policy-bypass flags are prohibited.
+
+## Operator-pinned no-data default
+
+The exact global override above only ever helps once qualification evidence exists for that route;
+on a fresh install, or before evaluation has run, every Skill resolves through the true no-data state
+instead. **Configure AI > Advanced routing override > Set no-data default model/reasoning**
+interrogates the live provider catalog -- whatever models and native reasoning levels the provider
+currently reports, not a hardcoded model ID -- and lets the Operator pin the pair used by that no-data
+fallback for every Skill, replacing the release policy's static `medium` default.
+
+This pin needs no qualification evidence: it only requires the chosen model/reasoning to be live right
+now, since it is exactly the fallback used when nothing is qualified. Every resolution re-validates the
+pin against the current provider catalog; if the pinned model or reasoning is no longer live, routing
+fails closed with `PROVISIONAL_OVERRIDE_NOT_AVAILABLE` rather than silently reverting to the release
+default. **Clear no-data default** in the same menu removes the pin and restores the release policy
+default. Setting or clearing the pin records an audit receipt, mirroring the exact override's audit
+trail.
+
+The no-data pin and the exact `USER_OVERRIDE` above are independent: clearing one never affects the
+other, and the exact override always takes precedence once its qualification evidence exists.
+
+```
+Configure AI > Advanced routing override
+  3. Set no-data default model/reasoning   -- pick a live model, then its native reasoning
+  4. Clear no-data default                 -- restore the release policy default
+```
 
 ## Deterministic ownership and token boundary
 
@@ -168,8 +202,10 @@ model/reasoning route qualifies independently for each Skill.
 | Data | Location |
 |---|---|
 | Provider connection/enablement | `localdata/.system/state/llm-settings.json` |
-| Audited advanced override | `localdata/.system/config/model-routing-override.json` |
-| Override receipts | `localdata/.system/state/model-routing-overrides/` |
+| Audited exact override | `localdata/.system/config/model-routing-override.json` |
+| Exact override receipts | `localdata/.system/state/model-routing-overrides/` |
+| Audited no-data default override | `localdata/.system/config/model-provisional-override.json` |
+| No-data override receipts | `localdata/.system/state/model-provisional-overrides/` |
 | Local qualification receipts | `localdata/.system/state/model-qualification/` |
 | Actual task route | task `validation/llm-execution-receipt.json` |
 | Core Skill criteria and seeds | `system/config/skill-evaluation-contracts.json`, `model-qualification-seeds.json` |
