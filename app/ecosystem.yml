@@ -192,6 +192,150 @@ language_profiles:
       wip:
         file: system/config/profiles/grammar/uk-UA/wip.yml
         role: WIP
+  sw-KE:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/sw-KE/wip.yml
+        role: WIP
+  sw-TZ:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/sw-TZ/wip.yml
+        role: WIP
+  ru-RU:
+    script: Cyrl
+    variants:
+      wip:
+        file: system/config/profiles/grammar/ru-RU/wip.yml
+        role: WIP
+  zh-CN:
+    script: Hans
+    variants:
+      wip:
+        file: system/config/profiles/grammar/zh-CN/wip.yml
+        role: WIP
+  zh-TW:
+    script: Hant
+    variants:
+      wip:
+        file: system/config/profiles/grammar/zh-TW/wip.yml
+        role: WIP
+  ms-MY:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/ms-MY/wip.yml
+        role: WIP
+  th-TH:
+    script: Thai
+    variants:
+      wip:
+        file: system/config/profiles/grammar/th-TH/wip.yml
+        role: WIP
+  vi-VN:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/vi-VN/wip.yml
+        role: WIP
+  fil-PH:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/fil-PH/wip.yml
+        role: WIP
+  tl-PH:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/tl-PH/wip.yml
+        role: WIP
+  ceb-PH:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/ceb-PH/wip.yml
+        role: WIP
+  ur-PK:
+    script: Arab
+    variants:
+      wip:
+        file: system/config/profiles/grammar/ur-PK/wip.yml
+        role: WIP
+  bn-BD:
+    script: Beng
+    variants:
+      wip:
+        file: system/config/profiles/grammar/bn-BD/wip.yml
+        role: WIP
+  ne-NP:
+    script: Deva
+    variants:
+      wip:
+        file: system/config/profiles/grammar/ne-NP/wip.yml
+        role: WIP
+  tr-TR:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/tr-TR/wip.yml
+        role: WIP
+  tpi-PG:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/tpi-PG/wip.yml
+        role: WIP
+  ln-CD:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/ln-CD/wip.yml
+        role: WIP
+  es-MX:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/es-MX/wip.yml
+        role: WIP
+  it-IT:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/it-IT/wip.yml
+        role: WIP
+  prs-AF:
+    script: Arab
+    variants:
+      wip:
+        file: system/config/profiles/grammar/prs-AF/wip.yml
+        role: WIP
+  ml-IN:
+    script: Mlym
+    variants:
+      wip:
+        file: system/config/profiles/grammar/ml-IN/wip.yml
+        role: WIP
+  ar-EG:
+    script: Arab
+    variants:
+      wip:
+        file: system/config/profiles/grammar/ar-EG/wip.yml
+        role: WIP
+  ar-015:
+    script: Arab
+    variants:
+      wip:
+        file: system/config/profiles/grammar/ar-015/wip.yml
+        role: WIP
+  yo-NG:
+    script: Latn
+    variants:
+      wip:
+        file: system/config/profiles/grammar/yo-NG/wip.yml
+        role: WIP
 projects: {}
 workflows:
   bic:

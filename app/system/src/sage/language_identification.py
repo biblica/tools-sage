@@ -97,6 +97,80 @@ def parse_ldml_identity(path: Path) -> dict[str, Any]:
     return values
 
 
+def parse_ldml_locale_conventions(path: Path) -> dict[str, Any]:
+    """Best-effort extraction of project-specific number/quotation conventions from one .ldml file.
+
+    The `numbers` block follows the LDML spec directly (`<numbers defaultNumberingSystem=...>`
+    with a matching `<symbols numberSystem="...">` child) and is reliable. The `punctuation`
+    block is a heuristic scan of SIL/Palaso `<special>` extension content for a quotation-mark
+    shaped open/close pair; it has not been validated against a real Paratext-produced .ldml
+    (none was available in this environment) and must be re-checked once one is. Both blocks
+    return None, never raise, when the expected shape is not present.
+    """
+    try:
+        root = ET.parse(path).getroot()
+    except (OSError, ET.ParseError) as exc:
+        raise ValidationError(f"Invalid LDML file: {path}: {exc}", code="PARATEXT_LDML_INVALID") from exc
+    return {
+        "file": path.name,
+        "numbers": _ldml_numbers(root),
+        "punctuation": _ldml_punctuation(root),
+    }
+
+
+def _ldml_numbers(root: ET.Element) -> dict[str, str] | None:
+    """Read the standard LDML `<numbers>` element's default system and decimal/group symbols."""
+    numbers = next((item for item in root.iter() if _local(item.tag) == "numbers"), None)
+    if numbers is None:
+        return None
+    default_system = next((e for e in numbers if _local(e.tag) == "defaultnumberingsystem"), None)
+    system = str(default_system.text or "").strip() if default_system is not None else ""
+    if not system:
+        return None
+    for symbols in numbers.iter():
+        if _local(symbols.tag) != "symbols" or symbols.attrib.get("numberSystem") != system:
+            continue
+        # Not .strip()'d: a real separator value can itself be a whitespace character (e.g. U+00A0).
+        decimal = next((e.text for e in symbols if _local(e.tag) == "decimal" and e.text), None)
+        group = next((e.text for e in symbols if _local(e.tag) == "group" and e.text), None)
+        if decimal and group:
+            return {"numbering_system": system, "decimal_separator": decimal, "group_separator": group}
+    return None
+
+
+def _ldml_punctuation(root: ET.Element) -> dict[str, str] | None:
+    """Heuristically scan SIL/Palaso `<special>` extension content for a quotation-mark pair.
+
+    Unverified against a real project .ldml — see this module's `parse_ldml_locale_conventions`.
+    """
+    special_blocks = (item for item in root.iter() if _local(item.tag) == "special")
+    for special in special_blocks:
+        for item in special.iter():
+            if "quotat" not in _local(item.tag):
+                continue
+            open_value = item.attrib.get("open") or item.attrib.get("Open")
+            close_value = item.attrib.get("close") or item.attrib.get("Close")
+            if open_value and close_value:
+                return {"quote_start": str(open_value).strip(), "quote_end": str(close_value).strip()}
+            children = {
+                _local(child.tag): str(child.text).strip()
+                for child in item if child.text and str(child.text).strip()
+            }
+            if children.get("open") and children.get("close"):
+                return {"quote_start": children["open"], "quote_end": children["close"]}
+    return None
+
+
+def merge_ldml_locale_conventions(rows: Iterable[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Combine a project's parsed .ldml rows into one locale-facts override, first hit per group."""
+    merged: dict[str, dict[str, str]] = {}
+    for row in rows:
+        for group in ("numbers", "punctuation"):
+            if group not in merged and row.get(group):
+                merged[group] = dict(row[group])
+    return merged
+
+
 def project_prefix_candidates(project_code: str) -> tuple[str, ...]:
     """Return plausible two/three-letter ISO candidates from initial lowercase letters."""
     match = _PREFIX_RE.match(str(project_code or ""))

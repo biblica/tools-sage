@@ -1,0 +1,1527 @@
+{
+  "cldr_ref": "48.2.1",
+  "locales": {
+    "am": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "›",
+        "alt_quote_start": "‹",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "am-ET": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "›",
+        "alt_quote_start": "‹",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "ar": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "‘",
+        "alt_quote_start": "’",
+        "quote_end": "“",
+        "quote_start": "”"
+      }
+    },
+    "ar-015": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "‘",
+        "alt_quote_start": "’",
+        "quote_end": "“",
+        "quote_start": "”"
+      }
+    },
+    "ar-145": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "‘",
+        "alt_quote_start": "’",
+        "quote_end": "“",
+        "quote_start": "”"
+      }
+    },
+    "ar-EG": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": "٫",
+        "digits": "٠١٢٣٤٥٦٧٨٩",
+        "group_separator": "٬",
+        "grouping_style": "THREE",
+        "numbering_system": "arab"
+      },
+      "punctuation": {
+        "alt_quote_end": "‘",
+        "alt_quote_start": "’",
+        "quote_end": "“",
+        "quote_start": "”"
+      }
+    },
+    "ar-SA": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": "٫",
+        "digits": "٠١٢٣٤٥٦٧٨٩",
+        "group_separator": "٬",
+        "grouping_style": "THREE",
+        "numbering_system": "arab"
+      },
+      "punctuation": {
+        "alt_quote_end": "‘",
+        "alt_quote_start": "’",
+        "quote_end": "“",
+        "quote_start": "”"
+      }
+    },
+    "bn": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "০১২৩৪৫৬৭৮৯",
+        "group_separator": ",",
+        "grouping_style": "THREE_TWO",
+        "numbering_system": "beng"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "bn-BD": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "০১২৩৪৫৬৭৮৯",
+        "group_separator": ",",
+        "grouping_style": "THREE_TWO",
+        "numbering_system": "beng"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ceb": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ceb-PH": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "de": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "‘",
+        "alt_quote_start": "‚",
+        "quote_end": "“",
+        "quote_start": "„"
+      }
+    },
+    "de-DE": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "‘",
+        "alt_quote_start": "‚",
+        "quote_end": "“",
+        "quote_start": "„"
+      }
+    },
+    "en": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "en-GB": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "en-US": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "es": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "es-419": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "es-BR": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "es-MX": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "fa": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "YMD",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": "٫",
+        "digits": "۰۱۲۳۴۵۶۷۸۹",
+        "group_separator": "٬",
+        "grouping_style": "THREE",
+        "numbering_system": "arabext"
+      },
+      "punctuation": {
+        "alt_quote_end": "›",
+        "alt_quote_start": "‹",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "fa-IR": {
+      "datetime": {
+        "calendar": "persian",
+        "date_field_order": "YMD",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": "٫",
+        "digits": "۰۱۲۳۴۵۶۷۸۹",
+        "group_separator": "٬",
+        "grouping_style": "THREE",
+        "numbering_system": "arabext"
+      },
+      "punctuation": {
+        "alt_quote_end": "›",
+        "alt_quote_start": "‹",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "fil": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "fil-PH": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "fr": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": " ",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "»",
+        "alt_quote_start": "«",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "fr-011": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": " ",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "»",
+        "alt_quote_start": "«",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "fr-FR": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": " ",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "»",
+        "alt_quote_start": "«",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "ha": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ha-NE": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ha-NG": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "hi": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE_TWO",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "hi-IN": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE_TWO",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "id": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "id-ID": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "it": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "”",
+        "alt_quote_start": "“",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "it-IT": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "”",
+        "alt_quote_start": "“",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "ln": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ln-CD": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ml": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE_TWO",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ml-IN": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE_TWO",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ms": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ms-MY": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ne": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "YMD",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "०१२३४५६७८९",
+        "group_separator": ",",
+        "grouping_style": "THREE_TWO",
+        "numbering_system": "deva"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ne-NP": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "YMD",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "०१२३४५६७८९",
+        "group_separator": ",",
+        "grouping_style": "THREE_TWO",
+        "numbering_system": "deva"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "prs": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "prs-AF": {
+      "datetime": {
+        "calendar": "persian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "pt": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "pt-419": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "pt-BR": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ru": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": " ",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "“",
+        "alt_quote_start": "„",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "ru-RU": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": " ",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "“",
+        "alt_quote_start": "„",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "sw": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "sw-KE": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "sw-TZ": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "th": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "th-TH": {
+      "datetime": {
+        "calendar": "buddhist",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "ti": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "”",
+        "alt_quote_start": "“",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "ti-ER": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "”",
+        "alt_quote_start": "“",
+        "quote_end": "’",
+        "quote_start": "‘"
+      }
+    },
+    "ti-ET": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "”",
+        "alt_quote_start": "“",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "tl": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "tl-PH": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "MDY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "tpi": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "YMD",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "tpi-PG": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "YMD",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "tr": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "tr-TR": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "uk": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": " ",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "“",
+        "alt_quote_start": "„",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "uk-UA": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": " ",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "“",
+        "alt_quote_start": "„",
+        "quote_end": "»",
+        "quote_start": "«"
+      }
+    },
+    "ur": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "‘",
+        "alt_quote_start": "’",
+        "quote_end": "“",
+        "quote_start": "”"
+      }
+    },
+    "ur-PK": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h12"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "‘",
+        "alt_quote_start": "’",
+        "quote_end": "“",
+        "quote_start": "”"
+      }
+    },
+    "vi": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "vi-VN": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ",",
+        "digits": "0123456789",
+        "group_separator": ".",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "yo": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "yo-NG": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "DMY",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "zh": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "YMD",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "zh-CN": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "YMD",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    },
+    "zh-TW": {
+      "datetime": {
+        "calendar": "gregorian",
+        "date_field_order": "YMD",
+        "hour_cycle": "h24"
+      },
+      "numbers": {
+        "decimal_separator": ".",
+        "digits": "0123456789",
+        "group_separator": ",",
+        "grouping_style": "THREE",
+        "numbering_system": "latn"
+      },
+      "punctuation": {
+        "alt_quote_end": "’",
+        "alt_quote_start": "‘",
+        "quote_end": "”",
+        "quote_start": "“"
+      }
+    }
+  },
+  "schema_version": "1.0",
+  "source": "Unicode CLDR JSON (unicode-org/cldr-json), packages cldr-numbers-full, cldr-misc-full, cldr-dates-full, cldr-core"
+}

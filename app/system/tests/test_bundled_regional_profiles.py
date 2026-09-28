@@ -20,9 +20,36 @@ EXPECTED = {
 def test_regional_starter_profiles_are_registered_and_valid() -> None:
     """Every bundled regional WIP starter must load and match its registered namespace."""
     config = load_ecosystem(ROOT / "ecosystem.yml")
-    assert set(config.language_profiles) == set(EXPECTED) | {"en"}
+    assert (set(EXPECTED) | {"en"}) <= set(config.language_profiles)
     assert config.language_profiles["en"].profile_alias == "en-US"
     for tag, script in EXPECTED.items():
+        namespace = config.language_profiles[tag]
+        assert namespace.script == script
+        variant = namespace.variants["wip"]
+        profile = load_grammar_profile(
+            variant.path,
+            expected_profile_id="wip",
+            expected_language=tag,
+            expected_role="WIP",
+        )
+        assert profile.status == "PROJECT_REVIEW_REQUIRED"
+        assert len(profile.checks) >= 8
+
+
+NEW_LWC_EXPECTED = {
+    "sw-KE": "Latn", "sw-TZ": "Latn", "ru-RU": "Cyrl", "zh-CN": "Hans", "zh-TW": "Hant",
+    "ms-MY": "Latn", "th-TH": "Thai", "vi-VN": "Latn", "fil-PH": "Latn", "tl-PH": "Latn",
+    "ceb-PH": "Latn", "ur-PK": "Arab", "bn-BD": "Beng", "ne-NP": "Deva", "tr-TR": "Latn",
+    "tpi-PG": "Latn", "ln-CD": "Latn", "es-MX": "Latn", "it-IT": "Latn", "prs-AF": "Arab",
+    "ml-IN": "Mlym", "ar-EG": "Arab", "ar-015": "Arab", "yo-NG": "Latn",
+}
+
+
+def test_expanded_lwc_starter_profiles_are_registered_and_valid() -> None:
+    """Every newly prepopulated LWC starter must be registered and load like the original set."""
+    config = load_ecosystem(ROOT / "ecosystem.yml")
+    assert set(NEW_LWC_EXPECTED) <= set(config.language_profiles)
+    for tag, script in NEW_LWC_EXPECTED.items():
         namespace = config.language_profiles[tag]
         assert namespace.script == script
         variant = namespace.variants["wip"]
