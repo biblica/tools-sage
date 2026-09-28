@@ -126,9 +126,9 @@ def _response_expression_schema(stream_id: str) -> dict[str, object]:
             "surface": {"type": "string", "minLength": 1},
             "span": _response_span_schema(),
             "values": {"type": "array", "minItems": 1, "items": rational},
-            "kind": {"enum": sorted(NUMERIC_KINDS)},
+            "kind": {"type": "string", "enum": sorted(NUMERIC_KINDS)},
             "unit": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
-            "qualifier": {"enum": sorted(NUMERIC_QUALIFIERS)},
+            "qualifier": {"type": "string", "enum": sorted(NUMERIC_QUALIFIERS)},
             "role": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
             "role_spans": {"type": "array", "items": role_span},
             "representations": {"type": "array", "items": representation},
@@ -183,8 +183,8 @@ _SCHEMAS: dict[str, dict[str, object]] = {
         "additionalProperties": False,
         "required": ["schema_version", "phase", "work_units"],
         "properties": {
-            "schema_version": {"const": "1.0"},
-            "phase": {"const": "EXTRACTION"},
+            "schema_version": {"type": "string", "const": "1.0"},
+            "phase": {"type": "string", "const": "EXTRACTION"},
             "work_units": {
                 "type": "array",
                 "minItems": 1,
@@ -195,7 +195,7 @@ _SCHEMAS: dict[str, dict[str, object]] = {
                     "required": ["unit_id", "status", "limitations", "expressions"],
                     "properties": {
                         "unit_id": {"type": "string", "minLength": 1},
-                        "status": {"enum": sorted(EXTRACTION_STATUSES)},
+                        "status": {"type": "string", "enum": sorted(EXTRACTION_STATUSES)},
                         "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}},
                         "expressions": {"type": "array", "items": _response_expression_schema("main")},
                     },
@@ -216,14 +216,14 @@ _SCHEMAS: dict[str, dict[str, object]] = {
             "target_roles",
         ],
         "properties": {
-            "schema_version": {"const": "1.0"},
-            "phase": {"const": "CORRESPONDENCE"},
+            "schema_version": {"type": "string", "const": "1.0"},
+            "phase": {"type": "string", "const": "CORRESPONDENCE"},
             "unit_id": {"type": "string"},
-            "status": {"enum": sorted(EXTRACTION_STATUSES)},
+            "status": {"type": "string", "enum": sorted(EXTRACTION_STATUSES)},
             "limitations": {"type": "array", "items": {"type": "string"}},
             "source_expressions": {"type": "array", "items": _response_expression_schema("ol")},
             "target_roles": {"type": "array", "items": _target_role_schema()},
-            "registered_status": {"enum": sorted(EXTRACTION_STATUSES)},
+            "registered_status": {"type": "string", "enum": sorted(EXTRACTION_STATUSES)},
             "registered_limitations": {"type": "array", "items": {"type": "string", "minLength": 1}},
             "registered_expressions": {"type": "array", "items": _response_expression_schema("registered")},
         },
@@ -243,13 +243,13 @@ _SCHEMAS: dict[str, dict[str, object]] = {
             "evidence",
         ],
         "properties": {
-            "schema_version": {"const": "1.0"},
-            "phase": {"const": "FOOTNOTE"},
+            "schema_version": {"type": "string", "const": "1.0"},
+            "phase": {"type": "string", "const": "FOOTNOTE"},
             "unit_id": {"type": "string"},
             "note_id": {"type": "string"},
-            "action": {"enum": sorted(FOOTNOTE_ACTIONS)},
-            "status": {"enum": sorted(FOOTNOTE_STATUSES)},
-            "outcome": {"enum": sorted(FOOTNOTE_OUTCOMES)},
+            "action": {"type": "string", "enum": sorted(FOOTNOTE_ACTIONS)},
+            "status": {"type": "string", "enum": sorted(FOOTNOTE_STATUSES)},
+            "outcome": {"type": "string", "enum": sorted(FOOTNOTE_OUTCOMES)},
             "limitations": {"type": "array", "items": {"type": "string"}},
             "evidence": {"type": "array", "items": _note_evidence_schema()},
         },
@@ -1164,7 +1164,7 @@ def _batch_response_schema() -> dict[str, object]:
     schema = deepcopy(_SCHEMAS["EXTRACTION"])
     schema["required"].append("batch_id")
     properties = schema["properties"]
-    properties["schema_version"] = {"const": "2.0"}
+    properties["schema_version"] = {"type": "string", "const": "2.0"}
     properties["batch_id"] = {"type": "string", "minLength": 1}
     rows = properties["work_units"]
     rows.pop("maxItems")
