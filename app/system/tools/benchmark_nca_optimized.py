@@ -85,7 +85,7 @@ class RecordedBatchTransport(baseline._RecordedTransport):
             'unmatched_target_ids': [], 'unresolved_target_ids': [target[index - 1]['expression_id'] for index in evidence['unresolved']]}
 
 
-def _run_synthetic_optimized(cases_path: Path, *, fault="none", checkpoint_root=None, resume_only=False) -> dict[str, object]:
+def _run_synthetic_optimized(cases_path: Path, *, fault="none", checkpoint_root=None, resume_only=False, max_units=8) -> dict[str, object]:
     """Measure one qualified reference/style load and complete-scope batched production evaluation."""
     fixture_bytes, cases, reference_path = baseline._load_cases(cases_path)
     started = perf_counter_ns()
@@ -129,7 +129,7 @@ def _run_synthetic_optimized(cases_path: Path, *, fault="none", checkpoint_root=
                     'reference_package': {'diagnostics': []}, 'model_route': dict(tasks.route_snapshot),
                     'checks': {'number_accuracy': True, 'presentation_consistency': True, 'footnote_review': False},
                     'optimization': {'contract_version': 'nca-optimization-2.0', 'reuse_scope': 'TASK',
-                        'extraction_batch_max_units': 8, 'request_concurrency': 1, 'transient_retries': 1}}
+                        'extraction_batch_max_units': max_units, 'request_concurrency': 1, 'transient_retries': 1}}
                 inputs = ExecutionInputs(bundle, profile, policy, tuple(projected), (),
                     tuple(x.target.unit_id for x in projected), tuple(r for x in projected for r in x.western_references),
                     documents, 'MAT 5', baseline._canonical_bytes(policy),
@@ -177,7 +177,7 @@ def _run_synthetic_optimized(cases_path: Path, *, fault="none", checkpoint_root=
             'bridge_result_new_behavior': golden['bridge_result_new_behavior']})
     code_sha, code_files = baseline._code_identity()
     return {'schema_version': '2.0', 'benchmark_id': 'nca-optimization-hybrid-v2', 'mode': 'synthetic', 'strategy': 'optimized',
-        'case_count': len(cases), 'fixture_sha256': baseline._sha256(fixture_bytes),
+        'case_count': len(cases), 'extraction_batch_max_units': max_units, 'fixture_sha256': baseline._sha256(fixture_bytes),
         'input_sha256': input_identity(cases, bundle.sha256, profile, policy['checks']),
         'governance': governance(tasks, 'optimized'),
         'resume': {'elapsed_ms': resume_elapsed_ns // 1_000_000, 'calls': summarize_calls(tuple(resume_calls)), 'reuse_events': reuse_events, 'equivalent_outcomes_and_coverage': resume_equivalent},
@@ -193,7 +193,7 @@ def _run_synthetic_optimized(cases_path: Path, *, fault="none", checkpoint_root=
         'capability_limitations': baseline.NCA_CAPABILITY_LIMITATION}
 
 
-def run_synthetic_optimized(cases_path: Path, *, fault="none", checkpoint_root=None, resume_only=False):
+def run_synthetic_optimized(cases_path: Path, *, fault="none", checkpoint_root=None, resume_only=False, max_units=8):
     """Observe every package/style qualification call across execution and checkpoint replay."""
     from contextlib import ExitStack
     counts = {'reference_load_count': 0, 'profile_validation_count': 0}
@@ -215,6 +215,7 @@ def run_synthetic_optimized(cases_path: Path, *, fault="none", checkpoint_root=N
         stack.enter_context(patch(__name__ + '.validate_style_profile', measured_style))
         stack.enter_context(patch.object(baseline.engine_module, 'validate_style_profile', measured_style))
         stack.enter_context(patch.object(baseline.style_module, 'validate_style_profile', measured_style))
-        receipt = _run_synthetic_optimized(cases_path, fault=fault, checkpoint_root=checkpoint_root, resume_only=resume_only)
+        receipt = _run_synthetic_optimized(cases_path, fault=fault, checkpoint_root=checkpoint_root,
+            resume_only=resume_only, max_units=max_units)
     receipt['local_loads'].update(counts)
     return receipt

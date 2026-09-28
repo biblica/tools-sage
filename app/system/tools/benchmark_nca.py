@@ -714,6 +714,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument('--scope')
     parser.add_argument('--labels', type=Path)
     parser.add_argument('--repetitions', type=int, default=3)
+    parser.add_argument('--batch-cap', type=int, default=8,
+        help='extraction_batch_max_units to exercise for the optimized/paired synthetic strategies')
     return parser
 
 
@@ -737,10 +739,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     elif args.strategy == "paired":
         from benchmark_nca_qualification import qualify_pair
         from benchmark_nca_optimized import run_synthetic_optimized
-        receipt = qualify_pair(run_synthetic_baseline(args.cases.resolve()), run_synthetic_optimized(args.cases.resolve()))
+        receipt = qualify_pair(run_synthetic_baseline(args.cases.resolve()),
+            run_synthetic_optimized(args.cases.resolve(), max_units=args.batch_cap))
     elif args.strategy == "optimized":
         from benchmark_nca_optimized import run_synthetic_optimized
-        receipt = run_synthetic_optimized(args.cases.resolve(), fault=args.fault, checkpoint_root=args.checkpoint_root, resume_only=args.resume_only)
+        receipt = run_synthetic_optimized(args.cases.resolve(), fault=args.fault, checkpoint_root=args.checkpoint_root,
+            resume_only=args.resume_only, max_units=args.batch_cap)
     else:
         receipt = run_synthetic_baseline(args.cases.resolve())
     destination = args.receipt.expanduser().resolve()
