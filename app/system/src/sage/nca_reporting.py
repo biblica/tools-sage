@@ -73,6 +73,17 @@ _ENGLISH.update({
     'report.nca.input_language': 'Input language and script',
     'report.nca.failed_calls': 'Failed calls',
     'report.nca.no_stylesheet': 'No stylesheet selected. Checks against approved rules are not assessed; numeric accuracy and footnote review remain independent.',
+    'report.nca.translator_note_heading': 'Note for translator (copy below)',
+    'report.nca.translator_note_fail':
+        '{ref}: Please check the numbers in this verse. The translation currently has {wip}; '
+        'based on {authority}, it should have {expected}.',
+    'report.nca.translator_note_needs_review':
+        '{ref}: The numbers {wip} appear in a different order than the source ({expected}). '
+        'If this is simply natural word order in your language, no change is needed. If these '
+        'numbers describe different things, please double-check each number is attached to '
+        'the correct item. For reference, the source reads: "{authority_text}"',
+    'report.nca.translator_note_authority_ol': 'the original-language text',
+    'report.nca.translator_note_authority_niv': 'the reference translation (NIV)',
 })
 _ENGLISH_LANGUAGES = frozenset({"en", "en-US", "en-GB"})
 _CATALOG_LANGUAGES = _ENGLISH_LANGUAGES | {"id", "fr", "ru", "pt-BR", "uk"}
@@ -275,6 +286,9 @@ def _chapter_lines(document, text) -> list[str]:
             lines.extend([f'<a id="{_anchor(finding_id, "finding")}"></a>', *_finding_lines(finding, text),
                 f"- {text('report.nca.parent_group')}: [{owner}](#{_anchor(owner, 'group')})",
                 f"- WIP: {_joined(refs)}", ''])
+            note = _translator_note(finding, groups[owner], text)
+            if note is not None:
+                lines.extend(['', f"**{text('report.nca.translator_note_heading')}:**", '', f'> {note}', ''])
         for cross in section['cross_references']:
             owner = cross['group_id']
             links = [f"[{owner}](#{_anchor(owner, 'group')})"]
@@ -301,6 +315,32 @@ def _finding_lines(finding, text) -> list[str]:
         f"- {finding.get('message', 'NOT RECORDED')}",
         "",
     ]
+
+
+def _translator_note(finding: Mapping[str, object], group: Mapping[str, object], text) -> str | None:
+    """Render one copy-paste-ready plain-language note for a FAIL or NEEDS_REVIEW finding.
+
+    Deliberately outside the technical finding block above: no codes, no backticks, no
+    internal field names -- an Operator must be able to select and paste this directly
+    to a translator. Uses the WIP-side target reference (what the translator recognizes
+    in their own project), not the internal Western/canonical reference.
+    """
+    code = finding.get('code')
+    ref = _joined(finding.get('target_references'))
+    wip = _joined(finding.get('wip_values'))
+    expected = _joined(finding.get('expected_values'))
+    if code == 'NCA_NUMBER_FAIL':
+        comparison = group.get('comparison') or {}
+        authority_key = ('report.nca.translator_note_authority_ol' if comparison.get('authority') == 'OL'
+                         else 'report.nca.translator_note_authority_niv')
+        return text('report.nca.translator_note_fail').format(
+            ref=ref, wip=wip, expected=expected, authority=text(authority_key))
+    if code == 'NCA_NUMBER_NEEDS_REVIEW':
+        review_context = ((group.get('comparison') or {}).get('review_context')) or {}
+        authority_text = review_context.get('authority_text') or 'NOT RECORDED'
+        return text('report.nca.translator_note_needs_review').format(
+            ref=ref, wip=wip, expected=expected, authority_text=authority_text)
+    return None
 
 
 def render_nca_report(

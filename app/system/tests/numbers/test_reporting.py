@@ -121,6 +121,39 @@ def test_zero_finding_and_incomplete_reports_still_show_capability_limitations()
     assert "No NCA findings were recorded." not in report
 
 
+def test_needs_review_finding_gets_a_copy_paste_translator_note():
+    """A NEEDS_REVIEW finding must render a plain-language note an Operator can paste as-is."""
+    report = render_nca_report(report_document())
+    assert "Note for translator (copy below):" in report
+    assert "> MAT 1:2: The numbers 4, 3 appear in a different order than the source (3, 4)." in report
+    assert 'the source reads: "three men and four women"' in report
+    # The translator note is plain prose -- no internal jargon leaks into it.
+    note_line = next(line for line in report.splitlines() if line.startswith("> MAT 1:2"))
+    assert "NCA_NUMBER" not in note_line
+    assert "western_reference" not in note_line.lower()
+
+
+def test_fail_finding_gets_its_own_translator_note_with_the_authority_named():
+    """A FAIL finding's note must name which authority (OL/NIV) the expected values came from."""
+    document = report_document()
+    document["groups"][0]["comparison"].update(outcome="FAIL", authority="NIV")
+    document["findings"][0].update(code="NCA_NUMBER_FAIL", severity="BLOCKING")
+    document["summary"].update(needs_review=0, failures=1)
+
+    report = render_nca_report(document)
+
+    assert "> MAT 1:2: Please check the numbers in this verse." in report
+    assert "the reference translation (NIV), it should have 3, 4." in report
+
+
+def test_pass_and_not_assessed_outcomes_produce_no_translator_note():
+    """Only FAIL/NEEDS_REVIEW findings exist at all -- PASS/NOT_ASSESSED never reach this path."""
+    from sage.nca_reporting import _translator_note
+    finding = {"code": "NCA_NUMBER_FAIL", "target_references": ["MAT 1:1"], "wip_values": ["1"], "expected_values": ["1"]}
+    group = {"comparison": {"authority": "OL"}}
+    assert _translator_note({**finding, "code": "SOMETHING_ELSE"}, group, lambda k: k) is None
+
+
 def test_localized_report_changes_human_labels_but_retains_machine_evidence():
     """A bound report localizer changes prose without altering codes or identifiers."""
     localized_text = {
