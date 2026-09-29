@@ -404,6 +404,7 @@ def make_workspace(tmp_path: Path):
             },
             "bindings": {"WIP": "usWIP"},
             "evidence_policies": {"default": dict(DEFAULT_POLICY)},
+            "default_numeric_comparison_mode": "UNORDERED",
             "permissions": {"may_write_projects": []},
             "process": {
                 "stages": [

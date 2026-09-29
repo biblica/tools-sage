@@ -1,21 +1,16 @@
-schema_id: sage-nca-check-policy-1.0
-required:
-- schema_version
-- checks
-- wip
-- reference_package
-- number_style
-- model_contract
-- model_route
-- sqs_checks_applied
-- capability_limitation_code
+schema_id: sage-nca-check-policy-2.0
+required: [schema_version, checks, wip, reference_package, number_style, model_contract, model_route, optimization, numeric_comparison_mode, phase_contracts, sqs_checks_applied, capability_limitation_code]
 controls:
-  schema_version: '1.0'
+  schema_version: '2.0'
+  owner: system/src/sage/numbers/policy.py
+  immutable_run_snapshot: required
   checks:
     number_accuracy: exact_boolean
     presentation_consistency: exact_boolean
     footnote_review: exact_boolean
     all_off: prohibited
+  numeric_comparison_mode: [ORDERED, UNORDERED]
+  numeric_comparison_mode_source: job_level_profile_default_not_per_run_override
   wip:
     source: sealed_Run_snapshot
     fields: [project_id, language, script, content_fingerprint, inventory_sha256, files]
@@ -31,6 +26,12 @@ controls:
   model_route:
     fields: [route_id, provider, model, reasoning_effort, capability_fingerprint, qualification_status, qualification_evidence_sha256, routing_policy_version]
     live_reselection_on_resume: prohibited
+  optimization:
+    contract_version: nca-optimization-2.0
+    request_concurrency: 1
+    transient_retries: [0, 1]
+    reuse_scope: TASK
+  phase_contracts: exact_installed_bytes_and_actual_model_route
   sqs_checks_applied: false
   capability_limitation_code: NCA_LLM_CAPABILITY_LIMITATION
 immutability:

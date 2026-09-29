@@ -1,104 +1,117 @@
-"""Numeric equivalence preserves roles, kinds, units, qualifiers and multiplicity."""
+"""Deterministic local comparison of WIP-extracted numbers against the index.
+
+The central design point of the 2026-09-28 simplified-check rewrite: unordered
+set comparison cannot distinguish a faithful reordering ("14 elders, 200 men")
+from a swapped referent ("200 elders, 14 men") -- both produce the same
+multiset {14, 200}. ORDERED mode exists precisely to catch that case, and it
+must never silently PASS or FAIL a real reordering -- it must surface it for
+human review with both orderings and the OL text attached (see
+test_ordered_mode_catches_swapped_referents_as_needs_review below).
+"""
 from fractions import Fraction
 
 import pytest
 
-from sage.numbers.compare import compare_expressions
-from sage.numbers.models import Extraction, NumericExpression
+from sage.numbers.compare import compare_values
+from sage.numbers.models import ReferenceRow
+from sage.vrs import VerseRef
 
 
-def quantity(value, role='men', **changes):
-    """Build one hand-specified typed quantity for correspondence tests."""
-    fields = dict(values=(Fraction(value),), kind='CARDINAL', surface=str(value), span=(0, len(str(value))), role=role)
-    fields.update(changes)
-    return NumericExpression(**fields)
+def row(ol_values=(), niv_values=(), *, ol_text='OL text', niv_text='NIV text'):
+    """Build one hand-specified reference row for comparator tests."""
+    return ReferenceRow(
+        VerseRef('MAT', 5, 1), 'MAT 5:1', 'grc', ol_text,
+        tuple(Fraction(value) for value in ol_values), niv_text,
+        tuple(Fraction(value) for value in niv_values), {},
+    )
 
 
-def test_equal_value_bag_does_not_justify_reassigned_quantities():
-    """Equal value bag does not justify reassigned quantities."""
-    ol = (quantity(3, 'sheep'), quantity(7, 'goats'))
-    target = Extraction((quantity(7, 'sheep'), quantity(3, 'goats')), 'COMPLETE')
-    assert compare_expressions(ol, target, allow_reordering=True).outcome == 'REVIEW_VALUE_DIFFERENCE'
+def values(*raw):
+    """Build one ordered WIP-extracted value tuple."""
+    return tuple(Fraction(value) for value in raw)
 
 
-def test_reordered_corresponding_quantities_can_pass():
-    """Reordered corresponding quantities can pass."""
-    ol = (quantity(3, 'sheep'), quantity(7, 'goats'))
-    target = Extraction((quantity(7, 'goats'), quantity(3, 'sheep')), 'COMPLETE')
-    assert compare_expressions(ol, target, allow_reordering=True).outcome == 'PASS_EQUIVALENT_NUMERIC_EXPRESSION'
+def test_row_absent_is_not_assessed_under_either_mode():
+    """A coordinate with no indexed reference row is never silently compared."""
+    for mode in ('ORDERED', 'UNORDERED'):
+        result = compare_values(values(3), None, mode=mode)
+        assert result.outcome == 'NOT_ASSESSED'
+        assert result.authority == 'NONE'
+        assert result.expected_values == ()
 
 
-def test_surface_style_does_not_change_numeric_meaning():
-    """Surface style does not change numeric meaning."""
-    ol = (quantity(318),)
-    target = Extraction((quantity(318, surface='three hundred and eighteen', span=(0, 26)),), 'COMPLETE')
-    assert compare_expressions(ol, target).outcome == 'PASS_AUTHORITY1'
+def test_exact_order_match_passes_under_both_modes():
+    """An exact sequence match is unambiguous regardless of comparison mode."""
+    for mode in ('ORDERED', 'UNORDERED'):
+        result = compare_values(values(14, 200), row((14, 200)), mode=mode)
+        assert result.outcome == 'PASS'
+        assert result.authority == 'OL'
 
 
-@pytest.mark.parametrize(('values', 'expected'), [([3], 'REVIEW_NUMBER_MISSING'), ([3, 4, 5], 'REVIEW_NUMBER_ADDED'), ([3, 9], 'REVIEW_VALUE_DIFFERENCE')])
-def test_missing_added_and_replaced_values_are_distinct(values, expected):
-    """Missing added and replaced values are distinct."""
-    ol = (quantity(3), quantity(4))
-    target = Extraction(tuple(quantity(value) for value in values), 'COMPLETE')
-    assert compare_expressions(ol, target).outcome == expected
+def test_ordered_mode_catches_swapped_referents_as_needs_review():
+    """Design point: ORDERED mode must never silently PASS or FAIL a real reordering.
+
+    "200 men, 14 elders" vs OL "14 elders, 200 men" -- multiset {14, 200} matches
+    either way, so this could be a faithful reordering OR a swapped referent.
+    ORDERED mode reports NEEDS_REVIEW with both orderings and the OL text so a
+    human can judge; it must not guess.
+    """
+    reference = row((14, 200), ol_text='δεκατέσσαρες πρεσβύτεροι, διακόσιοι ἄνδρες')
+    result = compare_values(values(200, 14), reference, mode='ORDERED')
+    assert result.outcome == 'NEEDS_REVIEW'
+    assert result.review_context['wip_order'] == ['200', '14']
+    assert result.review_context['expected_order'] == ['14', '200']
+    assert result.review_context['authority_text'] == 'δεκατέσσαρες πρεσβύτεροι, διακόσιοι ἄνδρες'
 
 
-def test_repeated_values_cannot_disappear_in_a_set_comparison():
-    """Repeated values cannot disappear in a set comparison."""
-    ol = (quantity(10000), quantity(10000), quantity(1000), quantity(1000))
-    target = Extraction((quantity(10000), quantity(1000)), 'COMPLETE')
-    assert compare_expressions(ol, target, allow_reordering=True).outcome == 'REVIEW_NUMBER_MISSING'
+def test_unordered_mode_cannot_catch_the_same_swap_by_design():
+    """UNORDERED mode is explicitly a multiset comparison: it cannot and does not catch this."""
+    reference = row((14, 200))
+    result = compare_values(values(200, 14), reference, mode='UNORDERED')
+    assert result.outcome == 'PASS'
 
 
-@pytest.mark.parametrize('changes', [{'unit': 'mile'}, {'qualifier': 'ABOUT'}, {'kind': 'ORDINAL'}, {'values': (Fraction(1, 3),), 'kind': 'FRACTION'}, {'role': 'goats'}])
-def test_semantic_attributes_cannot_be_changed_by_value_equality(changes):
-    """Semantic attributes cannot be changed by value equality."""
-    assert compare_expressions((quantity(3),), Extraction((quantity(3, **changes),), 'COMPLETE')).outcome == 'REVIEW_VALUE_DIFFERENCE'
+def test_ordered_mode_fails_when_multiset_also_disagrees():
+    """A real value difference is FAIL, not NEEDS_REVIEW, under either mode."""
+    reference = row((14, 200))
+    for mode in ('ORDERED', 'UNORDERED'):
+        result = compare_values(values(14, 9), reference, mode=mode)
+        assert result.outcome == 'FAIL'
 
 
-def test_ratio_members_remain_ordered_even_when_reordering_is_allowed():
-    """Ratio members remain ordered even when reordering is allowed."""
-    ol = (quantity(10, kind='RATIO', values=(Fraction(10), Fraction(100))),)
-    target = Extraction((quantity(10, kind='RATIO', values=(Fraction(100), Fraction(10))),), 'COMPLETE')
-    assert compare_expressions(ol, target, allow_reordering=True).outcome == 'REVIEW_VALUE_DIFFERENCE'
+def test_missing_and_added_values_fail_under_both_modes():
+    """A missing or an extra value is a real FAIL, not a reordering question."""
+    reference = row((3, 4))
+    assert compare_values(values(3), reference, mode='ORDERED').outcome == 'FAIL'
+    assert compare_values(values(3, 4, 5), reference, mode='UNORDERED').outcome == 'FAIL'
 
 
-@pytest.mark.parametrize('status', ['PARTIAL', 'UNSUPPORTED'])
-def test_incomplete_extraction_cannot_pass_or_assert_missing_numbers(status):
-    """Incomplete extraction cannot pass or assert missing numbers."""
-    assert compare_expressions((quantity(3),), Extraction((), status, ('Unsupported language context',))).outcome == 'INSUFFICIENT_EVIDENCE'
+def test_repeated_values_are_not_collapsed_into_a_set():
+    """Multiplicity matters: two missing duplicates is a real FAIL under UNORDERED too."""
+    reference = row((10000, 10000, 1000, 1000))
+    result = compare_values(values(10000, 1000), reference, mode='UNORDERED')
+    assert result.outcome == 'FAIL'
 
 
-def test_flat_source_value_equality_without_role_evidence_is_insufficient():
-    """Flat source value equality without role evidence is insufficient."""
-    result = compare_expressions((quantity(3, None), quantity(7, None)), Extraction((quantity(3, None), quantity(7, None)), 'COMPLETE'))
-    assert result.outcome == 'INSUFFICIENT_EVIDENCE'
-    assert 'SOURCE_CORRESPONDENCE_UNSUPPORTED' in result.reason_codes
+def test_ol_is_authority_one_niv_is_fallback():
+    """OL values are Authority 1; NIV is used only when a row has no OL values."""
+    ol_row = row((3,), (7,))
+    assert compare_values(values(3), ol_row, mode='ORDERED').authority == 'OL'
+    niv_only = row((), (7,))
+    result = compare_values(values(7), niv_only, mode='ORDERED')
+    assert result.authority == 'NIV'
+    assert result.expected_values == (Fraction(7),)
 
 
-def test_empty_complete_typed_sequences_agree():
-    """Empty complete typed sequences agree."""
-    assert compare_expressions((), Extraction((), 'COMPLETE')).outcome == 'PASS_AUTHORITY1'
+def test_row_with_neither_ol_nor_niv_values_is_not_assessed():
+    """A row that indexes no values at all cannot be compared against."""
+    result = compare_values(values(3), row((), ()), mode='ORDERED')
+    assert result.outcome == 'NOT_ASSESSED'
+    assert result.authority == 'NONE'
 
 
-def test_matching_values_cannot_authorize_unapproved_reordering():
-    """Matching values cannot authorize unapproved reordering."""
-    ol = (quantity(3, 'sheep'), quantity(7, 'goats'))
-    target = Extraction((quantity(7, 'goats'), quantity(3, 'sheep')), 'COMPLETE')
-    result = compare_expressions(ol, target)
-    assert result.outcome == 'REVIEW_VALUE_DIFFERENCE'
-    assert result.reason_codes == ('NUMERIC_MEANING_DIFFERENT',)
-
-
-@pytest.mark.parametrize('role', [None, '', '  '])
-@pytest.mark.parametrize('side', ['source', 'target'])
-@pytest.mark.parametrize('different_count', [False, True])
-def test_missing_or_blank_role_evidence_cannot_classify_numeric_changes(role, side, different_count):
-    """Missing or blank role evidence cannot classify numeric changes."""
-    source = (quantity(3, role if side == 'source' else 'men'),)
-    actual = (quantity(3, role if side == 'target' else 'men'),)
-    if different_count:
-        actual += (quantity(4),)
-    result = compare_expressions(source, Extraction(actual, 'COMPLETE'))
-    assert result.outcome == 'INSUFFICIENT_EVIDENCE'
-    assert result.reason_codes == (f'{side.upper()}_CORRESPONDENCE_UNSUPPORTED',)
+def test_needs_review_requires_nonempty_review_context():
+    """The comparator's own dataclass invariant: NEEDS_REVIEW must carry evidence."""
+    from sage.numbers.compare import ComparisonResult
+    with pytest.raises(ValueError):
+        ComparisonResult('NEEDS_REVIEW', 'ORDERED', values(3), values(3), 'OL', {})

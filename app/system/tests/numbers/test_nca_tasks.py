@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-from fractions import Fraction
 from pathlib import Path
 from threading import Event, Thread
 from types import SimpleNamespace
@@ -14,40 +13,9 @@ from sage.errors import LockError, ValidationError
 from sage.jobs import JobStore
 from sage.llm_tasks import execute_task
 from sage.nca import create_nca_job, create_nca_run, create_nca_task, finalize_nca_run
-from sage.numbers.models import Extraction, NumericExpression
 from sage.storage import storage_layout
 
 from .test_nca_jobs import _prepare_nca_workspace, _route
-
-
-class _Receipt:
-    """Provide one JSON-compatible phase receipt for offline execution tests."""
-
-    def __init__(self, phase: str) -> None:
-        """Record the phase whose provider evidence this receipt represents."""
-        self.phase = phase
-
-    def to_dict(self) -> dict[str, object]:
-        """Return the exact fields required by the NCA result validator."""
-        versions = {
-            "EXTRACTION": "nca-extraction-1.0",
-            "CORRESPONDENCE": "nca-correspondence-1.0",
-            "FOOTNOTE": "nca-footnote-1.0",
-        }
-        return {
-            "phase": self.phase,
-            "task_version": versions[self.phase],
-            "provider": "codex",
-            "model": "gpt-test",
-            "reasoning_effort": "high",
-            "route_id": "nca-route-fixture",
-            "routing_mode": "AUTOMATIC",
-            "qualification_status": "QUALIFIED",
-            "prompt_sha256": "3" * 64,
-            "input_sha256": "4" * 64,
-            "response_sha256": "5" * 64,
-            "provider_metadata": {"request_id": "offline"},
-        }
 
 
 from sage.numbers.model_tasks import NcaModelTasks as _RealModelTasks
@@ -94,18 +62,6 @@ class _OfflineTasks(_RealModelTasks):
         if expected_route_id != "nca-route-fixture":
             raise AssertionError("execution did not pin the sealed route")
 
-    def extract(self, _unit, *, language: str, style_profile):
-        """Return complete empty extraction for fixture text with no numeric surface."""
-        assert language == "en"
-        assert style_profile
-        return SimpleNamespace(value=Extraction((), "COMPLETE"), receipt=_Receipt("EXTRACTION"))
-
-    def correspond(self, *_args, **_kwargs):
-        """Leave correspondence unresolved so output reports limited evidence."""
-        if getattr(self, '_phase_executor', None) is not None:
-            return super().correspond(*_args, **_kwargs)
-        raise ValidationError("offline fixture has no correspondence", code="NCA_MODEL_PROVIDER_FAILED")
-
 
 class _EmptyTransport:
     """Return recorded no-number extraction at the physical provider boundary."""
@@ -115,9 +71,9 @@ class _EmptyTransport:
         from sage.executors.base import ProviderResponse
         payload = json.loads(request.prompt)['input']
         if payload['phase'] != 'EXTRACTION':
-            raise ValidationError('offline fixture has no correspondence', code='NCA_MODEL_PROVIDER_FAILED')
-        raw = {'schema_version': '2.0', 'phase': 'EXTRACTION', 'batch_id': payload['batch_id'],
-            'work_units': [{'input_id': x['input_id'], 'status': 'COMPLETE', 'limitations': [], 'expressions': []} for x in payload['work_units']]}
+            raise ValidationError('offline fixture only supports EXTRACTION', code='NCA_MODEL_PROVIDER_FAILED')
+        raw = {'schema_version': '1.0', 'phase': 'EXTRACTION', 'batch_id': payload['batch_id'],
+            'work_units': [{'input_id': x['input_id'], 'status': 'COMPLETE', 'limitations': [], 'values': []} for x in payload['work_units']]}
         return ProviderResponse(provider='codex', content=json.dumps(raw), model='gpt-test', reasoning_effort='high', metadata={})
 
 
@@ -312,7 +268,7 @@ def test_shared_execute_submit_and_finalize_use_nca_result_contract(
     assert executed["status"] == "EXECUTED"
     assert executed["provider"] == "codex"
     assert submitted["status"] == "FINALIZED"
-    assert submitted["validation"]["format"] == "NCA_NUMBERS_RESULT_2.0"
+    assert submitted["validation"]["format"] == "NCA_NUMBERS_RESULT_1.0"
     resumed = execute_task(config, task_manifest=path)
     assert resumed["status"] == "EXECUTED"
     result = Path(str(finalized["result_path"]))
@@ -433,11 +389,7 @@ def test_unindexed_target_scope_is_never_extracted_or_flagged(
             raw = json.loads(response.content)
             for supplied, returned in zip(payload['work_units'], raw['work_units']):
                 if 'Verse 2.' in supplied['text']:
-                    start = supplied['text'].index('2')
-                    returned['expressions'] = [{'expression_id': 'target-2', 'stream_id': supplied['stream_id'],
-                        'surface': '2', 'span': {'start': start, 'end': start + 1}, 'values': ['2'],
-                        'kind': 'CARDINAL', 'unit': None, 'qualifier': 'EXACT', 'role': None,
-                        'role_spans': [], 'representations': []}]
+                    returned['values'] = ['2']
             return replace(response, content=json.dumps(raw))
 
     class UnindexedTasks(_OfflineTasks):
@@ -455,10 +407,9 @@ def test_unindexed_target_scope_is_never_extracted_or_flagged(
     document = json.loads(Path(str(submitted["result_path"])).read_text(encoding="utf-8"))
 
     verse_two = next(
-        unit for unit in document["groups"] if unit["projection"]["target_references"] == ["MAT 1:2"]
+        group for group in document["groups"] if group["target_references"] == ["MAT 1:2"]
     )
-    verse_two = verse_two["components"][0]
-    assert verse_two["final_outcome"] == "NOT_ASSESSED"
+    assert verse_two["comparison"]["outcome"] == "NOT_ASSESSED"
     assert not any(finding["code"] == "NCA_REFERENCE_NOT_INDEXED" for finding in document["findings"])
 
 
@@ -478,14 +429,12 @@ def test_unindexed_empty_target_is_screened_without_a_finding(
     document = json.loads(Path(str(submitted["result_path"])).read_text(encoding="utf-8"))
 
     verse_two = next(
-        unit for unit in document["groups"] if unit["projection"]["target_references"] == ["MAT 1:2"]
+        group for group in document["groups"] if group["target_references"] == ["MAT 1:2"]
     )
-    verse_two = verse_two["components"][0]
-    assert verse_two["final_outcome"] == "NOT_ASSESSED"
-    assert verse_two["reading"]["semantic"]["outcome"] == "NOT_ASSESSED"
-    assert verse_two["footnote"]["status"] == "NOT_REQUIRED"
+    assert verse_two["comparison"]["outcome"] == "NOT_ASSESSED"
+    assert verse_two["extraction"]["status"] == "UNSUPPORTED"
     assert not any(
-        finding["target_reference"] == "MAT 1:2" for finding in document["findings"]
+        "MAT 1:2" in finding.get("target_references", []) for finding in document["findings"]
     )
 
 

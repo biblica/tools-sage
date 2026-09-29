@@ -18,48 +18,41 @@ _ENGLISH = {
     "report.nca.limitations": "Limitations",
     "report.nca.capability_limitation": NCA_CAPABILITY_LIMITATION,
     "report.nca.checks": "Selected checks",
-    "report.nca.units": "Units",
     "report.nca.findings": "Findings",
     "report.nca.no_findings": "No NCA findings were recorded.",
     "report.nca.target_reference": "Target reference",
-    "report.nca.target_locator": "Target locator",
     "report.nca.western_reference": "Western reference",
-    "report.nca.ol_reference": "Original-language reference",
-    "report.nca.selected_reading": "Selected reading",
-    "report.nca.source_ids": "Source IDs",
-    "report.nca.footnote_action": "Footnote action",
-    "report.nca.footnote_status": "Footnote status",
-    "report.nca.suggested_note": "Suggested note",
     "report.nca.code": "Code",
     "report.nca.category": "Category",
+    "report.nca.severity": "Severity",
     "report.nca.outcome": "Outcome",
     "report.nca.restrictions": "Restrictions",
     "report.nca.model_identity": "Model identity",
     "report.nca.style_profile": "Style profile",
     "report.nca.reference_package": "Reference package",
-    "report.nca.expressions": "Expressions",
-    "report.nca.insufficient_evidence": "Insufficient evidence",
-    "report.nca.reference_not_indexed": "Reference not indexed",
-    "report.nca.not_assessed": "Not assessed",
     "report.nca.result": "Result",
     "report.nca.confidence_basis": "Confidence basis",
-    "report.nca.ol_expressions_checked": "OL expressions checked",
-    "report.nca.target_expressions": "Target expressions",
+    "report.nca.groups": "Groups",
     "report.nca.passes": "Passes",
-    "report.nca.unit_conversions": "Unit conversions",
-    "report.nca.value_differences": "Value differences",
-    "report.nca.missing_numbers": "Missing numbers",
-    "report.nca.added_numbers": "Added numbers",
-    "report.nca.known_variants": "Known variants",
-    "report.nca.style_findings": "Style findings",
-    "report.nca.source_expressions": "OL source expressions",
-    "report.nca.variant_class": "Variant class",
+    "report.nca.failures": "Failures",
+    "report.nca.needs_review": "Needs review",
+    "report.nca.not_assessed": "Not assessed",
+    "report.nca.noteworthy_notes": "Noteworthy notes",
+    "report.nca.extraction_status": "Extraction status",
+    "report.nca.wip_values": "WIP values",
+    "report.nca.expected_values": "Expected values",
+    "report.nca.comparison_outcome": "Comparison outcome",
+    "report.nca.comparison_mode": "Comparison mode",
+    "report.nca.comparison_authority": "Authority",
+    "report.nca.review_context": "Review context",
+    "report.nca.classification": "Classification",
     "report.nca.scholarship_status": "Scholarship status",
+    "report.nca.manuscript_evidence": "Manuscript evidence",
+    "report.nca.ol_values": "OL values",
 }
 _ENGLISH.update({
     'report.nca.chapters': 'WIP chapters',
     'report.nca.unlocated': 'Unlocated WIP coverage',
-    'report.nca.alignment': 'Alignment',
     'report.nca.cross_reference': 'See primary evidence',
     'report.nca.parent_group': 'Protected parent group',
     'report.nca.planned_inputs': 'Planned extraction inputs',
@@ -68,17 +61,10 @@ _ENGLISH.update({
     'report.nca.reused_checkpoints': 'Reused checkpoints',
     'report.nca.blocked_inputs': 'Blocked extraction inputs',
     'report.nca.missing_owners': 'Groups without extraction',
-    'report.nca.scope_expansion': 'Scope expansion',
     'report.nca.requested_scope': 'Requested scope',
-    'report.nca.row_evidence': 'Exact row evidence',
-    'report.nca.indexed_coordinates': 'Indexed coordinates',
-    'report.nca.unindexed_coordinates': 'Unindexed coordinates',
     'report.nca.extraction_complete': 'Complete extractions',
     'report.nca.extraction_partial': 'Partial extractions',
     'report.nca.extraction_unsupported': 'Unsupported extractions',
-    'report.nca.unresolved_targets': 'Unresolved target expressions',
-    'report.nca.uncertain_navigation': 'Row ownership is unresolved; use the protected WIP range.',
-    'report.nca.unlocated_navigation': 'No proven WIP location; Western coordinates below identify coverage only.',
     'report.nca.planning_notice': 'Planning estimates describe initial extraction batches, not measured time, cost or model qualification. Semantic calls and retries depend on evidence.',
     'report.nca.preflight': 'Scoped preflight',
     'report.nca.reference_expectations': 'Reference expectations (Western)',
@@ -86,16 +72,6 @@ _ENGLISH.update({
     'report.nca.mandatory_profile': 'Number Style Profile (optional)',
     'report.nca.input_language': 'Input language and script',
     'report.nca.failed_calls': 'Failed calls',
-    'report.nca.exact_evidence': 'Exact evidence',
-    'report.nca.usage_title': 'Number Usage Report',
-    'report.nca.usage_notice': 'Observed usage in this Run scope, derived from accepted numeric extraction. Counts describe observed expressions; partial extraction is not complete coverage.',
-    'report.nca.usage_forms': 'Observed forms',
-    'report.nca.usage_stream': 'Text location',
-    'report.nca.usage_form': 'Form',
-    'report.nca.usage_details': 'Numeric details',
-    'report.nca.usage_mixed': 'Mixed usage for operator review',
-    'report.nca.usage_mixed_notice': 'Mixed forms can be appropriate in different contexts. These observations are not violations of approved rules; they do not create a stylesheet. Separator characters are observed without assuming a decimal or grouping convention.',
-    'report.nca.usage_no_mixed': 'No mixed usage identified in the available extracted evidence.',
     'report.nca.no_stylesheet': 'No stylesheet selected. Checks against approved rules are not assessed; numeric accuracy and footnote review remain independent.',
 })
 _ENGLISH_LANGUAGES = frozenset({"en", "en-US", "en-GB"})
@@ -155,58 +131,28 @@ def _joined(value: object) -> str:
     return ", ".join("NULL" if item is None else str(item) for item in value) or "NOT RECORDED"
 
 
-def _locator(value: object) -> str:
-    """Render the immutable target source locator in stable key order."""
-    if not isinstance(value, Mapping):
-        return "NOT RECORDED"
-    return ", ".join(f"{key}={value[key]}" for key in sorted(value)) or "NOT RECORDED"
-
-
-def _model_identities(value: object, *, grouped: bool = False) -> tuple[str, ...]:
-    """Collect exact provider/model identities from actual phase receipts."""
+def _model_identities(value: object) -> tuple[str, ...]:
+    """Collect exact provider/model identities from actual EXTRACTION phase receipts."""
     if not isinstance(value, Mapping):
         return ()
     identities: list[str] = []
-    for phase in ("EXTRACTION", "CORRESPONDENCE", "FOOTNOTE") + (("GROUP_CORRESPONDENCE",) if grouped else ()):
-        rows = value.get(phase, ())
-        if not isinstance(rows, (list, tuple)):
+    for row in value.get("EXTRACTION", ()):
+        if not isinstance(row, Mapping):
             continue
-        for row in rows:
-            if not isinstance(row, Mapping):
-                continue
-            provider, model = row.get("provider"), row.get("model")
-            if isinstance(provider, str) and provider and isinstance(model, str) and model:
-                identity = f"{phase}: {provider}/{model}"
-                if identity not in identities:
-                    identities.append(identity)
+        provider, model = row.get("provider"), row.get("model")
+        if isinstance(provider, str) and provider and isinstance(model, str) and model:
+            identity = f"EXTRACTION: {provider}/{model}"
+            if identity not in identities:
+                identities.append(identity)
     return tuple(identities)
 
 
-def _expressions(value: object) -> str:
-    """Render typed source expressions without changing their canonical values."""
-    if not isinstance(value, (list, tuple)):
-        return "NOT RECORDED"
-    rendered: list[str] = []
-    for item in value:
-        if not isinstance(item, Mapping):
-            continue
-        attributes = [str(item.get("kind") or "UNKNOWN")]
-        for key in ("role", "unit", "qualifier"):
-            if item.get(key) is not None:
-                attributes.append(f"{key}={item[key]}")
-        rendered.append(
-            f"{item.get('surface', 'NOT RECORDED')} = {_joined(item.get('values'))} "
-            f"[{' ; '.join(attributes)}]"
-        )
-    return "; ".join(rendered) or "NOT RECORDED"
-
-
 def chapter_sections(document: Mapping[str, object]) -> tuple[Mapping[str, object], ...]:
-    """Assign each canonical parent and finding once using only proven WIP coordinates."""
+    """Assign each canonical group and finding once using only proven WIP coordinates."""
     from sage.references import BOOK_ORDER
     import re
 
-    groups = document.get('groups', document.get('units', ()))
+    groups = document.get('groups', ())
     findings = document.get('findings', ())
     sections: dict[tuple[str | None, int | None], dict[str, Any]] = {}
     owners = {}
@@ -228,13 +174,13 @@ def chapter_sections(document: Mapping[str, object]) -> tuple[Mapping[str, objec
         return BOOK_ORDER.get(book, 999), book, int(chapter), int(verse)
 
     ordered = sorted(groups, key=lambda group: (
-        min((coordinate(ref) for ref in group['projection']['target_references']), default=(1000, '', 0, 0)),
+        min((coordinate(ref) for ref in group['target_references']), default=(1000, '', 0, 0)),
         group['unit_id']))
     for group in ordered:
         identity = group['unit_id']
         if identity in owners:
             raise ValidationError('Duplicate canonical parent', code='NCA_RESULT_COVERAGE_INVALID')
-        refs = sorted(group['projection']['target_references'], key=coordinate)
+        refs = sorted(group['target_references'], key=coordinate)
         chapters = list(dict.fromkeys((coordinate(ref)[1], coordinate(ref)[2]) for ref in refs)) or [(None, None)]
         primary = chapters[0]
         owners[identity] = primary
@@ -269,7 +215,7 @@ def _exact(value: object) -> str:
 
 
 def _optimized_metrics(document, text) -> list[str]:
-    """Expose sealed planning and observed work separately without estimating missing history."""
+    """Expose sealed planning and observed work separately from the summary counters."""
     metrics = document.get('metrics', {})
     planning = metrics.get('planning', {})
     coverage = document['coverage']
@@ -281,50 +227,34 @@ def _optimized_metrics(document, text) -> list[str]:
         'failed_calls': metrics.get('failed_calls', 'NOT RECORDED'),
     }
     lines = [f"- {text('report.nca.' + key)}: `{value}`" for key, value in values.items()]
-    for key in ('indexed_coordinates', 'unindexed_coordinates', 'extraction_complete', 'extraction_partial', 'extraction_unsupported'):
-        lines.append(f"- {text('report.nca.' + key)}: `{document['summary'].get(key, 'NOT RECORDED')}`")
     for key, value in (('blocked_inputs', planning.get('blocked')), ('missing_owners', planning.get('missing_owner_ids')),
-                       ('requested_scope', coverage.get('requested_scope')), ('scope_expansion', coverage.get('scope_expansions'))):
+                       ('requested_scope', coverage.get('requested_scope'))):
         lines.append(f"- {text('report.nca.' + key)}: `{_exact(value)}`")
     return lines + ['', text('report.nca.planning_notice'), '']
 
 
 def _group_lines(group, text) -> list[str]:
-    """Keep exact per-row evidence beneath its one protected target extraction parent."""
-    projection = group['projection']
+    """Render one indexed group's extraction, local comparison outcome, and advisory notes."""
+    extraction = group['extraction']
+    comparison = group['comparison']
     lines = [f'<a id="{_anchor(group["unit_id"], "group")}"></a>', f"### `{group['unit_id']}`", '',
-        f"- {text('report.nca.target_reference')}: {_joined(projection['target_references'])}",
-        f"- {text('report.nca.target_locator')}: {_locator(projection.get('source_locator'))}",
-        f"- {text('report.nca.western_reference')}: {_joined(projection['western_references'])}",
-        f"- {text('report.nca.alignment')}: `{group['alignment_status']}`",
-        f"- {text('report.nca.target_expressions')}: {_expressions(group['extraction']['expressions'])}",
-        f"- {text('report.nca.exact_evidence')}: `{_exact(group['extraction'])}`",
-        f"- {text('report.nca.unresolved_targets')}: {_joined(group['unresolved_target_ids'])}"]
-    if not projection['target_references']:
-        lines.extend(['', text('report.nca.unlocated_navigation')])
-    elif group['alignment_status'] in {'PARTIAL', 'UNAVAILABLE'}:
-        lines.extend(['', text('report.nca.uncertain_navigation')])
-    lines.extend(['', f"- {text('report.nca.exact_evidence')}: `{_exact({'projection': projection, 'expression_ownership': group['expression_ownership'], 'unmatched_target_ids': group['unmatched_target_ids'], 'style_findings': group['style_findings']})}`",
-        f"- {text('report.nca.limitations')}: {_joined(group['limitations'])}", ''])
-    # The Western row is the source-expression namespace. Target IDs stay on
-    # the extraction parent; row-specific components never replace that parent.
-    components = {row['western_reference']: row for row in group['components']}
-    for row in group['reference_rows']:
-        component = components.get(row['western_reference'])
-        lines.extend(['', f"#### {text('report.nca.western_reference')}: `{row['western_reference']}`", '',
-            f"- {text('report.nca.ol_reference')}: `{'NULL' if row['ol_reference'] is None else row['ol_reference']}`",
-            f"- {text('report.nca.coverage')}: `{row['status']}`",
-            f"- {text('report.nca.row_evidence')}: `{_exact(row)}`"])
-        if component is not None:
-            reading, note = component['reading'], component['footnote']
-            lines.extend([
-                f"- {text('report.nca.outcome')}: `{component['final_outcome']}`",
-                f"- {text('report.nca.source_expressions')}: {_expressions(component['source_expressions'])}",
-                f"- {text('report.nca.selected_reading')}: `{reading['selected']}`",
-                f"- {text('report.nca.source_ids')}: {_joined(reading['source_ids'])}",
-                f"- {text('report.nca.footnote_action')}: `{note['action']}`",
-                f"- {text('report.nca.footnote_status')}: `{note['status']}`",
-                f"- {text('report.nca.exact_evidence')}: `{_exact(component)}`"])
+        f"- {text('report.nca.target_reference')}: {_joined(group['target_references'])}",
+        f"- {text('report.nca.western_reference')}: {_joined(group['western_references'])}",
+        f"- {text('report.nca.extraction_status')}: `{extraction['status']}`",
+        f"- {text('report.nca.wip_values')}: {_joined(extraction['values'])}",
+        f"- {text('report.nca.comparison_outcome')}: `{comparison['outcome']}`",
+        f"- {text('report.nca.comparison_mode')}: `{comparison['mode']}`",
+        f"- {text('report.nca.comparison_authority')}: `{comparison['authority']}`",
+        f"- {text('report.nca.expected_values')}: {_joined(comparison['expected_values'])}",
+        f"- {text('report.nca.limitations')}: {_joined(group['limitations'])}"]
+    if comparison['review_context']:
+        lines.append(f"- {text('report.nca.review_context')}: `{_exact(comparison['review_context'])}`")
+    for note in group['notes']:
+        lines.extend(['', f"- {text('report.nca.classification')}: `{note.get('classification') or 'NOT RECORDED'}`",
+            f"- {text('report.nca.scholarship_status')}: `{note.get('scholarship_status') or 'NOT RECORDED'}`",
+            f"- {text('report.nca.manuscript_evidence')}: `{note.get('manuscript_evidence') or 'NOT RECORDED'}`",
+            f"- {text('report.nca.ol_values')}: `{note.get('ol_values') or 'NOT RECORDED'}`"])
+    lines.append('')
     return lines
 
 
@@ -341,7 +271,7 @@ def _chapter_lines(document, text) -> list[str]:
         for finding_id in section['finding_ids']:
             finding = findings[finding_id]
             owner = finding['work_unit_id']
-            refs = groups[owner]['projection']['target_references']
+            refs = groups[owner]['target_references']
             lines.extend([f'<a id="{_anchor(finding_id, "finding")}"></a>', *_finding_lines(finding, text),
                 f"- {text('report.nca.parent_group')}: [{owner}](#{_anchor(owner, 'group')})",
                 f"- WIP: {_joined(refs)}", ''])
@@ -363,14 +293,12 @@ def _finding_lines(finding, text) -> list[str]:
         "",
         f"- {text('report.nca.code')}: `{finding.get('code', 'NOT RECORDED')}`",
         f"- {text('report.nca.category')}: `{finding.get('category', 'NOT RECORDED')}`",
-        f"- {text('report.nca.target_reference')}: `{finding.get('target_reference') or 'NOT RECORDED'}`",
+        f"- {text('report.nca.severity')}: `{finding.get('severity', 'NOT RECORDED')}`",
+        f"- {text('report.nca.target_reference')}: {_joined(finding.get('target_references'))}",
         f"- {text('report.nca.western_reference')}: {_joined(finding.get('western_references'))}",
-        f"- {text('report.nca.ol_reference')}: `{finding.get('ol_reference') or 'NOT RECORDED'}`",
-        f"- {text('report.nca.selected_reading')}: `{finding.get('selected_reading') or 'NOT RECORDED'}`",
-        f"- {text('report.nca.source_ids')}: {_joined(finding.get('source_ids'))}",
-        f"- {text('report.nca.footnote_action')}: `{finding.get('footnote_action') or 'NOT RECORDED'}`",
-        f"- {text('report.nca.footnote_status')}: `{finding.get('footnote_status') or 'NOT RECORDED'}`",
-        f"- {text('report.nca.suggested_note')}: {finding.get('suggested_note') or 'NOT RECORDED'}",
+        f"- {text('report.nca.wip_values')}: {_joined(finding.get('wip_values'))}",
+        f"- {text('report.nca.expected_values')}: {_joined(finding.get('expected_values'))}",
+        f"- {finding.get('message', 'NOT RECORDED')}",
         "",
     ]
 
@@ -405,11 +333,10 @@ def render_nca_report(
     coverage = _mapping(document.get("coverage"), "coverage")
     summary = _mapping(document.get("summary"), "summary")
     findings = document.get("findings")
-    is_v2 = document.get("schema_version") == "2.0"
-    units = document.get("groups" if is_v2 else "units")
-    if not isinstance(findings, (list, tuple)) or not isinstance(units, (list, tuple)):
+    groups = document.get("groups")
+    if not isinstance(findings, (list, tuple)) or not isinstance(groups, (list, tuple)):
         raise ValidationError(
-            "NCA report units or findings are malformed.", code="NCA_RESULT_SCHEMA_INVALID"
+            "NCA report groups or findings are malformed.", code="NCA_RESULT_SCHEMA_INVALID"
         )
 
     # Human labels may change language; every backticked identity remains canonical machine evidence.
@@ -439,16 +366,16 @@ def render_nca_report(
             "",
         ]
     )
-    identities = _model_identities(document.get("model_receipts"), grouped=is_v2)
-    assessed_units = any(
-        isinstance(unit, Mapping)
-        and isinstance(unit.get("extraction"), Mapping)
-        and unit["extraction"].get("status") != "UNSUPPORTED"
-        for unit in units
+    identities = _model_identities(document.get("model_receipts"))
+    assessed_groups = any(
+        isinstance(group, Mapping)
+        and isinstance(group.get("extraction"), Mapping)
+        and group["extraction"].get("status") != "UNSUPPORTED"
+        for group in groups
     )
-    if assessed_units and not identities:
+    if assessed_groups and not identities:
         raise ValidationError(
-            "Assessed NCA units require actual model identity.",
+            "Assessed NCA groups require actual model identity.",
             code="NCA_RESULT_RECEIPT_INVALID",
         )
     lines.extend(f"- `{identity}`" for identity in identities)
@@ -459,21 +386,16 @@ def render_nca_report(
             "",
             f"## {text('report.nca.summary')}",
             "",
-            f"- {text('report.nca.units')}: `{summary.get('units', 0)}`",
-            f"- {text('report.nca.expressions')}: `{summary.get('expressions', 0)}`",
-            f"- {text('report.nca.target_expressions')}: `{summary.get('target_expressions', 0)}`",
-            f"- {text('report.nca.ol_expressions_checked')}: `{summary.get('ol_expressions_checked', 0)}`",
+            f"- {text('report.nca.groups')}: `{summary.get('groups', 0)}`",
             f"- {text('report.nca.passes')}: `{summary.get('passes', 0)}`",
-            f"- {text('report.nca.unit_conversions')}: `{summary.get('unit_conversions', 0)}`",
-            f"- {text('report.nca.value_differences')}: `{summary.get('value_differences', 0)}`",
-            f"- {text('report.nca.missing_numbers')}: `{summary.get('missing_numbers', 0)}`",
-            f"- {text('report.nca.added_numbers')}: `{summary.get('added_numbers', 0)}`",
-            f"- {text('report.nca.known_variants')}: `{summary.get('known_variants', 0)}`",
-            f"- {text('report.nca.style_findings')}: `{summary.get('style_findings', 0)}`",
-            f"- {text('report.nca.findings')}: `{summary.get('findings', 0)}`",
-            f"- {text('report.nca.insufficient_evidence')}: `{summary.get('insufficient_evidence', 0)}`",
-            f"- {text('report.nca.reference_not_indexed')}: `{summary.get('reference_not_indexed', 0)}`",
+            f"- {text('report.nca.failures')}: `{summary.get('failures', 0)}`",
+            f"- {text('report.nca.needs_review')}: `{summary.get('needs_review', 0)}`",
             f"- {text('report.nca.not_assessed')}: `{summary.get('not_assessed', 0)}`",
+            f"- {text('report.nca.noteworthy_notes')}: `{summary.get('noteworthy_notes', 0)}`",
+            f"- {text('report.nca.extraction_complete')}: `{summary.get('extraction_complete', 0)}`",
+            f"- {text('report.nca.extraction_partial')}: `{summary.get('extraction_partial', 0)}`",
+            f"- {text('report.nca.extraction_unsupported')}: `{summary.get('extraction_unsupported', 0)}`",
+            f"- {text('report.nca.findings')}: `{summary.get('findings', 0)}`",
             "",
             f"## {text('report.nca.coverage')}",
             "",
@@ -482,51 +404,12 @@ def render_nca_report(
             f"- {text('report.nca.confidence_basis')}: `{coverage.get('confidence_basis', 'NOT RECORDED')}`",
             f"- {text('report.nca.restrictions')}: {_joined(coverage.get('restrictions'))}",
             "",
-            f"## {text('report.nca.chapters' if is_v2 else 'report.nca.units')}",
+            f"## {text('report.nca.chapters')}",
             "",
         ]
     )
-    if is_v2:
-        lines.extend(_optimized_metrics(document, text))
-        lines.extend(_chapter_lines(document, text))
-    for raw_unit in (() if is_v2 else units):
-        unit = _mapping(raw_unit, "unit")
-        projection = _mapping(unit.get("projection"), "unit projection")
-        reading = _mapping(unit.get("reading"), "unit reading")
-        footnote = _mapping(unit.get("footnote"), "unit footnote")
-        source_evidence = _mapping(unit.get("source_evidence"), "unit source evidence")
-        source_context = _mapping(source_evidence.get("context"), "unit source context")
-        lines.extend(
-            [
-                f"### `{unit.get('unit_id', 'NOT RECORDED')}`",
-                "",
-                f"- {text('report.nca.target_reference')}: {_joined(projection.get('target_references'))}",
-                f"- {text('report.nca.target_locator')}: {_locator(projection.get('source_locator'))}",
-                f"- {text('report.nca.western_reference')}: {_joined(projection.get('western_references'))}",
-                f"- {text('report.nca.ol_reference')}: {_joined(projection.get('ol_references'))}",
-                f"- {text('report.nca.selected_reading')}: `{reading.get('selected', 'NOT RECORDED')}`",
-                f"- {text('report.nca.source_ids')}: {_joined(reading.get('source_ids'))}",
-                f"- {text('report.nca.source_expressions')}: {_expressions(source_evidence.get('expressions'))}",
-                f"- {text('report.nca.variant_class')}: `{source_context.get('variant_class') or 'NOT RECORDED'}`",
-                f"- {text('report.nca.scholarship_status')}: `{source_context.get('scholarship_status') or 'NOT RECORDED'}`",
-                f"- {text('report.nca.footnote_action')}: `{footnote.get('action', 'NOT RECORDED')}`",
-                f"- {text('report.nca.footnote_status')}: `{footnote.get('status', 'NOT RECORDED')}`",
-                f"- {text('report.nca.outcome')}: `{unit.get('final_outcome', 'NOT RECORDED')}`",
-                "",
-            ]
-        )
-    if not is_v2:
-        lines.extend([f"## {text('report.nca.findings')}", ""])
-    if not is_v2 and not findings:
-        if coverage.get("result") == "NO_FINDINGS":
-            lines.append(text("report.nca.no_findings"))
-        else:
-            lines.append(f"`{coverage.get('result', 'NOT ASSESSED')}`")
-    for raw_finding in (() if is_v2 else findings):
-        finding = _mapping(raw_finding, "finding")
-        lines.extend(_finding_lines(finding, text))
-    from .numbers.usage import render_number_usage
-    lines.extend(render_number_usage(document, text))
+    lines.extend(_optimized_metrics(document, text))
+    lines.extend(_chapter_lines(document, text))
     lines.extend(
         [
             f"## {text('report.nca.limitations')}",

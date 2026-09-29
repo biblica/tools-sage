@@ -210,10 +210,6 @@ def _validate_physical(key: PhaseKey, artifact: object) -> Mapping[str, object]:
     items = value['item_sha256']
     _require(isinstance(items, Mapping) and set(items) <= set(key.input_ids)
              and all(_hash(item) for item in items.values()), 'Invalid local item hashes')
-    # Batch validators reconcile the accepted subset and every item hash. Legacy
-    # singleton correspondence/footnote phases use an empty local-item mapping.
-    if receipt['task_version'] != 'nca-extraction-2.0':
-        _require(not items, 'Local item hashes require batch extraction')
     return value
 
 

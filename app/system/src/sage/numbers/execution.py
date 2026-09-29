@@ -21,7 +21,7 @@ from .reference import REFERENCE_PARSER_VERSION
 from .resources import reference_package_path, resolve_reference_package
 from .scope import project_scope
 from .style import load_style_profile, validate_style_profile
-from .target import extract_heading_units, target_units
+from .target import target_units
 from .transport import StreamInput
 
 
@@ -139,9 +139,10 @@ def prepare_execution_inputs(
 
     # Read the already verified inventory and hash the bytes actually retained, so
     # later inventory extraction never needs mutable paths or reconstructed SFM.
+    # Section/chapter headings have no successor in this pipeline (number
+    # accuracy only -- see numbers/hybrid.py); only body units are coverage.
     scope = parse_scope(run.scope)
     body: list[TargetUnit] = []
-    headings: list[TargetUnit] = []
     documents: dict[str, Mapping[str, object]] = {}
     for relative, digest in sorted(wip["files"].items()):
         try:
@@ -153,8 +154,6 @@ def prepare_execution_inputs(
             raise ValidationError("NCA sealed USJ changed", code="NCA_WIP_SNAPSHOT_STALE")
         documents[digest] = raw
         body.extend(target_units(raw, source_sha256=digest))
-        headings.extend(unit for unit in extract_heading_units(raw, source_sha256=digest)
-                        if any(scope.contains(ref) for ref in unit.target_references))
     service = VersificationService(config)
     projected, expected_refs = project_scope(
         tuple(body), scope=scope, target_schema=service.project_schema(wip["project_id"]),
@@ -162,17 +161,16 @@ def prepare_execution_inputs(
         mapping_path=package_root(config, bundle.package_id) / "reference/eng_org_map_rules.txt",
     )
     projected = tuple(projected)
-    expected_ids = tuple(unit.target.unit_id for unit in projected) + tuple(unit.unit_id for unit in headings)
+    expected_ids = tuple(unit.target.unit_id for unit in projected)
     contracts = {}
-    if sealed['schema_version'] == '2.0':
-        for relative, digest in sealed['phase_contracts']['files'].items():
-            data = (config.root / relative).read_bytes()
-            if sha256_bytes(data) != digest:
-                raise ValidationError('NCA installed phase contract changed', code='NCA_MODEL_ROUTE_CHANGED')
-            contracts[relative] = data
+    for relative, digest in sealed['phase_contracts']['files'].items():
+        data = (config.root / relative).read_bytes()
+        if sha256_bytes(data) != digest:
+            raise ValidationError('NCA installed phase contract changed', code='NCA_MODEL_ROUTE_CHANGED')
+        contracts[relative] = data
     import yaml
     limits = yaml.safe_load((config.root / 'system/config/workflows/nca/profile.yml').read_text())['evidence_policies']['default']
-    return ExecutionInputs(bundle, style_document, sealed, projected, tuple(headings),
+    return ExecutionInputs(bundle, style_document, sealed, projected, (),
                            expected_ids, tuple(expected_refs), documents, run.scope,
                            (run.root / 'check-policy.json').read_bytes(), contracts, limits)
 
@@ -236,7 +234,9 @@ def plan_extraction(inputs: ExecutionInputs, inventory: ScopeInventory | None = 
 
     inventory = inventory if inventory is not None else build_inventory(inputs)
     optimization = validate_optimization_policy(inputs.policy['optimization'])
-    streams = tuple(value for value in inventory.stream_inputs
-                    if value.purpose == 'BODY' or inputs.policy['checks']['presentation_consistency'])
+    # Only BODY streams feed a group's comparison (numbers/hybrid.py); presentation_consistency
+    # is an accepted no-op check-policy toggle (see numbers/results.py), so its former
+    # NOTE_STYLE/HEADING_STYLE streams are never planned -- nothing would consume them.
+    streams = tuple(value for value in inventory.stream_inputs if value.purpose == 'BODY')
     return streams, plan_batches(streams, policy=EvidencePolicy.from_mapping(inputs.evidence_policy),
                                 max_units=optimization['extraction_batch_max_units'])

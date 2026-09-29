@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-from dataclasses import replace
-from fractions import Fraction
 from importlib.metadata import PackageNotFoundError, version
 import json
 import hashlib
@@ -21,11 +19,7 @@ sys.path.insert(0, str(ROOT / 'system/src'))
 
 from sage.atomic import atomic_write_json
 from sage.errors import ValidationError
-from sage.numbers.models import Extraction, NumericExpression, SemanticDecision
 from sage.numbers.reference import REFERENCE_PARSER_VERSION, load_reference, parse_values
-from sage.numbers.footnotes import assess_footnote, footnote_recommendation
-from sage.numbers.units import compare_registered_units, parse_registered_quantity
-from sage.numbers.variants import select_reading
 from sage.vrs import VerseRef
 
 LIMITATION = "Findings are limited by the selected LLM's language understanding and numeric-interpretation capabilities. SQS confidence checks have not been applied."
@@ -56,8 +50,15 @@ def _plain(value):
     return value
 
 
-def _golden_readings(bundle) -> list[dict[str, object]]:
-    """Check all authorized whole-reading values and retained source policy outcomes."""
+def _golden_registered_coordinates(bundle) -> list[dict[str, object]]:
+    """Check registered OL reading data has not silently drifted from the golden fixture.
+
+    Per the 2026-09-28 simplified-check rewrite, per-row reading selection and
+    unit-conversion adjudication have no successor (comparison is now local/
+    deterministic against the indexed OL/NIV values -- see numbers/compare.py).
+    This keeps the reference-data regression coverage without depending on
+    that deleted adjudication code.
+    """
     fixture = ROOT / 'system/tests/numbers/fixtures/registered-readings.json'
     _require(fixture.is_file(), 'Required NCA reading acceptance fixture is absent.')
     cases = json.loads(fixture.read_text(encoding='utf-8'))
@@ -70,22 +71,25 @@ def _golden_readings(bundle) -> list[dict[str, object]]:
         _require(row is not None, f'Missing registered reading {ref.label()}.')
         _require(row.ol_values == parse_values(case['OL_VALUES']), f'Changed OL acceptance values at {ref.label()}.')
         _require(row.ol_reference == (case['OL_REF'] or None), f'Changed OL reference at {ref.label()}.')
-        for choice, values in [('OL', row.ol_values), ('ALT', parse_values(case['ALT_NIV_VALUES']))]:
-            decision = select_reading(row, values, bundle=bundle, semantic=SemanticDecision('PASS_AUTHORITY1'))
-            _require(decision.selected == choice, f'Whole-reading selection failed at {ref.label()}.')
-            _require(decision.footnote_action == case[f'FOOTNOTE_IF_TARGET_FOLLOWS_{choice}'], f'Changed disclosure policy at {ref.label()}.')
-            _require(decision.source_validation_outcome == case[f'VALIDATION_IF_TARGET_FOLLOWS_{choice}'], f'Changed source policy at {ref.label()}.')
-            _require(decision.source_ids == tuple(case['SOURCE_IDS'].split(';')), f'Changed provenance at {ref.label()}.')
-            note = assess_footnote(decision, (), bundle=bundle, language='en')
-            recommendation = footnote_recommendation(decision, note, bundle=bundle)
-            _require(note.status == 'MISSING', f'Missing-note assessment failed at {ref.label()}.')
-            _require(note.outcome == ('REVIEW_MISSING_FOOTNOTE' if decision.footnote_action == 'REQUIRE' else 'ADVISORY'),
-                     f'Missing-note severity differs at {ref.label()}.')
-            _require(recommendation is not None and recommendation['suggested_note'], f'Missing registered note at {ref.label()}.')
-            outcomes.append({'reference': ref.label(), 'reading': choice, 'semantic': decision.semantic.outcome,
-                             'footnote_action': decision.footnote_action, 'source_policy': decision.source_validation_outcome,
-                             'missing_note_outcome': note.outcome, 'suggested_note': recommendation['suggested_note'],
-                             'source_ids': list(decision.source_ids)})
+        outcomes.append({'reference': ref.label(), 'ol_values': case['OL_VALUES'], 'alt_niv_values': case['ALT_NIV_VALUES']})
+    return outcomes
+
+
+def _golden_registered_units(bundle) -> list[dict[str, object]]:
+    """Check registered unit example data has not silently drifted from the golden fixture."""
+    fixture = ROOT / 'system/tests/numbers/fixtures/registered-units.json'
+    _require(fixture.is_file(), 'Required NCA unit acceptance fixture is absent.')
+    cases = json.loads(fixture.read_text(encoding='utf-8'))
+    _require(len(cases) == 12, 'The complete 12-unit acceptance matrix is required.')
+    _require({VerseRef(case['BK'], int(case['CH']), int(case['VS'])) for case in cases} == set(bundle.units), 'Unit acceptance must cover each registered coordinate exactly once.')
+    outcomes = []
+    for case in cases:
+        ref = VerseRef(case['BK'], int(case['CH']), int(case['VS']))
+        row = bundle.lookup(ref)
+        _require(row is not None and ref in bundle.units, f'Missing unit example {ref.label()}.')
+        for key in ('OL_QUANTITY', 'NIV_QUANTITY', 'SOURCE_IDS'):
+            _require(bundle.units[ref][key] == case[key], f'Changed registered {key} at {ref.label()}.')
+        outcomes.append({'reference': ref.label(), 'source_ids': case['SOURCE_IDS'].split(';')})
     return outcomes
 
 
@@ -115,29 +119,6 @@ def _require_authorized_package(package: Path, bundle) -> str:
     return 'BUNDLED_CORE_PROJECTION'
 
 
-def _golden_units(bundle) -> list[dict[str, object]]:
-    """Check exact registered pairs with hand-specified retained unrelated quantities."""
-    fixture = ROOT / 'system/tests/numbers/fixtures/registered-units.json'
-    _require(fixture.is_file(), 'Required NCA unit acceptance fixture is absent.')
-    cases = json.loads(fixture.read_text(encoding='utf-8'))
-    _require(len(cases) == 12, 'The complete 12-unit acceptance matrix is required.')
-    _require({VerseRef(case['BK'], int(case['CH']), int(case['VS'])) for case in cases} == set(bundle.units), 'Unit acceptance must cover each registered coordinate exactly once.')
-    retained = {'LUK 24:13': (2,), 'JHN 2:6': (6,), 'JHN 19:39': (1,), 'REV 6:6': (4,)}
-    outcomes = []
-    for case in cases:
-        ref = VerseRef(case['BK'], int(case['CH']), int(case['VS']))
-        row = bundle.lookup(ref)
-        _require(row is not None and ref in bundle.units, f'Missing unit example {ref.label()}.')
-        for key in ('OL_QUANTITY', 'NIV_QUANTITY', 'SOURCE_IDS'):
-            _require(bundle.units[ref][key] == case[key], f'Changed registered {key} at {ref.label()}.')
-        extras = tuple(NumericExpression((Fraction(value),), 'CARDINAL', str(value), (0, len(str(value))), role='retained') for value in retained.get(ref.label(), ()))
-        expressions = extras + tuple(replace(item, role=f'measure-{index}') for index, item in enumerate(parse_registered_quantity(case['NIV_QUANTITY'])))
-        decision = compare_registered_units(row, Extraction(expressions, 'COMPLETE'), bundle=bundle)
-        _require(decision.outcome == 'PASS_UNIT_CONVERSION', f'Registered unit acceptance failed at {ref.label()}.')
-        outcomes.append({'reference': ref.label(), 'outcome': decision.outcome, 'source_ids': list(decision.evidence_ids)})
-    return outcomes
-
-
 def qualify(package: Path, *, release: bool = False) -> dict[str, object]:
     """Qualify integrity and optionally require the complete authorized acceptance package."""
     if not package.is_dir():
@@ -158,7 +139,7 @@ def qualify(package: Path, *, release: bool = False) -> dict[str, object]:
             _require(counts == EXPECTED_COUNTS, f'The authorized NCA package counts differ: {counts}.')
             lineage = next((item for item in bundle.diagnostics if item.get('code') == 'REFERENCE_LINEAGE_INCOMPLETE'), {})
             _require((lineage.get('differing_rows'), lineage.get('additional_authoritative_values'), lineage.get('new_numeric_rows'), lineage.get('supplementary_expression_count')) == (47, 51, 16, 6749), 'The documented supplementary-lineage warning must remain explicit.')
-            readings, units = _golden_readings(bundle), _golden_units(bundle)
+            readings, units = _golden_registered_coordinates(bundle), _golden_registered_units(bundle)
             for label, values in ACCEPTANCE_VALUES.items():
                 book, coordinate = label.split()
                 chapter, verse = coordinate.split(':')

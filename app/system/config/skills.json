@@ -97,9 +97,9 @@
       "source_version": "2026-09-09",
       "original_file": "system/skills/nca-numbers/references/ORIGINAL-NCA-NUMBERS-CONTRACT.md",
       "original_sha256": "6b2a566ffc34407e89be2e474cb343f68093db345a2cf8617f1191705d7c9243",
-      "adapted_sha256": "e79ba2e26ff4caadd799ff101a14495533e6d0c07143cd84491681d75788db7e",
+      "adapted_sha256": "b2e31afd9970f4c051178ca5e7df1a3dfb3783540e092dc4d256c8c90ba310f6",
       "qualification_status": "VALIDATED",
-      "transformation_summary": "Bounded target extraction, immutable OL correspondence, exact target-note evidence, pinned SAGE routing, and deterministic evidence validation. Version-2.0 target-only batch capsule with independent input coverage and one parent receipt. Governed v2 correspondence/footnote contracts, task-local checkpoints, and explicit unresolved group evidence."
+      "transformation_summary": "Bounded target extraction of ordered numeric values only, pinned SAGE routing, and deterministic evidence validation. Target-only batch capsule with independent input coverage and one parent receipt. Comparison against the indexed reference, coverage, and reports are all local to SAGE, not the model."
     },
     "rtc-focused-check": {
       "workflow": "saw",

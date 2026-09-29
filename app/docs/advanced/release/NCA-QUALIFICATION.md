@@ -1,5 +1,7 @@
 # NCA qualification record
 
+> **Historical record, preserved as-is.** This record describes the *original* exact-span/role/per-reference-row-correspondence NCA implementation qualified through `1ea6980`. That pipeline was replaced outright (no migration, no dual-path -- alpha software) by a simplified extraction-only design on 2026-09-28; see [`NCA-OPTIMIZATION-QUALIFICATION.md`](NCA-OPTIMIZATION-QUALIFICATION.md)'s "Simplified extraction-only pipeline" section for the current pipeline's qualification. The "Acceptance traceability" table below cites test files (`test_variants.py`, `test_units.py`, and others) that no longer exist -- they tested exact-span/role/registered-unit-conversion/whole-reading-selection behavior with no successor in the current pipeline. This page is not rewritten to match, so the historical record it made at the time remains accurate to what was true then.
+
 This record separates reference integrity, deterministic acceptance, and model language capability. The NCA implementation is on development branch `0.02a2`. SQS confidence checks are not implemented.
 
 ## Environment and baseline

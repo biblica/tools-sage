@@ -86,7 +86,9 @@ def test_scoped_preflight_reuses_actual_batches_without_provider(make_workspace,
     created = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
     inputs = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
     inventory = build_inventory(inputs)
-    streams = tuple(x for x in inventory.stream_inputs if x.purpose == 'BODY' or presentation)
+    # Only BODY streams feed a group's comparison (numbers/hybrid.py); presentation_consistency
+    # is an accepted no-op check-policy toggle, so it never changes what gets planned.
+    streams = tuple(x for x in inventory.stream_inputs if x.purpose == 'BODY')
     expected = plan_batches(streams, policy=EvidencePolicy.from_mapping(inputs.evidence_policy), max_units=cap)
     counts = {'package': 0, 'style': 0}
     load, validate = resources.load_reference, style.validate_style_profile

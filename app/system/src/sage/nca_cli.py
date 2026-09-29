@@ -135,20 +135,19 @@ def scoped_preflight(inputs) -> Mapping[str, object]:
     scope = parse_scope(inputs.requested_scope)
     refs = inputs.expected_references
     indexed = [ref.label() for ref in refs if inputs.bundle.lookup(ref) is not None]
-    # Historical v1 has no batch policy: never imply it used the optimized planner.
-    streams, plan = plan_extraction(inputs, inventory) if inputs.policy['schema_version'] == '2.0' else ((), None)
-    owners = {stream.owner_unit_id for stream in streams if stream.purpose != 'NOTE_STYLE'}
+    streams, plan = plan_extraction(inputs, inventory)
+    owners = {stream.owner_unit_id for stream in streams}
     return {'requested_scope': inputs.requested_scope,
         'language': inputs.policy['wip']['language'], 'script': inputs.policy['wip']['script'],
         'style_profile': _plain(inputs.policy['number_style']), 'checks': _plain(inputs.policy['checks']),
         'reference_expectations': indexed, 'indexed_coordinates': len(indexed),
         'unindexed_coordinates': len(refs) - len(indexed),
         'protected_group_ids': list(inputs.expected_unit_ids),
-        'planned_extraction_calls': len(plan.batches) if plan is not None else None,
+        'planned_extraction_calls': len(plan.batches),
         'input_ids': [stream.input_id for stream in streams],
-        'blocked': dict(plan.blocked) if plan is not None else {},
+        'blocked': dict(plan.blocked),
         'missing_owner_ids': [unit.target.unit_id for unit in inputs.projected_units
-                              if unit.target.unit_id not in owners] if plan is not None else [],
+                              if unit.target.unit_id not in owners],
         'scope_expansions': [{'unit_id': unit.target.unit_id,
             'included_target_references': [ref.label() for ref in unit.target.target_references if not scope.contains(ref)],
             'western_references': [ref.label() for ref in unit.western_references]}
