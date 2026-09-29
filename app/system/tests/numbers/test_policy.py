@@ -139,3 +139,28 @@ def test_v2_policy_can_explicitly_disable_transient_retry(package_root):
     from sage.numbers.policy import validate_optimization_policy
     raw = yaml.safe_load((package_root / 'system/config/workflows/nca/profile.yml').read_text())['optimization_policy']
     assert validate_optimization_policy(dict(raw, transient_retries=0))['transient_retries'] == 0
+
+
+def test_numeric_comparison_mode_is_validated_strictly():
+    """Only the exact ORDERED/UNORDERED vocabulary is admitted; nothing else, ever."""
+    from sage.numbers.policy import validate_numeric_comparison_mode
+    assert validate_numeric_comparison_mode('ORDERED') == 'ORDERED'
+    assert validate_numeric_comparison_mode('UNORDERED') == 'UNORDERED'
+    for invalid in (None, '', 'ordered', 'BOTH', 1):
+        with pytest.raises(ValidationError) as exc:
+            validate_numeric_comparison_mode(invalid)
+        assert exc.value.code == 'NCA_COMPARISON_MODE_INVALID'
+
+
+def test_run_snapshot_seals_the_profile_default_numeric_comparison_mode(
+    make_workspace, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A new Run seals the Job-level default from profile.yml, not a per-Run override."""
+    root = make_workspace(configured=True, qualification_status='VALIDATED')
+    config, _style_bytes = _prepare_nca_workspace(root)
+    _route(monkeypatch)
+    job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1', style_selector='fixture-style/1')
+
+    run = create_nca_run(config, job_id=job.job_id, scope_value='MAT 1')
+
+    assert load_nca_run_snapshot(run.root)['numeric_comparison_mode'] == 'UNORDERED'

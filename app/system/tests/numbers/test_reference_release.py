@@ -40,6 +40,5 @@ def test_bundled_reference_passes_refined_numeric_and_note_acceptance(package_ro
     assert result['package_form'] == 'BUNDLED_CORE_PROJECTION'
     assert result['numeric_index_validation']['ol_rows'] == 6244
     assert result['numeric_index_validation']['niv_rows'] == 6244
-    assert len(result['reading_cases']) == 42
-    assert all(row['suggested_note'] and row['source_ids'] for row in result['reading_cases'])
+    assert len(result['reading_cases']) == 21
     assert len(result['unit_cases']) == 12

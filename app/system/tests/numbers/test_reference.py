@@ -16,12 +16,8 @@ import pytest
 from sage.errors import ValidationError
 from sage.numbers.models import (
     Extraction,
-    FootnoteDecision,
-    NumericExpression,
     ProjectedUnit,
-    ReadingDecision,
     ReferenceBundle,
-    SemanticDecision,
     TargetNote,
     TargetUnit,
 )
@@ -131,9 +127,7 @@ def test_unsupported_numeric_encoding_is_rejected(raw: str) -> None:
 
 def test_shared_models_reject_unknown_enums_and_freeze_nested_mappings() -> None:
     """Shared records close executable vocabularies and nested mutation paths."""
-    expression = NumericExpression((Fraction(3),), "CARDINAL", "three", (0, 5))
-    extraction = Extraction((expression,), "COMPLETE")
-    semantic = SemanticDecision("PASS_AUTHORITY1")
+    extraction = Extraction((Fraction(3),), "COMPLETE")
     note = TargetNote("n1", "+", "note", (VerseRef("MAT", 1, 1),), ({"start": 0},))
     target = TargetUnit(
         "u1",
@@ -150,20 +144,16 @@ def test_shared_models_reject_unknown_enums_and_freeze_nested_mappings() -> None
         "EXACT",
         "READY",
     )
-    reading = ReadingDecision("OL", semantic, "NONE", None, ())
     assert projected.status == "READY"
-    assert reading.source_validation_outcome is None
+    assert extraction.values == (Fraction(3),)
     with pytest.raises(TypeError):
         note.content_spans[0]["start"] = 2
     with pytest.raises(TypeError):
         target.source_locator["line"] = 2
     for constructor in (
-        lambda: NumericExpression((Fraction(1),), "UNKNOWN", "1", (0, 1)),
         lambda: Extraction((), "UNKNOWN"),
-        lambda: SemanticDecision("UNKNOWN"),
-        lambda: FootnoteDecision("NONE", "UNKNOWN", "NONE"),
+        lambda: Extraction((Fraction(1),), "PARTIAL"),  # incomplete status requires a limitation
         lambda: ProjectedUnit(target, (), (), "EXACT", "UNKNOWN"),
-        lambda: ReadingDecision("UNKNOWN", semantic, "NONE", None, ()),
     ):
         with pytest.raises(ValidationError) as caught:
             constructor()

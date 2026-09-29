@@ -11,47 +11,13 @@ from sage.errors import ValidationError
 from sage.vrs import VerseRef
 
 
-NUMERIC_KINDS = frozenset({"CARDINAL", "ORDINAL", "FRACTION", "RANGE", "RATIO"})
-NUMERIC_QUALIFIERS = frozenset({"EXACT", "ABOUT", "LESS_THAN", "MORE_THAN"})
 EXTRACTION_STATUSES = frozenset({"COMPLETE", "PARTIAL", "UNSUPPORTED"})
-SEMANTIC_OUTCOMES = frozenset(
-    {
-        "PASS_AUTHORITY1",
-        "PASS_EQUIVALENT_NUMERIC_EXPRESSION",
-        "PASS_UNIT_CONVERSION",
-        "REGISTERED_ALTERNATE",
-        "ACCEPTABLE_VARIANT_WITH_FOOTNOTE",
-        "CAUTION_ACCEPTABLE_ATTESTED_MINOR_READING_WITH_FOOTNOTE",
-        "NO_CONFIGURED_OL_READING",
-        "REVIEW_MISSING_FOOTNOTE",
-        "REVIEW_VALUE_DIFFERENCE",
-        "REVIEW_NUMBER_MISSING",
-        "REVIEW_NUMBER_ADDED",
-        "INSUFFICIENT_EVIDENCE",
-        "REFERENCE_NOT_INDEXED",
-        "NOT_ASSESSED",
-    }
-)
-FOOTNOTE_ACTIONS = frozenset({"NONE", "RECOMMEND", "REQUIRE"})
-FOOTNOTE_STATUSES = frozenset(
-    {"ADEQUATE", "MISSING", "INADEQUATE", "NOT_REQUIRED", "NOT_ASSESSED"}
-)
-FOOTNOTE_OUTCOMES = frozenset(
-    {"NONE", "ADVISORY", "REVIEW_MISSING_FOOTNOTE", "INSUFFICIENT_EVIDENCE"}
-)
 PROJECTION_STATUSES = frozenset({"READY", "AMBIGUOUS", "UNMAPPED", "REGISTERED_ABSENCE"})
-READING_SELECTIONS = frozenset({"OL", "ALT", "UNSUPPORTED", "UNASSESSED"})
-SOURCE_VALIDATION_OUTCOMES = frozenset(
-    {
-        "PASS_AUTHORITY1",
-        "ACCEPTABLE_VARIANT_WITH_FOOTNOTE",
-        "CAUTION_ACCEPTABLE_ATTESTED_MINOR_READING_WITH_FOOTNOTE",
-        "NO_CONFIGURED_OL_READING",
-    }
-)
 QUALIFICATION_STATUSES = frozenset(
     {"QUALIFIED", "QUALIFIED_WITH_DIAGNOSTICS", "DIAGNOSTIC", "BLOCKED"}
 )
+COMPARISON_MODES = frozenset({"ORDERED", "UNORDERED"})
+COMPARISON_OUTCOMES = frozenset({"PASS", "FAIL", "NEEDS_REVIEW", "NOT_ASSESSED"})
 
 
 def _invalid(field_name: str, value: object) -> ValidationError:
@@ -95,159 +61,28 @@ def _freeze_mapping(field_name: str, value: Mapping[Any, Any]) -> Mapping[Any, A
 
 
 @dataclass(frozen=True)
-class NumericExpression:
-    """One exact numeric expression tied to its original text span."""
-    values: Tuple[Fraction, ...]
-    kind: str
-    surface: str
-    span: Tuple[int, int]
-    unit: Optional[str] = None
-    qualifier: str = "EXACT"
-    role: Optional[str] = None
-    expression_id: Optional[str] = None
-    stream_id: str = "main"
-    representations: Tuple[Mapping[str, object], ...] = ()
-    role_spans: Tuple[Tuple[int, int], ...] = ()
-
-    def __post_init__(self) -> None:
-        """Validate exact values, closed vocabularies, and source span bounds."""
-        values = _tuple("numeric expression values", self.values)
-        if not values or any(not isinstance(value, Fraction) for value in values):
-            raise _invalid("numeric expression values", self.values)
-        _enum("numeric expression kind", self.kind, NUMERIC_KINDS)
-        _enum("numeric expression qualifier", self.qualifier, NUMERIC_QUALIFIERS)
-        span = _tuple("numeric expression span", self.span)
-        if len(span) != 2 or any(type(value) is not int for value in span) or span[0] < 0 or span[1] <= span[0]:
-            raise _invalid("numeric expression span", self.span)
-        if not isinstance(self.surface, str) or not self.surface or len(self.surface) != span[1] - span[0]:
-            raise _invalid("numeric expression surface", self.surface)
-        if self.unit is not None and not isinstance(self.unit, str):
-            raise _invalid("numeric expression unit", self.unit)
-        if self.role is not None and not isinstance(self.role, str):
-            raise _invalid("numeric expression role", self.role)
-        if self.expression_id is not None and (
-            not isinstance(self.expression_id, str) or not self.expression_id
-        ):
-            raise _invalid("numeric expression ID", self.expression_id)
-        if not isinstance(self.stream_id, str) or not self.stream_id:
-            raise _invalid("numeric expression stream ID", self.stream_id)
-        representations = _tuple(
-            "numeric expression representations", self.representations
-        )
-        # Nested evidence must be safe even when a caller constructs the dataclass
-        # directly instead of entering through the model-response validators.
-        if any(not isinstance(value, Mapping) for value in representations):
-            raise _invalid("numeric expression representations", self.representations)
-        representation_spans: set[Tuple[int, int]] = set()
-        for representation in representations:
-            if set(representation) != {"surface", "span", "value"}:
-                raise _invalid("numeric expression representation", representation)
-            child_span = representation["span"]
-            child_surface = representation["surface"]
-            child_value = representation["value"]
-            if (
-                not isinstance(child_span, tuple)
-                or len(child_span) != 2
-                or any(type(value) is not int for value in child_span)
-                or child_span[0] < span[0]
-                or child_span[1] > span[1]
-                or child_span[1] <= child_span[0]
-                or child_span in representation_spans
-                or not isinstance(child_surface, str)
-                or not child_surface
-                or len(child_surface) != child_span[1] - child_span[0]
-                or self.surface[child_span[0] - span[0]:child_span[1] - span[0]] != child_surface
-                or not isinstance(child_value, str)
-            ):
-                raise _invalid("numeric expression representation", representation)
-            try:
-                parsed_child = Fraction(child_value)
-            except (ValueError, ZeroDivisionError) as exc:
-                raise _invalid("numeric expression representation", representation) from exc
-            if len(values) != 1 or parsed_child != values[0] or str(parsed_child) != child_value:
-                raise _invalid("numeric expression representation", representation)
-            representation_spans.add(child_span)
-        object.__setattr__(
-            self,
-            "representations",
-            tuple(freeze(value) for value in representations),
-        )
-        role_spans = _tuple("numeric expression role spans", self.role_spans)
-        seen_role_spans: set[Tuple[int, int]] = set()
-        for role_span in role_spans:
-            values = _tuple("numeric expression role span", role_span)
-            if (
-                len(values) != 2
-                or any(type(value) is not int for value in values)
-                or values[0] < 0
-                or values[1] <= values[0]
-                or role_span in seen_role_spans
-            ):
-                raise _invalid("numeric expression role span", role_span)
-            seen_role_spans.add(role_span)
-
-
-@dataclass(frozen=True)
 class Extraction:
-    """A model extraction with explicit completeness limitations."""
-    expressions: Tuple[NumericExpression, ...]
+    """The ordered numeric values a model found in one WIP work unit.
+
+    Deliberately minimal: no spans, kinds, qualifiers, roles, or representations.
+    The comparison this feeds (numbers/compare.py) only needs values in reading
+    order plus honest completeness -- see the 2026-09-28 simplified-check plan.
+    """
+    values: Tuple[Fraction, ...]
     status: str
     limitations: Tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        """Validate extraction members and its closed status vocabulary."""
-        expressions = _tuple("extraction expressions", self.expressions)
-        if any(not isinstance(value, NumericExpression) for value in expressions):
-            raise _invalid("extraction expressions", self.expressions)
+        """Validate exact values and the closed completeness vocabulary."""
+        values = _tuple("extraction values", self.values)
+        if any(not isinstance(value, Fraction) for value in values):
+            raise _invalid("extraction values", self.values)
         _enum("extraction status", self.status, EXTRACTION_STATUSES)
+        if self.status != "COMPLETE" and not self.limitations:
+            raise _invalid("extraction limitations", self.limitations)
         limitations = _tuple("extraction limitations", self.limitations)
         if any(not isinstance(value, str) for value in limitations):
             raise _invalid("extraction limitations", self.limitations)
-
-
-@dataclass(frozen=True)
-class SemanticDecision:
-    """A deterministic semantic outcome with bounded evidence identifiers."""
-    outcome: str
-    evidence_ids: Tuple[str, ...] = ()
-    reason_codes: Tuple[str, ...] = ()
-
-    def __post_init__(self) -> None:
-        """Validate the semantic outcome and immutable evidence identifiers."""
-        _enum("semantic outcome", self.outcome, SEMANTIC_OUTCOMES)
-        for name, value in (("semantic evidence IDs", self.evidence_ids), ("semantic reason codes", self.reason_codes)):
-            items = _tuple(name, value)
-            if any(not isinstance(item, str) or not item for item in items):
-                raise _invalid(name, value)
-
-
-@dataclass(frozen=True)
-class FootnoteDecision:
-    """A reading-dependent disclosure assessment and its exact note spans."""
-    action: str
-    status: str
-    outcome: str
-    evidence_spans: Tuple[Tuple[int, int], ...] = ()
-    evidence_note_ids: Tuple[str, ...] = ()
-
-    def __post_init__(self) -> None:
-        """Validate footnote policy vocabularies and evidence span bounds."""
-        _enum("footnote action", self.action, FOOTNOTE_ACTIONS)
-        _enum("footnote status", self.status, FOOTNOTE_STATUSES)
-        _enum("footnote outcome", self.outcome, FOOTNOTE_OUTCOMES)
-        spans = _tuple("footnote evidence spans", self.evidence_spans)
-        for span in spans:
-            values = _tuple("footnote evidence span", span)
-            if len(values) != 2 or any(type(value) is not int for value in values) or values[0] < 0 or values[1] <= values[0]:
-                raise _invalid("footnote evidence span", span)
-        note_ids = _tuple("footnote evidence note IDs", self.evidence_note_ids)
-        if any(not isinstance(note_id, str) or not note_id for note_id in note_ids):
-            raise _invalid("footnote evidence note IDs", self.evidence_note_ids)
-        if note_ids and len(note_ids) != len(spans):
-            raise _invalid("footnote evidence note IDs", self.evidence_note_ids)
-        evidence_keys = tuple(zip(note_ids, spans)) if note_ids else spans
-        if len(evidence_keys) != len(set(evidence_keys)):
-            raise _invalid("footnote evidence spans", self.evidence_spans)
 
 
 @dataclass(frozen=True)
@@ -412,127 +247,3 @@ class ProjectedUnit:
         ):
             raise _invalid("target Western mapping", mapping)
         object.__setattr__(self, "target_western_mapping", freeze(mapping))
-
-
-@dataclass(frozen=True)
-class ReadingDecision:
-    """The selected OL, alternate, or unsupported reading with raw policy state."""
-    selected: str
-    semantic: SemanticDecision
-    footnote_action: str
-    registry_id: Optional[str]
-    source_ids: Tuple[str, ...]
-    source_validation_outcome: Optional[str] = None
-
-    def __post_init__(self) -> None:
-        """Validate selection, policy action, provenance, and source outcome."""
-        _enum("reading selection", self.selected, READING_SELECTIONS)
-        if not isinstance(self.semantic, SemanticDecision):
-            raise _invalid("reading semantic decision", self.semantic)
-        _enum("reading footnote action", self.footnote_action, FOOTNOTE_ACTIONS)
-        if self.registry_id is not None and not isinstance(self.registry_id, str):
-            raise _invalid("reading registry ID", self.registry_id)
-        source_ids = _tuple("reading source IDs", self.source_ids)
-        if any(not isinstance(value, str) or not value for value in source_ids):
-            raise _invalid("reading source IDs", self.source_ids)
-        if self.source_validation_outcome is not None:
-            _enum(
-                "reading source validation outcome",
-                self.source_validation_outcome,
-                SOURCE_VALIDATION_OUTCOMES,
-            )
-
-
-@dataclass(frozen=True)
-class UnitResult:
-    """A complete NCA unit result with separate semantic, note, and style state."""
-    projected: ProjectedUnit
-    extraction: Extraction
-    reading: ReadingDecision
-    footnote: FootnoteDecision
-    final_outcome: str
-    style_findings: Tuple[Mapping[str, object], ...] = ()
-    limitations: Tuple[str, ...] = ()
-    ol_references: Tuple[Optional[str], ...] = ()
-    source_expressions: Tuple[NumericExpression, ...] = ()
-    reference_context: Mapping[str, object] = field(default_factory=dict)
-    reference_index: Tuple[Mapping[str, object], ...] = ()
-
-    def __post_init__(self) -> None:
-        """Validate result aggregates and freeze style evidence mappings."""
-        if not isinstance(self.projected, ProjectedUnit):
-            raise _invalid("unit result projection", self.projected)
-        if not isinstance(self.extraction, Extraction):
-            raise _invalid("unit result extraction", self.extraction)
-        if not isinstance(self.reading, ReadingDecision):
-            raise _invalid("unit result reading", self.reading)
-        if not isinstance(self.footnote, FootnoteDecision):
-            raise _invalid("unit result footnote", self.footnote)
-        _enum("unit final outcome", self.final_outcome, SEMANTIC_OUTCOMES)
-        findings = _tuple("unit style findings", self.style_findings)
-        if any(not isinstance(value, Mapping) for value in findings):
-            raise _invalid("unit style findings", self.style_findings)
-        object.__setattr__(self, "style_findings", tuple(freeze(value) for value in findings))
-        limitations = _tuple("unit limitations", self.limitations)
-        if any(not isinstance(value, str) for value in limitations):
-            raise _invalid("unit limitations", self.limitations)
-        ol_references = _tuple("unit OL references", self.ol_references)
-        if (
-            len(ol_references) > len(self.projected.western_references)
-            or any(value is not None and (not isinstance(value, str) or not value) for value in ol_references)
-            or any(value is None for value in ol_references)
-            and self.projected.status != "REGISTERED_ABSENCE"
-        ):
-            raise _invalid("unit OL references", self.ol_references)
-        source_expressions = _tuple("unit source expressions", self.source_expressions)
-        if any(not isinstance(value, NumericExpression) for value in source_expressions):
-            raise _invalid("unit source expressions", self.source_expressions)
-        object.__setattr__(
-            self,
-            "reference_context",
-            _freeze_mapping("unit reference context", self.reference_context),
-        )
-        reference_index = _tuple("unit reference index", self.reference_index)
-        if len(reference_index) != len(self.projected.western_references):
-            raise _invalid("unit reference index", self.reference_index)
-        resolved_ol: list[Optional[str]] = []
-        for ref, value in zip(self.projected.western_references, reference_index):
-            if not isinstance(value, Mapping) or set(value) != {
-                "western_reference", "status", "ol_reference"
-            } or value.get("western_reference") != ref.label():
-                raise _invalid("unit reference index", self.reference_index)
-            status, ol_reference = value.get("status"), value.get("ol_reference")
-            if status == "INDEXED" and isinstance(ol_reference, str) and ol_reference:
-                resolved_ol.append(ol_reference)
-            elif status == "REGISTERED_ABSENCE" and ol_reference is None:
-                resolved_ol.append(None)
-            elif status != "UNINDEXED" or ol_reference is not None:
-                raise _invalid("unit reference index", self.reference_index)
-        if tuple(resolved_ol) != ol_references:
-            raise _invalid("unit reference index", self.reference_index)
-        object.__setattr__(
-            self,
-            "reference_index",
-            tuple(freeze(value) for value in reference_index),
-        )
-
-
-@dataclass(frozen=True)
-class RunResult:
-    """An immutable NCA run aggregate with findings, coverage, and summary."""
-    units: Tuple[UnitResult, ...]
-    findings: Tuple[Mapping[str, object], ...] = ()
-    coverage: Mapping[str, object] = field(default_factory=dict)
-    summary: Mapping[str, object] = field(default_factory=dict)
-
-    def __post_init__(self) -> None:
-        """Validate unit membership and recursively freeze run-level mappings."""
-        units = _tuple("run units", self.units)
-        if any(not isinstance(value, UnitResult) for value in units):
-            raise _invalid("run units", self.units)
-        findings = _tuple("run findings", self.findings)
-        if any(not isinstance(value, Mapping) for value in findings):
-            raise _invalid("run findings", self.findings)
-        object.__setattr__(self, "findings", tuple(freeze(value) for value in findings))
-        object.__setattr__(self, "coverage", _freeze_mapping("run coverage", self.coverage))
-        object.__setattr__(self, "summary", _freeze_mapping("run summary", self.summary))

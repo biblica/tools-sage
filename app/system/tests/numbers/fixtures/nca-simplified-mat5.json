@@ -1,0 +1,567 @@
+{
+  "schema_version": "1.0",
+  "description": "MAT 5:1-32 synthetic extraction-only cases for the simplified NCA pipeline (each unit either reports the correct single-value number or omits it).",
+  "reference_package": "reference/lineage",
+  "cases": [
+    {
+      "case_id": "mat-5-1",
+      "language": "en",
+      "western_reference": "MAT 5:1",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:1",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-2",
+      "language": "en",
+      "western_reference": "MAT 5:2",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:2",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-3",
+      "language": "en",
+      "western_reference": "MAT 5:3",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:3",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-4",
+      "language": "en",
+      "western_reference": "MAT 5:4",
+      "body": "The men arrived.",
+      "reference_row": {
+        "ol_reference": "MAT 5:4",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [],
+      "expected_outcome": "FAIL"
+    },
+    {
+      "case_id": "mat-5-5",
+      "language": "en",
+      "western_reference": "MAT 5:5",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:5",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-6",
+      "language": "en",
+      "western_reference": "MAT 5:6",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:6",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-7",
+      "language": "en",
+      "western_reference": "MAT 5:7",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:7",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-8",
+      "language": "en",
+      "western_reference": "MAT 5:8",
+      "body": "The men arrived.",
+      "reference_row": {
+        "ol_reference": "MAT 5:8",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [],
+      "expected_outcome": "FAIL"
+    },
+    {
+      "case_id": "mat-5-9",
+      "language": "en",
+      "western_reference": "MAT 5:9",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:9",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-10",
+      "language": "en",
+      "western_reference": "MAT 5:10",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:10",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-11",
+      "language": "en",
+      "western_reference": "MAT 5:11",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:11",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-12",
+      "language": "en",
+      "western_reference": "MAT 5:12",
+      "body": "The men arrived.",
+      "reference_row": {
+        "ol_reference": "MAT 5:12",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [],
+      "expected_outcome": "FAIL"
+    },
+    {
+      "case_id": "mat-5-13",
+      "language": "en",
+      "western_reference": "MAT 5:13",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:13",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-14",
+      "language": "en",
+      "western_reference": "MAT 5:14",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:14",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-15",
+      "language": "en",
+      "western_reference": "MAT 5:15",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:15",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-16",
+      "language": "en",
+      "western_reference": "MAT 5:16",
+      "body": "The men arrived.",
+      "reference_row": {
+        "ol_reference": "MAT 5:16",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [],
+      "expected_outcome": "FAIL"
+    },
+    {
+      "case_id": "mat-5-17",
+      "language": "en",
+      "western_reference": "MAT 5:17",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:17",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-18",
+      "language": "en",
+      "western_reference": "MAT 5:18",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:18",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-19",
+      "language": "en",
+      "western_reference": "MAT 5:19",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:19",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-20",
+      "language": "en",
+      "western_reference": "MAT 5:20",
+      "body": "The men arrived.",
+      "reference_row": {
+        "ol_reference": "MAT 5:20",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [],
+      "expected_outcome": "FAIL"
+    },
+    {
+      "case_id": "mat-5-21",
+      "language": "en",
+      "western_reference": "MAT 5:21",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:21",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-22",
+      "language": "en",
+      "western_reference": "MAT 5:22",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:22",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-23",
+      "language": "en",
+      "western_reference": "MAT 5:23",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:23",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-24",
+      "language": "en",
+      "western_reference": "MAT 5:24",
+      "body": "The men arrived.",
+      "reference_row": {
+        "ol_reference": "MAT 5:24",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [],
+      "expected_outcome": "FAIL"
+    },
+    {
+      "case_id": "mat-5-25",
+      "language": "en",
+      "western_reference": "MAT 5:25",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:25",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-26",
+      "language": "en",
+      "western_reference": "MAT 5:26",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:26",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-27",
+      "language": "en",
+      "western_reference": "MAT 5:27",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:27",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-28",
+      "language": "en",
+      "western_reference": "MAT 5:28",
+      "body": "The men arrived.",
+      "reference_row": {
+        "ol_reference": "MAT 5:28",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [],
+      "expected_outcome": "FAIL"
+    },
+    {
+      "case_id": "mat-5-29",
+      "language": "en",
+      "western_reference": "MAT 5:29",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:29",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-30",
+      "language": "en",
+      "western_reference": "MAT 5:30",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:30",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-31",
+      "language": "en",
+      "western_reference": "MAT 5:31",
+      "body": "Three men.",
+      "reference_row": {
+        "ol_reference": "MAT 5:31",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [
+        "3"
+      ],
+      "expected_outcome": "PASS"
+    },
+    {
+      "case_id": "mat-5-32",
+      "language": "en",
+      "western_reference": "MAT 5:32",
+      "body": "The men arrived.",
+      "reference_row": {
+        "ol_reference": "MAT 5:32",
+        "language": "GRK",
+        "text": "three men",
+        "values": [
+          "3"
+        ]
+      },
+      "extracted_values": [],
+      "expected_outcome": "FAIL"
+    }
+  ]
+}

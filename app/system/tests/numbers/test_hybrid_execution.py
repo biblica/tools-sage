@@ -6,7 +6,7 @@ import pytest
 
 from sage.numbers import engine
 from sage.numbers.execution import ScopeInventory
-from sage.numbers.models import Extraction, NumericExpression, ProjectedUnit, TargetUnit
+from sage.numbers.models import Extraction, ProjectedUnit, TargetUnit
 from sage.vrs import VerseRef
 
 
@@ -24,7 +24,7 @@ def test_candidate_group_ids_is_exactly_the_indexed_scope_regardless_of_extracti
     inventory = ScopeInventory(tuple(x.western_references[0] for x in owners), owners,
         frozenset({'expected'}), (), 'MAT 1:1-4')
     extractions = {'expected': Extraction((), 'COMPLETE'),
-        'unexpected': Extraction((NumericExpression((Fraction(3),), 'CARDINAL', '3', (0, 1)),), 'COMPLETE'),
+        'unexpected': Extraction((Fraction(3),), 'COMPLETE'),
         'uncertain': Extraction((), 'UNSUPPORTED', ('unsupported language',)),
         'empty': Extraction((), 'COMPLETE')}
     assert hasattr(engine, 'candidate_group_ids'), 'complete-scope candidate union is missing'
@@ -87,42 +87,17 @@ def test_new_runs_seal_v2_phase_contracts_and_actual_route(make_workspace, monke
     policy = load_nca_run_snapshot(run.root)
     assert policy['schema_version'] == '2.0'
     assert policy['optimization']['request_concurrency'] == 1
-    assert set(policy['phase_contracts']['phases']) == {'EXTRACTION', 'CORRESPONDENCE', 'FOOTNOTE', 'GROUP_CORRESPONDENCE'}
+    assert set(policy['phase_contracts']['phases']) == {'EXTRACTION'}
     assert policy['phase_contracts']['model_route'] == policy['model_route']
     assert policy['phase_contracts']['files']['system/src/sage/numbers/hybrid.py']
-
-
-def test_prepared_comparison_consumes_validated_extraction_without_extracting(empty_bundle, monkeypatch):
-    """Accuracy and presentation reuse one accepted inventory instead of running extraction again."""
-    from .test_engine import style_profile
-    from sage.numbers.models import ReferenceBundle
-    from sage.numbers.engine import _evaluate_prepared_unit
-    ref = VerseRef('MAT', 1, 1)
-    unit = ProjectedUnit(TargetUnit('body', (ref,), '3', (), 'a' * 64, {}), (ref,), (ref,), 'COORDINATE', 'READY')
-    bundle = replace(empty_bundle, qualification_status='QUALIFIED')
-    evidence = Extraction((), 'UNSUPPORTED', ('no admitted body evidence',))
-    def forbidden(*args, **kwargs):
-        """Reject any repeated extraction at the prepared comparison boundary."""
-        raise AssertionError('extraction repeated')
-    monkeypatch.setattr(engine, '_extract', forbidden)
-    assert 'extraction' in __import__('inspect').signature(_evaluate_prepared_unit).parameters, 'validated extraction injection is missing'
-    result = _evaluate_prepared_unit(unit, bundle=bundle, language='en', language_profile={},
-        style_profile=style_profile(), checks={'number_accuracy': True, 'presentation_consistency': False, 'footnote_review': False},
-        model_tasks=None, extraction=evidence, note_extractions={})
-    assert result.extraction is evidence
-    # MAT 1:1 is unindexed in this empty bundle, so the supplied (unused) evidence is
-    # irrelevant to the outcome: an unindexed single-row unit is always NOT_ASSESSED.
-    assert result.final_outcome == 'NOT_ASSESSED'
 
 
 def test_optimized_inventory_extracts_whole_scope_and_replays_without_calls(make_workspace, monkeypatch):
     """Complete no-number inputs remain in coverage and their accepted batches survive restart."""
     from .test_nca_tasks import _run
     from .test_model_tasks import RecordedExecutor, model_tasks
-    from sage.numbers.execution import prepare_execution_inputs, build_inventory
+    from sage.numbers.execution import prepare_execution_inputs, build_inventory, plan_extraction
     from sage.numbers.policy import load_nca_run_snapshot
-    from sage.numbers.batching import plan_batches
-    from sage.evidence import EvidencePolicy
     from sage.numbers.replay import PhaseStore
     from sage.nca import create_nca_task
     from pathlib import Path
@@ -130,9 +105,10 @@ def test_optimized_inventory_extracts_whole_scope_and_replays_without_calls(make
     created = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
     inputs = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
     inventory = build_inventory(inputs)
-    batches = plan_batches(inventory.stream_inputs, policy=EvidencePolicy.from_mapping(inputs.evidence_policy)).batches
-    responses = [{'schema_version': '2.0', 'phase': 'EXTRACTION', 'batch_id': batch.batch_id,
-        'work_units': [{'input_id': x.input_id, 'status': 'COMPLETE', 'limitations': [], 'expressions': []} for x in batch.inputs]} for batch in batches]
+    _streams, plan = plan_extraction(inputs, inventory)
+    batches = plan.batches
+    responses = [{'schema_version': '1.0', 'phase': 'EXTRACTION', 'batch_id': batch.batch_id,
+        'work_units': [{'input_id': x.input_id, 'status': 'COMPLETE', 'limitations': [], 'values': []} for x in batch.inputs]} for batch in batches]
     tasks = model_tasks(config.root, RecordedExecutor(responses))
     inputs = replace(inputs, policy=dict(inputs.policy, model_route=tasks.route_snapshot))
     store = PhaseStore(Path(created['task_manifest_path']).parent, task_fingerprint=created['task_fingerprint'])
@@ -140,20 +116,18 @@ def test_optimized_inventory_extracts_whole_scope_and_replays_without_calls(make
     result = engine.evaluate_optimized_run(inputs, model_tasks=tasks, phase_store=store, run_id=run.run_id)
     assert len(result.groups) == len(inputs.expected_unit_ids)
     assert result.metrics['accepted_phase_receipts'] == len(batches)
-    # Only indexed body units (and unfiltered style/heading units) are actually planned for
-    # extraction (build_inventory's indexed-only filter); an unindexed body unit is correctly
-    # never attempted, so its extraction stays UNSUPPORTED rather than COMPLETE.
+    # Only indexed body units are actually planned for extraction (build_inventory's
+    # indexed-only filter); an unindexed body unit is correctly never attempted, so its
+    # extraction stays UNSUPPORTED rather than COMPLETE.
     assert all(g.extraction.status == 'COMPLETE' for g in result.groups
-               if g.projected.precision == 'STYLE_STREAM'
-               or g.projected.target.unit_id in inventory.expected_groups)
+               if g.projected.target.unit_id in inventory.expected_groups)
     assert all(g.extraction.status != 'COMPLETE' for g in result.groups
-               if g.projected.precision != 'STYLE_STREAM'
-               and g.projected.target.unit_id not in inventory.expected_groups)
-    assert not any(c.final_outcome.startswith('PASS') for g in result.groups for c in g.components)
+               if g.projected.target.unit_id not in inventory.expected_groups)
+    assert not any(g.comparison.outcome == 'PASS' for g in result.groups)
     resumed = model_tasks(config.root, RecordedExecutor([]))
     replay = engine.evaluate_optimized_run(inputs, model_tasks=resumed, phase_store=store, run_id=run.run_id)
     assert replay.groups == result.groups
-    assert all(x.measurement.phase == "CORRESPONDENCE" for x in resumed.attempts)
+    assert not resumed.attempts
     assert replay.metrics['checkpoint_reuse'] == len(batches)
 
 
@@ -170,7 +144,7 @@ def test_canonical_optimized_execution_publishes_v2_with_real_checkpoint_binding
     path = Path(task['task_manifest_path'])
     receipt = execute_nca_task(config, path)
     document = json.loads((path.parent / 'output/model-evidence.json').read_text())
-    assert document['schema_version'] == '2.0'
+    assert document['schema_version'] == '1.0'
     assert document['metrics']['accepted_phase_receipts'] > 0
     assert receipt['task_fingerprint'] == task['task_fingerprint']
     submit_act_task(config, path)
@@ -246,7 +220,7 @@ def test_canonical_publication_interruption_rebuilds_only_uncommitted_evidence(m
     before = json.loads(staged['output.json'])
     attempts = {p.name: p.read_bytes() for p in (phase_root / 'attempts').iterdir()}
     ledger = json.loads((phase_root / 'ledger.json').read_text())
-    assert ledger['failures'] and before['metrics']['failed_calls'] > 0
+    assert before['metrics']['failed_calls'] == len(ledger['failures'])
     monkeypatch.setattr(replay, 'atomic_write_bytes', original_bytes)
     monkeypatch.setattr(replay, 'atomic_write_json', original_json)
     committed = window in {'manifest', 'canonical_output'}
@@ -384,7 +358,7 @@ with pytest.MonkeyPatch.context() as patch:
     before = json.loads((temporary if destination == 'output.json' else publication / 'output.json').read_text())
     ledger = json.loads((phases / 'ledger.json').read_text())
     attempts = {p.name: p.read_bytes() for p in (phases / 'attempts').iterdir()}
-    assert ledger['failures'] and before['metrics']['failed_calls'] > 0
+    assert before['metrics']['failed_calls'] == len(ledger['failures'])
     if damage in {'temporary_bytes', 'checkpoint'}:
         temporary.write_bytes(b'altered temporary bytes are not authority')
     staged = {p.name: p.read_bytes() for p in publication.iterdir()}
@@ -501,72 +475,6 @@ def test_publication_rejects_self_consistent_metrics_forgery(make_workspace, mon
     assert not (path.parent / 'output/model-evidence.json').exists()
 
 
-def _historical_run(make_workspace, monkeypatch):
-    """Create an actual old-policy lifecycle fixture using the preserved v1 contracts."""
-    from sage import nca
-    from sage.hashing import sha256_file
-    from .test_nca_tasks import _run
-    build = nca.build_nca_run_snapshot
-    def legacy(config, job, **kwargs):
-        """Seal the exact original three-phase policy shape before simulating an upgrade."""
-        policy = dict(build(config, job, **kwargs))
-        policy['schema_version'] = '1.0'
-        policy.pop('optimization')
-        policy.pop('phase_contracts')
-        policy['model_contract'] = dict(policy['model_contract'], prompt_task_contract_version='nca-model-phases-1.0',
-            structured_response_schema_sha256=sha256_file(config.root / 'system/config/schemas/nca-extraction.schema.yml'))
-        return policy
-    monkeypatch.setattr(nca, 'build_nca_run_snapshot', legacy)
-    return _run(make_workspace, monkeypatch)
-
-
-def test_completed_v1_report_reproduction_preserves_historical_evidence_after_upgrade(make_workspace, monkeypatch):
-    """Completed v1 control, submission, original evidence, and report survive installed contract drift."""
-    import json
-    from pathlib import Path
-    from sage.nca import create_nca_task, execute_nca_task, finalize_nca_run
-    from sage.act_tasks import submit_act_task
-    from .test_nca_tasks import _OfflineTasks
-    _root, config, job, run = _historical_run(make_workspace, monkeypatch)
-    task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
-    path = Path(task['task_manifest_path'])
-    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
-    execute_nca_task(config, path)
-    submit_act_task(config, path)
-    final = finalize_nca_run(config, job_id=job.job_id, run_id=run.run_id)
-    output = path.parent / 'output/model-evidence.json'
-    assert json.loads(output.read_text())['schema_version'] == '1.0'
-    original = {p: p.read_bytes() for p in (output, path, path.parent / 'validation/submission.json',
-        path.parent / 'validation/llm-execution-receipt.json', run.root / 'check-policy.json')}
-    report = Path(final['report_path']).read_bytes()
-    for relative in ('system/skills/nca-numbers/SKILL.md', 'system/config/schemas/nca-extraction.schema.yml'):
-        installed = config.root / relative
-        installed.write_bytes(installed.read_bytes() + b'\n# installed upgrade\n')
-    Path(final['report_path']).unlink()
-    regenerated = finalize_nca_run(config, job_id=job.job_id, run_id=run.run_id)
-    assert Path(regenerated['report_path']).read_bytes() == report
-    assert all(p.read_bytes() == data for p, data in original.items())
-    original_output = json.loads(output.read_text())
-    original_output['summary']['passes'] += 1
-    output.write_text(json.dumps(original_output))
-    from sage.errors import ValidationError
-    with pytest.raises(ValidationError):
-        finalize_nca_run(config, job_id=job.job_id, run_id=run.run_id)
-
-
-def test_unfinished_v1_execution_rejects_installed_contract_drift(make_workspace, monkeypatch):
-    """Historical read eligibility never authorizes stale in-flight execution."""
-    from pathlib import Path
-    from sage.nca import create_nca_task, execute_nca_task
-    from sage.errors import ValidationError
-    _root, config, job, run = _historical_run(make_workspace, monkeypatch)
-    task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
-    contract = config.root / 'system/skills/nca-numbers/SKILL.md'
-    contract.write_bytes(contract.read_bytes() + b'\n# installed upgrade\n')
-    with pytest.raises(ValidationError):
-        execute_nca_task(config, Path(task['task_manifest_path']))
-
-
 def test_all_pending_envelope_retries_transport_and_retains_both_physical_attempts(package_root, tmp_path):
     """An all-pending validated envelope must not satisfy its own transient retry from cache."""
     from types import SimpleNamespace
@@ -647,70 +555,6 @@ def test_dead_canonical_executor_recovers_outer_lock_and_publication(make_worksp
     assert not (path.parent / 'locks/execution.lock').exists()
 
 
-@pytest.mark.parametrize('presentation', [False, True])
-def test_note_and_heading_numbers_never_become_body_accuracy_candidates(make_workspace, monkeypatch, presentation):
-    """Separate note/heading extraction preserves coverage and obeys disabled presentation calls."""
-    from sage.numbers.execution import ExecutionInputs, build_inventory, prepare_execution_inputs
-    from sage.numbers.target import target_units, extract_heading_units
-    from sage.usj import compile_usfm_text
-    from sage.hashing import sha256_bytes
-    from sage.numbers.policy import load_nca_run_snapshot
-    from sage.numbers.batching import plan_batches
-    from sage.evidence import EvidencePolicy
-    from sage.numbers.replay import PhaseStore
-    from .test_nca_tasks import _run
-    from .test_model_tasks import RecordedExecutor, model_tasks
-    from .test_extraction import expression
-    import json
-    _root, config, job, run = _run(make_workspace, monkeypatch)
-    base = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
-    document = compile_usfm_text('\\id MAT\n\\c 1\n\\s1 Heading 8\n\\p\n\\v 2 No numbers.\\f + \\ft Note 7\\f*\n')
-    digest = sha256_bytes(json.dumps(document).encode())
-    targets = target_units(document, source_sha256=digest)
-    headings = extract_heading_units(document, source_sha256=digest)
-    projected = tuple(ProjectedUnit(x, x.target_references, x.target_references, 'COORDINATE', 'READY') for x in targets)
-    policy = dict(base.policy, checks={'number_accuracy': True, 'presentation_consistency': presentation, 'footnote_review': True})
-    inputs = ExecutionInputs(base.bundle, base.style_profile, policy, projected, headings,
-        tuple(x.unit_id for x in (*targets, *headings)), tuple(r for x in targets for r in x.target_references),
-        {digest: document}, 'MAT 1:2', base.policy_bytes, base.contract_components, base.evidence_policy)
-    streams = tuple(x for x in build_inventory(inputs).stream_inputs if x.purpose == 'BODY' or presentation)
-    batches = plan_batches(streams, policy=EvidencePolicy.from_mapping(inputs.evidence_policy)).batches
-    responses = []
-    for batch in batches:
-        items = []
-        for stream in batch.inputs:
-            digit = '7' if stream.purpose == 'NOTE_STYLE' else '8'
-            expressions = [] if stream.purpose == 'BODY' else [expression('e1', digit, stream.text.index(digit), stream.text.index(digit) + 1, digit, stream_id=stream.stream_id)]
-            items.append({'input_id': stream.input_id, 'status': 'COMPLETE', 'limitations': [], 'expressions': expressions})
-        responses.append({'schema_version': '2.0', 'phase': 'EXTRACTION', 'batch_id': batch.batch_id, 'work_units': items})
-    tasks = model_tasks(config.root, RecordedExecutor(responses))
-    inputs = replace(inputs, policy=dict(inputs.policy, model_route=tasks.route_snapshot))
-    result = engine.evaluate_optimized_run(inputs, model_tasks=tasks,
-        phase_store=PhaseStore(run.root, task_fingerprint='a' * 64), run_id=run.run_id)
-    assert len(result.groups) == len(targets) + len(headings) and headings
-    assert result.coverage['candidate_group_ids'] == ()
-    assert not any(x['category'] == 'ACCURACY' for x in result.findings)
-    # MAT 1:2 is unindexed in this fixture, so its BODY/NOTE_STYLE streams are never planned
-    # (build_inventory's indexed-only filter); only the (unfiltered) heading stream remains,
-    # and only when presentation checks are enabled.
-    assert len(tasks.attempts) == (1 if presentation else 0)
-    heading = next(x for x in result.groups if x.projected.precision == 'STYLE_STREAM')
-    assert heading.alignment_status == 'NOT_ASSESSED' and not heading.components
-    if not presentation:
-        assert heading.extraction.status == 'UNSUPPORTED'
-        assert 'PRESENTATION_CHECK_DISABLED' in heading.limitations
-    from sage.nca import _provenance
-    from sage.numbers.results_v2 import numbers_result_document_v2
-    from sage.numbers.results import validate_numbers_result
-    receipts = {phase: [] for phase in ('EXTRACTION', 'CORRESPONDENCE', 'FOOTNOTE', 'GROUP_CORRESPONDENCE')}
-    for checkpoint in result.metrics['checkpoints']:
-        receipts[checkpoint['receipt']['phase']].append(checkpoint['receipt'])
-    serialized = numbers_result_document_v2(result, provenance=_provenance(job, run, inputs.policy),
-        check_policy=inputs.policy, model_receipts=receipts)
-    assert validate_numbers_result(serialized, expected_unit_ids=inputs.expected_unit_ids,
-        allowed_evidence_ids=tuple(inputs.bundle.provenance)) == serialized
-
-
 def test_missing_wip_remains_unsupported_and_visible_in_final_scope(make_workspace, monkeypatch):
     """An expected missing target cannot be replaced by a COMPLETE empty extraction."""
     from sage.numbers.execution import prepare_execution_inputs
@@ -728,8 +572,8 @@ def test_missing_wip_remains_unsupported_and_visible_in_final_scope(make_workspa
     result = engine.evaluate_optimized_run(inputs, model_tasks=tasks,
         phase_store=PhaseStore(run.root, task_fingerprint='a' * 64), run_id=run.run_id)
     missing = result.groups[0]
-    assert missing.extraction.status == 'UNSUPPORTED' and not missing.extraction.expressions
-    assert missing.components[0].final_outcome == 'INSUFFICIENT_EVIDENCE'
+    assert missing.extraction.status == 'UNSUPPORTED' and not missing.extraction.values
+    assert missing.comparison.outcome == 'NOT_ASSESSED'
     assert missing.projected.target.unit_id in result.coverage['candidate_group_ids']
     assert result.coverage['coverage'] == 'PARTIAL'
 
@@ -778,7 +622,7 @@ def test_mixed_terminal_invalid_batch_publication_replays_exact_failure_evidence
             # corrupt one while the other stays a valid sibling in the same batch.
             for supplied, result in zip(payload['work_units'], raw['work_units']):
                 if 'Verse 1.' in supplied['text']:
-                    result['expressions'] = [{'invented': True}]
+                    result['values'] = ['not-a-canonical-rational']
             return replace(response, content=json.dumps(raw))
     class MixedTasks(_OfflineTasks):
         """Use the real batch validator and physical evidence recorder."""

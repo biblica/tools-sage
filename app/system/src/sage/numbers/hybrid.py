@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import asdict, replace
+from dataclasses import asdict
 import json
 
 from sage.errors import ValidationError
@@ -172,23 +172,30 @@ class PhaseSession:
 
 
 def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, run_id: str) -> object:
-    """Extract bounded complete scope once, then feed accepted evidence to typed comparison."""
-    from sage.references import parse_scope
+    """Extract bounded indexed scope once, then compare locally against the index.
+
+    Simplified per the 2026-09-28 rewrite: EXTRACTION is the only model phase.
+    Comparison (numbers/compare.py) and the noteworthy-info advisory
+    (numbers/footnotes.py) are both local and deterministic -- no
+    CORRESPONDENCE/GROUP_CORRESPONDENCE/FOOTNOTE model calls. Presentation-
+    style/heading checking (the old NOTE_STYLE/HEADING_STYLE machinery) has
+    no successor here; this pipeline is number-accuracy only.
+    """
     from sage.coverage import assess_coverage
     from sage.findings import assign_global_finding_ids
     from .execution import build_inventory, plan_extraction, reference_restrictions
     from .extraction import _parsing_conventions
     from .model_tasks import extract_batch_with_retries
-    from .models import Extraction, ProjectedUnit
-    from .models_v2 import ComponentResult, GroupResult, OptimizedRunResult
-    from .engine import (_evaluate_prepared_unit, candidate_group_ids, _result_reference_context)
-    from .results_v2 import group_findings, group_summary
-    from .groups import ReferenceGroup, evaluate_group, assess_group_notes, row_provenance
+    from .models import Extraction
+    from .compare import compare_values
+    from .footnotes import noteworthy_note
+    from .results import GroupResult, NumbersResult, group_findings, group_summary
     from .telemetry import summarize_calls
     from .policy import validate_optimization_policy
 
     optimization = validate_optimization_policy(inputs.policy['optimization'])
     checks = inputs.policy['checks']
+    mode = inputs.policy['numeric_comparison_mode']
     inventory = build_inventory(inputs)
     streams, plan = plan_extraction(inputs, inventory)
     session = PhaseSession(inputs, model_tasks, phase_store)
@@ -200,79 +207,49 @@ def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, ru
             parsing_conventions=_parsing_conventions(inputs.style_profile), transient_retries=optimization['transient_retries'])
         accepted.update(result.accepted)
         blocked.update(result.pending)
-    by_owner, notes = {}, {}
+    by_owner = {}
     for stream in streams:
-        extraction = accepted.get(stream.input_id, Extraction((), 'UNSUPPORTED', (blocked.get(stream.input_id, 'EXTRACTION_UNAVAILABLE'),)))
-        if stream.purpose == 'NOTE_STYLE':
-            notes.setdefault(stream.owner_unit_id, {})[stream.stream_id.removeprefix('note:')] = extraction
-        else:
-            by_owner[stream.owner_unit_id] = extraction
-    candidates = candidate_group_ids(inventory, by_owner)
-    projected = inputs.projected_units + tuple(ProjectedUnit(x, (), x.target_references, 'STYLE_STREAM', 'READY') for x in inputs.style_units)
+        if stream.purpose != 'BODY':
+            continue
+        by_owner[stream.owner_unit_id] = accepted.get(
+            stream.input_id,
+            Extraction((), 'UNSUPPORTED', (blocked.get(stream.input_id, 'EXTRACTION_UNAVAILABLE'),)),
+        )
     groups = []
-    for unit in projected:
-        heading = unit.precision == 'STYLE_STREAM'
-        selected_checks = dict(checks, number_accuracy=False, footnote_review=False) if heading else checks
-        extraction = by_owner.get(unit.target.unit_id, Extraction((), 'UNSUPPORTED',
-            ('PRESENTATION_CHECK_DISABLED',) if heading and not checks['presentation_consistency'] else ('MISSING_WIP_OR_EXTRACTION',)))
-        # Presentation reuses the parent extraction; semantic policy runs only after row ownership.
-        multirow = len(unit.western_references) > 1
-        prepared_checks = dict(selected_checks, number_accuracy=False, footnote_review=False) if multirow else selected_checks
-        result = _evaluate_prepared_unit(unit, bundle=inputs.bundle, language=inputs.policy['wip']['language'],
-            language_profile={}, style_profile=inputs.style_profile, checks=prepared_checks, model_tasks=model_tasks,
-            extraction=extraction, note_extractions=notes.get(unit.target.unit_id, {}))
-        rows = tuple(dict(row, provenance=row_provenance(inputs.bundle.lookup(ref), inputs.bundle), context=(_result_reference_context(inputs.bundle.lookup(ref), inputs.bundle)
-            if inputs.bundle.lookup(ref) is not None else {})) for row, ref in zip(result.reference_index, unit.western_references))
-        ids = tuple(x.expression_id for x in extraction.expressions)
-        semantic_enabled = not heading and (checks["number_accuracy"] or checks["footnote_review"])
-        resolved = len(unit.western_references) == 1 and semantic_enabled
-        components = (ComponentResult(unit.western_references[0], rows[0]['ol_reference'], ids,
-            result.source_expressions, result.reading, result.footnote, result.final_outcome, result.limitations),) if resolved else ()
-        limits = result.limitations
-        alignment = 'NOT_ASSESSED' if not semantic_enabled else 'COMPLETE' if resolved else 'UNAVAILABLE'
-        ownership = {eid: unit.western_references[0].label() for eid in ids} if resolved else {}
-        unmatched, unresolved = (ids if not semantic_enabled else ()), (ids if semantic_enabled and not resolved else ())
-        if multirow and semantic_enabled and extraction.status == 'COMPLETE' and unit.status in {'READY', 'REGISTERED_ABSENCE'}:
-            reference_group = ReferenceGroup.build(unit, bundle=inputs.bundle)
-            try:
-                correspondence = model_tasks.correspond_group(unit, extraction, reference_group).value
-            except ValidationError as exc:
-                limits = tuple(dict.fromkeys((*limits, exc.code)))
-            else:
-                alignment = correspondence.status
-                limits = tuple(dict.fromkeys((*limits, *correspondence.limitations)))
-                if alignment != 'UNAVAILABLE':
-                    components = evaluate_group(reference_group, extraction, correspondence, bundle=inputs.bundle, checks=checks)
-                    components = assess_group_notes(reference_group, components, bundle=inputs.bundle, checks=checks,
-                        language=inputs.policy['wip']['language'], model_tasks=model_tasks)
-                    roles = {x.expression_id: x for row in correspondence.rows.values() for x in row.target_extraction.expressions}
-                    extraction = replace(extraction, expressions=tuple(roles.get(x.expression_id, x) for x in extraction.expressions))
-                    ownership = {eid: ref for ref, eids in correspondence.assignments.items() for eid in eids}
-                    unmatched, unresolved = correspondence.unmatched_target_ids, correspondence.unresolved_target_ids
-        if alignment == 'UNAVAILABLE':
-            limits = tuple(dict.fromkeys((*limits, 'GROUP_ALIGNMENT_UNRESOLVED')))
-        groups.append(GroupResult(unit, extraction, rows, components, alignment, ownership,
-            unmatched, unresolved, result.style_findings, limits,
-            {note.note_id: notes.get(unit.target.unit_id, {}).get(note.note_id,
-                Extraction((), 'UNSUPPORTED', ('NOTE_EXTRACTION_UNAVAILABLE',)))
-             for note in unit.target.notes} if checks['presentation_consistency'] else {}))
-    local = {g.projected.target.unit_id: group_findings(g, bundle=inputs.bundle,
-        checks=dict(checks, number_accuracy=False, footnote_review=False) if g.projected.precision == 'STYLE_STREAM' else checks) for g in groups}
+    for unit in inputs.projected_units:
+        extraction = by_owner.get(unit.target.unit_id, Extraction((), 'UNSUPPORTED', ('MISSING_WIP_OR_EXTRACTION',)))
+        limits = list(extraction.limitations)
+        rows = [inputs.bundle.lookup(ref) for ref in unit.western_references]
+        notes = [note for ref in unit.western_references
+                 if (note := noteworthy_note(ref, bundle=inputs.bundle)) is not None] if checks['footnote_review'] else []
+        if not checks['number_accuracy']:
+            comparison = compare_values((), None, mode=mode)  # NOT_ASSESSED placeholder; check disabled
+        elif extraction.status != 'COMPLETE':
+            comparison = compare_values((), None, mode=mode)
+            limits.append('NUMBER_ACCURACY_EXTRACTION_INCOMPLETE')
+        elif any(row is None for row in rows):
+            comparison = compare_values((), None, mode=mode)
+            limits.append('REFERENCE_NOT_INDEXED')
+        else:
+            # Bridged groups (multiple western_references) compare against the
+            # concatenation of each row's expected values, in reference order.
+            authority_field = 'ol_values' if all(row.ol_values for row in rows) else 'niv_values'
+            expected = tuple(value for row in rows for value in getattr(row, authority_field))
+            combined_row = rows[0] if len(rows) == 1 else type(rows[0])(
+                rows[0].western_reference, rows[0].ol_reference, rows[0].language,
+                rows[0].ol_text, expected if authority_field == 'ol_values' else (),
+                rows[0].niv_text, expected if authority_field == 'niv_values' else (), rows[0].metadata,
+            )
+            comparison = compare_values(extraction.values, combined_row, mode=mode)
+        groups.append(GroupResult(unit, extraction, comparison, tuple(dict.fromkeys(limits)), tuple(notes)))
+    local = {g.projected.target.unit_id: group_findings(g) for g in groups}
     findings = tuple(assign_global_finding_ids(local, run_id=run_id, prefix='NUMBERS'))
     restrictions = list(reference_restrictions(inputs.policy)) + [limit for g in groups for limit in g.limitations]
-    if checks['presentation_consistency']:
-        restrictions.extend(str(x['code']) for g in groups for x in g.style_findings if x['status'] == 'NOT_ASSESSED')
-    complete = all((g.extraction.status == 'COMPLETE' or 'PRESENTATION_CHECK_DISABLED' in g.limitations)
-        and g.alignment_status not in {'PARTIAL', 'UNAVAILABLE'}
-        and all(c.reading.semantic.outcome not in {'INSUFFICIENT_EVIDENCE', 'REFERENCE_NOT_INDEXED'}
-                and c.footnote.outcome != 'INSUFFICIENT_EVIDENCE' for c in g.components) for g in groups)
+    complete = all(g.comparison.outcome in {'PASS', 'FAIL'} for g in groups if checks['number_accuracy'])
     coverage = assess_coverage(findings_present=bool(findings), required_evidence_complete=complete,
         restrictions=restrictions, skipped_checks=tuple(sorted(k for k, v in checks.items() if not v)), assessed=bool(groups)).to_dict()
-    scope = parse_scope(inputs.requested_scope)
     coverage.update(expected_unit_ids=list(inputs.expected_unit_ids), assessed_unit_ids=[g.projected.target.unit_id for g in groups],
-        requested_scope=inputs.requested_scope, candidate_group_ids=sorted(candidates),
-        scope_expansions=[{'unit_id': g.projected.target.unit_id, 'included_target_references': [r.label() for r in g.projected.target.target_references if not scope.contains(r)],
-            'western_references': [r.label() for r in g.projected.western_references]} for g in groups if any(not scope.contains(r) for r in g.projected.target.target_references)])
+        requested_scope=inputs.requested_scope, candidate_group_ids=sorted(inventory.expected_groups))
     summary = group_summary(tuple(groups), checks=checks, findings_count=len(findings))
     phases = [{'checkpoint_id': cid, 'key': key.to_dict(), 'receipt': _plain(session.artifacts[key.identity]['receipt']),
         'request_id': session.artifacts[key.identity]['request_id'], 'accepted_input_ids': sorted(session.artifacts[key.identity]['item_sha256'])}
@@ -282,5 +259,6 @@ def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, ru
         reused_checkpoint_ids=sorted(session.reused), batch_members=sum(len(x['accepted_input_ids']) for x in phases),
         calls=[asdict(x) for x in measurements], checkpoints=phases,
         planning={'planned_extraction_calls': len(plan.batches), 'input_ids': [x.input_id for x in streams], 'blocked': blocked,
-                  'missing_owner_ids': [x.target.unit_id for x in projected if x.target.unit_id not in by_owner]})
-    return OptimizedRunResult(tuple(groups), findings, coverage, summary, metrics)
+                  'missing_owner_ids': [x.target.unit_id for x in inputs.projected_units if x.target.unit_id not in by_owner],
+                  'numeric_comparison_mode': mode})
+    return NumbersResult(tuple(groups), findings, coverage, summary, metrics)

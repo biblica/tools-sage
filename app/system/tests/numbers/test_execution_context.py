@@ -38,7 +38,6 @@ def test_execution_qualifies_package_and_style_once_per_attempt(make_workspace, 
 
     monkeypatch.setattr(resources, "load_reference", load)
     monkeypatch.setattr(style, "validate_style_profile", validate)
-    monkeypatch.setattr(engine, "validate_style_profile", validate)
     monkeypatch.setattr("sage.numbers.model_tasks.NcaModelTasks", _OfflineTasks)
     manifest = Path(created["task_manifest_path"])
     for dry_run, status in ((True, "READY_TO_EXECUTE"), (False, "EXECUTED"), (False, "EXECUTED"), (True, "EXECUTED")):
@@ -110,6 +109,8 @@ def test_prepared_context_freezes_sources_and_rejects_coverage_drift(make_worksp
 def test_context_preserves_explicit_missing_wip_placeholder(make_workspace, monkeypatch):
     """Zero-SHA absence evidence remains a coverage gap while actual text requires a source."""
     from sage.numbers.execution import prepare_execution_inputs
+    from sage.numbers.replay import PhaseStore
+    from .test_nca_tasks import _OfflineTasks
 
     _root, config, job, run = _run(make_workspace, monkeypatch)
     inputs = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
@@ -117,8 +118,10 @@ def test_context_preserves_explicit_missing_wip_placeholder(make_workspace, monk
     missing = ProjectedUnit(TargetUnit("missing:MAT 1:1", (), "", (), "0" * 64, {}),
                             (ref,), (ref,), "COORDINATE", "UNMAPPED")
     absent = replace(inputs, projected_units=(missing,), style_units=(), expected_unit_ids=(missing.target.unit_id,))
-    result = engine.evaluate_prepared_run(absent, model_tasks=None, run_id=run.run_id)
-    assert result.units[0].projected.status == "UNMAPPED"
+    tasks = _OfflineTasks(config, expected_route_id="nca-route-fixture")
+    result = engine.evaluate_optimized_run(absent, model_tasks=tasks,
+        phase_store=PhaseStore(run.root, task_fingerprint="a" * 64), run_id=run.run_id)
+    assert result.groups[0].projected.status == "UNMAPPED"
     assert result.coverage["coverage"] != "COMPLETE"
     with pytest.raises(ValidationError):
         replace(absent, projected_units=(replace(missing, target=replace(missing.target, main_text="3 men")),))
@@ -180,26 +183,19 @@ def test_creation_and_finalization_reject_package_inventory_drift(make_workspace
             finalize_nca_run(config, job_id=job.job_id, run_id=run.run_id)
 
 
-@pytest.mark.parametrize("api", ["unit", "run"])
-@pytest.mark.parametrize("damage", ["bundle", "style", "checks"])
-def test_public_evaluators_reject_unvalidated_inputs(api, damage):
-    """Both public boundaries remain strict with no prepared-input escape hatch."""
-    from .test_engine import check_policy, projected, reference_bundle, style_profile
+def test_execution_context_rejects_an_unqualified_bundle(make_workspace, monkeypatch):
+    """The sealed execution context itself enforces bundle qualification, with no escape hatch.
 
-    ref = VerseRef("MAT", 1, 1)
-    unit = projected(ref, "3 men")
-    bundle = reference_bundle(ref)
-    profile = style_profile()
-    policy = check_policy()
-    if damage == "bundle":
-        bundle = replace(bundle, qualification_status="BLOCKED")
-    elif damage == "style":
-        profile["rules"] = {}
-    else:
-        policy["checks"] = {"number_accuracy": False, "presentation_consistency": False, "footnote_review": False}
-    kwargs = dict(bundle=bundle, language="en", language_profile={}, style_profile=profile, check_policy=policy)
+    Per the 2026-09-28 simplified-check rewrite, evaluate_unit/evaluate_run (per-unit public
+    APIs taking loose bundle/style/checks kwargs) have no successor: evaluate_optimized_run
+    is the only entry point, and it requires a real, already-validated ExecutionInputs.
+    Style-profile and check-policy validation now happen earlier, at Run/task-creation time
+    (validate_style_profile in prepare_execution_inputs, validate_checks in
+    build_nca_run_snapshot) rather than at this evaluation boundary.
+    """
+    from sage.numbers.execution import prepare_execution_inputs
+
+    _root, config, job, run = _run(make_workspace, monkeypatch)
+    inputs = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
     with pytest.raises(ValidationError):
-        if api == "unit":
-            engine.evaluate_unit(unit, **kwargs)
-        else:
-            engine.evaluate_run((unit,), run_id="strict", expected_unit_ids=(unit.target.unit_id,), **kwargs)
+        replace(inputs, bundle=replace(inputs.bundle, qualification_status="BLOCKED"))

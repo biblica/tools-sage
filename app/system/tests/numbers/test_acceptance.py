@@ -11,13 +11,11 @@ import pytest
 
 from sage.cli import build_parser
 from sage.jobs import JobStore
-from sage.numbers.model_tasks import CorrespondenceEvidence
-from sage.numbers.models import Extraction, NumericExpression
 from sage.numbers.results import NCA_CAPABILITY_LIMITATION
 from sage.storage import storage_layout
 
 from .test_nca_jobs import REFERENCE_FIXTURE, _prepare_nca_workspace, _route
-from .test_nca_tasks import _OfflineTasks, _Receipt
+from .test_nca_tasks import _OfflineTasks
 
 
 def _inventory(root: Path) -> dict[str, str]:
@@ -30,37 +28,19 @@ class _NumericTransport:
     """Return literal numeric evidence through the real phase validation and recording boundary."""
 
     def execute(self, request):
-        """Emit exact v2 spans for target extraction and independent OL correspondence."""
+        """Emit exact ordered values for target extraction through the real batch validator."""
         from sage.executors.base import ProviderResponse
         payload = json.loads(request.prompt)['input']
-        phase = payload['phase']
-        def expression(text, surface, number, role, stream):
-            """Name a numeric surface and its independently bounded referent evidence."""
-            start = text.index(surface)
-            return {'expression_id': f'{stream}-{number}', 'stream_id': stream, 'surface': surface,
-                'span': {'start': start, 'end': start + len(surface)}, 'values': [str(number)],
-                'kind': 'CARDINAL', 'unit': None, 'qualifier': 'EXACT', 'role': role,
-                'role_spans': [{'start': 0, 'end': len(text), 'surface': text}], 'representations': []}
-        if phase == 'EXTRACTION':
-            _NumericTasks.calls += 1
-            raw = {'schema_version': '2.0', 'phase': phase, 'batch_id': payload['batch_id'], 'work_units': [
-                {'input_id': x['input_id'], 'status': 'UNSUPPORTED' if _NumericTasks.unsupported else 'COMPLETE',
-                 'limitations': ['Fixture language understanding unavailable'] if _NumericTasks.unsupported else [],
-                 'expressions': [] if _NumericTasks.unsupported else [expression(x['text'], str(number), number, role, x['stream_id'])
-                    for number, role in ((3, 'men'), (4, 'women'))]} for x in payload['work_units']]}
-        else:
-            text = payload['authority']['ol_text']
-            assert text == 'three and four'
-            target = payload['target']['text']
-            raw = {'schema_version': '2.0', 'phase': phase, 'unit_id': payload['unit_id'], 'status': 'COMPLETE', 'limitations': [],
-                'source_expressions': [expression(text, surface, number, role, 'ol') for number, surface, role in ((3, 'three', 'men'), (4, 'four', 'women'))],
-                'target_roles': [{'expression_id': x['expression_id'], 'role': x['role'], 'role_spans': [
-                    {'start': 0, 'end': len(target), 'surface': target}]} for x in payload['target']['expressions']]}
+        _NumericTasks.calls += 1
+        raw = {'schema_version': '1.0', 'phase': 'EXTRACTION', 'batch_id': payload['batch_id'], 'work_units': [
+            {'input_id': x['input_id'], 'status': 'UNSUPPORTED' if _NumericTasks.unsupported else 'COMPLETE',
+             'limitations': ['Fixture language understanding unavailable'] if _NumericTasks.unsupported else [],
+             'values': [] if _NumericTasks.unsupported else ['3', '4']} for x in payload['work_units']]}
         return ProviderResponse(provider='codex', model='gpt-test', reasoning_effort='high', content=json.dumps(raw), metadata={})
 
 
 class _NumericTasks(_OfflineTasks):
-    """Use recorded transport while retaining production extraction/correspondence validators."""
+    """Use recorded transport while retaining production extraction validators."""
     calls = 0
     unsupported = False
 
@@ -130,18 +110,17 @@ def test_import_to_report_is_read_only_reproducible_and_explicit_about_limits(ma
     assert len(document['groups']) == (1 if topology == 'single' else 4)
     if topology == 'chapters':
         from sage.nca_reporting import chapter_sections
-        from sage.numbers.results_v2 import validate_numbers_result_v2
+        from sage.numbers.results import validate_numbers_result
         task_identity = json.loads(Path(manifest).read_text())
-        validate_numbers_result_v2(document, expected_unit_ids=tuple(task_identity['expected_unit_ids']),
+        validate_numbers_result(document, expected_unit_ids=tuple(task_identity['expected_unit_ids']),
             allowed_evidence_ids=tuple(task_identity['allowed_evidence_ids']))
         sections = chapter_sections(document)
         assert {x['chapter'] for x in sections if x['book'] == 'MAT'} == {1, 2}
         primary = [item for section in sections for item in section['finding_ids']]
         assert len(primary) == len(set(primary)) == len(document['findings'])
-        assert any(x['projection']['status'] == 'UNMAPPED' for x in document['groups'])
-    unit = document['groups'][0]['components'][0]
-    assert unit['final_outcome'] == ('INSUFFICIENT_EVIDENCE' if unsupported else 'PASS_AUTHORITY1')
-    assert unit['footnote']['status'] == ('NOT_ASSESSED' if unsupported else 'NOT_REQUIRED')
+        assert any(x['projection_status'] == 'UNMAPPED' for x in document['groups'])
+    group = next(g for g in document['groups'] if g['target_references'] == ['MAT 1:1'])
+    assert group['comparison']['outcome'] == ('NOT_ASSESSED' if unsupported else 'PASS')
     assert document['model_receipts']['EXTRACTION']
     store = JobStore(root, root / 'ecosystem.yml')
     job = store.load_job(document['provenance']['job_id'], tool='nca')

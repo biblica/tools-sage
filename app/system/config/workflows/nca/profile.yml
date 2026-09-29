@@ -22,6 +22,7 @@ optimization_policy:
   request_concurrency: 1
   transient_retries: 1
   reuse_scope: TASK
+default_numeric_comparison_mode: UNORDERED
 permissions:
   may_write_projects: []
 process:
