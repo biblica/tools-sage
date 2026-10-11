@@ -84,8 +84,8 @@ SKILL_CRITERIA: dict[str, tuple[str, str]] = {
         "Use Reference evidence, omit completion, or demote primary Source authority.",
     ),
     "nca-numbers": (
-        "Return exact numeric evidence for the named phase; only target inventory may share one bounded multi-input review item.",
-        "Fabricate numeric evidence, accept missing or invalid batch coverage, combine independent adjudications or note assessments, supply expected values to target extraction, select authority, or upgrade uncertainty.",
+        "Return every counted number in reading order with its counting-convention kind; only target inventory may share one bounded multi-input review item.",
+        "Fabricate numeric values, ignore the counting convention, accept missing or invalid batch coverage, supply expected values to target extraction, select authority, or upgrade uncertainty.",
     ),
     "rtc-focused-check": (
         "Answer only the sealed question from the bounded WIP and Reference evidence.",
@@ -247,8 +247,8 @@ def _case_artifacts(skill_id: str, case_id: str, case_kind: str) -> dict[str, by
             "Do not expand scope, add evidence, write Scripture, combine items, or qualify yourself.",
             *(
                 [
-                    "Only target numeric inventory may contain multiple independent inputs in one bounded review item; keep each input ID, stream, and offset domain exact.",
-                    "Keep semantic adjudications and note assessments separate. Missing or invalid extraction members stay pending; PARTIAL and UNSUPPORTED remain unresolved semantic evidence without automatic retries.",
+                    "Only target numeric inventory may contain multiple independent inputs in one bounded review item; keep each input ID exact.",
+                    "Follow the counting convention: one value and one kind per counted number, in reading order. Missing or invalid extraction members stay pending; PARTIAL and UNSUPPORTED remain unresolved evidence without automatic retries.",
                     "Use only target text and parsing conventions for extraction. Preserve one exact parent request/response receipt and locally bind accepted members to it.",
                 ]
                 if skill_id == "nca-numbers"

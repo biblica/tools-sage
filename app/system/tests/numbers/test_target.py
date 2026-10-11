@@ -125,20 +125,28 @@ def test_explicit_note_anchor_can_identify_a_missing_adjacent_verse():
     assert unit.notes[0].anchor_references == (VerseRef('NEH', 7, 68),)
 
 
-def test_unclosed_note_fails_instead_of_returning_incomplete_body():
-    """Unclosed note fails instead of returning incomplete body."""
-    usj = compile_usfm_text('\\id MAT Fixture\n\\c 1\n\\v 1 Three.\\f + \\ft Thirty.\n')
-    with pytest.raises(ValidationError) as exc:
-        target_units(usj, source_sha256='0' * 64)
-    assert exc.value.code == 'NCA_TARGET_PARSE_ERROR'
+def test_unclosed_note_is_reported_on_its_verse_not_raised():
+    """NCA never stops on content: a verse with broken markup keeps its unit and carries the issue."""
+    usj = compile_usfm_text('\\id MAT Fixture\n\\c 1\n\\v 1 Three.\\f + \\ft Thirty.\n\\v 2 Four.\n')
+    units = target_units(usj, source_sha256='0' * 64)
+    flagged = [unit for unit in units if unit.content_issues]
+    assert flagged and all(issue.startswith('CONTENT_MARKUP_ERROR:') for unit in flagged for issue in unit.content_issues)
 
 
-def test_duplicate_target_coordinates_are_rejected():
-    """Duplicate target coordinates are rejected."""
+def test_duplicate_verse_keeps_the_first_and_flags_it():
+    """A repeated verse number keeps the first occurrence and reports the repeat."""
     usj = compile_usfm_text('\\id MAT Fixture\n\\c 1\n\\v 1 Three.\n\\v 1 Four.\n')
-    with pytest.raises(ValidationError) as exc:
-        target_units(usj, source_sha256='0' * 64)
-    assert exc.value.code == 'NCA_TARGET_DUPLICATE_REFERENCE'
+    unit, = target_units(usj, source_sha256='0' * 64)
+    assert unit.main_text.strip() == 'Three.'
+    assert unit.content_issues == ('CONTENT_DUPLICATE_VERSE:MAT 1:1:line=4',)
+
+
+def test_unreadable_book_yields_an_advisory_not_an_error():
+    """A file without a book ID produces no units and one book-level advisory."""
+    from sage.numbers.target import content_advisories
+    usj = compile_usfm_text('\\c 1\n\\v 1 Three.\n')
+    assert target_units(usj, source_sha256='0' * 64) == ()
+    assert content_advisories(usj) and content_advisories(usj)[0].startswith('CONTENT_UNREADABLE_BOOK')
 
 
 def test_superscription_stops_at_following_verse_without_paragraph_marker():

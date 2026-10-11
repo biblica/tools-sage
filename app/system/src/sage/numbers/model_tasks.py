@@ -34,22 +34,31 @@ from .extraction import (
     validate_batch_extraction_response,
 )
 from .models import (
-    EXTRACTION_STATUSES,
+    MODEL_EXTRACTION_STATUSES,
+    VALUE_KINDS,
     Extraction,
     freeze,
 )
 
 
 SKILL_ID = "nca-numbers"
+# The extraction capsule sent to the model: the contract, then the shared counting convention
+# the reference index is built with (both sealed in the Run's phase-contract manifest).
+SKILL_CONTRACT_FILES = (
+    "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md",
+    "system/skills/nca-numbers/references/COUNTING-CONVENTION.md",
+)
 _TASK_VERSIONS = {
-    "EXTRACTION": "nca-extraction-1.0",
+    "EXTRACTION": "nca-extraction-3.0",
 }
 _PHASE_INSTRUCTIONS = {
     "EXTRACTION": (
-        "Interpret only the supplied independent target streams. Identify every numeric "
-        "expression, preserving multiplicity, in the order it appears in the text. Return "
-        "each as a reduced canonical rational string. Do not classify kind, role, or unit -- "
-        "only the ordered list of values and honest completeness."
+        "Interpret only the supplied independent target streams. Follow the counting "
+        "convention in the skill contract exactly. Identify every counted number, preserving "
+        "multiplicity, in reading order; for each return its exact text as written in the "
+        "work unit, its value as a reduced canonical rational string, its convention kind, "
+        "what it counts in the target language, and an English gloss of that, plus honest "
+        "completeness."
     ),
 }
 
@@ -69,14 +78,26 @@ _SCHEMAS: dict[str, dict[str, object]] = {
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
-                    "required": ["input_id", "status", "limitations", "values"],
+                    "required": ["input_id", "status", "limitations", "numbers"],
                     "properties": {
                         "input_id": {"type": "string", "minLength": 1},
-                        "status": {"type": "string", "enum": sorted(EXTRACTION_STATUSES)},
+                        "status": {"type": "string", "enum": sorted(MODEL_EXTRACTION_STATUSES)},
                         "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}},
-                        "values": {
+                        "numbers": {
                             "type": "array",
-                            "items": {"type": "string", "pattern": r"^-?(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?$"},
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": False,
+                                "required": ["text", "value", "kind", "counts", "counts_en"],
+                                "properties": {
+                                    "text": {"type": "string", "minLength": 1},
+                                    "value": {"type": "string",
+                                              "pattern": r"^-?(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?$"},
+                                    "kind": {"type": "string", "enum": sorted(VALUE_KINDS)},
+                                    "counts": {"type": "string"},
+                                    "counts_en": {"type": "string"},
+                                },
+                            },
                         },
                     },
                 },
@@ -85,6 +106,16 @@ _SCHEMAS: dict[str, dict[str, object]] = {
     },
 }
 T = TypeVar("T")
+# Provider usage/rate limits: not a batch fault, so never a reason to split a batch.
+_RATE_LIMIT_CODES = frozenset({"CODEX_RATE_LIMITED", "LLM_PROVIDER_RATE_LIMITED"})
+# Seconds to wait before each same-batch retry after a rate limit (bounded, then pending).
+RATE_LIMIT_BACKOFF_SECONDS = (30.0, 120.0)
+
+
+def _sleep(seconds: float) -> None:
+    """Wait before a rate-limited retry (module-level so tests can avoid real delays)."""
+    import time
+    time.sleep(seconds)
 
 
 def _sha256(value: bytes) -> str:
@@ -281,16 +312,18 @@ class NcaModelTasks:
     def _prompt(self, phase: str, payload: Mapping[str, object], *, task_version: str | None = None) -> str:
         """Assemble a version-aware capsule from the registered simplified skill contract."""
         version = task_version or _TASK_VERSIONS[phase]
-        relative = "system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md"
         try:
-            skill_contract = (self._config.root / relative).read_text(encoding="utf-8")
+            skill_contract = "\n\n".join(
+                (self._config.root / relative).read_text(encoding="utf-8") for relative in SKILL_CONTRACT_FILES)
         except OSError as exc:
             raise _model_error("Registered NCA Skill contract is unavailable", "NCA_MODEL_SKILL_INVALID") from exc
-        return _canonical_json({
+        # Fixed fields first and the variable input last, so the instructions and contract
+        # form a stable prompt prefix providers can cache across batches.
+        return json.dumps({
             "task_version": version, "skill_id": SKILL_ID, "phase": phase,
             "instructions": _PHASE_INSTRUCTIONS[phase],
-            "skill_contract": skill_contract, "input": payload,
-        })
+            "skill_contract": skill_contract, "input": json.loads(_canonical_json(payload)),
+        }, ensure_ascii=False, separators=(",", ":"))
 
     def configure_phase_execution(self, executor: object) -> None:
         """Bind one controller-owned checkpoint hook without changing public phase methods."""
@@ -300,18 +333,25 @@ class NcaModelTasks:
         self, phase: str, payload: Mapping[str, object],
         validator: Callable[[Mapping[str, object]], T], *,
         task_version: str | None = None, schema: Mapping[str, object] | None = None,
+        unit_ids: tuple[str, ...] | None = None,
     ) -> ModelPhaseResult[T]:
-        """Use the optional attempt-local hook around the exact physical phase boundary."""
+        """Use the optional attempt-local hook around the exact physical phase boundary.
+
+        ``unit_ids`` are the controller input identities when the payload carries batch-local
+        model-facing IDs; checkpoints and measurements always use the controller identities.
+        """
         hook = getattr(self, '_phase_executor', None)
         if hook is not None:
             return hook(phase, payload, validator, task_version=task_version or _TASK_VERSIONS[phase],
-                schema=schema or _SCHEMAS[phase], physical=self._execute_physical)
-        return self._execute_physical(phase, payload, validator, task_version=task_version, schema=schema)
+                schema=schema or _SCHEMAS[phase], physical=self._execute_physical, unit_ids=unit_ids)
+        return self._execute_physical(phase, payload, validator, task_version=task_version, schema=schema,
+                                      unit_ids=unit_ids)
 
     def _execute_physical(
         self, phase: str, payload: Mapping[str, object],
         validator: Callable[[Mapping[str, object]], T], *,
         task_version: str | None = None, schema: Mapping[str, object] | None = None,
+        unit_ids: tuple[str, ...] | None = None,
     ) -> ModelPhaseResult[T]:
         """Measure each physical call and admit a receipt only after exact validation."""
         version = task_version or _TASK_VERSIONS[phase]
@@ -323,7 +363,7 @@ class NcaModelTasks:
         wire = {"prompt": request.prompt, "schema": request.schema, "model": request.model,
                 "reasoning_effort": request.reasoning_effort, "timeout_seconds": request.timeout_seconds}
         wire_text = _canonical_json(wire)
-        unit_ids = tuple(str(item.get("input_id", item.get("unit_id"))) for item in payload["work_units"])
+        unit_ids = unit_ids or tuple(str(item.get("input_id", item.get("unit_id"))) for item in payload["work_units"])
         request_id = uuid4().hex
         response = None
         status = "NCA_MODEL_PROVIDER_FAILED"
@@ -338,6 +378,9 @@ class NcaModelTasks:
                     "LLM_RESPONSE_ROUTE_MISMATCH", "NCA_MODEL_ROUTE_CHANGED", "PROVIDER_ROUTE_UNAVAILABLE"
                 }:
                     raise
+                if getattr(exc, "code", None) in _RATE_LIMIT_CODES:
+                    raise _model_error(f"NCA {phase.lower()} provider is rate-limited: {exc}",
+                                       "NCA_MODEL_RATE_LIMITED") from exc
                 if str(exc).startswith("invalid_json_schema"):
                     raise _model_error(
                         f"NCA {phase.lower()} request schema was rejected by the provider: {exc}",
@@ -389,8 +432,10 @@ class NcaModelTasks:
     ) -> ModelPhaseResult[BatchValidation]:
         """Send precisely one target-only batch request and retain its one parent receipt."""
         payload = build_batch_extraction_payload(batch, parsing_conventions=parsing_conventions)
+        conventions = payload["parsing_conventions"]
         return self._execute("EXTRACTION", payload,
-            lambda response: validate_batch_extraction_response(batch, response))
+            lambda response: validate_batch_extraction_response(batch, response, parsing_conventions=conventions),
+            unit_ids=tuple(value.input_id for value in batch.inputs))
 
 
 def _usage_counter(usage: object, field: str) -> int | None:
@@ -442,13 +487,28 @@ def extract_batch_with_retries(
     retryable = {"NCA_MODEL_PROVIDER_FAILED", "NCA_MODEL_RESPONSE_INVALID", "NCA_BATCH_COVERAGE_INVALID",
                  "NCA_EXTRACTION_SCHEMA_INVALID", "NCA_EXTRACTION_EVIDENCE_INVALID"}
 
+    def call(current: ExtractionBatch):
+        """One logical request: rate limits back off and retry the same batch, never split it."""
+        for delay in (*RATE_LIMIT_BACKOFF_SECONDS, None):
+            try:
+                return tasks.extract_batch(current, parsing_conventions=parsing_conventions)
+            except ValidationError as exc:
+                if exc.code != "NCA_MODEL_RATE_LIMITED" or delay is None:
+                    raise
+                _sleep(delay)
+        raise AssertionError("unreachable")
+
     def visit(current: ExtractionBatch) -> None:
         """Spend one bounded node budget, then recurse only into strictly smaller membership."""
         reasons = {}
         for _attempt in range(1 + transient_retries):
             try:
-                result = tasks.extract_batch(current, parsing_conventions=parsing_conventions)
+                result = call(current)
             except ValidationError as exc:
+                if exc.code == "NCA_MODEL_RATE_LIMITED":
+                    # Still rate-limited after backoff: leave the whole batch pending, unsplit.
+                    pending.update({value.input_id: "NCA_MODEL_RATE_LIMITED" for value in current.inputs})
+                    return
                 if exc.code not in retryable:
                     raise
                 reasons = {value.input_id: str(exc.code) for value in current.inputs}

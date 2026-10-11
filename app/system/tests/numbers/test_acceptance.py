@@ -16,6 +16,7 @@ from sage.storage import storage_layout
 
 from .test_nca_jobs import REFERENCE_FIXTURE, _prepare_nca_workspace, _route
 from .test_nca_tasks import _OfflineTasks
+from .fake_numbers import nums
 
 
 def _inventory(root: Path) -> dict[str, str]:
@@ -35,7 +36,7 @@ class _NumericTransport:
         raw = {'schema_version': '1.0', 'phase': 'EXTRACTION', 'batch_id': payload['batch_id'], 'work_units': [
             {'input_id': x['input_id'], 'status': 'UNSUPPORTED' if _NumericTasks.unsupported else 'COMPLETE',
              'limitations': ['Fixture language understanding unavailable'] if _NumericTasks.unsupported else [],
-             'values': [] if _NumericTasks.unsupported else ['3', '4']} for x in payload['work_units']]}
+             'numbers': [] if _NumericTasks.unsupported else nums(['3', '4'], x['text'])} for x in payload['work_units']]}
         return ProviderResponse(provider='codex', model='gpt-test', reasoning_effort='high', content=json.dumps(raw), metadata={})
 
 
@@ -127,7 +128,7 @@ def test_import_to_report_is_read_only_reproducible_and_explicit_about_limits(ma
     run = store.load_run(job, document['provenance']['run_id'])
     assert run.status == 'COMPLETE'
     # Mutable operator defaults cannot rewrite a completed Run or trigger repeat model work.
-    store.revise_job(job, defaults={'checks': {'number_accuracy': False, 'presentation_consistency': True, 'footnote_review': False}})
+    store.revise_job(job, defaults={'checks': {'number_accuracy': False, 'footnote_review': True}})
     calls = _NumericTasks.calls
     command('task', 'execute', '--task', manifest)
     from sage.nca import finalize_nca_run

@@ -584,12 +584,13 @@ def finalize_nca_run(
     job_id: str,
     run_id: str,
 ) -> Mapping[str, object]:
-    """Reconcile accepted task coverage and publish one deterministic NCA report."""
+    """Reconcile accepted task coverage and publish deterministic per-chapter NCA reports."""
     store = _store(config)
     job = store._load_job_metadata(job_id, tool="nca")
     run = store.load_run(job, run_id)
     result_path = run.root / "validation/numbers-result.json"
-    report_path = run.root / "reports/NUMBER-CONSISTENCY-ACCURACY.md"
+    # Operator-facing reports are published per chapter to localdata/reports/<job>/<BOOK>/<CCC>/
+    # (the RTC/STC layout); the machine result and technical diagnostics stay with the Run.
     if not run.task_manifests:
         raise ValidationError("NCA Run has no governed task", code="NCA_RESULT_COVERAGE_INVALID")
     # Finalization reads accepted task-local results only and publishes after the
@@ -619,26 +620,14 @@ def finalize_nca_run(
             code="NCA_RESULT_COVERAGE_INVALID",
         )
     document = documents[0]
-    from .nca_reporting import render_nca_report
+    from .nca_reporting import publish_nca_reports
 
     primary_language, secondary_language = report_languages[0]
-    report = render_nca_report(document, language=primary_language)
-    secondary_report = (
-        render_nca_report(document, language=secondary_language)
-        if secondary_language is not None
-        else None
-    )
-    secondary_report_path = (
-        run.root
-        / "reports"
-        / f"NUMBER-CONSISTENCY-ACCURACY.{secondary_language}.md"
-        if secondary_language is not None
-        else None
-    )
     atomic_write_json(result_path, document)
-    atomic_write_text(report_path, report)
-    if secondary_report_path is not None and secondary_report is not None:
-        atomic_write_text(secondary_report_path, secondary_report)
+    published_reports = publish_nca_reports(
+        config, job, run, document,
+        primary_language=primary_language, secondary_language=secondary_language,
+    )
     if run.status != "COMPLETE" or run.result != "DONE":
         store._update_run_for_job(
             job, run,
@@ -646,23 +635,18 @@ def finalize_nca_run(
             current_stage="DETERMINISTIC_FINALISATION",
             result="DONE",
         )
+    report_path = Path(published_reports["report_paths"][0]) if published_reports["report_paths"] else None
     published = {
         "status": "COMPLETE",
         "job_id": job.job_id,
         "run_id": run.run_id,
         "result_path": str(result_path),
         "result_sha256": sha256_file(result_path),
-        "report_path": str(report_path),
-        "report_sha256": sha256_file(report_path),
+        "report_path": str(report_path) if report_path else None,
+        "report_sha256": sha256_file(report_path) if report_path else None,
+        "report_languages": [primary_language] + ([secondary_language] if secondary_language else []),
+        **published_reports,
     }
-    if secondary_report_path is not None:
-        published.update(
-            {
-                "secondary_report_path": str(secondary_report_path),
-                "secondary_report_sha256": sha256_file(secondary_report_path),
-                "secondary_report_language": secondary_language,
-            }
-        )
     return published
 
 
@@ -964,6 +948,8 @@ def _provenance(job: Job, run: Run, policy: Mapping[str, object]) -> dict[str, o
         "wip": {
             "identity": policy["wip"]["project_id"],
             "sha256": policy["wip"]["content_fingerprint"],
+            "language": policy["wip"]["language"],
+            "script": policy["wip"]["script"],
         },
     }
 
@@ -1049,7 +1035,11 @@ def _execute_optimized_task(path: Path, manifest: Mapping[str, object], config: 
     started = _utc_now()
     result = evaluate_optimized_run(inputs, model_tasks=recording, phase_store=store, run_id=run.run_id)
     session = recording.phase_session
-    if not session.checkpoints:
+    planned = (result.metrics.get('planning') or {}).get('planned_extraction_calls')
+    # Nothing to extract (every verse damaged, undrafted or unindexed) is a content outcome:
+    # the result is published with those verses NOT_ASSESSED. Only planned calls that all
+    # failed mean the model produced no evidence.
+    if not session.checkpoints and planned != 0:
         failure = {'status': 'FAILED', 'task_id': manifest['task_id'], 'task_fingerprint': manifest['task_fingerprint'],
             'code': 'NCA_NO_ADMITTED_PHASE_EVIDENCE', 'expected_unit_ids': list(inputs.expected_unit_ids),
             'coverage': _plain(result.coverage), 'metrics': _plain(result.metrics), 'completed_utc': _utc_now()}
@@ -1095,13 +1085,16 @@ def _execute_optimized_task(path: Path, manifest: Mapping[str, object], config: 
             raise ValidationError('NCA execution receipt phase aggregation differs', code='NCA_RESULT_RECEIPT_INVALID')
         return accepted
     if publication.exists():
-        store.recover_publication(checkpoints=session.checkpoints, validate_phase=session.validate_phase, validate_final=validate_final)
+        store.recover_publication(checkpoints=session.checkpoints, validate_phase=session.validate_phase, validate_final=validate_final,
+            allow_empty=planned == 0)
         receipt = _load_json(receipt_path, 'NCA execution receipt')
     else:
         output_bytes = (json.dumps(document, ensure_ascii=False, indent=2, sort_keys=True) + '\n').encode('utf-8')
         receipt = _execution_receipt(manifest, route_identity=dict(tasks.route_identity), receipts=receipts,
             output_path=output_path, output_bytes=output_bytes, started=started)
         store.prepare_publication(document, receipt, checkpoints=session.checkpoints,
-            validate_phase=session.validate_phase, validate_final=validate_final)
-        store.recover_publication(checkpoints=session.checkpoints, validate_phase=session.validate_phase, validate_final=validate_final)
+            validate_phase=session.validate_phase, validate_final=validate_final,
+            allow_empty=planned == 0)
+        store.recover_publication(checkpoints=session.checkpoints, validate_phase=session.validate_phase, validate_final=validate_final,
+            allow_empty=planned == 0)
     return dict(receipt, status='EXECUTED', receipt_path=str(receipt_path))

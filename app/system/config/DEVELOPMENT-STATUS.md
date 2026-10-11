@@ -102,3 +102,17 @@ Current operating material must not present earlier pre-release implementation l
 ## Current checkpoint and planned work
 
 The full `0.02a1` development branch is consolidated as `0.02b1`, including shared versification alignment and Paratext filename-template validation. NCA and SQS are documented future implementation work; neither is activated by this release.
+
+### 0.02a3 development branch: NCA
+
+The non-release `0.02a3` branch implements the NCA runtime as Main Menu #5 (commits `a50cb30` to `11f95e0`, plus the NCA menu presentation change). **BREAKING** items invalidate earlier NCA Jobs, Runs, packages or extraction evidence; no migration is provided.
+
+- **BREAKING:** Core pin `SAGE_NUMBERS_TYPED_2026-10-09` (`sage-numbers-typed-1.1`; BSB-quoted, no NIV Scripture text; values as in 2026-10-08). It is built from MACULA Hebrew/Greek with an NIV secondary-evidence layer and covers 3,814 verses with 5,345 original-language and 5,021 NIV values. All review items are resolved (`RULE-2026-10-08`). `SAGE_NUMBERS_REFERENCE_2026-09-09` remains for comparison only.
+- **BREAKING:** Counting convention 2.0 (quantities and dates only) and extraction contract 3.0 (exact text, value, kind, and counted item; SAGE reads digit numerals itself).
+- **BREAKING:** BLOCKING FAIL only against original-language readings the index vouches for. Two Run switches remain (number accuracy, footnote review). Reports use the per-chapter RTC/STC action-report template under `localdata/reports/<job>/`.
+- Association check, `MALFORMED_NUMERAL` and `NUMBER_NOT_IN_SOURCE` FAILs, apparatus-backed text-critical decisions with cited and attributed evidence, and the `<run>_NUMBER-STYLE.md` formatting consistency report with a reconstructed style profile when none is given.
+- NCA never stops a Run on Scripture content; damaged verses report `NOT_ASSESSED`.
+- Menu: the style options are "Use standard language profile data" and "Upload style data from template". Package diagnostics print once per package per session. The preflight screen is reduced to operator-relevant fields, and the full plan is in `last-preflight.json`.
+- Runtime review fixes: style profiles with unit forms, scopes with nothing to extract, whole-token anchoring of number text, malformed model kinds, no-break-space grouping, digit ordinals, versification-safe gap coverage, authority-aware `WRONG_ASSOCIATION` severity, malformed numerals in unindexed or partly read verses, per-kind diagnostics notes, and digit script in the reconstructed style profile.
+
+Open: no release-gate receipt for the typed package; live-model NCA qualification and SQS confidence checks remain outstanding.

@@ -92,6 +92,10 @@ _REQUIRED_COLUMNS: Mapping[str, frozenset[str]] = {
         {"SOURCE_ID", "AUTHOR_OR_ORGANIZATION", "TITLE", "DATE_OR_EDITION", "URL", "ACCESS_NOTE", "EVIDENCE_USED"}
     ),
 }
+_OL_NORMALIZATION_LAYERS = frozenset({"AUDITED_OL_NORMALIZATION_MANIFEST", "FINAL_OL_VERSE_OVERRIDE"})
+_OL_NORMALIZATION_FIELDS = (
+    "LAYER", "ACTION", "SOURCE_EXPRESSION", "ORIGINAL_VALUES", "FINAL_VALUES", "RULE_CLASS", "REASON",
+)
 _COUNT_FIELDS = {
     "SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv": "operator_index_rows",
     "textual_variant_registry.tsv": "critical_rows",
@@ -1071,6 +1075,14 @@ def _load_qualified(root: Path) -> ReferenceBundle:
         provenance[source_id] = row
     _check_provenance(tables, provenance)
 
+    # OL-side overrides are keyed by real OL coordinate (applied before Western mapping), so join
+    # on OL_REF; NIV_SEMANTIC_OVERRIDE rows only reshape the secondary authority and are not carried.
+    normalizations: dict[str, list[dict[str, str]]] = {}
+    for override in tables["normalization_overrides.tsv"]:
+        if override["LAYER"] in _OL_NORMALIZATION_LAYERS and override["OL_REF"]:
+            normalizations.setdefault(override["OL_REF"], []).append(
+                {field: override[field] for field in _OL_NORMALIZATION_FIELDS})
+
     rows: dict[VerseRef, ReferenceRow] = {}
     for key, row in main.items():
         registered_absence = (
@@ -1091,9 +1103,10 @@ def _load_qualified(root: Path) -> ReferenceBundle:
             language=row["LANG"],
             ol_text=row["OL_TEXT"],
             ol_values=parse_values(row["OL_VALUES"]),
-            niv_text=row["NIV_TEXT"],
+            bsb_text="",  # the legacy NIV_TEXT is never displayed (NIV fair use); no BSB text in this format
             niv_values=parse_values(row["NIV_VALUES"]),
             metadata={field: value for field, value in row.items() if field not in _PRIMARY_FIELDS},
+            ol_normalizations=tuple(normalizations.get(row["OL_REF"], ())) if row["OL_REF"] else (),
         )
 
     diagnostics: list[dict[str, object]] = []
@@ -1126,6 +1139,128 @@ def _load_qualified(root: Path) -> ReferenceBundle:
     )
 
 
+TYPED_FORMAT = "sage-numbers-typed-1.1"
+_TYPED_VALUE_FIELDS = frozenset({"WESTERN_REF", "LAYER", "OL_REF", "LANG", "EXPR_NO", "VALUE", "KIND", "ROLE",
+                                 "REFERENT", "UNIT", "SURFACE", "SOURCE_IDS", "REVIEW_STATUS"})
+_TYPED_VERSE_FIELDS = frozenset({"WESTERN_REF", "OL_REFS", "LANG", "OL_TEXT", "BSB_TEXT", "BSB_NOTES",
+                                 "MATCH_STATUS", "OL_REVIEW_STATUS", "NIV_REVIEW_STATUS", "TC_STATUS",
+                                 "TC_EVIDENCE"})
+_TYPED_FILES = ("MANIFEST.json", "reference/values.tsv", "reference/verses.tsv",
+                "reference/textual_variant_registry.tsv", "reference/footnote_guidance.tsv",
+                "reference/unit_conversion_registry.tsv", "reference/provenance_sources.tsv",
+                "reference/eng_org_map_rules.txt")
+_REVIEW_STATUSES = frozenset({"AGREES", "CONVENTION", "REVIEWED", "PROVISIONAL"})
+
+
+def is_typed_package(root: Path) -> bool:
+    """Whether a package directory declares the typed format."""
+    path = Path(root) / "MANIFEST.json"
+    if not path.is_file():
+        return False
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("format") == TYPED_FORMAT
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
+def _verify_typed_inventory(root: Path) -> str:
+    """Require exactly the declared files, each matching CHECKSUMS.sha256; return the package SHA-256."""
+    checksum_path = root / "CHECKSUMS.sha256"
+    if not checksum_path.is_file():
+        raise _reference_error("NCA typed package has no CHECKSUMS.sha256", "NCA_REFERENCE_MANIFEST_INVALID")
+    listed: dict[str, str] = {}
+    for line in checksum_path.read_text(encoding="utf-8").splitlines():
+        digest, _, name = line.partition("  ")
+        if not _SHA256_RE.fullmatch(digest) or not name or name in listed:
+            raise _reference_error("NCA typed package checksum line is invalid", "NCA_REFERENCE_MANIFEST_INVALID",
+                                   line=line)
+        listed[_safe_relative(name)] = digest
+    present = {path.relative_to(root).as_posix() for path in root.rglob("*") if path.is_file()} - {"CHECKSUMS.sha256"}
+    if set(listed) != set(_TYPED_FILES) or present != set(_TYPED_FILES):
+        raise _reference_error("NCA typed package inventory differs from its format", "NCA_REFERENCE_MANIFEST_INVALID",
+                               missing=sorted(set(_TYPED_FILES) - present), unexpected=sorted(present - set(_TYPED_FILES)))
+    for name, digest in listed.items():
+        if hashlib.sha256((root / name).read_bytes()).hexdigest() != digest:
+            raise _reference_error(f"NCA typed package file changed: {name}", "NCA_REFERENCE_CHECKSUM_FAILED", file=name)
+    return hashlib.sha256(checksum_path.read_bytes()).hexdigest()
+
+
+def _load_typed(root: Path) -> ReferenceBundle:
+    """Load one typed package: verses and their typed OL/NIV values plus the curated registries."""
+    package_sha256 = _verify_typed_inventory(root)
+    manifest = _json_object(root / "MANIFEST.json")
+    package_id = validate_package_id(manifest.get("package_id"))
+    reference_root = root / "reference"
+    verses = _read_table(reference_root / "verses.tsv", _TYPED_VERSE_FIELDS)
+    values = _read_table(reference_root / "values.tsv", _TYPED_VALUE_FIELDS)
+    items: dict[tuple[str, str], list[dict[str, str]]] = {}
+    for line, row in enumerate(values, start=2):
+        if row["LAYER"] not in {"OL", "NIV"} or row["REVIEW_STATUS"] not in _REVIEW_STATUSES \
+                or not _VALUE_RE.fullmatch(row["VALUE"]):
+            raise _reference_error(f"Invalid NCA typed value at values.tsv line {line}",
+                                   "NCA_REFERENCE_CONTRACT_CONFLICT", line=line)
+        items.setdefault((row["WESTERN_REF"], row["LAYER"]), []).append(row)
+    rows: dict[VerseRef, ReferenceRow] = {}
+    provisional = 0
+    for row in verses:
+        key = _parse_western_label(row["WESTERN_REF"])
+        if key in rows:
+            raise _reference_error(f"Duplicate NCA typed verse {row['WESTERN_REF']}", "NCA_REFERENCE_DUPLICATE_KEY",
+                                   reference=row["WESTERN_REF"])
+        ol_items = tuple(items.get((row["WESTERN_REF"], "OL"), ()))
+        niv_items = tuple(items.get((row["WESTERN_REF"], "NIV"), ()))
+        provisional += "PROVISIONAL" in (row["OL_REVIEW_STATUS"], row["NIV_REVIEW_STATUS"])
+        rows[key] = ReferenceRow(
+            western_reference=key,
+            ol_reference=row["OL_REFS"].split()[0] if row["OL_REFS"] else None,
+            language=row["LANG"],
+            ol_text=row["OL_TEXT"],
+            ol_values=tuple(Fraction(item["VALUE"]) for item in ol_items),
+            bsb_text=row["BSB_TEXT"],
+            niv_values=tuple(Fraction(item["VALUE"]) for item in niv_items),
+            metadata={field: row[field] for field in ("MATCH_STATUS", "OL_REFS", "BSB_NOTES", "OL_REVIEW_STATUS",
+                                                       "NIV_REVIEW_STATUS", "TC_STATUS", "TC_EVIDENCE")},
+            ol_items=ol_items,
+            niv_items=niv_items,
+        )
+    registry = {name: _read_table(reference_root / name, _REQUIRED_COLUMNS[name])
+                for name in ("textual_variant_registry.tsv", "footnote_guidance.tsv", "unit_conversion_registry.tsv",
+                             "provenance_sources.tsv")}
+    provenance: dict[str, dict[str, str]] = {}
+    for row in registry["provenance_sources.tsv"]:
+        if not row["SOURCE_ID"] or row["SOURCE_ID"] in provenance:
+            raise _reference_error(f"Duplicate or blank NCA provenance source ID: {row['SOURCE_ID']!r}",
+                                   "NCA_REFERENCE_DUPLICATE_KEY", source_id=row["SOURCE_ID"])
+        provenance[row["SOURCE_ID"]] = row
+    diagnostics = []
+    if provisional:
+        diagnostics.append({
+            "code": "NCA_REFERENCE_PROVISIONAL_ROWS", "severity": "WARNING", "count": provisional,
+            "disposition": "Rebuilt values without a review decision; a mismatch there is reported for review, never FAIL.",
+        })
+    return ReferenceBundle(
+        package_id=package_id,
+        sha256=package_sha256,
+        rows=rows,
+        variants=_keyed(registry["textual_variant_registry.tsv"], "textual_variant_registry.tsv"),
+        footnote_guidance=_keyed(registry["footnote_guidance.tsv"], "footnote_guidance.tsv"),
+        units=_keyed(registry["unit_conversion_registry.tsv"], "unit_conversion_registry.tsv"),
+        provenance=provenance,
+        qualification_status="QUALIFIED_WITH_DIAGNOSTICS" if diagnostics else "QUALIFIED",
+        diagnostics=tuple(diagnostics),
+    )
+
+
+def _parse_western_label(label: str) -> VerseRef:
+    """Parse one 'BOOK C:V' Western label from a typed package."""
+    book, _, cv = label.partition(" ")
+    chapter, _, verse = cv.partition(":")
+    if not book or not chapter.isdigit() or not verse.isdigit():
+        raise _reference_error(f"Invalid NCA typed reference: {label!r}", "NCA_REFERENCE_CONTRACT_CONFLICT",
+                               reference=label)
+    return VerseRef(book, int(chapter), int(verse))
+
+
 def load_reference(root: Path, *, qualification: str = "STRICT") -> ReferenceBundle:
     """Validate and load an NCA package in strict or diagnostic qualification mode."""
     if qualification not in {"STRICT", "DIAGNOSTIC"}:
@@ -1136,6 +1271,8 @@ def load_reference(root: Path, *, qualification: str = "STRICT") -> ReferenceBun
         )
     resolved = Path(root).expanduser().resolve()
     try:
+        if is_typed_package(resolved):
+            return _load_typed(resolved)
         return _load_qualified(resolved)
     except ValidationError as exc:
         if qualification == "STRICT":

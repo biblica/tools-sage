@@ -26,6 +26,7 @@ from sage.executors.base import (
 )
 from sage.numbers.model_tasks import NcaModelTasks
 from sage.vrs import VerseRef
+from .fake_numbers import nums
 
 
 class RecordedExecutor:
@@ -165,8 +166,10 @@ def test_extract_batch_has_one_target_only_capsule_and_exact_parent_receipt(pack
     from jsonschema import Draft202012Validator
     Draft202012Validator(transport.requests[0].schema).validate(json.loads(raw_text))
     prompt = json.loads(transport.requests[0].prompt)
-    assert prompt['task_version'] == result.receipt.task_version == 'nca-extraction-1.0'
-    assert prompt['input']['routed_sfm'] == batch.routed_sfm
+    assert prompt['task_version'] == result.receipt.task_version == 'nca-extraction-3.0'
+    assert 'routed_sfm' not in prompt['input']
+    assert list(prompt)[-1] == 'input', 'variable input must come last for a cacheable prefix'
+    assert 'COUNTING-CONVENTION' not in prompt['skill_contract'] and 'counting convention' in prompt['skill_contract']
     assert prompt['input']['parsing_conventions'] == {}
     assert all(word not in prompt['skill_contract'].lower() for word in ('niv', 'registry', 'correspondence', 'footnote'))
     assert len(result.value.item_sha256) == 2
@@ -264,7 +267,8 @@ def test_accepted_items_checkpoint_before_remaining_calls_and_never_resubmit(pac
     result = bounded_extract(tasks, batch, on_accept=checkpoint)
     assert len(parents) == 2 and len(result.parents) == 2 and not result.pending
     assert result.accepted[batch.inputs[0].input_id].status == status
-    assert json.loads(transport.requests[1].prompt)['input']['work_units'][0]['input_id'] == batch.inputs[1].input_id
+    assert json.loads(transport.requests[1].prompt)['input']['work_units'][0]['input_id'] == 'u1'
+    assert tasks.attempts[1].measurement.unit_ids == (batch.inputs[1].input_id,)
     assert len(json.loads(transport.requests[1].prompt)['input']['work_units']) == 1
 
 
@@ -416,10 +420,10 @@ def test_physical_attempt_elapsed_excludes_local_semantic_validation(package_roo
 
     actual = module.validate_batch_extraction_response
 
-    def expensive_validation(batch, raw):
+    def expensive_validation(batch, raw, **options):
         """Add local semantic processing after the provider response has arrived."""
         now[0] = 100_000_000
-        return actual(batch, raw)
+        return actual(batch, raw, **options)
 
     monkeypatch.setattr(module, 'perf_counter_ns', clock)
     monkeypatch.setattr(module, 'validate_batch_extraction_response', expensive_validation)
@@ -429,7 +433,7 @@ def test_physical_attempt_elapsed_excludes_local_semantic_validation(package_roo
 
 
 def test_recorded_rational_conversion_failure_checkpoints_sibling_and_terminates_singleton(package_root, monkeypatch):
-    """A failed numeric conversion cannot discard accepted work or bypass bounded disposition."""
+    """A failed numeric conversion is recorded on its own item without discarding or re-requesting work."""
     from sage.numbers import extraction
     from sage.numbers.batching import _batch
     from .test_batch_extraction import batch_fixture, batch_response
@@ -446,9 +450,9 @@ def test_recorded_rational_conversion_failure_checkpoints_sibling_and_terminates
     batch = batch_fixture()
     failed_singleton = _batch(batch.inputs[:1], batch.inputs[0].routed_sfm)
     parent = batch_response(batch)
-    parent['work_units'][0]['values'] = [enormous]
+    parent['work_units'][0]['numbers'] = nums([enormous], 'x')
     child = batch_response(failed_singleton)
-    child['work_units'][0]['values'] = [enormous]
+    child['work_units'][0]['numbers'] = nums([enormous], 'x')
     transport = RecordedExecutor([parent, child, child])
     tasks = model_tasks(package_root, transport)
     accepted_parents = []
@@ -461,13 +465,29 @@ def test_recorded_rational_conversion_failure_checkpoints_sibling_and_terminates
     result = bounded_extract(tasks, batch, on_accept=checkpoint)
     first, second = [value.input_id for value in batch.inputs]
     assert result.accepted[second].values == (Fraction(4),)
-    assert set(result.accepted) == {second}
-    assert result.pending == {first: 'NCA_BATCH_SINGLETON_FAILED: NCA_EXTRACTION_EVIDENCE_INVALID'}
+    # The unconvertible value is dropped with a limitation in the same call: no re-requests.
+    assert result.accepted[first].status == 'PARTIAL' and result.accepted[first].values == ()
+    assert not result.pending
     assert len(accepted_parents) == len(result.parents) == 1
-    assert len(transport.requests) == len(tasks.attempts) == 3
-    assert len(transport.requests) <= 2 * (2 * len(batch.inputs) - 1)
-    assert all(json.loads(request.prompt)['input']['work_units'][0]['input_id'] == first
-               and len(json.loads(request.prompt)['input']['work_units']) == 1
-               for request in transport.requests[1:])
+    assert len(transport.requests) == len(tasks.attempts) == 1
     assert all(enormous in attempt.raw_response for attempt in tasks.attempts)
     assert {request.model for request in transport.requests} == {'gpt-5.6-sol'}
+
+
+def test_rate_limit_backs_off_and_never_splits_the_batch(package_root, monkeypatch):
+    """A provider rate limit is not a batch fault: same batch retried after backoff, then pending."""
+    from sage.errors import ValidationError
+    from sage.numbers import model_tasks as module
+    from .test_batch_extraction import batch_fixture
+    batch = batch_fixture()
+    waits = []
+    monkeypatch.setattr(module, '_sleep', waits.append)
+
+    error = ValidationError('rate limit reached', code='CODEX_RATE_LIMITED')
+    transport = RecordedExecutor([error] * (1 + len(module.RATE_LIMIT_BACKOFF_SECONDS)))
+    tasks = model_tasks(package_root, transport)
+    result = bounded_extract(tasks, batch)
+    assert waits == list(module.RATE_LIMIT_BACKOFF_SECONDS)
+    assert len(transport.requests) == 1 + len(module.RATE_LIMIT_BACKOFF_SECONDS)
+    assert all(len(json.loads(r.prompt)['input']['work_units']) == len(batch.inputs) for r in transport.requests)
+    assert result.pending == {value.input_id: 'NCA_MODEL_RATE_LIMITED' for value in batch.inputs}

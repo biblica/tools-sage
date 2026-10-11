@@ -56,7 +56,7 @@ def phase_key(recorded):
         policy_bytes=b'sealed policy', route=plain(tasks.route_snapshot),
         contract_components={'schema': (root / 'system/config/schemas/nca-extraction.schema.yml').read_bytes(),
             'skill': (root / 'system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md').read_bytes(),
-            'phase': result.receipt.task_version.encode()}, validator_version='nca-extraction-1.0')
+            'phase': result.receipt.task_version.encode()}, validator_version='nca-extraction-3.0')
 
 
 @pytest.fixture
@@ -258,7 +258,7 @@ def test_supported_and_unsupported_dispositions_survive(phase_store, phase_key, 
     """Valid UNSUPPORTED evidence remains uncertainty after reuse, never an empty pass."""
     root, batch, _, _ = recorded
     response = batch_response(batch)
-    response['work_units'][0].update(status='UNSUPPORTED', limitations=['uninterpretable'], values=[])
+    response['work_units'][0].update(status='UNSUPPORTED', limitations=['uninterpretable'], numbers=[])
     tasks = model_tasks(root, RecordedExecutor([response]))
     result = tasks.extract_batch(batch, parsing_conventions={})
     attempt = tasks.attempts[0]

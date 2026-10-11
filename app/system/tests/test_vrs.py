@@ -204,3 +204,46 @@ def test_effective_vrs_hash_is_portable_across_workspace_paths(make_workspace, t
     second = second_schema.to_dict()
     assert first["effective_sha256"] == second["effective_sha256"]
     assert all(not Path(item["path"]).is_absolute() for item in first["source_files"])
+
+
+def test_indexed_mapping_lookup_matches_a_full_scan(package_root: Path) -> None:
+    """The cached mapping index gives the same equivalence sets as scanning every mapping."""
+    schema = parse_vrs_file(package_root / "system/resources/scripture/eng.vrs", schema_id="eng", canonical_id="org")
+
+    def scanned_local(ref):
+        """Reference implementation: expand and scan every mapping."""
+        matches = [m for m in schema.mappings if ref in m.local.refs()]
+        if not matches:
+            return frozenset({ref})
+        found = set()
+        for m in matches:
+            local, canonical = m.local.refs(), m.canonical.refs()
+            if len(local) == len(canonical):
+                found.add(canonical[local.index(ref)])
+            elif len(canonical) == 1:
+                found.add(canonical[0])
+            else:
+                found.update(canonical)
+        return frozenset(found)
+
+    def scanned_canonical(ref):
+        """Reference implementation of the reverse lookup."""
+        found = set()
+        for m in schema.mappings:
+            local, canonical = m.local.refs(), m.canonical.refs()
+            if len(local) == len(canonical):
+                if ref in canonical:
+                    found.add(local[canonical.index(ref)])
+            elif len(canonical) == 1:
+                if ref == canonical[0]:
+                    found.update(local)
+            elif ref in canonical:
+                found.update(local)
+        return frozenset(found or {ref})
+
+    refs = {ref for m in schema.mappings for ref in (*m.local.refs(), *m.canonical.refs())}
+    refs.add(VerseRef("GEN", 1, 1))
+    assert schema.mappings, "fixture schema must exercise mappings"
+    for ref in sorted(refs, key=lambda r: (r.book, r.chapter, r.verse)):
+        assert schema.local_to_canonical(ref) == scanned_local(ref)
+        assert schema.canonical_to_local(ref) == scanned_canonical(ref)

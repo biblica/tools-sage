@@ -22,7 +22,6 @@ REFERENCE_FIXTURE = Path(__file__).parent / "fixtures" / "reference" / "lineage"
 IMPORT_TIME = datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc)
 CHECKS = {
     "number_accuracy": True,
-    "presentation_consistency": True,
     "footnote_review": True,
 }
 ROUTE = {
@@ -306,13 +305,13 @@ def test_create_nca_run_atomically_seals_policy_style_route_and_snapshot(
         config,
         job_id=job.job_id,
         scope_value="MAT 1",
-        checks={"presentation_consistency": False},
+        checks={"footnote_review": False},
     )
 
     assert run.operation == "numbers"
     assert (run.root / "snapshot/usj/MAT.json").is_file()
     policy = json.loads((run.root / "check-policy.json").read_text(encoding="utf-8"))
-    assert policy["checks"] == {**CHECKS, "presentation_consistency": False}
+    assert policy["checks"] == {**CHECKS, "footnote_review": False}
     assert policy["reference_package"] == job.resources["numbers_package"] | {
         "parser_version": "1.0",
         "qualification_status": "QUALIFIED_WITH_DIAGNOSTICS",

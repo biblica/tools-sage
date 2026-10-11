@@ -4,8 +4,7 @@ Per the 2026-09-28 simplified-check rewrite, presentation-style ASSESSMENT
 (assess_style/_assess_prepared_style) has no successor -- this pipeline is
 number-accuracy (plus its noteworthy-info advisory) only, and `Extraction`
 no longer carries the exact-span/kind/role evidence that assessment needed.
-`presentation_consistency` remains an accepted no-op check-policy toggle
-(see numbers/results.py). Only style-profile parsing/import/selection
+The retired presentation_consistency toggle was removed in 2026-10. Only style-profile parsing/import/selection
 remains in scope here; it still backs parsing conventions used by
 extraction (see numbers/extraction.py::_parsing_conventions).
 """

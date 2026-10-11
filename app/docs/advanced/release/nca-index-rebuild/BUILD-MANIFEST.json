@@ -1,0 +1,47 @@
+{
+  "artifacts": {
+    "EXCLUDED-WORDS.tsv": "5b19483f27fb7c3e40f7bcb17e796250e847ad57863912c192e748c6d24f3157",
+    "REGRESSION-DIFF.tsv": "b0f596d70f659baa80ea2fd557e1009f6401eff48fd53b1165b59e59a1766661",
+    "REVIEW-DECISIONS.tsv": "aba3203a8b22b0b65e33049a68c66d3181fea8ca8fa9ed2137424e47f9466a57",
+    "SUMMARY.md": "8fdcb875183beb72dbdb934fd3c9b6e12fa7d583dcd69d52384a813e31a8c8d3",
+    "TYPED-NUMBERS.tsv": "c783e55d22a256c8cb1aed098b28f477c9a84127b59b744c46b6ff42d0028372"
+  },
+  "builder": "system/tools/build_numbers_index.py",
+  "builder_modules": {
+    "__init__.py": "85b8a3f73d6ff6ab70cbd4692f816b76d07f7f9f83d941efe5f7656e45f14cf3",
+    "apparatus.py": "cd6dbcc23c7edc1930ddf7fbed39bc3b66bd7c0951bce504b0c14321031d859b",
+    "build.py": "71b3f8f8dcbc8027d092d74a912b6e5060bad99ad027cc9467fc471c2ba92e1a",
+    "compose.py": "338c04ccf6ceb4d715c68394df43b62ed7b86cce70bfb01f37a0fece28642124",
+    "english.py": "89e06a6dc330f3f430e2fdd46ab27174415e8cc90de9ebc4c9d849070394f86b",
+    "lexicon.py": "b0965296c28998a24eff745f14a2f3c4962b078881ba405f63e60c4f3e2bbd83",
+    "macula.py": "9882cf72959902659c57c7fed83c86b152d85dc4bb959e79cfa7aaae69a3a8e7",
+    "niv.py": "e647f63954f9d75492050e7261493bdb07c95bf201f239f58ebfe1195fec945d",
+    "niv_layer.py": "4fe1947b9ad4ec21654e1c42b13675c7f8bfd6580e37a5e70857298e256208db",
+    "package.py": "a829544a8ea4a68e0a80bf2e9d5c120586c1373a138604c984a2b7955f61bee1",
+    "versify.py": "b8ec9ab9cb2bfb3b0c293f9ff50eb0f9573b0c3426e6b181c3416aec24dc9334",
+    "witnesses.py": "141a2f5e291fea4ad44b29b40cedc0e8058096287cd1381052373e5ed7773626"
+  },
+  "compared_package": "2026-09-09",
+  "counting_convention_sha256": "c5d764bb980f7374f8a6ea6074d7a0302786fac76fa0287532752e6553d62bbc",
+  "counts": {
+    "differences": 1341,
+    "excluded_words": 1715,
+    "typed_values": 5347
+  },
+  "sources": {
+    "GRK": {
+      "attribution": "MACULA Greek Linguistic Datasets, available at https://github.com/Clear-Bible/macula-greek/",
+      "commit": "076282a3926625a5e670823b0738ce5f1e619528",
+      "edition": "SBL Greek New Testament (MACULA Greek)",
+      "sha256": "7f71504fdee8659bdd9f85342e4103d645864c2851b8205915bb298f0c004cc5",
+      "url": "https://raw.githubusercontent.com/Clear-Bible/macula-greek/076282a3926625a5e670823b0738ce5f1e619528/SBLGNT/tsv/macula-greek-SBLGNT.tsv"
+    },
+    "HEB": {
+      "attribution": "MACULA Hebrew Linguistic Datasets, available at https://github.com/Clear-Bible/macula-hebrew/",
+      "commit": "df1ea5d85c8cb194278a874d6c670cd1d8abd97f",
+      "edition": "Westminster Leningrad Codex (MACULA Hebrew, OSHB morphology)",
+      "sha256": "965cb0599beed2fe31283b615bcc369178141c0e718a66d97518d94309cfc124",
+      "url": "https://media.githubusercontent.com/media/Clear-Bible/macula-hebrew/df1ea5d85c8cb194278a874d6c670cd1d8abd97f/WLC/tsv/macula-hebrew.tsv"
+    }
+  }
+}

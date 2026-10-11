@@ -1,11 +1,9 @@
 """Serialize and strictly validate canonical NCA machine result documents.
 
-Simplified per the 2026-09-28 rewrite: a group's result is its numeric
-comparison outcome (PASS/FAIL/NEEDS_REVIEW/NOT_ASSESSED) plus any noteworthy
-text-critical notes -- no exact spans, kinds, roles, or per-row correspondence.
-`presentation_consistency` remains an accepted check-policy toggle for
-compatibility with existing Job configuration, but has no effect: this
-pipeline is number-accuracy (and its noteworthy-info advisory) only.
+A group's result is its numeric comparison outcome (PASS/FAIL/NEEDS_REVIEW/
+NOT_ASSESSED/NOT_INDEXED), the WIP verse text it was judged on, and any noteworthy
+text-critical notes. Every non-PASS comparison carries OL/NIV review evidence.
+This pipeline is number accuracy plus the noteworthy-info advisory only.
 """
 
 from __future__ import annotations
@@ -20,22 +18,35 @@ from sage.coverage import CoverageAssessment
 from sage.errors import ValidationError
 from sage.findings import validate_global_finding_ids
 
-from .models import COMPARISON_MODES, COMPARISON_OUTCOMES, EXTRACTION_STATUSES, PROJECTION_STATUSES
+from .models import COMPARISON_MODES, COMPARISON_OUTCOMES, EXTRACTION_STATUSES, PROJECTION_STATUSES, VALUE_KINDS
 
 
 NCA_CAPABILITY_LIMITATION = (
     "Findings are limited by the selected LLM's language understanding and "
     "numeric-interpretation capabilities. SQS confidence checks have not been applied."
 )
-_CHECKS = frozenset({"number_accuracy", "presentation_consistency", "footnote_review"})
+_CHECKS = frozenset({"number_accuracy", "footnote_review"})
+_AUTHORITIES = frozenset({"OL", "NIV", "MIXED", "NONE"})
 _HASH = re.compile(r"^[0-9a-f]{64}$")
 _RATIONAL = re.compile(r"^-?(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?$")
-_TASK_VERSIONS = {"EXTRACTION": "nca-extraction-1.0"}
+_TASK_VERSIONS = {"EXTRACTION": "nca-extraction-3.0"}
 _RECEIPT_FIELDS = {
     "phase", "task_version", "provider", "model", "reasoning_effort", "route_id",
     "routing_mode", "qualification_status", "prompt_sha256", "input_sha256",
     "response_sha256", "provider_metadata",
 }
+
+
+# Group limitations that explain why nothing needed comparing; they are coverage facts,
+# not evidence gaps, so they neither restrict coverage nor make it incomplete.
+EXCUSED_LIMITATIONS = frozenset({"NOT_INDEXED", "REGISTERED_ABSENCE", "COVERED_BY_WIP_GROUP"})
+
+
+def group_evidence_complete(outcome: str, extraction_status: str) -> bool:
+    """Whether one group's number-accuracy evidence is complete (shared with the validator)."""
+    if outcome == "NOT_INDEXED":
+        return True
+    return extraction_status == "COMPLETE" and outcome in {"PASS", "FAIL", "NEEDS_REVIEW"}
 
 
 def _error(message: str, code: str) -> ValidationError:
@@ -90,7 +101,15 @@ def _group_document(group: GroupResult) -> dict[str, object]:
             "status": group.extraction.status,
             "limitations": list(group.extraction.limitations),
             "values": [str(value) for value in group.extraction.values],
+            "kinds": list(group.extraction.kinds),
+            "surfaces": list(group.extraction.surfaces),
+            "spans": [list(span) for span in group.extraction.spans],
+            "counts": list(group.extraction.counts),
+            "counts_en": list(group.extraction.counts_en),
+            "origins": list(group.extraction.origins),
+            "issues": list(group.extraction.issues),
         },
+        "evidence": {"wip_text": unit.target.main_text},
         "comparison": {
             "outcome": group.comparison.outcome,
             "mode": group.comparison.mode,
@@ -112,6 +131,7 @@ def group_findings(group: GroupResult) -> list[dict[str, object]]:
     """
     if group.comparison.outcome not in {"FAIL", "NEEDS_REVIEW"}:
         return []
+    kind = str(group.comparison.review_context.get("kind") or "VALUE_DIFFERENCE")
     unit = group.projected
     base = {
         "target_references": [ref.label() for ref in unit.target.target_references],
@@ -122,17 +142,45 @@ def group_findings(group: GroupResult) -> list[dict[str, object]]:
         **base,
         "category": "ACCURACY",
         "code": f"NCA_NUMBER_{group.comparison.outcome}",
+        "kind": kind,
         "severity": severity,
+        "authority": group.comparison.authority,
         "mode": group.comparison.mode,
         "wip_values": [str(value) for value in group.comparison.wip_values],
         "expected_values": [str(value) for value in group.comparison.expected_values],
-        "message": (
-            "Numeric values differ from the indexed reference."
-            if group.comparison.outcome == "FAIL"
-            else "Same numeric values in a different order -- confirm this is a faithful "
-                 "reordering, not a swapped referent."
-        ),
+        "message": _finding_message(group.comparison),
     }]
+
+
+_MESSAGES = {
+    "VALUE_DIFFERENCE": "Numeric values differ from the original-language reading in the index.",
+    "WRONG_ASSOCIATION": "The same numbers as the source, but at least one is attached to a different item.",
+    "MALFORMED_NUMERAL": "A numeral in the verse cannot be read as a well-formed number.",
+    "NUMBER_NOT_IN_SOURCE": "The verse has a numeral although the source has no number here.",
+    "ORDER_DIFFERENCE": "Same numeric values in a different order -- confirm this is a faithful reordering, "
+                        "not a swapped referent.",
+    "NIV_ONLY_AUTHORITY": "Numeric values differ from the NIV reading; the original language has no explicit "
+                          "number here, so NIV is guidance only.",
+    "MIXED_AUTHORITY": "Numeric values differ across a bridged group whose expected values mix original-language "
+                       "and NIV-only readings.",
+    "ATTESTED_VARIANT_READING": "The WIP follows a registered alternate (textual-variant) reading; confirm the "
+                                "choice and the required footnote.",
+    "OL_NORMALIZED_UNDOCUMENTED": "Numeric values differ from an index reading normalized away from the literal "
+                                  "original-language tokens without a token record.",
+    "OL_NORMALIZATION_DIFFERENCE": "Numeric values match the original-language tokens before the index's "
+                                   "documented normalization.",
+    "MATCHES_SECONDARY_AUTHORITY": "Numeric values differ from the original-language reading but match the NIV.",
+    "CONVENTION_EDGE_CASE": "The only difference is extra ordinal, multiplier, percentage or approximate values.",
+    "NO_INDEXED_VALUES": "The index lists this coordinate without numeric values, but the WIP has numbers.",
+    "PROVISIONAL_INDEX": "Numeric values differ from a rebuilt index value that is not yet reviewed.",
+    "APPARATUS_VARIANT": "Numeric values differ where the textual apparatus records a number variant.",
+}
+
+
+def _finding_message(comparison: object) -> str:
+    """Describe why one FAIL or NEEDS_REVIEW comparison became a finding."""
+    kind = str(comparison.review_context.get("kind") or "VALUE_DIFFERENCE")
+    return _MESSAGES.get(kind, _MESSAGES["VALUE_DIFFERENCE"])
 
 
 def group_summary(groups: tuple[GroupResult, ...], *, checks: Mapping[str, bool], findings_count: int) -> dict[str, int]:
@@ -144,6 +192,7 @@ def group_summary(groups: tuple[GroupResult, ...], *, checks: Mapping[str, bool]
         "failures": outcomes.count("FAIL"),
         "needs_review": outcomes.count("NEEDS_REVIEW"),
         "not_assessed": outcomes.count("NOT_ASSESSED"),
+        "not_indexed": outcomes.count("NOT_INDEXED"),
         "noteworthy_notes": sum(len(group.notes) for group in groups) if checks["footnote_review"] else 0,
         "extraction_complete": sum(group.extraction.status == "COMPLETE" for group in groups),
         "extraction_partial": sum(group.extraction.status == "PARTIAL" for group in groups),
@@ -215,7 +264,8 @@ def _validate_fraction(value: object) -> None:
 def _validate_extraction(value: object) -> Mapping[str, object]:
     """Require the simplified extraction document shape."""
     raw = _require_mapping(value, "extraction", "NCA_RESULT_SCHEMA_INVALID")
-    _require_keys(raw, {"status", "limitations", "values"}, "extraction")
+    _require_keys(raw, {"status", "limitations", "values", "kinds", "surfaces", "spans", "counts", "counts_en",
+                        "origins", "issues"}, "extraction")
     if raw["status"] not in EXTRACTION_STATUSES:
         raise _error("Extraction status is unsupported.", "NCA_RESULT_SCHEMA_INVALID")
     if not isinstance(raw["limitations"], list) or any(not isinstance(v, str) for v in raw["limitations"]):
@@ -224,6 +274,18 @@ def _validate_extraction(value: object) -> Mapping[str, object]:
         raise _error("Extraction values must be an array.", "NCA_RESULT_SCHEMA_INVALID")
     for value in raw["values"]:
         _validate_fraction(value)
+    if not isinstance(raw["kinds"], list) or (raw["kinds"] and (
+            len(raw["kinds"]) != len(raw["values"]) or any(kind not in VALUE_KINDS for kind in raw["kinds"]))):
+        raise _error("Extraction kinds must be empty or one known kind per value.", "NCA_RESULT_SCHEMA_INVALID")
+    for name in ("surfaces", "counts", "counts_en", "origins"):
+        if not isinstance(raw[name], list) or (raw[name] and len(raw[name]) != len(raw["values"])) \
+                or any(not isinstance(item, str) for item in raw[name]):
+            raise _error(f"Extraction {name} must be empty or one string per value.", "NCA_RESULT_SCHEMA_INVALID")
+    if not isinstance(raw["spans"], list) or (raw["spans"] and len(raw["spans"]) != len(raw["values"])) or any(
+            not isinstance(span, list) or len(span) != 2 or not all(type(x) is int for x in span) for span in raw["spans"]):
+        raise _error("Extraction spans must be empty or one [start, end] per value.", "NCA_RESULT_SCHEMA_INVALID")
+    if not isinstance(raw["issues"], list) or any(not isinstance(item, str) for item in raw["issues"]):
+        raise _error("Extraction issues must be an array of strings.", "NCA_RESULT_SCHEMA_INVALID")
     return raw
 
 
@@ -235,7 +297,7 @@ def _validate_comparison(value: object) -> Mapping[str, object]:
         raise _error("Comparison outcome is unsupported.", "NCA_RESULT_SCHEMA_INVALID")
     if raw["mode"] not in COMPARISON_MODES:
         raise _error("Comparison mode is unsupported.", "NCA_RESULT_SCHEMA_INVALID")
-    if raw["authority"] not in {"OL", "NIV", "NONE"}:
+    if raw["authority"] not in _AUTHORITIES:
         raise _error("Comparison authority is unsupported.", "NCA_RESULT_SCHEMA_INVALID")
     for field in ("wip_values", "expected_values"):
         if not isinstance(raw[field], list):
@@ -254,7 +316,8 @@ def _validate_group(value: object, allowed_evidence_ids: set[str]) -> Mapping[st
     raw = _require_mapping(value, "group", "NCA_RESULT_SCHEMA_INVALID")
     _require_keys(
         raw,
-        {"unit_id", "projection_status", "western_references", "target_references", "extraction", "comparison", "limitations", "notes"},
+        {"unit_id", "projection_status", "western_references", "target_references", "extraction", "evidence",
+         "comparison", "limitations", "notes"},
         "group",
     )
     if not isinstance(raw["unit_id"], str) or not raw["unit_id"]:
@@ -265,6 +328,9 @@ def _validate_group(value: object, allowed_evidence_ids: set[str]) -> Mapping[st
         if not isinstance(raw[field], list) or any(not isinstance(v, str) or not v for v in raw[field]):
             raise _error(f"Group {field} must be an array of non-empty strings.", "NCA_RESULT_SCHEMA_INVALID")
     _validate_extraction(raw["extraction"])
+    evidence = _require_mapping(raw["evidence"], "group evidence", "NCA_RESULT_SCHEMA_INVALID")
+    if set(evidence) != {"wip_text"} or not isinstance(evidence["wip_text"], str):
+        raise _error("Group evidence must carry the WIP verse text.", "NCA_RESULT_SCHEMA_INVALID")
     _validate_comparison(raw["comparison"])
     if not isinstance(raw["limitations"], list) or any(not isinstance(v, str) for v in raw["limitations"]):
         raise _error("Group limitations must be an array of strings.", "NCA_RESULT_SCHEMA_INVALID")
@@ -379,12 +445,8 @@ def validate_numbers_result(
     validated_groups = [_validate_group(group, allowed) for group in groups]
     actual_ids = [group["unit_id"] for group in validated_groups]
     findings = _validate_findings(raw["findings"], allowed, groups=validated_groups)
-    required_evidence_complete = all(
-        group["extraction"]["status"] == "COMPLETE"
-        and (
-            not checks["number_accuracy"]
-            or group["comparison"]["outcome"] in {"PASS", "FAIL"}
-        )
+    required_evidence_complete = not checks["number_accuracy"] or all(
+        group_evidence_complete(group["comparison"]["outcome"], group["extraction"]["status"])
         for group in validated_groups
     )
     _validate_coverage(
@@ -419,6 +481,7 @@ def group_summary_document(groups: list[Mapping[str, object]], checks: Mapping[s
         "failures": outcomes.count("FAIL"),
         "needs_review": outcomes.count("NEEDS_REVIEW"),
         "not_assessed": outcomes.count("NOT_ASSESSED"),
+        "not_indexed": outcomes.count("NOT_INDEXED"),
         "noteworthy_notes": sum(len(group["notes"]) for group in groups) if checks["footnote_review"] else 0,
         "extraction_complete": sum(group["extraction"]["status"] == "COMPLETE" for group in groups),
         "extraction_partial": sum(group["extraction"]["status"] == "PARTIAL" for group in groups),

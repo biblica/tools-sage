@@ -21,7 +21,7 @@ from .reference import REFERENCE_PARSER_VERSION
 from .resources import reference_package_path, resolve_reference_package
 from .scope import project_scope
 from .style import load_style_profile, validate_style_profile
-from .target import target_units
+from .target import content_advisories, target_units
 from .transport import StreamInput
 
 
@@ -41,6 +41,8 @@ class ExecutionInputs:
     policy_bytes: bytes = b""
     contract_components: Mapping[str, bytes] = field(default_factory=dict)
     evidence_policy: Mapping[str, object] = field(default_factory=dict)
+    # Book-level content problems (unreadable book, markup outside any verse); reported, never blocking.
+    content_advisories: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         """Require concrete immutable model coverage and copy nested source evidence."""
@@ -143,6 +145,7 @@ def prepare_execution_inputs(
     # accuracy only -- see numbers/hybrid.py); only body units are coverage.
     scope = parse_scope(run.scope)
     body: list[TargetUnit] = []
+    advisories: list[str] = []
     documents: dict[str, Mapping[str, object]] = {}
     for relative, digest in sorted(wip["files"].items()):
         try:
@@ -154,6 +157,7 @@ def prepare_execution_inputs(
             raise ValidationError("NCA sealed USJ changed", code="NCA_WIP_SNAPSHOT_STALE")
         documents[digest] = raw
         body.extend(target_units(raw, source_sha256=digest))
+        advisories.extend(content_advisories(raw))
     service = VersificationService(config)
     projected, expected_refs = project_scope(
         tuple(body), scope=scope, target_schema=service.project_schema(wip["project_id"]),
@@ -172,7 +176,8 @@ def prepare_execution_inputs(
     limits = yaml.safe_load((config.root / 'system/config/workflows/nca/profile.yml').read_text())['evidence_policies']['default']
     return ExecutionInputs(bundle, style_document, sealed, projected, (),
                            expected_ids, tuple(expected_refs), documents, run.scope,
-                           (run.root / 'check-policy.json').read_bytes(), contracts, limits)
+                           (run.root / 'check-policy.json').read_bytes(), contracts, limits,
+                           tuple(dict.fromkeys(advisories)))
 
 
 def reference_restrictions(policy: Mapping[str, object]) -> tuple[str, ...]:
@@ -211,7 +216,7 @@ def build_inventory(inputs: ExecutionInputs) -> ScopeInventory:
         target = projected.target
         # Missing placeholders remain coverage, even when a nearby physical note
         # is also associated with that absence by the projection authority.
-        if target.target_references and any(
+        if target.target_references and not target.content_issues and any(
             inputs.bundle.lookup(ref) is not None for ref in projected.western_references
         ):
             streams.extend(streams_for_target(target, inputs.source_documents[target.source_sha256],
@@ -234,9 +239,8 @@ def plan_extraction(inputs: ExecutionInputs, inventory: ScopeInventory | None = 
 
     inventory = inventory if inventory is not None else build_inventory(inputs)
     optimization = validate_optimization_policy(inputs.policy['optimization'])
-    # Only BODY streams feed a group's comparison (numbers/hybrid.py); presentation_consistency
-    # is an accepted no-op check-policy toggle (see numbers/results.py), so its former
-    # NOTE_STYLE/HEADING_STYLE streams are never planned -- nothing would consume them.
+    # Only BODY streams feed a group's comparison (numbers/hybrid.py); NOTE_STYLE/HEADING_STYLE
+    # streams are never planned -- nothing consumes them.
     streams = tuple(value for value in inventory.stream_inputs if value.purpose == 'BODY')
     return streams, plan_batches(streams, policy=EvidencePolicy.from_mapping(inputs.evidence_policy),
                                 max_units=optimization['extraction_batch_max_units'])

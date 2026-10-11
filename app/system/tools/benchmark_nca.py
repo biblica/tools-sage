@@ -49,7 +49,9 @@ from sage.executors import (  # noqa: E402
 )
 from sage.jobs import JobStore  # noqa: E402
 from sage.numbers.engine import evaluate_optimized_run  # noqa: E402
-from sage.numbers.execution import ExecutionInputs, build_inventory, prepare_execution_inputs  # noqa: E402
+from sage.numbers.batching import split_batch  # noqa: E402
+from sage.numbers.execution import ExecutionInputs, build_inventory, plan_extraction, prepare_execution_inputs  # noqa: E402
+from sage.numbers.extraction import local_input_id  # noqa: E402
 from sage.numbers.model_tasks import NcaModelTasks  # noqa: E402
 from sage.numbers.models import ProjectedUnit, ReferenceBundle, ReferenceRow, TargetUnit  # noqa: E402
 from sage.numbers.policy import _plain as _plain_evidence, load_nca_run_snapshot, phase_contract_manifest  # noqa: E402
@@ -124,7 +126,7 @@ def _build_reference_bundle(seed: ReferenceBundle, cases: Sequence[Mapping[str, 
         values = tuple(Fraction(str(value)) for value in row["values"])
         rows[ref] = ReferenceRow(
             western_reference=ref, ol_reference=row["ol_reference"], language=str(row["language"]),
-            ol_text=str(row["text"]), ol_values=values, niv_text=str(row["text"]), niv_values=values,
+            ol_text=str(row["text"]), ol_values=values, bsb_text=str(row["text"]), niv_values=values,
             metadata={"SOURCE_IDS": "SYNTHETIC-SOURCE"},
         )
     return ReferenceBundle(
@@ -182,6 +184,8 @@ class RecordedTransport:
         """Index literal case evidence and start an empty ProviderRequest ledger."""
         self._cases = {str(case["case_id"]): case for case in cases}
         self.owners: dict[str, str] = {}
+        # batch_id -> controller input IDs in batch order; payloads carry batch-local IDs.
+        self.members: dict[str, tuple[str, ...]] = {}
         self.fault = fault
         self.requests: list[ProviderRequest] = []
         self.extraction_attempts = 0
@@ -211,19 +215,33 @@ class RecordedTransport:
             return ProviderResponse(provider="codex", model="gpt-5.6-sol", reasoning_effort="medium",
                 content="{invalid", metadata={"request_id": f"recorded-{len(self.requests)}"})
         items = []
+        local = dict(zip((local_input_id(index) for index in range(len(self.members[payload["batch_id"]]))),
+                         self.members[payload["batch_id"]]))
         for supplied in payload["work_units"]:
-            case = self._cases[self.owners[supplied["input_id"]]]
+            case = self._cases[self.owners[local[supplied["input_id"]]]]
             if self.fault in {"unsupported", "partial"}:
                 items.append({"input_id": supplied["input_id"], "status": self.fault.upper(),
-                    "limitations": ["Recorded language evidence limitation"], "values": []})
+                    "limitations": ["Recorded language evidence limitation"], "numbers": []})
             else:
                 items.append({"input_id": supplied["input_id"], "status": "COMPLETE", "limitations": [],
-                    "values": list(case["extracted_values"])})
+                    "numbers": [{"text": supplied["text"], "value": value, "kind": "CARDINAL", "counts": "",
+                                 "counts_en": ""} for value in case["extracted_values"]]})
         raw = {"schema_version": "1.0", "phase": "EXTRACTION", "batch_id": payload["batch_id"], "work_units": items}
         content = json.dumps(raw, ensure_ascii=False, sort_keys=True)
         self.requests.append(request)
         return ProviderResponse(provider="codex", model="gpt-5.6-sol", reasoning_effort="medium",
             content=content, metadata={"request_id": f"recorded-{len(self.requests)}"})
+
+
+def _batch_members(batches) -> dict[str, tuple[str, ...]]:
+    """Every planned batch and its deterministic bisections, keyed by batch ID."""
+    members: dict[str, tuple[str, ...]] = {}
+    pending = list(batches)
+    while pending:
+        batch = pending.pop()
+        members[batch.batch_id] = tuple(value.input_id for value in batch.inputs)
+        pending.extend(split_batch(batch))
+    return members
 
 
 def governance(tasks: NcaModelTasks) -> dict[str, object]:
@@ -232,13 +250,13 @@ def governance(tasks: NcaModelTasks) -> dict[str, object]:
     request_contracts = {}
     for attempt in tasks.attempts:
         envelope = json.loads(attempt.request["prompt"])
-        if envelope["task_version"] != "nca-extraction-1.0":
+        if envelope["task_version"] != "nca-extraction-3.0":
             raise ValueError("Benchmark request used an unexpected task version")
         request_contracts[envelope["phase"]] = {
             "task_version": envelope["task_version"], "skill_sha256": _sha256(envelope["skill_contract"].encode()),
             "schema_sha256": _sha256(_canonical_bytes(_plain_evidence(attempt.request["schema"]))),
         }
-    contract = {"phase_versions": {"EXTRACTION": "nca-extraction-1.0"}, "installed_manifest": manifest, "request_contracts": request_contracts}
+    contract = {"phase_versions": {"EXTRACTION": "nca-extraction-3.0"}, "installed_manifest": manifest, "request_contracts": request_contracts}
     return {"status": "VALIDATED", "contract_sha256": _sha256(_canonical_bytes(contract)),
         "route_sha256": _sha256(_canonical_bytes(dict(tasks.route_snapshot))), **contract}
 
@@ -276,7 +294,7 @@ def run_synthetic(cases_path: Path, *, mode: str = "UNORDERED", fault: str = "no
         projected_units.append(projected)
     projected_units = tuple(projected_units)
     transport = RecordedTransport(cases, fault=fault)
-    checks = {"number_accuracy": True, "presentation_consistency": True, "footnote_review": False}
+    checks = {"number_accuracy": True, "footnote_review": False}
     if checkpoint_root is not None:
         checkpoint_root = checkpoint_root.resolve()
         if resume_only and not checkpoint_root.is_dir():
@@ -302,6 +320,7 @@ def run_synthetic(cases_path: Path, *, mode: str = "UNORDERED", fault: str = "no
                 {name: (APP_ROOT / name).read_bytes() for name in contracts["files"]})
             inventory = build_inventory(inputs)
             transport.owners.update({x.input_id: x.owner_unit_id for x in inventory.stream_inputs})
+            transport.members.update(_batch_members(plan_extraction(inputs, inventory)[1].batches))
             task_root = Path(data_home) / "task"
             task_root.mkdir(exist_ok=True)
             fingerprint = _sha256(b"nca-simplified-benchmark")

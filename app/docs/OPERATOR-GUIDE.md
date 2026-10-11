@@ -125,7 +125,7 @@ supplies explicit conflict lineage, competing conclusions are retained and marke
 `HUMAN_REVIEW_REQUIRED`; SAGE never chooses one silently. Reports are never written into a
 Paratext Project.
 
-Every new final BIC/RTC/STC report includes an Execution section derived from immutable task execution
+Every new final BIC/RTC/STC/NCA report includes an Execution section derived from immutable task execution
 receipts. It records the actual Skill, provider, model, provider-native reasoning, routing mode, and
 task count; a later recommendation never replaces historical execution evidence. Report composition,
 coverage aggregation, filenames, and publication are deterministic Python operations and are not sent
@@ -167,4 +167,6 @@ Missing comparison coordinates, custom-versification differences, and similar us
 
 ## NCA numbers review
 
-NCA binds one WIP Project, the bundled qualified numbers reference, and an optional configured Number Style Profile. A standard installation requires no NCA reference archive import; additional qualified packages may be selected explicitly. Accuracy, presentation, and footnote checks are independent Run switches; presentation produces a descriptive Number Usage Report, with approved-rule checks when a style profile is selected. Omit the stylesheet to run numeric and footnote review without configuring one. See the [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) for setup, outcomes, and coverage limits. NCA never modifies Scripture or Paratext Notes XML.
+NCA binds one WIP Project, the bundled typed numbers reference (`SAGE_NUMBERS_TYPED_2026-10-09`: original-language values from MACULA Hebrew/Greek, with the NIV numbers as secondary evidence and verse text quoted from the public-domain BSB), and an optional Number Style Profile. A standard installation requires no NCA reference archive import; additional qualified packages may be selected explicitly. Number accuracy and footnote review are the two independent Run switches. Without a style profile (**Use standard language profile data**), NCA reconstructs the translation's own number style; with one (**Upload style data from template**), it reports every variance from it.
+
+Findings are FAIL (clear errors: `VALUE_DIFFERENCE`, `WRONG_ASSOCIATION`, `MALFORMED_NUMERAL`, `NUMBER_NOT_IN_SOURCE`) or NEEDS_REVIEW. Text-critical decisions are listed separately with cited apparatus evidence. NCA never stops a Run on Scripture content; damaged verses report `NOT_ASSESSED`. NCA publishes per-chapter action reports under `localdata/reports/<job-id>/<BOOK>/<CCC>/` in the same layout as RTC/STC, plus `<run>_NUMBER-STYLE.md` at the Job report root. See the [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) for setup, outcomes, and coverage limits. NCA never modifies Scripture or Paratext Notes XML.

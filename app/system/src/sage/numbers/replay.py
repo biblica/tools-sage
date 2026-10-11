@@ -489,9 +489,15 @@ class PhaseStore:
                 results.append({'key': key.to_dict(), 'diagnostic': value['artifact']})
             return tuple(results)
 
-    def _evidence(self, checkpoints: Mapping[str, PhaseKey], validate_phase: Callable) -> dict[str, object]:
-        """Require exactly the caller's current checkpoint identities and revalidate each."""
-        _require(isinstance(checkpoints, Mapping) and bool(checkpoints), 'Publication requires checkpoints')
+    def _evidence(self, checkpoints: Mapping[str, PhaseKey], validate_phase: Callable,
+                  allow_empty: bool = False) -> dict[str, object]:
+        """Require exactly the caller's current checkpoint identities and revalidate each.
+
+        ``allow_empty`` is only for a plan with no model call at all (nothing in scope could be
+        extracted); the final validator still derives the whole result from the current scope.
+        """
+        _require(isinstance(checkpoints, Mapping) and (bool(checkpoints) or allow_empty),
+                 'Publication requires checkpoints')
         ledger = self._ledger()
         evidence = {}
         for checkpoint, key in checkpoints.items():
@@ -551,14 +557,15 @@ class PhaseStore:
                 os.close(descriptor)
 
     def prepare_publication(self, output: Mapping[str, object], receipt: Mapping[str, object], *,
-                            checkpoints: Mapping[str, PhaseKey], validate_phase: Callable, validate_final: Callable) -> str:
+                            checkpoints: Mapping[str, PhaseKey], validate_phase: Callable, validate_final: Callable,
+                            allow_empty: bool = False) -> str:
         """Durably stage both canonical byte payloads and their checkpoint-bound manifest.
 
         The final validator must derive or reconcile both objects from revalidated
         checkpoint evidence. A schema-only validator is insufficient authority.
         """
         with self._lock():
-            evidence = self._evidence(checkpoints, validate_phase)
+            evidence = self._evidence(checkpoints, validate_phase, allow_empty)
             payloads = {}
             for name, value in (('output', output), ('receipt', receipt)):
                 payloads[name] = (json.dumps(_decode(_canonical(value)), ensure_ascii=False, indent=2, sort_keys=True) + '\n').encode('utf-8')
@@ -585,7 +592,7 @@ class PhaseStore:
             return _digest(_canonical(manifest))
 
     def recover_publication(self, *, checkpoints: Mapping[str, PhaseKey], validate_phase: Callable,
-                            validate_final: Callable) -> object | None:
+                            validate_final: Callable, allow_empty: bool = False) -> object | None:
         """Verify both staged files and current evidence before finishing canonical writes."""
         with self._lock():
             manifest_path = self._path(_PHASE_ROOT + '/publication/manifest.json')
@@ -596,7 +603,7 @@ class PhaseStore:
                                {'schema_version', 'task_fingerprint', 'checkpoints', 'files'})
             _require(manifest['schema_version'] == _VERSION and manifest['task_fingerprint'] == self.task_fingerprint,
                      'Publication task or version differs')
-            evidence = self._evidence(checkpoints, validate_phase)
+            evidence = self._evidence(checkpoints, validate_phase, allow_empty)
             _require(manifest['checkpoints'] == {checkpoint: key.to_dict() for checkpoint, key in checkpoints.items()},
                      'Current publication checkpoint set differs')
             files = _object(manifest['files'], {'output', 'receipt'})

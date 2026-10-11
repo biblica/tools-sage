@@ -97,9 +97,9 @@
       "source_version": "2026-09-09",
       "original_file": "system/skills/nca-numbers/references/ORIGINAL-NCA-NUMBERS-CONTRACT.md",
       "original_sha256": "6b2a566ffc34407e89be2e474cb343f68093db345a2cf8617f1191705d7c9243",
-      "adapted_sha256": "b2e31afd9970f4c051178ca5e7df1a3dfb3783540e092dc4d256c8c90ba310f6",
+      "adapted_sha256": "aee4c952c45e4cbb7cdc51b9f6990b0f321ea4e6d772d0f3dbb95b92a87a8dff",
       "qualification_status": "VALIDATED",
-      "transformation_summary": "Bounded target extraction of ordered numeric values only, pinned SAGE routing, and deterministic evidence validation. Target-only batch capsule with independent input coverage and one parent receipt. Comparison against the indexed reference, coverage, and reports are all local to SAGE, not the model."
+      "transformation_summary": "Bounded target extraction of ordered numbers (exact text, value, counting-convention kind, counted item), pinned SAGE routing, and deterministic evidence validation. Target-only batch capsule with independent input coverage and one parent receipt. Comparison against the indexed reference, coverage, and reports are all local to SAGE, not the model."
     },
     "rtc-focused-check": {
       "workflow": "saw",

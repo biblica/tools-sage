@@ -18,19 +18,19 @@ from .test_nca_jobs import _prepare_nca_workspace, _route
 
 @pytest.mark.parametrize(
     "values",
-    list(itertools.product((False, True), repeat=3)),
+    list(itertools.product((False, True), repeat=2)),
 )
 def test_all_toggle_combinations_require_at_least_one_enabled(
     make_workspace,
     monkeypatch: pytest.MonkeyPatch,
-    values: tuple[bool, bool, bool],
+    values: tuple[bool, bool],
 ) -> None:
     """Every exact NCA toggle combination is accepted except all OFF."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     config, _style_bytes = _prepare_nca_workspace(root)
     _route(monkeypatch)
     job = create_nca_job(config, wip="usWIP", package_id="SYNTHETIC_NCA_REFERENCE_1", style_selector="fixture-style/1")
-    checks = dict(zip(("number_accuracy", "presentation_consistency", "footnote_review"), values))
+    checks = dict(zip(("number_accuracy", "footnote_review"), values))
 
     if any(values):
         run = create_nca_run(config, job_id=job.job_id, scope_value="MAT 1", checks=checks)
@@ -41,13 +41,13 @@ def test_all_toggle_combinations_require_at_least_one_enabled(
         assert caught.value.code == "NCA_CHECK_POLICY_ALL_OFF"
 
 
-@pytest.mark.parametrize("presentation", (False, True))
-def test_selected_style_binding_remains_validated_when_presentation_is_off(
+@pytest.mark.parametrize("footnotes", (False, True))
+def test_selected_style_binding_remains_validated_when_footnote_review_is_off(
     make_workspace,
     monkeypatch: pytest.MonkeyPatch,
-    presentation: bool,
+    footnotes: bool,
 ) -> None:
-    """Disabling presentation never bypasses validation of an explicitly bound guide."""
+    """Changing checks never bypasses validation of an explicitly bound guide."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     config, _style_bytes = _prepare_nca_workspace(root)
     _route(monkeypatch)
@@ -60,7 +60,7 @@ def test_selected_style_binding_remains_validated_when_presentation_is_off(
             config,
             job_id=job.job_id,
             scope_value="MAT 1",
-            checks={"presentation_consistency": presentation},
+            checks={"footnote_review": footnotes},
         )
     assert getattr(caught.value, "code", "") in {
         "NCA_STYLE_PROFILE_INVALID",

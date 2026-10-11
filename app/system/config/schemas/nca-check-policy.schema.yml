@@ -6,7 +6,6 @@ controls:
   immutable_run_snapshot: required
   checks:
     number_accuracy: exact_boolean
-    presentation_consistency: exact_boolean
     footnote_review: exact_boolean
     all_off: prohibited
   numeric_comparison_mode: [ORDERED, UNORDERED]

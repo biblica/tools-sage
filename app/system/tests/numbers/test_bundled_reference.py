@@ -1,4 +1,5 @@
 """Bundled NCA references work without an Operator archive import."""
+import csv
 import hashlib
 import json
 import shutil
@@ -9,6 +10,7 @@ import pytest
 
 from sage.errors import ValidationError
 from sage.numbers.reference import load_reference
+from sage.vrs import VerseRef
 from sage.numbers.resources import reference_package_candidates, resolve_reference_package
 from .test_reference import FIXTURE
 
@@ -59,17 +61,35 @@ def test_bundled_reference_fails_closed(tmp_path, damage):
 
 
 def test_shipped_reference_preserves_original_table_bytes(package_root):
-    """The runtime package retains tested authoritative data and original provenance."""
-    pin = json.loads((package_root / 'system/config/numbers-reference.json').read_text())
-    path = package_root / pin['path']
+    """The 2026-09-09 package (kept for A/B) retains tested authoritative data and original provenance.
+
+    Tables with NIV_TEXT are the recorded NIV redaction of the original (NIV fair use: at most 500
+    verses); every other table keeps its original bytes.
+    """
+    path = package_root / 'system/resources/numbers/2026-09-09'
     source_manifest = json.loads((path / 'provenance/ORIGINAL_FILE_MANIFEST.json').read_text())
     original = {item['path']: item['sha256'] for item in source_manifest['files']}
+    redaction = {item['path']: item for item in
+                 json.loads((path / 'provenance/NIV_REDACTION.json').read_text())['files']}
+    assert set(redaction) == {'reference/canonical_number_index.tsv',
+                              'reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv',
+                              'reference/unit_conversion_registry.tsv'}
     for table in (path / 'reference').iterdir():
-        assert hashlib.sha256(table.read_bytes()).hexdigest() == original[table.relative_to(path).as_posix()]
-    bundle = resolve_reference_package(SimpleNamespace(root=package_root))
+        relative = table.relative_to(path).as_posix()
+        digest = hashlib.sha256(table.read_bytes()).hexdigest()
+        if relative in redaction:
+            assert redaction[relative]['original_sha256'] == original[relative]
+            assert redaction[relative]['redacted_sha256'] == digest
+            assert not any(row['NIV_TEXT'] for row in csv.DictReader(table.open(encoding='utf-8'), delimiter='\t'))
+        else:
+            assert digest == original[relative]
+    bundle = load_reference(path)
     assert len(bundle.rows) == 6244
     assert sum(len(row.ol_values) for row in bundle.rows.values()) == 6800
     assert not list(path.rglob('*.zip'))
+    ezra = bundle.rows[VerseRef('EZR', 1, 10)]
+    assert [item['LAYER'] for item in ezra.ol_normalizations] == ['FINAL_OL_VERSE_OVERRIDE']
+    assert sum(bool(row.ol_normalizations) for row in bundle.rows.values()) > 0
 
 
 def test_menu_uses_only_bundled_package_without_import_prompt(make_workspace):
@@ -110,21 +130,22 @@ def test_default_job_run_and_task_seal_core_reference(make_workspace, monkeypatc
 
 
 def test_reference_management_keeps_additional_import_accessible(make_workspace):
-    """Management exposes archive import even with just the bundled package."""
-    from sage.nca_menu import workflow_menu
+    """Manage NCA JOBs exposes archive import even with just the bundled package."""
+    from sage.job_menus import manage_jobs
     from ..test_primary_workflow_menus import _center
     root = make_workspace(configured=True, qualification_status='VALIDATED')
     install_fixture_bundle(root)
     center, _ = _center(root)
     prompts = []
 
-    def choose(title, options):
+    def choose(title, options, **_kwargs):
         """Open package management, then leave both menus."""
         prompts.append((title, dict(options)))
-        return '4' if len(prompts) == 1 else 'B'
+        return '6' if len(prompts) == 1 else 'B'
 
     center.io.choose = choose
-    workflow_menu(center)
+    manage_jobs(center, 'nca')
+    assert prompts[0][1]['6'] == 'NCA reference packages'
     assert prompts[1][0] == 'NCA reference package'
     assert 'Import additional NCA reference archive' in prompts[1][1].values()
 

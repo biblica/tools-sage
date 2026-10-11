@@ -56,7 +56,7 @@ def test_no_style_run_and_task_keep_sealed_absence_after_later_import(make_works
     policy = load_nca_run_snapshot(run.root)
     assert policy['number_style'] == {'selector': None, 'sha256': None, 'profile_id': None,
                                        'version': None, 'language': 'en', 'script': 'Latn'}
-    assert policy['checks']['presentation_consistency'] is True
+    assert set(policy['checks']) == {'number_accuracy', 'footnote_review'}
     assert not (run.root / 'profiles/number-style.yml').exists()
     source = root / 'later-guide.yml'
     source.write_bytes(guide_bytes)
@@ -88,7 +88,7 @@ def test_no_guide_extraction_preserves_ambiguous_interpretation():
         batch, parsing_conventions=extraction._parsing_conventions(validate_style_profile(None)))
     assert payload['parsing_conventions'] == {}
     interpreted = extraction._validated_extraction_item(
-        {'status': 'PARTIAL', 'limitations': ['Grouping or decimal separator is unresolved'], 'values': []})
+        {'status': 'PARTIAL', 'limitations': ['Grouping or decimal separator is unresolved'], 'numbers': []})
     assert interpreted.status == 'PARTIAL'
     assert interpreted.values == ()
     assert interpreted.limitations == ('Grouping or decimal separator is unresolved',)
@@ -101,9 +101,8 @@ def test_menu_can_remove_selected_guide_before_run(make_workspace):
     config, _ = _prepare_nca_workspace(root)
     job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1',
                          style_selector='fixture-style/1')
-    center, _ = _center(root, '5', '3', '7')
-    assert choose_checks(center, job) == {'number_accuracy': True, 'presentation_consistency': True,
-                                         'footnote_review': True}
+    center, _ = _center(root, '4', '2', '6')
+    assert choose_checks(center, job) == {'number_accuracy': True, 'footnote_review': True}
     assert center.store.load_job(job.job_id, tool='nca').profiles == {}
 
 
@@ -124,7 +123,7 @@ def test_menu_skip_creates_job_while_back_does_not(make_workspace, monkeypatch):
     root = make_workspace(configured=True, qualification_status='VALIDATED')
     config, _ = _prepare_nca_workspace(root)
     monkeypatch.setattr('sage.nca_menu.choose_package', lambda _center: 'SYNTHETIC_NCA_REFERENCE_1')
-    for choice, expected in (('a', None), ('3', {})):
+    for choice, expected in (('a', None), ('2', {})):
         center, _ = _center(root, choice)
         monkeypatch.setattr(center, 'choose_or_add_resource', lambda *_args: config.project('usWIP'))
         monkeypatch.setattr(center, '_write_job_ai_routing', lambda *_args: None)
@@ -168,14 +167,15 @@ def test_cli_existing_job_rejects_explicit_empty_style_selector(make_workspace, 
 
 @pytest.mark.parametrize('has_guide', [False, True])
 def test_menu_explicitly_skips_style_and_back_cancels(make_workspace, has_guide):
-    """Continue without stylesheet remains available even with one candidate."""
+    """Using the standard language profile data remains available even with one candidate."""
     from sage.nca_menu import choose_style
     root = make_workspace(configured=True, qualification_status='VALIDATED')
     config, _ = _prepare_nca_workspace(root)
     if not has_guide:
         (storage_layout(root).styleguides_root / 'numbers/fixture-style/1.yml').unlink()
-    center, output = _center(root, '3' if has_guide else '2')
+    center, output = _center(root, '2' if has_guide else '1')
     assert choose_style(center, config.project('usWIP')) == ''
-    assert 'Continue without stylesheet' in output.getvalue()
+    assert 'Use standard language profile data' in output.getvalue()
+    assert 'Upload style data from template' in output.getvalue()
     center, _ = _center(root, 'a')
     assert choose_style(center, config.project('usWIP')) is None

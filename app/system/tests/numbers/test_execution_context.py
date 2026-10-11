@@ -133,12 +133,12 @@ def test_context_uses_sealed_checks_after_job_defaults_change(make_workspace, mo
 
     _root, config, job, run = _run(make_workspace, monkeypatch)
     revised = JobStore(config.root, config.settings_path).revise_job(
-        job, defaults={"checks": {"number_accuracy": True, "presentation_consistency": False, "footnote_review": False}}
+        job, defaults={"checks": {"number_accuracy": True, "footnote_review": False}}
     )
     live_style = storage_layout(config.root).styleguides_root / "numbers/fixture-style/1.yml"
     live_style.unlink()
     inputs = prepare_execution_inputs(config, revised, run, load_nca_run_snapshot(run.root))
-    assert inputs.policy["checks"] == {"number_accuracy": True, "presentation_consistency": True, "footnote_review": True}
+    assert inputs.policy["checks"] == {"number_accuracy": True, "footnote_review": True}
 
 
 def test_creation_and_finalization_each_qualify_once(make_workspace, monkeypatch):

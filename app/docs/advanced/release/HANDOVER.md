@@ -50,4 +50,4 @@ explicit Operator approval.
 
 ## Next development boundary
 
-NCA and SQS are planning work in this checkpoint. NCA is specified as Main Menu #5 after STC, with a required Number Style Profile and three pre-Run toggles. Its current planned reports disclose LLM capability limitations; shared SQS confidence checks are future functionality. No NCA runtime entry is shipped in this Beta.
+NCA and SQS were planning work in the `0.02b1` checkpoint; no NCA runtime entry is shipped in that Beta. **Superseded on the `0.02a3` development branch:** NCA now runs as Main Menu #5 with an optional Number Style Profile, two Run switches (number accuracy, footnote review), and the typed reference package `SAGE_NUMBERS_TYPED_2026-10-08`. See the [NCA Cheat Sheet](../../NCA-CHEAT-SHEET.md) and the [index rebuild summary](nca-index-rebuild/SUMMARY.md). No release-gate receipt exists yet for the typed package (open item). Reports disclose LLM capability limitations; shared SQS confidence checks remain future functionality.

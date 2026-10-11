@@ -1,6 +1,8 @@
 """Project existing SAGE USJ into separate, locatable NCA evidence streams."""
 from __future__ import annotations
 
+from dataclasses import replace
+
 import re
 from collections.abc import Mapping
 from typing import Any
@@ -99,36 +101,61 @@ def _notes(nodes: list[Any], refs: tuple[VerseRef, ...], unit_id: str) -> tuple[
     return tuple(found)
 
 
-def target_units(usj: Mapping[str, object], *, source_sha256: str) -> tuple[TargetUnit, ...]:
-    """Extract exact compiler records plus canonical Psalm superscriptions.
-
-    Parser failures are blocking because dropping damaged content could produce
-    a false all-clear. The caller can preserve the error as incomplete coverage.
-    """
+def content_advisories(usj: Mapping[str, object]) -> tuple[str, ...]:
+    """Book-level content problems no single verse owns (missing book ID, stray markup)."""
     sage = usj.get("sage")
-    if not isinstance(sage, Mapping) or sage.get("errors"):
-        raise ValidationError("NCA requires error-free SAGE USJ compiler records.",
-                              code="NCA_TARGET_PARSE_ERROR",
-                              details={"errors": list(sage.get("errors", [])) if isinstance(sage, Mapping) else []})
-    if not re.fullmatch(r"[0-9a-f]{64}", source_sha256):
-        raise ValidationError("NCA target source hash is invalid.", code="NCA_TARGET_HASH_INVALID")
+    if not isinstance(sage, Mapping):
+        return ("CONTENT_UNREADABLE_BOOK",)
     book = str(sage.get("book_code", ""))
     records = sage.get("verse_records")
     if not isinstance(records, (list, tuple)) or not book or book == "UNK":
-        raise ValidationError("NCA requires book and verse compiler records.", code="NCA_TARGET_PARSE_ERROR")
+        return (f"CONTENT_UNREADABLE_BOOK:{book or 'UNK'}",)
+    owned = {f"{book} {record.get('chapter')}:{record.get('number')}:" for record in records}
+    return tuple(f"CONTENT_MARKUP_ERROR:{book}:{item}" for item in sage.get("errors", ())
+                 if not any(str(item).startswith(prefix) for prefix in owned))
+
+
+def target_units(usj: Mapping[str, object], *, source_sha256: str) -> tuple[TargetUnit, ...]:
+    """Extract exact compiler records plus canonical Psalm superscriptions.
+
+    NCA never stops on Scripture content. A verse with markup errors keeps its unit with
+    ``content_issues`` (reported, not assessed, so damage cannot read as an all-clear); a
+    repeated verse number keeps the first occurrence and flags it; an unreadable book yields no
+    units and a book-level advisory (``content_advisories``).
+    """
+    if not re.fullmatch(r"[0-9a-f]{64}", source_sha256):
+        raise ValidationError("NCA target source hash is invalid.", code="NCA_TARGET_HASH_INVALID")
+    sage = usj.get("sage")
+    if not isinstance(sage, Mapping):
+        return ()
+    book = str(sage.get("book_code", ""))
+    records = sage.get("verse_records")
+    if not isinstance(records, (list, tuple)) or not book or book == "UNK":
+        return ()
     units: list[TargetUnit] = []
-    seen: set[VerseRef] = set()
+    owner: dict[VerseRef, int] = {}
     for record in records:
-        refs = tuple(VerseRef(book, int(record["chapter"]), verse)
-                     for verse in range(int(record["verse_start"]), int(record["verse_end"]) + 1))
-        if not refs or seen.intersection(refs):
-            raise ValidationError("Repeated or invalid NCA target reference.", code="NCA_TARGET_DUPLICATE_REFERENCE")
-        seen.update(refs)
+        try:
+            refs = tuple(VerseRef(book, int(record["chapter"]), verse)
+                         for verse in range(int(record["verse_start"]), int(record["verse_end"]) + 1))
+        except (KeyError, TypeError, ValueError):
+            continue
+        line = int(record.get("line_start", 0) or 0)
+        repeated = [ref for ref in refs if ref in owner]
+        if not refs or repeated:
+            for ref in repeated:
+                first = units[owner[ref]]
+                units[owner[ref]] = replace(first, content_issues=first.content_issues + (
+                    f"CONTENT_DUPLICATE_VERSE:{ref.label()}:line={line}",))
+            continue
         identity = f"{source_sha256}:{book}:{record['chapter']}:{record['number']}"
         nodes = list(record.get("content", []))
+        issues = tuple(f"CONTENT_MARKUP_ERROR:{item}" for item in record.get("parser_errors", ()) or ())
+        for ref in refs:
+            owner[ref] = len(units)
         units.append(TargetUnit(identity, refs, visible_text(nodes), _notes(nodes, refs, identity),
-                                source_sha256, {"line_start": int(record["line_start"]),
-                                                "line_end": int(record["line_end"])}))
+                                source_sha256, {"line_start": line,
+                                                "line_end": int(record.get("line_end", line) or line)}, issues))
     if book == "PSA":
         chapter = 0
         chapter_verse_seen = False
@@ -141,7 +168,7 @@ def target_units(usj: Mapping[str, object], *, source_sha256: str) -> tuple[Targ
                 chapter_verse_seen = False
             elif node.get("marker") == "d" and chapter and not chapter_verse_seen:
                 ref = VerseRef(book, chapter, 0)
-                if ref in seen:
+                if ref in owner:
                     continue
                 nodes = []
                 for child in node.get("content", []):

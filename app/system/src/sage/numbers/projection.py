@@ -1,6 +1,8 @@
 """Western NCA lookup through existing VRS, with explicit coverage gaps."""
 from __future__ import annotations
 
+from dataclasses import replace
+
 from collections import defaultdict
 from hashlib import sha256
 import re
@@ -38,8 +40,12 @@ def _combined(units: tuple[TargetUnit, ...]) -> TargetUnit:
         return units[0]
     ordered = tuple(sorted(units, key=lambda unit: unit.target_references))
     if len({unit.source_sha256 for unit in ordered}) != 1:
-        raise ValidationError("NCA cannot combine target units from different source files.",
-                              code="NCA_PROJECTION_SOURCE_CONFLICT")
+        # One comparison group split across two WIP files is a content problem: report it on
+        # the first file's unit (never stop the Run, never compare half a group).
+        first = ordered[0]
+        return replace(first, content_issues=first.content_issues + (
+            "CONTENT_GROUP_SPLIT_ACROSS_FILES:" + ",".join(ref.label() for unit in ordered
+                                                           for ref in unit.target_references),))
     identity = sha256("\n".join(unit.unit_id for unit in ordered).encode()).hexdigest()
     locator: dict[str, int] = {}
     offset = 0
@@ -54,6 +60,24 @@ def _combined(units: tuple[TargetUnit, ...]) -> TargetUnit:
                       "\n".join(unit.main_text for unit in ordered),
                       tuple(note for unit in ordered for note in unit.notes),
                       ordered[0].source_sha256, locator)
+
+
+def _without_overlaps(units: tuple[TargetUnit, ...]) -> tuple[TargetUnit, ...]:
+    """Keep the first unit for a verse found twice (e.g. in two WIP files) and flag it."""
+    kept: list[TargetUnit] = []
+    owner: dict[VerseRef, int] = {}
+    for unit in units:
+        repeated = [ref for ref in unit.target_references if ref in owner]
+        if repeated:
+            for ref in repeated:
+                first = kept[owner[ref]]
+                kept[owner[ref]] = replace(first, content_issues=first.content_issues + (
+                    f"CONTENT_DUPLICATE_VERSE:{ref.label()}",))
+            continue
+        for ref in unit.target_references:
+            owner[ref] = len(kept)
+        kept.append(unit)
+    return tuple(kept)
 
 
 def project_units(
@@ -98,9 +122,7 @@ def project_units(
         return {key for key in candidates
                 if _valid(key, western_schema) and key not in absences and ref in canonical_for(key)}
 
-    local_refs = [ref for unit in units for ref in unit.target_references]
-    if len(set(local_refs)) != len(local_refs):
-        raise ValidationError("NCA target units overlap before projection.", code="NCA_PROJECTION_DUPLICATE_REFERENCE")
+    units = _without_overlaps(units)
     western_sets: list[set[VerseRef]] = []
     canonical_sets: list[set[VerseRef]] = []
     invalid: set[int] = set()

@@ -50,9 +50,11 @@ class PhaseSession:
         return ModelPhaseResult(value, ModelPhaseReceipt(**artifact['receipt']), artifact['raw_response'], artifact['request_id'])
 
     def execute(self, phase: str, payload: Mapping[str, object], validator: object, *,
-                task_version: str, schema: Mapping[str, object], physical: object) -> object:
+                task_version: str, schema: Mapping[str, object], physical: object,
+                unit_ids: tuple[str, ...] | None = None) -> object:
         """Replay accepted membership or immediately commit one real admitted response."""
-        ids = (tuple(x['input_id'] for x in payload['work_units']) if phase == 'EXTRACTION' else (payload['unit_id'],))
+        ids = unit_ids or (tuple(x['input_id'] for x in payload['work_units']) if phase == 'EXTRACTION'
+                           else (payload['unit_id'],))
         key = PhaseKey.build(phase=phase, task_fingerprint=self.store.task_fingerprint,
             input_ids=ids, input_components={'canonical_phase_payload': canonical(payload)},
             policy_bytes=self.inputs.policy_bytes, route=self.inputs.policy['model_route'],
@@ -76,7 +78,7 @@ class PhaseSession:
         if getattr(self.tasks, 'phase_resume_only', False):
             return self._replay_failure(key)
         try:
-            result = physical(phase, payload, validator, task_version=task_version, schema=schema)
+            result = physical(phase, payload, validator, task_version=task_version, schema=schema, unit_ids=ids)
         except ValidationError as exc:
             try:
                 self.store.record_failure(key, {'code': str(exc.code), 'message': str(exc),
@@ -187,11 +189,11 @@ def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, ru
     from .extraction import _parsing_conventions
     from .model_tasks import extract_batch_with_retries
     from .models import Extraction
-    from .compare import compare_values
-    from .footnotes import noteworthy_note
-    from .results import GroupResult, NumbersResult, group_findings, group_summary
+    from .grouping import evaluate_group, wip_covered_labels
+    from .results import EXCUSED_LIMITATIONS, NumbersResult, group_evidence_complete, group_findings, group_summary
     from .telemetry import summarize_calls
     from .policy import validate_optimization_policy
+    from .style_report import analyze as analyze_style
 
     optimization = validate_optimization_policy(inputs.policy['optimization'])
     checks = inputs.policy['checks']
@@ -215,37 +217,15 @@ def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, ru
             stream.input_id,
             Extraction((), 'UNSUPPORTED', (blocked.get(stream.input_id, 'EXTRACTION_UNAVAILABLE'),)),
         )
-    groups = []
-    for unit in inputs.projected_units:
-        extraction = by_owner.get(unit.target.unit_id, Extraction((), 'UNSUPPORTED', ('MISSING_WIP_OR_EXTRACTION',)))
-        limits = list(extraction.limitations)
-        rows = [inputs.bundle.lookup(ref) for ref in unit.western_references]
-        notes = [note for ref in unit.western_references
-                 if (note := noteworthy_note(ref, bundle=inputs.bundle)) is not None] if checks['footnote_review'] else []
-        if not checks['number_accuracy']:
-            comparison = compare_values((), None, mode=mode)  # NOT_ASSESSED placeholder; check disabled
-        elif extraction.status != 'COMPLETE':
-            comparison = compare_values((), None, mode=mode)
-            limits.append('NUMBER_ACCURACY_EXTRACTION_INCOMPLETE')
-        elif any(row is None for row in rows):
-            comparison = compare_values((), None, mode=mode)
-            limits.append('REFERENCE_NOT_INDEXED')
-        else:
-            # Bridged groups (multiple western_references) compare against the
-            # concatenation of each row's expected values, in reference order.
-            authority_field = 'ol_values' if all(row.ol_values for row in rows) else 'niv_values'
-            expected = tuple(value for row in rows for value in getattr(row, authority_field))
-            combined_row = rows[0] if len(rows) == 1 else type(rows[0])(
-                rows[0].western_reference, rows[0].ol_reference, rows[0].language,
-                rows[0].ol_text, expected if authority_field == 'ol_values' else (),
-                rows[0].niv_text, expected if authority_field == 'niv_values' else (), rows[0].metadata,
-            )
-            comparison = compare_values(extraction.values, combined_row, mode=mode)
-        groups.append(GroupResult(unit, extraction, comparison, tuple(dict.fromkeys(limits)), tuple(notes)))
+    covered = wip_covered_labels(inputs.projected_units)
+    groups = [evaluate_group(unit, inputs=inputs, by_owner=by_owner, checks=checks, mode=mode, covered=covered)
+              for unit in inputs.projected_units]
     local = {g.projected.target.unit_id: group_findings(g) for g in groups}
     findings = tuple(assign_global_finding_ids(local, run_id=run_id, prefix='NUMBERS'))
-    restrictions = list(reference_restrictions(inputs.policy)) + [limit for g in groups for limit in g.limitations]
-    complete = all(g.comparison.outcome in {'PASS', 'FAIL'} for g in groups if checks['number_accuracy'])
+    restrictions = list(reference_restrictions(inputs.policy)) + list(inputs.content_advisories) + [
+        limit for g in groups for limit in g.limitations if limit not in EXCUSED_LIMITATIONS]
+    complete = all(group_evidence_complete(g.comparison.outcome, g.extraction.status)
+                   for g in groups if checks['number_accuracy'])
     coverage = assess_coverage(findings_present=bool(findings), required_evidence_complete=complete,
         restrictions=restrictions, skipped_checks=tuple(sorted(k for k, v in checks.items() if not v)), assessed=bool(groups)).to_dict()
     coverage.update(expected_unit_ids=list(inputs.expected_unit_ids), assessed_unit_ids=[g.projected.target.unit_id for g in groups],
@@ -260,5 +240,7 @@ def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, ru
         calls=[asdict(x) for x in measurements], checkpoints=phases,
         planning={'planned_extraction_calls': len(plan.batches), 'input_ids': [x.input_id for x in streams], 'blocked': blocked,
                   'missing_owner_ids': [x.target.unit_id for x in inputs.projected_units if x.target.unit_id not in by_owner],
-                  'numeric_comparison_mode': mode})
+                  'numeric_comparison_mode': mode},
+        content_advisories=list(inputs.content_advisories),
+        number_style=analyze_style(groups, inputs.style_profile))
     return NumbersResult(tuple(groups), findings, coverage, summary, metrics)

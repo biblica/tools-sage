@@ -5,15 +5,18 @@ controls:
   owner: system/src/sage/numbers/results.py
   workflow: nca
   check_id: NUMBERS
-  checks: [number_accuracy, presentation_consistency, footnote_review]
-  presentation_consistency: accepted_no_op
-  group_required: [unit_id, western_references, target_references, extraction, comparison, limitations, notes]
-  extraction_required: [status, limitations, values]
+  checks: [number_accuracy, footnote_review]
+  group_required: [unit_id, western_references, target_references, extraction, evidence, comparison, limitations, notes]
+  extraction_required: [status, limitations, values, kinds]
+  extraction_statuses: [COMPLETE, PARTIAL, UNSUPPORTED, NOT_REQUIRED]
+  value_kinds: [CARDINAL, ORDINAL, FRACTION, MULTIPLIER, PERCENT, APPROX]
+  evidence_required: [wip_text]
   comparison_required: [outcome, mode, authority, wip_values, expected_values, review_context]
   numeric_encoding: reduced_rational_strings
   comparison_modes: [ORDERED, UNORDERED]
-  comparison_outcomes: [PASS, FAIL, NEEDS_REVIEW, NOT_ASSESSED]
-  comparison_authority: [OL, NIV, NONE]
+  comparison_outcomes: [PASS, FAIL, NEEDS_REVIEW, NOT_ASSESSED, NOT_INDEXED]
+  comparison_authority: [OL, NIV, MIXED, NONE]
+  blocking_fail_requires_authority: OL
   needs_review_requires_review_context: true
   expected_unit_reconciliation: exactly_once
   finding_identity: run_global

@@ -19,6 +19,7 @@ from .test_nca_jobs import _prepare_nca_workspace, _route
 
 
 from sage.numbers.model_tasks import NcaModelTasks as _RealModelTasks
+from .fake_numbers import nums
 
 
 class _OfflineTasks(_RealModelTasks):
@@ -73,7 +74,7 @@ class _EmptyTransport:
         if payload['phase'] != 'EXTRACTION':
             raise ValidationError('offline fixture only supports EXTRACTION', code='NCA_MODEL_PROVIDER_FAILED')
         raw = {'schema_version': '1.0', 'phase': 'EXTRACTION', 'batch_id': payload['batch_id'],
-            'work_units': [{'input_id': x['input_id'], 'status': 'COMPLETE', 'limitations': [], 'values': []} for x in payload['work_units']]}
+            'work_units': [{'input_id': x['input_id'], 'status': 'COMPLETE', 'limitations': [], 'numbers': []} for x in payload['work_units']]}
         return ProviderResponse(provider='codex', content=json.dumps(raw), model='gpt-test', reasoning_effort='high', metadata={})
 
 
@@ -296,7 +297,6 @@ def test_execution_replays_sealed_style_and_policy_after_live_job_changes(
         defaults={
             "checks": {
                 "number_accuracy": True,
-                "presentation_consistency": True,
                 "footnote_review": False,
             }
         },
@@ -313,7 +313,6 @@ def test_execution_replays_sealed_style_and_policy_after_live_job_changes(
     assert executed["status"] == "EXECUTED"
     assert output["check_policy"]["checks"] == {
         "number_accuracy": True,
-        "presentation_consistency": True,
         "footnote_review": True,
     }
 
@@ -364,14 +363,13 @@ def test_execute_rejects_full_route_drift_before_any_model_phase(
     assert DriftedTasks.calls == 0
 
 
-def test_unindexed_target_scope_is_never_extracted_or_flagged(
+def test_unindexed_verse_numeral_is_flagged_without_a_model_call(
     make_workspace, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Scoped coordinates outside the package index are never extracted or flagged as findings.
+    """A digit numeral in a verse the source has no number for is a FAIL (NUMBER_NOT_IN_SOURCE).
 
-    NCA finds incorrectly reported or missing numbers where a number is already known to be
-    expected; it does not scan unindexed coordinates for undiscovered numbers, so even a
-    transport that would supply real numeral evidence here is never actually invoked.
+    SAGE reads it locally: unindexed verses are never sent for model extraction, so even a
+    transport that would supply numeral evidence here is never invoked for them.
     """
     _root, config, job, run = _run(make_workspace, monkeypatch)
     created = create_nca_task(
@@ -389,7 +387,7 @@ def test_unindexed_target_scope_is_never_extracted_or_flagged(
             raw = json.loads(response.content)
             for supplied, returned in zip(payload['work_units'], raw['work_units']):
                 if 'Verse 2.' in supplied['text']:
-                    returned['values'] = ['2']
+                    returned['numbers'] = nums(['2'], '2')
             return replace(response, content=json.dumps(raw))
 
     class UnindexedTasks(_OfflineTasks):
@@ -409,14 +407,16 @@ def test_unindexed_target_scope_is_never_extracted_or_flagged(
     verse_two = next(
         group for group in document["groups"] if group["target_references"] == ["MAT 1:2"]
     )
-    assert verse_two["comparison"]["outcome"] == "NOT_ASSESSED"
-    assert not any(finding["code"] == "NCA_REFERENCE_NOT_INDEXED" for finding in document["findings"])
+    assert verse_two["comparison"]["outcome"] == "FAIL"
+    assert verse_two["comparison"]["review_context"]["kind"] == "NUMBER_NOT_IN_SOURCE"
+    assert any(finding["kind"] == "NUMBER_NOT_IN_SOURCE" for finding in document["findings"])
 
 
-def test_unindexed_empty_target_is_screened_without_a_finding(
+def test_unindexed_verse_is_screened_locally_without_reducing_coverage(
     make_workspace, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A complete empty extraction needs no reference row and does not reduce coverage."""
+    """An unindexed verse needs no model call; its digit numerals are read locally (the fixture
+    verse "Verse 2." carries one) and coverage stays complete."""
     _root, config, job, run = _run(make_workspace, monkeypatch)
     created = create_nca_task(
         config, job_id=job.job_id, run_id=run.run_id, scope_value="MAT 1"
@@ -431,11 +431,10 @@ def test_unindexed_empty_target_is_screened_without_a_finding(
     verse_two = next(
         group for group in document["groups"] if group["target_references"] == ["MAT 1:2"]
     )
-    assert verse_two["comparison"]["outcome"] == "NOT_ASSESSED"
-    assert verse_two["extraction"]["status"] == "UNSUPPORTED"
-    assert not any(
-        "MAT 1:2" in finding.get("target_references", []) for finding in document["findings"]
-    )
+    assert verse_two["comparison"]["outcome"] == "FAIL"
+    assert verse_two["extraction"]["surfaces"] == ["2"]
+    # Not-indexed verses are a coverage fact, not an evidence gap.
+    assert document["coverage"]["coverage"] != "PARTIAL"
 
 
 def test_concurrent_execution_invokes_one_provider_pipeline(
@@ -666,7 +665,7 @@ def test_restart_cannot_overtake_inflight_task_execution(
 def test_finalize_publishes_both_sealed_report_languages(
     make_workspace, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A bilingual Job produces primary and secondary reports from task-sealed settings."""
+    """A bilingual Job publishes per-chapter RTC-layout reports from task-sealed languages."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     config, _style_bytes = _prepare_nca_workspace(root)
     _route(monkeypatch)
@@ -691,20 +690,31 @@ def test_finalize_publishes_both_sealed_report_languages(
 
     submitted = submit_act_task(config, path)
 
-    primary_path = Path(str(submitted["report_path"]))
-    secondary_path = Path(str(submitted["secondary_report_path"]))
-    assert submitted["secondary_report_language"] == "fr"
-    assert secondary_path.name == "NUMBER-CONSISTENCY-ACCURACY.fr.md"
-    assert primary_path.read_bytes() != secondary_path.read_bytes()
-    sealed_secondary = secondary_path.read_bytes()
+    report_path = Path(str(submitted["report_path"]))
+    assert submitted["report_languages"] == ["en", "fr"]
+    # Per-chapter RTC layout under localdata/reports/<job>/<BOOK>/<CCC>/, never the Run work tree.
+    assert report_path.parent == config.reports_root / job.job_id / "MAT" / "001"
+    assert report_path.name == f"{run.run_id}_MAT-001_ACTION-REPORT.md"
+    assert not report_path.is_relative_to(config.jobs_root)
+    note_path = Path(str(submitted["operator_note_text_paths"][0]))
+    assert note_path.name == f"{run.run_id}_MAT-001_OPERATOR-NOTE.txt" and note_path.is_file()
+    assert Path(str(submitted["job_summary_path"])).name == "JOB-SUMMARY.md"
+    style_report = Path(str(submitted["number_style_report_path"]))
+    assert style_report.name == f"{run.run_id}_NUMBER-STYLE.md" and style_report.parent == config.reports_root / job.job_id
+    assert style_report.read_text(encoding="utf-8").startswith("# Number style — ")
+    assert Path(str(submitted["diagnostics_path"])).is_relative_to(run.root / "diagnostics")
+    report = report_path.read_text(encoding="utf-8")
+    assert report.startswith("# Number Consistency & Accuracy (NCA) — ")
+    assert "Report languages: `en`; `fr`" in report
+    sealed = report_path.read_bytes()
     current = store.load_job(job.job_id, tool="nca")
     store.revise_job(
         current,
         reporting={"primary_language": "en", "secondary_language": "ru"},
     )
     retried = finalize_nca_run(config, job_id=job.job_id, run_id=run.run_id)
-    assert retried["secondary_report_language"] == "fr"
-    assert Path(str(retried["secondary_report_path"])).read_bytes() == sealed_secondary
+    assert retried["report_languages"] == ["en", "fr"]
+    assert Path(str(retried["report_path"])).read_bytes() == sealed
 
 
 def test_nca_controller_checkpoint_declarations_do_not_expand_model_authority(make_workspace, monkeypatch):

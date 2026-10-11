@@ -11,13 +11,20 @@ from sage.errors import ValidationError
 from sage.vrs import VerseRef
 
 
-EXTRACTION_STATUSES = frozenset({"COMPLETE", "PARTIAL", "UNSUPPORTED"})
+# NOT_REQUIRED: no extraction was planned because the group has no indexed coordinate.
+EXTRACTION_STATUSES = frozenset({"COMPLETE", "PARTIAL", "UNSUPPORTED", "NOT_REQUIRED"})
 PROJECTION_STATUSES = frozenset({"READY", "AMBIGUOUS", "UNMAPPED", "REGISTERED_ABSENCE"})
 QUALIFICATION_STATUSES = frozenset(
     {"QUALIFIED", "QUALIFIED_WITH_DIAGNOSTICS", "DIAGNOSTIC", "BLOCKED"}
 )
 COMPARISON_MODES = frozenset({"ORDERED", "UNORDERED"})
-COMPARISON_OUTCOMES = frozenset({"PASS", "FAIL", "NEEDS_REVIEW", "NOT_ASSESSED"})
+# NOT_INDEXED: the index has no number at any of the group's coordinates (in OL or NIV),
+# so there is nothing to compare -- distinct from NOT_ASSESSED, an evidence gap.
+COMPARISON_OUTCOMES = frozenset({"PASS", "FAIL", "NEEDS_REVIEW", "NOT_ASSESSED", "NOT_INDEXED"})
+# Per-value kinds the extractor may tag (shared counting convention vocabulary).
+VALUE_KINDS = frozenset({"CARDINAL", "ORDINAL", "FRACTION", "MULTIPLIER", "PERCENT", "APPROX"})
+# Statuses the extraction model may return; NOT_REQUIRED is controller-assigned only.
+MODEL_EXTRACTION_STATUSES = frozenset({"COMPLETE", "PARTIAL", "UNSUPPORTED"})
 
 
 def _invalid(field_name: str, value: object) -> ValidationError:
@@ -62,15 +69,25 @@ def _freeze_mapping(field_name: str, value: Mapping[Any, Any]) -> Mapping[Any, A
 
 @dataclass(frozen=True)
 class Extraction:
-    """The ordered numeric values a model found in one WIP work unit.
+    """The ordered numbers found in one WIP work unit.
 
-    Deliberately minimal: no spans, kinds, qualifiers, roles, or representations.
-    The comparison this feeds (numbers/compare.py) only needs values in reading
-    order plus honest completeness -- see the 2026-09-28 simplified-check plan.
+    Values in reading order plus honest completeness. Every per-number tuple is empty or
+    exactly parallel to ``values``: ``kinds`` (convention kind), ``surfaces`` (the exact text
+    in the verse), ``spans`` ((start, end) of that text), ``counts`` (what it counts, in the
+    target language), ``counts_en`` (an English gloss of that) and ``origins`` (``MODEL``, or
+    ``LOCAL`` for a digit numeral SAGE read itself). ``issues`` are numeral problems SAGE found
+    locally (``MALFORMED_NUMERAL:...``, ``NUMERAL_VALUE_DIFFERS:...``).
     """
     values: Tuple[Fraction, ...]
     status: str
     limitations: Tuple[str, ...] = ()
+    kinds: Tuple[str, ...] = ()
+    surfaces: Tuple[str, ...] = ()
+    spans: Tuple[Tuple[int, int], ...] = ()
+    counts: Tuple[str, ...] = ()
+    counts_en: Tuple[str, ...] = ()
+    origins: Tuple[str, ...] = ()
+    issues: Tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         """Validate exact values and the closed completeness vocabulary."""
@@ -83,6 +100,20 @@ class Extraction:
         limitations = _tuple("extraction limitations", self.limitations)
         if any(not isinstance(value, str) for value in limitations):
             raise _invalid("extraction limitations", self.limitations)
+        kinds = _tuple("extraction kinds", self.kinds)
+        if kinds and (len(kinds) != len(values) or any(kind not in VALUE_KINDS for kind in kinds)):
+            raise _invalid("extraction kinds", self.kinds)
+        for name in ("surfaces", "counts", "counts_en", "origins"):
+            items = _tuple(f"extraction {name}", getattr(self, name))
+            if items and (len(items) != len(values) or any(not isinstance(item, str) for item in items)):
+                raise _invalid(f"extraction {name}", items)
+        spans = _tuple("extraction spans", self.spans)
+        if spans and (len(spans) != len(values) or any(
+                not isinstance(span, tuple) or len(span) != 2 or not all(isinstance(x, int) for x in span)
+                for span in spans)):
+            raise _invalid("extraction spans", self.spans)
+        if any(not isinstance(item, str) for item in _tuple("extraction issues", self.issues)):
+            raise _invalid("extraction issues", self.issues)
 
 
 @dataclass(frozen=True)
@@ -93,9 +124,18 @@ class ReferenceRow:
     language: str
     ol_text: str
     ol_values: Tuple[Fraction, ...]
-    niv_text: str
+    # Quoted English text: the public-domain Berean Standard Bible (no NIV Scripture text is shipped;
+    # the NIV is cited by its values, "also see"). Empty for the legacy 2026-09-09 package.
+    bsb_text: str
     niv_values: Tuple[Fraction, ...]
     metadata: Mapping[str, str]
+    # Audited normalization-override rows that changed this verse's OL_VALUES away from
+    # the literal OL token reading; empty when OL_VALUES is the unmodified reading.
+    ol_normalizations: Tuple[Mapping[str, str], ...] = ()
+    # Typed per-value records (typed packages only), parallel to ol_values / niv_values: VALUE, KIND,
+    # ROLE, REFERENT (what the number counts), UNIT, SURFACE, SOURCE_IDS, REVIEW_STATUS.
+    ol_items: Tuple[Mapping[str, str], ...] = ()
+    niv_items: Tuple[Mapping[str, str], ...] = ()
 
     def __post_init__(self) -> None:
         """Validate typed authority fields and freeze retained raw metadata."""
@@ -107,14 +147,20 @@ class ReferenceRow:
             values = _tuple(name, value)
             if any(not isinstance(item, Fraction) for item in values):
                 raise _invalid(name, value)
-        if any(not isinstance(value, str) for value in (self.language, self.ol_text, self.niv_text)):
-            raise _invalid("reference row text", (self.language, self.ol_text, self.niv_text))
+        if any(not isinstance(value, str) for value in (self.language, self.ol_text, self.bsb_text)):
+            raise _invalid("reference row text", (self.language, self.ol_text, self.bsb_text))
         if not isinstance(self.metadata, Mapping) or any(
             not isinstance(key, str) or not isinstance(value, str)
             for key, value in self.metadata.items()
         ):
             raise _invalid("reference row metadata", self.metadata)
         object.__setattr__(self, "metadata", _freeze_mapping("reference row metadata", self.metadata))
+        object.__setattr__(self, "ol_normalizations", tuple(
+            _freeze_mapping("reference row OL normalization", item)
+            for item in _tuple("reference row OL normalizations", self.ol_normalizations)))
+        for name in ("ol_items", "niv_items"):
+            object.__setattr__(self, name, tuple(
+                _freeze_mapping(f"reference row {name}", item) for item in _tuple(f"reference row {name}", getattr(self, name))))
 
 
 @dataclass(frozen=True)
@@ -191,6 +237,9 @@ class TargetUnit:
     notes: Tuple[TargetNote, ...]
     source_sha256: str
     source_locator: Mapping[str, int]
+    # Content problems found while compiling this verse (markup errors, a repeated verse
+    # number). NCA never stops on content: such a unit is reported, not assessed.
+    content_issues: Tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         """Validate target identities while permitting registered absent units."""
@@ -214,6 +263,9 @@ class TargetUnit:
         ):
             raise _invalid("target source locator", self.source_locator)
         object.__setattr__(self, "source_locator", _freeze_mapping("target source locator", self.source_locator))
+        issues = _tuple("target content issues", self.content_issues)
+        if any(not isinstance(value, str) or not value for value in issues):
+            raise _invalid("target content issues", self.content_issues)
 
 
 @dataclass(frozen=True)

@@ -32,10 +32,9 @@ def test_release_mode_fails_when_authorized_package_is_absent(tmp_path):
 
 
 def test_bundled_reference_passes_refined_numeric_and_note_acceptance(package_root):
-    """The shipped authority passes every OL/NIV reading, unit, and disclosure case."""
+    """The 2026-09-09 authority (kept for A/B) passes every OL/NIV reading, unit, and disclosure case."""
     import json
-    pin = json.loads((package_root / 'system/config/numbers-reference.json').read_text())
-    result = qualification_tool().qualify(package_root / pin['path'], release=True)
+    result = qualification_tool().qualify(package_root / 'system/resources/numbers/2026-09-09', release=True)
     assert result['status'] == 'PASS'
     assert result['package_form'] == 'BUNDLED_CORE_PROJECTION'
     assert result['numeric_index_validation']['ol_rows'] == 6244

@@ -1,18 +1,22 @@
-schema_id: sage-nca-extraction-1.0
+schema_id: sage-nca-extraction-3.0
 required: [schema_version, phase, batch_id, work_units]
 controls:
   schema_version: '1.0'
   owner: system/src/sage/numbers/extraction.py
   phase: EXTRACTION
-  work_unit_required: [input_id, status, limitations, values]
+  work_unit_required: [input_id, status, limitations, numbers]
+  number_required: [text, value, kind, counts, counts_en]
+  number_text: exact_substring_of_work_unit_in_reading_order
+  digit_numerals: read_locally_by_sage
   unknown_fields: prohibited
   authority_inputs: [target_streams, language, parsing_conventions]
   prohibited_inputs: [ol_text, ol_values, niv_text, niv_values]
   exact_target_streams: required
-  offset_authority: admitted_stream_text
   normalized_values: reduced_rational_strings
   ordered_values: reading_order
-  no_kind_role_or_unit_classification: true
+  value_kinds: [CARDINAL, ORDINAL, FRACTION, MULTIPLIER, PERCENT, APPROX]
+  counting_convention: system/skills/nca-numbers/references/COUNTING-CONVENTION.md
+  counted_item: target_language_and_english_gloss
   coverage: independently_validate_known_inputs
   duplicate_or_unknown_input_id: reject_parent_envelope
   absent_or_invalid_input: pending
@@ -26,4 +30,4 @@ controls:
   singleton_failure: explicit
   confidence_gate: prohibited
   phase_contracts:
-    EXTRACTION: nca-extraction-1.0
+    EXTRACTION: nca-extraction-3.0

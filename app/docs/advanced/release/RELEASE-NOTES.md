@@ -1,6 +1,27 @@
 # Release Notes - SAGE v0.02b1
 
 
+## 0.02a3 — development branch (unreleased)
+
+`0.02a3` is a non-release development branch on top of `0.02b1`. Its NCA (Number Consistency & Accuracy) work spans `a50cb30` to `11f95e0`, plus the NCA menu presentation change. **BREAKING** marks changes that invalidate earlier NCA Jobs, Runs, packages or extraction evidence; test data is disposable and no migration is provided.
+
+- **BREAKING:** No NIV Scripture text is shipped (NIV fair use allows at most 500 verses). The typed package `SAGE_NUMBERS_TYPED_2026-10-09` (`sage-numbers-typed-1.1`) replaces `SAGE_NUMBERS_TYPED_2026-10-08`: `verses.tsv` quotes the public-domain Berean Standard Bible (`BSB_TEXT`, `BSB_NOTES`) instead of `NIV_TEXT`/`NIV_NOTES`; values are unchanged (5,345 original-language, 5,021 NIV). NCA reports quote the BSB and cite the NIV by reference and numbers ("Also see — NIV"). `NIV-EVIDENCE.tsv` keeps only a SHA-256 of each NIV verse and its number-bearing footnote count. BSB readings join the LXX/Vulgate/KJV witnesses with "Also see: MT, NIV, LXX, Vulgate, KJV", and BSB footnotes that report a number in another text are apparatus evidence.
+- **BREAKING:** The typed reference package `SAGE_NUMBERS_TYPED_2026-10-08` (`sage-numbers-typed-1.0`) replaces `SAGE_NUMBERS_REFERENCE_2026-09-09` as the Core pin. It is built in the repository from MACULA Hebrew (WLC) and MACULA Greek (SBLGNT), with an NIV layer as secondary evidence, and records what each number counts. It covers 3,814 verses with 5,345 original-language and 5,021 NIV values. All index review items are resolved by the NIV number rule (`RULE-2026-10-08`); no provisional rows remain. The 2026-09-09 package stays in Core for comparison only.
+- **BREAKING:** Counting convention 2.0 is shared by the index and the model: only numbers that state a quantity or a date are counted.
+- **BREAKING:** Extraction contract 3.0: the model returns each number's exact text, value, kind and counted item; SAGE verifies the text, reads digit numerals itself, and flags or adds numerals the model misread or missed.
+- **BREAKING:** BLOCKING FAIL is reserved for mismatches against an original-language reading the index vouches for. Other mismatches are NEEDS_REVIEW. The unused presentation-consistency Run check is removed; the Run switches are number accuracy and footnote review.
+- **BREAKING:** NCA reports use the RTC/STC action-report template: per-chapter `ACTION-REPORT.md` and `OPERATOR-NOTE.txt` under `localdata/reports/<job>/<BOOK>/<CCC>/`, and `JOB-SUMMARY.md`. Each FAIL/NEEDS_REVIEW finding carries a copy-paste translator note. The technical projection moves to Run diagnostics.
+- Adds the association check (`WRONG_ASSOCIATION`) and the FAILs `MALFORMED_NUMERAL` and `NUMBER_NOT_IN_SOURCE`, plus the report sections "Text-critical decisions (operator)" and "Notes (no action needed)".
+- Adds an apparatus-backed text-critical list. NET Bible tc notes (short excerpts quoted under fair use with attribution), the SBLGNT apparatus, OSHB ketiv/qere, Brenton's LXX, the Douay-Rheims Vulgate, the KJV, Berean Standard Bible footnotes (public domain), and synoptic parallels are cited as evidence. BSB readings are cited as a rendering reference with "Also see: MT, NIV, LXX, Vulgate, KJV". A mismatch at an attested variant is review (`APPARATUS_VARIANT`), never FAIL. Reports end with "Sources and attribution".
+- Adds the number formatting consistency report `<run>_NUMBER-STYLE.md` and, when no style profile is given, a reconstructed, importable `<run>_NUMBER-STYLE-PROFILE-RECONSTRUCTED.yml`.
+- NCA never stops a Run on Scripture content. Damaged verses report `NOT_ASSESSED` with issue codes, and only integrity guards stop a Run.
+- Normalized index readings are no longer presented as the original-language text.
+- Faster package load (4.8 s to 0.3 s) through versification indexing, and a leaner extraction handover.
+- Menu: NCA Jobs use the standard RTC/STC Job menu shape with a two-step Job delete. The style options are "Use standard language profile data" and "Upload style data from template". The package diagnostics block prints once per package per session as readable lines. The preflight screen shows only what the operator confirms; counters, batching and group IDs go to `last-preflight.json`.
+- Review fixes: a style profile with unit forms no longer fails every Run (convention re-selection kept unit forms); a scope with nothing to extract publishes its `NOT_ASSESSED` verses instead of failing; a number's text is anchored to a whole token (a "7" inside "17" no longer yields a false FAIL); malformed model kinds are retried instead of crashing; no-break spaces group like a configured space and "30 40" is two numerals; suffixed digit ordinals ("2nd") are edge cases, not stray cardinals; a gap under a different WIP versification is no longer excused as covered; `WRONG_ASSOCIATION` is BLOCKING only under original-language authority; malformed numerals are reported in unindexed and partly read verses; diagnostics translator notes use the per-kind wording; the reconstructed style profile keeps the translation's digit script and never sets one mark for grouping and decimal.
+
+Open: no release-gate receipt exists yet for the typed package; live-model qualification and SQS confidence checks have not been performed.
+
 ## 0.02b1 — 2026-09-09
 
 `0.02b1` consolidates the complete `0.02a1` development branch into `main` as the first Beta of the 0.02 line. It remains a pre-release build with `public_release_ready=false`.

@@ -21,7 +21,7 @@ from .reference import REFERENCE_PARSER_VERSION
 from .resources import reference_package_path, resolve_reference_package
 from .style import StyleProfile, resolve_style_profile
 
-CHECK_NAMES = ("number_accuracy", "presentation_consistency", "footnote_review")
+CHECK_NAMES = ("number_accuracy", "footnote_review")
 DEFAULT_CHECKS = {name: True for name in CHECK_NAMES}
 POLICY_SCHEMA_VERSION = "2.0"
 CAPABILITY_LIMITATION_CODE = "NCA_LLM_CAPABILITY_LIMITATION"
@@ -89,10 +89,10 @@ def validate_numeric_comparison_mode(raw: object) -> str:
 
 
 def validate_checks(raw: Mapping[str, object] | None) -> dict[str, bool]:
-    """Require all three exact NCA booleans and at least one enabled assessment."""
+    """Require the exact NCA check booleans and at least one enabled assessment."""
     if not isinstance(raw, Mapping) or set(raw) != set(CHECK_NAMES):
         raise ValidationError(
-            "NCA check policy requires exactly three assessment booleans",
+            "NCA check policy requires exactly the number_accuracy and footnote_review booleans",
             code="NCA_CHECK_POLICY_INVALID",
         )
     checks = {name: raw[name] for name in CHECK_NAMES}
@@ -102,7 +102,7 @@ def validate_checks(raw: Mapping[str, object] | None) -> dict[str, bool]:
         raise ValidationError(
             "At least one NCA assessment must be enabled",
             code="NCA_CHECK_POLICY_ALL_OFF",
-            next_action="Enable number accuracy, presentation consistency, or footnote review.",
+            next_action="Enable number accuracy or footnote review.",
         )
     return checks
 
@@ -308,6 +308,10 @@ def validate_optimization_policy(raw: Mapping[str, object]) -> dict[str, object]
     return dict(raw)
 
 
+_EXTRACTION_MODULES = ('batching', 'execution', 'extraction', 'hybrid', 'model_tasks', 'models', 'policy',
+                       'projection', 'reference', 'replay', 'resources', 'scope', 'style', 'target', 'transport')
+
+
 def phase_contract_manifest(root: Path, route: Mapping[str, object]) -> dict[str, object]:
     """Seal applicable schema, capsule, validator, routing limits, and actual route identities."""
     paths = [
@@ -318,9 +322,11 @@ def phase_contract_manifest(root: Path, route: Mapping[str, object]) -> dict[str
         'system/config/workflows/nca/profile.yml',
         'system/skills/nca-numbers/SKILL.md',
         'system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md',
-        'system/src/sage/nca.py', 'system/src/sage/nca_reporting.py',
+        'system/skills/nca-numbers/references/COUNTING-CONVENTION.md',
     ]
-    paths.extend(path.relative_to(root).as_posix() for path in sorted((root / 'system/src/sage/numbers').glob('*.py')))
-    return {'version': 'nca-phase-contracts-1.0', 'schema_ids': ['sage-nca-extraction-1.0', 'sage-numbers-result-1.0'],
-        'phases': {'EXTRACTION': 'nca-extraction-1.0'},
+    # Only code that decides what is sent to the model and how its answer is validated is
+    # sealed: comparison, results and reporting edits must not invalidate extraction evidence.
+    paths.extend(f'system/src/sage/numbers/{name}.py' for name in _EXTRACTION_MODULES)
+    return {'version': 'nca-phase-contracts-1.0', 'schema_ids': ['sage-nca-extraction-3.0', 'sage-numbers-result-1.0'],
+        'phases': {'EXTRACTION': 'nca-extraction-3.0'},
         'files': {name: _sha256(root / name) for name in paths}, 'model_route': dict(route)}

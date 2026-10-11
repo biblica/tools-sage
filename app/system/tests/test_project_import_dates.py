@@ -455,7 +455,7 @@ def test_snapshot_refresh_retains_the_wip_project_import_date(make_workspace) ->
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["5", "", "a"]), output=output),
+        io=MenuIO(input_func=ScriptedInput(["2", "", "a"]), output=output),
         skip_setup=True,
         dry_run_provider=True,
     )
@@ -506,21 +506,25 @@ def test_analysis_manage_job_exposes_delete_but_no_binding_replacement(
     center._job_settings_menu(job)
 
     rendered = output.getvalue()
-    assert "6. Delete JOB" in rendered
+    label = tool.upper()
+    # Standard [ Manage XXX <WIP> ] shape (tester feedback 0.02a3).
+    for line in ("1. Manage reporting languages", f"2. Refresh {label} JOB source", f"3. Delete {label} JOB",
+                 "4. usWIP JOB reports and history", "5. Recovery and diagnostics"):
+        assert line in rendered
     assert "Replace WIP Project" not in rendered
     assert "Update REFERENCE Project" not in rendered
 
 
 @pytest.mark.parametrize(
     ("report_answer", "reports_remain"),
-    (("n", True), ("y", False)),
+    (("2", True), ("1", False)),
 )
 def test_manage_job_delete_prompts_separately_for_published_reports(
     make_workspace,
     report_answer,
     reports_remain,
 ) -> None:
-    """Deleting a Job preserves reports by default and never touches its Projects."""
+    """Delete confirms [y/N] first, then chooses delete-all or keep-only-reports; Projects untouched."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     _register_fixture_project(root, "usWIP")
     store = JobStore(root, root / "ecosystem.yml")
@@ -543,7 +547,7 @@ def test_manage_job_delete_prompts_separately_for_published_reports(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
         io=MenuIO(
-            input_func=ScriptedInput(["6", report_answer, "y"]),
+            input_func=ScriptedInput(["3", "y", report_answer]),
             output=output,
         ),
         skip_setup=True,
@@ -560,12 +564,14 @@ def test_manage_job_delete_prompts_separately_for_published_reports(
     assert "Published report files:       1" in rendered
     assert "SAGE Projects and Paratext Project files will NOT be deleted or modified." in rendered
     assert "Deleted Job: STC-usWIP_20260829" in rendered
+    assert "1. Delete all STC usWIP data" in rendered
+    assert "2. Delete STC usWIP data, keep only reports" in rendered
 
 
 def test_manage_job_delete_defaults_preserve_everything_on_final_cancellation(
     make_workspace,
 ) -> None:
-    """Blank answers preserve reports and cancel the final destructive action."""
+    """A blank answer to the first [y/N] prompt cancels before any report choice is offered."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     _register_fixture_project(root, "usWIP")
     store = JobStore(root, root / "ecosystem.yml")
@@ -585,7 +591,7 @@ def test_manage_job_delete_defaults_preserve_everything_on_final_cancellation(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
         io=MenuIO(
-            input_func=ScriptedInput(["6", "", "", "a"]),
+            input_func=ScriptedInput(["3", "", "a"]),
             output=output,
         ),
         skip_setup=True,
@@ -597,7 +603,7 @@ def test_manage_job_delete_defaults_preserve_everything_on_final_cancellation(
     assert deleted is False
     assert job.root.is_dir()
     assert published_report.is_file()
-    assert "Published reports:            PRESERVE" in output.getvalue()
+    assert "keep only reports" not in output.getvalue()
     assert "Delete Job cancelled. No Job or report data was changed." in output.getvalue()
 
 
@@ -620,7 +626,7 @@ def test_delete_from_open_analysis_job_returns_to_parent_without_reloading_it(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
         io=MenuIO(
-            input_func=ScriptedInput(["3", "6", "y"]),
+            input_func=ScriptedInput(["3", "3", "y"]),
             output=io.StringIO(),
         ),
         skip_setup=True,
