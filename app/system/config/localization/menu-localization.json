@@ -3642,6 +3642,46 @@
       "fr": "La couverture est incomplète. Les Jobs WIP peuvent être exécutés pour les livres présents.",
       "ru": "Охват неполный. Jobs WIP можно выполнять для имеющихся книг.",
       "pt-BR": "A cobertura está incompleta. Os Jobs WIP podem ser executados para os livros presentes."
+    },
+    "menu.set.active.job": {
+      "en-US": "Set active Job",
+      "en-GB": "Set active Job",
+      "id": "Tetapkan Job aktif",
+      "fr": "Définir le Job actif",
+      "ru": "Назначить активный Job",
+      "pt-BR": "Definir Job ativo"
+    },
+    "menu.delete.job.data": {
+      "en-US": "Delete Job data",
+      "en-GB": "Delete Job data",
+      "id": "Hapus data Job",
+      "fr": "Supprimer les données du Job",
+      "ru": "Удалить данные Job",
+      "pt-BR": "Excluir dados do Job"
+    },
+    "menu.manage.reporting.languages": {
+      "en-US": "Manage reporting languages",
+      "en-GB": "Manage reporting languages",
+      "id": "Kelola bahasa laporan",
+      "fr": "Gérer les langues des rapports",
+      "ru": "Управление языками отчётов",
+      "pt-BR": "Gerenciar idiomas dos relatórios"
+    },
+    "menu.published.job.reports": {
+      "en-US": "Published Job reports",
+      "en-GB": "Published Job reports",
+      "id": "Laporan Job yang diterbitkan",
+      "fr": "Rapports du Job publiés",
+      "ru": "Опубликованные отчёты Job",
+      "pt-BR": "Relatórios publicados do Job"
+    },
+    "menu.nca.defaults.setting": {
+      "en-US": "NCA defaults setting",
+      "en-GB": "NCA defaults setting",
+      "id": "Pengaturan bawaan NCA",
+      "fr": "Paramètres par défaut NCA",
+      "ru": "Настройки NCA по умолчанию",
+      "pt-BR": "Configuração padrão do NCA"
     }
   }
 }

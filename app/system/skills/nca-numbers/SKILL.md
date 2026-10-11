@@ -8,11 +8,8 @@ Execute only the named phase of the sealed SAGE governed task described by `task
 
 For `EXTRACTION`, use the target-only capsule in `references/TARGET-EXTRACTION-CONTRACT.md`. One bounded request may inventory multiple independent target input streams. Echo their input IDs exactly. Missing or invalid members remain pending; valid PARTIAL/UNSUPPORTED interpretations remain terminal. A batch shares one parent receipt.
 
-Identify every numeric expression in one work unit's target text, in the order it appears, and return it as a reduced canonical rational string. Do not classify kind, role, or unit; do not report spans or representations. Use only the target text, target language, and parsing conventions. Do not infer expected values from original-language Scripture, NIV, model recall, or external sources -- SAGE performs the comparison locally after extraction.
+Identify every counted number in one work unit's target text, in reading order, following `references/COUNTING-CONVENTION.md`, and return each with its exact text as written, its value as a reduced canonical rational string, its convention kind, and what it counts (target-language words and an English gloss). Do not report roles, units or offsets. Use only the target text, target language, and parsing conventions. Do not infer expected values from original-language Scripture, NIV, model recall, or external sources -- SAGE performs the comparison locally after extraction.
 
 Return `PARTIAL`, `UNSUPPORTED`, or insufficient evidence whenever language interpretation is incomplete. Confidence does not bypass structural or evidence validation. Do not modify Scripture, notes, reference data, work-unit identity, or routing identity.
 
 SAGE owns route selection, immutable input identity, exact value validation, comparison, classification, and reports.
-interface:
-  display_name: "NCA Numbers"
-  short_description: "Identify the ordered numeric values in bounded target text."

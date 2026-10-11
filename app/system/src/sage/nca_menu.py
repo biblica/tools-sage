@@ -28,11 +28,12 @@ def choose_style(center, project) -> str | None:
         script = config.language_profile(project.language_profile).script
         candidates = style_profile_candidates(config, language=project.language_code, script=script, project=project.project_id)
         options = [(str(index), item.selector) for index, item in enumerate(candidates, 1)]
-        import_key = str(len(options) + 1)
-        skip_key = str(len(options) + 2)
-        options.extend(((import_key, 'Import configured Number Style Profile'),
-                        (skip_key, 'Continue without stylesheet'), ('B', 'Back')))
-        center.io.write('An optional Number Style Profile adds approved rule checks to the Number Usage Report.')
+        skip_key = str(len(options) + 1)
+        import_key = str(len(options) + 2)
+        options.extend(((skip_key, 'Use standard language profile data'),
+                        (import_key, 'Upload style data from template'), ('B', 'Back')))
+        center.io.write('A Number Style Profile is optional. Without one, NCA uses the standard language profile '
+                        'data and reconstructs the translation\'s own number style from the text.')
         center.io.write('Template: system/config/profiles/numbers/number-style-template.yml')
         choice = center.io.choose('NCA Number Style Profile', options)
         if choice == 'B':
@@ -40,7 +41,7 @@ def choose_style(center, project) -> str | None:
         if choice == skip_key:
             return ''
         if choice == import_key:
-            raw = center.io.text('Configured profile path', required=False).strip()
+            raw = center.io.text('Style data file (filled-in template)', required=False).strip()
             if not raw:
                 return None
             import_style_profile(config, Path(raw).expanduser())
@@ -73,12 +74,24 @@ def choose_package(center, *, manage: bool = False) -> str | None:
             else:
                 package_id = candidates[int(choice) - 1][1].package_id
         status = inspect_numbers_package(config, package_id)
-        center.io.write(f"NCA reference package: {package_id}")
-        center.io.write(f"Reference qualification: {status['qualification_status']}")
-        center.io.write(f"Numeric reference coverage: {status['rows']} indexed rows")
-        for diagnostic in status['diagnostics']:
-            center.io.write(str(diagnostic))
+        shown = center.__dict__.setdefault('_nca_packages_shown', set())
+        if manage or (package_id, status['sha256']) not in shown:
+            # once per package per session; package management always shows it
+            shown.add((package_id, status['sha256']))
+            center.io.write(f"NCA reference package: {package_id}")
+            center.io.write(f"Reference qualification: {status['qualification_status']}")
+            center.io.write(f"Numeric reference coverage: {status['rows']} indexed rows")
+            for diagnostic in status['diagnostics']:
+                center.io.write(_diagnostic_line(diagnostic))
         return package_id
+
+
+def _diagnostic_line(diagnostic) -> str:
+    """One readable line for a package diagnostic (the full record stays in the package report)."""
+    count = diagnostic.get('count', diagnostic.get('differing_rows'))
+    detail = diagnostic.get('disposition') or diagnostic.get('message') or ''
+    return (f"- {diagnostic.get('severity', 'NOTE')} {diagnostic.get('code', 'DIAGNOSTIC')}"
+            + (f" ({count} verses)" if count is not None else "") + (f": {detail}" if detail else ""))
 
 
 def create_job(center):
@@ -102,43 +115,69 @@ def create_job(center):
     return job
 
 
-def choose_checks(center, job) -> dict[str, bool] | None:
-    """Offer independent pre-Run switches and an optional approved stylesheet."""
-    defaults = {key: True for key in CHECK_LABELS}
-    defaults.update(job.defaults.get('checks', {}))
+def saved_checks(job) -> dict[str, bool]:
+    """Return the Job's saved NCA check defaults, with every unsaved check ON."""
+    checks = {key: True for key in CHECK_LABELS}
+    checks.update({key: value for key, value in job.defaults.get('checks', {}).items() if key in checks})
+    return checks
+
+
+def choose_checks(center, job, *, for_run: bool = True) -> dict[str, bool] | None:
+    """Offer independent check switches and an optional approved stylesheet.
+
+    ``for_run=False`` is the NCA defaults setting screen: it saves defaults and returns,
+    without the "Continue with selected checks" Run action.
+    """
+    defaults = saved_checks(job)
     checks = dict(defaults)
     while True:
         center.io.write(f"Number Style Profile: {job.profiles.get('number_style', 'NOT CONFIGURED')}")
-        choices = [(str(index), f"{center.localizer.text(label)}: {'ON' if checks[key] else 'OFF'}") for index, (key, label) in enumerate(CHECK_LABELS.items(), 1)]
-        choices.extend((('4', 'Restore saved check defaults'), ('5', 'Change Number Style Profile'),
-                        ('6', 'Save check defaults'), ('7', 'Continue with selected checks'), ('B', 'Back')))
-        choice = center.io.choose('NCA Run checks', choices)
+        names = tuple(CHECK_LABELS)
+        restore, style, save, proceed = (str(len(names) + offset) for offset in range(1, 5))
+        choices = [(str(index), f"{center.localizer.text(label)}: {'ON' if checks[key] else 'OFF'}")
+                   for index, (key, label) in enumerate(CHECK_LABELS.items(), 1)]
+        choices.extend(((restore, 'Restore saved check defaults'), (style, 'Change Number Style Profile'),
+                        (save, 'Save check defaults')))
+        if for_run:
+            choices.append((proceed, 'Continue with selected checks'))
+        choices.append(('B', 'Back'))
+        choice = center.io.choose('NCA Run checks' if for_run else 'NCA defaults setting', choices)
         if choice == 'B':
             return None
-        if choice in {'1', '2', '3'}:
-            key = tuple(CHECK_LABELS)[int(choice) - 1]
+        if choice.isdigit() and 1 <= int(choice) <= len(names):
+            key = names[int(choice) - 1]
             checks[key] = not checks[key]
-        elif choice == '4':
+        elif choice == restore:
             checks = dict(defaults)
-        elif choice == '5':
+        elif choice == style:
             config = load_ecosystem(center.store.settings_path)
             selector = choose_style(center, config.project(job.bindings['wip']))
             if selector is not None:
                 job = center.store.revise_job(job, profiles={'number_style': selector} if selector else {})
         elif not any(checks.values()):
             center.io.write('Enable at least one NCA check.')
-        elif choice == '6':
+        elif choice == save:
             job = center.store.revise_job(job, defaults={**job.defaults, 'checks': checks})
             defaults = dict(checks)
-        elif choice == '7':
+            if not for_run:
+                center.io.write('NCA defaults saved. They apply to every later Run of this Job.')
+        elif choice == proceed:
             return checks
 
 
-def start_run(center, job) -> None:
-    """Create and execute the same governed task used by the canonical CLI."""
+def start_run(center, job, *, checks: dict[str, bool] | None = None) -> None:
+    """Create and execute the same governed task used by the canonical CLI.
+
+    Supplied ``checks`` (the Job's saved defaults) skip the per-Run check screen.
+    """
     from sage.nca import create_nca_run
-    checks = choose_checks(center, job)
     if checks is None:
+        checks = choose_checks(center, job)
+    if checks is None:
+        return
+    if not any(checks.values()):
+        center.io.write('Enable at least one NCA check in NCA defaults setting.')
+        center.io.pause()
         return
     scope = center._select_scripture_scope(job, primary_binding='wip')
     if scope is None:
@@ -215,29 +254,23 @@ def show_preflight(center, job, result) -> None:
     if plan:
         plan_path = job.controller_state_root / "last-preflight.json"
         atomic_write_json(plan_path, plan)
+        # The screen shows what the operator confirms; batching, coverage counters and group ids
+        # stay in the preflight file. Inputs that cannot be extracted are shown only when present.
         values = (
             ('input_language', f"{plan.get('language')}; {plan.get('script')}"),
             ('requested_scope', plan.get('requested_scope')),
             ('mandatory_profile', plan.get('style_profile', {}).get('selector')),
             ('checks', plan.get('checks')),
-            ('reference_expectations', plan.get('reference_expectations')),
-            ('indexed_coordinates', plan.get('indexed_coordinates')),
-            ('unindexed_coordinates', plan.get('unindexed_coordinates')),
-            ('protected_groups', plan.get('protected_group_ids')),
-            ('planned_extraction_calls', plan.get('planned_extraction_calls')),
-            ('planned_inputs', len(plan.get('input_ids', ()))),
-            ('blocked_inputs', plan.get('blocked')),
-            ('missing_owners', plan.get('missing_owner_ids')),
-            ('scope_expansion', plan.get('scope_expansions')),
+            ('blocked_inputs', plan.get('blocked') or None),
+            ('missing_owners', plan.get('missing_owner_ids') or None),
             ('limitations', plan.get('limitations')),
         )
-        truncated = False
         for key, value in values:
-            bounded, was_cut = _bounded_preflight_value(value)
-            truncated = truncated or was_cut
+            if value is None and key in {'blocked_inputs', 'missing_owners'}:
+                continue
+            bounded, _ = _bounded_preflight_value(value)
             center.io.write(f"{text('report.nca.' + key)}: {_exact(bounded)}")
-        if truncated:
-            center.io.write(f"Full preflight detail: {plan_path}")
+        center.io.write(f"Full preflight detail: {plan_path}")
     center.io.write(f"{text('report.nca.model_identity')}: {result.get('provider', 'NOT RECORDED')}/{result.get('model', 'NOT RECORDED')}")
     center.io.write(text('report.nca.planning_notice'))
     center.io.write(text('report.nca.capability_limitation'))
@@ -245,56 +278,12 @@ def show_preflight(center, job, result) -> None:
 
 
 def job_menu(center, job) -> None:
-    """Operate one NCA Job without entering RTC or STC execution branches."""
-    while True:
-        job = center.store.load_job(job.job_id, tool='nca')
-        run = center.store.active_run(job)
-        choice = center.io.choose('NUMBER CONSISTENCY & ACCURACY (NCA)',
-                                  (('1', 'Run SAGE NUMBERS CHECK'), ('2', 'Reports and history'),
-                                   ('3', 'NCA check defaults and profile'), ('4', 'Recovery and diagnostics'),
-                                   ('5', 'Manage Job'), ('B', 'Back')),
-                                  context=(f'Job: {job.job_id}', f"WIP Project: {job.bindings['wip']}", f"Number Style Profile: {job.profiles.get('number_style', 'NOT CONFIGURED')}"))
-        if choice == 'B':
-            return
-        if choice == '1':
-            if run is None:
-                start_run(center, job)
-            else:
-                center.io.write(f'Resuming NCA Run: {run.run_id}')
-                center.continue_run(job, run)
-        elif choice == '2':
-            center.reports_menu(job)
-        elif choice == '3':
-            choose_checks(center, job)
-        elif choice == '4':
-            center.recovery_menu(job)
-        elif choice == '5':
-            if center._job_settings_menu(job):
-                return
+    """Operate one NCA Job in the standard [ NCA <WIP> ] Job menu shape."""
+    from sage.job_menus import open_job
+    open_job(center, job)
 
 
 def workflow_menu(center) -> None:
-    """Create, select and operate independent NCA Jobs using shared discovery."""
-    while True:
-        choice = center.io.choose('NUMBER CONSISTENCY & ACCURACY (NCA)',
-                                  (('1', 'Open active NCA job'), ('2', 'Choose active NCA job'),
-                                   ('3', 'Add NCA job <WIP PROJECT>'), ('4', 'NCA reference packages'), ('B', 'Back')))
-        if choice == 'B':
-            return
-        try:
-            if choice == '4':
-                choose_package(center, manage=True)
-                continue
-            if choice == '3':
-                job = create_job(center)
-            elif choice == '2':
-                job = center.choose_job('nca')
-            else:
-                job = center.store.active_job('nca') or center.choose_job('nca')
-            if job is not None:
-                job_menu(center, job)
-        except ValidationError as exc:
-            center.io.write(str(exc))
-            if exc.next_action:
-                center.io.write(exc.next_action)
-            center.io.pause()
+    """Open the NCA Job home in the standard Job menu shape."""
+    from sage.job_menus import job_home
+    job_home(center, 'nca')

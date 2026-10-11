@@ -93,12 +93,18 @@ def _golden_registered_units(bundle) -> list[dict[str, object]]:
     return outcomes
 
 
+LEGACY_BUNDLED_PACKAGE = ('SAGE_NUMBERS_REFERENCE_2026-09-09',
+                          'e14ba3e60b5f60b2555c401c5f5843d4774fedadf612c3ef6ecfb0ed95fadbd1')
+
+
 def _require_authorized_package(package: Path, bundle) -> str:
     """Accept the original handover or its pinned byte-preserving Core projection."""
     if bundle.sha256 == EXPECTED_PACKAGE_SHA256:
         return 'ORIGINAL_HANDOVER'
     pin = json.loads((ROOT / 'system/config/numbers-reference.json').read_text(encoding='utf-8'))
-    _require(bundle.package_id == pin['package_id'] and bundle.sha256 == pin['sha256'],
+    # The 2026-09-09 Core projection stays authorized for A/B after the pin moved to the typed package.
+    authorized = {(pin['package_id'], pin['sha256']), LEGACY_BUNDLED_PACKAGE}
+    _require((bundle.package_id, bundle.sha256) in authorized,
              'Release qualification requires the authorized original or bundled NCA reference.')
     original_checksums = package / 'provenance/ORIGINAL_CHECKSUMS.sha256'
     _require(hashlib.sha256(original_checksums.read_bytes()).hexdigest() == EXPECTED_PACKAGE_SHA256,
@@ -113,9 +119,20 @@ def _require_authorized_package(package: Path, bundle) -> str:
                 if item['path'].startswith('reference/') and Path(item['path']).suffix in {'.tsv', '.txt'}}
     actual = {path.relative_to(package).as_posix() for path in (package / 'reference').iterdir() if path.is_file()}
     _require(actual == set(expected), 'Bundled runtime reference inventory differs from the supplied tables.')
+    # NIV_TEXT is blanked (NIV fair use, at most 500 verses); each redacted table must be the recorded
+    # redaction of the qualified original, so the chain to the original inventory still holds.
+    redaction_path = package / 'provenance/NIV_REDACTION.json'
+    redacted = {}
+    if redaction_path.is_file():
+        redacted = {item['path']: item for item in json.loads(redaction_path.read_text(encoding='utf-8'))['files']}
     for relative, digest in expected.items():
-        _require(hashlib.sha256((package / relative).read_bytes()).hexdigest() == digest,
-                 f'Bundled reference differs from qualified source: {relative}.')
+        actual_digest = hashlib.sha256((package / relative).read_bytes()).hexdigest()
+        record = redacted.get(relative)
+        if record is not None:
+            _require(record['original_sha256'] == digest and record['redacted_sha256'] == actual_digest,
+                     f'Bundled reference is not the recorded NIV redaction of the qualified source: {relative}.')
+            continue
+        _require(actual_digest == digest, f'Bundled reference differs from qualified source: {relative}.')
     return 'BUNDLED_CORE_PROJECTION'
 
 

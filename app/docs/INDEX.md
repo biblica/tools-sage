@@ -11,7 +11,8 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Scripture Project Operator Cheat Sheet](PROJECT-OPERATOR-CHEAT-SHEET.md) — discovery, Add-to-SAGE, Project maintenance, Job-owned reports, reporting languages, and original-language resources.
 - [BIC Cheat Sheet](BIC-CHEAT-SHEET.md) — BIC Job, Run, task, state, and recovery quick reference.
 - [RTC/STC Cheat Sheet](RTC-STC-CHEAT-SHEET.md) — canonical RTC/STC Job setup, authority, finalization, and read-only boundaries.
-- [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) — number accuracy, registered readings and notes, required style profiles, Run switches, and coverage limits.
+- [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) — number accuracy, FAIL/NEEDS_REVIEW findings, text-critical decisions, optional style profiles and the number-style report, Run switches, and coverage limits.
+- [NCA Counting Convention](../system/skills/nca-numbers/references/COUNTING-CONVENTION.md) — which numbers NCA counts (quantities and dates) and what value each gets.
 - [Good Practice](GOOD-PRACTICE.md) — safe operating and source-maintenance habits.
 - [Known Limitations](KNOWN-LIMITATIONS.md) — explicit functional and platform limits.
 - [Windows Cheat Sheet](windows/CHEAT-SHEET.md), [Recovery](windows/RECOVERY.md), and [Errors](windows/ERRORS.md).
@@ -73,9 +74,13 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Provisional Medium Skill Routing Implementation Plan](advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-IMPLEMENTATION-PLAN.md) — test-first resolver, preference, receipt, preflight, documentation, and hardening sequence.
 - [Legacy Review Portions and OL Referral Admission Design](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-DESIGN.md) — historical design record for the pre-RTC identity.
 - [Legacy Review Portions and OL Referral Admission Implementation Plan](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-IMPLEMENTATION-PLAN.md) — historical implementation record for the pre-RTC identity.
+- [NCA Index Rebuild](advanced/release/nca-index-rebuild/SUMMARY.md), [NCA NIV Layer](advanced/release/nca-index-rebuild/NIV-SUMMARY.md), and [NCA Apparatus Check](advanced/release/nca-index-rebuild/APPARATUS-SUMMARY.md) — build, review, and text-critical evidence records for the typed NCA reference package.
+- [NCA Qualification](advanced/release/NCA-QUALIFICATION.md), [NCA Optimization Qualification](advanced/release/NCA-OPTIMIZATION-QUALIFICATION.md), and [Bundled NCA Reference Validation](advanced/release/NCA-BUNDLED-REFERENCE-VALIDATION.md) — historical records for the earlier 2026-09-09 package and pipeline.
 - [Vanilla Installation Manifest](advanced/release/VANILLA-INSTALL-MANIFEST.md) — complete clean package inventory.
 
 ## Advanced: future, non-current designs
 
 - [Future Work Index](advanced/future/README.md) — explicitly non-current designs.
+- [Authority Policy](advanced/future/AUTHORITY-POLICY.md) — approved, not yet implemented authority roles per SAGE function, including the NCA original-language/NIV split.
+- [NCA Report Samples](advanced/future/NCA-REPORT-SAMPLE.md) — sample operator report layout, not produced by the current runtime.
 - [Resource Hub](advanced/future/RESOURCE-HUB.md), [Base-Target Revision Workflow](advanced/future/BASE-TARGET-REVISION-WORKFLOW.md), and [WDA Word Data Analysis](advanced/future/WDA-WORD-DATA-ANALYSIS.md).

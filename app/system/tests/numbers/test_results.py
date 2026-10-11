@@ -38,7 +38,7 @@ def _group(*, outcome='PASS', extraction_status='COMPLETE', wip=(3,), expected=(
 def _receipt():
     """Build one hand-specified EXTRACTION phase receipt for validator tests."""
     return {
-        'phase': 'EXTRACTION', 'task_version': 'nca-extraction-1.0', 'provider': 'codex',
+        'phase': 'EXTRACTION', 'task_version': 'nca-extraction-3.0', 'provider': 'codex',
         'model': 'gpt-test', 'reasoning_effort': 'high', 'route_id': 'route-1',
         'routing_mode': 'AUTOMATIC', 'qualification_status': 'QUALIFIED',
         'prompt_sha256': '1' * 64, 'input_sha256': '2' * 64, 'response_sha256': '3' * 64,
@@ -52,8 +52,9 @@ def _document(groups, *, findings=(), run_id='RUN-1'):
     from sage.findings import assign_global_finding_ids
     local = {group.projected.target.unit_id: group_findings(group) for group in groups}
     assigned = tuple(assign_global_finding_ids(local, run_id=run_id, prefix='NUMBERS')) if not findings else findings
-    checks = {'number_accuracy': True, 'presentation_consistency': True, 'footnote_review': True}
-    complete = all(group.comparison.outcome in {'PASS', 'FAIL'} for group in groups)
+    checks = {'number_accuracy': True, 'footnote_review': True}
+    from sage.numbers.results import group_evidence_complete
+    complete = all(group_evidence_complete(group.comparison.outcome, group.extraction.status) for group in groups)
     coverage = assess_coverage(findings_present=bool(assigned), required_evidence_complete=complete,
                                 assessed=bool(groups)).to_dict()
     coverage.update(
@@ -87,7 +88,7 @@ def test_fail_finding_is_blocking_and_needs_review_finding_is_review():
     assert fail[0]['severity'] == 'BLOCKING'
     assert fail[0]['code'] == 'NCA_NUMBER_FAIL'
     review = group_findings(_group(outcome='NEEDS_REVIEW', wip=(200, 14), expected=(14, 200),
-                                    review_context={'wip_order': ['200', '14'], 'expected_order': ['14', '200'],
+                                    review_context={'kind': 'ORDER_DIFFERENCE', 'wip_order': ['200', '14'], 'expected_order': ['14', '200'],
                                                      'authority_text': 'OL text'}))
     assert review[0]['severity'] == 'REVIEW'
     assert review[0]['code'] == 'NCA_NUMBER_NEEDS_REVIEW'
@@ -111,7 +112,7 @@ def test_round_trip_document_validates_and_summary_is_independently_derived():
 def test_needs_review_group_document_carries_review_context_and_authority_text():
     """A NEEDS_REVIEW group's serialized document retains both orderings and OL text."""
     group = _group(outcome='NEEDS_REVIEW', wip=(200, 14), expected=(14, 200),
-                    review_context={'wip_order': ['200', '14'], 'expected_order': ['14', '200'],
+                    review_context={'kind': 'ORDER_DIFFERENCE', 'wip_order': ['200', '14'], 'expected_order': ['14', '200'],
                                     'authority_text': 'δεκατέσσαρες πρεσβύτεροι'})
     document, expected_ids = _document([group])
 
@@ -207,7 +208,7 @@ def test_complete_evidence_cannot_claim_unexplained_partial_coverage():
 def test_at_least_one_check_must_be_enabled():
     """An all-off check policy is not a representable NCA result."""
     document, expected_ids = _document([_group()])
-    document['check_policy']['checks'] = {'number_accuracy': False, 'presentation_consistency': False, 'footnote_review': False}
+    document['check_policy']['checks'] = {'number_accuracy': False, 'footnote_review': False}
     with pytest.raises(ValidationError) as exc:
         validate_numbers_result(document, expected_unit_ids=expected_ids, allowed_evidence_ids=())
     assert exc.value.code == 'NCA_RESULT_POLICY_INVALID'

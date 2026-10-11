@@ -7715,9 +7715,14 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             }
         )
         for key in (
-            "secondary_report_path",
-            "secondary_report_sha256",
-            "secondary_report_language",
+            "report_languages",
+            "report_directory",
+            "report_paths",
+            "operator_note_text_paths",
+            "job_summary_path",
+            "diagnostics_path",
+            "number_style_report_path",
+            "reconstructed_style_profile_path",
         ):
             if key in finalized:
                 result[key] = finalized[key]

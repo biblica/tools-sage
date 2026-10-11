@@ -1,10 +1,11 @@
 """Build bounded NCA extraction requests and validate exact model evidence.
 
-Simplified per the 2026-09-28 rewrite: a work unit's response is just its
-ordered numeric values (canonical rational strings, in reading order) plus
-honest completeness -- no spans, kinds, qualifiers, roles, or representations.
-Comparison against the indexed expected values happens later, locally, in
-numbers/compare.py -- extraction never sees the expected values.
+Contract 3.0: a work unit's response lists its numbers in reading order, each with its
+exact text in the verse, its value (canonical rational string), its convention kind, what it
+counts (target language and an English gloss), plus honest completeness. SAGE verifies each
+text against the verse and reads digit numerals itself (numbers/numerals.py). Comparison
+against the indexed expected values happens later, locally, in numbers/compare.py --
+extraction never sees the expected values.
 """
 
 from __future__ import annotations
@@ -20,7 +21,8 @@ from .batching import ExtractionBatch
 from .transport import _digest
 from .models import (
     freeze,
-    EXTRACTION_STATUSES,
+    MODEL_EXTRACTION_STATUSES,
+    VALUE_KINDS,
     Extraction,
 )
 
@@ -32,9 +34,11 @@ _PARSING_FIELDS: dict[str, frozenset[str]] = {
     "decimal": frozenset({"separator"}),
     "fractions": frozenset({"notation", "forms"}),
     "ranges": frozenset({"separator"}),
-    "qualifiers": frozenset({"forms", "markers"}),
-    "units": frozenset({"forms", "abbreviations"}),
+    "ordinals": frozenset({"form", "suffixes"}),
+    "qualifiers": frozenset({"forms"}),
 }
+# Unit forms live per location in style profiles (rules.units.locations.<where>.forms).
+_UNIT_LOCATIONS = ("body", "heading", "footnote")
 
 
 def _error(message: str, *, code: str) -> ValidationError:
@@ -129,8 +133,8 @@ def _parsing_conventions(style_profile: Mapping[str, object]) -> dict[str, objec
     result: dict[str, object] = {}
     for area, allowed in _PARSING_FIELDS.items():
         raw = rules.get(area)
-        if not isinstance(raw, Mapping):
-            continue
+        if not isinstance(raw, Mapping) or raw.get("status") == "NOT_SPECIFIED":
+            continue  # an unspecified rule says nothing about how this text writes numbers
         selected = {
             field: _safe_convention_value(raw[field])
             for field in sorted(allowed)
@@ -138,15 +142,71 @@ def _parsing_conventions(style_profile: Mapping[str, object]) -> dict[str, objec
         }
         if selected:
             result[area] = selected
+    units = rules.get("units")
+    locations = units.get("locations") if isinstance(units, Mapping) else None
+    if isinstance(locations, Mapping):
+        forms: dict[str, list[str]] = {}
+        for where in _UNIT_LOCATIONS:
+            location = locations.get(where)
+            if isinstance(location, Mapping) and location.get("status") == "CONFIGURED":
+                for unit, labels in (location.get("forms") or {}).items():
+                    merged = forms.setdefault(str(unit), [])
+                    merged.extend(label for label in _safe_convention_value(labels) if label not in merged)
+        if forms:
+            result["units"] = {"forms": {unit: forms[unit] for unit in sorted(forms)}}
+    elif isinstance(units, Mapping) and isinstance(units.get("forms"), Mapping):
+        # already-selected conventions (a second pass must reproduce the same selection)
+        result["units"] = {"forms": _safe_convention_value(units["forms"])}
     return result
 
 
-def _validated_extraction_item(raw: Mapping[str, Any]) -> Extraction:
-    """Validate status and the ordered numeric values found in one work unit."""
+def _surface_at(text: str, surface: str, cursor: int, taken: list[tuple[int, int]]) -> int:
+    """Where a number's text stands in its verse, or -1.
+
+    The match must be a whole token (a "7" inside "17" or "seven" inside "seventy" is not the
+    number) and must not overlap a number already placed; the first such match at or after the
+    previous number wins, else the first anywhere (the model listed numbers out of order),
+    else the very token of an earlier number (listed twice).
+    """
+    def whole(start: int) -> bool:
+        """Whether the match at ``start`` is a whole token, not part of a longer word or numeral."""
+        end = start + len(surface)
+        before = text[start - 1] if start else ""
+        after = text[end] if end < len(text) else ""
+        return not ((before.isalnum() and surface[0].isalnum()) or (after.isalnum() and surface[-1].isalnum())
+                    or (before in ",." and start > 1 and text[start - 2].isdigit() and surface[0].isdigit())
+                    or (after in ",." and end + 1 < len(text) and text[end + 1].isdigit() and surface[-1].isdigit()))
+
+    spaces = {"\u00a0": " ", "\u202f": " ", "\u2009": " "}
+    # same length, so offsets still hold
+    text, surface = ("".join(spaces.get(char, char) for char in value) for value in (text, surface))
+    found = [match.start() for match in re.finditer(re.escape(surface), text)]
+    tokens = [start for start in found if whole(start)]
+    free = [start for start in tokens
+            if not any(start < end and begin < start + len(surface) for begin, end in taken)]
+    # last resort: the same token again (the model listed it twice), never a partial overlap
+    again = [start for start in tokens if (start, start + len(surface)) in taken]
+    return next((start for start in free if start >= cursor), free[0] if free else again[0] if again else -1)
+
+
+_NUMBER_FIELDS = frozenset({"text", "value", "kind", "counts", "counts_en"})
+
+
+def _validated_extraction_item(raw: Mapping[str, Any], text: str = "",
+                               conventions: Mapping[str, object] | None = None) -> Extraction:
+    """Validate one work unit's numbers against its own text, then read its digit numerals locally.
+
+    Each number's ``text`` must occur in the work unit at or after the previous number (reading
+    order); a number whose text is not there is dropped with a limitation. A number that is a
+    digit numeral takes SAGE's own reading (``NUMERAL_VALUE_DIFFERS`` when the model read it
+    otherwise); a digit numeral the model did not return is added (origin ``LOCAL``); a numeral
+    with no well-formed reading is a ``MALFORMED_NUMERAL`` issue.
+    """
+    from .numerals import find_numerals
     status = _require_text(raw["status"], "status")
-    if status not in EXTRACTION_STATUSES:
+    if status not in MODEL_EXTRACTION_STATUSES:
         raise _error("Extraction status is unsupported", code="NCA_EXTRACTION_SCHEMA_INVALID")
-    limitations = tuple(
+    limitations = list(
         _require_text(value, f"limitations[{index}]")
         for index, value in enumerate(
             _require_list(raw["limitations"], "limitations", code="NCA_EXTRACTION_SCHEMA_INVALID")
@@ -154,13 +214,61 @@ def _validated_extraction_item(raw: Mapping[str, Any]) -> Extraction:
     )
     if status != "COMPLETE" and not limitations:
         raise _error("Incomplete extraction must state a limitation", code="NCA_EXTRACTION_SCHEMA_INVALID")
-    values = tuple(
-        _fraction(value, f"values[{index}]")
-        for index, value in enumerate(
-            _require_list(raw["values"], "values", code="NCA_EXTRACTION_SCHEMA_INVALID")
-        )
-    )
-    return Extraction(values=values, status=status, limitations=limitations)
+    numbers = _require_list(raw["numbers"], "numbers", code="NCA_EXTRACTION_SCHEMA_INVALID")
+    rows: list[dict[str, object]] = []
+    cursor = 0
+    for index, item in enumerate(numbers):
+        item = _require_object(item, f"numbers[{index}]", code="NCA_EXTRACTION_SCHEMA_INVALID")
+        _require_exact_keys(item, required=_NUMBER_FIELDS, label=f"numbers[{index}]",
+                            code="NCA_EXTRACTION_SCHEMA_INVALID")
+        if not isinstance(item["kind"], str) or item["kind"] not in VALUE_KINDS:
+            raise _error("Extraction kinds must name one convention kind per value",
+                         code="NCA_EXTRACTION_SCHEMA_INVALID")
+        surface = _require_text(item["text"], f"numbers[{index}].text")
+        counts = _require_text(item["counts"], f"numbers[{index}].counts", allow_empty=True)
+        counts_en = _require_text(item["counts_en"], f"numbers[{index}].counts_en", allow_empty=True)
+        try:
+            value = _fraction(item["value"], f"numbers[{index}].value")
+        except ValidationError:
+            limitations.append(f"NCA_VALUE_MALFORMED: {item['value']!r}")
+            status = "PARTIAL"
+            continue
+        start = _surface_at(text, surface, cursor, [row["span"] for row in rows]) if text else -1
+        if text and start < 0:
+            limitations.append(f"NCA_SURFACE_NOT_IN_TEXT: {surface!r}")
+            status = "PARTIAL"
+            continue
+        if start >= 0:
+            cursor = start + len(surface)
+        rows.append({"value": value, "kind": item["kind"], "surface": surface,
+                     "span": (start, start + len(surface)) if start >= 0 else (0, 0),
+                     "counts": counts, "counts_en": counts_en, "origin": "MODEL"})
+    issues: list[str] = []
+    if text:
+        for numeral in find_numerals(text, conventions):
+            if numeral.malformed:
+                issues.append(f"MALFORMED_NUMERAL:{numeral.text}")
+            owner = next((row for row in rows if row["span"][0] <= numeral.start and numeral.end <= row["span"][1]),
+                         None)
+            if owner is None:
+                if not numeral.malformed:
+                    # a suffixed digit numeral ("2nd") is an ordinal: a convention edge case
+                    rows.append({"value": numeral.readings[0], "kind": "ORDINAL" if numeral.suffixed else "CARDINAL",
+                                 "surface": numeral.text,
+                                 "span": (numeral.start, numeral.end), "counts": "", "counts_en": "",
+                                 "origin": "LOCAL"})
+                continue
+            if owner["span"] == (numeral.start, numeral.end) and numeral.readings \
+                    and owner["value"] not in numeral.readings:
+                issues.append(f"NUMERAL_VALUE_DIFFERS:{numeral.text}:model={owner['value']}")
+                owner["value"] = numeral.readings[0]
+        rows.sort(key=lambda row: row["span"])
+    return Extraction(
+        values=tuple(row["value"] for row in rows), status=status, limitations=tuple(limitations),
+        kinds=tuple(row["kind"] for row in rows), surfaces=tuple(row["surface"] for row in rows),
+        spans=tuple(row["span"] for row in rows), counts=tuple(row["counts"] for row in rows),
+        counts_en=tuple(row["counts_en"] for row in rows), origins=tuple(row["origin"] for row in rows),
+        issues=tuple(issues))
 
 
 @dataclass(frozen=True)
@@ -189,10 +297,23 @@ class BatchValidation:
             object.__setattr__(self, field, freeze(getattr(self, field)))
 
 
+def local_input_id(position: int) -> str:
+    """Batch-local model-facing ID for the input at one 0-based batch position.
+
+    Controller input IDs are 70-character hashes the model must echo; short positional IDs
+    keep request and response size proportional to the verses, not to their identities.
+    """
+    return f"u{position + 1}"
+
+
 def build_batch_extraction_payload(
     batch: ExtractionBatch, *, parsing_conventions: Mapping[str, object],
 ) -> Mapping[str, object]:
-    """Send only bound target streams, routed SFM, and allowlisted parsing conventions."""
+    """Send only the visible target text of each stream, with batch-local IDs and conventions.
+
+    Raw routed SFM is not sent: it repeats each verse and carries verse numbers, note callers
+    and cross-references the convention says never to count.
+    """
     if not isinstance(batch, ExtractionBatch) or not isinstance(parsing_conventions, Mapping):
         raise _error("Invalid batch extraction input", code="NCA_EXTRACTION_PAYLOAD_INVALID")
     conventions = _parsing_conventions({"rules": parsing_conventions})
@@ -202,16 +323,16 @@ def build_batch_extraction_payload(
     return {
         "schema_version": "1.0", "phase": "EXTRACTION", "batch_id": batch.batch_id,
         "language": batch.inputs[0].language,
-        "routed_sfm": batch.routed_sfm,
-        "work_units": [{"input_id": value.input_id, "stream_id": value.stream_id,
-                        "text": value.text} for value in batch.inputs],
+        "work_units": [{"input_id": local_input_id(position), "text": value.text}
+                       for position, value in enumerate(batch.inputs)],
         "parsing_conventions": conventions,
-        "output_schema_id": "sage-nca-extraction-1.0#extraction",
+        "output_schema_id": "sage-nca-extraction-3.0#extraction",
     }
 
 
 def validate_batch_extraction_response(
-    batch: ExtractionBatch, response: Mapping[str, object],
+    batch: ExtractionBatch, response: Mapping[str, object], *,
+    parsing_conventions: Mapping[str, object] | None = None,
 ) -> BatchValidation:
     """Reconcile envelope identities first, then validate known members independently."""
     code = "NCA_EXTRACTION_SCHEMA_INVALID"
@@ -226,12 +347,13 @@ def validate_batch_extraction_response(
     if root["batch_id"] != batch.batch_id:
         raise _error("Invalid batch identities", code=coverage)
     rows = _require_list(root["work_units"], "work_units", code=code)
+    controller_ids = {local_input_id(position): value.input_id for position, value in enumerate(batch.inputs)}
     received = []
     for row in rows:
         item = _require_object(row, "work unit", code=coverage)
-        if not isinstance(item.get("input_id"), str) or not item["input_id"]:
+        if not isinstance(item.get("input_id"), str) or item["input_id"] not in controller_ids:
             raise _error("Invalid batch identities", code=coverage)
-        received.append(item["input_id"])
+        received.append(controller_ids[item["input_id"]])
     expected = {item.input_id for item in batch.inputs}
     if len(received) != len(set(received)) or set(received) - expected:
         raise _error("Invalid batch identities", code=coverage)
@@ -243,9 +365,9 @@ def validate_batch_extraction_response(
             pending[value.input_id] = "NCA_BATCH_INPUT_MISSING"
             continue
         try:
-            _require_exact_keys(raw, required=frozenset({"input_id", "status", "limitations", "values"}),
+            _require_exact_keys(raw, required=frozenset({"input_id", "status", "limitations", "numbers"}),
                                 label="work unit", code=code)
-            accepted[value.input_id] = _validated_extraction_item(raw)
+            accepted[value.input_id] = _validated_extraction_item(raw, value.text, parsing_conventions)
         except ValidationError as exc:
             pending[value.input_id] = str(exc.code)
             continue

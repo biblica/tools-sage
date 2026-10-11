@@ -35,7 +35,7 @@ def report_document() -> dict[str, object]:
             "outcome": "NEEDS_REVIEW", "mode": "ORDERED", "authority": "OL",
             "wip_values": ["4", "3"], "expected_values": ["3", "4"],
             "review_context": {
-                "wip_order": ["4", "3"], "expected_order": ["3", "4"],
+                "kind": "ORDER_DIFFERENCE", "wip_order": ["4", "3"], "expected_order": ["3", "4"],
                 "authority_text": "three men and four women",
             },
         },
@@ -55,9 +55,9 @@ def report_document() -> dict[str, object]:
             "wip": {"identity": "WIP", "sha256": "d" * 64},
             "language_profile": {"grammar_issue": "Never report this."},
         },
-        "check_policy": {"checks": {"number_accuracy": True, "presentation_consistency": True, "footnote_review": True}},
+        "check_policy": {"checks": {"number_accuracy": True, "footnote_review": True}},
         "model_receipts": {"EXTRACTION": [{
-            "phase": "EXTRACTION", "task_version": "nca-extraction-1.0",
+            "phase": "EXTRACTION", "task_version": "nca-extraction-3.0",
             "provider": "fixture-provider", "model": "fixture-model", "reasoning_effort": "medium",
             "route_id": "route-1", "routing_mode": "AUTOMATIC", "qualification_status": "QUALIFIED",
             "prompt_sha256": "e" * 64, "input_sha256": "f" * 64, "response_sha256": "0" * 64,
@@ -134,16 +134,16 @@ def test_needs_review_finding_gets_a_copy_paste_translator_note():
 
 
 def test_fail_finding_gets_its_own_translator_note_with_the_authority_named():
-    """A FAIL finding's note must name which authority (OL/NIV) the expected values came from."""
+    """A FAIL finding's note names the authority the expected values came from (a value FAIL is OL)."""
     document = report_document()
-    document["groups"][0]["comparison"].update(outcome="FAIL", authority="NIV")
+    document["groups"][0]["comparison"].update(outcome="FAIL", authority="OL", review_context={"kind": "VALUE_DIFFERENCE"})
     document["findings"][0].update(code="NCA_NUMBER_FAIL", severity="BLOCKING")
     document["summary"].update(needs_review=0, failures=1)
 
     report = render_nca_report(document)
 
     assert "> MAT 1:2: Please check the numbers in this verse." in report
-    assert "the reference translation (NIV), it should have 3, 4." in report
+    assert "based on the original-language text, it should have 3, 4." in report
 
 
 def test_pass_and_not_assessed_outcomes_produce_no_translator_note():
@@ -271,3 +271,170 @@ def test_historical_missing_planned_call_count_is_not_inferred():
     assert 'Planned extraction calls (initial batches): `NOT RECORDED`' in report
     document['metrics']['planning']['planned_extraction_calls'] = 1
     assert 'Planned extraction calls (initial batches): `1`' in render_nca_report(document)
+
+
+def test_normalized_ol_review_note_does_not_claim_the_original_language_text():
+    """EZR 1:10 feedback: a normalized index reading must not be presented as the literal OL text."""
+    document = report_document()
+    document["groups"][0]["comparison"].update(review_context={
+        "kind": "OL_NORMALIZED_UNDOCUMENTED", "ol_text": "OL fixture text", "bsb_text": "BSB fixture text",
+        "niv_values": ["3", "4"], "normalizations": [{"LAYER": "FINAL_OL_VERSE_OVERRIDE", "SOURCE_EXPRESSION": "",
+                                                      "REASON": "Corpus-wide audit"}]})
+    report = render_nca_report(document)
+    note_line = next(line for line in report.splitlines() if line.startswith("> MAT 1:2"))
+    assert "based on the original-language text" not in note_line
+    assert "This may not be an error" in note_line
+    assert 'Original-language text: "OL fixture text"' in note_line
+    assert 'Reference translation (BSB): "BSB fixture text". Also see the NIV' in note_line
+
+
+def test_documented_normalization_note_names_the_expression():
+    """A documented override names the OL expression and reason the index did not count."""
+    document = report_document()
+    document["groups"][0]["comparison"].update(review_context={
+        "kind": "OL_NORMALIZATION_DIFFERENCE", "ol_text": "OL", "bsb_text": "BSB", "niv_values": [],
+        "normalizations": [{"LAYER": "AUDITED_OL_NORMALIZATION_MANIFEST", "SOURCE_EXPRESSION": "שֵׁת",
+                            "REASON": "Proper name, not the numeral six."}]})
+    report = render_nca_report(document)
+    assert '("שֵׁת": Proper name, not the numeral six.)' in report
+
+
+def test_pass_groups_are_counted_but_not_listed():
+    """Tester feedback 2a3: a PASS verse is summary data only; the report lists what needs action."""
+    document = chapter_document()
+    passing = dict(deepcopy(document['groups'][1]), unit_id='passing', target_references=['MAT 4:1'], notes=[])
+    passing['comparison'] = dict(passing['comparison'], outcome='PASS', review_context={})
+    document['groups'].append(passing)
+    document['summary'].update(passes=1)
+    report = render_nca_report(document)
+    assert '### `passing`' not in report
+    assert '## MAT 4' not in report
+    assert 'Passes: `1` (counted here, not listed below)' in report
+    # A PASS group that still carries an advisory note stays visible.
+    passing['notes'] = deepcopy(document['groups'][1]['notes'])
+    assert '### `passing`' in render_nca_report(document)
+
+
+def _action_document():
+    """A two-chapter document: one OL FAIL in MAT 1, one NOT_INDEXED verse in MAT 2."""
+    document = report_document()
+    group = document["groups"][0]
+    group.update(evidence={"wip_text": "Four women and three men."}, notes=[])
+    group["comparison"].update(outcome="FAIL", review_context={
+        "kind": "VALUE_DIFFERENCE", "ol_text": "τρεῖς ἄνδρες", "bsb_text": "three men",
+        "ol_values": ["3"], "niv_values": ["3"], "match_status": ["PASS_EXACT"]},
+        wip_values=["4", "3"], expected_values=["3"])
+    document["findings"][0].update(code="NCA_NUMBER_FAIL", severity="BLOCKING", kind="VALUE_DIFFERENCE",
+                                   authority="OL", expected_values=["3"])
+    quiet = dict(deepcopy(group), unit_id="unit-2", target_references=["MAT 2:1"], western_references=["MAT 2:1"],
+                 limitations=["NOT_INDEXED"], evidence={"wip_text": "They went home."})
+    quiet["comparison"] = {"outcome": "NOT_INDEXED", "mode": "ORDERED", "authority": "NONE",
+                           "wip_values": [], "expected_values": [], "review_context": {}}
+    document["groups"].append(quiet)
+    return document
+
+
+def test_action_reports_follow_the_rtc_template_per_chapter():
+    """NCA operator reports use the RTC/STC action-report template, one per chapter."""
+    from sage.nca_reporting import build_chapter_reports, render_nca_action_report
+    reports = build_chapter_reports(_action_document(), primary_language="en", secondary_language=None)
+    assert [(r["book"], r["chapter"]) for r in reports] == [("MAT", 1), ("MAT", 2)]
+    first = render_nca_action_report(reports[0])
+    assert first.startswith("# Number Consistency & Accuracy (NCA) — NCA Action Report\n")
+    for expected in ("- Projects: `WIP` checked against `GRK OL` (secondary: `NIV`)", "- Scope: `MAT 1`",
+                     "## Authority and analyzed snapshot", "Number reference package",
+                     "## Execution route", "## Actionable findings",
+                     "### NUMBERS_RUN-1_UNIT-1_0001 — MAT 1:2", "- Action level: `BLOCKING`",
+                     "**Issue — English**", "**Proposed action — English**",
+                     "based on the original-language text, it should have 3.",
+                     "**WIP evidence**", "Four women and three men.", "**GRK OL evidence**", "τρεῖς ἄνδρες",
+                     "**BSB evidence**", "**Also see — NIV (other reference)**", "SQS: `NOT_APPLIED`"):
+        assert expected in first, expected
+    # The NIV is cited by reference and numbers only; the quoted BSB text carries its attribution.
+    assert "**NIV evidence**" not in first
+    assert "Berean Standard Bible, public domain" in first.split("## Sources and attribution", 1)[1]
+    # Technical plumbing stays in Run diagnostics, never the operator report.
+    for absent in ("unit-1", "Planned extraction", "presentation", "Groups without extraction", "c" * 64 + "`)"):
+        assert absent not in first
+    second = render_nca_action_report(reports[1])
+    assert "No actionable findings were submitted." in second
+    assert "1 without indexed numbers" in second
+
+
+def test_attested_variant_finding_carries_footnote_guidance():
+    """The translator note for an attested alternate reading names the footnote requirement."""
+    from sage.nca_reporting import build_chapter_reports, render_nca_action_report
+    document = _action_document()
+    group = document["groups"][0]
+    group["comparison"].update(outcome="NEEDS_REVIEW", review_context={
+        "kind": "ATTESTED_VARIANT_READING", "ol_text": "OL", "bsb_text": "BSB", "ol_values": ["3"],
+        "niv_values": ["3"], "match_status": ["PASS_EXACT"], "variant_reference": "MAT 1:1",
+        "alternate_values": ["4", "3"], "variant_guidance": {
+            "footnote_if_target_follows_alt": "REQUIRE", "scholarship_status": "DIVIDED",
+            "suggested_note": "Some manuscripts add four women."}})
+    document["findings"][0].update(code="NCA_NUMBER_NEEDS_REVIEW", severity="REVIEW", kind="ATTESTED_VARIANT_READING")
+    report = render_nca_action_report(build_chapter_reports(document, primary_language="en",
+                                                            secondary_language=None)[0])
+    assert "- Action level: `REVIEW`" in report
+    assert "A footnote is required. Suggested note: Some manuscripts add four women." in report
+
+
+def test_action_report_lists_text_critical_decisions_and_order_notes():
+    """Text-critical decisions get their own operator table; correct reorderings are plain notes."""
+    from sage.nca_reporting import build_chapter_reports, render_nca_action_report
+    document = _action_document()
+    group = document["groups"][0]
+    group["notes"] = [
+        {"kind": "TEXT_CRITICAL", "western_reference": "MAT 1:2", "ol_values": ["2"], "niv_values": ["30", "42"],
+         "wip_values": ["30", "42"], "follows": "NIV", "footnote_in_wip": False,
+         "suggested_note": "Hebrew does not have thirty.", "niv_footnote": ""},
+        {"kind": "ORDER_NOTE", "western_reference": "MAT 1:2",
+         "pairings": [{"wip_value": "1000", "wip_counts": "silver dishes"}, {"wip_value": "30", "wip_counts": "gold dishes"}]},
+    ]
+    report = render_nca_action_report(build_chapter_reports(document, primary_language="en", secondary_language=None)[0])
+    assert "## Text-critical decisions (operator)" in report
+    assert "| MAT 1:2 | 2 | 30, 42 | NIV | **no** | Hebrew does not have thirty. |" in report
+    assert "## Notes (no action needed)" in report and "silver dishes 1000" in report
+
+
+def test_reports_cite_apparatus_evidence_for_findings_and_decisions():
+    """Suggestions cite their support: readings with named editions, NET excerpt with link, registry."""
+    from sage.nca_reporting import build_chapter_reports, render_nca_action_report
+    document = _action_document()
+    group = document["groups"][0]
+    sblgnt = {"source": "SBLGNT_APPARATUS", "summary": "ἄνδρες RP ] + τρεῖς Treg NA28; + δύο WH",
+              "url": "https://github.com/Faithlife/SBLGNT", "reference": "MAT 1:2",
+              "readings": [{"text": "ἄνδρες", "witnesses": ["RP"], "sblgnt": True},
+                           {"text": "adds τρεῖς", "witnesses": ["Treg", "NA28"], "sblgnt": False}]}
+    net = {"source": "NET_TC", "summary": "The MT does not have “thirty.”", "url": "https://netbible.org/bible/x+1",
+           "reference": "MAT 1:2", "basis": ["Syriac Peshitta", "Hebrew manuscripts"]}
+    registry = {"source": "REGISTRY", "summary": "Some Greek manuscripts read 4,000.", "status": "NIV_FAVORED",
+                "url": "", "reference": "MAT 1:2"}
+    group["comparison"]["review_context"]["apparatus"] = [sblgnt, net]
+    group["notes"] = [{"kind": "TEXT_CRITICAL", "western_reference": "MAT 1:2", "ol_values": ["2"],
+                       "niv_values": ["30"], "wip_values": ["30"], "follows": "NIV", "footnote_in_wip": False,
+                       "suggested_note": "", "niv_footnote": "", "apparatus": [registry, net]}]
+    report = render_nca_action_report(build_chapter_reports(document, primary_language="en", secondary_language=None)[0])
+    assert "**Apparatus evidence**" in report
+    assert "SBLGNT text «ἄνδρες» (Robinson–Pierpont); variant «adds τρεῖς» (Tregelles, Nestle–Aland 28)" in report
+    assert "- **[NET Bible text-critical note](https://netbible.org/bible/x+1)** — MAT 1:2 — basis: Syriac Peshitta; Hebrew manuscripts: “The MT does not have “thirty.”" in report
+    assert "- **SAGE textual-variant registry** — MAT 1:2 (scholarship: NIV_FAVORED): Some Greek manuscripts read 4,000." in report
+    assert "Suggested footnote basis (the translation has no footnote here): Some Greek manuscripts read 4,000." in report
+    attribution = report.split("## Sources and attribution", 1)[1]
+    assert "NET Bible® notes copyright © 1996, 2019 by Biblical Studies Press, L.L.C." in attribution
+    assert "SBLGNT apparatus" in attribution and "Open Scriptures" not in attribution
+
+
+def test_bsb_citation_points_to_the_original_language_niv_and_versions():
+    """A BSB reading is cited with "Also see" (MT, NIV, the versions) and carries its public-domain attribution."""
+    from sage.nca_reporting import build_chapter_reports, render_nca_action_report
+    document = _action_document()
+    group = document["groups"][0]
+    bsb = {"source": "BSB", "summary": "AGREES_NIV: 4 — “On the fourth day they said.”",
+           "url": "https://ebible.org/find/show.php?id=engbsb", "reference": "MAT 1:2",
+           "see_also": ["MT 7", "NIV 4", "LXX 4"]}
+    group["comparison"]["review_context"]["apparatus"] = [bsb]
+    report = render_nca_action_report(build_chapter_reports(document, primary_language="en", secondary_language=None)[0])
+    assert ("- **[Berean Standard Bible (public domain)](https://ebible.org/find/show.php?id=engbsb)** — MAT 1:2: "
+            "“AGREES_NIV: 4 — “On the fourth day they said.”” Also see: MT 7; NIV 4; LXX 4.") in report
+    assert "Berean Standard Bible, public domain" in report.split("## Sources and attribution", 1)[1]

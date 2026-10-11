@@ -2300,7 +2300,7 @@ class SageControlCenter:
                 "8": "READY can be used directly; WARNING is usable with a disclosed issue; ERROR requires correction before affected work.",
                 "9": "The global Operator language is the default primary language for new Jobs. Each Job owns one required primary and may add one optional secondary reporting language.",
                 "10": "GRK and HEB are governed original-language authorities; STC does not use a REFERENCE Project.",
-                "12": "NCA > Add NCA Job. Choose a WIP Project, qualified numbers package, and configured Number Style Profile. Choose independent accuracy, presentation, and footnote checks before each Run. See docs/NCA-CHEAT-SHEET.md.",
+                "12": "NCA > Add NCA Job. Choose a WIP Project, qualified numbers package, and configured Number Style Profile. Number accuracy and footnote review are saved as NCA defaults; Run with defaults uses them. See docs/NCA-CHEAT-SHEET.md.",
             }
             if choice == "11": self._show_support_docs()
             else:
@@ -2414,14 +2414,14 @@ class SageControlCenter:
         self.io.write()
 
     def nca_menu(self) -> None:
-        """Open the independent NCA workflow through its owned operator adapter."""
-        from .nca_menu import workflow_menu
-        workflow_menu(self)
+        """Open the NCA Job home in the standard Job menu shape."""
+        from .job_menus import job_home
+        job_home(self, "nca")
 
     def nca_job_menu(self, project: Job) -> None:
         """Open one NCA Job without using an RTC/STC fallback."""
-        from .nca_menu import job_menu
-        job_menu(self, project)
+        from .job_menus import open_job
+        open_job(self, project)
 
     def main_menu(self) -> str:
         """Render the task-oriented current Main Menu."""
@@ -2556,9 +2556,8 @@ class SageControlCenter:
         ]
         entries.sort(key=lambda item: item[0].casefold())
         if not entries:
-            self.io.write(f"No {tool_label} Jobs exist. Open {tool_label} from the Main Menu to create one.")
-            self.io.pause()
-            return None
+            self.io.write(f"No {tool_label} Jobs exist.")
+            return self._add_active_job(tool)
         options = [
             (
                 str(index),
@@ -2567,10 +2566,15 @@ class SageControlCenter:
             )
             for index, (_job_id, item) in enumerate(entries, 1)
         ]
+        add_key = str(len(entries) + 1)
+        options.append((add_key, f"Add new {tool_label} JOB"))
         options.append(("B", "Back"))
-        choice = self.io.choose(f"{self.localizer.text('Choose active Job')} [{tool_label}]", options)
+        choice = self.io.choose(
+            f"{self.localizer.text('Set active Job')} [{tool_label}]", options, blank_before=(add_key,))
         if choice == "B":
             return None
+        if choice == add_key:
+            return self._add_active_job(tool)
         selected = entries[int(choice) - 1][1]
         if isinstance(selected, JobLoadIssue):
             project = self._present_job_action_needed(selected, offer_onboarding=True)
@@ -2581,6 +2585,11 @@ class SageControlCenter:
         self.store.set_active_job(tool, project.job_id)
         self.io.write(f"Active {tool_label} job: {project.display_name}")
         return project
+
+    def _add_active_job(self, tool: str) -> Job | None:
+        """Create one Job with its wizard and make it the active Job of its type."""
+        from .job_menus import add_job
+        return add_job(self, tool)
 
     @staticmethod
     def _active_job_from_report(
@@ -2797,172 +2806,19 @@ class SageControlCenter:
             return
 
     def analysis_menu(self, tool: str) -> None:
-        """Choose, create, and operate one fixed RTC or STC primary-flow Job."""
+        """Open the RTC or STC Job home in the standard Job menu shape."""
+        from .job_menus import job_home
         normalized = tool.strip().lower()
         if normalized not in {"rtc", "stc"}:
             raise ValidationError(f"Analysis menu requires RTC or STC, not {tool}")
-        title = (
-            "REFERENCE TEXT COMPARISON (RTC)"
-            if normalized == "rtc"
-            else "SOURCE TEXT CORRESPONDENCE (STC)"
-        )
-        binding_label = (
-            "<WIP PROJECT, REFERENCE PROJECT>"
-            if normalized == "rtc"
-            else "<WIP PROJECT>"
-        )
-        while True:
-            report = self.store.discover_report(normalized, include_archived=True)
-            active_id = self.store.active_jobs().get(normalized)
-            active, active_issue = self._active_job_from_report(report, active_id)
-            active_label = active.job_id if active else active_issue.job_id if active_issue else "NONE"
-            if active_issue is not None:
-                active_label += " [ACTION NEEDED]"
-            context = [f"Active Job                   {active_label}"]
-            if active is not None:
-                context.append(f"WIP Project                  {active.bindings['wip']}")
-                if normalized == "rtc":
-                    context.append(
-                        f"REFERENCE Project            {active.bindings['reference']}"
-                    )
-                snapshot = dict(active.wip_snapshot or {})
-                context.append(
-                    f"WIP snapshot date             {snapshot.get('snapshot_date') or 'UNKNOWN'}"
-                )
-            choice = self.io.choose(
-                title,
-                (
-                    ("1", f"Open active {normalized.upper()} job"),
-                    ("2", f"Choose active {normalized.upper()} job"),
-                    ("3", f"Add {normalized.upper()} job {binding_label}"),
-                    ("4", f"Manage {normalized.upper()} jobs"),
-                    ("5", "Reports and history"),
-                    ("6", "Recovery and diagnostics"),
-                    ("7", "Maintain job storage"),
-                    ("B", "Back"),
-                ),
-                context=tuple(context),
-            )
-            if choice == "B":
-                return
-            if choice == "1":
-                selected = active
-                if active_issue is not None:
-                    selected = self._present_job_action_needed(
-                        active_issue,
-                        offer_onboarding=True,
-                    )
-                    if selected is not None:
-                        self.store.set_active_job(normalized, selected.job_id)
-                if selected is None:
-                    selected = self.choose_job(normalized)
-                if selected is not None:
-                    self.analysis_job_menu(selected)
-            elif choice == "2":
-                selected = self.choose_job(normalized)
-                if selected is not None:
-                    self.analysis_job_menu(selected)
-            elif choice == "3":
-                selected = self.create_job_wizard(normalized)
-                if isinstance(selected, Job):
-                    self.analysis_job_menu(selected)
-            elif choice == "4":
-                self.job_management_menu(normalized)
-            elif choice in {"5", "6"}:
-                selected = active or self.choose_job(normalized)
-                if selected is not None:
-                    if choice == "5":
-                        self.reports_menu(selected)
-                    else:
-                        self.recovery_menu(selected)
-            elif choice == "7":
-                self.job_storage_maintenance_menu(normalized)
+        job_home(self, normalized)
 
     def analysis_job_menu(self, project: Job) -> None:
-        """Operate one RTC or STC Job with exactly its fixed Run action."""
+        """Operate one RTC or STC Job in the standard [ XXX <WIP> ] shape."""
+        from .job_menus import open_job
         if project.tool not in {"rtc", "stc"}:
             raise ValidationError("Analysis Job menu requires an RTC or STC Job")
-        operation_label = {
-            "rtc": "Run Reference Text Comparison (RTC)",
-            "stc": "Run Source Text Correspondence (STC)",
-        }[project.tool]
-        while True:
-            project = self.store.active_job(project.tool) or self.store.load_job(
-                project.job_id,
-                tool=project.tool,
-            )
-            run = self.store.active_run(project)
-            snapshot = dict(project.wip_snapshot or {})
-            self.io.write()
-            self.io.write(f"{project.tool.upper()} JOB - {project.job_id}")
-            self.io.write("-" * 72)
-            self.io.write(f"WIP Project                  {project.bindings['wip']}")
-            if project.tool == "rtc":
-                self.io.write(
-                    f"REFERENCE Project            {project.bindings['reference']}"
-                )
-            self.io.write(
-                f"WIP snapshot date             {snapshot.get('snapshot_date') or 'UNKNOWN'}"
-            )
-            self.io.write(
-                f"WIP snapshot fingerprint      {snapshot.get('content_fingerprint') or 'UNKNOWN'}"
-            )
-            self.io.write()
-            self._write_job_ai_routing(project.tool, run)
-            if run is None:
-                self.io.write("Active Run                   NONE")
-                options = (
-                    ("1", operation_label),
-                    ("2", "Runs and task history"),
-                    ("3", "Manage Job"),
-                    ("4", "Reports and exports"),
-                    ("5", "Recovery and diagnostics"),
-                    ("B", "Back"),
-                )
-            else:
-                self.io.write("Active Run")
-                self.io.write(f"  Run                        {run.run_id}")
-                self.io.write(f"  Scope                      {run.scope}")
-                self.io.write(f"  Task                       {run.current_stage}")
-                self.io.write(f"  Status                     {run.status}")
-                options = (
-                    ("1", "Continue active Run"),
-                    ("2", operation_label),
-                    ("3", "Runs and task history"),
-                    ("4", "Manage Job"),
-                    ("5", "Reports and exports"),
-                    ("6", "Recovery and diagnostics"),
-                    ("B", "Back"),
-                )
-            choice = self.io.choose(f"{project.tool.upper()} CHECK", options)
-            if choice == "B":
-                return
-            if run is None:
-                if choice == "1":
-                    self.start_saw_run(project, project.tool)
-                elif choice == "2":
-                    self.runs_menu(project)
-                elif choice == "3":
-                    if self._job_settings_menu(project):
-                        return
-                elif choice == "4":
-                    self.reports_menu(project)
-                elif choice == "5":
-                    self.recovery_menu(project)
-            else:
-                if choice == "1":
-                    self.continue_run(project, run)
-                elif choice == "2":
-                    self.start_saw_run(project, project.tool)
-                elif choice == "3":
-                    self.runs_menu(project)
-                elif choice == "4":
-                    if self._job_settings_menu(project):
-                        return
-                elif choice == "5":
-                    self.reports_menu(project)
-                elif choice == "6":
-                    self.recovery_menu(project)
+        open_job(self, project)
 
     @staticmethod
     def _saw_operation_label(operation: str) -> str:
@@ -2971,17 +2827,25 @@ class SageControlCenter:
             str(operation).lower(), str(operation).upper()
         )
 
-    def _rtc_policy_menu(self, scope: str, *, workflow: str = "rtc") -> dict[str, Any] | None:
-        """Let the Operator tune RTC checks/policies before the Run snapshot is sealed."""
+    def _rtc_policy_menu(
+        self,
+        scope: str,
+        *,
+        workflow: str = "rtc",
+        initial: dict[str, Any] | None = None,
+        action_label: str = "Run Reference Text Comparison (RTC)",
+    ) -> dict[str, Any] | None:
+        """Let the Operator tune RTC checks/policies, for one Run or as the saved Job preset."""
         profile_path = (
             self.root / "system" / "config" / "workflows" / workflow / "profile.yml"
         )
         defaults = default_rtc_policy(profile_path)
+        start = initial or defaults
         policy = {
-            "policy_version": defaults["policy_version"],
-            "checks": dict(defaults["checks"]),
-            "usfm_contexts": dict(defaults["usfm_contexts"]),
-            "original_language": dict(defaults.get("original_language") or {}),
+            "policy_version": start["policy_version"],
+            "checks": dict(start["checks"]),
+            "usfm_contexts": dict(start["usfm_contexts"]),
+            "original_language": dict(start.get("original_language") or {}),
         }
         check_rows = [
             ("structure_completeness", "Check structure and completeness"),
@@ -2997,7 +2861,7 @@ class SageControlCenter:
         policy_cycle = ("NORMAL", "MATERIAL_ONLY", "STRUCTURE_ONLY")
         while True:
             self.io.write_menu_header(f"REFERENCE TEXT COMPARISON (RTC): {scope}")
-            self.io.write_menu_item(1, "Run Reference Text Comparison (RTC)")
+            self.io.write_menu_item(1, action_label)
             self.io.write_menu_item(2, "Restore defaults")
             self.io.write_menu_header("Checks [Choose number to toggle ON/OFF]", major=False)
             for index, (key, label) in enumerate(check_rows, 3):
@@ -3059,8 +2923,12 @@ class SageControlCenter:
                 continue
             self.io.write("Invalid choice. Choose one listed option.")
 
-    def start_saw_run(self, project: Job, operation: str) -> None:
-        """Choose scope, preview bounded work, then create one analysis Run."""
+    def start_saw_run(self, project: Job, operation: str, *, policy: dict[str, Any] | None = None) -> None:
+        """Choose scope, preview bounded work, then create one analysis Run.
+
+        A supplied RTC ``policy`` (the Job's saved defaults) is used as-is; without one the
+        per-Run RTC policy menu is shown, as legacy callers expect.
+        """
         focus = None
         check_type = None
         if operation in {"focused", "ol"}:
@@ -3078,8 +2946,8 @@ class SageControlCenter:
             scope = self._select_scripture_scope(project, primary_binding="wip")
             if scope is None:
                 return
-            effective_policy = None
-            if operation == "rtc":
+            effective_policy = policy
+            if operation == "rtc" and effective_policy is None:
                 effective_policy = self._rtc_policy_menu(
                     scope,
                     workflow=project.runtime_tool,
@@ -4847,6 +4715,9 @@ class SageControlCenter:
             ]
             if project.tool == "bic":
                 recovery_options.append(("7", "Restart one BIC scope [TARGET unchanged]"))
+            if project.tool in {"rtc", "stc", "nca"}:
+                # The standard Job menus keep validation and the manifest under diagnostics.
+                recovery_options.extend((("7", "Validate Job"), ("8", "Show Job manifest")))
             recovery_options.append(("B", "Back"))
             choice = self.io.choose(
                 f"{project.tool.upper()} - {self.localizer.text('Recovery and reset')}",
@@ -4889,6 +4760,11 @@ class SageControlCenter:
                     run = self.store.restart_bic_scope(project, scope=scope)
                     self.io.write(f"Restarted BIC analytical scope {scope}: {run.run_id}")
                     self.io.write("TARGET Scripture changed: NO")
+                    self.io.pause()
+                elif choice == "7" and project.tool in {"rtc", "stc", "nca"}:
+                    self.project_readiness(project)
+                elif choice == "8" and project.tool in {"rtc", "stc", "nca"}:
+                    self.io.write(project.manifest_path.read_text(encoding="utf-8"))
                     self.io.pause()
             except SageError as exc:
                 self.show_error(exc)
@@ -5037,7 +4913,7 @@ class SageControlCenter:
     # ---------- Job management ----------
 
     def _delete_job(self, target: Job) -> bool:
-        """Confirm and delete one Job, with an independent published-report choice."""
+        """Confirm deletion first, then choose whether published reports are kept."""
         runs = self.store.list_runs(target)
         report_root = storage_layout(self.root).reports_root / target.job_id
         report_files = (
@@ -5045,6 +4921,8 @@ class SageControlCenter:
             if report_root.is_dir()
             else []
         )
+        wip = target.bindings.get("wip")
+        data_label = f"{target.tool.upper()} {wip}" if wip else target.tool.upper()
         self.io.write()
         self.io.write(f"DELETE JOB - {target.job_id}")
         self.io.write("-" * 72)
@@ -5057,28 +4935,26 @@ class SageControlCenter:
         self.io.write(
             "SAGE Projects and Paratext Project files will NOT be deleted or modified."
         )
-
-        remove_reports = False
-        if report_files:
-            remove_reports = self.io.confirm(
-                "Delete the published reports for this Job too?",
-                default=False,
-            )
-        report_disposition = (
-            "DELETE"
-            if remove_reports
-            else "PRESERVE"
-            if report_files
-            else "NONE"
-        )
-        self.io.write(f"Published reports:            {report_disposition}")
-        if not self.io.confirm(
-            f"Permanently delete Job {target.job_id} with the scope shown above?",
-            default=False,
-        ):
+        if not self.io.confirm(f"Delete Job {target.job_id}?", default=False):
             self.io.write("Delete Job cancelled. No Job or report data was changed.")
             self.io.pause()
             return False
+
+        remove_reports = False
+        if report_files:
+            choice = self.io.choose(
+                "Delete Job data",
+                (
+                    ("1", f"Delete all {data_label} data"),
+                    ("2", f"Delete {data_label} data, keep only reports"),
+                    ("B", "Back"),
+                ),
+            )
+            if choice not in {"1", "2"}:
+                self.io.write("Delete Job cancelled. No Job or report data was changed.")
+                self.io.pause()
+                return False
+            remove_reports = choice == "1"
 
         self.store.remove_job(target, remove_reports=remove_reports)
         self.io.write(f"Deleted Job: {target.job_id}")
@@ -5255,22 +5131,26 @@ class SageControlCenter:
             return True, requested
 
     def _job_settings_menu(self, project: Job) -> bool:
-        """Manage Job snapshot/reporting settings, or delete the Job."""
+        """Manage one Job; True once the Job was deleted.
+
+        RTC, STC and NCA use the standard [ Manage XXX <WIP> ] screen; other Job types keep
+        reporting languages and the Job manifest here.
+        """
+        from .job_menus import STANDARD_JOB_TOOLS, manage_job
+        if project.tool in STANDARD_JOB_TOOLS:
+            return manage_job(self, project)
+        self._reporting_languages_menu(project, include_manifest=True)
+        return False
+
+    def _reporting_languages_menu(self, project: Job, *, include_manifest: bool = False) -> None:
+        """Manage one Job's primary and secondary reporting languages."""
         while True:
             project = self.store.load_job(project.job_id, tool=project.tool)
             primary = project.primary_report_language
             secondary = project.secondary_report_language
             self.io.write()
-            self.io.write(f"MANAGE JOB - {project.job_id}")
+            self.io.write(f"REPORTING LANGUAGES - {project.job_id}")
             self.io.write("-" * 72)
-            if project.tool in {"rtc", "stc", "nca"}:
-                self.io.write(f"WIP Project:               {project.bindings['wip']}")
-                if project.tool == "rtc":
-                    self.io.write(f"REFERENCE Project:         {project.bindings['reference']}")
-                self.io.write(
-                    "WIP snapshot date:          "
-                    + str(dict(project.wip_snapshot or {}).get("snapshot_date") or "UNKNOWN")
-                )
             self.io.write(f"Primary report language:   {primary} [JOB, REQUIRED]")
             self.io.write(f"Secondary report language: {secondary or 'NONE'} [JOB]")
             if secondary:
@@ -5286,42 +5166,17 @@ class SageControlCenter:
                 ("1", "Set secondary reporting language"),
                 ("2", "Clear secondary reporting language"),
                 ("3", "Set primary reporting language"),
-                ("4", "Show Job manifest"),
             ]
-            # Analysis Jobs expose snapshot refresh and deletion while Project
-            # bindings remain immutable for the Job lifetime.
-            if project.tool in {"rtc", "stc", "nca"}:
-                options.extend([
-                    ("5", "Refresh WIP snapshot from Project source"),
-                    ("6", "Delete Job"),
-                ])
+            if include_manifest:
+                options.append(("4", "Show Job manifest"))
             options.append(("B", "Back"))
             choice = self.io.choose(
-                "Manage Job",
+                "Manage reporting languages",
                 tuple(options),
             )
             if choice == "B":
-                return False
-            if choice == "5" and project.tool in {"rtc", "stc", "nca"}:
-                try:
-                    project = self.store.refresh_job_snapshot(
-                        project,
-                        imported_at=self._required_project_imported_at(
-                            project.bindings["wip"]
-                        ),
-                    )
-                    self.io.write(
-                        f"WIP snapshot refreshed: {dict(project.wip_snapshot or {}).get('snapshot_date')}"
-                    )
-                except SageError as exc:
-                    self.show_error(exc)
-                self.io.pause()
-                continue
-            if choice == "6" and project.tool in {"rtc", "stc", "nca"}:
-                if self._delete_job(project):
-                    return True
-                continue
-            if choice == "4":
+                return
+            if choice == "4" and include_manifest:
                 self.io.write(project.manifest_path.read_text(encoding="utf-8"))
                 self.io.pause()
                 continue

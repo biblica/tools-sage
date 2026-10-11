@@ -95,30 +95,30 @@
     "nca-numbers": {
       "cases": [
         {
-          "bundle_sha256": "b33b8ff4a38849666fd946362578cec38d87baa42691646177be7b55417275f7",
+          "bundle_sha256": "c99e44a6d7e0000f2f4e7d7379ae0a446b025acb3bef1ed948ae1db992b8ab49",
           "case_id": "exact-cardinal-evidence",
           "case_kind": "POSITIVE",
           "path": "system/evaluations/model-routing-alpha1/nca-numbers/exact-cardinal-evidence"
         },
         {
-          "bundle_sha256": "acdb44345a51981ac93130fad8e8d3dc082769a5ce46de249c3fa34ab985414c",
+          "bundle_sha256": "b4c13acd1c70634fcfcdaa8cfb5e28fb2f487aa62a7471087e0fa076927422f7",
           "case_id": "complete-no-number",
           "case_kind": "ZERO_FINDING",
           "path": "system/evaluations/model-routing-alpha1/nca-numbers/complete-no-number"
         },
         {
-          "bundle_sha256": "c061a5fc1bf51246f59a05e3958df74da408c2646da45f406e8225a634ff58f3",
+          "bundle_sha256": "caa3e6c0ca5a7ab93a4e95b4a241fc63be86c4ad2ce524a34cf2d49a8a193cc9",
           "case_id": "fabricated-span",
           "case_kind": "ADVERSARIAL",
           "path": "system/evaluations/model-routing-alpha1/nca-numbers/fabricated-span"
         }
       ],
-      "disqualifying_behavior": "Fabricate numeric evidence, accept missing or invalid batch coverage, combine independent adjudications or note assessments, supply expected values to target extraction, select authority, or upgrade uncertainty.",
+      "disqualifying_behavior": "Fabricate numeric values, ignore the counting convention, accept missing or invalid batch coverage, supply expected values to target extraction, select authority, or upgrade uncertainty.",
       "execution_class": "GOVERNED_SKILL",
       "repetitions_per_case": 3,
-      "required_semantic_success": "Return exact numeric evidence for the named phase; only target inventory may share one bounded multi-input review item.",
+      "required_semantic_success": "Return every counted number in reading order with its counting-convention kind; only target inventory may share one bounded multi-input review item.",
       "suite_id": "alpha1-nca-numbers",
-      "suite_sha256": "9bb95ea68529a5f0091a172db53fef43f664413deb8399395798bec5abcd4de0",
+      "suite_sha256": "83e98451c880064cdd7d7b8b263cbad8ede3e8163a9cc418c4211ce358bcf425",
       "suite_version": "1.0",
       "validator_id": "sealed-semantic-contract-v1"
     },

@@ -12,7 +12,6 @@ from sage.numbers.style import import_style_profile, load_style_profile
 
 CHECK_LABELS = {
     'number_accuracy': 'Number accuracy',
-    'presentation_consistency': 'Number usage and presentation',
     'footnote_review': 'Footnote review and recommendations',
 }
 

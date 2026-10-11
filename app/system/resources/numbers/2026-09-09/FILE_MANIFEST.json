@@ -16,6 +16,11 @@
       "bytes": 868
     },
     {
+      "path": "provenance/NIV_REDACTION.json",
+      "sha256": "fe45224365528ae7181aefb99e450e979d4ea5013808bcca59efe5def75a446c",
+      "bytes": 1300
+    },
+    {
       "path": "provenance/ORIGINAL_CHECKSUMS.sha256",
       "sha256": "b04a08e7e51e405defeb1c1821a8fb3c63bf1af4f6bda7ce7c4fff268b19b202",
       "bytes": 3658
@@ -37,8 +42,8 @@
     },
     {
       "path": "reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv",
-      "sha256": "a137b41441e19b3c8cdf60f0f502ee4d5b731ac30268fa436f32c8aeab9ca283",
-      "bytes": 4567363
+      "sha256": "4a0440325d8e26a7c3e1f7003852ddec25ec6281c9925628fd54dce5995e1ab8",
+      "bytes": 3712923
     },
     {
       "path": "reference/audit.tsv",
@@ -47,8 +52,8 @@
     },
     {
       "path": "reference/canonical_number_index.tsv",
-      "sha256": "e49e17d7887a4e1daa29d32098bfc496a36f1de610ecd8b6efdc6191762fb07d",
-      "bytes": 3026931
+      "sha256": "27c00323c61bafc91d39f4086f7a9d8fbf5515dbeaa3108e0b0372479e566d0d",
+      "bytes": 2172491
     },
     {
       "path": "reference/eng_org_map_rules.txt",
@@ -92,8 +97,8 @@
     },
     {
       "path": "reference/unit_conversion_registry.tsv",
-      "sha256": "ada6f2a8a19c838b9cd10f781a6678dc102b37d946a810feffab3f4206b8bb9c",
-      "bytes": 7784
+      "sha256": "ed3d017a3bdf363b05103deba14eb7dfb4e0651abf333921f87b2addfdcb9b5e",
+      "bytes": 6100
     }
   ]
 }

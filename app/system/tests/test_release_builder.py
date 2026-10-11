@@ -52,7 +52,8 @@ def test_release_builder_excludes_runtime_and_operator_scripture_but_bundles_ol(
         assert pin_name in names
         nca_pin = json.loads(archive.read(pin_name))
         reference_prefix = f"{prefix}/app/{nca_pin['path']}"
-        assert f"{reference_prefix}/reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv" in names
+        assert f"{reference_prefix}/reference/verses.tsv" in names
+        assert f"{reference_prefix}/reference/values.tsv" in names
         assert f"{reference_prefix}/reference/footnote_guidance.tsv" in names
         assert f"{reference_prefix}/CHECKSUMS.sha256" in names
         assert f"{prefix}/START-HERE.md" not in names

@@ -433,6 +433,17 @@ def test_guided_first_run_setup_records_missing_project_root_with_ready_test_ai(
     assert "BETA - PRE-RELEASE" in rendered
 
 
+def _active_rtc_job(center) -> None:
+    """Create one active RTC Job so the RTC home renders instead of redirecting to Add new."""
+    from datetime import datetime, timezone
+    job = center.store.create_job(
+        tool="rtc", job_id="RTC-usWIP_20260901", display_name="RTC fixture",
+        bindings={"wip": "usWIP", "reference": "usNIVv2"},
+        imported_at=datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc),
+    )
+    center.store.set_active_job("rtc", job.job_id)
+
+
 def test_global_footer_is_rendered_for_main_bic_and_rtc(make_workspace) -> None:
     """The common horizontal navigation footer is present across workflow menus."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")
@@ -444,6 +455,7 @@ def test_global_footer_is_rendered_for_main_bic_and_rtc(make_workspace) -> None:
         skip_setup=True,
         dry_run_provider=True,
     )
+    _active_rtc_job(center)
 
     center.bic_menu()
     center.analysis_menu("rtc")
@@ -960,8 +972,11 @@ def test_reports_and_recovery_are_owned_by_workflow_or_sage_maintenance(make_wor
         dry_run_provider=True,
     )
 
+    _active_rtc_job(center)
     center.bic_menu()
-    center.io.input_func = ScriptedInput(["a"])
+    # RTC follows the standard Job shape: storage upkeep lives under Manage RTC JOBs, and
+    # reports/recovery under Manage RTC <WIP>.
+    center.io.input_func = ScriptedInput(["3", "a", "1", "3", "a", "a", "a"])
     center.analysis_menu("rtc")
     center.io.input_func = ScriptedInput(["a"])
     assert center.system_configuration_menu() == "BACK"
@@ -969,9 +984,11 @@ def test_reports_and_recovery_are_owned_by_workflow_or_sage_maintenance(make_wor
     center.system_actions_menu()
 
     rendered = output.getvalue()
-    assert rendered.count("Reports and history") >= 2
+    assert rendered.casefold().count("reports and history") >= 2
+    assert "usWIP JOB reports and history" in rendered
     assert rendered.count("Recovery and diagnostics") >= 2
-    assert rendered.count("Maintain JOB storage") == 2
+    assert rendered.count("Maintain JOB storage") == 1
+    assert "Maintain RTC JOB storage" in rendered
     assert "SAGE Maintenance" in rendered
     assert "6. System actions" in rendered
     assert "System information, recovery and diagnostics" not in rendered

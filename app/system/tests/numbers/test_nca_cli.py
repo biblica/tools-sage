@@ -10,10 +10,10 @@ from sage.nca_cli import check_overrides, inspect_numbers_package
 
 def test_task_create_accepts_independent_nca_policy_and_resource_selectors():
     """The existing task family carries NCA setup and explicit check switches."""
-    args = build_parser().parse_args(['task', 'create', '--workflow', 'nca', '--operation', 'numbers', '--wip', 'usWIP', '--scope', 'MAT 1:1', '--numbers-package', 'fixture', '--number-style', 'fixture-en/1', '--no-presentation-consistency'])
+    args = build_parser().parse_args(['task', 'create', '--workflow', 'nca', '--operation', 'numbers', '--wip', 'usWIP', '--scope', 'MAT 1:1', '--numbers-package', 'fixture', '--number-style', 'fixture-en/1', '--no-footnote-review'])
     assert args.workflow_id == 'nca'
     assert args.operation == 'numbers'
-    assert check_overrides(args) == {'presentation_consistency': False}
+    assert check_overrides(args) == {'footnote_review': False}
     assert args.numbers_package == 'fixture'
 
 
@@ -30,7 +30,7 @@ def test_numbers_import_and_inspection_use_existing_resource_family():
 def test_omitted_policy_does_not_override_saved_defaults():
     """CLI absence and explicit false remain distinct when creating a Run."""
     assert check_overrides(Namespace()) == {}
-    assert check_overrides(Namespace(number_accuracy=True, presentation_consistency=None, footnote_review=False)) == {'number_accuracy': True, 'footnote_review': False}
+    assert check_overrides(Namespace(number_accuracy=True, footnote_review=False)) == {'number_accuracy': True, 'footnote_review': False}
 
 
 def test_inspection_rejects_missing_and_escaping_packages(make_workspace):
@@ -60,8 +60,8 @@ def test_task_creation_rejects_cross_workflow_options(make_workspace, monkeypatc
         command_act_create(args)
 
 
-@pytest.mark.parametrize('presentation,cap', [(False, 1), (True, 8)])
-def test_scoped_preflight_reuses_actual_batches_without_provider(make_workspace, monkeypatch, presentation, cap):
+@pytest.mark.parametrize('footnotes,cap', [(False, 1), (True, 8)])
+def test_scoped_preflight_reuses_actual_batches_without_provider(make_workspace, monkeypatch, footnotes, cap):
     """Dry-run counts use sealed scope, enabled streams and the real SFM batch cap."""
     from pathlib import Path
     import yaml
@@ -82,12 +82,12 @@ def test_scoped_preflight_reuses_actual_batches_without_provider(make_workspace,
     profile.write_text(yaml.safe_dump(raw))
     _route(monkeypatch)
     job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1', style_selector='fixture-style/1')
-    run = create_nca_run(config, job_id=job.job_id, scope_value='MAT 1:1-2', checks={'presentation_consistency': presentation})
+    run = create_nca_run(config, job_id=job.job_id, scope_value='MAT 1:1-2', checks={'footnote_review': footnotes})
     created = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
     inputs = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
     inventory = build_inventory(inputs)
-    # Only BODY streams feed a group's comparison (numbers/hybrid.py); presentation_consistency
-    # is an accepted no-op check-policy toggle, so it never changes what gets planned.
+    # Only BODY streams feed a group's comparison (numbers/hybrid.py); check toggles never
+    # change what gets planned.
     streams = tuple(x for x in inventory.stream_inputs if x.purpose == 'BODY')
     expected = plan_batches(streams, policy=EvidencePolicy.from_mapping(inputs.evidence_policy), max_units=cap)
     counts = {'package': 0, 'style': 0}
@@ -120,7 +120,7 @@ def test_scoped_preflight_reuses_actual_batches_without_provider(make_workspace,
     assert plan['blocked'] == dict(expected.blocked)
     assert plan['indexed_coordinates'] == 1 and plan['unindexed_coordinates'] == 1
     assert plan['style_profile']['selector'] == 'fixture-style/1'
-    assert plan['checks']['presentation_consistency'] is presentation
+    assert plan['checks']['footnote_review'] is footnotes
     assert not (Path(created['task_manifest_path']).parent / 'output/model-evidence.json').exists()
 
 

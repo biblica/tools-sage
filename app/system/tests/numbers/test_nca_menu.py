@@ -1,5 +1,6 @@
 """NCA menu positioning, real dispatch and independent check selection."""
 from ..test_primary_workflow_menus import _center
+import json
 from types import SimpleNamespace
 import pytest
 
@@ -15,7 +16,7 @@ def test_nca_scope_prompt_retries_invalid_input_before_creating_run(make_workspa
     config, _ = _prepare_nca_workspace(root)
     _route(monkeypatch)
     job = create_nca_job(config, wip='usWIP', package_id='SYNTHETIC_NCA_REFERENCE_1')
-    center, output = _center(root, '7', 'MAT 0', 'matthew 01')
+    center, output = _center(root, '6', 'MAT 0', 'matthew 01')
     # This test stops at the execution boundary; CLI lifecycle is covered separately.
     monkeypatch.setattr('sage.nca_menu.continue_run', lambda _center, _job, run: run)
     start_run(center, job)
@@ -75,7 +76,9 @@ def test_run_preflight_shows_reference_and_language_capability(make_workspace, m
         'language': 'en', 'script': 'Latn', 'indexed_coordinates': 1,
         'reference_expectations': ['MAT 1:1'], 'requested_scope': 'MAT 1:1'}})
     assert 'en; Latn' in output.getvalue()
-    assert 'Indexed coordinates: 1' in output.getvalue()
+    # coverage counters and batching stay in the preflight file, off the operator screen
+    assert 'Indexed coordinates' not in output.getvalue()
+    assert json.loads((job.controller_state_root / 'last-preflight.json').read_text())['indexed_coordinates'] == 1
     assert 'SQS: NOT_APPLIED' in output.getvalue()
 
 
@@ -124,13 +127,14 @@ def test_main_menu_dispatches_five_and_six_to_correct_workflows(make_workspace, 
 
 
 def test_each_check_toggles_independently_and_saved_defaults_restore(make_workspace):
-    """The presentation switch does not alter numeric or footnote assessment."""
+    """Each check toggles alone, and restore returns to the saved defaults."""
     root = make_workspace(configured=True, qualification_status='VALIDATED')
     job = SimpleNamespace(profiles={'number_style': 'fixture/1'}, defaults={})
-    center, output = _center(root, '2', '7')
-    assert choose_checks(center, job) == {'number_accuracy': True, 'presentation_consistency': False, 'footnote_review': True}
+    center, output = _center(root, '2', '6')
+    assert choose_checks(center, job) == {'number_accuracy': True, 'footnote_review': False}
     assert 'Number Style Profile: fixture/1' in output.getvalue()
-    center, output = _center(root, '1', '3', '4', '7')
+    assert 'Number usage and presentation' not in output.getvalue()
+    center, output = _center(root, '1', '2', '3', '6')
     assert all(choose_checks(center, job).values())
 
 
@@ -138,17 +142,18 @@ def test_all_off_cannot_start_and_cancellation_is_honored(make_workspace):
     """The menu keeps an all-OFF policy pending until corrected or cancelled."""
     root = make_workspace(configured=True, qualification_status='VALIDATED')
     job = SimpleNamespace(profiles={'number_style': 'fixture/1'}, defaults={})
-    center, output = _center(root, '1', '2', '3', '7', 'a')
+    center, output = _center(root, '1', '2', '6', 'a')
     assert choose_checks(center, job) is None
     assert 'Enable at least one NCA check.' in output.getvalue()
 
 
 def test_nca_workflow_menu_can_cancel_before_creating_any_job(make_workspace):
-    """Opening the new workflow and backing out has no lifecycle side effect."""
+    """With no NCA Jobs the home goes straight to Add new; backing out creates nothing."""
     root = make_workspace(configured=True, qualification_status='VALIDATED')
     center, output = _center(root, 'a')
     center.nca_menu()
-    assert 'Add NCA JOB <WIP PROJECT>' in output.getvalue()
+    assert 'Start new NCA review <WIP PROJECT>' in output.getvalue()
+    assert center.store.discover('nca') == []
 
 
 def test_single_compatible_profile_is_selected_from_project_language_namespace(make_workspace, tmp_path):

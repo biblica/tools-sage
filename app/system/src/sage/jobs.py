@@ -59,16 +59,17 @@ _JOB_ID_RE = re.compile(
 )
 _NCA_CHECK_NAMES = {
     "number_accuracy",
-    "presentation_consistency",
     "footnote_review",
 }
+_RETIRED_NCA_CHECKS = {"presentation_consistency"}
 
 
 def _validate_nca_defaults(value: Mapping[str, Any]) -> dict[str, Any]:
     """Require the exact editable NCA Job check-default contract."""
     if set(value) != {"checks"} or not isinstance(value.get("checks"), Mapping):
         raise ValidationError("NCA Job defaults require one checks mapping", code="NCA_CHECK_POLICY_INVALID")
-    checks = value["checks"]
+    # A retired toggle (presentation_consistency, removed 2026-10) is ignored, not migrated.
+    checks = {name: flag for name, flag in value["checks"].items() if name not in _RETIRED_NCA_CHECKS}
     if set(checks) != _NCA_CHECK_NAMES or any(type(checks[name]) is not bool for name in checks):
         raise ValidationError("NCA Job check defaults are invalid", code="NCA_CHECK_POLICY_INVALID")
     if not any(checks.values()):

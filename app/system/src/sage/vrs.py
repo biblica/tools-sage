@@ -80,6 +80,8 @@ class VerseMapping:
 class VersificationSchema:
     """A composed base plus custom versification schema."""
 
+    # Mapping lookups go through _mapping_index(), a lazily built cache keyed to the
+    # identity of ``mappings``; compose_vrs/replace always build a new list, never mutate.
     schema_id: str
     canonical_id: str
     chapter_max: dict[str, dict[int, int]]
@@ -93,6 +95,28 @@ class VersificationSchema:
         """Return the local maximum verse number for a chapter when defined."""
         return self.chapter_max.get(book, {}).get(chapter)
 
+    def _mapping_index(self):
+        """Expanded mappings indexed by local and by canonical coordinate, built once.
+
+        Mapping lookups ran a full scan with range expansion per call (millions of
+        comparisons per NCA package load). The index is keyed to the identity of the
+        ``mappings`` list, which composition always replaces rather than mutates.
+        """
+        cached = self.__dict__.get("_index_cache")
+        identity = (id(self.mappings), len(self.mappings))
+        if cached is None or cached[0] != identity:
+            by_local: dict[VerseRef, list[tuple[list[VerseRef], list[VerseRef]]]] = {}
+            by_canonical: dict[VerseRef, list[tuple[list[VerseRef], list[VerseRef]]]] = {}
+            for mapping in self.mappings:
+                pair = (mapping.local.refs(), mapping.canonical.refs())
+                for local in dict.fromkeys(pair[0]):
+                    by_local.setdefault(local, []).append(pair)
+                for canonical in dict.fromkeys(pair[1]):
+                    by_canonical.setdefault(canonical, []).append(pair)
+            cached = (identity, (by_local, by_canonical))
+            self.__dict__["_index_cache"] = cached
+        return cached[1]
+
     def local_to_canonical(self, ref: VerseRef) -> frozenset[VerseRef]:
         """Map one local coordinate to its canonical equivalence set.
 
@@ -101,13 +125,11 @@ class VersificationSchema:
         unequal spans are treated as a complete equivalence group because VRS
         data does not encode phrase-level boundaries.
         """
-        matches = [mapping for mapping in self.mappings if ref in mapping.local.refs()]
+        matches = self._mapping_index()[0].get(ref)
         if not matches:
             return frozenset({ref})
         canonical: set[VerseRef] = set()
-        for mapping in matches:
-            local_refs = mapping.local.refs()
-            canonical_refs = mapping.canonical.refs()
+        for local_refs, canonical_refs in matches:
             if len(local_refs) == len(canonical_refs):
                 canonical.add(canonical_refs[local_refs.index(ref)])
             elif len(canonical_refs) == 1:
@@ -119,9 +141,7 @@ class VersificationSchema:
     def canonical_to_local(self, ref: VerseRef) -> frozenset[VerseRef]:
         """Return all local coordinates whose equivalence sets include a canonical ref."""
         local: set[VerseRef] = set()
-        for mapping in self.mappings:
-            local_refs = mapping.local.refs()
-            canonical_refs = mapping.canonical.refs()
+        for local_refs, canonical_refs in self._mapping_index()[1].get(ref, ()):
             if len(local_refs) == len(canonical_refs):
                 if ref in canonical_refs:
                     local.add(local_refs[canonical_refs.index(ref)])

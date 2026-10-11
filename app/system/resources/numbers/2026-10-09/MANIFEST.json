@@ -1,0 +1,64 @@
+{
+  "apparatus": {
+    "attribution": {
+      "BSB": "Berean Standard Bible, public domain (berean.bible; ebible.org engbsb).",
+      "BSB_NOTE": "Berean Standard Bible footnotes, public domain (berean.bible; ebible.org engbsb).",
+      "KJV": "King James Version (1769 text, eng-kjv2006), public domain (ebible.org).",
+      "LXX_BRENTON": "Brenton, The Septuagint Version of the Old Testament (1851), public domain (ebible.org).",
+      "NET_TC": "NET Bible® notes copyright © 1996, 2019 by Biblical Studies Press, L.L.C., https://netbible.com. All rights reserved. Short excerpts of text-critical notes are quoted for commentary on number variants (fair use).",
+      "OSHB_KETIV_QERE": "Open Scriptures Hebrew Bible (openscriptures/morphhb), CC BY 4.0.",
+      "SBLGNT_APPARATUS": "SBLGNT apparatus, Society of Biblical Literature and Logos Bible Software (Faithlife/SBLGNT), CC BY 4.0.",
+      "VULGATE_DRA": "Douay-Rheims Bible (Challoner revision), public domain (ebible.org)."
+    },
+    "evidence_sha256": "a29fed4eba7e3c8decddf9ea38465a6f148a402a8d160def5e75811578789f7b",
+    "sources": "NET Bible tc notes (netbible.org, cited); SBLGNT apparatus (Faithlife/SBLGNT, CC BY 4.0); OSHB ketiv/qere (openscriptures/morphhb, CC BY 4.0); BSB footnotes and LXX/Vulgate/KJV/BSB readings (public domain)"
+  },
+  "counting_convention_sha256": "c5d764bb980f7374f8a6ea6074d7a0302786fac76fa0287532752e6553d62bbc",
+  "counts": {
+    "niv_values": 5021,
+    "ol_values": 5345,
+    "values": 10366,
+    "verses": 3814
+  },
+  "format": "sage-numbers-typed-1.1",
+  "package_id": "SAGE_NUMBERS_TYPED_2026-10-09",
+  "review": {
+    "niv_decisions_sha256": "96f2961f3b871643950fbcd7fa23cd857c626c07ab30ca52a2c15c84987c5bf8",
+    "ol_decisions_sha256": "aba3203a8b22b0b65e33049a68c66d3181fea8ca8fa9ed2137424e47f9466a57",
+    "verses_by_status": {
+      "AGREES": 3582,
+      "CONVENTION": 700,
+      "PROVISIONAL": 0,
+      "REVIEWED": 158
+    }
+  },
+  "sources": {
+    "BSB": {
+      "attribution": "Berean Standard Bible, public domain (berean.bible; ebible.org engbsb).",
+      "edition": "Berean Standard Bible (public domain)",
+      "shipped": "quoted verse text and footnotes (BSB_TEXT, BSB_NOTES)",
+      "url": "https://ebible.org/find/show.php?id=engbsb"
+    },
+    "GRK": {
+      "attribution": "MACULA Greek Linguistic Datasets, available at https://github.com/Clear-Bible/macula-greek/",
+      "commit": "076282a3926625a5e670823b0738ce5f1e619528",
+      "edition": "SBL Greek New Testament (MACULA Greek)",
+      "sha256": "7f71504fdee8659bdd9f85342e4103d645864c2851b8205915bb298f0c004cc5",
+      "url": "https://raw.githubusercontent.com/Clear-Bible/macula-greek/076282a3926625a5e670823b0738ce5f1e619528/SBLGNT/tsv/macula-greek-SBLGNT.tsv"
+    },
+    "HEB": {
+      "attribution": "MACULA Hebrew Linguistic Datasets, available at https://github.com/Clear-Bible/macula-hebrew/",
+      "commit": "df1ea5d85c8cb194278a874d6c670cd1d8abd97f",
+      "edition": "Westminster Leningrad Codex (MACULA Hebrew, OSHB morphology)",
+      "sha256": "965cb0599beed2fe31283b615bcc369178141c0e718a66d97518d94309cfc124",
+      "url": "https://media.githubusercontent.com/media/Clear-Bible/macula-hebrew/df1ea5d85c8cb194278a874d6c670cd1d8abd97f/WLC/tsv/macula-hebrew.tsv"
+    },
+    "NIV": {
+      "edition": "New International Version (NIV) 2011, Biblica, Inc.",
+      "rights": "Copyright © 1973, 1978, 1984, 2011 by Biblica, Inc.",
+      "sha256": "add35fb810a3162eeb8634ccd68982322a5ea68ffe9911efce62e1b02df5cfd2",
+      "shipped": "numbers, number words and offsets only; no NIV Scripture text (fair use: at most 500 verses)"
+    },
+    "registries": "SAGE_NUMBERS_REFERENCE_2026-09-09 (textual variants, footnote guidance, unit conversions)"
+  }
+}

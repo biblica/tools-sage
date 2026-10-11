@@ -1,4 +1,5 @@
 """Complete-scope hybrid selection and durable execution integration."""
+from sage.numbers.extraction import local_input_id
 from dataclasses import replace
 from fractions import Fraction
 
@@ -8,6 +9,7 @@ from sage.numbers import engine
 from sage.numbers.execution import ScopeInventory
 from sage.numbers.models import Extraction, ProjectedUnit, TargetUnit
 from sage.vrs import VerseRef
+from .fake_numbers import nums
 
 
 def test_candidate_group_ids_is_exactly_the_indexed_scope_regardless_of_extraction():
@@ -108,7 +110,7 @@ def test_optimized_inventory_extracts_whole_scope_and_replays_without_calls(make
     _streams, plan = plan_extraction(inputs, inventory)
     batches = plan.batches
     responses = [{'schema_version': '1.0', 'phase': 'EXTRACTION', 'batch_id': batch.batch_id,
-        'work_units': [{'input_id': x.input_id, 'status': 'COMPLETE', 'limitations': [], 'values': []} for x in batch.inputs]} for batch in batches]
+        'work_units': [{'input_id': local_input_id(i), 'status': 'COMPLETE', 'limitations': [], 'numbers': []} for i, x in enumerate(batch.inputs)]} for batch in batches]
     tasks = model_tasks(config.root, RecordedExecutor(responses))
     inputs = replace(inputs, policy=dict(inputs.policy, model_route=tasks.route_snapshot))
     store = PhaseStore(Path(created['task_manifest_path']).parent, task_fingerprint=created['task_fingerprint'])
@@ -121,8 +123,8 @@ def test_optimized_inventory_extracts_whole_scope_and_replays_without_calls(make
     # extraction stays UNSUPPORTED rather than COMPLETE.
     assert all(g.extraction.status == 'COMPLETE' for g in result.groups
                if g.projected.target.unit_id in inventory.expected_groups)
-    assert all(g.extraction.status != 'COMPLETE' for g in result.groups
-               if g.projected.target.unit_id not in inventory.expected_groups)
+    assert all(g.extraction.status != 'COMPLETE' or g.comparison.review_context.get('kind') == 'NUMBER_NOT_IN_SOURCE'
+               for g in result.groups if g.projected.target.unit_id not in inventory.expected_groups)
     assert not any(g.comparison.outcome == 'PASS' for g in result.groups)
     resumed = model_tasks(config.root, RecordedExecutor([]))
     replay = engine.evaluate_optimized_run(inputs, model_tasks=resumed, phase_store=store, run_id=run.run_id)
@@ -578,6 +580,31 @@ def test_missing_wip_remains_unsupported_and_visible_in_final_scope(make_workspa
     assert result.coverage['coverage'] == 'PARTIAL'
 
 
+def test_damaged_verse_is_reported_and_the_run_still_assesses_the_rest(make_workspace, monkeypatch):
+    """NCA never stops on content: a verse with broken markup is NOT_ASSESSED with its issue,
+    is never sent for extraction, and every other verse is still compared."""
+    from sage.numbers.execution import plan_extraction, prepare_execution_inputs
+    from sage.numbers.policy import load_nca_run_snapshot
+    from sage.numbers.replay import PhaseStore
+    from .test_nca_tasks import _run, _OfflineTasks
+    _root, config, job, run = _run(make_workspace, monkeypatch)
+    inputs = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
+    first = inputs.projected_units[0]
+    damaged = replace(first, target=replace(first.target, content_issues=('CONTENT_MARKUP_ERROR:UNCLOSED_NOTE_CONTAINER:f',)))
+    projected = (damaged,) + inputs.projected_units[1:]
+    inputs = replace(inputs, projected_units=projected, content_advisories=('CONTENT_MARKUP_ERROR:NEH:STRAY',))
+    tasks = _OfflineTasks(config, expected_route_id='nca-route-fixture')
+    result = engine.evaluate_optimized_run(inputs, model_tasks=tasks,
+        phase_store=PhaseStore(run.root, task_fingerprint='a' * 64), run_id=run.run_id)
+    group = result.groups[0]
+    assert group.comparison.outcome == 'NOT_ASSESSED'
+    assert 'CONTENT_MARKUP_ERROR:UNCLOSED_NOTE_CONTAINER:f' in group.limitations
+    assert damaged.target.unit_id not in {stream.owner_unit_id for stream in plan_extraction(inputs)[0]}
+    assert any(g.comparison.outcome != 'NOT_ASSESSED' for g in result.groups[1:])
+    assert 'CONTENT_MARKUP_ERROR:NEH:STRAY' in result.coverage['restrictions']
+    assert result.metrics['content_advisories'] == ['CONTENT_MARKUP_ERROR:NEH:STRAY']
+
+
 def test_new_snapshot_uses_governed_batch_cap_and_rejects_unsupported_concurrency(make_workspace, monkeypatch):
     """Activation must honor the configured cap and reject a policy the executor cannot implement."""
     import yaml
@@ -622,7 +649,7 @@ def test_mixed_terminal_invalid_batch_publication_replays_exact_failure_evidence
             # corrupt one while the other stays a valid sibling in the same batch.
             for supplied, result in zip(payload['work_units'], raw['work_units']):
                 if 'Verse 1.' in supplied['text']:
-                    result['values'] = ['not-a-canonical-rational']
+                    result['numbers'] = [{'value': '1'}]  # a number object missing its required fields
             return replace(response, content=json.dumps(raw))
     class MixedTasks(_OfflineTasks):
         """Use the real batch validator and physical evidence recorder."""
@@ -651,3 +678,36 @@ def test_mixed_terminal_invalid_batch_publication_replays_exact_failure_evidence
     monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', NoCalls)
     assert execute_nca_task(config, path)['status'] == 'EXECUTED'
     assert (path.parent / 'output/model-evidence.json').read_bytes() == output
+
+
+def test_scope_with_nothing_to_extract_publishes_instead_of_failing(make_workspace, monkeypatch):
+    """Every verse damaged: no model call is planned, and the Run still publishes NOT_ASSESSED
+    verses with their issues instead of failing (NCA never stops on content)."""
+    import json
+    from pathlib import Path
+    from .test_nca_tasks import _run, _OfflineTasks
+    from sage.nca import create_nca_task, execute_nca_task
+    import sage.nca as nca_module
+    _root, config, job, run = _run(make_workspace, monkeypatch)
+    task = create_nca_task(config, job_id=job.job_id, run_id=run.run_id, scope_value=run.scope)
+    original = nca_module.prepare_execution_inputs
+
+    def damaged_inputs(*args, **kwargs):
+        """Mark every verse in scope as damaged markup."""
+        inputs = original(*args, **kwargs)
+        units = tuple(replace(unit, target=replace(unit.target, content_issues=('CONTENT_MARKUP_ERROR:X:f',)))
+                      for unit in inputs.projected_units)
+        return replace(inputs, projected_units=units)
+
+    monkeypatch.setattr(nca_module, 'prepare_execution_inputs', damaged_inputs)
+    monkeypatch.setattr('sage.numbers.model_tasks.NcaModelTasks', _OfflineTasks)
+    path = Path(task['task_manifest_path'])
+    execute_nca_task(config, path)
+    document = json.loads((path.parent / 'output/model-evidence.json').read_text())
+    assert document['metrics']['planning']['planned_extraction_calls'] == 0
+    assert {group['comparison']['outcome'] for group in document['groups']} == {'NOT_ASSESSED'}
+    from sage.act_tasks import submit_act_task
+    from sage.nca import finalize_nca_run
+    submit_act_task(config, path)
+    final = finalize_nca_run(config, job_id=job.job_id, run_id=run.run_id)
+    assert Path(final['report_path']).is_file()

@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-10-09",
+  "reason": "NIV fair use allows at most 500 verses (and under 25% of the work); the public repository may not carry NIV Scripture text. NIV_TEXT values are blanked; every other byte is unchanged. NIV numbers (NIV_VALUES) stay as citations. Verse text is quoted from the public-domain BSB in the typed package.",
+  "files": [
+    {
+      "path": "reference/canonical_number_index.tsv",
+      "column": "NIV_TEXT",
+      "original_sha256": "e49e17d7887a4e1daa29d32098bfc496a36f1de610ecd8b6efdc6191762fb07d",
+      "redacted_sha256": "27c00323c61bafc91d39f4086f7a9d8fbf5515dbeaa3108e0b0372479e566d0d",
+      "rows": 6244
+    },
+    {
+      "path": "reference/SAGE_NUMBERS_OPERATOR_VALIDATION_INDEX.tsv",
+      "column": "NIV_TEXT",
+      "original_sha256": "a137b41441e19b3c8cdf60f0f502ee4d5b731ac30268fa436f32c8aeab9ca283",
+      "redacted_sha256": "4a0440325d8e26a7c3e1f7003852ddec25ec6281c9925628fd54dce5995e1ab8",
+      "rows": 6244
+    },
+    {
+      "path": "reference/unit_conversion_registry.tsv",
+      "column": "NIV_TEXT",
+      "original_sha256": "ada6f2a8a19c838b9cd10f781a6678dc102b37d946a810feffab3f4206b8bb9c",
+      "redacted_sha256": "ed3d017a3bdf363b05103deba14eb7dfb4e0651abf333921f87b2addfdcb9b5e",
+      "rows": 12
+    }
+  ]
+}
