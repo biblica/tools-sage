@@ -25,6 +25,7 @@ required:
   - conditional_ol_micro_scopes
   - prompt_sha256
   - final_prompt_sha256
+  - protected_contracts
   - handoff_measurements
   - response_sha256
   - output_sha256
@@ -75,3 +76,12 @@ conditional_ol_transport:
   merge_owner: LOCAL_CONTROLLER
   verb_choice_question: verbal_sense_or_function_only
   automatic_surrounding_context: prohibited
+protected_contracts:
+  bic_operations: [rewrite, self_check]
+  contracts: [BIC4_PROTECTED_REWRITE_DETAIL_RULES, BIC_PROTECTED_VERB_SELECTION_POLICY]
+  transport: verbatim_marked_instruction_block
+  placement: after_act_capsule_outside_authorized_reads
+  phases: [primary, report_language_correction, bic_ol_micro]
+  embedded_text_must_hash_to_pin: true
+  receipt_record: [id, sha256, bytes]
+  other_tasks: empty_list

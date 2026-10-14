@@ -9,6 +9,27 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261014-001 — BIC protected contracts reach the model verbatim
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261013`
+- **TODO:** `TODO-20261013-001`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** BIC REWRITE and SELF-CHECK tasks now send `PROTECTED-REWRITE-DETAIL-RULES.md` and
+  `bic-verb-selection-policy.yml` byte-for-byte to the model in a marked `PROTECTED CONTRACTS` block
+  placed after the ACT capsule and before (outside) `AUTHORIZED READS`, in the primary prompt, the
+  report-language correction prompt, and every OL micro prompt. `llm_tasks._protected_contracts`
+  re-loads both pins, requires the task's sealed contract records to match them, and asserts the
+  embedded bytes hash to the pin; it runs before any provider contact and fails closed with
+  `BIC_PROTECTED_CONTRACT_MISSING`, `_STALE`, or `_HASH_MISMATCH`. The execution receipt and dry run
+  record `protected_contracts: [{id, sha256, bytes}]` (schema updated). One controller line states that
+  each routed SFM read is the deterministic projection of the USJ input the rewrite-detail contract
+  names. Neither contract file, pin, nor the Process brief wording changed.
+- **Verification:** full `system/tests` suite on 2026-10-14: 2066 passed, 2 skipped, and one failure that
+  was bytecode caches left by the test run itself (removed; passes clean). The conditional-OL harness test
+  now asserts both contracts appear verbatim in both phases, in the required position, with the receipt
+  record; a new test covers the missing and stale cases without provider contact.
+
 ### IMP-20261013-001 — Rejected provider output no longer resubmits forever
 
 - **Version:** `0.02a3` (development branch)

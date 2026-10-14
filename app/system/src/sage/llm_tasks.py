@@ -43,11 +43,18 @@ from .task_retry import (
     provider_output_contract,
     write_provider_responses,
 )
+from .vocabulary import CANONICAL_TARGET_TEXT_OPERATION
 from .vrs import VerseRef
 from .workflow_identity import is_analysis_workflow, legacy_saw_workflow
 
 EXECUTION_MODE = "SAGE_GOVERNED_TASK_V1"
 SCRIPTURE_PROJECTION = "SAGE_SCRIPTURE_SLICE_V1"
+# BIC operations whose pinned rewrite-detail and verb-selection contracts reach the model verbatim.
+PROTECTED_CONTRACT_OPERATIONS = frozenset({CANONICAL_TARGET_TEXT_OPERATION, "self_check"})
+PROTECTED_CONTRACT_SFM_NOTE = (
+    "CONTROLLER NOTE: Each routed SFM read is SAGE's deterministic projection of the bounded USJ "
+    "input that the protected rewrite-detail contract names; apply its USJ rules to that SFM."
+)
 _JSON_FENCE = re.compile(r"^```(?:json)?\s*(.*?)\s*```$", re.IGNORECASE | re.DOTALL)
 
 _REPORT_LANGUAGE_NAMES = {
@@ -784,6 +791,78 @@ def _verified_governance_input(config: EcosystemConfig, item: dict[str, Any]) ->
     return relative, evidence_class
 
 
+def _protected_contracts(config: EcosystemConfig, manifest: dict[str, Any]) -> list[dict[str, Any]]:
+    """Load the pinned BIC contracts a REWRITE or SELF-CHECK task must send verbatim to the model."""
+    workflow = str(manifest.get("workflow") or "").strip().lower()
+    operation = str(manifest.get("operation") or "").strip().lower()
+    if workflow != "bic" or operation not in PROTECTED_CONTRACT_OPERATIONS:
+        return []
+    from .act_tasks import (
+        _load_bic_protected_rewrite_contract,
+        _load_bic_protected_verb_selection_contract,
+    )
+
+    contracts: list[dict[str, Any]] = []
+    for field, load_pin in (
+        ("protected_rewrite_contract", _load_bic_protected_rewrite_contract),
+        ("protected_verb_selection_contract", _load_bic_protected_verb_selection_contract),
+    ):
+        sealed = manifest.get(field)
+        if not isinstance(sealed, dict):
+            raise ValidationError(
+                f"BIC {operation} task is missing its sealed {field}",
+                code="BIC_PROTECTED_CONTRACT_MISSING",
+            )
+        pin = load_pin(config)
+        if (
+            sealed.get("id") != pin["id"]
+            or str(sealed.get("sha256", "")).lower() != pin["sha256"]
+            or sealed.get("canonical_file") != pin["canonical_file"]
+        ):
+            raise ValidationError(
+                f"BIC task {field} differs from the current pin; rebuild the task",
+                code="BIC_PROTECTED_CONTRACT_STALE",
+            )
+        data = (config.root / pin["canonical_file"]).read_bytes()
+        digest = sha256_bytes(data)
+        if digest != pin["sha256"]:
+            raise ValidationError(
+                f"Embedded protected contract {pin['id']} does not hash to its pin",
+                code="BIC_PROTECTED_CONTRACT_HASH_MISMATCH",
+            )
+        contracts.append(
+            {
+                "id": pin["id"],
+                "sha256": digest,
+                "bytes": len(data),
+                "text": data.decode("utf-8"),
+            }
+        )
+    return contracts
+
+
+def _protected_contract_lines(contracts: Sequence[dict[str, Any]]) -> list[str]:
+    """Render pinned contracts as marked instruction blocks, byte-for-byte and outside the reads."""
+    if not contracts:
+        return []
+    lines = [
+        "",
+        "=== PROTECTED CONTRACTS ===",
+        "Each block below is a controller-pinned instruction contract for this task, not evidence. Apply every block exactly as written.",
+        PROTECTED_CONTRACT_SFM_NOTE,
+    ]
+    for contract in contracts:
+        lines.extend(
+            [
+                f"--- PROTECTED CONTRACT {contract['id']} sha256={contract['sha256']} ---",
+                contract["text"],
+                f"--- END PROTECTED CONTRACT {contract['id']} ---",
+            ]
+        )
+    lines.append("=== END PROTECTED CONTRACTS ===")
+    return lines
+
+
 def _act_control_capsule(act_text: str) -> str:
     """Extract only the operation brief from immutable ACT text for provider execution."""
     lines = act_text.splitlines()
@@ -882,6 +961,7 @@ def _prompt(
     manifest: dict[str, Any],
     act_text: str,
     reads: list[tuple[str, str, str]],
+    protected_contracts: Sequence[dict[str, Any]] = (),
 ) -> str:
     """Assemble the normal sealed prompt from a compact ACT capsule and authorized evidence."""
     narrative_tag = _narrative_language_tag(manifest)
@@ -905,6 +985,7 @@ def _prompt(
         "=== CONTROLLER-COMPILED ACT CAPSULE ===",
         _act_control_capsule(act_text),
         "=== END ACT CAPSULE ===",
+        *_protected_contract_lines(protected_contracts),
     ]
     classes = sorted({validate_read_class(item[2]) for item in reads})
     if classes:
@@ -1321,6 +1402,7 @@ def _bic_ol_micro_prompt(
     request: dict[str, str],
     challenge: dict[str, Any],
     candidate_verse: str,
+    protected_contracts: Sequence[dict[str, Any]] = (),
 ) -> str:
     """Assemble a minimal BIC OL adjudication prompt for one challenge and one verse only."""
     narrative_tag = _narrative_language_tag(manifest)
@@ -1334,6 +1416,7 @@ def _bic_ol_micro_prompt(
         "Inspect the routed project-grammar rules against any replacement and report only newly introduced grammar issues; SAGE conservatively retains earlier issues.",
         f"Write generated explanatory and assessment prose in {_report_language_label(narrative_tag)}.",
         "Preserve source/OL quotations and replacement USFM in their governed content languages; do not let those languages determine report prose.",
+        *_protected_contract_lines(protected_contracts),
         "",
         "QUESTION:",
         json.dumps(request, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
@@ -1668,7 +1751,12 @@ def _measure_task_route(
     """
     reads = [_verified_read(config, dict(item)) for item in manifest.get("allowed_reads", [])]
     schema = _output_schema(manifest)
-    prompt = _prompt(manifest=manifest, act_text=act_text, reads=reads)
+    prompt = _prompt(
+        manifest=manifest,
+        act_text=act_text,
+        reads=reads,
+        protected_contracts=_protected_contracts(config, manifest),
+    )
     return _route_measurement(prompt, schema, reads)
 
 
@@ -1887,6 +1975,8 @@ def execute_task(
     if not act_path.is_file():
         raise ValidationError("Immutable ACT.md is missing", code="LLM_TASK_INVALID")
     act_text = act_path.read_text(encoding="utf-8")
+    # Fail closed before any provider contact when a pinned contract is missing or stale.
+    protected_contracts = _protected_contracts(config, manifest)
 
     settings = load_llm_settings(config.root)
     executor, provider_status_snapshot, route = _resolve_task_route(
@@ -1901,7 +1991,15 @@ def execute_task(
     normal_reads = [_verified_read(config, dict(item)) for item in manifest.get("allowed_reads", [])]
     conditional_reads = [_verified_read(config, dict(item)) for item in manifest.get("conditional_reads", [])]
     schema = _output_schema(manifest)
-    prompt = _prompt(manifest=manifest, act_text=act_text, reads=normal_reads)
+    protected_contract_receipt = [
+        {key: contract[key] for key in ("id", "sha256", "bytes")} for contract in protected_contracts
+    ]
+    prompt = _prompt(
+        manifest=manifest,
+        act_text=act_text,
+        reads=normal_reads,
+        protected_contracts=protected_contracts,
+    )
     prompt_sha = sha256_bytes(prompt.encode("utf-8"))
     first_handoff = _enforce_routed_sfm_budget(config, manifest, _route_measurement(prompt, schema, normal_reads))
 
@@ -1924,6 +2022,7 @@ def execute_task(
             "prompt_bytes": len(prompt.encode("utf-8")),
             "handoff_measurement": first_handoff,
             "governance_inputs": len(governance_inputs),
+            "protected_contracts": protected_contract_receipt,
             "normal_reads": len(normal_reads),
             "conditional_reads": len(conditional_reads),
             "allowed_writes": list(manifest.get("allowed_writes", [])),
@@ -2055,6 +2154,7 @@ def execute_task(
                 request=conditional_request,
                 challenge=challenge,
                 candidate_verse=candidate_verse,
+                protected_contracts=protected_contracts,
             )
             phase_number = base_phase_count + request_index
             measurement = _enforce_routed_sfm_budget(
@@ -2122,6 +2222,7 @@ def execute_task(
         "language_retry_reason": language_retry_reason,
         "prompt_sha256": prompt_sha,
         "final_prompt_sha256": final_prompt_sha,
+        "protected_contracts": protected_contract_receipt,
         "handoff_measurements": handoff_measurements,
         "response_sha256": sha256_bytes(final.content.encode("utf-8")),
         "provider_response_sha256": [
