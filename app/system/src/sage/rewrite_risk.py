@@ -156,8 +156,38 @@ def lexical_burden_total(components: Mapping[str, int]) -> int:
     return min(4, max(0, int(math.floor(weighted + 0.5))))
 
 
-def _validate_candidate(raw: Any, label: str) -> dict[str, Any]:
-    """Validate one proposed verb or construction while deriving arithmetic locally."""
+def _correction(
+    corrections: list[dict[str, Any]] | None,
+    *,
+    label: str,
+    supplied: Any,
+    derived: Any,
+    coordinate: str = "",
+) -> None:
+    """Record that a model-supplied value was overwritten by the locally derived one."""
+    if corrections is None:
+        return
+    corrections.append(
+        {
+            "code": "VALUE_CORRECTED",
+            "effect": "CORRECTED",
+            "coordinate": coordinate,
+            "field": label,
+            "message": f"{label} was {supplied!r}; replaced by the locally derived value {derived!r}.",
+        }
+    )
+
+
+def _validate_candidate(
+    raw: Any,
+    label: str,
+    corrections: list[dict[str, Any]] | None = None,
+    coordinate: str = "",
+) -> dict[str, Any]:
+    """Validate one proposed verb or construction while deriving arithmetic locally.
+
+    A supplied value that disagrees with its locally derived counterpart is overwritten and recorded.
+    """
     row = _mapping(raw, label)
     candidate_id = _text(row.get("candidate_id"), f"{label}.candidate_id", maximum=80)
     form = _text(row.get("form"), f"{label}.form", maximum=160)
@@ -172,13 +202,6 @@ def _validate_candidate(raw: Any, label: str) -> dict[str, Any]:
             "specialist_load",
         )
     }
-    expected_total = lexical_burden_total(components)
-    if "overall" in components_raw:
-        supplied_total = _score(components_raw.get("overall"), f"{label}.lexical_burden.overall")
-        if supplied_total != expected_total:
-            raise ValidationError(
-                f"{label}.lexical_burden.overall must equal the locally derived weighted score {expected_total}"
-            )
     frequency = _mapping(row.get("frequency_evidence"), f"{label}.frequency_evidence")
     source = str(frequency.get("source", "")).strip().upper()
     if source not in _ALLOWED_EVIDENCE_SOURCES:
@@ -195,13 +218,29 @@ def _validate_candidate(raw: Any, label: str) -> dict[str, Any]:
                 f"{label}.frequency_evidence requires a licensed Longman band or UNLISTED"
             )
         if components["familiarity"] != longman_score:
-            raise ValidationError(
-                f"{label}.lexical_burden.familiarity must equal Longman score {longman_score}"
+            _correction(
+                corrections,
+                label=f"{label}.lexical_burden.familiarity",
+                supplied=components["familiarity"],
+                derived=longman_score,
+                coordinate=coordinate,
             )
+            components["familiarity"] = longman_score
     elif longman_score is not None:
         raise ValidationError(
             f"{label}.frequency_evidence Longman bands require source LONGMAN"
         )
+    expected_total = lexical_burden_total(components)
+    if "overall" in components_raw:
+        supplied_total = _score(components_raw.get("overall"), f"{label}.lexical_burden.overall")
+        if supplied_total != expected_total:
+            _correction(
+                corrections,
+                label=f"{label}.lexical_burden.overall",
+                supplied=supplied_total,
+                derived=expected_total,
+                coordinate=coordinate,
+            )
     rejection_code_raw = str(row.get("rejection_code", "")).strip().upper()
     rejection_reason_raw = str(row.get("rejection_reason", "")).strip()
     if rejection_code_raw and rejection_code_raw not in _ALLOWED_REJECTION_CODES:
@@ -259,31 +298,41 @@ def _challenge_messages(
     canonical_risk: str,
     canonical_evidence: str,
     canonical_action: str,
-) -> dict[str, dict[str, str]]:
-    """Validate localized challenge wording without inventing missing specialist text."""
+) -> tuple[dict[str, dict[str, str]], list[str]]:
+    """Return localized challenge wording plus the languages that fell back to canonical text.
+
+    A language whose wording is missing or defective is left out of the returned wording, so renderers
+    show the canonical text for it, and is reported as untranslated; specialist wording is never invented.
+    """
+    canonical = {
+        "summary": canonical_summary,
+        "risk": canonical_risk,
+        "evidence": canonical_evidence,
+        "action": canonical_action,
+    }
     raw = row.get("messages")
     if raw in (None, {}) and languages == ("en",):
-        return {
-            "en": {
-                "summary": canonical_summary,
-                "risk": canonical_risk,
-                "evidence": canonical_evidence,
-                "action": canonical_action,
-            }
-        }
-    messages = _mapping(raw, f"{label}.messages")
+        return {"en": canonical}, []
+    messages = raw if isinstance(raw, Mapping) else {}
     result: dict[str, dict[str, str]] = {}
+    untranslated: list[str] = []
     for language in languages:
-        language_row = _mapping(messages.get(language), f"{label}.messages.{language}")
-        result[language] = {
-            field: _text(
-                language_row.get(field),
-                f"{label}.messages.{language}.{field}",
-                maximum=1800,
-            )
-            for field in ("summary", "risk", "evidence", "action")
-        }
-    return result
+        language_row = messages.get(language)
+        try:
+            if not isinstance(language_row, Mapping):
+                raise ValidationError(f"{label}.messages.{language} must be an object")
+            result[language] = {
+                field: _text(
+                    language_row.get(field),
+                    f"{label}.messages.{language}.{field}",
+                    maximum=1800,
+                )
+                for field in canonical
+            }
+        except ValidationError:
+            # Left out of the localized wording: renderers fall back to the canonical text for this language.
+            untranslated.append(language)
+    return result, untranslated
 
 
 def _normalise_consolidation_key(
@@ -377,6 +426,8 @@ def validate_rewrite_challenges(
     inherited = set(inherited_challenge_ids)
     seen: set[str] = set()
     normalised: list[dict[str, Any]] = []
+    # Corrections and fallbacks the controller applied instead of rejecting the unit; reported by the caller.
+    salvage: list[dict[str, Any]] = []
     for index, raw in enumerate(raw_challenges, start=1):
         label = f"challenges[{index}]"
         row = _mapping(raw, label)
@@ -391,6 +442,7 @@ def validate_rewrite_challenges(
         reference = _text(row.get("scripture_reference"), f"{label}.scripture_reference", maximum=160)
         if not _scope_contains(parent_scope, reference):
             raise ValidationError(f"{label}.scripture_reference is outside the bounded task scope")
+        corrections: list[dict[str, Any]] = []
         category = str(row.get("category", "")).strip().upper()
         if category not in _ALLOWED_CATEGORIES:
             raise ValidationError(f"{label}.category is unsupported: {category}")
@@ -398,7 +450,7 @@ def validate_rewrite_challenges(
         if not isinstance(candidates_raw, list) or not candidates_raw:
             raise ValidationError(f"{label}.candidates must contain at least one candidate")
         candidates = [
-            _validate_candidate(item, f"{label}.candidates[{candidate_index}]")
+            _validate_candidate(item, f"{label}.candidates[{candidate_index}]", corrections, reference)
             for candidate_index, item in enumerate(candidates_raw, start=1)
         ]
         candidate_ids = [item["candidate_id"] for item in candidates]
@@ -417,14 +469,27 @@ def validate_rewrite_challenges(
             raise ValidationError(f"{label}.recommended_candidate_id must identify a listed candidate")
         supplied_selected = str(row.get("selected_candidate_id", recommended_candidate_id)).strip()
         if supplied_selected and supplied_selected != recommended_candidate_id:
-            raise ValidationError(
-                f"{label}.selected_candidate_id cannot differ from the recommended candidate; REWRITE has no Operator override"
+            # REWRITE has no Operator override: the selected candidate is always the recommended one.
+            _correction(
+                corrections,
+                label=f"{label}.selected_candidate_id",
+                supplied=supplied_selected,
+                derived=recommended_candidate_id,
+                coordinate=reference,
             )
         risk = _mapping(row.get("risk"), f"{label}.risk")
         before_ol = _score(risk.get("before_ol"), f"{label}.risk.before_ol")
         after_ol = _score(risk.get("after_ol", before_ol), f"{label}.risk.after_ol")
-        if "urgency" in risk and _score(risk.get("urgency"), f"{label}.risk.urgency") != after_ol:
-            raise ValidationError(f"{label}.risk.urgency must equal the locally derived final risk")
+        if "urgency" in risk:
+            supplied_urgency = _score(risk.get("urgency"), f"{label}.risk.urgency")
+            if supplied_urgency != after_ol:
+                _correction(
+                    corrections,
+                    label=f"{label}.risk.urgency",
+                    supplied=supplied_urgency,
+                    derived=after_ol,
+                    coordinate=reference,
+                )
         triggers = _string_list(
             risk.get("material_triggers", []),
             f"{label}.risk.material_triggers",
@@ -437,7 +502,23 @@ def validate_rewrite_challenges(
             raise ValidationError(f"{label}.ol_referral.performed must be boolean")
         if bool(ol.get("operator_requested", False)):
             raise ValidationError(f"{label}.ol_referral.operator_requested is prohibited")
-        if performed != ol_required:
+        ol_unavailable = bool(ol.get("unavailable")) and ol_required and not performed
+        if ol_unavailable:
+            # The controller could not complete the bounded OL check; the pass-1 candidate and risk stand.
+            salvage.append(
+                {
+                    "code": "OL_UNAVAILABLE",
+                    "effect": "FLAGGED",
+                    "coordinate": reference,
+                    "challenge_id": challenge_id,
+                    "message": (
+                        f"OL check for {challenge_id} at {reference} could not be completed "
+                        f"({str(ol.get('unavailable_code') or 'unknown cause')}); "
+                        "the first-pass candidate and risk were kept without original-language confirmation."
+                    ),
+                }
+            )
+        elif performed != ol_required:
             if ol_required:
                 raise ValidationError(
                     f"{label} requires one bounded OL check because risk is 2+ and a material trigger exists"
@@ -466,7 +547,14 @@ def validate_rewrite_challenges(
                 raise ValidationError(f"{label}.ol_referral.before_candidate_id must identify a listed candidate")
         else:
             if after_ol != before_ol:
-                raise ValidationError(f"{label}.risk.after_ol must equal before_ol when no OL check is performed")
+                _correction(
+                    corrections,
+                    label=f"{label}.risk.after_ol",
+                    supplied=after_ol,
+                    derived=before_ol,
+                    coordinate=reference,
+                )
+                after_ol = before_ol
             forbidden_detail_fields = (
                 "question",
                 "evidence_scope",
@@ -478,7 +566,7 @@ def validate_rewrite_challenges(
                 "automatic",
             )
             populated = [field for field in forbidden_detail_fields if ol.get(field) not in (None, "", False, [])]
-            if populated:
+            if populated and not ol_unavailable:
                 raise ValidationError(
                     f"{label}.ol_referral contains OL-derived fields although performed is false: {', '.join(populated)}"
                 )
@@ -489,11 +577,30 @@ def validate_rewrite_challenges(
         candidate_changed = bool(performed and before_candidate_id != recommended_candidate_id)
         resolved = bool(performed and after_ol <= 2)
         if performed and "candidate_changed" in ol and bool(ol.get("candidate_changed")) != candidate_changed:
-            raise ValidationError(f"{label}.ol_referral.candidate_changed conflicts with the locally derived value")
+            _correction(
+                corrections,
+                label=f"{label}.ol_referral.candidate_changed",
+                supplied=bool(ol.get("candidate_changed")),
+                derived=candidate_changed,
+                coordinate=reference,
+            )
         if performed and "resolved" in ol and bool(ol.get("resolved")) != resolved:
-            raise ValidationError(f"{label}.ol_referral.resolved conflicts with the locally derived value")
-        if performed and str(ol.get("after_candidate_id", recommended_candidate_id)).strip() not in {"", recommended_candidate_id}:
-            raise ValidationError(f"{label}.ol_referral.after_candidate_id must equal the recommended candidate")
+            _correction(
+                corrections,
+                label=f"{label}.ol_referral.resolved",
+                supplied=bool(ol.get("resolved")),
+                derived=resolved,
+                coordinate=reference,
+            )
+        supplied_after = str(ol.get("after_candidate_id", recommended_candidate_id)).strip()
+        if performed and supplied_after not in {"", recommended_candidate_id}:
+            _correction(
+                corrections,
+                label=f"{label}.ol_referral.after_candidate_id",
+                supplied=supplied_after,
+                derived=recommended_candidate_id,
+                coordinate=reference,
+            )
         if after_ol >= 3:
             rejected = [candidate for candidate in candidates if candidate["candidate_id"] != recommended_candidate_id]
             for candidate in rejected:
@@ -518,7 +625,7 @@ def validate_rewrite_challenges(
         selected = next(item for item in candidates if item["candidate_id"] == recommended_candidate_id)
         canonical_risk = selected["main_risk"]
         canonical_evidence = evidence_summary or summary
-        messages = _challenge_messages(
+        messages, untranslated = _challenge_messages(
             row,
             label=label,
             languages=languages,
@@ -527,6 +634,21 @@ def validate_rewrite_challenges(
             canonical_evidence=canonical_evidence,
             canonical_action=recommended_action,
         )
+        for language in untranslated:
+            salvage.append(
+                {
+                    "code": "MESSAGE_LANGUAGE_UNTRANSLATED",
+                    "effect": "FLAGGED",
+                    "coordinate": reference,
+                    "challenge_id": challenge_id,
+                    "message": (
+                        f"{challenge_id} has no usable {language} wording; the canonical text is shown "
+                        f"and flagged as untranslated."
+                    ),
+                }
+            )
+        for correction in corrections:
+            salvage.append({**correction, "challenge_id": challenge_id})
         urgency = after_ol
         material = bool(urgency >= policy.translation_challenges.minimum_individual_urgency)
         automatic_resolution = bool(
@@ -561,7 +683,12 @@ def validate_rewrite_challenges(
                     "candidate_changed": candidate_changed,
                     "before_candidate_id": before_candidate_id,
                     "after_candidate_id": recommended_candidate_id if performed else "",
+                    "unavailable": ol_unavailable,
+                    "unavailable_code": (
+                        str(ol.get("unavailable_code") or "OL_UNAVAILABLE") if ol_unavailable else ""
+                    ),
                 },
+                "untranslated_languages": untranslated,
                 "inherited_challenge_ids": inherited_ids,
                 "recommended_action": recommended_action,
                 "consolidation_key": _normalise_consolidation_key(
@@ -627,6 +754,7 @@ def validate_rewrite_challenges(
             },
         },
         "challenges": normalised,
+        "salvage_records": salvage,
     }
 
 
@@ -763,6 +891,11 @@ def render_rewrite_challenge_report(
                 f"- {label('label.risk')}: {risk_text}",
                 f"- {label('label.evidence')}: {evidence_text}",
                 f"- {label('label.action')}: {action_text}",
+                *(
+                    [f"- {label('label.untranslated_languages')}: `{', '.join(first['untranslated_languages'])}`"]
+                    if first.get("untranslated_languages")
+                    else []
+                ),
                 "",
             ]
         )

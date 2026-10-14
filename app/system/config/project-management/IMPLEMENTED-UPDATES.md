@@ -9,6 +9,39 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261014-004 — BIC item-level salvage (first part of TODO-20261013-020)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261013`
+- **TODO:** `TODO-20261013-020` (stays `IN_PROGRESS`; the STC, RTC, planner, and report-translation parts
+  and the OL `performed` flag for a model that mis-states it are still open)
+- **Commits:** the commits that introduced this entry (INSPECT part: `46b1d8a`).
+- **Implemented:** BIC no longer rejects a whole unit for one defective item.
+  - INSPECT: a defective proposal or challenge (bad payload JSON, unsupported type, invalid or
+    out-of-scope reference, duplicate id) is dropped and recorded; an INSPECT with nothing in it is accepted
+    as no challenges. Header defects stay strict.
+  - REWRITE challenge ledger (`rewrite_risk.validate_rewrite_challenges`): a model value that disagrees with
+    its locally derived value (lexical-burden total, Longman familiarity, selected candidate, risk urgency,
+    `after_ol` without an OL check, OL `candidate_changed`, `resolved`, `after_candidate_id`) is overwritten
+    and recorded as `VALUE_CORRECTED`. A missing or unusable message language is left out of the localized
+    wording, so the report shows the canonical text and an "untranslated" line, and the ledger records
+    `MESSAGE_LANGUAGE_UNTRANSLATED`.
+  - OL micro-failure (`llm_tasks`): an unusable micro-response, micro-scope, or over-budget micro read undoes
+    only that challenge. Its pass-1 candidate and risk stay, its `ol_referral` becomes
+    `{performed: false, unavailable: true, unavailable_code}`, the ledger validator accepts that and records
+    `OL_UNAVAILABLE`, and the receipt lists `conditional_ol_micro_failures`. Route mismatch and integrity
+    codes still stop the task.
+  - REWRITE and SELF-CHECK USFM (`act_outputs.classify_bic_usfm_verses`): validation is verse by verse. A
+    verse that is empty, outside the sealed coverage, missing, or whose protected markers differ from its
+    SOURCE verse is recorded as `NOT_ASSESSED` ("not rewritten"); SELF-CHECK commits only the passing verses
+    (`bounded_target.drop_verse_blocks`, `merge_bounded_usfm(keep_existing=...)`) and failing verses keep their
+    existing TARGET text. A passing verse is also held back when it shares continuation (poetry) lines with a
+    failing neighbour (`expand_unsafe_drops`, code `BIC_VERSE_SPLICE_RISK`). Markers that cannot be attributed
+    to verses, or a candidate with no passing verse, are still rejected as a whole.
+  - Each dropped, corrected, or flagged item is written to the Run's `diagnostics/EXCEPTION-REPORTS.jsonl`.
+- **Verification:** new tests in `test_rewrite_risk.py`, `test_llm_harness.py`, `test_core_hardening.py`, and
+  `test_hardening_and_segmentation.py`; full suite re-run with the `textual` extra installed.
+
 ### IMP-20261014-003 — Shared exception reports; content problems no longer stop a Run
 
 - **Version:** `0.02a3` (development branch)

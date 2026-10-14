@@ -1307,6 +1307,112 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
     assert ledger["output_sha256"] == sha256_file(rewrite_path)
 
 
+def test_failed_ol_micro_check_keeps_the_pass_one_candidate_and_marks_only_that_challenge(
+    make_workspace, monkeypatch
+) -> None:
+    """An OL micro-response that is unusable leaves the pass-1 candidate in place and records OL as unavailable."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest = _synthetic_task(root, conditional=True)
+    config = load_ecosystem(root / "ecosystem.yml")
+    calls: list[int] = []
+
+    def row(challenge_id: str) -> dict:
+        """Build one risk-triggering first-pass challenge with two candidates."""
+        burden = {key: 1 for key in (
+            "familiarity", "register_markedness", "sense_ambiguity", "construction_burden", "specialist_load"
+        )}
+
+        def candidate(identifier: str, rendering: str) -> dict:
+            """Build one model-facing candidate without any derived burden total."""
+            return {
+                "candidate_id": identifier,
+                "form": rendering,
+                "meaning_features": ["event"],
+                "tone_and_force": "neutral",
+                "register": "plain",
+                "lexical_burden": burden,
+                "frequency_evidence": {"source": "PROJECT_ESTIMATE", "bands": [], "note": "estimate"},
+                "main_risk": "sense drift",
+                "rejection_code": "",
+                "rejection_reason": "",
+            }
+
+        return {
+            "challenge_id": challenge_id,
+            "scripture_reference": "MAT 1:1",
+            "category": "VERB_CHOICE",
+            "summary": "Resolve the disputed verb",
+            "confidence": "MEDIUM",
+            "candidates": [candidate("C1", "phase1"), candidate("C2", "phase2")],
+            "recommended_candidate_id": "C1",
+            "risk": {"before_ol": 2, "material_triggers": ["COMPETING_NON_EQUIVALENT_SENSES"]},
+            "inherited_challenge_ids": [],
+            "recommended_action": "Review the verb.",
+        }
+
+    class FakeExecutor:
+        """Return a risk-triggering full pass, then an OL micro-response that cannot be used."""
+
+        def status(self, **_kwargs):
+            """Expose a deterministic live catalog for policy routing."""
+            return _fake_codex_status()
+
+        def execute_prevalidated(self, request, status):
+            """Reuse the task-scoped readiness snapshot for every provider phase."""
+            return self.execute(request)
+
+        def execute(self, request):
+            """Answer the first pass normally and every later phase with unusable text."""
+            calls.append(1)
+            if len(calls) > 1:
+                return ProviderResponse("codex", request.model, "this is not json", {}, request.reasoning_effort)
+            payload = {
+                "schema_version": "1.0",
+                "task_id": "synthetic-task-1",
+                "files": {
+                    "output/rewrite.usfm": "\\id MAT Fixture\n\\c 1\n\\v 1 phase1\n",
+                    "output/grammar-assessment.json": {
+                        "rules": [
+                            {"rule_id": "R1", "status": "PASS", "evidence": ""},
+                            {"rule_id": "R2", "status": "NOT_APPLICABLE", "evidence": ""},
+                        ],
+                        "unresolved": [],
+                    },
+                    "output/translation-challenges.json": {
+                        "challenges": [row("CH-1")],
+                        "minor_summary": {"by_category": {}, "notes": []},
+                    },
+                },
+            }
+            return ProviderResponse("codex", request.model, json.dumps(payload), {}, request.reasoning_effort)
+
+    monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
+    result = execute_task(config, task_manifest=manifest)
+    assert len(calls) == 2
+    assert [row["challenge_id"] for row in result["conditional_ol_micro_failures"]] == ["CH-1"]
+    assert result["conditional_ol_micro_failures"][0]["code"] == "LLM_PROVIDER_RESPONSE_INVALID"
+    output_root = manifest.parent / "output"
+    assert "\\v 1 phase1" in (output_root / "rewrite.usfm").read_text(encoding="utf-8")
+    ledger = json.loads((output_root / "translation-challenges.json").read_text(encoding="utf-8"))
+    assert ledger["challenges"][0]["recommended_candidate_id"] == "C1"
+    assert ledger["challenges"][0]["ol_referral"]["unavailable"] is True
+
+    from sage.rewrite_risk import validate_rewrite_challenges
+
+    normalized = validate_rewrite_challenges(
+        output_root / "translation-challenges.json",
+        task_id="synthetic-task-1",
+        operation="rewrite",
+        scope_value="MAT 1:1",
+        output_path=output_root / "rewrite.usfm",
+        human_output=config.human_output,
+        source_language=config.project("idKKHv0").language_code,
+        target_language=config.project("usBOLx1").language_code,
+    )
+    assert [item["code"] for item in normalized["salvage_records"]] == ["OL_UNAVAILABLE"]
+    assert normalized["challenges"][0]["selected_candidate_id"] == "C1"
+
+
 def test_bic_inspect_identity_is_materialized_and_payload_decoded(make_workspace) -> None:
     """INSPECT identity comes from the sealed task; the model supplies proposals and challenges only."""
     from sage.bic_memory import validate_inspect_submission

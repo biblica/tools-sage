@@ -13,6 +13,7 @@ from . import bic_output_contract
 from .atomic import atomic_write_json, atomic_write_text
 from .bounded_target import extract_scope_usfm, merge_bounded_usfm
 from .errors import ConfigurationError, EvidenceLimitError, SageError, ValidationError
+from .exception_reports import is_integrity_code
 from .execution_events import classify_exception
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
@@ -1530,6 +1531,49 @@ def _parse_bic_ol_micro_response(
     return value
 
 
+def _ol_micro_failure_is_recoverable(exc: Exception) -> bool:
+    """Return whether one failed OL micro-adjudication may leave its challenge on the pass-1 candidate.
+
+    Output defects, an unusable micro-scope, and an over-budget micro read only mean OL did not run for
+    that challenge. Route mismatch and integrity guards still stop the task.
+    """
+    if isinstance(exc, EvidenceLimitError):
+        return True
+    code = str(getattr(exc, "code", "") or "").upper()
+    if is_integrity_code(code) or code == "LLM_RESPONSE_ROUTE_MISMATCH":
+        return False
+    return (
+        code.startswith("BIC_OL_MICRO")
+        or code in {"LLM_PROVIDER_RESPONSE_INVALID", "LLM_CONDITIONAL_SCOPE_INVALID"}
+    )
+
+
+def _mark_bic_ol_unavailable(files: dict[str, str], request: dict[str, str], exc: Exception) -> dict[str, str]:
+    """Record on one challenge that its bounded OL check could not run; every other challenge is untouched."""
+    updated = dict(files)
+    try:
+        document = json.loads(updated.get("output/translation-challenges.json", ""))
+        rows = document["challenges"]
+    except (json.JSONDecodeError, KeyError, TypeError):
+        raise exc
+    wanted = request["challenge_id"].strip().upper()
+    for index, item in enumerate(rows):
+        if isinstance(item, dict) and str(item.get("challenge_id", "")).strip().upper() == wanted:
+            rows[index] = {
+                **item,
+                "ol_referral": {
+                    "performed": False,
+                    "unavailable": True,
+                    "unavailable_code": str(getattr(exc, "code", "") or "OL_MICRO_FAILED"),
+                },
+            }
+            break
+    else:
+        raise exc
+    updated["output/translation-challenges.json"] = json.dumps(document, ensure_ascii=False, indent=2) + "\n"
+    return updated
+
+
 def _apply_bic_ol_micro_result(
     files: dict[str, str],
     manifest: dict[str, Any],
@@ -2065,6 +2109,7 @@ def execute_task(
     phase_reasoning_efforts: list[str | None] = [resolved_reasoning]
     handoff_measurements: list[dict[str, Any]] = [{"phase": 1, **first_handoff}]
     conditional_micro_scopes: list[dict[str, str]] = []
+    micro_failures: list[dict[str, str]] = []
     first = _execute_provider_request(
         executor,
         ProviderRequest(
@@ -2148,55 +2193,70 @@ def execute_task(
         base_phase_count = phase_count
         for request_index, conditional_request in enumerate(conditional_requests, start=1):
             used_conditional = True
-            challenge = _challenge_for_request(final_files, conditional_request["challenge_id"])
-            current_rewrite = final_files.get("output/rewrite.usfm", "")
-            candidate_verse = extract_scope_usfm(current_rewrite, conditional_request["scripture_reference"])
-            if not candidate_verse.strip():
-                raise ValidationError(
-                    "Conditional OL micro-adjudication could not isolate the current candidate verse",
-                    code="LLM_CONDITIONAL_SCOPE_INVALID",
-                )
-            focused_reads = _micro_scope_reads(
-                normal_reads,
-                conditional_reads,
-                conditional_request["scripture_reference"],
-            )
-            micro_schema = _bic_ol_micro_schema(manifest, conditional_request, challenge)
-            conditional_prompt = _bic_ol_micro_prompt(
-                manifest=manifest,
-                reads=focused_reads,
-                request=conditional_request,
-                challenge=challenge,
-                candidate_verse=candidate_verse,
-                protected_contracts=protected_contracts,
-            )
             phase_number = base_phase_count + request_index
-            measurement = _enforce_routed_sfm_budget(
-                config,
-                manifest,
-                _route_measurement(conditional_prompt, micro_schema, focused_reads),
-                follow_up=True,
-            )
-            handoff_measurements.append({"phase": phase_number, **measurement, "mode": "BIC_OL_MICRO"})
-            conditional_micro_scopes.append(dict(conditional_request))
-            phase_reasoning_efforts.append(second_pass_reasoning)
-            final = _execute_provider_request(
-                executor,
-                ProviderRequest(
-                    prompt=conditional_prompt,
-                    schema=micro_schema,
-                    model=resolved_model,
-                    reasoning_effort=second_pass_reasoning,
-                    timeout_seconds=timeout_seconds,
-                ),
-                prevalidated_status=provider_status_snapshot,
-            )
-            provider_responses.append(final)
-            _validate_provider_response_route(final, route)
-            micro_result = _parse_bic_ol_micro_response(final.content, conditional_request, challenge)
-            final_files = _apply_bic_ol_micro_result(final_files, manifest, conditional_request, micro_result)
-            final_prompt_sha = sha256_bytes(conditional_prompt.encode("utf-8"))
-            phase_count = phase_number
+            try:
+                challenge = _challenge_for_request(final_files, conditional_request["challenge_id"])
+                current_rewrite = final_files.get("output/rewrite.usfm", "")
+                candidate_verse = extract_scope_usfm(current_rewrite, conditional_request["scripture_reference"])
+                if not candidate_verse.strip():
+                    raise ValidationError(
+                        "Conditional OL micro-adjudication could not isolate the current candidate verse",
+                        code="LLM_CONDITIONAL_SCOPE_INVALID",
+                    )
+                focused_reads = _micro_scope_reads(
+                    normal_reads,
+                    conditional_reads,
+                    conditional_request["scripture_reference"],
+                )
+                micro_schema = _bic_ol_micro_schema(manifest, conditional_request, challenge)
+                conditional_prompt = _bic_ol_micro_prompt(
+                    manifest=manifest,
+                    reads=focused_reads,
+                    request=conditional_request,
+                    challenge=challenge,
+                    candidate_verse=candidate_verse,
+                    protected_contracts=protected_contracts,
+                )
+                measurement = _enforce_routed_sfm_budget(
+                    config,
+                    manifest,
+                    _route_measurement(conditional_prompt, micro_schema, focused_reads),
+                    follow_up=True,
+                )
+                handoff_measurements.append({"phase": phase_number, **measurement, "mode": "BIC_OL_MICRO"})
+                conditional_micro_scopes.append(dict(conditional_request))
+                phase_reasoning_efforts.append(second_pass_reasoning)
+                final = _execute_provider_request(
+                    executor,
+                    ProviderRequest(
+                        prompt=conditional_prompt,
+                        schema=micro_schema,
+                        model=resolved_model,
+                        reasoning_effort=second_pass_reasoning,
+                        timeout_seconds=timeout_seconds,
+                    ),
+                    prevalidated_status=provider_status_snapshot,
+                )
+                provider_responses.append(final)
+                phase_count = phase_number
+                _validate_provider_response_route(final, route)
+                micro_result = _parse_bic_ol_micro_response(final.content, conditional_request, challenge)
+                # The merge works on a copy, so a failure leaves the pass-1 files untouched.
+                final_files = _apply_bic_ol_micro_result(final_files, manifest, conditional_request, micro_result)
+                final_prompt_sha = sha256_bytes(conditional_prompt.encode("utf-8"))
+            except (ValidationError, EvidenceLimitError) as exc:
+                if not _ol_micro_failure_is_recoverable(exc):
+                    raise
+                # Undo only this challenge: keep its pass-1 candidate and record that OL did not run.
+                final_files = _mark_bic_ol_unavailable(final_files, conditional_request, exc)
+                micro_failures.append(
+                    {
+                        "challenge_id": conditional_request["challenge_id"],
+                        "scripture_reference": conditional_request["scripture_reference"],
+                        "code": str(getattr(exc, "code", "") or "OL_MICRO_FAILED"),
+                        "message": str(exc),
+                    }
+                )
         # Identity, hashes, and derived fields are set once, after every OL merge has settled the candidate.
         final_files = bic_output_contract.materialize_files(config, manifest, final_files)
 
@@ -2233,6 +2293,7 @@ def execute_task(
         "phase_reasoning_efforts": phase_reasoning_efforts,
         "conditional_evidence_used": used_conditional,
         "conditional_ol_micro_scopes": conditional_micro_scopes,
+        "conditional_ol_micro_failures": micro_failures,
         "report_language": _narrative_language_tag(manifest),
         "language_retry_count": language_retry_count,
         "language_retry_reason": language_retry_reason,

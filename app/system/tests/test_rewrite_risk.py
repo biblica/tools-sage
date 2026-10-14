@@ -357,6 +357,79 @@ def test_unresolved_urgent_choice_logs_and_flows_without_prompt(
     assert self_check["operation"] == "self_check"
 
 
+def test_self_check_commits_only_passing_verses_and_reports_the_rest(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A verse whose protected markers differ from SOURCE is not committed; the other verses still are."""
+    import re
+
+    config, rewrite, manifest = _initialised_rewrite(package_root, make_workspace)
+    rewrite_output = manifest.parent / "output" / "rewrite.usfm"
+    (manifest.parent / "output" / "translation-challenges.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "1.2",
+                "task_id": rewrite["task_id"],
+                "operation": "rewrite",
+                "scope": rewrite["scope"],
+                "output_sha256": sha256_file(rewrite_output),
+                "challenges": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    submit_act_task(config, manifest)
+    self_check = create_act_task(
+        config, workflow="bic", operation="self_check", output_project_id="usBOLx1",
+        contemporary_source_id="idKKHv0", scope_value="MAT 1", predecessor_task=str(manifest),
+    )
+    self_manifest = Path(self_check["manifest_path"])
+    self_output = self_manifest.parent / "output" / "self-check.usfm"
+
+    def rewritten(match: re.Match) -> str:
+        """Rewrite every verse; verse 2 also gains a protected marker the SOURCE verse lacks."""
+        extra = " \\add x\\add*" if match.group(1) == "2" else ""
+        return f"{match.group(0)} REWRITTEN{extra}"
+
+    self_output.write_text(
+        re.sub(r"^\\v (\d+) .*$", rewritten, rewrite_output.read_text(encoding="utf-8"), flags=re.MULTILINE),
+        encoding="utf-8",
+    )
+    grammar = self_check["project_grammar"]
+    (self_output.parent / "grammar-assessment.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "task_id": self_check["task_id"],
+                "scope": self_check["scope"],
+                "profile_id": grammar["profile_id"],
+                "profile_sha256": grammar["profile_sha256"],
+                "output_sha256": sha256_file(self_output),
+                "rules": [
+                    {"rule_id": rule_id, "status": "PASS", "evidence": "Checked."}
+                    for rule_id in grammar["rule_ids"]
+                ],
+                "unresolved": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    result = submit_act_task(config, self_manifest)
+    assert result["status"] == "COMMITTED"
+    assert result["commit"]["not_committed"] == ["MAT 1:2"]
+    assert result["validation"]["not_rewritten"] == ["MAT 1:2"]
+    target = (storage_layout(config.root).projects_root / "usBOLx1" / "41MAT.SFM").read_text(encoding="utf-8")
+    assert "\\v 1 Verse 1. REWRITTEN" in target
+    assert "\\v 2 Verse 2.\n" in target
+    assert "\\v 3 Verse 3. REWRITTEN" in target
+    reports = list(config.root.parent.rglob("EXCEPTION-REPORTS.jsonl"))
+    rows = [json.loads(line) for report in reports for line in report.read_text(encoding="utf-8").splitlines()]
+    assert [(row["code"], row["effect"], row["coordinates"]) for row in rows] == [
+        ("USFM_PROTECTED_MARKER_MISMATCH", "NOT_ASSESSED", ["MAT 1:2"])
+    ]
+
+
 def test_generated_rewrite_act_and_skill_share_current_risk_contract(
     package_root: Path,
     make_workspace,
@@ -405,8 +478,17 @@ def test_longman_frequency_bands_map_to_governed_familiarity_scores() -> None:
     assert longman_familiarity_score(["UNKNOWN"]) is None
 
 
-def test_longman_evidence_rejects_inconsistent_familiarity_score(tmp_path: Path) -> None:
-    """Verify licensed Longman evidence cannot be paired with an incompatible score."""
+def _validate_fixture(tmp_path: Path, document: dict, output: Path) -> dict:
+    """Write one challenge fixture and run the REWRITE validator over it."""
+    path = tmp_path / "translation-challenges.json"
+    path.write_text(json.dumps(document), encoding="utf-8")
+    return validate_rewrite_challenges(
+        path, task_id="TASK", operation="rewrite", scope_value="MAT 1:1", output_path=output
+    )
+
+
+def test_longman_evidence_overwrites_inconsistent_familiarity_score(tmp_path: Path) -> None:
+    """Licensed Longman evidence wins over a model familiarity score, and the correction is recorded."""
     output = tmp_path / "candidate.usfm"
     output.write_text("fixture", encoding="utf-8")
     challenge = _challenge_document({"task_id": "TASK", "scope": "MAT 1:1"}, output, resolved=True)
@@ -418,16 +500,103 @@ def test_longman_evidence_rejects_inconsistent_familiarity_score(tmp_path: Path)
     }
     candidate["lexical_burden"]["familiarity"] = 2
     candidate["lexical_burden"]["overall"] = lexical_burden_total(candidate["lexical_burden"])
+    result = _validate_fixture(tmp_path, challenge, output)
+    burden = result["challenges"][0]["candidates"][0]["lexical_burden"]
+    assert burden["familiarity"] == 0
+    assert burden["overall"] == lexical_burden_total({k: v for k, v in burden.items() if k != "overall"})
+    fields = {row["field"] for row in result["salvage_records"] if row["code"] == "VALUE_CORRECTED"}
+    assert "challenges[1].candidates[1].lexical_burden.familiarity" in fields
+    assert "challenges[1].candidates[1].lexical_burden.overall" in fields
+
+
+def test_model_values_that_disagree_with_derived_ones_are_corrected(tmp_path: Path) -> None:
+    """Urgency, selected candidate, and OL-derived flags are overwritten with the local values and recorded."""
+    output = tmp_path / "candidate.usfm"
+    output.write_text("fixture", encoding="utf-8")
+    document = _challenge_document({"task_id": "TASK", "scope": "MAT 1:1"}, output, resolved=True)
+    challenge = document["challenges"][0]
+    challenge["risk"]["urgency"] = 4
+    challenge["selected_candidate_id"] = "REMAIN"
+    challenge["ol_referral"]["candidate_changed"] = False
+    challenge["ol_referral"]["resolved"] = False
+    result = _validate_fixture(tmp_path, document, output)
+    row = result["challenges"][0]
+    assert row["risk"]["urgency"] == row["risk"]["after_ol"] == 1
+    assert row["selected_candidate_id"] == "ABIDE"
+    assert row["ol_referral"]["candidate_changed"] is True
+    assert row["ol_referral"]["resolved"] is True
+    corrected = {item["field"] for item in result["salvage_records"] if item["code"] == "VALUE_CORRECTED"}
+    assert corrected == {
+        "challenges[1].risk.urgency",
+        "challenges[1].selected_candidate_id",
+        "challenges[1].ol_referral.candidate_changed",
+        "challenges[1].ol_referral.resolved",
+    }
+    assert all(item["effect"] == "CORRECTED" for item in result["salvage_records"])
+
+
+def test_missing_message_language_falls_back_to_canonical_and_is_flagged(tmp_path: Path) -> None:
+    """A language without usable wording is flagged untranslated instead of rejecting the ledger."""
+    from sage.human_output import parse_human_output
+
+    output = tmp_path / "candidate.usfm"
+    output.write_text("fixture", encoding="utf-8")
+    document = _challenge_document({"task_id": "TASK", "scope": "MAT 1:1"}, output, resolved=True)
+    del document["challenges"][0]["messages"]["id"]
+    policy = parse_human_output(
+        {
+            "operator_language": "en",
+            "logs_and_reports": {"primary_language": "en", "secondary_language": None, "bilingual": False},
+            "translation_challenges": {
+                "primary_language": "en",
+                "secondary_language": "id",
+                "bilingual": True,
+                "minimum_individual_urgency": 1,
+                "aggregate_lower_levels": True,
+                "consolidate_repeated_cause": True,
+                "render_only_material_fields": True,
+            },
+            "machine_records": {"language": "canonical", "localise_codes": False},
+        }
+    )
     path = tmp_path / "translation-challenges.json"
-    path.write_text(json.dumps(challenge), encoding="utf-8")
-    with pytest.raises(ValidationError, match="must equal Longman score 0"):
-        validate_rewrite_challenges(
-            path,
-            task_id="TASK",
-            operation="rewrite",
-            scope_value="MAT 1:1",
-            output_path=output,
-        )
+    document["reporting_languages"] = ["en", "id"]
+    path.write_text(json.dumps(document), encoding="utf-8")
+    result = validate_rewrite_challenges(
+        path,
+        task_id="TASK",
+        operation="rewrite",
+        scope_value="MAT 1:1",
+        output_path=output,
+        human_output=policy,
+    )
+    row = result["challenges"][0]
+    assert row["untranslated_languages"] == ["id"]
+    assert set(row["messages"]) == {"en"}
+    assert [item["code"] for item in result["salvage_records"]] == ["MESSAGE_LANGUAGE_UNTRANSLATED"]
+
+
+def test_unavailable_ol_check_keeps_the_pass_one_candidate(tmp_path: Path) -> None:
+    """A challenge whose OL micro-check could not run is accepted unresolved and reported OL_UNAVAILABLE."""
+    output = tmp_path / "candidate.usfm"
+    output.write_text("fixture", encoding="utf-8")
+    document = _challenge_document({"task_id": "TASK", "scope": "MAT 1:1"}, output, resolved=True)
+    challenge = document["challenges"][0]
+    challenge["risk"]["after_ol"] = challenge["risk"]["before_ol"]
+    challenge["recommended_candidate_id"] = "REMAIN"
+    challenge["candidates"][1].pop("rejection_code", None)
+    challenge["ol_referral"] = {"performed": False, "unavailable": True, "unavailable_code": "LLM_PROVIDER_RESPONSE_INVALID"}
+    result = _validate_fixture(tmp_path, document, output)
+    row = result["challenges"][0]
+    assert row["ol_referral"]["performed"] is False
+    assert row["ol_referral"]["unavailable"] is True
+    assert row["risk"]["after_ol"] == row["risk"]["before_ol"] == 2
+    assert row["selected_candidate_id"] == "REMAIN"
+    assert [item["code"] for item in result["salvage_records"]] == ["OL_UNAVAILABLE"]
+    # Without the unavailable marker the controller still requires the OL check to have run.
+    challenge["ol_referral"] = {"performed": False}
+    with pytest.raises(ValidationError, match="requires one bounded OL check"):
+        _validate_fixture(tmp_path, document, output)
 
 
 def test_bic_ol_evidence_is_conditional_not_an_ordinary_read(

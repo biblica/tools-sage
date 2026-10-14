@@ -149,6 +149,7 @@ _CATALOGUE: dict[str, dict[str, str]] = {
         "label.risk": "Risk",
         "label.evidence": "Evidence",
         "label.action": "Action",
+        "label.untranslated_languages": "Shown in canonical wording (no usable translation)",
         "label.resolved_by_self_check": "Resolved by SELF-CHECK",
         "label.automatic_resolutions": "Automatic resolutions",
         "label.summary": "Summary",

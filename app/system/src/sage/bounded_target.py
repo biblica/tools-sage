@@ -270,9 +270,76 @@ def preflight_bounded_target_commit(
     }
 
 
-def merge_bounded_usfm(target_text: str, candidate_text: str, scope_value: str) -> str:
-    """Replace only bounded verse blocks in one TARGET book and preserve all other book content."""
+_TAIL_LINE_RE = re.compile(
+    r"^\\(?:p|m|mi|nb|pc|pm|pmo|pmc|pmr|pr|pi\d*|ph\d*|q\d*|qm\d*|qr|qc|qa|li\d*|lim\d*)\s+\S"
+)
+
+
+def expand_unsafe_drops(
+    candidate_text: str,
+    scope_value: str,
+    drop: Iterable[tuple[int, int, int]],
+) -> set[tuple[int, int, int]]:
+    """Widen a set of failing verses so no kept verse is joined to the wrong half of a neighbour.
+
+    A verse block owns the lines before its ``\\v`` marker, and those lines can be the text-bearing tail
+    (poetry or continuation paragraph) of the previous verse. Mixing a kept verse with its dropped
+    neighbour's tail would splice two versions of one verse, so such neighbours are dropped as well.
+    """
     scope = parse_scope(scope_value)
+    blocks = _scope_blocks(candidate_text, scope)
+    keys = [(block.chapter, block.start_verse, block.end_verse) for block in blocks]
+    has_tail = [any(_TAIL_LINE_RE.match(line.strip()) for line in block.lines[:-1]) for block in blocks]
+    dropped = set(drop)
+    changed = True
+    while changed:
+        changed = False
+        for index, key in enumerate(keys):
+            if key in dropped:
+                if has_tail[index] and index > 0 and keys[index - 1] not in dropped:
+                    dropped.add(keys[index - 1])
+                    changed = True
+                if index + 1 < len(keys) and has_tail[index + 1] and keys[index + 1] not in dropped:
+                    dropped.add(keys[index + 1])
+                    changed = True
+    return dropped
+
+
+def drop_verse_blocks(candidate_text: str, drop: Iterable[tuple[int, int, int]]) -> str:
+    """Return the candidate without the verse blocks keyed ``(chapter, start_verse, end_verse)`` in ``drop``."""
+    dropped = set(drop)
+    kept: list[RawBlock | VerseBlock] = []
+    previous_dropped = False
+    for block in _parse_blocks(candidate_text):
+        if isinstance(block, VerseBlock):
+            previous_dropped = (block.chapter, block.start_verse, block.end_verse) in dropped
+            if not previous_dropped:
+                kept.append(block)
+            continue
+        # Lines trailing a dropped verse (before the next chapter marker or the end) are that verse's tail.
+        is_chapter_marker = any(_CHAPTER_RE.match(line) for line in block.lines)
+        if previous_dropped and not is_chapter_marker:
+            previous_dropped = False
+            continue
+        previous_dropped = False
+        kept.append(block)
+    return _render_blocks(kept)
+
+
+def merge_bounded_usfm(
+    target_text: str,
+    candidate_text: str,
+    scope_value: str,
+    *,
+    keep_existing: Iterable[tuple[int, int, int]] = (),
+) -> str:
+    """Replace only bounded verse blocks in one TARGET book and preserve all other book content.
+
+    A verse keyed ``(chapter, start_verse, end_verse)`` in ``keep_existing`` is deliberately absent from the
+    candidate: its existing TARGET block is kept unchanged instead of being treated as a shape mismatch.
+    """
+    scope = parse_scope(scope_value)
+    keep = set(keep_existing)
     candidate_blocks = _scope_blocks(candidate_text, scope)
     if not candidate_blocks:
         raise ValidationError(f"Bounded candidate contains no verse blocks for {scope.label()}")
@@ -301,6 +368,9 @@ def merge_bounded_usfm(target_text: str, candidate_text: str, scope_value: str) 
             continue
         key = (block.chapter, block.start_verse, block.end_verse)
         replacement = candidate_by_range.get(key)
+        if replacement is None and key in keep:
+            output.append(block)
+            continue
         if replacement is None:
             raise ValidationError(
                 "Existing TARGET verse/bridge shape differs from the bounded candidate; SAGE will not guess a bridge split/merge",
@@ -355,7 +425,7 @@ def merge_bounded_usfm(target_text: str, candidate_text: str, scope_value: str) 
             output.insert(insert_at, new_block)
 
     merged = _render_blocks(output)
-    _validate_bounded_merge(target_text, candidate_text, merged, scope_value)
+    _validate_bounded_merge(target_text, candidate_text, merged, scope_value, keep_existing=keep)
     return merged
 
 
@@ -364,10 +434,35 @@ def _validate_bounded_merge(
     candidate_text: str,
     merged_text: str,
     scope_value: str,
+    *,
+    keep_existing: Iterable[tuple[int, int, int]] = (),
 ) -> None:
-    """Fail closed unless a merge reproduces the candidate and preserves out-of-scope content."""
+    """Fail closed unless a merge reproduces the candidate and preserves out-of-scope content.
+
+    Verses in ``keep_existing`` are checked separately: they must remain exactly as they were in the TARGET.
+    """
+    keep = set(keep_existing)
+    scope = parse_scope(scope_value)
+    if keep:
+        def keyed(text: str) -> dict[tuple[int, int, int], tuple[str, ...]]:
+            """Map each in-scope kept verse key to its exact lines."""
+            return {
+                (block.chapter, block.start_verse, block.end_verse): block.lines
+                for block in _scope_blocks(text, scope)
+                if (block.chapter, block.start_verse, block.end_verse) in keep
+            }
+
+        if keyed(before_text) != keyed(merged_text):
+            raise ValidationError(
+                "Bounded TARGET merge changed a verse that was meant to stay unchanged",
+                code="TARGET_SCOPE_KEPT_VERSE_CHANGED",
+                details={"scope": scope.label()},
+            )
+        merged_scope_text = drop_verse_blocks(merged_text, keep)
+    else:
+        merged_scope_text = merged_text
     expected_scope = extract_scope_usfm(candidate_text, scope_value)
-    actual_scope = extract_scope_usfm(merged_text, scope_value)
+    actual_scope = extract_scope_usfm(merged_scope_text, scope_value)
     if not actual_scope.strip() or actual_scope != expected_scope:
         raise ValidationError(
             "Bounded TARGET merge did not reproduce the candidate at the requested coordinates",

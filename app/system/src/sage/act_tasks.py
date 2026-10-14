@@ -19,7 +19,7 @@ from .act_outputs import (
     render_execution_section,
     render_operator_note_text,
     validate_bic_inspect_output,
-    validate_bic_usfm_output,
+    classify_bic_usfm_verses,
     validate_grammar_assessment,
     validate_analysis_findings,
 )
@@ -28,7 +28,13 @@ from .rewrite_risk import (
     render_rewrite_challenge_report,
     validate_rewrite_challenges,
 )
-from .bounded_target import merge_bounded_usfm, preflight_bounded_target_commit, record_target_commit
+from .bounded_target import (
+    drop_verse_blocks,
+    expand_unsafe_drops,
+    merge_bounded_usfm,
+    preflight_bounded_target_commit,
+    record_target_commit,
+)
 from .bic_memory import (
     eligible_memory_records,
     inspect_completion_and_review_status,
@@ -7159,7 +7165,7 @@ def _update_control(path: Path, value: dict[str, Any]) -> None:
         pass
 
 
-def _record_dropped_item_exceptions(
+def _record_salvage_exceptions(
     run_root: Path,
     *,
     workflow: str,
@@ -7169,22 +7175,24 @@ def _record_dropped_item_exceptions(
     stage: str,
     scope: str,
     items: Sequence[Mapping[str, Any]],
+    effect: str = "FLAGGED",
 ) -> None:
-    """Report each model item dropped during salvage; the rest of the unit's output is still accepted."""
+    """Report each item the controller dropped, corrected, or flagged while still accepting the unit's output."""
     for item in items:
+        coordinate = str(item.get("coordinate") or item.get("reference") or "") or scope
         record_exception(
             run_root,
             ExceptionRecord(
                 tool=workflow.upper(),
-                code=str(item.get("code") or "ITEM_DROPPED"),
-                message=str(item.get("message") or "Defective model item dropped."),
-                effect="FLAGGED",
+                code=str(item.get("code") or "ITEM_SALVAGED"),
+                message=str(item.get("message") or "Defective model output was salvaged."),
+                effect=str(item.get("effect") or effect),
                 run_id=run_id,
                 job_id=job_id,
                 task_id=task_id,
-                work_unit=str(item.get("submitted_id") or "") or None,
+                work_unit=str(item.get("challenge_id") or item.get("submitted_id") or "") or None,
                 stage=stage,
-                coordinates=(scope,),
+                coordinates=(coordinate,),
             ),
         )
 
@@ -7383,7 +7391,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             bic_job_id=str(raw.get("job_id") or "") or None,
         )
         dropped_items = list(normalized.get("dropped_items") or [])
-        _record_dropped_item_exceptions(
+        _record_salvage_exceptions(
             job_store.load_run(owning_job, run_id).root,
             workflow=workflow_hint,
             job_id=job_id,
@@ -7421,7 +7429,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         output_key = "output/rewrite.usfm" if operation == "rewrite" else "output/self-check.usfm"
         grammar = raw.get("project_grammar") or {}
         with provider_output_contract("BIC_OUTPUT_INVALID", affected_scope=str(raw["scope"])):
-            usfm_validation = validate_bic_usfm_output(
+            usfm_validation = classify_bic_usfm_verses(
                 output_paths[output_key],
                 expected_book=target_scope.book,
                 expected_references=expected_refs,
@@ -7437,6 +7445,39 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 output_path=output_paths[output_key],
                 required_rule_ids=list(grammar.get("rule_ids", [])),
             )
+        failed_verses = list(usfm_validation.pop("failed_verses", []))
+        usfm_validation.pop("passing_blocks", None)
+        candidate_text = output_paths[output_key].read_text(encoding="utf-8")
+        failed_keys = {
+            (int(row["chapter"]), int(row["verse_start"]), int(row["verse_end"])) for row in failed_verses
+        }
+        # Never commit a kept verse joined to a failing neighbour's tail lines.
+        committed_drop = expand_unsafe_drops(candidate_text, target_scope_value, failed_keys) if failed_keys else set()
+        for chapter, verse_start, verse_end in sorted(committed_drop - failed_keys):
+            label = f"{target_scope.book} {chapter}:{verse_start}" + (f"-{verse_end}" if verse_end != verse_start else "")
+            failed_verses.append(
+                {
+                    "reference": label,
+                    "chapter": chapter,
+                    "verse_start": verse_start,
+                    "verse_end": verse_end,
+                    "code": "BIC_VERSE_SPLICE_RISK",
+                    "message": f"{label} shares continuation lines with a failing neighbouring verse.",
+                }
+            )
+        for row in failed_verses:
+            row["message"] = f"{row['message']} The verse was not rewritten."
+        _record_salvage_exceptions(
+            job_store.load_run(owning_job, run_id).root,
+            workflow=workflow_hint,
+            job_id=job_id,
+            run_id=run_id,
+            task_id=task_id,
+            stage=operation.upper(),
+            scope=str(raw["scope"]),
+            items=failed_verses,
+            effect=NOT_ASSESSED,
+        )
         challenge_document: dict[str, Any] | None = None
         if operation == "rewrite":
             inherited_path = task_root / "packet" / "translation-challenges.json"
@@ -7461,6 +7502,16 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                     ),
                 )
             challenge_document["execution_route"] = execution_route
+            _record_salvage_exceptions(
+                job_store.load_run(owning_job, run_id).root,
+                workflow=workflow_hint,
+                job_id=job_id,
+                run_id=run_id,
+                task_id=task_id,
+                stage="REWRITE",
+                scope=str(raw["scope"]),
+                items=challenge_document.get("salvage_records", []),
+            )
             conditional_ol_evidence_used = any(
                 bool((item.get("ol_referral") or {}).get("performed", False))
                 for item in challenge_document.get("challenges", [])
@@ -7492,6 +7543,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 else "BOUNDED_USFM_AND_GRAMMAR_ASSESSMENT_2.0"
             ),
             "usfm": usfm_validation,
+            "not_rewritten": [str(row["reference"]) for row in failed_verses],
             "grammar_assessment": {
                 "rules": len(assessment["rules"]),
                 "issues": assessment["issue_count"],
@@ -7531,12 +7583,15 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                         code="EXTERNAL_TARGET_WRITE_PROHIBITED",
                     )
                 target_file = validate_external_file(target_file, roots=(project.path,), write=True)
-            candidate_text = output_paths[output_key].read_text(encoding="utf-8")
             before_text = target_file.read_text(encoding="utf-8") if target_file.is_file() else ""
+            # Only verses that passed SELF-CHECK are committed; failing verses keep their existing TARGET text.
+            commit_text = drop_verse_blocks(candidate_text, committed_drop) if committed_drop else candidate_text
             after_text = (
-                merge_bounded_usfm(before_text, candidate_text, target_scope_value)
+                merge_bounded_usfm(
+                    before_text, commit_text, target_scope_value, keep_existing=committed_drop
+                )
                 if before_text.strip()
-                else candidate_text
+                else commit_text
             )
             lock_path = config.workflow("bic").lock_root / "self-check-commit.lock"
             with WorkspaceLock(lock_path, "BIC_SELF_CHECK_COMMIT"):
@@ -7570,6 +7625,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "bounded_scope": target_scope_value,
                 "source_scope": str(raw["scope"]),
                 "history": history,
+                "not_committed": [str(row["reference"]) for row in failed_verses],
             }
             final_status = "COMMITTED"
         else:
