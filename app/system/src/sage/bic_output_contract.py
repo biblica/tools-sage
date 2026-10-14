@@ -356,7 +356,8 @@ def _materialize_challenges(
 ) -> dict[str, Any]:
     """Set challenge-ledger identity and every locally derived field.
 
-    Idempotent over an OL micro merge: a merged ``after_ol`` and a performed ``ol_referral`` are kept.
+    Idempotent over an OL micro merge: a merged ``after_ol`` and a performed (or recorded-unavailable)
+    ``ol_referral`` are kept.
     """
     challenges: list[dict[str, Any]] = []
     for raw in document.get("challenges") or []:
@@ -372,9 +373,11 @@ def _materialize_challenges(
         row["risk"] = risk
         row["selected_candidate_id"] = row.get("recommended_candidate_id")
         referral = row.get("ol_referral")
-        row["ol_referral"] = (
-            referral if isinstance(referral, dict) and referral.get("performed") is True else {"performed": False}
+        kept = isinstance(referral, dict) and (
+            referral.get("performed") is True
+            or (referral.get("performed") is False and referral.get("unavailable") is True)
         )
+        row["ol_referral"] = referral if kept else {"performed": False}
         challenges.append(row)
     minor = dict(document.get("minor_summary") or {})
     by_category = {

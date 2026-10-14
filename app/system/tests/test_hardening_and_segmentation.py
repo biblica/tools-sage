@@ -14,6 +14,8 @@ import yaml
 from sage.storage import storage_layout
 from sage.act_tasks import create_act_task
 from sage.bounded_target import (
+    drop_verse_blocks,
+    expand_unsafe_drops,
     extract_scope_usfm,
     list_target_history,
     merge_bounded_usfm,
@@ -688,3 +690,15 @@ def test_hardening_module_runner_uses_bounded_node_groups(
     finally:
         sys.path.remove(scripts)
         sys.modules.pop("hardening", None)
+
+
+def test_merge_keeps_dropped_verses_and_widens_drops_across_continuation_tails() -> None:
+    """A failing verse keeps its TARGET text, and no kept verse is spliced to its neighbour's tail lines."""
+    before = "\\id MAT\n\\c 1\n\\q1\n\\v 1 old one\n\\q2 old one tail\n\\v 2 old two\n\\v 3 old three\n"
+    candidate = "\\id MAT\n\\c 1\n\\q1\n\\v 1 new one\n\\q2 new one tail\n\\v 2 new two\n\\v 3 new three\n"
+    # Verse 2 failing drags verse 1 with it because the tail of verse 1 is stored in verse 2's block.
+    assert expand_unsafe_drops(candidate, "MAT 1:1-3", {(1, 2, 2)}) == {(1, 1, 1), (1, 2, 2)}
+    assert expand_unsafe_drops(candidate, "MAT 1:1-3", {(1, 3, 3)}) == {(1, 3, 3)}
+    drop = expand_unsafe_drops(candidate, "MAT 1:1-3", {(1, 2, 2)})
+    merged = merge_bounded_usfm(before, drop_verse_blocks(candidate, drop), "MAT 1:1-3", keep_existing=drop)
+    assert merged == before.replace("old three", "new three")

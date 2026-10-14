@@ -380,6 +380,132 @@ def usfm_scope_refs(path: Path, *, expected_book: str) -> tuple[set[VerseRef], d
     return refs, usj
 
 
+def _split_at_verses(markers: Sequence[str]) -> list[tuple[str, ...]]:
+    """Split a marker sequence into the preamble and one segment starting at each ``v`` marker."""
+    segments: list[list[str]] = [[]]
+    for marker in markers:
+        if marker == "v":
+            segments.append([])
+        segments[-1].append(marker)
+    return [tuple(segment) for segment in segments]
+
+
+def classify_bic_usfm_verses(
+    path: Path,
+    *,
+    expected_book: str,
+    expected_references: set[VerseRef],
+    source_marker_sequence: tuple[str, ...],
+    marker_policy: str = "SEMANTIC_STRUCTURE_V1",
+) -> dict[str, Any]:
+    """Validate bounded BIC USFM verse by verse so one defective verse does not reject the rest.
+
+    Whole-file defects (parser errors, wrong book, no verses, markers that cannot be attributed to a
+    verse) still raise. A verse that is empty, outside the sealed coverage, missing, or whose protected
+    markers differ from its SOURCE verse is listed in ``failed_verses``; the others are listed in
+    ``passing_blocks``. When no verse passes, the unit is rejected with the strict validator's error.
+    """
+    try:
+        usj = compile_usfm_file(path)
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise ValidationError(f"USFM output cannot be compiled: {exc}") from exc
+    errors = list(usj.get("sage", {}).get("errors", []))
+    if errors:
+        raise ValidationError("USFM output has parser errors: " + ", ".join(errors[:8]))
+    actual_book = str(usj.get("sage", {}).get("book_code", "")).upper()
+    if actual_book != expected_book:
+        raise ValidationError(f"USFM output book is {actual_book or 'UNKNOWN'}; expected {expected_book}")
+    units = parse_usj_units(usj)
+    if not units:
+        raise ValidationError("USFM output contains no verse units")
+    text = path.read_text(encoding="utf-8-sig")
+    actual_markers = marker_sequence(text)
+    source_protected = tuple(
+        marker for marker in source_marker_sequence if not _LAYOUT_MARKER_RE.fullmatch(marker.rstrip("*"))
+    )
+    actual_protected = protected_marker_sequence(text)
+    candidate_segments = _split_at_verses(actual_protected)
+    source_segments = _split_at_verses(source_protected)
+    attributable = (
+        len(candidate_segments) == len(units) + 1
+        and len(source_segments) == len(candidate_segments)
+        and candidate_segments[0] == source_segments[0]
+    )
+    if not attributable:
+        # Markers cannot be attributed to verses: fall back to the whole-file contract.
+        return validate_bic_usfm_output(
+            path,
+            expected_book=expected_book,
+            expected_references=expected_references,
+            source_marker_sequence=source_marker_sequence,
+            marker_policy=marker_policy,
+        ) | {"failed_verses": [], "passing_blocks": []}
+    failed: list[dict[str, Any]] = []
+    passing: list[tuple[int, int, int]] = []
+    covered: set[VerseRef] = set()
+    for index, unit in enumerate(units, start=1):
+        refs = _unit_refs(unit, expected_book)
+        covered.update(refs)
+        label = f"{expected_book} {unit['chapter']}:{unit['verse_start']}" + (
+            f"-{unit['verse_end']}" if unit["verse_end"] != unit["verse_start"] else ""
+        )
+        reason: tuple[str, str] | None = None
+        if not refs <= expected_references:
+            reason = ("BIC_VERSE_OUTSIDE_SCOPE", f"{label} is outside the sealed TARGET-local output coverage.")
+        elif not str(unit.get("body_text_exact", "")).strip():
+            reason = ("BIC_VERSE_EMPTY", f"{label} has no visible verse content.")
+        elif candidate_segments[index] != source_segments[index]:
+            reason = (
+                "USFM_PROTECTED_MARKER_MISMATCH",
+                f"{label} protected markers differ from the bounded SOURCE verse.",
+            )
+        if reason is None:
+            passing.append((int(unit["chapter"]), int(unit["verse_start"]), int(unit["verse_end"])))
+        else:
+            failed.append(
+                {
+                    "reference": label,
+                    "chapter": int(unit["chapter"]),
+                    "verse_start": int(unit["verse_start"]),
+                    "verse_end": int(unit["verse_end"]),
+                    "code": reason[0],
+                    "message": reason[1],
+                }
+            )
+    for ref in sorted(expected_references - covered):
+        failed.append(
+            {
+                "reference": ref.label(),
+                "chapter": ref.chapter,
+                "verse_start": ref.verse,
+                "verse_end": ref.verse,
+                "code": "BIC_VERSE_MISSING",
+                "message": f"{ref.label()} is missing from the candidate.",
+            }
+        )
+    if not passing:
+        # Nothing is safe to keep: reject the unit with the strict validator's precise error.
+        validate_bic_usfm_output(
+            path,
+            expected_book=expected_book,
+            expected_references=expected_references,
+            source_marker_sequence=source_marker_sequence,
+            marker_policy=marker_policy,
+        )
+        raise ValidationError("USFM output has no verse that passes validation", code="BIC_OUTPUT_INVALID")
+    return {
+        "format": "USFM",
+        "book": expected_book,
+        "atomic_coordinates": len(expected_references) - len(failed),
+        "marker_count": len(actual_markers),
+        "protected_marker_count": len(actual_protected),
+        "marker_policy": marker_policy,
+        "sha256": sha256_file(path),
+        "failed_verses": failed,
+        "passing_blocks": passing,
+    }
+
+
 def validate_bic_usfm_output(
     path: Path,
     *,
