@@ -977,7 +977,7 @@ def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str,
     elif stage_name == "REFERENCE_TEXT_COMPARISON":
         # Keep OL referrals attached to their immutable parent review portions.
         meaning = _load_object(Path(str(result_path)), "RTC meaning-stage result")
-        from .act_tasks import _review_portion_for_reference
+        from .act_tasks import review_portion_for_reference
 
         requests = globalize_ol_review_request_ids(
             list(meaning.get("ol_review_requests", [])),
@@ -1000,7 +1000,7 @@ def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str,
                 }
             ]
         for request in requests:
-            progress = _review_portion_for_reference(
+            progress = review_portion_for_reference(
                 review_portions,
                 str(request.get("target_reference") or ""),
                 workflow=str(plan.get("workflow") or "rtc"),
@@ -1058,7 +1058,7 @@ def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str,
     else:
         raise ValidationError(f"Unsupported composite RTC stage: {stage_name}")
 
-    from .act_tasks import _stage_record, create_act_task
+    from .act_tasks import create_act_task, stage_record
     result = create_act_task(
         config,
         workflow=str(plan.get("workflow") or "rtc").lower(),
@@ -1085,7 +1085,7 @@ def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str,
             else None
         ),
     )
-    new_stage = _stage_record(result, next_stage)
+    new_stage = stage_record(result, next_stage)
     stages.append(new_stage)
     plan["stages"] = stages
     plan["updated_utc"] = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).replace(microsecond=0).isoformat()

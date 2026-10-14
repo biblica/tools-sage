@@ -24,7 +24,7 @@ sys.path.insert(0, str(APP_ROOT / "system" / "src"))
 
 from sage.storage import storage_layout
 from bootstrap_runtime import hardening_worker_cap, load_host_capability
-from build_release import _copy_source_tree, _source_tree_sha256
+from build_release import FORBIDDEN_PARTS, _copy_source_tree, _source_tree_sha256
 
 _PYTEST_TERMINAL_RE = re.compile(
     r"^(?:\d+ (?:passed|failed|skipped|deselected|xfailed|xpassed|warnings?|errors?)(?:, )?)+ in [0-9.]+s$"
@@ -328,12 +328,24 @@ def _validation_steps(target: Path, *, prefix: str) -> list[dict]:
     ]
 
 
+def _copy_test_services(root: Path, stage: Path) -> None:
+    """Copy the in-tree SQS service beside the app copy: its tests run here, though it never ships."""
+    services = root / "services"
+    if services.is_dir():
+        shutil.copytree(
+            services,
+            stage / "services",
+            ignore=shutil.ignore_patterns(*FORBIDDEN_PARTS, "*.pyc", "*.pyo"),
+        )
+
+
 def _run_test_module_isolated(test_path: str, *, name: str, expected_hash: str) -> dict:
     """Run one test module in a clean source copy, splitting long files into bounded node groups."""
     with tempfile.TemporaryDirectory(prefix=f"sage-hardening-{name}-") as td:
         bundle_target = Path(td) / BUNDLE_ROOT.name
         bundle_target.mkdir(parents=True)
         unknown = _copy_source_tree(BUNDLE_ROOT, bundle_target)
+        _copy_test_services(BUNDLE_ROOT, bundle_target)
         target = bundle_target / APP_ROOT.name
         if unknown:
             return {
@@ -407,6 +419,7 @@ def run_shard(*, shard_count: int, shard_index: int) -> dict:
         bundle_target = Path(td) / BUNDLE_ROOT.name
         bundle_target.mkdir(parents=True)
         unknown = _copy_source_tree(BUNDLE_ROOT, bundle_target)
+        _copy_test_services(BUNDLE_ROOT, bundle_target)
         target = bundle_target / APP_ROOT.name
         if unknown:
             return {

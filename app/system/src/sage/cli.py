@@ -19,9 +19,9 @@ import yaml
 from .atomic import atomic_write_json, atomic_write_text
 from .act_tasks import (
     LEGACY_TARGETED_CHECK_TYPES,
-    _one_book_file,
     aggregate_act_plan,
     create_act_task,
+    one_book_file,
     submit_act_task,
     validate_act_request_readiness,
 )
@@ -3495,7 +3495,7 @@ def command_bic_revert_target_scope(args: argparse.Namespace) -> int:
     runtime = load_ecosystem(runtime_path)
     target = runtime.project(project.bindings["generated_target"])
     scope = validate_scripture_scope(args.scope)
-    target_file = _one_book_file(target, scope.book, optional=False)
+    target_file = one_book_file(target, scope.book, optional=False)
     assert target_file is not None
     if target.external:
         if not target.external_writable_target:
