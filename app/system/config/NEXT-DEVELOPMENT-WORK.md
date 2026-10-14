@@ -16,6 +16,26 @@
 
 - [ ] **`TODO-20260914-001` — UPDATE PROJECT propagation to WIP analysis footprints.** Define how updating a WIP Project affects its RTC, STC, and NCA footprints: reviewed coverage, findings, cached analysis, and continuation checkpoints. Compare the previous and updated Project revisions, identify affected books/chapters and dependent Jobs/Runs, and mark affected footprints as stale or requiring review. Plan refreshed analysis for changed or newly available scope, including previously missing books. Preserve valid unaffected coverage and immutable historical reports with their original Project revision; distinguish those reports from results current for the updated WIP. Verify changed text, added/removed books, unchanged updates, and continuation after an update across all three workflows. This is future architecture work; implementation is not scheduled.
 
+## To consider (conditional; not accepted work)
+
+- [ ] **MACULA annotation for BIC original-language micro-adjudication.** Not needed while OL stays a failover
+  and tester feedback is positive. Revisit only if real runs show consistently inferior OL-assessed output
+  (wrong verbal sense, a lemma or tense in `ol_evidence_summary` that is not in the verse, or weak Hebrew
+  stem/weqatal readings). Idea: attach a verse-bounded MACULA extract (form, lemma, morphology, gloss, role,
+  frame) to the existing conditional OL read for the one micro-verse. Add deterministic checks of the
+  model's cited lemma or tense and, later, a Louw-Nida multi-domain pre-flag for the
+  `COMPETING_NON_EQUIVALENT_SENSES` trigger.
+  - Cost measured 2026-10-14 on MACULA Greek (17 words per verse): the bare Greek verse is about 200 bytes;
+    form+lemma+morph is about 500 bytes and the fuller annotation about 800 bytes. A micro-call already
+    carries about 9 KB of fixed text, so the addition is roughly 3–7% of tokens; lookup time is negligible
+    from a compact pinned extract.
+  - Real cost is engineering: a pinned per-verse extract shipped with the CC BY 4.0 attribution, mapping
+    the AGNT/SBLGNT/WLC edition and versification differences through the VRS machinery, and a license
+    check before sending Greek Louw-Nida domains (`macula.py` deliberately never copies the UBS Hebrew
+    SDBH fields).
+  - Before building: run a small A/B on OL-triggering fixtures, with and without the annotation, to confirm a
+    quality gain. The pinned tables are already cached for NCA (`index_build/macula.py`).
+
 ## Future TUI work (`MS-FUTURE-TUI`, deferred)
 
 The `0.02b1` Textual shell is frozen as **EXPERIMENTAL / UNSTABLE**; the classic terminal menu and
