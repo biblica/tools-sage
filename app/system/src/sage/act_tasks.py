@@ -71,6 +71,12 @@ from .ol_referrals import (
     is_ol_referral_contract,
     ol_referral_contract,
 )
+from .exception_reports import (
+    NOT_ASSESSED,
+    coverage_document,
+    load_not_assessed_result,
+    render_exceptions_section,
+)
 from .references import (
     AnalysisScope,
     ScriptureScope,
@@ -6578,6 +6584,8 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
     expected_lineage_keys = {f"project.{output_project}", f"project.{ol_authority}"}
     planned_units: list[dict[str, Any]] = []
     accepted_results: list[dict[str, Any]] = []
+    exception_rows: list[dict[str, Any]] = []
+    not_assessed_atoms: list[str] = []
     lineage: dict[str, str] | None = None
     seen_units: set[str] = set()
     seen_tasks: set[str] = set()
@@ -6607,6 +6615,16 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         validation_root = manifest_path.parent / "validation"
         submission_path = validation_root / "submission.json"
         normalized_path = validation_root / "normalized-findings.json"
+        if submission_path.is_file() and load_json(submission_path).get("status") == NOT_ASSESSED:
+            record = dict(load_not_assessed_result(manifest_path)["exception"])
+            not_assessed_atoms.extend(
+                str(value)
+                for value in (
+                    unit.get("primary_coverage_atoms") or manifest.get("expected_references") or record.get("coordinates", [])
+                )
+            )
+            exception_rows.append(record)
+            continue
         if not submission_path.is_file() or not normalized_path.is_file():
             raise ValidationError("Missing STC terminal work-unit result", code="MISSING_WORK_UNIT_RESULT")
         submission = load_json(submission_path)
@@ -6644,11 +6662,16 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         })
         accepted_results.append(normalized)
     canonical_root = path.with_name(f"{plan['plan_id']}-stc")
-    artifacts = finalize_stc_run(
-        run_id=str(plan.get("run_id") or plan.get("plan_id") or "STC-RUN"),
-        planned_units=planned_units,
-        accepted_results=accepted_results,
-        output_root=canonical_root,
+    artifacts = (
+        finalize_stc_run(
+            run_id=str(plan.get("run_id") or plan.get("plan_id") or "STC-RUN"),
+            planned_units=planned_units,
+            accepted_results=accepted_results,
+            output_root=canonical_root,
+            exceptions=exception_rows,
+        )
+        if planned_units
+        else {}
     )
     publication = publish_stc_reports(
         config,
@@ -6656,6 +6679,12 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         run_id=str(plan.get("run_id") or ""),
         requested_scope=str(plan.get("requested_scope") or ""),
         results=accepted_results,
+        exceptions=exception_rows,
+        fallback_identity={
+            "output_project": output_project,
+            "primary_ol_authority": ol_authority,
+            "authority_family": family,
+        },
     )
     source_issue_rows = unique_source_text_issues(
         dict(row)
@@ -6681,6 +6710,12 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
         "structural_issues": source_issue_rows,
         "source_text_issues": source_issue_rows,
         "work_unit_count": len(accepted_results),
+        "coverage": coverage_document(
+            [str(value) for row in planned_units for value in row["primary_coverage"]],
+            not_assessed_atoms,
+            findings_present=any(int(row.get("finding_count") or 0) for row in accepted_results),
+        ),
+        "exceptions": exception_rows,
         "resource_fingerprints": lineage or {},
         "execution_routes": aggregate_execution_routes(accepted_results),
         "canonical_artifacts": {key: str(value) for key, value in artifacts.items()},
@@ -6737,6 +6772,9 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
     resolved_ol_request_ids: list[str] = []
     source_issue_rows: list[dict[str, Any]] = []
     child_results: list[dict[str, Any]] = []
+    not_assessed_atoms: list[str] = []
+    unassessed_ol_request_ids: list[str] = []
+    exception_rows: list[dict[str, Any]] = []
     lineage_fingerprints: dict[str, str] | None = None
     lineage_bindings: dict[str, Any] | None = None
     lineage_display_names: dict[str, str] | None = None
@@ -6792,6 +6830,34 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         validation_root = manifest_path.parent / "validation"
         submission_path = validation_root / "submission.json"
         normalized_path = validation_root / "normalized-findings.json"
+        if (
+            submission_path.is_file()
+            and json.loads(submission_path.read_text(encoding="utf-8")).get("status") == NOT_ASSESSED
+        ):
+            # A terminal exception result: report it, never claim coverage or findings for it.
+            record = dict(load_not_assessed_result(manifest_path)["exception"])
+            unit_atoms = unit_atoms or [str(value) for value in record.get("coordinates", [])]
+            planned_by_unit.extend(unit_atoms)
+            not_assessed_atoms.extend(unit_atoms)
+            unassessed_ol_request_ids.extend(
+                str(value).strip().upper() for value in unit_ol_request_ids if str(value).strip()
+            )
+            exception_rows.append(record)
+            child_results.append({
+                "unit_id": unit_id,
+                "task_id": task_id,
+                "scope": unit.get("scope"),
+                "status": NOT_ASSESSED,
+                "primary_coverage_atoms": unit_atoms,
+                "review_portion_id": unit.get("review_portion_id"),
+                "review_portion_index": unit.get("review_portion_index"),
+                "review_portion_total": unit.get("review_portion_total"),
+                "review_portion_scope": unit.get("review_portion_scope"),
+                "parent_review_portion_id": unit.get("parent_review_portion_id"),
+                "stage_case_index": unit.get("stage_case_index"),
+                "stage_case_total": unit.get("stage_case_total"),
+            })
+            continue
         if not submission_path.is_file() or not normalized_path.is_file():
             raise ValidationError(
                 f"Work unit {unit.get('unit_id')} is not `FINALIZED`",
@@ -6963,7 +7029,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         )
     if (
         (not selective_ol_cases and len(observed) != len(set(observed)))
-        or set(observed) != set(expected)
+        or set(observed) | set(not_assessed_atoms) != set(expected)
     ):
         raise ValidationError(
             "Accepted work-unit results do not reconcile exact plan coverage",
@@ -6976,10 +7042,13 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         )
     if selective_ol_cases:
         resolved_request_ids = [str(value).strip().upper() for value in resolved_ol_request_ids]
+        assessed_request_ids = [
+            value for value in planned_ol_request_ids if value not in set(unassessed_ol_request_ids)
+        ]
         if (
             len(planned_ol_request_ids) != len(set(planned_ol_request_ids))
             or len(resolved_request_ids) != len(set(resolved_request_ids))
-            or set(resolved_request_ids) != set(planned_ol_request_ids)
+            or set(resolved_request_ids) != set(assessed_request_ids)
         ):
             raise ValidationError(
                 "Selective OL work units do not reconcile one resolution per isolated request",
@@ -7005,10 +7074,14 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         "resource_fingerprints": lineage_fingerprints or {},
         "rtc_stage": plan.get("rtc_stage"),
         "coverage": {
-            "status": "COMPLETE",
-            "reviewed_references": expected,
+            **coverage_document(
+                [value for value in expected if value not in set(not_assessed_atoms)],
+                not_assessed_atoms,
+                findings_present=bool(findings),
+            ),
             "legacy_raw_spans_expanded": legacy_raw_spans,
         },
+        "exceptions": exception_rows,
         "review_receipts": receipts,
         "structural_adjudications": adjudications,
         "ol_review_requests": ol_review_requests,
@@ -7039,7 +7112,8 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         f"- Status: `FINALIZED`",
         f"- Scope: `{plan['requested_scope']}`",
         f"- Work units: `{len(child_results)}`",
-        f"- Reviewed coordinates: `{len(expected)}`",
+        f"- Reviewed coordinates: `{len(expected) - len(set(not_assessed_atoms))}`",
+        *([f"- Not assessed coordinates: `{len(set(not_assessed_atoms))}`"] if not_assessed_atoms else []),
         f"- Review receipts: `{len(receipts)}`",
         f"- Findings: `{len(findings)}`",
         f"- Source comparison: `{source_comparison_status(source_issue_rows)}`",
@@ -7049,6 +7123,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
     if authority_notice:
         aggregate_lines.extend([authority_notice, ""])
     aggregate_lines.extend(render_execution_section(aggregate["execution_routes"]))
+    aggregate_lines.extend(render_exceptions_section(exception_rows))
     atomic_write_text(report_path, "\\n".join(aggregate_lines))
     plan["status"] = "FINALIZED"
     plan["aggregate_path"] = str(aggregate_path)

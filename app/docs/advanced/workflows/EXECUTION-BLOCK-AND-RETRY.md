@@ -20,6 +20,16 @@ Run-local execution events are append-only in `runs/<run-id>/diagnostics/EXECUTI
 
 Provider execution failures pause the current task rather than invalidate the Run. Invalid provider output is moved to `tasks/<task-id>/attempts/attempt-NNN-rejected-*/` with a hash-bearing receipt; the sealed task inputs remain unchanged and the task can be executed again. Aggregate coverage/finalization inconsistencies remain Run-level blocks.
 
+## Exception reports: content never stops a Run
+
+Content and recoverable problems become exception reports; only integrity guards stop a Run. The plan runner (partitioned RTC/STC plans and every BIC chain) applies one policy to each failed work-unit attempt:
+
+- **Stop** for an integrity code (`INTEGRITY_CODES` in `exception_reports.py`: hashes and fingerprints, stale inputs, task/Job/Project binding, pinned contracts, path safety, corrupt governed or commit state) and for environment conditions that say nothing about content (`INPUT_REQUIRED`, `TASK_PAUSED`: login, provider outage). The Run stays open and resumable.
+- **Retry** any other failure automatically, up to three failed attempts per task.
+- **Not assessed** after the third failure: SAGE seals the unit with a terminal `NOT_ASSESSED` result (`validation/submission.json` plus `validation/not-assessed.json`) and the Run continues with the next unit.
+
+Each failed attempt is one structured record (tool, Job, Run, task, work unit, stage, coordinates, code, message, severity, effect, attempts, evidence path) in `runs/<run-id>/diagnostics/EXCEPTION-REPORTS.jsonl`. A `NOT_ASSESSED` unit is terminal for plan continuation. Aggregation, STC finalization, composite RTC finalization, and chapter consolidation accept it, report the coordinates as `not_assessed_references`, and derive coverage through `coverage.assess_coverage` (`PARTIAL`, or `NOT_ASSESSED` when nothing was assessed) instead of claiming `COMPLETE`. Every RTC, STC, BIC, and NCA report carries one shared "Exceptions — not assessed" section; a BIC Run also writes `diagnostics/EXCEPTIONS-NOT-ASSESSED.md`. For BIC a unit that cannot be assessed is not rewritten and its TARGET text is left untouched.
+
 ## Optional OL
 
 RTC requires WIP + REFERENCE; STC requires WIP plus the testament-appropriate primary OL authority. BIC core execution requires SOURCE + DONOR + TARGET. Original-language resources are conditional: a non-ready GRK/HEB resource produces `READY_WITH_LIMITATIONS` for ordinary RTC/BIC readiness and blocks only an invoked OL-required stage for the applicable testament.

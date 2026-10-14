@@ -9,6 +9,38 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261014-003 — Shared exception reports; content problems no longer stop a Run
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261013`
+- **TODO:** `TODO-20261013-003`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** new `exception_reports.py` on top of `execution_events`: one `ExceptionRecord` (tool,
+  Job, Run, task, work unit, stage, coordinates, code, message, severity, effect, attempts, evidence path)
+  persisted per Run in `diagnostics/EXCEPTION-REPORTS.jsonl`; one `INTEGRITY_CODES` list merging the NCA
+  integrity codes (`NCA_INTEGRITY_FAILURE_CODES` is now re-exported from it), the stale-input, binding,
+  commit, and finalization codes, and path and pinned-contract guards; and `unit_failure_action`, which
+  STOPs on an integrity code or an environment condition (`INPUT_REQUIRED`, `TASK_PAUSED`), RETRYs any other
+  failure, and returns NOT_ASSESSED after `MAX_UNIT_ATTEMPTS` (3) failures. The partitioned RTC/STC plan
+  loop and the BIC chain apply that policy; the BIC chain now runs INSPECT, REWRITE, and SELF-CHECK in one
+  Continue (it stopped after every stage), seals a unit that keeps failing as not rewritten, and leaves
+  TARGET text untouched. A NOT_ASSESSED unit is a terminal result (`validation/submission.json` plus
+  `validation/not-assessed.json`): `plan_continuation`, `aggregate_act_plan`, `_aggregate_stc_plan`,
+  `finalize_stc_run`, composite RTC finalization, chapter documents, and `consolidate_result_documents`
+  accept it and derive coverage through `coverage.assess_coverage` (`PARTIAL`, or `NOT_ASSESSED` when nothing
+  was assessed) instead of hard-coding `COMPLETE`; a coordinate reviewed by any consolidated input stays
+  reviewed. STC now publishes even when every unit was not assessed. One "Exceptions — not assessed"
+  section (`render_exceptions_section`) appears in RTC, STC, and NCA reports, and a BIC Run writes
+  `diagnostics/EXCEPTIONS-NOT-ASSESSED.md`.
+- **Not changed:** a Run that wrote nothing still closes as `COMPLETE` (no new Run status; the completion
+  text and exception report say what was lost). NCA does not yet produce records of its own, so its
+  section lists only groups already `NOT_ASSESSED`; the NCA hard stops stay with `TODO-20261013-021`.
+  Single-task analysis Runs (focused and OL checks) are not plan runs and keep manual retry. Item-level
+  salvage inside a unit is `TODO-20261013-020`.
+- **Verification:** `tests/test_exception_reports.py` (20 tests: policy matrix, integrity list, records,
+  aggregation, STC including all-unassessed, composite RTC, consolidation, the RTC/STC runner, the BIC
+  chain, NCA section); full `system/tests` suite on 2026-10-14: 2089 passed, 2 skipped.
+
 ### IMP-20261014-002 — BIC identity is controller-injected; BIC output has real JSON schemas
 
 - **Version:** `0.02a3` (development branch)

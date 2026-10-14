@@ -9,6 +9,7 @@ from typing import Any, Mapping, Sequence
 
 from .act_outputs import aggregate_execution_routes
 from .errors import ValidationError
+from .exception_reports import NOT_ASSESSED, coverage_document
 from .hashing import sha256_file
 from .source_coverage import source_comparison_status, unique_source_text_issues
 
@@ -169,6 +170,22 @@ def consolidate_result_documents(
                 if value not in reviewed_references:
                     reviewed_references.append(value)
 
+    # A coordinate reviewed by any input is reviewed; only the rest stay reported as not assessed.
+    not_assessed_references: list[str] = []
+    for document in normalised:
+        coverage = document.get("coverage", {})
+        if isinstance(coverage, Mapping):
+            for reference in coverage.get("not_assessed_references", []):
+                value = str(reference)
+                if value not in reviewed_references and value not in not_assessed_references:
+                    not_assessed_references.append(value)
+    exception_rows = [
+        row
+        for row in _unique_rows(normalised, "exceptions")
+        if row.get("effect") != NOT_ASSESSED
+        or any(str(value) in not_assessed_references for value in row.get("coordinates", []))
+    ]
+
     # Project the combined record through the normal report renderer without touching inputs.
     result = deepcopy(normalised[-1])
     scope = next(iter(scopes))
@@ -183,7 +200,10 @@ def consolidate_result_documents(
             "task_id": f"CONSOLIDATED-{scope.replace(' ', '-')}",
             "stage": "CONSOLIDATED",
             "scope": scope,
-            "coverage": {"status": "COMPLETE", "reviewed_references": reviewed_references},
+            "coverage": coverage_document(
+                reviewed_references, not_assessed_references, findings_present=bool(retained)
+            ),
+            "exceptions": exception_rows,
             "review_receipts": _unique_rows(normalised, "review_receipts"),
             "structural_adjudications": _unique_rows(normalised, "structural_adjudications"),
             "ol_review_requests": _unique_rows(normalised, "ol_review_requests"),

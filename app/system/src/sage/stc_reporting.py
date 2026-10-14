@@ -14,6 +14,7 @@ from .act_outputs import (
 )
 from .atomic import atomic_write_json, atomic_write_text
 from .errors import ValidationError
+from .exception_reports import NOT_ASSESSED, load_not_assessed_result, render_exceptions_section
 from .human_output import (
     catalogue_text,
     render_report_language_authority,
@@ -154,6 +155,11 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
         translated_notice = catalogue_text(secondary, "message.secondary_rendering_unavailable")
         if translated_notice != catalogue_text(primary, "message.secondary_rendering_unavailable"):
             lines.append(f"> **{translated_notice}**")
+    exception_section = render_exceptions_section(
+        [row for row in document.get("exceptions", []) if isinstance(row, Mapping)], language=primary
+    )
+    if exception_section:
+        lines.extend(["", *exception_section])
     if source_issues:
         lines.extend([
             "",
@@ -221,11 +227,26 @@ def publish_stc_reports(
     run_id: str,
     requested_scope: str,
     results: Iterable[Mapping[str, Any]],
+    exceptions: Iterable[Mapping[str, Any]] = (),
+    fallback_identity: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Publish one separate STC report bundle per represented Scripture chapter."""
     # Chapter partitioning preserves each finding's originating execution route
     # so deterministic aggregation never substitutes the current recommendation.
     documents = [dict(row) for row in results]
+    exception_rows = [dict(row) for row in exceptions]
+    if not documents and exception_rows and fallback_identity:
+        # Every work unit was not assessed; the plan still owns the report identity.
+        documents = [
+            {
+                "operation": "stc",
+                "job_id": job_id,
+                "run_id": run_id,
+                "primary_coverage": [],
+                "findings": [],
+                **dict(fallback_identity),
+            }
+        ]
     if not documents or any(str(row.get("operation") or "").lower() != "stc" for row in documents):
         raise ValidationError("STC report publication requires finalized STC result documents")
     parsed_scope = parse_analysis_scope(requested_scope)
@@ -254,7 +275,10 @@ def publish_stc_reports(
         raise ValidationError("STC report is not owned by an STC Run")
 
     coverage = [str(value) for row in documents for value in row.get("primary_coverage", [])]
-    chapters = sorted({chapter for value in coverage if (chapter := _chapter(value)) is not None})
+    not_assessed = [str(value) for row in exception_rows for value in row.get("coordinates", [])]
+    chapters = sorted(
+        {chapter for value in [*coverage, *not_assessed] if (chapter := _chapter(value)) is not None}
+    )
     if not chapters:
         raise ValidationError("STC report publication has no canonical chapter coverage")
     all_findings = [
@@ -298,7 +322,15 @@ def publish_stc_reports(
             for row in all_source_issues
             if _chapter(str(row.get("reference") or row.get("scope") or "")) == chapter
         ]
-        first = next(row for row in documents if any(_chapter(str(value)) == chapter for value in row.get("primary_coverage", [])))
+        first = next(
+            (row for row in documents if any(_chapter(str(value)) == chapter for value in row.get("primary_coverage", []))),
+            documents[0],
+        )
+        chapter_not_assessed = [value for value in not_assessed if _chapter(value) == chapter]
+        chapter_exceptions = [
+            row for row in exception_rows
+            if any(_chapter(str(value)) == chapter for value in row.get("coordinates", []))
+        ]
         bindings = dict(first.get("resource_bindings") or {})
         ol_role = "ORIGINAL_LANGUAGE_GREEK" if family == "GRK" else "ORIGINAL_LANGUAGE_HEBREW"
         bindings.setdefault("WIP", output_project)
@@ -329,6 +361,8 @@ def publish_stc_reports(
                 dict(first.get("resource_display_names") or {}),
             ),
             "primary_coverage": chapter_coverage,
+            "not_assessed_coverage": chapter_not_assessed,
+            "exceptions": chapter_exceptions,
             "source_comparison_status": source_comparison_status(chapter_source_issues),
             "source_text_issues": chapter_source_issues,
             "finding_count": len(projected_findings),
@@ -404,6 +438,7 @@ def publish_stc_plan_reports(
 ) -> dict[str, Any]:
     """Publish or regenerate reports for an already-finalized partitioned STC plan."""
     results: list[dict[str, Any]] = []
+    exception_rows: list[dict[str, Any]] = []
     for unit in plan.get("work_units", []):
         if not isinstance(unit, Mapping):
             raise ValidationError("STC report plan contains an invalid work unit")
@@ -412,11 +447,20 @@ def publish_stc_plan_reports(
             str(unit.get("manifest_path") or ""),
             "STC report work-unit manifest",
         )
+        if _load_object(manifest.parent / "validation" / "submission.json", "STC submission").get("status") == NOT_ASSESSED:
+            exception_rows.append(dict(load_not_assessed_result(manifest)["exception"]))
+            continue
         results.append(_load_object(manifest.parent / "validation" / "normalized-findings.json", "STC normalized findings"))
     return publish_stc_reports(
         config,
         job_id=str(plan.get("job_id") or ""),
         run_id=str(plan.get("run_id") or ""),
         requested_scope=str(plan.get("requested_scope") or ""),
+        exceptions=exception_rows,
+        fallback_identity={
+            "output_project": plan.get("output_project"),
+            "primary_ol_authority": plan.get("primary_ol_authority"),
+            "authority_family": plan.get("authority_family"),
+        },
         results=results,
     )

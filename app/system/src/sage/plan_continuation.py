@@ -37,6 +37,7 @@ from .report_authority import (
 from .platform_commands import render_sage_command
 from .local_assistive import maybe_write_report_executive_summary
 from .report_translation import ensure_secondary_analysis_report_rendering
+from .exception_reports import NOT_ASSESSED, coverage_document
 from .execution_events import events_for_run
 from .source_coverage import source_comparison_status, unique_source_text_issues
 from .stc import LEGACY_STC_PLANNER_VERSION, STC_PLANNER_VERSION
@@ -193,7 +194,11 @@ def _reference_chapter(value: str) -> int | None:
 def _report_chapters(document: dict[str, Any], requested_scope: str) -> list[int]:
     """Return the ordered chapter inventory represented by a finalized analysis result."""
     chapters: set[int] = set()
-    for value in list((document.get("coverage") or {}).get("reviewed_references", [])):
+    coverage_record = document.get("coverage") or {}
+    for value in [
+        *coverage_record.get("reviewed_references", []),
+        *coverage_record.get("not_assessed_references", []),
+    ]:
         chapter = _reference_chapter(str(value))
         if chapter is not None:
             chapters.add(chapter)
@@ -231,6 +236,15 @@ def _chapter_document(document: dict[str, Any], *, book: str, chapter: int) -> d
         str(value) for value in list((document.get("coverage") or {}).get("reviewed_references", []))
         if _reference_chapter(str(value)) == chapter
     ]
+    not_assessed = [
+        str(value) for value in list((document.get("coverage") or {}).get("not_assessed_references", []))
+        if _reference_chapter(str(value)) == chapter
+    ]
+    chapter_exceptions = [
+        dict(row) for row in document.get("exceptions", [])
+        if isinstance(row, dict)
+        and any(_reference_chapter(str(value)) == chapter for value in row.get("coordinates", []))
+    ]
     advisories = [
         dict(row) for row in document.get("versification_advisories", [])
         if isinstance(row, dict) and _reference_chapter(str(row.get("scope") or row.get("reference") or "")) == chapter
@@ -250,7 +264,8 @@ def _chapter_document(document: dict[str, Any], *, book: str, chapter: int) -> d
         if event_chapter in {None, chapter}:
             events.append(dict(row))
     result["scope"] = f"{book} {chapter}"
-    result["coverage"] = {"status": "COMPLETE", "reviewed_references": coverage}
+    result["coverage"] = coverage_document(coverage, not_assessed, findings_present=bool(findings))
+    result["exceptions"] = chapter_exceptions
     result["findings"] = findings
     result["finding_count"] = len(findings)
     chapter_finding_ids = {str(row.get("finding_id") or "") for row in findings}
@@ -624,7 +639,7 @@ def _continue_partitioned_plan(config: EcosystemConfig, plan_path: Path) -> dict
             submission = _load_object(submission_path, f"submission for {unit.get('unit_id')}")
             status = str(submission.get("status", "UNKNOWN"))
             submission_sha256 = sha256_file(submission_path)
-        finalized = status == "FINALIZED"
+        finalized = status in {"FINALIZED", NOT_ASSESSED}
         if not finalized and first_unfinished is None:
             first_unfinished = index
         elif finalized and first_unfinished is not None:
@@ -719,6 +734,8 @@ def _composite_stage_result(config: EcosystemConfig, stage: dict[str, Any]) -> t
                 "submit_command": render_sage_command(["task", "submit", "--task", manifest]),
             }
         receipt = _load_object(submission, f"submission for {stage.get('stage')}")
+        if receipt.get("status") == NOT_ASSESSED:
+            return NOT_ASSESSED, str(manifest.parent / "validation" / "not-assessed.json"), None
         if receipt.get("status") != "FINALIZED" or not normalized.is_file():
             raise ValidationError(f"Composite RTC stage {stage.get('stage')} is not FINALIZED")
         return "FINALIZED", str(normalized), None
@@ -767,8 +784,18 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
     resource_bindings: dict[str, Any] = {}
     resource_display_names: dict[str, Any] = {}
     source_issue_rows: list[dict[str, Any]] = []
+    exception_rows: list[dict[str, Any]] = []
+    not_assessed_by_stage: dict[str, list[str]] = {}
     for stage in plan.get("stages", []):
         state, result_path, _ = _composite_stage_result(config, stage)
+        if state == NOT_ASSESSED and result_path:
+            evidence = _load_object(Path(result_path), f"NOT_ASSESSED evidence for {stage.get('stage')}")
+            exception_rows.append(dict(evidence["exception"]))
+            not_assessed_by_stage[str(stage.get("stage"))] = [
+                str(value) for value in evidence["exception"].get("coordinates", [])
+            ]
+            stage_results.append({"stage": stage.get("stage"), "result_path": result_path, "status": NOT_ASSESSED})
+            continue
         if state != "FINALIZED" or not result_path:
             raise ValidationError("Cannot finalize composite RTC before every created stage is FINALIZED")
         result = _load_object(Path(result_path), f"composite result for {stage.get('stage')}")
@@ -784,8 +811,12 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
             if isinstance(row, dict)
         )
         refs = list((result.get("coverage") or {}).get("reviewed_references", []))
+        exception_rows.extend(dict(row) for row in result.get("exceptions", []) if isinstance(row, dict))
         if stage.get("stage") == "REFERENCE_TEXT_COMPARISON":
             coverage_refs = refs
+            not_assessed_by_stage[str(stage.get("stage"))] = [
+                str(value) for value in (result.get("coverage") or {}).get("not_assessed_references", [])
+            ]
         globalized = globalize_result_finding_ids(
             result,
             unit_id=f"{plan['plan_id']}-{stage.get('stage')}",
@@ -798,7 +829,17 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         ol_resolutions.extend(globalized.get("ol_resolutions", []))
         findings.extend(globalized.get("findings", []))
     validate_global_finding_ids(findings)
-    if not coverage_refs:
+    not_assessed_refs = list(
+        dict.fromkeys(
+            not_assessed_by_stage.get("REFERENCE_TEXT_COMPARISON")
+            or (
+                [ref for refs in not_assessed_by_stage.values() for ref in refs]
+                if not coverage_refs
+                else []
+            )
+        )
+    )
+    if not coverage_refs and not not_assessed_refs:
         raise ValidationError("Composite RTC finalization is missing meaning-stage coordinate coverage")
     source_issue_rows = unique_source_text_issues(source_issue_rows)
     document = {
@@ -817,7 +858,8 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         "focus": None,
         "check_type": None,
         "answer": "",
-        "coverage": {"status": "COMPLETE", "reviewed_references": coverage_refs},
+        "coverage": coverage_document(coverage_refs, not_assessed_refs, findings_present=bool(findings)),
+        "exceptions": exception_rows,
         "review_receipts": receipts,
         "structural_adjudications": adjudications,
         "ol_review_requests": ol_review_requests,
@@ -876,6 +918,9 @@ def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str,
         raise ValidationError("Composite RTC plan has no valid stage inventory")
     current = stages[-1]
     state, result_path, continuation = _composite_stage_result(config, current)
+    if state == NOT_ASSESSED:
+        # A single-task stage that could not be assessed leaves nothing for later stages to build on.
+        return _finalize_composite_rtc(config, path, plan)
     if state != "FINALIZED":
         assert continuation is not None
         return {**continuation, "plan_id": plan.get("plan_id"), "plan_path": str(path), "composite_stage": current.get("stage")}

@@ -865,6 +865,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/errors.py`
 - `system/src/sage/evidence.py`
 - `system/src/sage/evidence_policy.py`
+- `system/src/sage/exception_reports.py`
 - `system/src/sage/execution_events.py`
 - `system/src/sage/executors`
 - `system/src/sage/executors/__init__.py`
@@ -1112,6 +1113,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_controller_capabilities.py`
 - `system/tests/test_core_hardening.py`
 - `system/tests/test_dev8_governance.py`
+- `system/tests/test_exception_reports.py`
 - `system/tests/test_display_paths.py`
 - `system/tests/test_documentation_contracts.py`
 - `system/tests/test_findings_and_coverage.py`

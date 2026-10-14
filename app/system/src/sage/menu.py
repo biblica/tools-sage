@@ -36,6 +36,18 @@ from .external_access import READ_ONLY_SCRIPTURE, READ_WRITE_SCRIPTURE, READ_WRI
 from .errors import ConfigurationError, InputRequiredError, OperatorCancelledError, SageError, ValidationError
 from .display_paths import operator_path, operator_text
 from .execution_events import classify_exception, record_exception_event, terminal_heading
+from .exception_reports import (
+    NOT_ASSESSED,
+    ExceptionRecord,
+    exceptions_for_run,
+    failed_attempts,
+    not_assessed_rows,
+    record_exception,
+    unit_failure_action,
+    write_not_assessed_result,
+    write_run_exception_report,
+)
+from .references import atomic_reference_labels
 from .task_retry import archive_rejected_task_output
 from .hashing import sha256_file
 from .grammar import load_grammar_profile
@@ -633,6 +645,9 @@ class SageControlCenter:
         # catalog readiness alone do not prove the WebSocket sampling channel works.
         self._codex_transport_verified_until = 0.0
         self._compact_saw_progress = False
+        # While a plan runner owns retries, a failed attempt records its event instead of pausing.
+        self._auto_retry_units = False
+        self._last_execution_event: dict[str, Any] | None = None
         # State for terminating an actively-running controller subprocess on operator
         # request (Ctrl-C) -- see _request_active_controller_termination().
         self._active_controller_process: subprocess.Popen | None = None
@@ -3581,7 +3596,8 @@ class SageControlCenter:
             if preserved and not getattr(self, "_compact_saw_progress", False):
                 self.io.write(f"Provider response preserved: {operator_path(self.root, str(preserved))}")
             self.io.write(f"Task remains resumable: {manifest_path}")
-            self.io.pause()
+            if not self._auto_retry_units:
+                self.io.pause()
             return False
         if not getattr(self, "_compact_saw_progress", False):
             snapshot = self.ui_service.run_progress_snapshot(project, run)
@@ -3654,6 +3670,67 @@ class SageControlCenter:
         self.io.write(f"Task already submitted: {manifest.get('operation')} - {state}")
         return run, True
 
+    def _note_unassessed(self, run: Run) -> None:
+        """Tell the Operator once, at completion, that some coordinates were reported as not assessed."""
+        count = len(not_assessed_rows(exceptions_for_run(run.root)))
+        if count:
+            self.io.write(
+                f"{count} work unit(s) were not assessed. The report's "
+                "\"Exceptions — not assessed\" section lists them."
+            )
+
+    def _apply_unit_failure_policy(
+        self,
+        project: Job,
+        run: Run,
+        manifest_path: Path,
+        *,
+        unit_id: str,
+        stage: str,
+    ) -> tuple[Run, bool]:
+        """Retry a failed unit, report it as NOT_ASSESSED after the cap, or stop for an integrity guard.
+
+        Returns the Run and whether the plan loop continues with the next governed action.
+        """
+        event = self._last_execution_event
+        if event is None:
+            # Nothing was recorded (operator stop, or outputs still incomplete): the Run stays resumable.
+            return run, False
+        manifest = _json_file(manifest_path)
+        task_id = str(manifest.get("task_id") or "")
+        attempts = failed_attempts(run.root, task_id) + 1
+        code = str(event["reason_code"])
+        action = unit_failure_action(code, str(event["disposition"]), attempts)
+        if action == "STOP":
+            self.io.pause()
+            return run, False
+        scope = self._saw_task_scope_label(manifest, run)
+        coordinates = tuple(atomic_reference_labels(str(value) for value in manifest.get("expected_references") or []))
+        record = ExceptionRecord(
+            tool=project.tool,
+            code=code,
+            message=str(event["message"]),
+            effect="RETRY" if action == "RETRY" else NOT_ASSESSED,
+            run_id=run.run_id,
+            job_id=project.job_id,
+            task_id=task_id,
+            work_unit=unit_id or None,
+            stage=stage,
+            coordinates=coordinates,
+            attempts=attempts,
+            evidence_path=str(event.get("report_path") or "") or None,
+        )
+        record_exception(run.root, record)
+        if action == "RETRY":
+            self.io.write(f"Work unit {scope}: attempt {attempts} failed ({code}); retrying.")
+            return run, True
+        write_not_assessed_result(manifest_path, record)
+        self.io.write(
+            f"Work unit {scope} could not be assessed after {attempts} attempts ({code}). "
+            "It is reported as NOT_ASSESSED and the Run continues."
+        )
+        return run, True
+
     def _handle_task_submission_failure(
         self,
         project: Job,
@@ -3671,6 +3748,7 @@ class SageControlCenter:
             boundary_hint="TASK_ATTEMPT",
             pause=False,
         )
+        self._last_execution_event = event
         if event["disposition"] == "TASK_OUTPUT_REJECTED":
             retry = archive_rejected_task_output(
                 manifest_path,
@@ -3745,6 +3823,7 @@ class SageControlCenter:
             run_root=run.root,
             source_module="sage.menu",
         )
+        self._last_execution_event = event
         if self._compact_saw_progress:
             scope = self._saw_task_scope_label(manifest, run)
             self.io.write(
@@ -3840,35 +3919,88 @@ class SageControlCenter:
         self.io.write(f"Created replacement Run: {replacement.run_id}")
         return replacement
 
+    def _bic_progress_signature(self, run: Run) -> tuple[Any, ...]:
+        """Summarize BIC chain state so a step that changed nothing can never spin the loop."""
+        return (
+            run.status,
+            run.plan_path,
+            tuple((str(path), self._task_state(self._manifest_path(path))[0]) for path in run.task_manifests),
+            # Each failed attempt records an exception, so a retry is progress and the cap bounds the loop.
+            len(exceptions_for_run(run.root)),
+        )
+
+    def _run_bic_task(
+        self, project: Job, run: Run, path: Path, *, stage: str, unit: str = ""
+    ) -> tuple[Run, bool]:
+        """Run one BIC task under the shared retry policy; return whether the chain may keep going."""
+        self._last_execution_event = None
+        self._auto_retry_units = True
+        try:
+            run, submitted = self._task_action(project, run, path)
+        finally:
+            self._auto_retry_units = False
+        if submitted:
+            return run, True
+        return self._apply_unit_failure_policy(
+            project, run, path, unit_id=f"{stage} {unit}".strip(), stage=stage
+        )
+
+    def _finish_bic_run(self, project: Job, run: Run, message: str) -> Run:
+        """Close one BIC Run and point the Operator at any exceptions reported along the way."""
+        run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
+        self.io.write(message)
+        self._note_unassessed(run)
+        report = write_run_exception_report(run.root, language=self.localizer.language)
+        if report is not None:
+            self.io.write(f"Exception report: {operator_path(self.root, str(report))}")
+        self.io.pause()
+        return run
+
     def _continue_bic(self, project: Job, run: Run) -> Run:
-        """Implement ` continue bic` in the deterministic terminal control flow."""
+        """Advance the BIC chain until it completes or a guard needs the Operator; never stop on content."""
+        while True:
+            before = self._bic_progress_signature(run)
+            run, keep_going = self._bic_partitioned_step(project, run) if run.plan_path else self._bic_step(project, run)
+            if not keep_going or run.status in RUN_CLOSED_STATUSES:
+                return run
+            if self._bic_progress_signature(run) == before:
+                return run
+
+    def _bic_step(self, project: Job, run: Run) -> tuple[Run, bool]:
+        """Perform the next governed action of an unpartitioned BIC Run."""
         tasks = self._tasks_by_operation(run)
-        if run.plan_path:
-            return self._continue_partitioned_bic(project, run)
         inspect_tasks = tasks.get("inspect", [])
         if not inspect_tasks:
             run, result = self._create_task(project, run, "inspect")
             if result.get("status") == "PARTITIONED":
                 self.io.write(f"BIC scope was partitioned into {len(result.get('work_units', []))} units.")
-                return run
+                return run, True
             self.io.write(f"Created INSPECT ACT: {result['act_path']}")
-            return run
-        inspect_path, inspect_manifest, inspect_state = inspect_tasks[-1]
+            return run, True
+        inspect_path, _inspect_manifest, inspect_state = inspect_tasks[-1]
+        if inspect_state == NOT_ASSESSED:
+            return self._finish_bic_run(
+                project, run, "BIC INSPECT could not be assessed; no TARGET text was written."
+            ), False
         if inspect_state not in {"COMMITTED"}:
-            run, _ = self._task_action(project, run, inspect_path)
-            return self.store.update_run(run, current_stage="INSPECT")
+            run, keep_going = self._run_bic_task(project, run, inspect_path, stage="INSPECT")
+            return self.store.update_run(run, current_stage="INSPECT"), keep_going
 
         rewrite_tasks = tasks.get("rewrite", [])
         if not rewrite_tasks:
             run, result = self._create_task(project, run, "rewrite")
             self.io.write(f"Created REWRITE ACT: {result['act_path']}")
-            return run
-        rewrite_path, rewrite_manifest, rewrite_state = rewrite_tasks[-1]
+            return run, True
+        rewrite_path, _rewrite_manifest, rewrite_state = rewrite_tasks[-1]
+        if rewrite_state == NOT_ASSESSED:
+            return self._finish_bic_run(
+                project, run, "BIC REWRITE could not be assessed; no TARGET text was written."
+            ), False
         if rewrite_state not in {"STAGED_VALIDATED", "STAGED_VALIDATED_WITH_CHALLENGES", "ABANDONED"}:
-            run, _ = self._task_action(project, run, rewrite_path)
-            return self.store.update_run(run, current_stage="REWRITE")
+            run, keep_going = self._run_bic_task(project, run, rewrite_path, stage="REWRITE")
+            return self.store.update_run(run, current_stage="REWRITE"), keep_going
         if rewrite_state == "ABANDONED":
-            return self.store.update_run(run, status="ABANDONED", current_stage="REWRITE")
+            return self.store.update_run(run, status="ABANDONED", current_stage="REWRITE"), False
 
         self_check_tasks = tasks.get("self_check", [])
         if not self_check_tasks:
@@ -3879,19 +4011,22 @@ class SageControlCenter:
                 predecessor=str(rewrite_path),
             )
             self.io.write(f"Created SELF-CHECK ACT: {result['act_path']}")
-            return run
+            return run, True
         self_path, _, self_state = self_check_tasks[-1]
+        if self_state == NOT_ASSESSED:
+            return self._finish_bic_run(
+                project, run, "BIC SELF-CHECK could not be assessed; the TARGET text was not committed."
+            ), False
         if self_state != "COMMITTED":
-            run, _ = self._task_action(project, run, self_path)
-            if self._task_state(self_path)[0] != "COMMITTED":
-                return self.store.update_run(run, current_stage="SELF_CHECK")
-        run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
-        self.io.write("BIC run is complete and the bounded target commit is recorded.")
-        self.io.pause()
-        return run
+            run, keep_going = self._run_bic_task(project, run, self_path, stage="SELF_CHECK")
+            run = self.store.update_run(run, current_stage="SELF_CHECK")
+            return run, keep_going
+        return self._finish_bic_run(
+            project, run, "BIC run is complete and the bounded target commit is recorded."
+        ), False
 
-    def _continue_partitioned_bic(self, project: Job, run: Run) -> Run:
-        """Implement ` continue partitioned bic` in the deterministic terminal control flow."""
+    def _bic_partitioned_step(self, project: Job, run: Run) -> tuple[Run, bool]:
+        """Perform the next governed action of a partitioned BIC Run; an unassessed unit is skipped."""
         plan = _json_file(self._manifest_path(run.plan_path or ""))
         units = plan.get("work_units", []) if isinstance(plan, dict) else []
         if not units:
@@ -3901,13 +4036,17 @@ class SageControlCenter:
             inspect_path = self._manifest_path(str(unit["manifest_path"]))
             inspect_state, inspect_manifest = self._task_state(inspect_path)
             unit_scope = str(unit["scope"])
+            if inspect_state == NOT_ASSESSED:
+                continue
             if inspect_state != "COMMITTED":
-                run, _ = self._task_action(project, run, inspect_path)
+                run, keep_going = self._run_bic_task(
+                    project, run, inspect_path, stage="INSPECT", unit=str(unit.get("unit_id") or unit_scope)
+                )
                 return self.store.update_run(
                     run,
                     current_stage=f"INSPECT {unit.get('unit_id')}",
                     status="PARTITIONED_IN_PROGRESS",
-                )
+                ), keep_going
             rewrite = next(
                 (
                     row
@@ -3919,11 +4058,15 @@ class SageControlCenter:
             if rewrite is None:
                 run, result = self._create_task(project, run, "rewrite", scope=unit_scope)
                 self.io.write(f"Created REWRITE for {unit_scope}: {result['act_path']}")
-                return run
+                return run, True
             rewrite_path, _, rewrite_state = rewrite
+            if rewrite_state == NOT_ASSESSED:
+                continue
             if rewrite_state not in {"STAGED_VALIDATED", "STAGED_VALIDATED_WITH_CHALLENGES"}:
-                run, _ = self._task_action(project, run, rewrite_path)
-                return self.store.update_run(run, current_stage=f"REWRITE {unit_scope}")
+                run, keep_going = self._run_bic_task(
+                    project, run, rewrite_path, stage="REWRITE", unit=unit_scope
+                )
+                return self.store.update_run(run, current_stage=f"REWRITE {unit_scope}"), keep_going
             self_check = next(
                 (
                     row
@@ -3941,15 +4084,18 @@ class SageControlCenter:
                     predecessor=str(rewrite_path),
                 )
                 self.io.write(f"Created SELF-CHECK for {unit_scope}: {result['act_path']}")
-                return run
+                return run, True
             self_path, _, self_state = self_check
+            if self_state == NOT_ASSESSED:
+                continue
             if self_state != "COMMITTED":
-                run, _ = self._task_action(project, run, self_path)
-                return self.store.update_run(run, current_stage=f"SELF_CHECK {unit_scope}")
-        run = self.store.update_run(run, status="COMPLETE", current_stage="COMPLETE")
-        self.io.write("All partitioned BIC work units are committed.")
-        self.io.pause()
-        return run
+                run, keep_going = self._run_bic_task(
+                    project, run, self_path, stage="SELF_CHECK", unit=unit_scope
+                )
+                return self.store.update_run(run, current_stage=f"SELF_CHECK {unit_scope}"), keep_going
+        return self._finish_bic_run(
+            project, run, "All partitioned BIC work units are committed or reported as not assessed."
+        ), False
 
     def _preflight_saw_route(self, run: Run) -> dict[str, Any] | None:
         """Resolve the exact current analysis route before task creation or visible work."""
@@ -4263,7 +4409,12 @@ class SageControlCenter:
                     stage_case_total=int(next_unit.get("stage_case_total") or 0)
                     or None,
                 ):
-                    run, submitted = self._task_action(project, run, path)
+                    self._last_execution_event = None
+                    self._auto_retry_units = True
+                    try:
+                        run, submitted = self._task_action(project, run, path)
+                    finally:
+                        self._auto_retry_units = False
                 progress = f"{completed + (1 if submitted else 0)}/{total}"
                 stage = str(result.get("composite_stage") or f"WORK_UNIT {progress}")
                 run = self.store.update_run(
@@ -4272,7 +4423,11 @@ class SageControlCenter:
                     current_stage=stage,
                 )
                 if not submitted:
-                    return run
+                    run, proceed = self._apply_unit_failure_policy(
+                        project, run, path, unit_id=str(next_unit.get("unit_id") or ""), stage=stage
+                    )
+                    if not proceed:
+                        return run
                 continue
             if status == "READY_TO_AGGREGATE":
                 aggregate_plan = str(result.get("aggregate_plan_path") or run.plan_path)
@@ -4294,6 +4449,7 @@ class SageControlCenter:
                     run, status=completion, current_stage=completion
                 )
                 report_directory = str(aggregate.get("report_directory") or "").strip()
+                self._note_unassessed(run)
                 self._write_saw_run_complete(
                     project,
                     run,
@@ -4307,6 +4463,7 @@ class SageControlCenter:
                     run, status=completion, current_stage=completion
                 )
                 report_directory = str(result.get("report_directory") or "").strip()
+                self._note_unassessed(run)
                 self._write_saw_run_complete(
                     project,
                     run,

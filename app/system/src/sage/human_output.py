@@ -158,6 +158,8 @@ _CATALOGUE: dict[str, dict[str, str]] = {
         "report.nca_action_report": "NCA Action Report",
         "report.actionable_findings": "Actionable findings",
         "report.consolidation": "Consolidation",
+        "report.exceptions_not_assessed": "Exceptions — not assessed",
+        "report.exceptions_not_assessed_note": "SAGE could not assess these coordinates, so no finding or clearance is claimed for them. Every other coordinate was assessed normally.",
         "label.stage": "Stage",
         "label.coverage": "Coverage",
         "label.action_level": "Action level",
