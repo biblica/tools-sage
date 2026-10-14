@@ -16,6 +16,7 @@ from sage.storage import storage_layout
 from sage.act_outputs import validate_bic_usfm_output
 from sage.act_tasks import create_act_task, load_skill_registry, submit_act_task
 from sage.errors import InputRequiredError, MemoryGovernanceError, ValidationError
+from sage.execution_events import classify_exception
 from sage.grammar_governance import record_grammar_profile_review
 from sage.registry import load_ecosystem
 from sage.llm_tasks import execute_task
@@ -190,6 +191,43 @@ def test_inspect_rejects_out_of_scope_challenge(
     with pytest.raises(MemoryGovernanceError) as caught:
         submit_act_task(config, manifest)
     assert caught.value.code == "INSPECT_REFERENCE_OUTSIDE_SCOPE"
+    assert classify_exception(caught.value)[0] == "TASK_OUTPUT_REJECTED"
+
+
+def test_inspect_generic_validator_failure_is_rejected_output(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A malformed INSPECT item raises a generic memory code; submit must still reject it as provider output."""
+    root = make_workspace(qualification_status="VALIDATED")
+    initialize(package_root, root)
+    config = load_ecosystem(root / "ecosystem.yml")
+    task = create_act_task(
+        config,
+        workflow="bic",
+        operation="inspect",
+        output_project_id="usBOLx1",
+        contemporary_source_id="idKKHv0",
+        scope_value="MAT 1:1",
+    )
+    manifest = Path(task["manifest_path"])
+    payload = {
+        "schema_version": "1.0",
+        "operation_id": task["task_id"],
+        "scope": task["scope"],
+        "resource_fingerprints": task["resource_fingerprints"],
+        "proposals": "not a list",
+        "challenges": [],
+    }
+    (manifest.parent / "output" / "inspect-submission.json").write_text(
+        json.dumps(payload),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValidationError) as caught:
+        submit_act_task(config, manifest)
+    assert caught.value.code == "BIC_OUTPUT_INVALID"
+    assert "proposals" in caught.value.message
+    assert classify_exception(caught.value)[0] == "TASK_OUTPUT_REJECTED"
 
 
 def test_saw_rejects_coverage_without_review_receipt(

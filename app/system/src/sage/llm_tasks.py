@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import json
 import re
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator, Sequence
 
 from .atomic import atomic_write_json, atomic_write_text
 from .bounded_target import extract_scope_usfm, merge_bounded_usfm
-from .errors import ConfigurationError, EvidenceLimitError, ValidationError
+from .errors import ConfigurationError, EvidenceLimitError, SageError, ValidationError
+from .execution_events import classify_exception
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
     AUTHORITY_INTERPRETATION_RULES,
@@ -35,6 +37,12 @@ from .references import parse_scope
 from .registry import EcosystemConfig
 from .storage import StorageError, declare_governed_path, resolve_declared_path
 from .stc import STC_FINDING_CATEGORIES
+from .task_retry import (
+    PROVIDER_RESPONSES_DIRECTORY,
+    preserve_failed_provider_responses,
+    provider_output_contract,
+    write_provider_responses,
+)
 from .vrs import VerseRef
 from .workflow_identity import is_analysis_workflow, legacy_saw_workflow
 
@@ -1668,8 +1676,14 @@ def _enforce_routed_sfm_budget(
     config: EcosystemConfig,
     manifest: dict[str, Any],
     measurement: dict[str, Any],
+    *,
+    follow_up: bool = False,
 ) -> dict[str, Any]:
-    """Fail closed when routed analysis SFM exceeds the workflow policy."""
+    """Fail closed when routed analysis SFM exceeds the workflow policy.
+
+    A follow-up phase prompt is built from the prior provider response, so its overflow
+    rejects that response for a same-task retry instead of blocking the task.
+    """
     workflow = str(manifest.get("workflow", "")).strip().lower()
     operation = str(manifest.get("operation", "")).strip().lower()
     profile = load_workflow_profile(config, config.workflow(workflow))
@@ -1684,9 +1698,13 @@ def _enforce_routed_sfm_budget(
     if failures:
         raise EvidenceLimitError(
             "Routed analysis SFM exceeds governed hard limit: " + "; ".join(failures),
-            code="LLM_HANDOFF_CONTEXT_LIMIT_EXCEEDED",
+            code="LLM_FOLLOWUP_CONTEXT_LIMIT_EXCEEDED" if follow_up else "LLM_HANDOFF_CONTEXT_LIMIT_EXCEEDED",
             affected_scope=str(manifest.get("scope", "")) or None,
-            next_action="Partition or narrow the governed task before provider execution.",
+            next_action=(
+                "Retry the same sealed task; the follow-up prompt built from the rejected response exceeded the limit."
+                if follow_up
+                else "Partition or narrow the governed task before provider execution."
+            ),
             details={"handoff": measurement, "policy": policy.to_dict()},
         )
     result = {**measurement, "policy": policy.to_dict()}
@@ -1731,6 +1749,24 @@ def _execute_provider_request(
         if callable(execute_prevalidated):
             return execute_prevalidated(request, prevalidated_status)
     return executor.execute(request)
+
+
+@contextmanager
+def _preserve_responses_on_failure(manifest_path: Path, responses: Sequence[Any]) -> Iterator[None]:
+    """Archive every raw provider response received so far when a later step fails, then re-raise."""
+    try:
+        yield
+    except SageError as exc:
+        disposition, _, _ = classify_exception(exc)
+        attempt = preserve_failed_provider_responses(
+            manifest_path,
+            [response.content for response in responses],
+            reason_code=exc.code,
+            message=exc.message,
+            status=disposition,
+        )
+        exc.details["provider_attempt_path"] = attempt["attempt_path"]
+        raise
 
 
 def _validated_manifest_skill(config: EcosystemConfig, manifest: dict[str, Any]) -> str:
@@ -1928,115 +1964,125 @@ def execute_task(
         prevalidated_status=provider_status_snapshot,
     )
     provider_responses = [first]
-    _validate_provider_response_route(first, route)
-    parsed_files = _parse_response(first.content, manifest)
-    phase_count = 1
-    used_conditional = False
-    language_retry_count = 0
-    language_retry_reason: str | None = None
-    final = first
-    final_prompt_sha = prompt_sha
-    try:
-        _validate_provider_narrative_language(manifest, parsed_files)
-    except ValidationError as exc:
-        if exc.code != "LLM_REPORT_LANGUAGE_MISMATCH":
-            raise
-        language_retry_count = 1
-        language_retry_reason = exc.code
-        narrative_tag = _narrative_language_tag(manifest)
-        correction_prompt = "\n".join(
-            [
-                prompt,
-                "",
-                "LANGUAGE-CORRECTION RETRY",
-                f"The prior response was rejected because generated canonical narrative was not in {_report_language_label(narrative_tag)}.",
-                "Return a complete fresh response for the same sealed task and schema. Use the same evidence and scope; preserve identifiers, enum values, and source quotations.",
-            ]
-        )
-        correction_measurement = _enforce_routed_sfm_budget(
-            config, manifest, _route_measurement(correction_prompt, schema, normal_reads)
-        )
-        handoff_measurements.append(
-            {"phase": 2, **correction_measurement, "mode": "REPORT_LANGUAGE_CORRECTION"}
-        )
-        phase_reasoning_efforts.append(resolved_reasoning)
-        final = _execute_provider_request(
-            executor,
-            ProviderRequest(
-                prompt=correction_prompt,
-                schema=schema,
-                model=resolved_model,
-                reasoning_effort=resolved_reasoning,
-                timeout_seconds=timeout_seconds,
-            ),
-            prevalidated_status=provider_status_snapshot,
-        )
-        provider_responses.append(final)
-        _validate_provider_response_route(final, route)
-        parsed_files = _parse_response(final.content, manifest)
+    # Every failure from here on has provider output in hand; keep it as evidence for the retry.
+    with _preserve_responses_on_failure(manifest_path, provider_responses), provider_output_contract(
+        "LLM_PROVIDER_RESPONSE_INVALID", affected_scope=str(manifest.get("scope") or "") or None
+    ):
+        _validate_provider_response_route(first, route)
+        parsed_files = _parse_response(first.content, manifest)
+        phase_count = 1
+        used_conditional = False
+        language_retry_count = 0
+        language_retry_reason: str | None = None
+        final = first
+        final_prompt_sha = prompt_sha
         try:
             _validate_provider_narrative_language(manifest, parsed_files)
-        except ValidationError as retry_exc:
-            if retry_exc.code != "LLM_REPORT_LANGUAGE_MISMATCH":
+        except ValidationError as exc:
+            if exc.code != "LLM_REPORT_LANGUAGE_MISMATCH":
                 raise
-            raise ValidationError(
-                "Provider narrative still violates the Job report language after one correction retry",
-                code="LLM_REPORT_LANGUAGE_RETRY_EXHAUSTED",
-                next_action="Preserve the failed task diagnostics and recreate or review the task before another execution.",
-                details=retry_exc.details,
-            ) from retry_exc
-        final_prompt_sha = sha256_bytes(correction_prompt.encode("utf-8"))
-        phase_count = 2
-    final_files = _materialize_provider_files(manifest, parsed_files)
-    conditional_requests = _conditional_requests(final_files) if conditional_reads else []
-    base_phase_count = phase_count
-    for request_index, conditional_request in enumerate(conditional_requests, start=1):
-        used_conditional = True
-        challenge = _challenge_for_request(final_files, conditional_request["challenge_id"])
-        current_rewrite = final_files.get("output/rewrite.usfm", "")
-        candidate_verse = extract_scope_usfm(current_rewrite, conditional_request["scripture_reference"])
-        if not candidate_verse.strip():
-            raise ValidationError(
-                "Conditional OL micro-adjudication could not isolate the current candidate verse",
-                code="LLM_CONDITIONAL_SCOPE_INVALID",
+            language_retry_count = 1
+            language_retry_reason = exc.code
+            narrative_tag = _narrative_language_tag(manifest)
+            correction_prompt = "\n".join(
+                [
+                    prompt,
+                    "",
+                    "LANGUAGE-CORRECTION RETRY",
+                    f"The prior response was rejected because generated canonical narrative was not in {_report_language_label(narrative_tag)}.",
+                    "Return a complete fresh response for the same sealed task and schema. Use the same evidence and scope; preserve identifiers, enum values, and source quotations.",
+                ]
             )
-        focused_reads = _micro_scope_reads(
-            normal_reads,
-            conditional_reads,
-            conditional_request["scripture_reference"],
-        )
-        micro_schema = _bic_ol_micro_schema(manifest, conditional_request, challenge)
-        conditional_prompt = _bic_ol_micro_prompt(
-            manifest=manifest,
-            reads=focused_reads,
-            request=conditional_request,
-            challenge=challenge,
-            candidate_verse=candidate_verse,
-        )
-        phase_number = base_phase_count + request_index
-        measurement = _enforce_routed_sfm_budget(
-            config, manifest, _route_measurement(conditional_prompt, micro_schema, focused_reads)
-        )
-        handoff_measurements.append({"phase": phase_number, **measurement, "mode": "BIC_OL_MICRO"})
-        conditional_micro_scopes.append(dict(conditional_request))
-        phase_reasoning_efforts.append(second_pass_reasoning)
-        final = _execute_provider_request(
-            executor,
-            ProviderRequest(
-                prompt=conditional_prompt,
-                schema=micro_schema,
-                model=resolved_model,
-                reasoning_effort=second_pass_reasoning,
-                timeout_seconds=timeout_seconds,
-            ),
-            prevalidated_status=provider_status_snapshot,
-        )
-        provider_responses.append(final)
-        _validate_provider_response_route(final, route)
-        micro_result = _parse_bic_ol_micro_response(final.content, conditional_request, challenge)
-        final_files = _apply_bic_ol_micro_result(final_files, manifest, conditional_request, micro_result)
-        final_prompt_sha = sha256_bytes(conditional_prompt.encode("utf-8"))
-        phase_count = phase_number
+            correction_measurement = _enforce_routed_sfm_budget(
+                config,
+                manifest,
+                _route_measurement(correction_prompt, schema, normal_reads),
+                follow_up=True,
+            )
+            handoff_measurements.append(
+                {"phase": 2, **correction_measurement, "mode": "REPORT_LANGUAGE_CORRECTION"}
+            )
+            phase_reasoning_efforts.append(resolved_reasoning)
+            final = _execute_provider_request(
+                executor,
+                ProviderRequest(
+                    prompt=correction_prompt,
+                    schema=schema,
+                    model=resolved_model,
+                    reasoning_effort=resolved_reasoning,
+                    timeout_seconds=timeout_seconds,
+                ),
+                prevalidated_status=provider_status_snapshot,
+            )
+            provider_responses.append(final)
+            _validate_provider_response_route(final, route)
+            parsed_files = _parse_response(final.content, manifest)
+            try:
+                _validate_provider_narrative_language(manifest, parsed_files)
+            except ValidationError as retry_exc:
+                if retry_exc.code != "LLM_REPORT_LANGUAGE_MISMATCH":
+                    raise
+                raise ValidationError(
+                    "Provider narrative still violates the Job report language after one correction retry",
+                    code="LLM_REPORT_LANGUAGE_RETRY_EXHAUSTED",
+                    next_action="Retry the same sealed task; both rejected responses are preserved in the task attempts folder.",
+                    details=retry_exc.details,
+                ) from retry_exc
+            final_prompt_sha = sha256_bytes(correction_prompt.encode("utf-8"))
+            phase_count = 2
+        final_files = _materialize_provider_files(manifest, parsed_files)
+        conditional_requests = _conditional_requests(final_files) if conditional_reads else []
+        base_phase_count = phase_count
+        for request_index, conditional_request in enumerate(conditional_requests, start=1):
+            used_conditional = True
+            challenge = _challenge_for_request(final_files, conditional_request["challenge_id"])
+            current_rewrite = final_files.get("output/rewrite.usfm", "")
+            candidate_verse = extract_scope_usfm(current_rewrite, conditional_request["scripture_reference"])
+            if not candidate_verse.strip():
+                raise ValidationError(
+                    "Conditional OL micro-adjudication could not isolate the current candidate verse",
+                    code="LLM_CONDITIONAL_SCOPE_INVALID",
+                )
+            focused_reads = _micro_scope_reads(
+                normal_reads,
+                conditional_reads,
+                conditional_request["scripture_reference"],
+            )
+            micro_schema = _bic_ol_micro_schema(manifest, conditional_request, challenge)
+            conditional_prompt = _bic_ol_micro_prompt(
+                manifest=manifest,
+                reads=focused_reads,
+                request=conditional_request,
+                challenge=challenge,
+                candidate_verse=candidate_verse,
+            )
+            phase_number = base_phase_count + request_index
+            measurement = _enforce_routed_sfm_budget(
+                config,
+                manifest,
+                _route_measurement(conditional_prompt, micro_schema, focused_reads),
+                follow_up=True,
+            )
+            handoff_measurements.append({"phase": phase_number, **measurement, "mode": "BIC_OL_MICRO"})
+            conditional_micro_scopes.append(dict(conditional_request))
+            phase_reasoning_efforts.append(second_pass_reasoning)
+            final = _execute_provider_request(
+                executor,
+                ProviderRequest(
+                    prompt=conditional_prompt,
+                    schema=micro_schema,
+                    model=resolved_model,
+                    reasoning_effort=second_pass_reasoning,
+                    timeout_seconds=timeout_seconds,
+                ),
+                prevalidated_status=provider_status_snapshot,
+            )
+            provider_responses.append(final)
+            _validate_provider_response_route(final, route)
+            micro_result = _parse_bic_ol_micro_response(final.content, conditional_request, challenge)
+            final_files = _apply_bic_ol_micro_result(final_files, manifest, conditional_request, micro_result)
+            final_prompt_sha = sha256_bytes(conditional_prompt.encode("utf-8"))
+            phase_count = phase_number
 
     output_hashes: dict[str, str] = {}
     for relative, content in final_files.items():
@@ -2083,6 +2129,13 @@ def execute_task(
             for response in provider_responses
         ],
         "output_sha256": output_hashes,
+        "provider_responses": [
+            {**row, "path": f"validation/{PROVIDER_RESPONSES_DIRECTORY}/{row['path']}"}
+            for row in write_provider_responses(
+                task_root / "validation" / PROVIDER_RESPONSES_DIRECTORY,
+                [response.content for response in provider_responses],
+            )
+        ],
         "provider_metadata": final.metadata,
         "policy": {
             "openai_api_keys": "PROHIBITED",

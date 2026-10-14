@@ -5,6 +5,113 @@ before this ledger remains in `system/config/CHANGELOG.md` and `docs/advanced/re
 Entries before the canonical RTC/STC migration retain former identifiers only as historical records;
 they do not define current workflows, menus, reports, Skills, or artifact names.
 
+Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectively on 2026-10-13 from
+git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
+lines record the suites re-run on 2026-10-13 against `6bce03f`.
+
+### IMP-20261013-001 — Rejected provider output no longer resubmits forever
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261013`
+- **TODO:** `TODO-20261013-019`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** BIC INSPECT, USFM, grammar-assessment, and translation-challenge validators and
+  the STC submission validator now run inside `task_retry.provider_output_contract`, which re-codes
+  generic `VALIDATION_ERROR` and `MEMORY_GOVERNANCE_ERROR` failures to `BIC_OUTPUT_INVALID` or
+  `STC_OUTPUT_INVALID` (RTC already did this inline; it now shares the helper). Specific output codes
+  that matched no output fragment are now classified `TASK_OUTPUT_REJECTED`: every `*_OL_REFERRAL_*`
+  code, `USFM_PROTECTED_MARKER_MISMATCH`, `STC_REPORT_LANGUAGE_MISMATCH`,
+  `LLM_REPORT_LANGUAGE_RETRY_EXHAUSTED`, `LLM_CONDITIONAL_SCOPE_INVALID`, the three `INSPECT_*`
+  output codes, and `BIC_OL_MICROSCOPE_INVALID` / `_NOT_SINGLE_VERSE`. A context overflow in a
+  follow-up phase (language correction or OL micro step) is now `LLM_FOLLOWUP_CONTEXT_LIMIT_EXCEEDED`
+  and retries the task; the first-phase `LLM_HANDOFF_CONTEXT_LIMIT_EXCEEDED` is unchanged. Rejected
+  submissions are therefore archived and the sealed task reopens instead of being resubmitted on every
+  Continue. Raw provider responses are kept verbatim: on success under
+  `validation/provider-responses/` (listed with hashes in the execution receipt, and archived with
+  any later rejected attempt), and on any failure after the first response under
+  `attempts/attempt-NNN-rejected|failed-*/provider-responses/`. The menu shows the preserved path.
+  Task, evidence, and integrity codes (for example `ACT_REPORT_LANGUAGE_MISMATCH`,
+  `BIC_OL_MICROSCOPE_EVIDENCE_INVALID`, `EXECUTION_RECEIPT_*`) keep their previous classification.
+- **Verification:** full `system/tests` suite on 2026-10-14: 2065 passed, 2 skipped, 1 failed. The
+  failure, `test_bootstrap_runtime.py::test_runtime_state_records_python_platform_and_dependency_contract`,
+  is host-dependent (the development Mac resolves `approved-host-python` instead of the pinned
+  runtime path) and fails identically on `6bce03f`.
+  New regression tests cover classification, the re-coding helper, response preservation on
+  execution failure and success, archiving, and BIC submit codes.
+
+### IMP-20261011-001 — NCA 0.02a3 runtime and tester feedback 2a3
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **Commits:** `6bce03f` (squashed `0.02a3` work), building on `11a5176`, `a50cb30`, `4f44c70`,
+  `ce1c09c`, and `e9dee08`.
+- **Implemented:** Rewrote the numeric check as a proportionate extract-and-compare pipeline that
+  extracts only indexed coordinates in scope. Pinned the typed MACULA/NIV number index
+  `SAGE_NUMBERS_TYPED_2026-10-09` (BSB-quoted, no NIV Scripture text) with counting convention 2.0
+  (quantities and dates) and extraction contract 3.0. BLOCKING FAIL now applies only against
+  original-language readings the index vouches for. Added copy-paste translator notes, apparatus-backed
+  text-critical decisions, the association check, and the number-style consistency report. NCA never
+  stops a Run on Scripture content; damaged verses report `NOT_ASSESSED`. Tester feedback 2a3: one
+  standard Job menu shape for RTC, STC, and NCA (`job_menus.py`), two-step Job delete (delete all, or
+  keep reports), Operator reports under `localdata/reports/`, PASS groups removed from final reports,
+  and EZR 1:10 no longer presents a normalized index reading as the original-language text.
+- **Verification:** `system/tests/numbers`, `test_primary_workflow_menus.py`, and
+  `test_menu_localization.py`: 747 passed, 2 skipped. Open: live-model qualification and the
+  typed-package release receipt (`TODO-20261013-016`).
+
+### IMP-20260928-001 — Run termination, routing parity, language data, and incomplete-portion detection
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **Commits:** `b546384`, `e4c7a52`, `49cd2a6`, `95a5afc`, `d11feb8`.
+- **Implemented:** Ctrl-C gracefully terminates an actively executing Run. Model routing on `0.02a3`
+  matches main's no-data default override, including the reasoning-picker fix. CLDR locale-facts data
+  and regional grammar-profile coverage expanded. WIP import detects
+  incomplete (empty visible body) portions and no longer crashes on bad encoding.
+- **Verification:** Covered by the commits' own regression tests; the full-suite result for this
+  branch is recorded under `IMP-20261011-001`.
+
+### IMP-20260925-001 — SQS service recovered and integrated on the SAGE side
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-SQS`
+- **Commits:** `33368fc` through `847e298` (2026-09-18 to 2026-09-25).
+- **Implemented:** Recovered the SQS service into `services/sqs/` and locked the integration
+  decisions. Delivered integration plan Tasks 1–6: provider and execution-channel onboarding, language
+  onboarding, recovery defect fixes and hardening, bounded rate-limit backoff, SAGE-side cache,
+  validation, transport, discovery, qualification lookup, `sage model sqs-sync`, submission keys,
+  provider bridge, list/run/submit orchestration, server-side submission review, and user-initiated
+  language-profile validation requests. An end-to-end review fixed three findings, and the ingest
+  watcher survives unreadable entries.
+- **Verification:** SAGE-side SQS suites (`system/tests/test_sqs_*.py`): 104 passed. The
+  `services/sqs/tests` suite needs its own environment and was not re-run. Deployment and acceptance
+  remain open (`TODO-20261013-017`).
+
+### IMP-20260917-001 — Shared workflow plumbing and legacy menu removal
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **Commits:** `8d95a6c`, `6752cef`, `0960742`, `eeb9408`, `c2abc1f`, `236c487`, `49a8274`, `1d26b96`.
+- **Implemented:** Migrated the legacy analysis Skills to RTC and STC with shared contracts. Centralized
+  Scripture scope validation across workflow entry points. Folded NCA task create, execute, and submit
+  onto the shared BIC, RTC, and STC helpers and gave NCA the shared guided scope picker. Removed the
+  dead legacy compatibility menu, unified task-execution progress rendering, and made STC derive real
+  coverage status. Recorded WIP update propagation as future architecture (`TODO-20260914-001`).
+- **Verification:** Covered by the commits' own regression tests; the full-suite result for this
+  branch is recorded under `IMP-20261011-001`.
+
+### IMP-20260914-001 — First NCA implementation (superseded)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **Commits:** `f31ce13` through `0eb6ce5` (2026-09-09 to 2026-09-14).
+- **Implemented:** First governed NCA lifecycle: routed numeric evidence validation, style profiles,
+  qualified reference packages, Operator menu and CLI flow, batched extraction with checkpoints and
+  crash recovery, hybrid full-scope analysis, bridged-verse comparison, and number-usage reporting.
+  Its analysis core was replaced by the `11a5176` rewrite recorded in `IMP-20261011-001`.
+- **Verification:** Superseded behavior is not re-verified; current behavior is verified under
+  `IMP-20261011-001`.
+
 ### IMP-20260909-02B1 — Full development branch promoted to Beta 1
 
 - **Version:** `0.02b1`

@@ -123,7 +123,24 @@ _OUTPUT_CODE_FRAGMENTS = (
     "NCA_RESULT_",
     "NCA_MODEL_RESPONSE_INVALID",
     "NCA_MODEL_RECEIPT_INVALID",
+    "OL_REFERRAL_",
 )
+# Provider-output defects whose codes match no fragment above; each must archive the rejected attempt.
+_OUTPUT_CODES = {
+    "BIC_OL_MICROSCOPE_INVALID",
+    "BIC_OL_MICROSCOPE_NOT_SINGLE_VERSE",
+    "INSPECT_REFERENCE_INVALID",
+    "INSPECT_REFERENCE_OUTSIDE_SCOPE",
+    "INSPECT_SCOPE_MISMATCH",
+    "LLM_CONDITIONAL_SCOPE_INVALID",
+    "LLM_FOLLOWUP_CONTEXT_LIMIT_EXCEEDED",
+    "LLM_REPORT_LANGUAGE_RETRY_EXHAUSTED",
+    "RTC_REVIEW_EVIDENCE_INCOMPLETE",
+    "RTC_REVIEW_EVIDENCE_MISSING",
+    "SAW_TASK_RESULT_INVALID",
+    "STC_REPORT_LANGUAGE_MISMATCH",
+    "USFM_PROTECTED_MARKER_MISMATCH",
+}
 _HARD_RESOURCE_FRAGMENTS = (
     "PARSER_ERROR",
     "SCRIPTURE_NOT_FOUND",
@@ -162,11 +179,7 @@ def classify_exception(
         disposition, boundary, retry = "BLOCKED", "TARGET_COMMIT", "AFTER_CORRECTION"
     elif code in _BINDING_CODES or "BINDING_MISMATCH" in code:
         disposition, boundary, retry = "BLOCKED", "JOB_CREATION", "AFTER_CORRECTION"
-    elif any(fragment in code for fragment in _OUTPUT_CODE_FRAGMENTS) or code in {
-        "RTC_REVIEW_EVIDENCE_INCOMPLETE",
-        "RTC_REVIEW_EVIDENCE_MISSING",
-        "SAW_TASK_RESULT_INVALID",
-    }:
+    elif code in _OUTPUT_CODES or any(fragment in code for fragment in _OUTPUT_CODE_FRAGMENTS):
         disposition, boundary, retry = "TASK_OUTPUT_REJECTED", "TASK_ATTEMPT", "RETRY_SAME_TASK"
     elif code in {"REQUESTED_SCOPE_BLOCKED", "WORKSPACE_INITIALIZATION_BLOCKED"} or any(
         fragment in code for fragment in _HARD_RESOURCE_FRAGMENTS

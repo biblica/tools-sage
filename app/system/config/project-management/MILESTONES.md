@@ -1,17 +1,28 @@
 # Project Milestones
 
-Milestone states are `PLANNED`, `IN_PROGRESS`, `BLOCKED`, or `COMPLETE`. The target is a version,
-not an invented calendar commitment; a target date is added only when the project has approved one.
+Milestone states are `PLANNED`, `IN_PROGRESS`, `BLOCKED`, `COMPLETE`, or `SUPERSEDED`. The target
+is a version, not an invented calendar commitment; a target date is added only when the project has
+approved one. A `SUPERSEDED` milestone names the milestone or release that replaced it.
 
-## Milestone register
+## Active milestones
 
 | ID | Target | State | Outcome | Exit evidence |
 |---|---|---|---|---|
+| `MS-REVIEW-20261013` | `0.02a3` | PLANNED | Apply the 2026-10-13 code review: BIC protected contracts reach the model, BIC identity is controller-injected, every tool reports exceptions instead of hard-blocking, and the LLM, code, documentation, and grammar cleanups land. | `TODO-20261013-001` through `TODO-20261013-015` and `TODO-20261013-019` through `TODO-20261013-022` |
+| `MS-02A3` | `0.02a3` (non-release development branch) | IN_PROGRESS | Deliver the NCA runtime and the supporting workflow, menu, and language-data work, then qualify NCA with live models. | Implemented: `IMP-20260914-001`, `IMP-20260917-001`, `IMP-20260928-001`, `IMP-20261011-001`. Open: `TODO-20261013-016`, `TODO-20261013-018` |
+| `MS-SQS` | unscheduled | IN_PROGRESS | Recover the SQS service and integrate it into SAGE as qualification evidence, then deploy and accept it. | Implemented: `IMP-20260925-001`. Open: `TODO-20261013-017` |
+| `MS-02B1-QUALIFY` | `0.02b1` | BLOCKED | Produce fresh exact-source qualification evidence from a clean governed staging tree. | Blocked by `BI-20260826-001`; requires `TODO-20260826-001` and `RCLEAN-0.02b1-001` |
+| `MS-02B1-NATIVE` | `0.02b1` | IN_PROGRESS | Complete Windows, macOS, Linux, and real Operator workflow acceptance. | `TODO-20260826-002` through `TODO-20260826-004`, `TODO-20260829-002` |
+| `MS-FUTURE-TUI` | a later release | PLANNED | Reach action-capable TUI parity without removing classic-menu or CLI support. | `TODO-20260826-005` |
+
+## Closed milestones
+
+| ID | Target | State | Outcome | Exit evidence |
+|---|---|---|---|---|
+| `MS-02B1-TUI` | `0.02b1` | SUPERSEDED | Reach action-capable TUI parity in `0.02b1`. The TUI baseline is frozen for `0.02b1` as **EXPERIMENTAL / UNSTABLE**; parity work moved to `MS-FUTURE-TUI`. | `IMP-20260826-008`; `MS-FUTURE-TUI` |
+| `MS-BETA2-QUALIFY` | `0.01beta2` | SUPERSEDED | Qualify the `0.01beta2` integration of STC and Alpha hardening. The line was consolidated into `0.02b1` before release qualification; qualification now runs under `MS-02B1-QUALIFY`. | `IMP-20260830-BETA2` through `IMP-20260903-003`; `IMP-20260909-02B1` |
 | `MS-BETA-PM` | `0.01beta` | COMPLETE | Establish internal PM tracking and versioning policy, reset the version baseline, and separate simple Operator documentation from advanced technical material. | `IMP-20260826-002` through `IMP-20260826-007` |
 | `MS-BETA-UX` | `0.01beta` | COMPLETE | Converge current classic-menu operator grammar and navigation presentation. | `IMP-20260826-001`; focused UI tests pass |
-| `MS-02B1-QUALIFY` | `0.02b1` | BLOCKED | Produce fresh exact-source qualification evidence from a clean governed staging tree. | Blocked by `BI-20260826-001`; requires `TODO-20260826-001` and `RCLEAN-0.02b1-001` |
-| `MS-02B1-NATIVE` | `0.02b1` | IN_PROGRESS | Complete Windows, macOS, Linux, and real Operator workflow acceptance. | `TODO-20260826-002` through `TODO-20260826-004` |
-| `MS-02B1-TUI` | `0.02b1` | IN_PROGRESS | Reach action-capable TUI parity without removing classic-menu or CLI support. | `TODO-20260826-005` |
 
 ## Milestone update rule
 
