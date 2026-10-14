@@ -841,7 +841,11 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src`
 - `system/src/sage`
 - `system/src/sage/__init__.py`
+- `system/src/sage/act_aggregation.py`
+- `system/src/sage/act_common.py`
+- `system/src/sage/act_evidence.py`
 - `system/src/sage/act_outputs.py`
+- `system/src/sage/act_submit.py`
 - `system/src/sage/act_tasks.py`
 - `system/src/sage/atomic.py`
 - `system/src/sage/auto_resolution.py`

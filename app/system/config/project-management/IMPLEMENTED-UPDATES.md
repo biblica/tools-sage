@@ -9,6 +9,17 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261014-025 — Hardening copies the in-tree SQS service (TODO-20261014-023)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-023`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** `system/tools/hardening.py` copies the bundle's `services/` tree (without caches) next
+  to the clean app copy in each isolated module workspace, so the SQS tests that import it pass under the
+  official runner. `services/` is still excluded from release packages and from the source hash.
+- **Verification:** `test_hardening_and_segmentation.py` re-run.
+
 ### IMP-20261014-024 — RTC/STC documentation drift (TODO-20261014-021)
 
 - **Version:** `0.02a3` (development branch)
@@ -37,6 +48,22 @@ lines record the suites re-run on 2026-10-13 against `6bce03f`.
   `AGGREGATE_COVERAGE_MISMATCH`; another Run's result raises `RESULT_COVERAGE_DRIFT`), and Continue after a
   crash between stage-task creation and plan save.
 - **Verification:** `test_rtc_stc_regressions.py`.
+
+### IMP-20261014-022 — act_tasks.py split into layered modules (first part of TODO-20261014-018)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-018` (stays `IN_PROGRESS`: `create_act_task` and its partition and composite
+  builders are not yet split into `rtc_tasks` and `stc_tasks`, and ACT rendering is still inline)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** `act_tasks.py` keeps only task creation (`create_act_task`, the STC and composite RTC
+  builders, and the partitioners). Helpers and constants move to `act_common.py`; evidence packets,
+  preflight, structural triage, and budget checks to `act_evidence.py`; submission and its integrity
+  checks to `act_submit.py`; aggregation to `act_aggregation.py`. The layers import only downward, and
+  `act_tasks` re-exports every moved name, so existing imports keep working. The private names other
+  modules used are public: `one_book_file`, `review_portion_for_reference`, and `stage_record` (the old
+  names remain as aliases).
+- **Verification:** full suite re-run.
 
 ### IMP-20261014-021 — RTC/STC performance (TODO-20261014-017)
 
