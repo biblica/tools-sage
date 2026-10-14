@@ -152,11 +152,11 @@ def test_layout_markers_may_normalize_but_semantic_markers_may_not(
     assert caught.value.code == "USFM_PROTECTED_MARKER_MISMATCH"
 
 
-def test_inspect_rejects_out_of_scope_challenge(
+def test_inspect_drops_and_reports_out_of_scope_challenge(
     package_root: Path,
     make_workspace,
 ) -> None:
-    """Verify that INSPECT rejects a challenge outside its immutable scope."""
+    """An INSPECT challenge outside the immutable scope is dropped and reported; the rest is still committed."""
     root = make_workspace(qualification_status="VALIDATED")
     initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
@@ -188,10 +188,10 @@ def test_inspect_rejects_out_of_scope_challenge(
         json.dumps(payload),
         encoding="utf-8",
     )
-    with pytest.raises(MemoryGovernanceError) as caught:
-        submit_act_task(config, manifest)
-    assert caught.value.code == "INSPECT_REFERENCE_OUTSIDE_SCOPE"
-    assert classify_exception(caught.value)[0] == "TASK_OUTPUT_REJECTED"
+    result = submit_act_task(config, manifest)
+    assert result["status"] == "COMMITTED"
+    assert result["validation"]["challenges"] == 0
+    assert result["validation"]["dropped_items"] == 1
 
 
 def test_inspect_generic_validator_failure_is_rejected_output(

@@ -1349,10 +1349,28 @@ def test_bic_inspect_identity_is_materialized_and_payload_decoded(make_workspace
     assert normalized["proposals"][0]["submitted_id"] == "P0001"
     assert normalized["challenges"][0]["submitted_id"] == "C0001"
 
-    broken = dict(model_file, proposals=[{**model_file["proposals"][0], "payload_json": "{not json"}])
-    with pytest.raises(ValidationError) as caught:
-        materialize_files(config, manifest, {INSPECT_FILE: json.dumps(broken)})
-    assert caught.value.code == "LLM_PROVIDER_RESPONSE_INVALID"
+    # A defective item is dropped and reported; the good item beside it and an empty result both stand.
+    broken = dict(
+        model_file,
+        proposals=[{**model_file["proposals"][0], "payload_json": "{not json"}, model_file["proposals"][0]],
+        challenges=[
+            *model_file["challenges"],
+            {**model_file["challenges"][0], "scripture_reference": "MAT 2:1"},
+            {**model_file["challenges"][0], "challenge_type": "NOT_A_TYPE"},
+        ],
+    )
+    salvaged = json.loads(materialize_files(config, manifest, {INSPECT_FILE: json.dumps(broken)})[INSPECT_FILE])
+    assert [row["submitted_id"] for row in salvaged["dropped_items"]] == ["P0001"]
+    result = validate_inspect_submission(salvaged, expected_scope="MAT 1")
+    assert [row["submitted_id"] for row in result["proposals"]] == ["P0002"]
+    assert [row["submitted_id"] for row in result["challenges"]] == ["C0001"]
+    assert [(row["collection"], row["submitted_id"], row["code"]) for row in result["dropped_items"]] == [
+        ("proposals", "P0001", "INSPECT_ITEM_INVALID"),
+        ("challenges", "C0002", "INSPECT_REFERENCE_OUTSIDE_SCOPE"),
+        ("challenges", "C0003", "INSPECT_ITEM_INVALID"),
+    ]
+    empty = validate_inspect_submission({**document, "proposals": [], "challenges": []}, expected_scope="MAT 1")
+    assert empty["proposals"] == [] and empty["challenges"] == [] and empty["dropped_items"] == []
 
 
 def test_bic_self_check_grammar_identity_is_bound_to_the_final_candidate(make_workspace) -> None:

@@ -108,38 +108,62 @@ def validate_inspect_submission(
 
     proposals_raw = document.get("proposals", []) or []
     challenges_raw = document.get("challenges", []) or []
-    if not isinstance(proposals_raw, list) or any(not isinstance(item, dict) for item in proposals_raw):
-        raise MemoryGovernanceError("proposals must be a list of mappings")
-    if not isinstance(challenges_raw, list) or any(not isinstance(item, dict) for item in challenges_raw):
-        raise MemoryGovernanceError("challenges must be a list of mappings")
+    if not isinstance(proposals_raw, list):
+        raise MemoryGovernanceError("proposals must be a list")
+    if not isinstance(challenges_raw, list):
+        raise MemoryGovernanceError("challenges must be a list")
+    # Item-level defects drop only the defective item and are reported; the header checks above stay strict.
+    dropped_items: list[dict[str, Any]] = [
+        dict(item) for item in document.get("dropped_items") or [] if isinstance(item, Mapping)
+    ]
+
+    def drop(collection: str, index: int, item: Any, exc: MemoryGovernanceError) -> None:
+        """Record one dropped INSPECT item with its reason."""
+        submitted = item.get("submitted_id") if isinstance(item, Mapping) else None
+        dropped_items.append(
+            {
+                "collection": collection,
+                "index": index,
+                "submitted_id": str(submitted) if submitted else "",
+                "code": exc.code if exc.code != exc.default_code else "INSPECT_ITEM_INVALID",
+                "message": str(exc),
+            }
+        )
+
     proposals: list[dict[str, Any]] = []
     proposal_ids: set[str] = set()
     for index, item in enumerate(proposals_raw, start=1):
-        submitted_id = _required_string(
-            item.get("submitted_id", f"P{index:04d}"),
-            f"proposals[{index}].submitted_id",
-            maximum=128,
-        )
-        if submitted_id in proposal_ids:
-            raise MemoryGovernanceError(f"Duplicate proposal submitted_id: {submitted_id}")
-        proposal_ids.add(submitted_id)
-        record_type = _required_string(
-            item.get("record_type"),
-            f"proposals[{index}].record_type",
-            maximum=80,
-        ).upper()
-        if record_type not in RECORD_TYPES:
-            raise MemoryGovernanceError(f"Unsupported INSPECT record_type: {record_type}")
-        payload = item.get("payload")
-        if not isinstance(payload, dict) or not payload:
-            raise MemoryGovernanceError(f"proposals[{index}].payload must be a nonempty mapping")
-        evidence_refs = item.get("evidence_refs", []) or []
-        if not isinstance(evidence_refs, list) or any(
-            not isinstance(value, str) or not value.strip() for value in evidence_refs
-        ):
-            raise MemoryGovernanceError(
-                f"proposals[{index}].evidence_refs must be a string list"
+        try:
+            if not isinstance(item, dict):
+                raise MemoryGovernanceError(f"proposals[{index}] must be a mapping")
+            submitted_id = _required_string(
+                item.get("submitted_id", f"P{index:04d}"),
+                f"proposals[{index}].submitted_id",
+                maximum=128,
             )
+            if submitted_id in proposal_ids:
+                raise MemoryGovernanceError(f"Duplicate proposal submitted_id: {submitted_id}")
+            record_type = _required_string(
+                item.get("record_type"),
+                f"proposals[{index}].record_type",
+                maximum=80,
+            ).upper()
+            if record_type not in RECORD_TYPES:
+                raise MemoryGovernanceError(f"Unsupported INSPECT record_type: {record_type}")
+            payload = item.get("payload")
+            if not isinstance(payload, dict) or not payload:
+                raise MemoryGovernanceError(f"proposals[{index}].payload must be a nonempty mapping")
+            evidence_refs = item.get("evidence_refs", []) or []
+            if not isinstance(evidence_refs, list) or any(
+                not isinstance(value, str) or not value.strip() for value in evidence_refs
+            ):
+                raise MemoryGovernanceError(
+                    f"proposals[{index}].evidence_refs must be a string list"
+                )
+        except MemoryGovernanceError as exc:
+            drop("proposals", index, item, exc)
+            continue
+        proposal_ids.add(submitted_id)
         proposals.append(
             {
                 "proposal_id": _stable_id("MEM", operation_id, submitted_id),
@@ -161,87 +185,27 @@ def validate_inspect_submission(
     challenges: list[dict[str, Any]] = []
     challenge_ids: set[str] = set()
     for index, item in enumerate(challenges_raw, start=1):
-        submitted_id = _required_string(
-            item.get("submitted_id", f"C{index:04d}"),
-            f"challenges[{index}].submitted_id",
-            maximum=128,
-        )
-        if submitted_id in challenge_ids:
-            raise MemoryGovernanceError(f"Duplicate challenge submitted_id: {submitted_id}")
-        challenge_ids.add(submitted_id)
-        challenge_type = _required_string(
-            item.get("challenge_type", "OTHER"),
-            f"challenges[{index}].challenge_type",
-            maximum=80,
-        ).upper()
-        if challenge_type not in CHALLENGE_TYPES:
-            raise MemoryGovernanceError(f"Unsupported challenge_type: {challenge_type}")
-        scripture_reference = _required_string(
-            item.get("scripture_reference"),
-            f"challenges[{index}].scripture_reference",
-            maximum=120,
-        )
         try:
-            challenge_scope = parse_scope(scripture_reference)
-        except Exception as exc:
-            raise MemoryGovernanceError(
-                f"challenges[{index}].scripture_reference is invalid: {scripture_reference}",
-                code="INSPECT_REFERENCE_INVALID",
-                affected_scope=scope,
-            ) from exc
-        points = []
-        if challenge_scope.start_chapter is None:
-            points = []
-        elif challenge_scope.start_verse is None:
-            points = [
-                (challenge_scope.start_chapter, 1),
-                (challenge_scope.start_chapter, 9999),
-            ]
-        else:
-            points = [
-                (challenge_scope.start_chapter, challenge_scope.start_verse),
-                (challenge_scope.end_chapter or challenge_scope.start_chapter, challenge_scope.end_verse or challenge_scope.start_verse),
-            ]
-        if challenge_scope.book != parent_scope.book or (
-            points and not all(parent_scope.contains(VerseRef(parent_scope.book, chapter, verse)) for chapter, verse in points)
-        ):
-            raise MemoryGovernanceError(
-                f"INSPECT challenge reference is outside task scope: {scripture_reference}",
-                code="INSPECT_REFERENCE_OUTSIDE_SCOPE",
-                affected_scope=scope,
-                details={"scripture_reference": scripture_reference},
+            if not isinstance(item, dict):
+                raise MemoryGovernanceError(f"challenges[{index}] must be a mapping")
+            challenge = _validated_challenge(
+                item,
+                index=index,
+                operation_id=operation_id,
+                scope=scope,
+                parent_scope=parent_scope,
+                fingerprints=normalized_fingerprints,
             )
-        challenges.append(
-            {
-                "challenge_id": _stable_id("CHL", operation_id, submitted_id),
-                "submitted_id": submitted_id,
-                "operation_id": operation_id,
-                "scope": scope,
-                "scripture_reference": scripture_reference,
-                "challenge_type": challenge_type,
-                "summary": _required_string(
-                    item.get("summary"),
-                    f"challenges[{index}].summary",
-                    maximum=1200,
-                ),
-                "recommended_action": _required_string(
-                    item.get("recommended_action"),
-                    f"challenges[{index}].recommended_action",
-                    maximum=1200,
-                ),
-                "review_state": "PROPOSED",
-                "status": "OPEN",
-                "operator_decision_id": "",
-                "provenance": {
-                    "resource_fingerprints": normalized_fingerprints,
-                    "submission_source": "BIC_INSPECT",
-                },
-            }
-        )
-    if not proposals and not challenges:
-        raise MemoryGovernanceError(
-            "INSPECT submission must contain at least one proposal or challenge"
-        )
+            if challenge["submitted_id"] in challenge_ids:
+                raise MemoryGovernanceError(
+                    f"Duplicate challenge submitted_id: {challenge['submitted_id']}"
+                )
+        except MemoryGovernanceError as exc:
+            drop("challenges", index, item, exc)
+            continue
+        challenge_ids.add(challenge["submitted_id"])
+        challenges.append(challenge)
+    # An INSPECT that found nothing worth challenging or remembering is a valid, empty result.
     return {
         "schema_version": "1.0",
         "operation_id": operation_id,
@@ -249,6 +213,91 @@ def validate_inspect_submission(
         "resource_fingerprints": normalized_fingerprints,
         "proposals": proposals,
         "challenges": challenges,
+        "dropped_items": dropped_items,
+    }
+
+
+def _validated_challenge(
+    item: Mapping[str, Any],
+    *,
+    index: int,
+    operation_id: str,
+    scope: str,
+    parent_scope: Any,
+    fingerprints: Mapping[str, str],
+) -> dict[str, Any]:
+    """Validate one INSPECT challenge against the governed task scope and return its normalized form."""
+    submitted_id = _required_string(
+        item.get("submitted_id", f"C{index:04d}"),
+        f"challenges[{index}].submitted_id",
+        maximum=128,
+    )
+    challenge_type = _required_string(
+        item.get("challenge_type", "OTHER"),
+        f"challenges[{index}].challenge_type",
+        maximum=80,
+    ).upper()
+    if challenge_type not in CHALLENGE_TYPES:
+        raise MemoryGovernanceError(f"Unsupported challenge_type: {challenge_type}")
+    scripture_reference = _required_string(
+        item.get("scripture_reference"),
+        f"challenges[{index}].scripture_reference",
+        maximum=120,
+    )
+    try:
+        challenge_scope = parse_scope(scripture_reference)
+    except Exception as exc:
+        raise MemoryGovernanceError(
+            f"challenges[{index}].scripture_reference is invalid: {scripture_reference}",
+            code="INSPECT_REFERENCE_INVALID",
+            affected_scope=scope,
+        ) from exc
+    points = []
+    if challenge_scope.start_chapter is None:
+        points = []
+    elif challenge_scope.start_verse is None:
+        points = [
+            (challenge_scope.start_chapter, 1),
+            (challenge_scope.start_chapter, 9999),
+        ]
+    else:
+        points = [
+            (challenge_scope.start_chapter, challenge_scope.start_verse),
+            (challenge_scope.end_chapter or challenge_scope.start_chapter, challenge_scope.end_verse or challenge_scope.start_verse),
+        ]
+    if challenge_scope.book != parent_scope.book or (
+        points and not all(parent_scope.contains(VerseRef(parent_scope.book, chapter, verse)) for chapter, verse in points)
+    ):
+        raise MemoryGovernanceError(
+            f"INSPECT challenge reference is outside task scope: {scripture_reference}",
+            code="INSPECT_REFERENCE_OUTSIDE_SCOPE",
+            affected_scope=scope,
+            details={"scripture_reference": scripture_reference},
+        )
+    return {
+        "challenge_id": _stable_id("CHL", operation_id, submitted_id),
+        "submitted_id": submitted_id,
+        "operation_id": operation_id,
+        "scope": scope,
+        "scripture_reference": scripture_reference,
+        "challenge_type": challenge_type,
+        "summary": _required_string(
+            item.get("summary"),
+            f"challenges[{index}].summary",
+            maximum=1200,
+        ),
+        "recommended_action": _required_string(
+            item.get("recommended_action"),
+            f"challenges[{index}].recommended_action",
+            maximum=1200,
+        ),
+        "review_state": "PROPOSED",
+        "status": "OPEN",
+        "operator_decision_id": "",
+        "provenance": {
+            "resource_fingerprints": dict(fingerprints),
+            "submission_source": "BIC_INSPECT",
+        },
     }
 
 

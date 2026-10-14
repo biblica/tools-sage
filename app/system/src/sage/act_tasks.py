@@ -73,8 +73,10 @@ from .ol_referrals import (
 )
 from .exception_reports import (
     NOT_ASSESSED,
+    ExceptionRecord,
     coverage_document,
     load_not_assessed_result,
+    record_exception,
     render_exceptions_section,
 )
 from .references import (
@@ -7157,6 +7159,36 @@ def _update_control(path: Path, value: dict[str, Any]) -> None:
         pass
 
 
+def _record_dropped_item_exceptions(
+    run_root: Path,
+    *,
+    workflow: str,
+    job_id: str,
+    run_id: str,
+    task_id: str,
+    stage: str,
+    scope: str,
+    items: Sequence[Mapping[str, Any]],
+) -> None:
+    """Report each model item dropped during salvage; the rest of the unit's output is still accepted."""
+    for item in items:
+        record_exception(
+            run_root,
+            ExceptionRecord(
+                tool=workflow.upper(),
+                code=str(item.get("code") or "ITEM_DROPPED"),
+                message=str(item.get("message") or "Defective model item dropped."),
+                effect="FLAGGED",
+                run_id=run_id,
+                job_id=job_id,
+                task_id=task_id,
+                work_unit=str(item.get("submitted_id") or "") or None,
+                stage=stage,
+                coordinates=(scope,),
+            ),
+        )
+
+
 def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, Any]:
     """Validate immutable controls, exact reads, output grammar, and governed commit."""
     # Revalidate immutable controls before interpreting model output or committing workflow state.
@@ -7350,10 +7382,22 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             transaction_root=config.workflow("bic").transaction_root,
             bic_job_id=str(raw.get("job_id") or "") or None,
         )
+        dropped_items = list(normalized.get("dropped_items") or [])
+        _record_dropped_item_exceptions(
+            job_store.load_run(owning_job, run_id).root,
+            workflow=workflow_hint,
+            job_id=job_id,
+            run_id=run_id,
+            task_id=task_id,
+            stage="INSPECT",
+            scope=str(raw["scope"]),
+            items=dropped_items,
+        )
         validation_details = {
             "format": "BIC_INSPECT_1.0",
             "proposals": len(normalized["proposals"]),
             "challenges": len(normalized["challenges"]),
+            "dropped_items": len(dropped_items),
         }
         final_status = "COMMITTED"
     elif workflow == "bic":
