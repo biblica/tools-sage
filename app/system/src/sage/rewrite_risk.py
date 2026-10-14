@@ -497,14 +497,57 @@ def validate_rewrite_challenges(
         )
         ol_required = bool(before_ol >= 2 and triggers)
         ol = _mapping(row.get("ol_referral", {}), f"{label}.ol_referral")
-        performed = ol.get("performed", False)
-        if not isinstance(performed, bool):
+        claimed = ol.get("performed", False)
+        if not isinstance(claimed, bool):
             raise ValidationError(f"{label}.ol_referral.performed must be boolean")
         if bool(ol.get("operator_requested", False)):
             raise ValidationError(f"{label}.ol_referral.operator_requested is prohibited")
-        ol_unavailable = bool(ol.get("unavailable")) and ol_required and not performed
+        # ``performed`` records what actually ran. A claim the controller cannot support is replaced by the
+        # derived value and reported, instead of rejecting the unit.
+        performed = claimed
+        unavailable_code = ""
+        question = evidence_scope = evidence_summary = before_candidate_id = ""
+        if performed and not ol_required:
+            _correction(
+                corrections,
+                label=f"{label}.ol_referral.performed",
+                supplied=True,
+                derived=False,
+                coordinate=reference,
+            )
+            performed = False
+        elif performed and not ol_evidence_available:
+            performed = False
+            unavailable_code = "OL_NOT_ROUTED"
+        elif performed:
+            try:
+                question = _text(ol.get("question"), f"{label}.ol_referral.question")
+                evidence_scope = _text(
+                    ol.get("evidence_scope"), f"{label}.ol_referral.evidence_scope", maximum=160
+                )
+                if not _scope_contains(parent_scope, evidence_scope):
+                    raise ValidationError(f"{label}.ol_referral.evidence_scope is outside the bounded task scope")
+                evidence_summary = _text(
+                    ol.get("evidence_summary"), f"{label}.ol_referral.evidence_summary"
+                )
+                before_candidate_id = _text(
+                    ol.get("before_candidate_id"), f"{label}.ol_referral.before_candidate_id", maximum=80
+                )
+                if before_candidate_id not in candidate_ids:
+                    raise ValidationError(
+                        f"{label}.ol_referral.before_candidate_id must identify a listed candidate"
+                    )
+            except ValidationError:
+                question = evidence_scope = evidence_summary = before_candidate_id = ""
+                performed = False
+                unavailable_code = "OL_EVIDENCE_INCOMPLETE"
+        elif ol_required:
+            unavailable_code = str(ol.get("unavailable_code") or "").strip() or (
+                "OL_NOT_PERFORMED" if ol_evidence_available else "OL_NOT_ROUTED"
+            )
+        ol_unavailable = bool(unavailable_code)
         if ol_unavailable:
-            # The controller could not complete the bounded OL check; the pass-1 candidate and risk stand.
+            # The bounded OL check did not run; the pass-1 candidate and risk stand.
             salvage.append(
                 {
                     "code": "OL_UNAVAILABLE",
@@ -512,40 +555,12 @@ def validate_rewrite_challenges(
                     "coordinate": reference,
                     "challenge_id": challenge_id,
                     "message": (
-                        f"OL check for {challenge_id} at {reference} could not be completed "
-                        f"({str(ol.get('unavailable_code') or 'unknown cause')}); "
+                        f"OL check for {challenge_id} at {reference} did not run ({unavailable_code}); "
                         "the first-pass candidate and risk were kept without original-language confirmation."
                     ),
                 }
             )
-        elif performed != ol_required:
-            if ol_required:
-                raise ValidationError(
-                    f"{label} requires one bounded OL check because risk is 2+ and a material trigger exists"
-                )
-            raise ValidationError(
-                f"{label} performs an OL check without both the risk threshold and a material semantic trigger"
-            )
-        if performed and not ol_evidence_available:
-            raise ValidationError(
-                f"{label}.ol_referral requires OL evidence that was not conditionally routed to the task"
-            )
-        if performed:
-            question = _text(ol.get("question"), f"{label}.ol_referral.question")
-            evidence_scope = _text(
-                ol.get("evidence_scope"), f"{label}.ol_referral.evidence_scope", maximum=160
-            )
-            if not _scope_contains(parent_scope, evidence_scope):
-                raise ValidationError(f"{label}.ol_referral.evidence_scope is outside the bounded task scope")
-            evidence_summary = _text(
-                ol.get("evidence_summary"), f"{label}.ol_referral.evidence_summary"
-            )
-            before_candidate_id = _text(
-                ol.get("before_candidate_id"), f"{label}.ol_referral.before_candidate_id", maximum=80
-            )
-            if before_candidate_id not in candidate_ids:
-                raise ValidationError(f"{label}.ol_referral.before_candidate_id must identify a listed candidate")
-        else:
+        if not performed:
             if after_ol != before_ol:
                 _correction(
                     corrections,
@@ -555,7 +570,7 @@ def validate_rewrite_challenges(
                     coordinate=reference,
                 )
                 after_ol = before_ol
-            forbidden_detail_fields = (
+            detail_fields = (
                 "question",
                 "evidence_scope",
                 "evidence_summary",
@@ -565,15 +580,15 @@ def validate_rewrite_challenges(
                 "resolved",
                 "automatic",
             )
-            populated = [field for field in forbidden_detail_fields if ol.get(field) not in (None, "", False, [])]
-            if populated and not ol_unavailable:
-                raise ValidationError(
-                    f"{label}.ol_referral contains OL-derived fields although performed is false: {', '.join(populated)}"
+            populated = [field for field in detail_fields if ol.get(field) not in (None, "", False, [])]
+            if populated and not claimed:
+                _correction(
+                    corrections,
+                    label=f"{label}.ol_referral",
+                    supplied=", ".join(populated),
+                    derived="(cleared: no OL check was performed)",
+                    coordinate=reference,
                 )
-            question = ""
-            evidence_scope = ""
-            evidence_summary = ""
-            before_candidate_id = ""
         candidate_changed = bool(performed and before_candidate_id != recommended_candidate_id)
         resolved = bool(performed and after_ol <= 2)
         if performed and "candidate_changed" in ol and bool(ol.get("candidate_changed")) != candidate_changed:
@@ -684,9 +699,7 @@ def validate_rewrite_challenges(
                     "before_candidate_id": before_candidate_id,
                     "after_candidate_id": recommended_candidate_id if performed else "",
                     "unavailable": ol_unavailable,
-                    "unavailable_code": (
-                        str(ol.get("unavailable_code") or "OL_UNAVAILABLE") if ol_unavailable else ""
-                    ),
+                    "unavailable_code": unavailable_code,
                 },
                 "untranslated_languages": untranslated,
                 "inherited_challenge_ids": inherited_ids,
