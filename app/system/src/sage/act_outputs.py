@@ -10,6 +10,7 @@ from typing import Any, Mapping, Sequence
 
 from .bic_memory import validate_inspect_submission
 from .errors import ValidationError
+from .exception_reports import render_exceptions_section
 from .hashing import sha256_file
 from .human_output import catalogue_text, render_report_language_authority
 from .iso_languages import iso_language
@@ -1273,6 +1274,11 @@ def render_action_report(document: Mapping[str, Any]) -> str:
     consolidation = document.get("consolidation")
     if isinstance(consolidation, Mapping) and consolidation.get("status") == "HUMAN_REVIEW_REQUIRED":
         lines.extend(["", "> **Consolidation requires human review because material conclusions conflict.**"])
+    exception_section = render_exceptions_section(
+        [row for row in document.get("exceptions", []) if isinstance(row, Mapping)], language=primary
+    )
+    if exception_section:
+        lines.extend(["", *exception_section])
     execution_events = [dict(row) for row in document.get("execution_events", []) if isinstance(row, Mapping)]
     if execution_events:
         lines.extend(["", "## Execution advisories", ""])

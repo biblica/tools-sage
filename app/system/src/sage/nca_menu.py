@@ -9,16 +9,9 @@ from sage.nca_cli import CHECK_LABELS, inspect_numbers_package
 from sage.numbers.resources import import_reference, reference_package_candidates
 from sage.numbers.style import import_style_profile, style_profile_candidates
 
-# Data-integrity violations detected while executing a sealed NCA task (a
-# corrupted or tampered checkpoint, an output that no longer matches its
-# execution receipt). These must remain hard failures -- a soft, resumable
-# framing (the default for provider/transient failures) would misrepresent
-# a detected integrity breach as an ordinary retryable hiccup.
-NCA_INTEGRITY_FAILURE_CODES = frozenset({
-    'LLM_TASK_OUTPUT_NOT_EMPTY',
-    'NCA_PHASE_CHECKPOINT_INVALID',
-    'EXECUTION_RECEIPT_OUTPUT_MISMATCH',
-})
+# Data-integrity violations detected while executing a sealed NCA task stay hard failures; the
+# codes live in the shared INTEGRITY_CODES list of sage.exception_reports.
+from sage.exception_reports import NCA_INTEGRITY_FAILURE_CODES
 
 
 def choose_style(center, project) -> str | None:

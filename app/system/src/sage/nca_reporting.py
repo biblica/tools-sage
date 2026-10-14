@@ -778,6 +778,15 @@ def build_chapter_reports(
             for group in chapter["groups"]
             if (group.get("comparison") or {}).get("outcome") == "NOT_ASSESSED"
         ]
+        exceptions = [
+            {"effect": "NOT_ASSESSED", "tool": "nca", "stage": "NCA", "severity": "WARNING", "attempts": 0,
+             "work_unit": group.get("unit_id"),
+             "code": ",".join(group.get("limitations") or ()) or "NOT_ASSESSED",
+             "coordinates": list(group.get("target_references") or group.get("western_references") or ()),
+             "message": "NCA could not compare these numbers, so none were checked."}
+            for group in chapter["groups"]
+            if (group.get("comparison") or {}).get("outcome") == "NOT_ASSESSED"
+        ]
         versification = [
             {"reference": ", ".join(group.get("western_references") or ()),
              "code": ",".join(group.get("limitations") or ())}
@@ -803,6 +812,7 @@ def build_chapter_reports(
             "authority_header": _authority_lines(document, family=family, snapshot_date=snapshot_date),
             "findings": findings,
             "advisories": advisories,
+            "exceptions": exceptions,
             "versification_advisories": versification,
             "notes": notes,
         }
@@ -817,6 +827,7 @@ def build_chapter_reports(
 def render_nca_action_report(report: Mapping[str, object]) -> str:
     """Render one chapter's Operator action report in the shared RTC/STC template."""
     from .act_outputs import _language_display_name, _report_label, render_execution_section
+    from .exception_reports import render_exceptions_section
     from .human_output import render_report_language_authority
     from .report_authority import authority_markdown
 
@@ -859,6 +870,8 @@ def render_nca_action_report(report: Mapping[str, object]) -> str:
         lines.extend(["", "## Execution advisories", "",
                       "These coordinates could not be compared; their numbers were not checked.", ""])
         lines.extend(f"- `{row['reference']}` | `{row['code']}`" for row in advisories)
+    lines.extend(["", *render_exceptions_section(list(report.get("exceptions") or ()), language=primary)]
+                 if report.get("exceptions") else [])
     versification = list(report.get("versification_advisories") or ())
     if versification:
         lines.extend(["", "## Versification advisories", "",

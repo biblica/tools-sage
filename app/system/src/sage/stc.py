@@ -10,6 +10,7 @@ from .atomic import atomic_write_json, atomic_write_text
 from .canon import NT_27, OT_39
 from .errors import ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy
+from .exception_reports import render_exceptions_section
 from .hashing import sha256_bytes
 from .references import expand_reference_atoms, parse_scope
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
@@ -392,10 +393,13 @@ def finalize_stc_run(
     planned_units: Iterable[Mapping[str, Any]],
     accepted_results: Iterable[Mapping[str, Any]],
     output_root: Path,
+    exceptions: Iterable[Mapping[str, Any]] = (),
 ) -> dict[str, Path]:
     """Fail closed on exact STC work-unit/coverage reconciliation and write canonical artifacts."""
     plans = [dict(row) for row in planned_units]
     results = [dict(row) for row in accepted_results]
+    # Units sealed NOT_ASSESSED never reach this function as results; their exceptions are only reported here.
+    exceptions_list = [dict(row) for row in exceptions]
     plan_by_id = {str(row.get("work_unit_id") or row.get("unit_id") or ""): row for row in plans}
     if not plan_by_id or len(plan_by_id) != len(plans) or "" in plan_by_id:
         raise ValidationError("STC immutable work-unit plan is invalid", code="STC_WORK_UNIT_PLAN_INVALID")
@@ -462,6 +466,7 @@ def finalize_stc_run(
         "planned_primary_coverage": planned_atoms,
         "analytical_completion_receipts": receipts,
         "finding_count": len(findings),
+        "exceptions": exceptions_list,
     }
     findings_document = {
         "schema_version": STC_RESULT_VERSION,
@@ -489,8 +494,15 @@ def finalize_stc_run(
             ],
             "",
         ])
+    exception_section = render_exceptions_section(exceptions_list)
+    if exception_section:
+        lines.extend([*exception_section])
     if not findings:
-        lines.append("No governed STC findings were reported. All planned STC review items completed.")
+        lines.append(
+            "No governed STC findings were reported for the assessed coordinates."
+            if exception_section
+            else "No governed STC findings were reported. All planned STC review items completed."
+        )
     else:
         for finding in findings:
             lines.extend([
