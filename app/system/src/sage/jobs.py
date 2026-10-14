@@ -50,9 +50,11 @@ TOOL_IDS = ("bic", "rtc", "stc", "nca", "saw")
 PERSISTED_JOB_TOOLS = SUPPORTED_JOB_TOOLS
 JOB_SCHEMA_VERSION = "1.0"
 RUN_SCHEMA_VERSION = "1.0"
-RUN_CLOSED_STATUSES = frozenset(
-    {"COMPLETE", "COMPLETE_WITH_STRUCTURE_PROBLEMS", "ARCHIVED", "ABANDONED"}
+# Completed Runs: COMPLETE_WITH_EXCEPTIONS means some coordinates were reported NOT_ASSESSED.
+RUN_COMPLETED_STATUSES = frozenset(
+    {"COMPLETE", "COMPLETE_WITH_STRUCTURE_PROBLEMS", "COMPLETE_WITH_EXCEPTIONS"}
 )
+RUN_CLOSED_STATUSES = RUN_COMPLETED_STATUSES | {"ARCHIVED", "ABANDONED"}
 _JOB_ID_RE = re.compile(
     r"^(?:(?:BIC|SAW)_[A-Za-z0-9][A-Za-z0-9._-]{1,190}"
     r"|(?:RTC|STC|NCA)-[A-Za-z0-9][A-Za-z0-9._-]{0,63}_[0-9]{8})$"
@@ -1115,6 +1117,16 @@ class JobStore:
             )
             raw["profiles"] = canonical
         if defaults is not None:
+            if project.tool != "nca":
+                # Every revision changes the sealed runtime settings, which would stale an open Run's tasks.
+                nonclosed = self.open_run_ids(project)
+                if nonclosed:
+                    raise ValidationError(
+                        "Cannot change Job defaults while a Run is open",
+                        code="JOB_DEFAULTS_RUN_OPEN",
+                        next_action="Finish or abandon the open Run, then change the defaults; they apply to later Runs.",
+                        details={"run_ids": nonclosed},
+                    )
             raw["defaults"] = (
                 _validate_nca_defaults(defaults)
                 if project.tool == "nca"
@@ -1686,6 +1698,10 @@ class JobStore:
         load_ecosystem(project.runtime_settings_path)
         return project.runtime_settings_path
 
+    def open_run_ids(self, project: Job) -> list[str]:
+        """Return the IDs of the Job's Runs that are not closed."""
+        return [run.run_id for run in self.list_runs(project) if run.status not in RUN_CLOSED_STATUSES]
+
     def ensure_runtime_files(self, project: Job) -> Path:
         """Refresh and validate derived Job runtime files against current SAGE configuration."""
         if not project.reporting_contract_persisted:
@@ -1903,7 +1919,7 @@ class JobStore:
             return restart_nca_run(
                 load_ecosystem(self.settings_path), job=project, run=run
             )
-        if run.status in {"COMPLETE", "ARCHIVED", "ABANDONED"}:
+        if run.status in RUN_CLOSED_STATUSES:
             raise ValidationError(
                 f"Cannot restart a {run.status.lower()} Run; start a new task instead"
             )
@@ -2031,7 +2047,7 @@ class JobStore:
         status = str(raw.get("status") or "").upper()
         explicit_result = str(raw.get("result") or "").upper()
         if not explicit_result:
-            if status in {"COMPLETE", "COMPLETE_WITH_STRUCTURE_PROBLEMS"}:
+            if status in RUN_COMPLETED_STATUSES:
                 raw["result"] = "DONE"
             elif status == "ABANDONED":
                 raw["result"] = "CANCELLED"

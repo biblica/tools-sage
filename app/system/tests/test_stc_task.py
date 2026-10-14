@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from .conftest import submit_with_receipt
 from sage.act_tasks import create_act_task, submit_act_task
 from sage.errors import ValidationError
 from sage.external_access import READ_ONLY_SCRIPTURE
@@ -259,7 +260,13 @@ def test_stc_task_routes_ol_by_its_persisted_planner_version(
             "authority_stream": "GRK:PRIMARY",
             "authority_local_spans": ["MAT 1:2"],
             "missing_canonical_atoms": [],
+            "verse_correspondence": [
+                {"wip": "MAT 1:3", "original_language": ["MAT 1:2"], "precision": "COORDINATE"}
+            ],
+            "length_outliers": [],
+            "numeric_candidates": manifest["stc_alignment"]["numeric_candidates"],
         }
+        assert manifest["stc_alignment"]["numeric_candidates"]["caveat"].startswith("Index values follow")
     else:
         assert manifest["stc_alignment"] is None
 
@@ -365,9 +372,11 @@ def test_stc_task_reports_empty_primary_ol_coordinate_without_aborting(
     assert issue["source_project_id"] == "GRK"
     assert issue["wip_project_id"] == "usWIP"
     assert issue["reference"] == "MAT 1:2"
+    # The single-unit path routes its boundary context verse; the absent primary verse stays absent.
+    assert manifest["context_references"]["before"] == ["MAT 1:1"]
     assert Path(manifest_path.parent / "packet/original-language.sfm").read_text(
         encoding="utf-8"
-    ) == "\\id MAT\n\\c 1\n"
+    ) == "\\id MAT\n\\c 1\n\\v 1 Verse 1.\n"
     assert "Do not invent wording for source coordinates reported as absent" in Path(
         task["act_path"]
     ).read_text(encoding="utf-8")
@@ -381,7 +390,7 @@ def test_stc_task_reports_empty_primary_ol_coordinate_without_aborting(
         }),
         encoding="utf-8",
     )
-    result = submit_act_task(load_ecosystem(root / "ecosystem.yml"), manifest_path)
+    result = submit_with_receipt(load_ecosystem(root / "ecosystem.yml"), manifest_path)
     normalized = json.loads(
         (manifest_path.parent / "validation/normalized-findings.json").read_text(encoding="utf-8")
     )
@@ -457,7 +466,7 @@ def test_stc_submission_uses_stc_grammar_and_writes_standalone_canonical_artifac
         encoding="utf-8",
     )
 
-    result = submit_act_task(config, manifest_path)
+    result = submit_with_receipt(config, manifest_path)
 
     assert result["status"] == "FINALIZED"
     normalized = json.loads((manifest_path.parent / "validation/normalized-findings.json").read_text(encoding="utf-8"))
@@ -476,3 +485,16 @@ def test_stc_submission_uses_stc_grammar_and_writes_standalone_canonical_artifac
     assert report_path.parent.parent.name == "MAT"
     assert "STC Action Report" in report_path.read_text(encoding="utf-8")
     assert note_path.is_file()
+
+
+def test_parser_errors_outside_the_requested_chapters_do_not_block() -> None:
+    """A broken marker in chapter 2 must not stop work on chapter 1 of the same book."""
+    from sage.act_tasks import _parser_errors_in_scope
+    from sage.usj import compile_usfm_text
+
+    text = "\\id MAT\n\\c 1\n\\v 1 Fine.\n\\c 2\n\\v 1 Broken \\nd* marker.\n"
+    usj = compile_usfm_text(text, "41MAT.SFM")
+    assert usj["sage"]["errors"]
+    assert _parser_errors_in_scope(text, "41MAT.SFM", usj, {1}) == []
+    assert _parser_errors_in_scope(text, "41MAT.SFM", usj, {2})
+    assert _parser_errors_in_scope(text, "41MAT.SFM", usj, None) == usj["sage"]["errors"]

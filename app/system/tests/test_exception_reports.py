@@ -231,6 +231,7 @@ def test_aggregation_reports_partial_coverage_instead_of_failing(make_workspace)
     report = Path(result["report_path"]).read_text(encoding="utf-8")
     assert "Exceptions — not assessed" in report
     assert "Not assessed coordinates: `1`" in report
+    assert "\\n" not in report and report.count("\n") > 5
 
 
 def test_aggregation_of_a_fully_assessed_plan_is_unchanged(make_workspace) -> None:
@@ -319,7 +320,7 @@ def test_runner_retries_then_reports_not_assessed_and_continues(make_workspace, 
     output = center.io.output.getvalue()
     assert "reported as NOT_ASSESSED" in output
     assert "1 work unit(s) were not assessed" in output
-    assert finished.status in {"COMPLETE", "COMPLETE_WITH_STRUCTURE_PROBLEMS"}
+    assert finished.status == "COMPLETE_WITH_EXCEPTIONS"
 
 
 def test_runner_stops_without_sealing_on_an_integrity_code(make_workspace, monkeypatch) -> None:
@@ -472,6 +473,8 @@ def test_stc_aggregation_reports_a_not_assessed_unit(make_workspace) -> None:
     assert [row["code"] for row in result["exceptions"]] == ["STC_OUTPUT_INVALID"]
     canonical = json.loads(Path(result["canonical_artifacts"]["run_result"]).read_text(encoding="utf-8"))
     assert canonical["planned_primary_coverage"] == ["MAT 1:1"]
+    assert canonical["status"] == "PARTIAL"
+    assert canonical["coverage"]["not_assessed_references"] == ["MAT 1:2"]
     assert canonical["exceptions"][0]["coordinates"] == ["MAT 1:2"]
     assert "Exceptions — not assessed" in Path(result["canonical_artifacts"]["report"]).read_text(encoding="utf-8")
     assert "Exceptions — not assessed" in Path(result["report_path"]).read_text(encoding="utf-8")
@@ -488,6 +491,8 @@ def test_stc_aggregation_finalizes_when_every_unit_is_not_assessed(make_workspac
     report = Path(result["report_path"]).read_text(encoding="utf-8")
     assert "Exceptions — not assessed" in report
     assert "MAT 1:1" in report
+    assert "`NOT_ASSESSED` (0 assessed, 1 not assessed coordinates)" in report
+    assert "`COMPLETE` (0 coordinates)" not in report
 
 
 def test_composite_rtc_finalizes_when_its_only_stage_is_not_assessed(make_workspace) -> None:
@@ -774,3 +779,402 @@ def test_nca_report_renders_the_shared_exceptions_section() -> None:
     assert "MAT 1:2" in text
     without = render_nca_action_report({**report, "exceptions": []})
     assert "Exceptions — not assessed" not in without
+
+
+def _composite_fixture(make_workspace, stages: list[dict]):
+    """Write a composite RTC plan whose stages are given as (stage name, manifest writer) rows."""
+    root = make_workspace()
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-2")
+    config = load_ecosystem(store.ensure_runtime_files(job))
+    rows = []
+    for stage in stages:
+        manifest = run.root / "tasks" / stage["stage"].lower() / "task-manifest.json"
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(
+            json.dumps({"task_id": f"T-{stage['stage']}", "scope": "MAT 1:1-2", "expected_references": stage.get("refs", [])})
+            + "\n",
+            encoding="utf-8",
+        )
+        if stage["state"] == NOT_ASSESSED:
+            write_not_assessed_result(
+                manifest,
+                ExceptionRecord(
+                    tool="rtc",
+                    code="LLM_PROVIDER_RESPONSE_INVALID",
+                    message="Output rejected three times.",
+                    effect=NOT_ASSESSED,
+                    task_id=f"T-{stage['stage']}",
+                    coordinates=tuple(stage.get("refs", [])),
+                    attempts=3,
+                ),
+            )
+        else:
+            validation = manifest.parent / "validation"
+            validation.mkdir(parents=True, exist_ok=True)
+            (validation / "submission.json").write_text(json.dumps({"status": "FINALIZED"}) + "\n", encoding="utf-8")
+            (validation / "normalized-findings.json").write_text(json.dumps(stage["result"]) + "\n", encoding="utf-8")
+        rows.append({"kind": "TASK", "stage": stage["stage"], "manifest_path": str(manifest.resolve())})
+    plan_path = run.root / "plans" / "RTC-COMPOSITE-X.json"
+    plan_path.parent.mkdir(parents=True, exist_ok=True)
+    plan_path.write_text(
+        json.dumps(
+            {
+                "plan_type": "RTC_COMPOSITE",
+                "status": "PARTITIONED",
+                "plan_id": "RTC-COMPOSITE-X",
+                "workflow": "saw",
+                "job_id": job.job_id,
+                "run_id": run.run_id,
+                "requested_scope": "MAT 1:1-2",
+                "output_project": "usWIP",
+                "contemporary_source": "usREF",
+                "stages": rows,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return config, plan_path
+
+
+def test_composite_rtc_continues_to_meaning_stage_after_not_assessed_structural_stage(make_workspace, monkeypatch) -> None:
+    """A lost structural adjudication does not leave the rest of the scope unreviewed."""
+    import sage.act_tasks as act_tasks
+
+    config, plan_path = _composite_fixture(
+        make_workspace, [{"stage": "STRUCTURAL_ADJUDICATION", "state": NOT_ASSESSED, "refs": ["MAT 1:2"]}]
+    )
+    calls: list[dict] = []
+    pending = plan_path.parent.parent / "tasks" / "meaning" / "task-manifest.json"
+    pending.parent.mkdir(parents=True, exist_ok=True)
+    pending.write_text(json.dumps({"task_id": "T-MEANING", "scope": "MAT 1:1-2"}) + "\n", encoding="utf-8")
+
+    def fake_create(_config, **kwargs):
+        """Record the requested stage and return the pending meaning-stage task."""
+        calls.append(kwargs)
+        return {"status": "CREATED", "manifest_path": str(pending)}
+
+    monkeypatch.setattr(act_tasks, "create_act_task", fake_create)
+    result = continue_analysis_plan(config, plan_path)
+
+    assert result["status"] == "NEXT_WORK_UNIT"
+    assert result["composite_stage"] == "REFERENCE_TEXT_COMPARISON"
+    assert calls[0]["rtc_stage"] == "REFERENCE_TEXT_COMPARISON"
+    assert calls[0]["rtc_predecessor_files"] == []
+
+
+def test_composite_rtc_reports_not_assessed_ol_stage_references(make_workspace) -> None:
+    """A lost OL adjudication keeps its deferred verse NOT_ASSESSED instead of COMPLETE coverage."""
+    meaning = {
+        "schema_version": "2.0",
+        "operation": "rtc",
+        "coverage": {"status": "COMPLETE", "reviewed_references": ["MAT 1:1", "MAT 1:2"]},
+        "findings": [],
+        "ol_review_requests": [{"request_id": "OLR-001", "deferred_finding_id": "F001", "target_reference": "MAT 1:2"}],
+    }
+    config, plan_path = _composite_fixture(
+        make_workspace,
+        [
+            {"stage": "REFERENCE_TEXT_COMPARISON", "state": "FINALIZED", "result": meaning},
+            {"stage": "SELECTIVE_OL_ADJUDICATION", "state": NOT_ASSESSED},
+        ],
+    )
+
+    result = continue_analysis_plan(config, plan_path)
+
+    final = json.loads(Path(result["aggregate_path"]).read_text(encoding="utf-8"))
+    assert final["coverage"]["status"] == "PARTIAL"
+    assert final["coverage"]["reviewed_references"] == ["MAT 1:1"]
+    assert final["coverage"]["not_assessed_references"] == ["MAT 1:2"]
+    assert final["exceptions"][0]["coordinates"] == ["MAT 1:2"]
+    assert "Exceptions — not assessed" in Path(result["report_path"]).read_text(encoding="utf-8")
+
+
+def test_action_report_renders_ol_resolutions_without_findings() -> None:
+    """NO_FINDING and INSUFFICIENT_EVIDENCE adjudications are visible with their decision and rationale."""
+    from sage.act_outputs import render_action_report
+
+    report = render_action_report(
+        {
+            "operation": "rtc",
+            "workflow": "rtc",
+            "scope": "MAT 1:2",
+            "coverage": {"status": "COMPLETE", "reviewed_references": ["MAT 1:2"]},
+            "findings": [],
+            "ol_resolutions": [
+                {
+                    "request_id": "OLR-001",
+                    "target_reference": "MAT 1:2",
+                    "outcome": "NO_FINDING",
+                    "decision": "BOTH_DEFENSIBLE",
+                    "finding_id": None,
+                    "rationale": "Both renderings follow the Greek aorist.",
+                }
+            ],
+        }
+    )
+    assert "## Original-language adjudications" in report
+    assert "Outcome: `NO_FINDING`; Decision: `BOTH_DEFENSIBLE`" in report
+    assert "Both renderings follow the Greek aorist." in report
+
+
+def test_composite_rtc_reports_prohibited_ol_requests_instead_of_stalling(make_workspace) -> None:
+    """A sealed meaning stage with OL requests under a PROHIBITED policy finishes with a record."""
+    meaning = {
+        "schema_version": "2.0",
+        "operation": "rtc",
+        "coverage": {"status": "COMPLETE", "reviewed_references": ["MAT 1:1", "MAT 1:2"]},
+        "findings": [],
+        "ol_review_requests": [{"request_id": "OLR-001", "deferred_finding_id": "F001", "target_reference": "MAT 1:2"}],
+    }
+    config, plan_path = _composite_fixture(
+        make_workspace, [{"stage": "REFERENCE_TEXT_COMPARISON", "state": "FINALIZED", "result": meaning}]
+    )
+
+    result = continue_analysis_plan(config, plan_path)
+
+    assert result["status"] == "COMPLETE"
+    records = exceptions_for_run(plan_path.parent.parent)
+    assert [(row["code"], row["effect"], row["coordinates"]) for row in records] == [
+        ("SAW_OL_REQUEST_PROHIBITED", "FLAGGED", ["MAT 1:2"])
+    ]
+
+
+def test_run_with_not_assessed_units_closes_with_its_own_status(make_workspace) -> None:
+    """A Run that lost units closes COMPLETE_WITH_EXCEPTIONS, still DONE, never plain COMPLETE."""
+    root = make_workspace()
+    center = _center(root)
+    job = next(item for item in center.store.bootstrap_default_jobs() if item.tool == "saw")
+    run = center.store.create_run(job, operation="stc", scope="MAT 1:1-2")
+    assert center._saw_completion_status(run) == "COMPLETE"
+    record_exception(
+        run.root,
+        ExceptionRecord(tool="stc", code="X", message="m", effect=NOT_ASSESSED, coordinates=("MAT 1:2",)),
+    )
+
+    status = center._saw_completion_status(run)
+    closed = center.store.update_run(run, status=status, current_stage=status)
+
+    assert status == "COMPLETE_WITH_EXCEPTIONS"
+    assert closed.result == "DONE"
+
+
+def test_provider_configuration_and_controller_failures_stop_the_run() -> None:
+    """A logged-out provider or a controller crash must not be retried into NOT_ASSESSED units."""
+    for code in (
+        "CODEX_EXECUTION_NOT_READY",
+        "MENU_CONTROLLER_COMMAND_FAILED",
+        "CONFIGURATION_ERROR",
+        "PROVIDER_ROUTE_UNAVAILABLE",
+        "LLM_RESPONSE_ROUTE_MISMATCH",
+        "RTC_TASK_CONTRACT_INVALID",
+        "STC_TASK_CONTRACT_INVALID",
+        "STC_OL_AUTHORITY_MISMATCH",
+        "TASK_SUBMISSION_TAMPERED",
+        "EXECUTION_RECEIPT_MISSING",
+    ):
+        assert unit_failure_action(code, "ERROR", 1) == "STOP", code
+
+
+def test_circuit_breaker_stops_a_recurring_non_content_failure() -> None:
+    """The same non-content code sealing units again and again is systemic; content rejections are not."""
+    assert unit_failure_action("SAGE_ERROR", "ERROR", 1, prior_not_assessed_codes=["SAGE_ERROR"]) == "RETRY"
+    assert (
+        unit_failure_action("SAGE_ERROR", "ERROR", 1, prior_not_assessed_codes=["SAGE_ERROR", "SAGE_ERROR"])
+        == "STOP"
+    )
+    assert (
+        unit_failure_action(
+            "RTC_OUTPUT_INVALID",
+            "TASK_OUTPUT_REJECTED",
+            1,
+            prior_not_assessed_codes=["RTC_OUTPUT_INVALID"] * 5,
+        )
+        == "RETRY"
+    )
+
+
+def test_single_task_run_applies_the_unit_failure_policy(make_workspace, monkeypatch) -> None:
+    """A one-unit Run retries, seals the unit NOT_ASSESSED, and closes instead of stalling."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1")
+    manifest = run.root / "tasks" / "unit-1" / "task-manifest.json"
+    manifest.parent.mkdir(parents=True, exist_ok=True)
+    manifest.write_text(
+        json.dumps({"task_id": "T-SINGLE", "scope": "MAT 1:1", "expected_references": ["MAT 1:1"]}) + "\n",
+        encoding="utf-8",
+    )
+    run = store.update_run(run, task_manifests=[str(manifest)])
+    center = _center(root)
+    attempts: list[int] = []
+
+    def failing_action(_job, current, _path):
+        """Fail every attempt with a rejected-output event."""
+        attempts.append(1)
+        center._last_execution_event = {
+            "reason_code": "RTC_OUTPUT_INVALID",
+            "disposition": "TASK_OUTPUT_REJECTED",
+            "message": "The provider output was rejected.",
+            "report_path": "",
+        }
+        return current, False
+
+    monkeypatch.setattr(center, "_task_action", failing_action)
+    finished = center._continue_saw(job, run)
+
+    assert len(attempts) == MAX_UNIT_ATTEMPTS
+    assert json.loads((manifest.parent / "validation" / "submission.json").read_text(encoding="utf-8"))["status"] == NOT_ASSESSED
+    assert finished.status == "COMPLETE_WITH_EXCEPTIONS"
+
+
+def test_job_defaults_cannot_change_while_a_run_is_open(make_workspace) -> None:
+    """Changing defaults rewrites sealed runtime settings, so it waits until the open Run closes."""
+    from sage.errors import ValidationError
+
+    root = make_workspace()
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
+    with pytest.raises(ValidationError) as caught:
+        store.revise_job(job, defaults={"rtc_policy": {}})
+    assert caught.value.code == "JOB_DEFAULTS_RUN_OPEN"
+    store.update_run(run, status="ABANDONED", current_stage="ABANDONED")
+    assert store.revise_job(store.load_job(job.job_id), defaults={"note": "x"}).defaults == {"note": "x"}
+
+
+def test_rtc_task_without_a_job_is_refused(make_workspace) -> None:
+    """The CLI shortcut no longer mints an orphan Job for a canonical RTC task."""
+    from sage.act_tasks import create_act_task
+    from sage.errors import ValidationError
+
+    root = make_workspace()
+    with pytest.raises(ValidationError) as caught:
+        create_act_task(
+            load_ecosystem(root / "ecosystem.yml"),
+            workflow="rtc",
+            operation="rtc",
+            output_project_id="usWIP",
+            contemporary_source_id="usNIVv2",
+            scope_value="MAT 1:1",
+        )
+    assert caught.value.code == "RTC_JOB_REQUIRED"
+
+
+def test_composite_rtc_final_result_includes_deterministic_structural_findings(make_workspace) -> None:
+    """Findings decided in code at composite creation are merged with run-global identity."""
+    meaning = {
+        "schema_version": "2.0",
+        "operation": "rtc",
+        "coverage": {"status": "COMPLETE", "reviewed_references": ["MAT 1:1", "MAT 1:2"]},
+        "findings": [],
+    }
+    config, plan_path = _composite_fixture(
+        make_workspace, [{"stage": "REFERENCE_TEXT_COMPARISON", "state": "FINALIZED", "result": meaning}]
+    )
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["deterministic_findings"] = [
+        {
+            "finding_id": "D-VRS-1",
+            "target_reference": "MAT 1:2",
+            "category": "STRUCTURE",
+            "issue": "usWIP MAT 1:2 maps to MAT 1:2, which has text in usWIP but none in usREF.",
+            "required_action": "Check whether text is missing from usREF at this coordinate.",
+            "action_level": "REVIEW",
+            "confidence": "HIGH",
+            "evidence_ids": ["WIP", "REFERENCE"],
+            "grammar_rule_ids": [],
+            "original_language_evidence": "",
+        }
+    ]
+    plan_path.write_text(json.dumps(plan) + "\n", encoding="utf-8")
+
+    result = continue_analysis_plan(config, plan_path)
+
+    final = json.loads(Path(result["aggregate_path"]).read_text(encoding="utf-8"))
+    [finding] = final["findings"]
+    assert finding["category"] == "STRUCTURE"
+    assert finding["submitted_id"] == "D-VRS-1"
+    assert finding["finding_id"] != "D-VRS-1"
+
+
+def test_menu_runs_plan_continuation_in_process(make_workspace, monkeypatch) -> None:
+    """Continue, submit, and aggregate no longer spawn a CLI subprocess per call."""
+    import subprocess
+
+    meaning = {
+        "schema_version": "2.0",
+        "operation": "rtc",
+        "coverage": {"status": "COMPLETE", "reviewed_references": ["MAT 1:1", "MAT 1:2"]},
+        "findings": [],
+    }
+    config, plan_path = _composite_fixture(
+        make_workspace, [{"stage": "REFERENCE_TEXT_COMPARISON", "state": "FINALIZED", "result": meaning}]
+    )
+    center = _center(config.root)
+    job = center.store.load_job(json.loads(plan_path.read_text(encoding="utf-8"))["job_id"])
+
+    def no_subprocess(*_args, **_kwargs):
+        """Fail if the controller tries to start a process."""
+        raise AssertionError("controller spawned a subprocess")
+
+    monkeypatch.setattr(subprocess, "Popen", no_subprocess)
+    result = center.controller(job, ["task", "continue", "--plan", str(plan_path)])
+
+    assert result["status"] == "COMPLETE"
+    assert isinstance(result["aggregate_path"], str)
+
+
+def test_cli_task_failure_applies_the_shared_unit_policy(make_workspace, monkeypatch) -> None:
+    """A CLI-run RTC task failure is counted and sealed the same way the menu does it."""
+    from sage.cli import _cli_unit_failure
+    from sage.errors import ValidationError
+
+    root = make_workspace()
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1")
+    config = load_ecosystem(store.ensure_runtime_files(job))
+    manifest = run.root / "tasks" / "unit" / "task-manifest.json"
+    manifest.parent.mkdir(parents=True, exist_ok=True)
+    manifest.write_text(
+        json.dumps(
+            {
+                "task_id": "T-CLI",
+                "workflow": "saw",
+                "operation": "rtc",
+                "job_id": job.job_id,
+                "run_id": run.run_id,
+                "expected_references": ["MAT 1:1"],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.delenv("SAGE_MENU_DRIVER", raising=False)
+    for _ in range(MAX_UNIT_ATTEMPTS):
+        _cli_unit_failure(config, manifest, ValidationError("bad output", code="RTC_OUTPUT_INVALID"))
+
+    assert [row["effect"] for row in exceptions_for_run(run.root)] == ["RETRY", "RETRY", NOT_ASSESSED]
+    assert load_not_assessed_result(manifest)["exception"]["coordinates"] == ["MAT 1:1"]
+    monkeypatch.setenv("SAGE_MENU_DRIVER", "1")
+    _cli_unit_failure(config, manifest, ValidationError("bad output", code="RTC_OUTPUT_INVALID"))
+    assert len(exceptions_for_run(run.root)) == 3
+
+
+def test_a_run_driven_by_one_session_is_locked_for_another(make_workspace) -> None:
+    """The Run driver lock refuses a second live owner."""
+    from sage.errors import LockError
+    from sage.locking import WorkspaceLock
+
+    root = make_workspace()
+    store = JobStore(root, root / "ecosystem.yml")
+    job = next(item for item in store.bootstrap_default_jobs() if item.tool == "saw")
+    run = store.create_run(job, operation="rtc", scope="MAT 1")
+    path = run.root / "locks" / "run-driver"
+    with WorkspaceLock(path, "first", break_stale=True):
+        with pytest.raises(LockError):
+            WorkspaceLock(path, "second", break_stale=True).acquire()

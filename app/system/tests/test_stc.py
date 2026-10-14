@@ -315,6 +315,89 @@ def test_stc_submission_normalizes_stable_finding_identity(tmp_path) -> None:
     assert finding["authority_role"] == "PRIMARY"
 
 
+def test_stc_finding_reference_must_match_a_planned_verse_exactly(tmp_path) -> None:
+    """MAT 1:2 is not accepted just because the planned MAT 1:20 starts with it; bridge atoms are."""
+    def submit(reference: str):
+        """Validate one finding at ``reference`` against a unit planning MAT 1:20 and MAT 1:21-22."""
+        path = tmp_path / "findings.json"
+        path.write_text(json.dumps({
+            "review_summary": "One finding.",
+            "report_language": "eng",
+            "findings": [{
+                "category": "variation",
+                "target_reference": reference,
+                "summary": "Material departure.",
+                "wip_evidence": "WIP words",
+                "ol_evidence": "OL words",
+            }],
+        }), encoding="utf-8")
+        return validate_stc_submission(
+            path,
+            task_id="TASK-1",
+            work_unit_id="WU-1",
+            scope_value="MAT 1:1-25",
+            expected_references=("MAT 1:20", "MAT 1:21-22"),
+            authority_family="GRK",
+            task_fingerprint="abc",
+            narrative_language="eng",
+        )
+
+    dropped = submit("MAT 1:2")
+    assert dropped["finding_count"] == 0
+    assert dropped["salvage_records"][0]["code"] == "STC_FINDING_DROPPED"
+    assert submit("MAT 1:21")["findings"][0]["target_reference"] == "MAT 1:21"
+    assert submit("MAT 1:21-22")["finding_count"] == 1
+
+
+def test_stc_defective_finding_is_dropped_and_the_rest_kept(tmp_path) -> None:
+    """A bad category, a duplicate, or a language mismatch no longer rejects the whole STC unit."""
+    good = {
+        "category": "variation",
+        "target_reference": "JHN 1:1",
+        "summary": "Material departure.",
+        "wip_evidence": "WIP words",
+        "ol_evidence": "OL words",
+    }
+    path = tmp_path / "findings.json"
+    path.write_text(json.dumps({
+        "review_summary": "Three candidate findings.",
+        "report_language": "fr",
+        "findings": [good, {**good, "category": "style"}, dict(good)],
+    }), encoding="utf-8")
+
+    result = validate_stc_submission(
+        path,
+        task_id="TASK-1",
+        work_unit_id="WU-1",
+        scope_value="JHN 1:1",
+        expected_references=("JHN 1:1",),
+        authority_family="GRK",
+        task_fingerprint="abc",
+        narrative_language="en",
+    )
+
+    assert result["finding_count"] == 1
+    assert [row["code"] for row in result["salvage_records"]] == [
+        "STC_REPORT_LANGUAGE_UNVERIFIED",
+        "STC_FINDING_DROPPED",
+        "STC_FINDING_DROPPED",
+    ]
+
+
+def test_stc_schema_limits_target_reference_to_planned_wip_verses() -> None:
+    """The response schema enumerates the unit's WIP-numbered verses instead of asking for canonical scope."""
+    from sage.llm_tasks import _stc_findings_file_schema
+
+    schema = _stc_findings_file_schema(
+        {
+            "expected_references": ["MAT 1:3", "MAT 1:4-5"],
+            "narrative_language": {"tag": "en", "authority": "CANONICAL_REPORT_NARRATIVE"},
+        }
+    )
+    target = schema["properties"]["findings"]["items"]["properties"]["target_reference"]
+    assert target["enum"] == ["MAT 1:3", "MAT 1:4-5"]
+
+
 def test_stc_zero_finding_submission_still_proves_analysis(tmp_path) -> None:
     """A zero-finding terminal result carries an analytical-completion receipt."""
     path = tmp_path / "findings.json"
@@ -513,3 +596,58 @@ def test_controller_aggregate_routes_partitioned_stc_to_canonical_finalizer(make
     assert Path(result["operator_note_text_path"]).name == (
         f"{run_id}_MAT-001_OPERATOR-NOTE.txt"
     )
+
+
+def test_stc_quotation_not_found_in_the_routed_text_is_marked_unverified(tmp_path) -> None:
+    """A quotation that is not in the routed slice keeps its finding but is flagged as unverified."""
+    path = tmp_path / "findings.json"
+    path.write_text(json.dumps({
+        "review_summary": "One finding.",
+        "report_language": "en",
+        "findings": [{
+            "category": "variation",
+            "target_reference": "JHN 1:1",
+            "summary": "Material departure.",
+            "wip_evidence": "In the beginning",
+            "ol_evidence": "εν αρχη ... λογος",
+        }],
+    }), encoding="utf-8")
+
+    def submit(wip_text: str):
+        """Validate against the given WIP slice and a fixed Greek slice."""
+        return validate_stc_submission(
+            path, task_id="T", work_unit_id="WU", scope_value="JHN 1:1", expected_references=("JHN 1:1",),
+            authority_family="GRK", task_fingerprint="abc", narrative_language="en",
+            wip_text=wip_text, ol_text="\\v 1 Ἐν ἀρχῇ ἦν ὁ \\w λόγος\\w*",
+        )
+
+    verified = submit("\\v 1 In the beginning was the Word.")
+    assert "evidence_verified" not in verified["findings"][0]
+    unverified = submit("\\v 1 At the start was the Word.")
+    assert unverified["findings"][0]["evidence_verified"] is False
+    assert unverified["salvage_records"][0]["code"] == "STC_EVIDENCE_UNVERIFIED"
+
+
+def test_length_outliers_flag_verses_far_from_the_book_median() -> None:
+    """A WIP verse far shorter than its OL text, relative to the book, is a candidate."""
+    from sage.stc import length_outliers
+
+    class _Index:
+        """Identity index: canonical refs are the record's own refs."""
+
+        def __init__(self, records):
+            """Index records by reference."""
+            self.records = {ref: record for record in records for ref in record.refs}
+
+        def canonical_refs_for_records(self, records):
+            """Return each record's refs."""
+            return frozenset(ref for record in records for ref in record.refs)
+
+        def records_for_canonical(self, refs):
+            """Return the records at these refs."""
+            return tuple(self.records[ref] for ref in refs if ref in self.records)
+
+    wip = [_record("JHN", verse, "w" * (10 if verse == 3 else 60), role="WIP") for verse in range(1, 8)]
+    ol = [_record("JHN", verse, "o" * 50, role="GRK") for verse in range(1, 8)]
+    rows = length_outliers(wip, wip, _Index(wip), _Index(ol))
+    assert [(row["wip_reference"], row["direction"]) for row in rows] == [("JHN 1:3", "SHORT")]

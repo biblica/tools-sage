@@ -390,6 +390,10 @@ def _run_with_defaults(center, job: Job) -> None:
 
 def _edit_defaults(center, job: Job) -> None:
     """Edit the per-Job defaults every later "Run with defaults" uses."""
+    if job.tool == "rtc" and center.store.open_run_ids(job):
+        center.io.write("RTC defaults cannot change while a Run is open. Finish or abandon that Run first.")
+        center.io.pause()
+        return
     if job.tool == "rtc":
         current, _source = rtc_defaults(center, job)
         policy = center._rtc_policy_menu(

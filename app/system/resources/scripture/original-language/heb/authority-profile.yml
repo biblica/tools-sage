@@ -44,3 +44,18 @@ interpretation:
 evidence:
   classification: AUTHORITY_INTERPRETATION_RULES
   content_authority: false
+notation_conventions:
+  - notation: "*word **word"
+    meaning: >-
+      A word prefixed with one asterisk is the ketiv (the written form); the word that follows it,
+      prefixed with two asterisks, is the qere (the form read aloud). The pair stands for one word of the
+      text. Compare the WIP with either form, say which one it follows, and never report the pair as two
+      words or as an addition.
+language_ranges:
+  - language: Biblical Aramaic
+    language_code: arc
+    ranges: ["GEN 31:47", "EZR 4:8-6:18", "EZR 7:12-26", "JER 10:11", "DAN 2:4-7:28"]
+    instruction: >-
+      These passages are Aramaic, not Hebrew: in GEN 31:47 only the two-word place name, and in DAN 2:4
+      only the words after the introduction of the Chaldeans' reply. Interpret their vocabulary,
+      morphology, and syntax as Biblical Aramaic.

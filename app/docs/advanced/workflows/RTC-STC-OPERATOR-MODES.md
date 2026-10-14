@@ -37,7 +37,13 @@ The Run header prints stable parameters once. In a terminal, one live progress r
 
 ## Completion
 
-A Run becomes `FINALIZED` only after governed findings, exact coordinate coverage, receipts, and deterministic report publication pass. Reportable structural or versification differences produce `COMPLETE_WITH_STRUCTURE_PROBLEMS`; they never block RTC/STC solely because project versifications differ.
+A Run ends `COMPLETE` after governed findings, exact coordinate coverage, receipts, and deterministic report publication pass. Plans and work units are internally `FINALIZED`; a Run never is. Reportable structural or versification differences end the Run as `COMPLETE_WITH_STRUCTURE_PROBLEMS`; they never block RTC/STC solely because project versifications differ. A Run in which some work units could not be assessed ends as `COMPLETE_WITH_EXCEPTIONS`.
+
+## Exceptions and NOT_ASSESSED work units
+
+A work unit whose provider output keeps failing is retried up to three times and then reported `NOT_ASSESSED`; the Run continues with the next unit. Its coordinates appear under "Exceptions — not assessed" in the chapter report, in the Run's `diagnostics/EXCEPTIONS-NOT-ASSESSED.md`, and as `PARTIAL` or `NOT_ASSESSED` coverage. A defective item inside an otherwise usable result (for example a finding outside the scope, or a quotation SAGE cannot find in the routed text) is dropped, corrected, or flagged and recorded in `diagnostics/EXCEPTION-REPORTS.jsonl`; the rest of the result is kept.
+
+Only integrity guards (changed sealed inputs, task or Run identity, path safety) and provider, configuration, or controller failures stop a Run. A non-content failure that has already cost two work units stops the Run the next time it occurs. A stopped Run resumes where it stopped with **Continue active Run**.
 
 ## Legacy compatibility
 

@@ -69,7 +69,8 @@ def test_rtc_partition_policy_keeps_wip_soft_target_but_uses_complete_route_hard
     assert derived.target_estimated_tokens == 6000
     assert derived.minimum_target_tokens == 5000
     assert derived.preferred_max_estimated_tokens == 7000
-    assert derived.hard_estimated_tokens == 32000
+    # Plan-time sizing keeps RTC_PLAN_HEADROOM_TOKENS below the task-time route limit.
+    assert derived.hard_estimated_tokens == 32000 - 64
     assert derived.hard_serialized_bytes == 224000
 
 

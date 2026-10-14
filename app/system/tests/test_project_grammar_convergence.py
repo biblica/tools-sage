@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from .conftest import submit_with_receipt
 from sage.storage import storage_layout
 from sage.act_outputs import render_operator_note_text
 from sage.act_tasks import create_act_task, submit_act_task
@@ -356,7 +357,7 @@ def test_composite_rtc_meaning_to_selective_ol_to_final_text(package_root: Path,
     meaning_manifest = json.loads(meaning_manifest_path.read_text(encoding="utf-8"))
     output = meaning_manifest_path.parent / "output" / "findings.json"
     output.write_text(json.dumps(_rtc_stage_document(meaning_manifest, ol_request=True)), encoding="utf-8")
-    submit_act_task(config, meaning_manifest_path)
+    submit_with_receipt(config, meaning_manifest_path)
 
     advanced = continue_saw_plan(config, Path(result["plan_path"]))
     assert advanced["composite_stage"] == "SELECTIVE_OL_ADJUDICATION"
@@ -376,7 +377,7 @@ def test_composite_rtc_meaning_to_selective_ol_to_final_text(package_root: Path,
         json.dumps(_rtc_stage_document(ol_manifest, resolved_ids=[ol_request_id])),
         encoding="utf-8",
     )
-    submit_act_task(config, ol_manifest_path)
+    submit_with_receipt(config, ol_manifest_path)
     plan_document = json.loads(Path(result["plan_path"]).read_text(encoding="utf-8"))
     reports_root = (
         storage_layout(root).reports_root

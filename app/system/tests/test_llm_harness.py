@@ -490,7 +490,7 @@ def test_task_dry_run_resolves_exact_route_without_provider_execution(
     assert result["normal_reads"] == 1
     assert result["conditional_reads"] == 0
     assert result["allowed_writes"] == ["output/result.txt"]
-    assert result["handoff_measurement"]["measurement_scope"] == "routed_analysis_sfm_only"
+    assert result["handoff_measurement"]["measurement_scope"] == "routed_reads_bytes_and_sfm_tokens"
     assert result["handoff_measurement"]["total_estimated_tokens"] == 0
     assert result["handoff_measurement"]["transport_bytes"] > 0
     assert result["handoff_measurement"]["evidence_projection"]["read_count"] == 1
@@ -819,7 +819,12 @@ def test_rtc_provider_schema_requests_only_stage_semantics() -> None:
     findings_schema = schema["properties"]["files"]["properties"]["output/findings.json"]
 
     assert findings_schema["type"] == "object"
-    assert set(findings_schema["required"]) == {"review_summary", "findings", "ol_review_requests"}
+    assert set(findings_schema["required"]) == {
+        "review_summary",
+        "findings",
+        "ol_review_requests",
+        "candidate_adjudications",
+    }
     assert "coverage" not in findings_schema["properties"]
     assert "review_receipts" not in findings_schema["properties"]
     assert "task_id" not in findings_schema["properties"]
@@ -907,7 +912,7 @@ def test_stc_provider_schema_uses_only_stc_semantics() -> None:
     schema = _output_schema(manifest)
     findings_schema = schema["properties"]["files"]["properties"]["output/findings.json"]
 
-    assert set(findings_schema["required"]) == {"review_summary", "findings"}
+    assert set(findings_schema["required"]) == {"review_summary", "findings", "candidate_adjudications"}
     assert "ol_review_requests" not in findings_schema["properties"]
     finding = findings_schema["properties"]["findings"]["items"]
     assert set(finding["required"]) == {
@@ -981,6 +986,7 @@ def test_stc_semantics_materialize_as_stc_submission_not_rtc_findings() -> None:
     assert document == {
         **semantic,
         "report_language": "en",
+        "candidate_adjudications": [],
     }
     assert "stage" not in document
     assert "review_receipts" not in document
@@ -1754,7 +1760,9 @@ def test_routed_sfm_sizing_tokenizes_only_routed_sfm(monkeypatch) -> None:
     )
 
     assert calls == [sfm]
-    assert measurement["measurement_scope"] == "routed_analysis_sfm_only"
+    assert measurement["measurement_scope"] == "routed_reads_bytes_and_sfm_tokens"
     assert measurement["total_estimated_tokens"] == 7
-    assert measurement["total_bytes"] == len(sfm.encode("utf-8"))
+    # Every routed read counts against the byte budget; only SFM is sized in tokens.
+    assert measurement["total_bytes"] == measurement["evidence_projection"]["model_bytes"]
+    assert measurement["total_bytes"] > len(sfm.encode("utf-8"))
     assert measurement["transport_bytes"] > measurement["total_bytes"]

@@ -14,7 +14,7 @@ from .act_outputs import (
 )
 from .atomic import atomic_write_json, atomic_write_text
 from .errors import ValidationError
-from .exception_reports import NOT_ASSESSED, load_not_assessed_result, render_exceptions_section
+from .exception_reports import NOT_ASSESSED, coverage_document, load_not_assessed_result, render_exceptions_section
 from .human_output import (
     catalogue_text,
     render_report_language_authority,
@@ -113,8 +113,11 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
     ol_id = str(bindings.get(ol_role) or document.get("primary_ol_authority") or document.get("authority_family") or "SRC")
     ol_name = str(names.get(ol_role) or ol_id)
     coverage = list(document.get("primary_coverage") or [])
+    not_assessed = [str(value) for value in document.get("not_assessed_coverage") or []]
     findings = [dict(row) for row in document.get("findings", []) if isinstance(row, Mapping)]
     findings.sort(key=_finding_sort_key)
+    # Coverage is what was assessed; the source-comparison status is reported on its own line.
+    coverage_status = coverage_document(coverage, not_assessed, findings_present=bool(findings))
     source_issues = unique_source_text_issues(
         dict(row)
         for row in document.get("source_text_issues", [])
@@ -131,7 +134,9 @@ def _stc_report_markdown(document: Mapping[str, Any]) -> str:
         f"- WIP Project: `{wip_name}` (`{wip_id}`)",
         f"- Original-language authority: `{ol_id}`",
         f"- {_report_label(document, 'label.scope')}: `{document.get('scope', '')}`",
-        f"- {_report_label(document, 'label.coverage')}: `{comparison_status}` ({len(coverage)} coordinates)",
+        f"- {_report_label(document, 'label.coverage')}: `{coverage_status['status']}` ({len(coverage)} assessed"
+        + (f", {len(not_assessed)} not assessed" if not_assessed else "")
+        + " coordinates)",
         f"- Source comparison: `{comparison_status}`",
         f"- Report languages: `{primary}`" + (f"; `{secondary}`" if secondary else ""),
     ]
@@ -421,6 +426,24 @@ def publish_stc_reports(
 def publish_stc_task_reports(config: EcosystemConfig, manifest_path: Path) -> dict[str, Any]:
     """Publish or regenerate the report for an already-finalized standalone STC task."""
     manifest = _load_object(manifest_path, "STC task manifest")
+    submission = _load_object(manifest_path.parent / "validation" / "submission.json", "STC submission")
+    if submission.get("status") == NOT_ASSESSED:
+        # A standalone unit that could not be assessed still publishes a report that says so.
+        return publish_stc_reports(
+            config,
+            job_id=str(manifest.get("job_id") or ""),
+            run_id=str(manifest.get("run_id") or ""),
+            requested_scope=str(manifest.get("scope") or ""),
+            results=[],
+            exceptions=[dict(load_not_assessed_result(manifest_path)["exception"])],
+            fallback_identity={
+                "output_project": manifest.get("output_project"),
+                "primary_ol_authority": manifest.get("primary_ol_authority"),
+                "authority_family": dict((manifest.get("original_language_sources") or [{}])[0]).get(
+                    "authority_family"
+                ),
+            },
+        )
     normalized = _load_object(manifest_path.parent / "validation" / "normalized-findings.json", "STC normalized findings")
     return publish_stc_reports(
         config,

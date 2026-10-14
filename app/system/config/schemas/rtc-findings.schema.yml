@@ -24,8 +24,9 @@ coverage_required:
 - status
 - reviewed_references
 coverage_controls:
-  status: COMPLETE
+  status: [COMPLETE, PARTIAL, NOT_ASSESSED]
   references: exact_stage_coordinate_inventory
+  not_assessed_references: reported_with_exception_records
 structural_adjudication_required:
 - candidate_id
 - outcome
@@ -45,6 +46,23 @@ finding_required:
 - evidence_ids
 - grammar_rule_ids
 - original_language_evidence
+finding_optional:
+- usfm_context
+- material
+- ol_decision
+- ol_rationale
+- detection
+- text_relation
+- submitted_id
+candidate_adjudication_required:
+- candidate_id
+- verdict
+- finding_id
+- rationale
+candidate_verdicts:
+- CONFIRM
+- REJECT
+- UNSURE
 controls:
   narrative_language:
     authority: CANONICAL_REPORT_NARRATIVE
@@ -58,6 +76,10 @@ controls:
   grammar_findings_cite_rule_ids: true
   original_language_review_requires_ol_evidence: true
   all_structural_candidates_reconciled: true
+  defective_items: dropped_or_corrected_with_exception_records
+  text_policy_filters_disabled_checks_and_immaterial_contexts: true
+  every_deterministic_candidate_adjudicated_or_recorded_unsure: true
+  deterministic_findings: controller_merged_with_run_global_ids
   focused_and_ol_require_exact_focus_and_answer: true
   deterministic_report_projection:
     bilingual_language_authority_notice: required
@@ -81,6 +103,8 @@ review_receipt_controls:
 rtc_composite_fields:
   REFERENCE_TEXT_COMPARISON:
     may_emit: ol_review_requests
+    requires: candidate_adjudications
+    ol_review_requests_dropped_when_drift_adjudication_prohibited: true
     ol_review_request_required:
     - request_id
     - deferred_finding_id

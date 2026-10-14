@@ -16,6 +16,7 @@ from .act_outputs import (
 from .storage import resolve_persisted_path, storage_layout
 from .errors import ValidationError
 from .findings import (
+    dedupe_findings,
     globalize_ol_review_request_ids,
     globalize_result_finding_ids,
     validate_global_finding_ids,
@@ -37,10 +38,11 @@ from .report_authority import (
 from .platform_commands import render_sage_command
 from .local_assistive import maybe_write_report_executive_summary
 from .report_translation import ensure_secondary_analysis_report_rendering
-from .exception_reports import NOT_ASSESSED, coverage_document
+from .exception_reports import NOT_ASSESSED, ExceptionRecord, coverage_document, record_exception
 from .execution_events import events_for_run
 from .source_coverage import source_comparison_status, unique_source_text_issues
 from .stc import LEGACY_STC_PLANNER_VERSION, STC_PLANNER_VERSION
+from .text_coverage import gap_findings
 from .workflow_identity import analysis_reason_code, is_analysis_workflow, legacy_saw_workflow
 
 
@@ -791,9 +793,23 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         if state == NOT_ASSESSED and result_path:
             evidence = _load_object(Path(result_path), f"NOT_ASSESSED evidence for {stage.get('stage')}")
             exception_rows.append(dict(evidence["exception"]))
-            not_assessed_by_stage[str(stage.get("stage"))] = [
-                str(value) for value in evidence["exception"].get("coordinates", [])
+            coordinates = [
+                str(value)
+                for value in [
+                    *evidence["exception"].get("coordinates", []),
+                    *evidence.get("expected_references", []),
+                ]
             ]
+            if stage.get("stage") == "SELECTIVE_OL_ADJUDICATION":
+                # The deferred conflicts stay visible: their target verses are not assessed.
+                coordinates.extend(
+                    str(row.get("target_reference", "")).strip()
+                    for row in ol_review_requests
+                    if str(row.get("target_reference", "")).strip()
+                )
+            not_assessed_by_stage[str(stage.get("stage"))] = list(dict.fromkeys(coordinates))
+            if not exception_rows[-1].get("coordinates"):
+                exception_rows[-1]["coordinates"] = not_assessed_by_stage[str(stage.get("stage"))]
             stage_results.append({"stage": stage.get("stage"), "result_path": result_path, "status": NOT_ASSESSED})
             continue
         if state != "FINALIZED" or not result_path:
@@ -814,9 +830,11 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         exception_rows.extend(dict(row) for row in result.get("exceptions", []) if isinstance(row, dict))
         if stage.get("stage") == "REFERENCE_TEXT_COMPARISON":
             coverage_refs = refs
-            not_assessed_by_stage[str(stage.get("stage"))] = [
-                str(value) for value in (result.get("coverage") or {}).get("not_assessed_references", [])
-            ]
+        stage_not_assessed = [
+            str(value) for value in (result.get("coverage") or {}).get("not_assessed_references", [])
+        ]
+        if stage_not_assessed:
+            not_assessed_by_stage[str(stage.get("stage"))] = stage_not_assessed
         globalized = globalize_result_finding_ids(
             result,
             unit_id=f"{plan['plan_id']}-{stage.get('stage')}",
@@ -828,17 +846,39 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         ol_review_requests.extend(globalized.get("ol_review_requests", []))
         ol_resolutions.extend(globalized.get("ol_resolutions", []))
         findings.extend(globalized.get("findings", []))
-    validate_global_finding_ids(findings)
-    not_assessed_refs = list(
-        dict.fromkeys(
-            not_assessed_by_stage.get("REFERENCE_TEXT_COMPARISON")
-            or (
-                [ref for refs in not_assessed_by_stage.values() for ref in refs]
-                if not coverage_refs
-                else []
-            )
+    source_issue_rows.extend(dict(row) for row in plan.get("coverage_gap_issues") or [] if isinstance(row, dict))
+    source_issue_rows = unique_source_text_issues(source_issue_rows)
+    deterministic = [dict(row) for row in plan.get("deterministic_findings") or [] if isinstance(row, dict)]
+    covered = {str(row.get("target_reference") or "") for row in deterministic}
+    # Every WIP/REFERENCE text gap becomes a reviewable STRUCTURE finding, once per coordinate.
+    deterministic.extend(
+        row
+        for row in gap_findings(source_issue_rows)
+        if row["target_reference"] not in covered
+        and not any(
+            row["target_reference"] == str(finding.get("target_reference") or "")
+            and str(finding.get("category") or "").upper() == "STRUCTURE"
+            for finding in findings
         )
     )
+    if deterministic:
+        # Structural candidates decided in code at composite creation join the model findings here.
+        findings.extend(
+            globalize_result_finding_ids(
+                {"findings": deterministic},
+                unit_id=f"{plan['plan_id']}-DETERMINISTIC",
+                run_id=str(plan.get("run_id") or plan.get("plan_id") or "RUN"),
+                prefix=str(plan.get("workflow") or "rtc").upper(),
+            )["findings"]
+        )
+    findings, duplicate_findings = dedupe_findings(findings)
+    validate_global_finding_ids(findings)
+    # A coordinate any stage could not assess is not assessed, even when the meaning stage reviewed it;
+    # otherwise a lost structural or OL adjudication would disappear behind COMPLETE coverage.
+    not_assessed_refs = list(
+        dict.fromkeys(ref for refs in not_assessed_by_stage.values() for ref in refs)
+    )
+    coverage_refs = [ref for ref in coverage_refs if ref not in set(not_assessed_refs)]
     if not coverage_refs and not not_assessed_refs:
         raise ValidationError("Composite RTC finalization is missing meaning-stage coordinate coverage")
     source_issue_rows = unique_source_text_issues(source_issue_rows)
@@ -867,6 +907,7 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         "resolved_ol_request_ids": [str(row.get("request_id", "")) for row in ol_resolutions],
         "findings": findings,
         "finding_count": len(findings),
+        "deduplicated_finding_ids": [str(row.get("finding_id") or "") for row in duplicate_findings],
         "source_comparison_status": source_comparison_status(source_issue_rows),
         "source_text_issues": source_issue_rows,
         "versification_advisories": _run_versification_advisories(path),
@@ -918,20 +959,21 @@ def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str,
         raise ValidationError("Composite RTC plan has no valid stage inventory")
     current = stages[-1]
     state, result_path, continuation = _composite_stage_result(config, current)
-    if state == NOT_ASSESSED:
-        # A single-task stage that could not be assessed leaves nothing for later stages to build on.
+    stage_name = str(current.get("stage"))
+    if state == NOT_ASSESSED and stage_name != "STRUCTURAL_ADJUDICATION":
+        # Meaning or OL stages that could not be assessed are terminal; finalization reports their coordinates.
         return _finalize_composite_rtc(config, path, plan)
-    if state != "FINALIZED":
+    if state not in {"FINALIZED", NOT_ASSESSED}:
         assert continuation is not None
         return {**continuation, "plan_id": plan.get("plan_id"), "plan_path": str(path), "composite_stage": current.get("stage")}
 
-    stage_name = str(current.get("stage"))
     expected_requests: list[dict[str, Any]] = []
     stage_references: list[str] = []
     if stage_name == "STRUCTURAL_ADJUDICATION":
+        # The meaning stage still reviews the whole scope when structural adjudication was NOT_ASSESSED.
         next_stage = "REFERENCE_TEXT_COMPARISON"
         expected_ids: list[str] = []
-        predecessor_files = [str(result_path)]
+        predecessor_files = [str(result_path)] if state == "FINALIZED" else []
     elif stage_name == "REFERENCE_TEXT_COMPARISON":
         # Keep OL referrals attached to their immutable parent review portions.
         meaning = _load_object(Path(str(result_path)), "RTC meaning-stage result")
@@ -971,14 +1013,28 @@ def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str,
             )
         ).upper()
         if requests and drift_state != "ENABLED":
-            raise ValidationError(
-                "Reference Text Comparison (RTC) emitted original-language review requests while source-text drift adjudication is prohibited",
-                code=_analysis_code(
-                    str(plan.get("workflow") or "rtc"),
-                    "SAW_OL_REQUEST_PROHIBITED",
-                ),
-                next_action="Retry the same meaning-stage task; do not emit ol_review_requests unless the Run policy enables source-text drift adjudication.",
-            )
+            # Outputs sealed before the submit-time policy check: report the requests and finish the
+            # composite instead of failing every Continue against an already FINALIZED meaning task.
+            workflow_name = str(plan.get("workflow") or "rtc")
+            for request in requests:
+                record_exception(
+                    path.parent.parent,
+                    ExceptionRecord(
+                        tool=workflow_name.upper(),
+                        code=_analysis_code(workflow_name, "SAW_OL_REQUEST_PROHIBITED"),
+                        message=(
+                            "Original-language review was requested but source-text drift adjudication is "
+                            "prohibited for this Run; the request was not routed."
+                        ),
+                        effect="FLAGGED",
+                        run_id=str(plan.get("run_id") or "") or None,
+                        job_id=str(plan.get("job_id") or "") or None,
+                        work_unit=str(request.get("request_id") or "") or None,
+                        stage=stage_name,
+                        coordinates=(str(request.get("target_reference") or ""),),
+                    ),
+                )
+            return _finalize_composite_rtc(config, path, plan)
         if not requests:
             return _finalize_composite_rtc(config, path, plan)
         next_stage = "SELECTIVE_OL_ADJUDICATION"

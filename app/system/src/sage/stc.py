@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 import json
+import re
+import unicodedata
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Mapping, Sequence
 
 from .atomic import atomic_write_json, atomic_write_text
+from .candidates import reconcile_adjudications
 from .canon import NT_27, OT_39
 from .errors import ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy
-from .exception_reports import render_exceptions_section
+from .exception_reports import NOT_ASSESSED, coverage_document, render_exceptions_section
 from .hashing import sha256_bytes
 from .references import expand_reference_atoms, parse_scope
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
@@ -302,6 +305,111 @@ def _stable_finding_id(work_unit_id: str, finding: Mapping[str, Any]) -> str:
     return f"STC-F-{digest}"
 
 
+# A verse is a length outlier when its WIP/OL length ratio is this far from the book's median ratio.
+LENGTH_OUTLIER_LOW = 0.4
+LENGTH_OUTLIER_HIGH = 2.5
+_MIN_OL_CHARS = 20
+
+
+def length_outliers(
+    primary_records: Sequence[Any],
+    book_records: Sequence[Any],
+    wip_index: Any,
+    ol_index: Any,
+) -> list[dict[str, Any]]:
+    """Return WIP verses much shorter or longer than their OL text, relative to the book's median ratio.
+
+    These are candidates for the model to check for omissions or additions, never findings by themselves.
+    """
+
+    def ratio(record: Any) -> tuple[float, int] | None:
+        """Return the WIP/OL character ratio of one WIP record and its OL length."""
+        ol_records = ol_index.records_for_canonical(wip_index.canonical_refs_for_records((record,)))
+        ol_chars = sum(len(str(item.payload.get("body_text") or "").strip()) for item in ol_records)
+        wip_chars = len(str(record.payload.get("body_text") or "").strip())
+        if ol_chars < _MIN_OL_CHARS or not wip_chars:
+            return None
+        return wip_chars / ol_chars, ol_chars
+
+    book_ratios = sorted(value[0] for record in book_records if (value := ratio(record)) is not None)
+    if len(book_ratios) < 5:
+        return []
+    median = book_ratios[len(book_ratios) // 2]
+    rows: list[dict[str, Any]] = []
+    for record in primary_records:
+        value = ratio(record)
+        if value is None:
+            continue
+        relative = value[0] / median
+        if relative < LENGTH_OUTLIER_LOW or relative > LENGTH_OUTLIER_HIGH:
+            rows.append(
+                {
+                    "wip_reference": record.reference,
+                    "direction": "SHORT" if relative < 1 else "LONG",
+                    "relative_length": round(relative, 2),
+                }
+            )
+    return rows
+
+
+def stc_gap_findings(
+    rows: Iterable[Mapping[str, Any]],
+    *,
+    work_unit_id: str,
+    authority_family: str,
+) -> list[dict[str, Any]]:
+    """Promote OMISSION and ADDITION coverage gaps to deterministic STC findings."""
+    findings: list[dict[str, Any]] = []
+    for row in rows:
+        relation = str(row.get("text_relation") or "").upper()
+        if relation not in {"OMISSION", "ADDITION"}:
+            continue
+        normalized = {
+            "category": relation,
+            "target_reference": str(row.get("reference") or ""),
+            "summary": str(row.get("message") or ""),
+            "wip_evidence": "" if relation == "OMISSION" else "WIP text present",
+            "ol_evidence": "Original-language text present" if relation == "OMISSION" else "",
+            "authority_family": authority_family,
+            "authority_role": "PRIMARY",
+            "detection": "DETERMINISTIC",
+        }
+        normalized["finding_id"] = _stable_finding_id(work_unit_id, normalized)
+        findings.append(normalized)
+    return findings
+
+
+_MARKER_RE = re.compile(r"\\[A-Za-z0-9]+\*?")
+_ELLIPSIS_RE = re.compile(r"\s*(?:\.\.\.|…)\s*")
+
+
+def _evidence_plain(text: str, *, fold_diacritics: bool = False) -> str:
+    """Reduce SFM or a quotation to comparable plain text: NFC, no markers, no ketiv/qere asterisks."""
+    value = unicodedata.normalize("NFC", _MARKER_RE.sub(" ", str(text))).replace("*", "")
+    if fold_diacritics:
+        value = unicodedata.normalize(
+            "NFC",
+            "".join(char for char in unicodedata.normalize("NFD", value) if not unicodedata.combining(char)),
+        )
+    return " ".join(value.split()).casefold()
+
+
+def evidence_is_verbatim(quote: str, source_text: str) -> bool:
+    """Return whether every ellipsis-separated part of a quotation occurs in the routed text.
+
+    Comparison ignores USFM markers, whitespace, and case, and falls back to ignoring diacritics
+    (vowel points and accents) when the exact comparison fails.
+    """
+    parts = [part for part in _ELLIPSIS_RE.split(str(quote)) if part.strip()]
+    if not parts:
+        return False
+    for fold in (False, True):
+        haystack = _evidence_plain(source_text, fold_diacritics=fold)
+        if all(_evidence_plain(part, fold_diacritics=fold) in haystack for part in parts):
+            return True
+    return False
+
+
 def validate_stc_submission(
     path: Path,
     *,
@@ -312,8 +420,15 @@ def validate_stc_submission(
     authority_family: str,
     task_fingerprint: str,
     narrative_language: str,
+    wip_text: str | None = None,
+    ol_text: str | None = None,
+    expected_candidates: Iterable[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
-    """Validate provider STC semantics and materialize deterministic identity/coverage."""
+    """Validate provider STC semantics and materialize deterministic identity/coverage.
+
+    With the routed ``wip_text`` and ``ol_text``, each finding's quotations are checked against them; a
+    quotation that cannot be found keeps its finding but marks it ``evidence_verified: false``.
+    """
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -323,33 +438,53 @@ def validate_stc_submission(
     summary = str(raw.get("review_summary") or "").strip()
     if not summary:
         raise ValidationError("STC output requires review_summary", code="STC_OUTPUT_INVALID")
+    salvage_records: list[dict[str, Any]] = []
     report_language = str(raw.get("report_language") or "").strip()
     if report_language != narrative_language:
-        raise ValidationError("STC report_language differs from the governed narrative language", code="STC_REPORT_LANGUAGE_MISMATCH")
+        # The narrative is kept but reported as unverified rather than discarding the whole unit.
+        salvage_records.append(
+            {
+                "code": "STC_REPORT_LANGUAGE_UNVERIFIED",
+                "coordinate": scope_value,
+                "effect": "FLAGGED",
+                "message": (
+                    f"The STC narrative declares {report_language or 'no language'} instead of "
+                    f"{narrative_language}; its wording is unverified."
+                ),
+            }
+        )
     expected = tuple(str(value) for value in expected_references)
     expected_set = set(expected)
+    # Exact verse atoms: a prefix test would accept MAT 1:2 because MAT 1:20 is planned.
+    expected_atoms = {atom for label in expected for atom in expand_reference_atoms(label)}
     scope = parse_scope(scope_value)
     findings_raw = raw.get("findings", [])
     if not isinstance(findings_raw, list):
         raise ValidationError("STC findings must be a list", code="STC_OUTPUT_INVALID")
     findings: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
     for value in findings_raw:
         if not isinstance(value, dict):
             raise ValidationError("Each STC finding must be an object", code="STC_OUTPUT_INVALID")
         category = str(value.get("category") or "").strip().upper()
-        if category not in STC_FINDING_CATEGORIES:
-            raise ValidationError(f"Unsupported STC finding category: {category}", code="STC_FINDING_CATEGORY_INVALID")
         reference = str(value.get("target_reference") or "").strip()
-        reference_atoms = expand_reference_atoms(reference) if reference else ()
-        if not reference_atoms or not all(scope.contains(ref) for ref in reference_atoms):
-            raise ValidationError("STC finding lies outside the governed scope", code="STC_FINDING_SCOPE_INVALID")
-        if reference not in expected_set and not any(reference.startswith(label) or label.startswith(reference) for label in expected_set):
-            raise ValidationError("STC finding reference is outside planned primary coverage", code="STC_FINDING_SCOPE_INVALID")
         wip_evidence = str(value.get("wip_evidence") or "").strip()
         ol_evidence = str(value.get("ol_evidence") or "").strip()
         finding_summary = str(value.get("summary") or "").strip()
-        if not wip_evidence or not ol_evidence or not finding_summary:
-            raise ValidationError("STC findings require WIP evidence, OL evidence, and summary", code="STC_FINDING_EVIDENCE_MISSING")
+        defect = ""
+        if category not in STC_FINDING_CATEGORIES:
+            defect = f"uses an unsupported category {category or '(none)'}"
+        else:
+            try:
+                reference_atoms = expand_reference_atoms(reference) if reference else ()
+            except ValidationError:
+                reference_atoms = ()
+            if not reference_atoms or not all(scope.contains(ref) for ref in reference_atoms):
+                defect = "cites a reference outside the governed scope"
+            elif reference not in expected_set and not set(reference_atoms) <= expected_atoms:
+                defect = "cites a reference outside the planned WIP verses"
+            elif not wip_evidence or not ol_evidence or not finding_summary:
+                defect = "lacks WIP evidence, OL evidence, or a summary"
         normalized = {
             "category": category,
             "target_reference": reference,
@@ -359,11 +494,51 @@ def validate_stc_submission(
             "authority_family": authority_family,
             "authority_role": "PRIMARY",
         }
-        normalized["finding_id"] = _stable_finding_id(work_unit_id, normalized)
+        if not defect:
+            normalized["finding_id"] = _stable_finding_id(work_unit_id, normalized)
+            if normalized["finding_id"] in seen_ids:
+                defect = "duplicates another finding"
+        if defect:
+            salvage_records.append(
+                {
+                    "code": "STC_FINDING_DROPPED",
+                    "coordinate": reference or scope_value,
+                    "effect": "FLAGGED",
+                    "message": f"An STC finding was dropped: it {defect}."
+                    + (f" Finding text: {finding_summary[:600]}" if finding_summary else ""),
+                }
+            )
+            continue
+        seen_ids.add(normalized["finding_id"])
+        unverified = [
+            label
+            for label, quote, source_text in (("WIP", wip_evidence, wip_text), ("OL", ol_evidence, ol_text))
+            if source_text is not None and not evidence_is_verbatim(quote, source_text)
+        ]
+        if unverified:
+            normalized["evidence_verified"] = False
+            salvage_records.append(
+                {
+                    "code": "STC_EVIDENCE_UNVERIFIED",
+                    "coordinate": reference,
+                    "effect": "FLAGGED",
+                    "message": (
+                        f"The {' and '.join(unverified)} quotation of finding {normalized['finding_id']} was not "
+                        "found in the routed text; the finding is kept and marked unverified."
+                    ),
+                }
+            )
         findings.append(normalized)
-    ids = [row["finding_id"] for row in findings]
-    if len(ids) != len(set(ids)):
-        raise ValidationError("STC output contains duplicate normalized findings", code="STC_DUPLICATE_FINDING")
+    inventory = list(expected_candidates)
+    candidate_adjudications: list[dict[str, Any]] = []
+    if inventory or raw.get("candidate_adjudications"):
+        candidate_adjudications, candidate_records = reconcile_adjudications(
+            raw.get("candidate_adjudications"),
+            inventory,
+            seen_ids,
+            code_prefix="STC",
+        )
+        salvage_records.extend(candidate_records)
     return {
         "schema_version": STC_RESULT_VERSION,
         "operation": "stc",
@@ -384,6 +559,8 @@ def validate_stc_submission(
         },
         "finding_count": len(findings),
         "findings": findings,
+        **({"candidate_adjudications": candidate_adjudications} if candidate_adjudications else {}),
+        **({"salvage_records": salvage_records} if salvage_records else {}),
     }
 
 
@@ -450,11 +627,22 @@ def finalize_stc_run(
     run_path = output_root / "STC_RUN_RESULT.json"
     findings_path = output_root / "STC_FINDINGS.json"
     report_path = output_root / "STC_REPORT.md"
+    not_assessed_atoms = list(
+        dict.fromkeys(
+            str(value)
+            for row in exceptions_list
+            if row.get("effect") == NOT_ASSESSED
+            for value in row.get("coordinates") or []
+        )
+    )
+    coverage = coverage_document(planned_atoms, not_assessed_atoms, findings_present=bool(findings))
     run_document = {
         "schema_version": STC_RESULT_VERSION,
         "run_id": run_id,
         "operation": "stc",
-        "status": comparison_status,
+        # Lost units outrank the source-comparison status: a Run with NOT_ASSESSED units is not COMPLETE.
+        "status": coverage["status"] if not_assessed_atoms else comparison_status,
+        "coverage": coverage,
         "structure_status": (
             "VERSIFICATION_MISMATCH" if source_issue_rows else "READY"
         ),

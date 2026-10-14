@@ -163,13 +163,14 @@ class VersificationSchema:
 
     def mapping_precision(self, refs: Iterable[VerseRef]) -> str:
         """Classify whether mappings preserve coordinate-level attribution."""
+        by_local = self._mapping_index()[0]
         for ref in refs:
             mapped = self.local_to_canonical(ref)
             if len(mapped) != 1:
                 return "EQUIVALENCE_GROUP"
-            for mapping in self.mappings:
-                if ref in mapping.local.refs() and len(mapping.local.refs()) != len(mapping.canonical.refs()):
-                    return "EQUIVALENCE_GROUP"
+            # The indexed mappings that cover this local verse, instead of a scan of every mapping.
+            if any(len(local) != len(canonical) for local, canonical in by_local.get(ref, ())):
+                return "EQUIVALENCE_GROUP"
         return "COORDINATE"
 
     def to_dict(self) -> dict[str, Any]:

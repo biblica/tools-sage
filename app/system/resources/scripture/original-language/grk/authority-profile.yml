@@ -45,3 +45,9 @@ interpretation:
 evidence:
   classification: AUTHORITY_INTERPRETATION_RULES
   content_authority: false
+notation_conventions:
+  - notation: "[[ ]]"
+    meaning: >-
+      Double square brackets enclose text that the supplied edition marks as a later addition. The
+      bracketed text is still part of the supplied text. When the WIP lacks, brackets, or footnotes such a
+      passage, describe it as a difference in a bracketed passage, not as a plain omission or addition.

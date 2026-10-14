@@ -38,6 +38,7 @@ from .display_paths import operator_path, operator_text
 from .execution_events import classify_exception, record_exception_event, terminal_heading
 from .exception_reports import (
     NOT_ASSESSED,
+    apply_unit_failure,
     ExceptionRecord,
     exceptions_for_run,
     failed_attempts,
@@ -121,7 +122,8 @@ from .semantic.store import (
     set_review_state,
 )
 from .state import ecosystem_state_path, read_state
-from .storage import declare_governed_path, resolve_declared_path, storage_layout
+from .storage import declare_governed_path, resolve_declared_path, resolve_persisted_path, storage_layout
+from .locking import WorkspaceLock
 from .stc_reporting import publish_stc_task_reports
 from .operator_overrides import load_effective_settings, write_local_settings
 from .job_layout import audit_job_layout, migrate_job_layout, render_job_layout_audit, verify_job_layout, write_job_layout_audit
@@ -133,6 +135,7 @@ from .resource_status_report import (
 )
 from .jobs import (
     RUN_CLOSED_STATUSES,
+    RUN_COMPLETED_STATUSES,
     Job as Job,
     JobDiscoveryReport as JobDiscoveryReport,
     JobLoadIssue as JobLoadIssue,
@@ -144,6 +147,7 @@ from .workflow_identity import (
     OPERATOR_WORKFLOWS,
     analysis_reason_code,
     canonical_analysis_job_id,
+    is_analysis_workflow,
 )
 from .project_inventory import (
     load_project_registry, project_import_date, registered_project_records, require_project_imported_at, unregister_project, update_project_record,
@@ -608,6 +612,8 @@ def _unassessed_competency_tags(assessments: Sequence[dict[str, Any]]) -> list[t
 # graceful terminate() before either escalation path (controller()'s own no-tty retry,
 # or _run_with_status's interactive tty poll loop) forces a kill().
 _CONTROLLER_TERMINATE_GRACE_SECONDS = 5.0
+# Marks a controller command that is not handled in process.
+_NOT_IN_PROCESS = object()
 
 
 class SageControlCenter:
@@ -672,8 +678,58 @@ class SageControlCenter:
         else:
             process.terminate()
 
+    def _in_process_controller(self, project: Job, arguments: Sequence[str]) -> Any:
+        """Run RTC/STC continue, submit, and aggregate as function calls instead of CLI subprocesses.
+
+        Returns ``_NOT_IN_PROCESS`` for every other command. ``task execute`` stays a subprocess so the
+        Operator can still stop a running provider call.
+        """
+        values = [str(value) for value in arguments]
+        if len(values) < 4 or values[0] != "task" or values[1] not in {"continue", "submit", "aggregate"}:
+            return _NOT_IN_PROCESS
+        option = {"continue": "--plan", "aggregate": "--plan", "submit": "--task"}[values[1]]
+        if option not in values or not is_analysis_workflow(project.runtime_tool):
+            return _NOT_IN_PROCESS
+        target = values[values.index(option) + 1]
+        config = load_ecosystem(self.store.ensure_runtime_files(project))
+        path = resolve_persisted_path(config.root, target, "controller target")
+        if values[1] == "submit" and not is_analysis_workflow(str(_json_file(path).get("workflow") or "")):
+            return _NOT_IN_PROCESS
+        from .act_tasks import aggregate_act_plan, submit_act_task
+        from .plan_continuation import continue_analysis_plan
+
+        quiet = {"SAGE_DISABLE_OPERATIONAL_LOG": "1", "SAGE_DISABLE_HUMAN_CONSOLE": "1"}
+        previous = {key: os.environ.get(key) for key in quiet}
+        os.environ.update(quiet)
+        try:
+            if values[1] == "continue":
+                result = continue_analysis_plan(config, path)
+            elif values[1] == "aggregate":
+                result = aggregate_act_plan(config, path)
+            else:
+                result = submit_act_task(config, path)
+        except SageError:
+            raise
+        except Exception as exc:
+            raise ValidationError(
+                f"{type(exc).__name__}: {exc}",
+                code="MENU_CONTROLLER_COMMAND_FAILED",
+                details={"command": values},
+            ) from exc
+        finally:
+            for key, value in previous.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+        # Same JSON shape the CLI would have printed, so callers see no difference.
+        return json.loads(json.dumps(result, ensure_ascii=False, default=str))
+
     def controller(self, project: Job, arguments: Sequence[str]) -> Any:
         """Run one canonical controller command against a Job-scoped config."""
+        in_process = self._in_process_controller(project, arguments)
+        if in_process is not _NOT_IN_PROCESS:
+            return in_process
         settings = self.store.ensure_runtime_files(project)
         command = [
             sys.executable,
@@ -691,6 +747,8 @@ class SageControlCenter:
         env["PYTHONUTF8"] = "1"
         env["SAGE_DISABLE_OPERATIONAL_LOG"] = "1"
         env["SAGE_DISABLE_HUMAN_CONSOLE"] = "1"
+        # The menu applies the work-unit failure policy itself; the CLI must not count the attempt twice.
+        env["SAGE_MENU_DRIVER"] = "1"
         core_path = str(self.root / "system" / "src")
         existing_pythonpath = env.get("PYTHONPATH", "")
         env["PYTHONPATH"] = (
@@ -3505,7 +3563,11 @@ class SageControlCenter:
 
     def _ensure_codex_execution_transport(self) -> None:
         """Verify Codex runtime readiness without sending a preliminary model prompt."""
+        run_id = self.runtime_status.current_run
         if self.dry_run_provider or time.monotonic() < self._codex_transport_verified_until:
+            return
+        if run_id and run_id == getattr(self, "_codex_transport_verified_run", None):
+            # Checked once per Run; a later logout surfaces as a provider error that stops the Run.
             return
         service = ModelService(self.root)
         settings = service.settings()
@@ -3527,6 +3589,7 @@ class SageControlCenter:
                 details={"provider_error": exc.message, "provider_code": exc.code},
             ) from exc
         self._codex_transport_verified_until = time.monotonic() + 600.0
+        self._codex_transport_verified_run = run_id
 
     def _launch_task(
         self,
@@ -3697,34 +3760,27 @@ class SageControlCenter:
             # Nothing was recorded (operator stop, or outputs still incomplete): the Run stays resumable.
             return run, False
         manifest = _json_file(manifest_path)
-        task_id = str(manifest.get("task_id") or "")
-        attempts = failed_attempts(run.root, task_id) + 1
         code = str(event["reason_code"])
-        action = unit_failure_action(code, str(event["disposition"]), attempts)
+        action, attempts = apply_unit_failure(
+            run.root,
+            manifest_path,
+            tool=project.tool,
+            code=code,
+            message=str(event["message"]),
+            disposition=str(event["disposition"]),
+            run_id=run.run_id,
+            job_id=project.job_id,
+            work_unit=unit_id or None,
+            stage=stage,
+            evidence_path=str(event.get("report_path") or "") or None,
+        )
         if action == "STOP":
             self.io.pause()
             return run, False
         scope = self._saw_task_scope_label(manifest, run)
-        coordinates = tuple(atomic_reference_labels(str(value) for value in manifest.get("expected_references") or []))
-        record = ExceptionRecord(
-            tool=project.tool,
-            code=code,
-            message=str(event["message"]),
-            effect="RETRY" if action == "RETRY" else NOT_ASSESSED,
-            run_id=run.run_id,
-            job_id=project.job_id,
-            task_id=task_id,
-            work_unit=unit_id or None,
-            stage=stage,
-            coordinates=coordinates,
-            attempts=attempts,
-            evidence_path=str(event.get("report_path") or "") or None,
-        )
-        record_exception(run.root, record)
         if action == "RETRY":
             self.io.write(f"Work unit {scope}: attempt {attempts} failed ({code}); retrying.")
             return run, True
-        write_not_assessed_result(manifest_path, record)
         self.io.write(
             f"Work unit {scope} could not be assessed after {attempts} attempts ({code}). "
             "It is reported as NOT_ASSESSED and the Run continues."
@@ -3864,7 +3920,9 @@ class SageControlCenter:
             elif project.tool == "bic":
                 run = self._continue_bic(project, run)
             else:
-                run = self._continue_saw(project, run)
+                # One SAGE session drives a Run at a time; a second session gets a clear lock error.
+                with WorkspaceLock(run.root / "locks" / "run-driver", f"continue {run.run_id}", break_stale=True):
+                    run = self._continue_saw(project, run)
             if run.status in RUN_CLOSED_STATUSES:
                 self.store.set_active_run(project, None)
             else:
@@ -3944,6 +4002,15 @@ class SageControlCenter:
         return self._apply_unit_failure_policy(
             project, run, path, unit_id=f"{stage} {unit}".strip(), stage=stage
         )
+
+    def _run_single_analysis_unit(self, project: Job, run: Run, path: Path) -> tuple[Run, bool]:
+        """Run a one-unit RTC/STC task under the plan retry policy; True once it is FINALIZED or NOT_ASSESSED."""
+        while True:
+            run, proceed = self._run_bic_task(project, run, path, stage=run.operation.upper())
+            if not proceed:
+                return run, False
+            if self._task_state(path)[0] in {"FINALIZED", NOT_ASSESSED}:
+                return run, True
 
     def _finish_bic_run(self, project: Job, run: Run, message: str) -> Run:
         """Close one BIC Run and point the Operator at any exceptions reported along the way."""
@@ -4253,6 +4320,9 @@ class SageControlCenter:
 
     def _saw_completion_status(self, run: Run, *payloads: Any) -> str:
         """Close completed RTC/STC work while retaining report-only deficiencies."""
+        if any(row.get("effect") == NOT_ASSESSED for row in exceptions_for_run(run.root)):
+            # Units reported NOT_ASSESSED must not close as a plain COMPLETE Run.
+            return "COMPLETE_WITH_EXCEPTIONS"
         if any(self._payload_has_structure_problems(value) for value in payloads):
             return "COMPLETE_WITH_STRUCTURE_PROBLEMS"
         advisory_path = run.root / "diagnostics" / "VERSIFICATION-ADVISORIES.json"
@@ -4317,10 +4387,10 @@ class SageControlCenter:
             if standard_run_ui:
                 self._write_saw_run_header(project, run, route=preflight_route)
                 with self._saw_work_unit_status(index=1, total=1, scope=run.scope):
-                    run, submitted = self._task_action(project, run, path)
+                    run, submitted = self._run_single_analysis_unit(project, run, path)
             else:
-                run, submitted = self._task_action(project, run, path)
-            if submitted and self._task_state(path)[0] == "FINALIZED":
+                run, submitted = self._run_single_analysis_unit(project, run, path)
+            if submitted:
                 publication = (
                     self._ensure_stc_task_publication(project, path)
                     if run.operation == "stc"
@@ -4344,14 +4414,14 @@ class SageControlCenter:
             return self._continue_saw_plan(project, run)
         path = self._manifest_path(run.task_manifests[-1])
         state, _ = self._task_state(path)
-        if state != "FINALIZED":
+        if state not in {"FINALIZED", NOT_ASSESSED}:
             if standard_run_ui:
                 self._write_saw_run_header(project, run, route=preflight_route)
                 with self._saw_work_unit_status(index=1, total=1, scope=run.scope):
-                    run, _ = self._task_action(project, run, path)
+                    run, _ = self._run_single_analysis_unit(project, run, path)
             else:
-                run, _ = self._task_action(project, run, path)
-            if self._task_state(path)[0] != "FINALIZED":
+                run, _ = self._run_single_analysis_unit(project, run, path)
+            if self._task_state(path)[0] not in {"FINALIZED", NOT_ASSESSED}:
                 return self.store.update_run(run, current_stage=run.operation.upper())
         publication = (
             self._ensure_stc_task_publication(project, path)
@@ -4549,7 +4619,7 @@ class SageControlCenter:
                     self.io.write(f"Run bundle: {path}")
                     self.io.pause()
             elif choice == "8":
-                run = self.choose_run(project, [item for item in runs if item.status == "COMPLETE"])
+                run = self.choose_run(project, [item for item in runs if item.status in RUN_COMPLETED_STATUSES])
                 if run:
                     self.store.update_run(run, status="ARCHIVED", current_stage="ARCHIVED")
 

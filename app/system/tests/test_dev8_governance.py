@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from .conftest import submit_with_receipt
 from sage.storage import storage_layout
 from sage.act_tasks import create_act_task, submit_act_task
 from sage.bounded_target import extract_scope_usfm
@@ -375,7 +376,7 @@ def test_manifest_mutation_is_rejected(package_root, make_workspace):
     output = manifest.parent / "output" / "findings.json"
     output.write_text(json.dumps(saw_document(task)), encoding="utf-8")
     with pytest.raises(ValidationError, match="manifest changed"):
-        submit_act_task(config, manifest)
+        submit_with_receipt(config, manifest)
 
 
 def test_write_allowlist_escape_is_rejected(package_root, make_workspace):
@@ -397,7 +398,7 @@ def test_write_allowlist_escape_is_rejected(package_root, make_workspace):
     value["allowed_writes"] = ["../escaped.txt"]
     control.write_text(json.dumps(value), encoding="utf-8")
     with pytest.raises(ValidationError, match="control write allowlist is corrupt"):
-        submit_act_task(config, Path(task["manifest_path"]))
+        submit_with_receipt(config, Path(task["manifest_path"]))
 
 
 def test_empty_saw_object_is_rejected(package_root, make_workspace):
@@ -416,7 +417,7 @@ def test_empty_saw_object_is_rejected(package_root, make_workspace):
     manifest = Path(task["manifest_path"])
     (manifest.parent / "output" / "findings.json").write_text("{}\n", encoding="utf-8")
     with pytest.raises(ValidationError, match="schema_version"):
-        submit_act_task(config, manifest)
+        submit_with_receipt(config, manifest)
 
 
 def test_valid_saw_output_renders_reports(package_root, make_workspace):
@@ -449,7 +450,7 @@ def test_valid_saw_output_renders_reports(package_root, make_workspace):
     ]
     output = manifest.parent / "output" / "findings.json"
     output.write_text(json.dumps(saw_document(task, findings=findings)), encoding="utf-8")
-    result = submit_act_task(config, manifest)
+    result = submit_with_receipt(config, manifest)
     assert result["status"] == "FINALIZED"
     assert (manifest.parent / "validation" / "ACTION-REPORT.md").is_file()
     assert not (manifest.parent / "validation" / "PARATEXT-NOTES.txt").exists()
@@ -485,7 +486,7 @@ def test_bic_rewrite_logs_pending_human_memory_review_without_blocking(package_r
         "challenges": [],
     }
     (manifest.parent / "output" / "inspect-submission.json").write_text(json.dumps(payload), encoding="utf-8")
-    submit_act_task(config, manifest)
+    submit_with_receipt(config, manifest)
     rewrite = create_act_task(
         config,
         workflow="bic",
@@ -531,7 +532,7 @@ def test_plain_text_bic_usfm_is_rejected(package_root, make_workspace):
     (manifest.parent / "output" / "inspect-submission.json").write_text(
         json.dumps(payload), encoding="utf-8"
     )
-    submit_act_task(config, manifest)
+    submit_with_receipt(config, manifest)
     approve_bic_review(config, task["scope"], "plain-usfm")
     rewrite = create_act_task(
         config,
@@ -546,7 +547,7 @@ def test_plain_text_bic_usfm_is_rejected(package_root, make_workspace):
     invalid_output.write_text("plain text\n", encoding="utf-8")
     write_bic_assessment(rewrite, invalid_output)
     with pytest.raises(ValidationError, match="USFM") as caught:
-        submit_act_task(config, rewrite_manifest)
+        submit_with_receipt(config, rewrite_manifest)
     # A generic validator code would leave this output in place and resubmit it on every Continue.
     assert caught.value.code == "BIC_OUTPUT_INVALID"
     assert classify_exception(caught.value)[0] == "TASK_OUTPUT_REJECTED"
@@ -584,7 +585,7 @@ def test_bic_rewrite_and_self_check_are_separate_and_commit(package_root, make_w
     (inspect_manifest.parent / "output" / "inspect-submission.json").write_text(
         json.dumps(inspect_payload), encoding="utf-8"
     )
-    submit_act_task(config, inspect_manifest)
+    submit_with_receipt(config, inspect_manifest)
     approve_bic_review(config, inspect["scope"], "rewrite-self-check")
 
     rewrite = create_act_task(
@@ -605,7 +606,7 @@ def test_bic_rewrite_and_self_check_are_separate_and_commit(package_root, make_w
         encoding="utf-8",
     )
     write_bic_assessment(rewrite, rewrite_output)
-    submit_act_task(config, rewrite_manifest)
+    submit_with_receipt(config, rewrite_manifest)
 
     self_check = create_act_task(
         config,
@@ -626,7 +627,7 @@ def test_bic_rewrite_and_self_check_are_separate_and_commit(package_root, make_w
     self_output = self_manifest.parent / "output" / "self-check.usfm"
     self_output.write_bytes(rewrite_output.read_bytes())
     write_bic_assessment(self_check, self_output)
-    result = submit_act_task(config, self_manifest)
+    result = submit_with_receipt(config, self_manifest)
     assert result["commit"]["target_file"].endswith("41MAT.SFM")
 
 
@@ -688,7 +689,7 @@ def test_act_prompt_mutation_is_rejected(package_root, make_workspace):
         json.dumps(saw_document(task)), encoding="utf-8"
     )
     with pytest.raises(ValidationError, match="ACT prompt changed"):
-        submit_act_task(config, manifest)
+        submit_with_receipt(config, manifest)
 
 
 def test_settings_drift_is_rejected_at_submission(package_root, make_workspace):
@@ -737,7 +738,7 @@ def test_unlisted_output_is_rejected(package_root, make_workspace):
     (output_root / "findings.json").write_text(json.dumps(saw_document(task)), encoding="utf-8")
     (output_root / "extra.txt").write_text("not authorised\n", encoding="utf-8")
     with pytest.raises(ValidationError, match="unlisted outputs"):
-        submit_act_task(config, manifest)
+        submit_with_receipt(config, manifest)
 
 
 def test_completed_task_cannot_be_resubmitted(package_root, make_workspace):
@@ -757,6 +758,6 @@ def test_completed_task_cannot_be_resubmitted(package_root, make_workspace):
     (manifest.parent / "output" / "findings.json").write_text(
         json.dumps(saw_document(task)), encoding="utf-8"
     )
-    assert submit_act_task(config, manifest)["status"] == "FINALIZED"
+    assert submit_with_receipt(config, manifest)["status"] == "FINALIZED"
     with pytest.raises(ValidationError, match="not open for submission"):
-        submit_act_task(config, manifest)
+        submit_with_receipt(config, manifest)

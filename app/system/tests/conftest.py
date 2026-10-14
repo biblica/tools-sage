@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -508,3 +509,31 @@ def make_workspace(tmp_path: Path):
         return root
 
     return factory
+
+
+def write_execution_receipt(manifest_path: Path) -> Path:
+    """Write the minimal provider receipt a hand-written RTC/STC output needs before submission."""
+    from sage.hashing import sha256_file
+
+    task_root = Path(manifest_path).parent
+    manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    outputs = {
+        str(relative): sha256_file(task_root / str(relative))
+        for relative in manifest.get("allowed_writes", [])
+        if (task_root / str(relative)).is_file()
+    }
+    receipt = task_root / "validation" / "llm-execution-receipt.json"
+    receipt.parent.mkdir(parents=True, exist_ok=True)
+    receipt.write_text(
+        json.dumps({"task_id": manifest["task_id"], "provider": "fixture", "output_sha256": outputs}) + "\n",
+        encoding="utf-8",
+    )
+    return receipt
+
+
+def submit_with_receipt(config: Any, manifest_path: Path) -> dict[str, Any]:
+    """Submit one hand-written task output the way a recorded provider run would."""
+    from sage.act_tasks import submit_act_task
+
+    write_execution_receipt(manifest_path)
+    return submit_act_task(config, manifest_path)
