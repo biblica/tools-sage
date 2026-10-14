@@ -105,3 +105,32 @@ ol_policy:
   operator_input_during_rewrite: prohibited
   self_check_required: true
   linguistic_uncertainty_blocks_current_operation: false
+model_contract:
+  model_returns: [challenges, minor_summary.by_category, minor_summary.notes]
+  challenge_model_fields:
+  - challenge_id
+  - scripture_reference
+  - category
+  - summary
+  - confidence
+  - candidates
+  - recommended_candidate_id
+  - risk.before_ol
+  - risk.material_triggers
+  - inherited_challenge_ids
+  - recommended_action
+  - messages
+  controller_sets:
+  - schema_version
+  - task_id
+  - operation
+  - scope
+  - output_sha256
+  - reporting_languages
+  - minor_summary.total
+  - risk.after_ol
+  - risk.urgency
+  - selected_candidate_id
+  - ol_referral
+  owner: LOCAL_CONTROLLER
+  set_after: every_ol_micro_merge

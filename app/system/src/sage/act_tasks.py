@@ -6291,13 +6291,14 @@ def create_act_task(
         if workflow == "bic" and operation == "inspect":
             act_lines.extend([
                 "- Match `system/config/schemas/bic-inspect-submission.schema.yml`.",
-                "- Set `operation_id` to the Task ID and copy `resource_fingerprints` exactly from the manifest.",
+                "- Return only the proposals and challenges; SAGE sets `schema_version`, `operation_id`, `scope`, and `resource_fingerprints` from this task.",
             ])
         elif workflow == "bic":
             act_lines.extend([
                 "- Write valid UTF-8 USFM for only the bounded scope.",
                 "- Match `system/config/schemas/bic-grammar-assessment.schema.yml` for the companion assessment.",
                 "- The assessment must cover every project-grammar rule ID exactly once.",
+                "- Return only the semantic judgments of the supplied response schema; SAGE sets task identity, scope, profile, hashes, reporting languages, and every locally derived field.",
                 *( [
                     "- Match `system/config/schemas/bic-translation-challenges.schema.yml` version 1.2 for `output/translation-challenges.json`.",
                     "- Record material challenges individually, consolidate repeated causes, and aggregate minor or automatically resolved matters in `minor_summary`.",

@@ -50,7 +50,11 @@ def _synthetic_task(
     (task / "ACT.md").write_text("# Governed task\nReturn the required outputs.\n", encoding="utf-8")
     writes = ["output/result.txt"]
     if conditional:
-        writes = ["output/rewrite.usfm", "output/translation-challenges.json"]
+        writes = [
+            "output/rewrite.usfm",
+            "output/grammar-assessment.json",
+            "output/translation-challenges.json",
+        ]
     manifest = {
         "task_id": "synthetic-task-1",
         "skill_id": "bic-rewrite" if conditional else "bic-inspect",
@@ -92,6 +96,19 @@ def _synthetic_task(
         "allowed_writes": writes,
     }
     if conditional:
+        manifest.update(
+            {
+                "contemporary_source": "idKKHv0",
+                "output_project": "usBOLx1",
+                "marker_policy": "SEMANTIC_STRUCTURE_V1",
+                "resource_fingerprints": {"settings": "b" * 64},
+                "project_grammar": {
+                    "profile_id": "GRAMMAR-1",
+                    "profile_sha256": "a" * 64,
+                    "rule_ids": ["R1", "R2"],
+                },
+            }
+        )
         from sage.act_tasks import (
             _load_bic_protected_rewrite_contract,
             _load_bic_protected_verb_selection_contract,
@@ -110,6 +127,18 @@ def _synthetic_task(
             reasoning_id="high" if conditional else "medium",
         )
     return path
+
+
+def _assert_strict_object_schema(schema: dict) -> None:
+    """Every provider-facing (sub)schema is typed; objects are closed and fully required."""
+    assert "type" in schema or "anyOf" in schema, schema
+    if schema.get("type") == "object":
+        assert schema.get("additionalProperties") is False
+        assert set(schema.get("required", ())) == set(schema["properties"])
+        for child in schema["properties"].values():
+            _assert_strict_object_schema(child)
+    if schema.get("type") == "array":
+        _assert_strict_object_schema(schema["items"])
 
 
 def _fake_codex_status() -> ProviderStatus:
@@ -1083,6 +1112,7 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
     manifest = _synthetic_task(root, conditional=True)
     config = load_ecosystem(root / "ecosystem.yml")
     prompts: list[str] = []
+    schemas: list[dict] = []
     efforts: list[str | None] = []
     status_calls: list[int] = []
     prevalidated_calls: list[int] = []
@@ -1104,6 +1134,7 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
         def execute(self, request):
             """Return a risk-triggering full pass followed by one narrow OL micro-decision."""
             prompts.append(request.prompt)
+            schemas.append(request.schema)
             efforts.append(request.reasoning_effort)
             first = len(prompts) == 1
             if not first:
@@ -1122,6 +1153,29 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
                 return ProviderResponse(
                     "codex", request.model, json.dumps(payload), {"phase": len(prompts)}, request.reasoning_effort
                 )
+            burden = {
+                "familiarity": 1,
+                "register_markedness": 1,
+                "sense_ambiguity": 1,
+                "construction_burden": 1,
+                "specialist_load": 1,
+            }
+
+            def candidate(identifier: str, rendering: str) -> dict:
+                """Build one model-facing candidate without any derived burden total."""
+                return {
+                    "candidate_id": identifier,
+                    "form": rendering,
+                    "meaning_features": ["event"],
+                    "tone_and_force": "neutral",
+                    "register": "plain",
+                    "lexical_burden": burden,
+                    "frequency_evidence": {"source": "PROJECT_ESTIMATE", "bands": [], "note": "estimate"},
+                    "main_risk": "sense drift",
+                    "rejection_code": "",
+                    "rejection_reason": "",
+                }
+
             challenge = {
                 "challenges": [
                     {
@@ -1129,22 +1183,30 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
                         "scripture_reference": "MAT 1:1",
                         "category": "VERB_CHOICE",
                         "summary": "Resolve the disputed verb",
-                        "risk": {"before_ol": 2, "material_triggers": ["semantic ambiguity"]},
-                        "candidates": [
-                            {"candidate_id": "C1", "rendering": "phase1"},
-                            {"candidate_id": "C2", "rendering": "phase2"},
-                        ],
+                        "confidence": "MEDIUM",
+                        "candidates": [candidate("C1", "phase1"), candidate("C2", "phase2")],
                         "recommended_candidate_id": "C1",
-                        "ol_referral": {"performed": False},
+                        "risk": {"before_ol": 2, "material_triggers": ["COMPETING_NON_EQUIVALENT_SENSES"]},
+                        "inherited_challenge_ids": [],
+                        "recommended_action": "Review the verb.",
                     }
-                ]
+                ],
+                "minor_summary": {"by_category": {"REGISTER": 2}, "notes": []},
+            }
+            grammar = {
+                "rules": [
+                    {"rule_id": "R1", "status": "PASS", "evidence": ""},
+                    {"rule_id": "R2", "status": "NOT_APPLICABLE", "evidence": ""},
+                ],
+                "unresolved": [],
             }
             payload = {
                 "schema_version": "1.0",
                 "task_id": "synthetic-task-1",
                 "files": {
                     "output/rewrite.usfm": "\\id MAT Fixture\n\\c 1\n\\v 1 phase1\n",
-                    "output/translation-challenges.json": json.dumps(challenge),
+                    "output/grammar-assessment.json": grammar,
+                    "output/translation-challenges.json": challenge,
                 },
             }
             return ProviderResponse(
@@ -1190,6 +1252,139 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
     ledger = json.loads((manifest.parent / "output" / "translation-challenges.json").read_text(encoding="utf-8"))
     assert ledger["challenges"][0]["recommended_candidate_id"] == "C2"
     assert ledger["challenges"][0]["ol_referral"]["performed"] is True
+
+    # The model never sees or returns identity or derived fields; SAGE sets them after the last merge.
+    from sage.act_outputs import validate_grammar_assessment
+    from sage.rewrite_risk import validate_rewrite_challenges
+
+    files = schemas[0]["properties"]["files"]["properties"]
+    challenge_schema = files["output/translation-challenges.json"]
+    assert set(challenge_schema["properties"]) == {"challenges", "minor_summary"}
+    row_schema = challenge_schema["properties"]["challenges"]["items"]
+    assert not {"selected_candidate_id", "ol_referral", "task_id", "output_sha256"} & set(row_schema["properties"])
+    assert set(row_schema["properties"]["risk"]["properties"]) == {"before_ol", "material_triggers"}
+    assert row_schema["properties"]["category"]["enum"] == sorted(row_schema["properties"]["category"]["enum"])
+    assert row_schema["properties"]["risk"]["properties"]["before_ol"] == {"type": "integer", "enum": [0, 1, 2, 3, 4]}
+    grammar_schema = files["output/grammar-assessment.json"]
+    assert set(grammar_schema["properties"]) == {"rules", "unresolved"}
+    assert grammar_schema["properties"]["rules"]["items"]["properties"]["rule_id"]["enum"] == ["R1", "R2"]
+    for schema in (challenge_schema, grammar_schema):
+        _assert_strict_object_schema(schema)
+    assignment = json.loads(prompts[0].split("SAGE sets output identity, scope, fingerprints, hashes, and derived fields):", 1)[1].splitlines()[1])
+    assert assignment["grammar_rule_ids"] == ["R1", "R2"]
+    assert assignment["marker_policy"] == "SEMANTIC_STRUCTURE_V1"
+    assert assignment["reporting_languages"] == ["en"]
+    assert not {"rtc_stage", "structural_candidate_ids", "allowed_evidence_ids", "expected_ol_requests"} & set(assignment)
+
+    output_root = manifest.parent / "output"
+    rewrite_path = output_root / "rewrite.usfm"
+    grammar = validate_grammar_assessment(
+        output_root / "grammar-assessment.json",
+        task_id="synthetic-task-1",
+        scope_value="MAT 1:1",
+        profile_id="GRAMMAR-1",
+        profile_sha256="a" * 64,
+        output_path=rewrite_path,
+        required_rule_ids=["R1", "R2"],
+    )
+    assert grammar["output_sha256"] == sha256_file(rewrite_path)
+    normalized = validate_rewrite_challenges(
+        output_root / "translation-challenges.json",
+        task_id="synthetic-task-1",
+        operation="rewrite",
+        scope_value="MAT 1:1",
+        output_path=rewrite_path,
+        human_output=config.human_output,
+        source_language=config.project("idKKHv0").language_code,
+        target_language=config.project("usBOLx1").language_code,
+    )
+    row = normalized["challenges"][0]
+    assert row["risk"] == {"before_ol": 2, "after_ol": 1, "urgency": 1, "material_triggers": ["COMPETING_NON_EQUIVALENT_SENSES"]}
+    assert row["selected_candidate_id"] == "C2"
+    # Two supplied minor matters plus the OL-resolved challenge, now below the material threshold.
+    assert normalized["reporting"]["minor_summary"]["total"] == 3
+    assert ledger["minor_summary"]["total"] == 2
+    assert ledger["output_sha256"] == sha256_file(rewrite_path)
+
+
+def test_bic_inspect_identity_is_materialized_and_payload_decoded(make_workspace) -> None:
+    """INSPECT identity comes from the sealed task; the model supplies proposals and challenges only."""
+    from sage.bic_memory import validate_inspect_submission
+    from sage.bic_output_contract import INSPECT_FILE, file_schemas, materialize_files
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    config = load_ecosystem(root / "ecosystem.yml")
+    manifest = {
+        "task_id": "inspect-1",
+        "workflow": "bic",
+        "operation": "inspect",
+        "scope": "MAT 1",
+        "resource_fingerprints": {"settings": "c" * 64},
+        "allowed_writes": [INSPECT_FILE],
+    }
+    schema = file_schemas(config, manifest, "Write in English.")[INSPECT_FILE]
+    _assert_strict_object_schema(schema)
+    assert set(schema["properties"]) == {"proposals", "challenges"}
+    assert "submitted_id" not in schema["properties"]["proposals"]["items"]["properties"]
+    model_file = {
+        "proposals": [
+            {"record_type": "LEXICAL_ENTRY", "payload_json": json.dumps({"lemma": "x"}), "evidence_refs": []}
+        ],
+        "challenges": [
+            {
+                "scripture_reference": "MAT 1:1",
+                "challenge_type": "LEXICAL",
+                "summary": "s",
+                "recommended_action": "a",
+            }
+        ],
+    }
+    files = materialize_files(config, manifest, {INSPECT_FILE: json.dumps(model_file)})
+    document = json.loads(files[INSPECT_FILE])
+    assert document["operation_id"] == "inspect-1"
+    assert document["scope"] == "MAT 1"
+    assert document["resource_fingerprints"] == {"settings": "c" * 64}
+    assert document["proposals"][0]["payload"] == {"lemma": "x"}
+    normalized = validate_inspect_submission(document, expected_scope="MAT 1")
+    assert normalized["proposals"][0]["submitted_id"] == "P0001"
+    assert normalized["challenges"][0]["submitted_id"] == "C0001"
+
+    broken = dict(model_file, proposals=[{**model_file["proposals"][0], "payload_json": "{not json"}])
+    with pytest.raises(ValidationError) as caught:
+        materialize_files(config, manifest, {INSPECT_FILE: json.dumps(broken)})
+    assert caught.value.code == "LLM_PROVIDER_RESPONSE_INVALID"
+
+
+def test_bic_self_check_grammar_identity_is_bound_to_the_final_candidate(make_workspace) -> None:
+    """SELF-CHECK grammar identity and candidate hash are set by SAGE, never echoed by the model."""
+    from sage.bic_output_contract import GRAMMAR_FILE, materialize_files
+    from sage.hashing import sha256_bytes
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    config = load_ecosystem(root / "ecosystem.yml")
+    manifest = {
+        "task_id": "check-1",
+        "workflow": "bic",
+        "operation": "self_check",
+        "scope": "MAT 1",
+        "project_grammar": {"profile_id": "G", "profile_sha256": "d" * 64, "rule_ids": ["R1"]},
+    }
+    candidate = "\\id MAT\n\\c 1\n\\v 1 text\n"
+    model_grammar = {"rules": [{"rule_id": "R1", "status": "PASS", "evidence": ""}], "unresolved": []}
+    files = materialize_files(
+        config,
+        manifest,
+        {"output/self-check.usfm": candidate, GRAMMAR_FILE: json.dumps(model_grammar)},
+    )
+    document = json.loads(files[GRAMMAR_FILE])
+    assert document["task_id"] == "check-1"
+    assert document["profile_id"] == "G"
+    assert document["profile_sha256"] == "d" * 64
+    assert document["output_sha256"] == sha256_bytes(candidate.encode("utf-8"))
+    assert files["output/self-check.usfm"] == candidate
+    with pytest.raises(ValidationError) as caught:
+        materialize_files(config, manifest, {GRAMMAR_FILE: json.dumps(model_grammar)})
+    assert caught.value.code == "LLM_PROVIDER_RESPONSE_INVALID"
 
 
 def test_bic_rewrite_fails_closed_without_matching_protected_contracts(make_workspace, monkeypatch) -> None:

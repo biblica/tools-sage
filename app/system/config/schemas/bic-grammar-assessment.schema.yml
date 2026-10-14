@@ -16,3 +16,9 @@ controls:
   unknown_rule_ids: prohibited
   issue_requires_evidence: true
   assessment_bound_to_output_sha256: true
+model_contract:
+  model_returns: [rules, unresolved]
+  rule_id_values: manifest_project_grammar_rule_ids
+  controller_sets: [schema_version, task_id, scope, profile_id, profile_sha256, output_sha256]
+  owner: LOCAL_CONTROLLER
+  set_after: every_ol_micro_merge
