@@ -268,30 +268,53 @@ def _dump(document: Mapping[str, Any]) -> str:
 
 
 def _materialize_inspect(manifest: Mapping[str, Any], document: dict[str, Any]) -> dict[str, Any]:
-    """Set INSPECT identity and bookkeeping; decode each proposal payload."""
+    """Set INSPECT identity and bookkeeping; decode each proposal payload, dropping and reporting defective items."""
     proposals: list[dict[str, Any]] = []
+    dropped_items: list[dict[str, Any]] = []
     for index, raw in enumerate(document.get("proposals") or [], start=1):
         if not isinstance(raw, dict):
-            raise ValidationError(
-                "BIC INSPECT proposals must be objects", code="LLM_PROVIDER_RESPONSE_INVALID"
+            dropped_items.append(
+                {
+                    "collection": "proposals",
+                    "index": index,
+                    "submitted_id": f"P{index:04d}",
+                    "code": "INSPECT_ITEM_INVALID",
+                    "message": f"BIC INSPECT proposals[{index}] must be an object",
+                }
             )
+            continue
         row = {key: value for key, value in raw.items() if key != "payload_json"}
         if "payload_json" in raw:
             try:
                 payload = json.loads(str(raw["payload_json"]))
             except json.JSONDecodeError as exc:
-                raise ValidationError(
-                    f"BIC INSPECT proposals[{index}].payload_json is not valid JSON: {exc}",
-                    code="LLM_PROVIDER_RESPONSE_INVALID",
-                ) from exc
+                dropped_items.append(
+                    {
+                        "collection": "proposals",
+                        "index": index,
+                        "submitted_id": f"P{index:04d}",
+                        "code": "INSPECT_ITEM_INVALID",
+                        "message": f"BIC INSPECT proposals[{index}].payload_json is not valid JSON: {exc}",
+                    }
+                )
+                continue
             row["payload"] = payload
         proposals.append({"submitted_id": f"P{index:04d}", **row})
-    challenges = [
-        {"submitted_id": f"C{index:04d}", **dict(raw)}
-        for index, raw in enumerate(document.get("challenges") or [], start=1)
-        if isinstance(raw, dict)
-    ]
-    return {
+    challenges: list[dict[str, Any]] = []
+    for index, raw in enumerate(document.get("challenges") or [], start=1):
+        if isinstance(raw, dict):
+            challenges.append({"submitted_id": f"C{index:04d}", **dict(raw)})
+        else:
+            dropped_items.append(
+                {
+                    "collection": "challenges",
+                    "index": index,
+                    "submitted_id": f"C{index:04d}",
+                    "code": "INSPECT_ITEM_INVALID",
+                    "message": f"BIC INSPECT challenges[{index}] must be an object",
+                }
+            )
+    result: dict[str, Any] = {
         "schema_version": "1.0",
         "operation_id": manifest.get("task_id"),
         "scope": manifest.get("scope"),
@@ -299,6 +322,9 @@ def _materialize_inspect(manifest: Mapping[str, Any], document: dict[str, Any]) 
         "proposals": proposals,
         "challenges": challenges,
     }
+    if dropped_items:
+        result["dropped_items"] = dropped_items
+    return result
 
 
 def _materialize_grammar(
