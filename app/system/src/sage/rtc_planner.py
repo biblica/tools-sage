@@ -9,7 +9,7 @@ from .errors import ConfigurationError, EvidenceLimitError, ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
 from .source_coverage import source_text_issues
-from .verse_alignment import ProjectVerseIndex
+from .verse_alignment import ProjectVerseIndex, missing_by_local_ref
 from .work_units import EvidenceRecord, WorkUnit
 from .vrs import VerseRef
 
@@ -20,6 +20,15 @@ RTC_HANDOFF_CONTRACT_VERSION = "SAGE_GOVERNED_TASK_V1"
 RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "RTC_REFERENCE_TEXT_COMPARISON_V1"
 LEGACY_RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "SAW_RTC_REFERENCE_TEXT_COMPARISON_V1"
 RTC_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_1"
+# Plan-time sizing stays this far below the task-time limits: the sealed task packet adds headers
+# (~18 tokens today) that the planner does not measure, and a unit planned at the edge would be
+# rejected at task creation as a permanently stale plan.
+RTC_PLAN_HEADROOM_TOKENS = 64
+
+
+def rtc_plan_wip_limit(sizing: RTCSizingPolicy) -> int:
+    """Return the inclusive plan-time WIP token limit, with headroom below the task-time check."""
+    return max(1, sizing.wip_hard_exclusive_tokens - 1 - RTC_PLAN_HEADROOM_TOKENS)
 
 
 def rtc_prompt_schema_projection_version(workflow: str) -> str:
@@ -50,7 +59,7 @@ def rtc_slicing_policy(base: EvidencePolicy, sizing: RTCSizingPolicy) -> Evidenc
         raise ConfigurationError(
             f"Unsupported RTC estimator {sizing.estimator!r}; expected {RTC_ESTIMATOR}"
         )
-    route_hard = min(base.hard_estimated_tokens, sizing.route_hard_max_tokens)
+    route_hard = min(base.hard_estimated_tokens, sizing.route_hard_max_tokens - RTC_PLAN_HEADROOM_TOKENS)
     target = min(sizing.wip_target_min_tokens, max(1, route_hard - 1))
     preferred = min(sizing.wip_target_max_tokens, route_hard)
     return EvidencePolicy(
@@ -141,11 +150,7 @@ def _canonical_source_text_issues(
     missing_local: set[VerseRef] = set()
     canonical_by_local: dict[VerseRef, set[VerseRef]] = {}
     for record in unit.primary:
-        record_canonical = wip_index.canonical_refs_for_records((record,))
-        record_missing = record_canonical.intersection(missing_canonical)
-        if not record_missing:
-            continue
-        for local_ref in record.refs:
+        for local_ref, record_missing in missing_by_local_ref(record, wip_index, missing_canonical).items():
             missing_local.add(local_ref)
             canonical_by_local.setdefault(local_ref, set()).update(record_missing)
     issues = list(source_text_issues(
@@ -276,7 +281,7 @@ def plan_rtc_work_units(
             ),
         ),
         target_stream_ids=("WIP",),
-        stream_hard_token_limits=(("WIP", sizing.wip_hard_exclusive_tokens - 1),),
+        stream_hard_token_limits=(("WIP", rtc_plan_wip_limit(sizing)),),
         primary_stream_id="WIP" if indexed else None,
         primary_index=wip_index if indexed else None,
     )

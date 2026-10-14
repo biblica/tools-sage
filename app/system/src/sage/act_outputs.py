@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from .bic_memory import validate_inspect_submission
+from .candidates import reconcile_adjudications
 from .errors import ValidationError
 from .exception_reports import render_exceptions_section
 from .hashing import sha256_file
@@ -21,6 +22,7 @@ from .ol_referrals import (
     referral_conflict_key,
 )
 from .report_authority import authority_markdown
+from .rtc_policy import should_elevate
 from .references import (
     BOOK_ORDER,
     ScriptureScope,
@@ -648,6 +650,43 @@ def _normalised_stage(operation: str, rtc_stage: str | None = None) -> str:
     return {"focused": "FOCUSED_CHECK", "ol": "FOCUSED_OL"}[operation]
 
 
+# Text-policy check that owns each finding category; a disabled check is never reported.
+_CATEGORY_CHECKS = {
+    "STRUCTURE": "structure_completeness",
+    "VERSIFICATION": "structure_completeness",
+    "QUOTATION": "structure_completeness",
+    "MEANING": "translation_meaning",
+    "GRAMMAR": "language_readability",
+    "ORTHOGRAPHY": "language_readability",
+    "TERMINOLOGY": "consistency",
+    "PARTICIPANT_REFERENCE": "consistency",
+}
+
+
+def _policy_filter_reason(policy: Mapping[str, Any], category: str, usfm_context: str, material: Any) -> str:
+    """Return why the sealed Text policy suppresses one finding, or an empty string."""
+    check = _CATEGORY_CHECKS.get(category)
+    if check and not bool(dict(policy.get("checks") or {}).get(check, True)):
+        return f"the {check} check is disabled for this Run"
+    mode = str(dict(policy.get("usfm_contexts") or {}).get(usfm_context) or "") if usfm_context != "NONE" else ""
+    if mode and not should_elevate(
+        mode=mode,
+        category=category,
+        material=bool(material),
+        structural=category in {"STRUCTURE", "VERSIFICATION"},
+    ):
+        return f"the \\{usfm_context} policy is {mode} and the finding is not material"
+    return ""
+
+
+# Decisions consistent with each OL outcome. FINDING keeps INCONCLUSIVE so a corrected decision still holds.
+_OL_DECISIONS_BY_OUTCOME = {
+    "FINDING": frozenset({"REFERENCE_CLOSER_TO_SOURCE", "INCONCLUSIVE"}),
+    "NO_FINDING": frozenset({"WIP_CLOSER_TO_SOURCE", "BOTH_DEFENSIBLE"}),
+    "INSUFFICIENT_EVIDENCE": frozenset({"INCONCLUSIVE"}),
+}
+
+
 def validate_analysis_findings(
     path: Path,
     *,
@@ -669,8 +708,18 @@ def validate_analysis_findings(
     narrative_language: str | None = None,
     ol_referral_contract: str | None = None,
     workflow: str = "saw",
+    source_text_drift_adjudication: str | None = None,
+    rtc_policy: Mapping[str, Any] | None = None,
+    expected_candidates: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
-    """Validate staged analysis findings, complete coverage, and bounded answers."""
+    """Validate staged analysis findings, complete coverage, and bounded answers.
+
+    ``rtc_policy`` is the sealed Run Text policy: findings of disabled checks, and findings in a USFM
+    context whose mode does not elevate them, are filtered out with a record.
+
+    ``source_text_drift_adjudication`` is the sealed Run policy; when it is given and not ``ENABLED``,
+    meaning-stage OL review requests are dropped with a record instead of stalling the Run later.
+    """
     identity = "SAW" if legacy_saw_workflow(workflow) else workflow.upper()
     reason_code = lambda code: (
         code if legacy_saw_workflow(workflow) else analysis_reason_code(code, workflow)
@@ -820,10 +869,35 @@ def validate_analysis_findings(
     if set(adjudications) != set(structural_candidate_ids):
         raise ValidationError(f"{identity} structural adjudications do not reconcile the exact candidate inventory")
 
+    salvage_records: list[dict[str, Any]] = []
     ol_review_requests: list[dict[str, Any]] = []
     raw_requests = document.get("ol_review_requests", [])
     if not isinstance(raw_requests, list) or any(not isinstance(item, dict) for item in raw_requests):
         raise ValidationError(f"{identity} ol_review_requests must be a list of objects")
+    if (
+        raw_requests
+        and source_text_drift_adjudication is not None
+        and str(source_text_drift_adjudication).upper() != "ENABLED"
+        and operation == "rtc"
+        and _normalised_stage(operation, rtc_stage) == "REFERENCE_TEXT_COMPARISON"
+    ):
+        # The Run policy forbids OL adjudication: keep each deferred question visible, but do not route it.
+        for request in raw_requests:
+            question = str(request.get("question") or request.get("reason") or "").strip()
+            salvage_records.append(
+                {
+                    "code": reason_code("SAW_OL_REQUEST_PROHIBITED"),
+                    "coordinate": str(request.get("target_reference") or "").strip(),
+                    "submitted_id": str(request.get("request_id") or "").strip(),
+                    "effect": "FLAGGED",
+                    "message": (
+                        "Original-language review was requested but source-text drift adjudication is "
+                        "prohibited for this Run; the request was dropped"
+                        + (f": {question}" if question else ".")
+                    ),
+                }
+            )
+        raw_requests = []
     if operation == "rtc" and _normalised_stage(operation, rtc_stage) == "REFERENCE_TEXT_COMPARISON":
         seen_request_ids: set[str] = set()
         seen_deferred_ids: set[str] = set()
@@ -929,6 +1003,21 @@ def validate_analysis_findings(
             "INCONCLUSIVE",
         }:
             raise ValidationError(f"ol_resolutions[{index}].decision is unsupported: {decision}")
+        if decision not in _OL_DECISIONS_BY_OUTCOME[outcome]:
+            # The outcome drives findings; a contradicting decision is not trusted and is flagged.
+            salvage_records.append(
+                {
+                    "code": reason_code("SAW_OL_DECISION_OUTCOME_MISMATCH"),
+                    "coordinate": str(resolution.get("target_reference") or "").strip(),
+                    "submitted_id": request_id,
+                    "effect": "CORRECTED",
+                    "message": (
+                        f"OL outcome {outcome} contradicts decision {decision}; "
+                        "the decision is reported as INCONCLUSIVE for human review."
+                    ),
+                }
+            )
+            decision = "INCONCLUSIVE"
         deferred_id = str(expected_request.get("deferred_finding_id", "")).upper()
         raw_finding_id = resolution.get("finding_id")
         finding_id = (
@@ -981,90 +1070,139 @@ def validate_analysis_findings(
     parent_scope = parse_scope(scope_value)
     allowed_grammar_rules = set(grammar_rule_ids)
     allowed_evidence = set(allowed_evidence_ids)
+    stage_name = _normalised_stage(operation, rtc_stage)
+    ol_stage = operation == "ol" or (operation == "rtc" and stage_name == "SELECTIVE_OL_ADJUDICATION")
+    # Findings another ledger points at cannot be dropped without breaking that ledger; their defects still reject.
+    ledger_finding_ids = {
+        str(row["finding_id"]) for row in adjudications.values() if row.get("finding_id")
+    } | {str(row["finding_id"]) for row in ol_resolutions if row.get("finding_id")}
     normalised: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
+
+    def _salvage(code: str, effect: str, message: str, row: Mapping[str, Any], finding_id: str) -> None:
+        """Record one dropped or corrected finding so the Operator still sees what the model said."""
+        issue = str(row.get("issue") or "").strip()
+        salvage_records.append(
+            {
+                "code": reason_code(code),
+                "coordinate": str(row.get("target_reference") or "").strip(),
+                "submitted_id": finding_id,
+                "effect": effect,
+                "message": message + (f" Finding text: {issue[:600]}" if issue and effect == "FLAGGED" else ""),
+            }
+        )
+
     for index, raw in enumerate(findings, start=1):
         row = _require_mapping(raw, f"findings[{index}]")
         finding_id = _canonical_saw_local_finding_id(
             row.get("finding_id"), f"findings[{index}].finding_id"
         )
+        defect = ""
+        reference = ""
         if finding_id in seen_ids:
-            raise ValidationError(f"Duplicate {identity} finding_id: {finding_id}")
-        seen_ids.add(finding_id)
-        reference = normalize_scope_set(_require_string(
-            row.get("target_reference"),
-            f"findings[{index}].target_reference",
-        ))
-        if not _scope_contains_reference(parent_scope, reference):
-            raise ValidationError(
-                f"findings[{index}].target_reference is outside the bounded task scope"
-            )
-        stage_name = _normalised_stage(operation, rtc_stage)
-        if operation == "rtc" and stage_name in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"}:
-            if not _atomic_reference_labels(reference).issubset(set(expected_references)):
-                raise ValidationError(
-                    f"findings[{index}].target_reference is outside the exact composite-RTC stage references"
-                )
+            defect = f"duplicates finding_id {finding_id}"
+        else:
+            try:
+                reference = normalize_scope_set(_require_string(
+                    row.get("target_reference"),
+                    f"findings[{index}].target_reference",
+                ))
+            except ValidationError as exc:
+                defect = f"has an unusable target_reference ({exc})"
+        if not defect and not _scope_contains_reference(parent_scope, reference):
+            defect = "cites a reference outside the bounded task scope (context verses are not reviewed)"
+        if (
+            not defect
+            and operation == "rtc"
+            and stage_name in {"STRUCTURAL_ADJUDICATION", "SELECTIVE_OL_ADJUDICATION"}
+            and not _atomic_reference_labels(reference).issubset(set(expected_references))
+        ):
+            defect = "cites a reference outside the exact composite-RTC stage references"
         category = str(row.get("category", "")).strip().upper()
-        if category not in _ALLOWED_CATEGORIES:
-            raise ValidationError(f"findings[{index}].category is unsupported: {category}")
+        if not defect and category not in _ALLOWED_CATEGORIES:
+            defect = f"uses an unsupported category {category or '(none)'}"
+        issue_text = str(row.get("issue") or "").strip()
+        if not defect and not issue_text:
+            defect = "has no issue text"
+        raw_evidence = row.get("evidence_ids")
+        evidence_ids = [str(value) for value in raw_evidence] if isinstance(raw_evidence, list) else []
+        known_evidence = [value for value in evidence_ids if value in allowed_evidence]
+        if not defect and not known_evidence:
+            defect = "cites no routed evidence"
+        raw_rules = row.get("grammar_rule_ids", [])
+        cited_rules = [str(value) for value in raw_rules] if isinstance(raw_rules, list) else []
+        known_rules = [value for value in cited_rules if value in allowed_grammar_rules]
+        if not defect and category == "GRAMMAR" and not known_rules:
+            defect = "is a grammar finding that cites no project grammar rule"
+        ol_evidence = str(row.get("original_language_evidence", "")).strip()
+        if not defect and ol_stage and not ol_evidence:
+            defect = "has no original-language evidence in an OL review stage"
+        if defect:
+            if finding_id in ledger_finding_ids:
+                raise ValidationError(f"findings[{index}] {defect}")
+            _salvage("SAW_FINDING_DROPPED", "FLAGGED", f"Finding {finding_id} was dropped: it {defect}.", row, finding_id)
+            continue
+        seen_ids.add(finding_id)
+        corrections: list[str] = []
+        if len(known_evidence) != len(evidence_ids):
+            corrections.append("unrouted evidence IDs were removed")
+        if len(known_rules) != len(cited_rules):
+            corrections.append("unknown grammar rule IDs were removed")
         action_level = str(row.get("action_level", "")).strip().upper()
         if action_level not in _ALLOWED_ACTION_LEVELS:
-            raise ValidationError(
-                f"findings[{index}].action_level is unsupported: {action_level}"
-            )
+            corrections.append(f"action level {action_level or '(none)'} became REVIEW")
+            action_level = "REVIEW"
         confidence = str(row.get("confidence", "")).strip().upper()
         if confidence not in _ALLOWED_CONFIDENCE:
-            raise ValidationError(f"findings[{index}].confidence is unsupported: {confidence}")
+            corrections.append(f"confidence {confidence or '(none)'} became UNKNOWN")
+            confidence = "UNKNOWN"
         if action_level in {"CHANGE", "BLOCK"} and confidence in {"LOW", "UNKNOWN"}:
-            raise ValidationError(
-                f"findings[{index}] cannot use {confidence} confidence with {action_level}"
-            )
+            corrections.append(f"{action_level} with {confidence} confidence became REVIEW")
+            action_level = "REVIEW"
         required_action = str(row.get("required_action", "")).strip()
         if action_level in {"REVIEW", "CHANGE", "BLOCK"} and not required_action:
-            raise ValidationError(
-                f"findings[{index}].required_action is required for {action_level}"
-            )
-        evidence_ids = _string_list(
-            row.get("evidence_ids"),
-            f"findings[{index}].evidence_ids",
-            allow_empty=False,
-        )
-        if set(evidence_ids) - allowed_evidence:
-            raise ValidationError(f"findings[{index}] cites unknown evidence IDs")
-        cited_grammar_rules = _string_list(
-            row.get("grammar_rule_ids", []),
-            f"findings[{index}].grammar_rule_ids",
-        )
-        if set(cited_grammar_rules) - allowed_grammar_rules:
-            raise ValidationError(f"findings[{index}] cites unknown grammar rule IDs")
-        if category == "GRAMMAR" and not cited_grammar_rules:
-            raise ValidationError(f"findings[{index}] grammar finding must cite grammar_rule_ids")
-        ol_evidence = str(row.get("original_language_evidence", "")).strip()
-        stage_name = _normalised_stage(operation, rtc_stage)
-        ol_stage = operation == "ol" or (operation == "rtc" and stage_name == "SELECTIVE_OL_ADJUDICATION")
-        if ol_stage and not ol_evidence:
-            raise ValidationError(
-                f"findings[{index}].original_language_evidence is required for OL review"
-            )
+            corrections.append("a missing required action was supplied")
+            required_action = "Review the cited text against the evidence and decide whether to revise it."
         if not ol_stage and ol_evidence:
-            raise ValidationError(
-                f"findings[{index}].original_language_evidence must be empty outside an OL review stage"
+            corrections.append("original-language evidence outside an OL stage was removed")
+            ol_evidence = ""
+        usfm_context = str(row.get("usfm_context") or "NONE").strip()
+        usfm_context = usfm_context.lstrip("\\").lower() if usfm_context.upper() != "NONE" else "NONE"
+        material = row.get("material")
+        filtered = _policy_filter_reason(rtc_policy, category, usfm_context, material) if rtc_policy else ""
+        if filtered and finding_id not in ledger_finding_ids:
+            _salvage("SAW_FINDING_POLICY_FILTERED", "FLAGGED", f"Finding {finding_id} was not reported: {filtered}.", row, finding_id)
+            continue
+        if corrections:
+            _salvage(
+                "SAW_FINDING_CORRECTED",
+                "CORRECTED",
+                f"Finding {finding_id} was corrected: " + "; ".join(corrections) + ".",
+                row,
+                finding_id,
             )
-        normalised.append(
-            {
-                "finding_id": finding_id,
-                "target_reference": reference,
-                "category": category,
-                "issue": _require_string(row.get("issue"), f"findings[{index}].issue"),
-                "required_action": required_action,
-                "action_level": action_level,
-                "confidence": confidence,
-                "evidence_ids": evidence_ids,
-                "grammar_rule_ids": cited_grammar_rules,
-                "original_language_evidence": ol_evidence,
-            }
-        )
+        normalised_row = {
+            "finding_id": finding_id,
+            "target_reference": reference,
+            "category": category,
+            "issue": issue_text,
+            "required_action": required_action,
+            "action_level": action_level,
+            "confidence": confidence,
+            "evidence_ids": known_evidence,
+            "grammar_rule_ids": known_rules,
+            "original_language_evidence": ol_evidence,
+        }
+        if "usfm_context" in row or "material" in row:
+            normalised_row["usfm_context"] = usfm_context
+            normalised_row["material"] = bool(material)
+        if ol_stage:
+            # The OL decision and its rationale travel with the finding so the report can show them.
+            for key in ("ol_decision", "ol_rationale"):
+                value = str(row.get(key) or "").strip()
+                if value:
+                    normalised_row[key] = value.upper() if key == "ol_decision" else value
+        normalised.append(normalised_row)
     stage_name = _normalised_stage(operation, rtc_stage)
     if operation == "rtc" and stage_name == "REFERENCE_TEXT_COMPARISON":
         deferred_ids = {row["deferred_finding_id"] for row in ol_review_requests}
@@ -1096,14 +1234,34 @@ def validate_analysis_findings(
         structural_finding_ids = {
             str(row["finding_id"]) for row in adjudications.values() if row["outcome"] == "FINDING"
         }
-        if seen_ids != structural_finding_ids:
-            raise ValidationError("Structural adjudication may emit findings only for routed structural candidates")
+        extra = seen_ids - structural_finding_ids
+        if extra:
+            # Structural adjudication reports only routed candidates; any other finding is dropped and recorded.
+            for row in [item for item in normalised if item["finding_id"] in extra]:
+                _salvage(
+                    "SAW_FINDING_DROPPED",
+                    "FLAGGED",
+                    f"Finding {row['finding_id']} was dropped: structural adjudication reports only routed candidates.",
+                    row,
+                    row["finding_id"],
+                )
+            normalised = [item for item in normalised if item["finding_id"] not in extra]
+            seen_ids -= extra
 
     for candidate_id, row in adjudications.items():
         if row["outcome"] == "FINDING" and row["finding_id"] not in seen_ids:
             raise ValidationError(
                 f"Structural candidate {candidate_id} refers to missing finding_id {row['finding_id']}"
             )
+    candidate_adjudications: list[dict[str, Any]] = []
+    if expected_candidates or document.get("candidate_adjudications"):
+        candidate_adjudications, candidate_records = reconcile_adjudications(
+            document.get("candidate_adjudications"),
+            expected_candidates,
+            seen_ids,
+            code_prefix=identity,
+        )
+        salvage_records.extend(candidate_records)
     return {
         "schema_version": "2.0",
         "task_id": task_id,
@@ -1121,6 +1279,8 @@ def validate_analysis_findings(
         "ol_resolutions": ol_resolutions,
         "findings": normalised,
         "finding_count": len(normalised),
+        **({"candidate_adjudications": candidate_adjudications} if candidate_adjudications else {}),
+        **({"salvage_records": salvage_records} if salvage_records else {}),
     }
 
 
@@ -1331,6 +1491,33 @@ def render_plain_text_from_markdown(markdown: str) -> str:
     return "\n".join(result).rstrip() + "\n"
 
 
+def _render_ol_resolutions(document: Mapping[str, Any]) -> list[str]:
+    """Render every original-language adjudication, including those that produced no finding."""
+    rows = [dict(row) for row in document.get("ol_resolutions", []) if isinstance(row, Mapping)]
+    if not rows:
+        return []
+    lines = [
+        "",
+        "## Original-language adjudications",
+        "",
+        "Each deferred WIP/REFERENCE conflict was checked against the original-language text.",
+        "",
+    ]
+    for row in rows:
+        outcome = str(row.get("outcome") or "")
+        finding = f"; Finding: `{row['finding_id']}`" if row.get("finding_id") else ""
+        lines.extend([
+            f"### {row.get('request_id', '')} — {row.get('target_reference', '')}",
+            "",
+            f"- Outcome: `{outcome}`; Decision: `{row.get('decision') or 'INCONCLUSIVE'}`{finding}",
+        ])
+        rationale = str(row.get("rationale") or "").strip()
+        if rationale:
+            lines.extend(["", operator_finding_text(rationale, document, row)])
+        lines.append("")
+    return lines
+
+
 def render_action_report(document: Mapping[str, Any]) -> str:
     """Render deterministic analysis Markdown with per-language issue/action grouping."""
     # Receipt-backed route metadata and assistive translations are projections;
@@ -1457,6 +1644,7 @@ def render_action_report(document: Mapping[str, Any]) -> str:
                 f"- `{row.get('reference', '')}` | `{row.get('source_project_id', '')}` | "
                 f"`{issue_code}` — {_operator_project_text(row.get('message', ''), document)}"
             )
+    lines.extend(_render_ol_resolutions(document))
     lines.extend(["", "## " + _report_label(document, "report.actionable_findings"), ""])
     findings = sorted(
         [dict(row) for row in document.get("findings", []) if isinstance(row, Mapping)],
@@ -1475,6 +1663,8 @@ def render_action_report(document: Mapping[str, Any]) -> str:
         ol = str(row.get("original_language_evidence") or "").strip()
         if ol:
             metadata += f"; Original-language: `{operator_finding_text(ol, document, row)}`"
+        if row.get("ol_decision"):
+            metadata += f"; OL decision: `{row['ol_decision']}`"
         lines.extend([
             f"### {finding_id} — {row['target_reference']}",
             "",

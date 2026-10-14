@@ -2328,15 +2328,59 @@ def command_model_test(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cli_unit_failure(config: Any, task: Any, exc: SageError) -> None:
+    """Apply the shared work-unit failure policy to an RTC/STC task run from the CLI.
+
+    The menu applies the same policy itself, so a menu-driven subprocess skips it here.
+    """
+    if os.environ.get("SAGE_MENU_DRIVER") == "1":
+        return
+    from .exception_reports import apply_unit_failure
+    from .execution_events import classify_exception
+    from .storage import resolve_persisted_path
+    from .workflow_identity import is_analysis_workflow
+
+    try:
+        manifest_path = resolve_persisted_path(config.root, str(task), "task manifest")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        workflow = str(manifest.get("workflow") or "")
+        if not is_analysis_workflow(workflow) or not manifest.get("run_id"):
+            return
+        store = JobStore(config.root, config.settings_path)
+        job = store.load_job(str(manifest["job_id"]))
+        run = store.load_run(job, str(manifest["run_id"]))
+    except (OSError, ValueError, SageError):
+        return
+    disposition, _boundary, _retry = classify_exception(exc)
+    action, attempts = apply_unit_failure(
+        run.root,
+        manifest_path,
+        tool=workflow,
+        code=str(exc.code or "SAGE_ERROR"),
+        message=str(exc),
+        disposition=disposition,
+        run_id=run.run_id,
+        job_id=job.job_id,
+        work_unit=str(manifest.get("work_unit_id") or "") or None,
+        stage=str(manifest.get("rtc_stage") or manifest.get("operation") or "") or None,
+    )
+    print(f"Work-unit failure policy: {action} (attempt {attempts}).", file=sys.stderr)
+
+
 def command_task_execute(args: argparse.Namespace) -> int:
     """Execute one immutable task through the provider-neutral SAGE LLM harness."""
     config, _ = _load(args)
-    result = execute_task(
-        config,
-        task_manifest=Path(args.task),
-        timeout_seconds=args.timeout,
-        dry_run=bool(args.dry_run),
-    )
+    try:
+        result = execute_task(
+            config,
+            task_manifest=Path(args.task),
+            timeout_seconds=args.timeout,
+            dry_run=bool(args.dry_run),
+        )
+    except SageError as exc:
+        if not args.dry_run:
+            _cli_unit_failure(config, args.task, exc)
+        raise
     if args.json:
         _print_json(result)
     else:
@@ -2428,7 +2472,11 @@ def command_act_submit(args: argparse.Namespace) -> int:
     from .storage import resolve_persisted_path
     config, _ = _load(args)
     task_path = resolve_persisted_path(config.root, str(args.task), "task manifest")
-    result = submit_act_task(config, task_path)
+    try:
+        result = submit_act_task(config, task_path)
+    except SageError as exc:
+        _cli_unit_failure(config, task_path, exc)
+        raise
     if result.get('workflow') == 'nca':
         from .nca import finalize_nca_run
         finalization = finalize_nca_run(config, job_id=result['job_id'], run_id=result['run_id'])
@@ -3202,6 +3250,7 @@ def command_initialize(args: argparse.Namespace) -> int:
                 "bic": {"CONTENT_SOURCE", "LEXICAL_DONOR", "GENERATED_TARGET"},
                 "rtc": {"WIP", "REFERENCE"},
                 "stc": {"WIP"},
+                "nca": {"WIP"},
                 "saw": {"WIP", "REFERENCE"},
             }
             for workflow_id, item in workflows.items():
@@ -3219,7 +3268,7 @@ def command_initialize(args: argparse.Namespace) -> int:
                     if acceptable:
                         continue
                     label = f"{role}={project_status}"
-                    if role in required_roles[workflow_id]:
+                    if role in required_roles.get(workflow_id, set()):
                         blocked_roles.append(label)
                     elif role.startswith("ORIGINAL_LANGUAGE_"):
                         limited_roles.append(label)

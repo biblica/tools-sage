@@ -9,6 +9,315 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261014-024 — RTC/STC documentation drift (TODO-20261014-021)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-021`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** `RTC-STC-OPERATOR-MODES.md`, `RTC-STC-CHEAT-SHEET.md`, and `RTC-CHECK-POLICY.md` now say
+  that Runs end `COMPLETE`, `COMPLETE_WITH_STRUCTURE_PROBLEMS`, or `COMPLETE_WITH_EXCEPTIONS` (never
+  `FINALIZED`); document NOT_ASSESSED work units, the exception reports, and what still stops a Run; place
+  quotation checks under the structure/completeness group; replace the unreachable per-Run toggle screen
+  with the Job's RTC defaults screen and the "Run RTC on <WIP> with defaults" label; describe the
+  Operator-pinned no-data routing default; say that secondary-language rendering calls the model; and
+  explain that an RTC chapter report consolidates every Run that reviewed the chapter.
+- **Verification:** documentation contract tests re-run.
+
+### IMP-20261014-023 — RTC/STC regression tests (TODO-20261014-020)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-020` (stays `IN_PROGRESS`: the multi-portion `1CH 5-6; 24` end-to-end Runs and the
+  approved-plan staleness causes that need the RTC sizing/planner schema are not covered yet)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** regression tests for `TODO-20261014-001` through `-008` landed with those items. New
+  `test_rtc_stc_regressions.py` covers the reachable approved-plan staleness causes (plan missing, Run
+  identity, changed WIP), STC aggregation guards (duplicate primary ownership and coverage drift raise
+  `AGGREGATE_COVERAGE_MISMATCH`; another Run's result raises `RESULT_COVERAGE_DRIFT`), and Continue after a
+  crash between stage-task creation and plan save.
+- **Verification:** `test_rtc_stc_regressions.py`.
+
+### IMP-20261014-021 — RTC/STC performance (TODO-20261014-017)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-017`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** `ProjectVerseIndex.cached` reuses one verse index per Project content and effective VRS
+  across a Run's tasks (keyed by every record's coordinates and text and the full schema), and RTC/STC task
+  creation and composite checks use it. `VersificationSchema.mapping_precision` uses the mapping index
+  instead of scanning every mapping per verse (the PSA index-build hotspot). Task creation measures the
+  routed handoff and checks the budget once; the identical second measurement, input re-read, and budget
+  check after the manifest is built are gone.
+- **Verification:** RTC, STC, VRS, and harness suites re-run.
+
+### IMP-20261014-020 — In-process Run driver (TODO-20261014-016)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-016`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** the menu runs RTC/STC `task continue`, `task submit`, and `task aggregate` as function
+  calls (`_in_process_controller`) instead of `sage.cli` subprocesses; non-SAGE exceptions still surface as
+  `MENU_CONTROLLER_COMMAND_FAILED`. `task execute` stays a subprocess so Ctrl-C can still stop a running
+  provider call. The work-unit failure policy is one function (`exception_reports.apply_unit_failure`) used
+  by the menu and by CLI `task execute` and `task submit` (skipped when the menu drives the CLI, via
+  `SAGE_MENU_DRIVER`, so attempts are not counted twice). Continuing an RTC/STC Run takes a Run driver lock
+  (`locks/run-driver`, stale same-host owners recovered). The Codex readiness check runs once per Run.
+- **Verification:** new tests in `test_exception_reports.py`.
+
+### IMP-20261014-019 — Narrower model contract and prompt hygiene (TODO-20261014-015)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-015`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** new `candidates.py`. Deterministic candidates (`\add`/`\nd` differences, numbers that
+  differ from the index or are written in words, and STC length outliers) get stable IDs and are listed in
+  the task manifest (`deterministic_candidates`) and model assignment. The RTC meaning-stage and STC
+  response schemas require `candidate_adjudications` (`CONFIRM`, `REJECT`, `UNSURE`, with the confirming
+  `finding_id`); validation keeps one adjudication per candidate, drops unknown ones, turns a CONFIRM
+  without a reported finding into UNSURE, and records unadjudicated candidates as UNSURE. The RTC and STC
+  Skills describe the narrowed contract (candidates plus an open search for meaning, quotation, and
+  participant issues). Prompt hygiene: the three byte-identical per-Skill `EXECUTION-RULES.md` copies are
+  removed (ACT step 8 carries the rule), the global execution rules lose lines the sealed model cannot act
+  on and the outdated "failures stop the controller" rule, the ACT no longer repeats the
+  narrative-language exclusion the prompt already states, and `rtc-findings.schema.yml` is brought up to
+  date. Skill hashes in `skills.json` are re-pinned. The handoff byte budget now counts every routed read,
+  not only `.sfm` (`measurement_scope: routed_reads_bytes_and_sfm_tokens`); token sizing stays SFM-only to
+  match the planner.
+- **Verification:** new `test_candidates.py`; harness and STC expectations updated.
+
+### IMP-20261014-018 — Numbers in RTC/STC (TODO-20261014-014)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-014`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** new `numeric_candidates.py` reuses `sage/numbers` (`find_numerals` and the qualified
+  number index) to classify each WIP verse with numbers as `MATCH`, `DIFFERS`, or `NOT_IN_DIGITS`. RTC
+  preflights and STC alignments carry the rows with the index-edition caveat (the index follows WLC and
+  SBLGNT, not the bundled OL editions); the ACT tells the model not to report numbers for `MATCH` verses and
+  that NCA checks numbers in full. A missing index yields `INDEX_UNAVAILABLE` instead of an error.
+- **Verification:** new `test_numeric_candidates.py`.
+
+### IMP-20261014-017 — STC evidence checked in code (TODO-20261014-013)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-013`; also the STC quotation check of `TODO-20261013-008` (which stays `OPEN`
+  for the other model-echoed fields).
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** each STC finding's `wip_evidence` and `ol_evidence` is checked against the routed WIP
+  and OL slices (`stc.evidence_is_verbatim`: NFC, USFM markers and ketiv/qere asterisks removed, ellipsis
+  parts checked separately, diacritic-insensitive fallback). A quotation that is not found keeps its finding
+  but marks it `evidence_verified: false` and records `STC_EVIDENCE_UNVERIFIED`. The HEB authority profile
+  now explains the `*ketiv **qere` notation and lists the Biblical Aramaic ranges (GEN 31:47, EZR 4:8–6:18,
+  EZR 7:12–26, JER 10:11, DAN 2:4–7:28); the GRK profile explains `[[ ]]`. Each STC unit's alignment carries
+  `length_outliers` (WIP verses far shorter or longer than their OL text relative to the book's median
+  ratio), sent to the model as `verse_length_outliers` candidates; the STC ACT text tells the model to cite
+  WIP numbering, quote verbatim, and not restate code-reported gaps.
+- **Verification:** new tests in `test_stc.py`; `test_stc_task.py` expectation updated.
+
+### IMP-20261014-016 — RTC Text policy applied in code (TODO-20261014-012)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-012`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** the RTC finding schema requires `usfm_context` (`NONE`, `add`, `nd`, `f`, `x`) and
+  `material`, and `grammar_rule_ids` is an enum of the task's project grammar rules. The sealed Text policy
+  (`checks` and `usfm_contexts`) is sent in the model assignment, and `validate_analysis_findings` filters
+  findings of disabled checks and findings whose USFM context mode does not elevate them
+  (`rtc_policy.should_elevate`, now called in production), recording `RTC_FINDING_POLICY_FILTERED`.
+  Severity clamping with a correction record landed in `IMP-20261014-012`. `findings.dedupe_findings` drops
+  repeated findings (same reference, category, and normalized issue) and model STRUCTURE/VERSIFICATION
+  findings at a deterministic finding's verse, in composite finalization and partitioned aggregation; the
+  composite result lists `deduplicated_finding_ids`.
+- **Verification:** new tests in `test_storage_rtc_boundaries.py`.
+
+### IMP-20261014-015 — Deterministic marker checks (TODO-20261014-011)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-011`; also the `\x` and `\f` marker-sanity part of `TODO-20261013-009` (which
+  stays `OPEN` for the other pre-checks).
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** new `marker_checks.py`. At composite creation SAGE compares each WIP verse's
+  cross-reference target numbers (`\xt`, book names ignored because they are localized) with the REFERENCE
+  verses at the same canonical coordinates, and checks every footnote for an origin (`\fr`) naming its own
+  verse and a text (`\ft`); differences become deterministic STRUCTURE findings. `\add` and `\nd` count
+  differences are candidates only: each RTC task preflight lists them as `marker_candidates` and the ACT
+  tells the model to report only material ones. The meaning-stage ACT says SAGE compares Scripture target
+  numbers and footnote structure in code. The composite compiles WIP and REFERENCE once for all of its
+  deterministic checks.
+- **Verification:** new `test_marker_checks.py`.
+
+### IMP-20261014-014 — Omission and addition in both directions (TODO-20261014-010)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-010`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** new `text_coverage.py` computes the OMISSION direction that was never computed:
+  REFERENCE (RTC) or OL (STC) text in the scope's canonical window that no WIP verse carries, empty WIP
+  verses, and whole chapters the WIP lacks (one chapter-level row). A WIP Psalm `\d` title is matched to
+  the Authority's leading title verse(s) instead of being reported. RTC composites store these rows as
+  `coverage_gap_issues`; finalization reports them and promotes every OMISSION and ADDITION gap to a
+  deterministic STRUCTURE finding once per coordinate. STC plans (or a one-unit STC task) carry the same
+  rows; STC submission and aggregation promote gaps to deterministic OMISSION/ADDITION findings. The RTC
+  preflight replaces the empty `direct_findings` with the task's gap findings and adds a
+  `REFERENCE_TEXT_COVERAGE` controller check computed from the packets.
+- **Verification:** new `test_text_coverage.py`; RTC and STC suites re-run.
+
+### IMP-20261014-013 — Deterministic structural stage (TODO-20261014-009)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-009`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** composite RTC creation triages every WIP VRS mapping candidate in code
+  (`_structural_triage`) from the WIP↔REFERENCE alignment (`align_records`): identity, shift, merge, or
+  split with text on both sides is recorded as a `NO_FINDING` resolution; text missing on one side becomes a
+  deterministic `STRUCTURE` finding (`plan.deterministic_findings`, merged with run-global IDs at
+  finalization); only an equivalence group the code cannot decide goes to the `STRUCTURAL_ADJUDICATION`
+  model stage, and that stage's preflight lists only those candidates. `VERSE_BRIDGE_MAPPING` is no longer a
+  model check: bridge mapping is decided from the alignment and its canonical-gap source issues, while the
+  model keeps `VERSE_BRIDGE_CONTENT`.
+- **Verification:** new tests in `test_storage_rtc_boundaries.py` and `test_exception_reports.py`; the
+  structural-stage tests now use an equivalence group whose REFERENCE side has no text.
+
+### IMP-20261014-012 — RTC/STC never-block specifics (TODO-20261014-008)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-008`; also the STC and RTC finding parts of `TODO-20261013-020` (which stays
+  `IN_PROGRESS` for planners and report translation).
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** RTC findings are validated item by item. A finding with a duplicate ID, an unusable,
+  out-of-scope, or context-only reference, an unsupported category, no issue text, no routed evidence, a
+  grammar category without a project grammar rule, or no OL evidence in an OL stage is dropped and
+  recorded (`RTC_FINDING_DROPPED`, `FLAGGED`, with the finding text). Unsupported action levels or
+  confidence, `CHANGE`/`BLOCK` with low confidence, a missing required action, unrouted evidence IDs,
+  unknown grammar rule IDs, and OL evidence outside an OL stage are corrected and recorded
+  (`RTC_FINDING_CORRECTED`). A finding that a structural adjudication or OL resolution points at still
+  rejects the unit when defective, so those ledgers stay consistent; extra structural-stage findings are
+  dropped. STC drops a finding with an unsupported category, an out-of-scope or unplanned reference,
+  missing evidence, or a duplicate (`STC_FINDING_DROPPED`) and flags a report-language mismatch as
+  `STC_REPORT_LANGUAGE_UNVERIFIED`. All records go to the Run's exception report. USFM parser errors block
+  task creation only when they fall in the requested chapters (`_parser_errors_in_scope`). The selective-OL,
+  auto-partition, and STC partitioners roll back the child tasks they created when they fail mid-loop.
+- **Verification:** new tests in `test_storage_rtc_boundaries.py`, `test_stc.py`, and `test_stc_task.py`;
+  reject-expecting tests updated to the salvage behavior.
+
+### IMP-20261014-011 — RTC/STC engine gaps (TODO-20261014-007)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-007`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** a one-unit RTC/STC Run goes through the same retry, NOT_ASSESSED, and stop policy as a
+  plan (`_run_single_analysis_unit`), and a NOT_ASSESSED standalone STC task publishes its report.
+  Changing RTC/STC Job defaults while a Run is open is refused (`JOB_DEFAULTS_RUN_OPEN`; the RTC defaults
+  menu says so up front), because every revision rewrites the sealed runtime settings. `workspace
+  initialize` knows the NCA required roles. `task create --workflow rtc` without a Job is refused
+  (`RTC_JOB_REQUIRED`) instead of minting an orphan Job.
+- **Verification:** new tests in `test_exception_reports.py`.
+
+### IMP-20261014-010 — Failure classification and pre-provider checks (TODO-20261014-006)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-006`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** `unit_failure_action` stops the Run for `RUN_STOP_CODES` (`CODEX_EXECUTION_NOT_READY`,
+  `MENU_CONTROLLER_COMMAND_FAILED`, `CONFIGURATION_ERROR`, `PROVIDER_ROUTE_UNAVAILABLE`) instead of retrying
+  them into NOT_ASSESSED units, and trips a circuit breaker when a non-content code has already sealed
+  `CIRCUIT_BREAKER_UNITS` (2) units in the Run. `INTEGRITY_CODES` gains `RTC_/STC_TASK_CONTRACT_INVALID`,
+  `STC_OL_AUTHORITY_MISMATCH`, `LLM_RESPONSE_ROUTE_MISMATCH`, the analysis work-unit layout codes,
+  `EXECUTION_RECEIPT_MISSING`, and the new `TASK_SUBMISSION_TAMPERED` code now carried by the submit-time
+  manifest, prompt, fingerprint, and write-allowlist checks (a changed conditional input is
+  `ACT_INPUT_STALE`). The RTC work-unit layout and selective-OL evidence-contract checks run before the
+  provider call. RTC and STC output without an execution receipt is rejected instead of being recorded as
+  `UNRECORDED`; tests use the new `conftest.submit_with_receipt` helper.
+- **Verification:** new tests in `test_exception_reports.py` and `test_storage_rtc_boundaries.py`.
+
+### IMP-20261014-009 — RTC planner headroom and bridge boundaries (TODO-20261014-005)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-005`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** RTC planning keeps `RTC_PLAN_HEADROOM_TOKENS` (64) below the task-time WIP and route
+  limits (`rtc_plan_wip_limit`), so a unit planned at the edge no longer becomes a permanent
+  `RTC_APPROVED_PLAN_STALE`; the composite auto-partition route applies the same WIP stream limit. Required
+  span closure first moves a boundary back before an indivisible REFERENCE or VRS span and extends forward
+  only when the backward plan does not fit. A canonical gap inside a WIP bridge flags only the local verse
+  that owns it (`verse_alignment.missing_by_local_ref`). Structural candidate IDs are derived from the VRS
+  mapping (`VRS-<hash>`), so they are unique across a plan.
+- **Verification:** updated and new tests in `test_rtc_planner.py`; `test_storage_rtc_boundaries.py`.
+
+### IMP-20261014-008 — Honest STC coverage and Run status (TODO-20261014-004)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-004`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** the STC chapter report's Coverage line now reports assessed coverage through
+  `coverage_document` (`COMPLETE`, `PARTIAL`, or `NOT_ASSESSED`, with assessed and not-assessed counts)
+  instead of repeating the source-comparison status; a fully not-assessed chapter no longer shows
+  `COMPLETE (0 coordinates)`. `STC_RUN_RESULT.json` carries a `coverage` record, and its `status` is the
+  coverage status when units were NOT_ASSESSED. A Run with NOT_ASSESSED exception records closes as
+  `COMPLETE_WITH_EXCEPTIONS` (new `RUN_COMPLETED_STATUSES`; result `DONE`; archivable). The partitioned
+  aggregate Markdown is joined with real newlines.
+- **Verification:** new and updated tests in `test_exception_reports.py`.
+
+### IMP-20261014-007 — STC references in WIP numbering (TODO-20261014-003)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-003`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** STC finding references are matched by exact verse atoms (`MAT 1:2` is no longer
+  accepted because `MAT 1:20` is planned). The STC response schema makes `target_reference` an enum of the
+  unit's `expected_references` (WIP numbering). The task manifest's `stc_alignment` gains
+  `verse_correspondence` (WIP verses whose OL verses carry other numbers, from
+  `verse_alignment.record_correspondence`), and the STC model assignment carries it as
+  `wip_to_original_language_verses` with `original_language_missing_for`. A current-planner STC scope that
+  fits one unit now receives the planner's boundary context verses.
+- **Verification:** new tests in `test_stc.py`; updated `test_stc_task.py` expectations.
+
+### IMP-20261014-006 — RTC OL requests under a PROHIBITED policy (TODO-20261014-002)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-002`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** `validate_analysis_findings` takes the sealed `source_text_drift_adjudication` policy;
+  under anything but `ENABLED` the meaning stage's `ol_review_requests` are dropped at submit and each is
+  recorded (`RTC_OL_REQUEST_PROHIBITED`, `FLAGGED`, with the model's question). Composite continuation no
+  longer raises on such requests in already sealed outputs; it records them and finalizes. An OL resolution
+  whose `decision` contradicts its `outcome` keeps the outcome, reports the decision as `INCONCLUSIVE`, and
+  is recorded as `RTC_OL_DECISION_OUTCOME_MISMATCH` (`CORRECTED`). The selective-OL ACT step 5 now names the
+  schema `decision` values and their consistent outcomes.
+- **Verification:** new tests in `test_storage_rtc_boundaries.py` and `test_exception_reports.py`.
+
+### IMP-20261014-005 — RTC composite NOT_ASSESSED handling (TODO-20261014-001)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-001`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** a NOT_ASSESSED `STRUCTURAL_ADJUDICATION` stage no longer finalizes the composite; the
+  meaning stage is created without a structural predecessor and reviews the whole scope. Composite
+  finalization unions every stage's not-assessed coordinates and removes them from reviewed coverage, so a
+  NOT_ASSESSED `SELECTIVE_OL_ADJUDICATION` stage marks its deferred target verses NOT_ASSESSED and its
+  exception survives consolidation. OL resolutions (outcome, decision, rationale, finding) render in a new
+  "Original-language adjudications" report section, and OL-stage findings keep `ol_decision` and
+  `ol_rationale`.
+- **Verification:** new tests in `test_exception_reports.py`.
+
 ### IMP-20261014-004 — BIC item-level salvage (first part of TODO-20261013-020)
 
 - **Version:** `0.02a3` (development branch)

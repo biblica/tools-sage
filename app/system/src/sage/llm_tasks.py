@@ -7,7 +7,7 @@ import re
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterator, Sequence
+from typing import Any, Iterator, Mapping, Sequence
 
 from . import bic_output_contract
 from .atomic import atomic_write_json, atomic_write_text
@@ -47,6 +47,7 @@ from .task_retry import (
 )
 from .vocabulary import CANONICAL_TARGET_TEXT_OPERATION
 from .vrs import VerseRef
+from .candidates import adjudication_schema
 from .workflow_identity import is_analysis_workflow, legacy_saw_workflow
 
 EXECUTION_MODE = "SAGE_GOVERNED_TASK_V1"
@@ -148,8 +149,13 @@ def _stc_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
             },
             "target_reference": {
                 "type": "string",
+                **(
+                    {"enum": list(dict.fromkeys(str(value) for value in manifest["expected_references"]))}
+                    if manifest.get("expected_references")
+                    else {}
+                ),
                 "description": (
-                    "One canonical Scripture scope inside the assigned STC work unit."
+                    "One assigned WIP verse, in WIP verse numbering, exactly as listed in expected_references."
                 ),
             },
             "summary": _narrative_field_schema(
@@ -176,12 +182,16 @@ def _stc_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["review_summary", "findings"],
+        "required": ["review_summary", "findings", "candidate_adjudications"],
         "properties": {
             "review_summary": _narrative_field_schema(
                 narrative_tag, "Summarize the bounded STC review."
             ),
             "findings": {"type": "array", "items": finding},
+            "candidate_adjudications": adjudication_schema(
+                list(manifest.get("deterministic_candidates") or []),
+                _narrative_field_schema(narrative_tag, "Explain the verdict."),
+            ),
         },
     }
 
@@ -231,6 +241,10 @@ def _analysis_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
             else {"type": "string"}
         ),
     }
+    # GRAMMAR findings must cite project grammar rules; the schema lists the ones this task may cite.
+    grammar_rule_ids = [
+        str(value) for value in dict(manifest.get("project_grammar") or {}).get("rule_ids", []) if str(value)
+    ]
     finding = {
         "type": "object",
         "additionalProperties": False,
@@ -245,6 +259,8 @@ def _analysis_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
             "evidence_ids",
             "grammar_rule_ids",
             "original_language_evidence",
+            "usfm_context",
+            "material",
         ],
         "properties": {
             "finding_id": {"type": "string"},
@@ -274,10 +290,23 @@ def _analysis_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
                 "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"],
             },
             "evidence_ids": evidence_array,
-            "grammar_rule_ids": string_array,
+            "grammar_rule_ids": (
+                {"type": "array", "items": {"type": "string", "enum": grammar_rule_ids}}
+                if grammar_rule_ids
+                else string_array
+            ),
             "original_language_evidence": _narrative_field_schema(
                 narrative_tag, "Explain the original-language evidence."
             ),
+            "usfm_context": {
+                "type": "string",
+                "enum": ["NONE", "add", "nd", "f", "x"],
+                "description": "The USFM span the finding is about (\\add, \\nd, footnote, cross-reference), or NONE.",
+            },
+            "material": {
+                "type": "boolean",
+                "description": "True when the finding changes meaning a reader would understand.",
+            },
         },
     }
     structural_adjudication = {
@@ -428,6 +457,11 @@ def _analysis_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
     if stage == "REFERENCE_TEXT_COMPARISON":
         properties["ol_review_requests"] = {"type": "array", "items": ol_request}
         required.append("ol_review_requests")
+        properties["candidate_adjudications"] = adjudication_schema(
+            list(manifest.get("deterministic_candidates") or []),
+            _narrative_field_schema(narrative_tag, "Explain the verdict."),
+        )
+        required.append("candidate_adjudications")
     if stage == "SELECTIVE_OL_ADJUDICATION":
         properties["ol_resolutions"] = {"type": "array", "items": ol_resolution}
         required.append("ol_resolutions")
@@ -437,6 +471,47 @@ def _analysis_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
         "required": required,
         "properties": properties,
     }
+
+
+def _selective_ol_roles(manifest: dict[str, Any]) -> list[str]:
+    """Return the single routed OL role of a selective OL task, or raise a task-contract error."""
+    sources = [
+        dict(item)
+        for item in manifest.get("original_language_sources", [])
+        if isinstance(item, dict)
+    ]
+    ol_roles = [
+        str(item.get("role") or "")
+        for item in sources
+        if str(item.get("role") or "") in {"ORIGINAL_LANGUAGE_HEBREW", "ORIGINAL_LANGUAGE_GREEK"}
+    ]
+    allowed = {str(value) for value in manifest.get("allowed_evidence_ids", [])}
+    if len(ol_roles) != 1 or not {"WIP", "REFERENCE", ol_roles[0]}.issubset(allowed):
+        raise ValidationError(
+            "Selective OL task has an inconsistent routed evidence contract",
+            code=_analysis_error_code(
+                manifest, "RTC_TASK_CONTRACT_INVALID", "SAW_TASK_CONTRACT_INVALID"
+            ),
+        )
+    return ol_roles
+
+
+def _check_analysis_manifest_contract(manifest: dict[str, Any]) -> None:
+    """Run the deterministic RTC task-contract checks; called before any provider contact."""
+    if not is_analysis_workflow(str(manifest.get("workflow") or "")) or manifest.get("operation") == "stc":
+        return
+    review = dict(manifest.get("review_requirements") or {})
+    if len([str(value) for value in review.get("expected_work_unit_ids", [])]) != 1:
+        raise ValidationError(
+            f"One sealed {_analysis_identity(manifest)} provider task must correspond to exactly one work unit",
+            code=_analysis_error_code(
+                manifest,
+                "LLM_ANALYSIS_WORK_UNIT_LAYOUT_INVALID",
+                "LLM_SAW_WORK_UNIT_LAYOUT_INVALID",
+            ),
+        )
+    if str(manifest.get("rtc_stage") or "") == "SELECTIVE_OL_ADJUDICATION":
+        _selective_ol_roles(manifest)
 
 
 def _materialize_analysis_findings(
@@ -467,6 +542,7 @@ def _materialize_analysis_findings(
             "review_summary": summary,
             "report_language": _narrative_language_tag(manifest),
             "findings": findings,
+            "candidate_adjudications": semantic.get("candidate_adjudications", []),
         }
     stage = str(manifest.get("rtc_stage") or {
         "focused": "FOCUSED_CHECK",
@@ -480,15 +556,7 @@ def _materialize_analysis_findings(
         )
     review = dict(manifest.get("review_requirements") or {})
     work_unit_ids = [str(value) for value in review.get("expected_work_unit_ids", [])]
-    if len(work_unit_ids) != 1:
-        raise ValidationError(
-            f"One sealed {identity} provider task must correspond to exactly one work unit",
-            code=_analysis_error_code(
-                manifest,
-                "LLM_ANALYSIS_WORK_UNIT_LAYOUT_INVALID",
-                "LLM_SAW_WORK_UNIT_LAYOUT_INVALID",
-            ),
-        )
+    _check_analysis_manifest_contract(manifest)
     expected_references = [str(value) for value in manifest.get("expected_references", [])]
     required_checks = [str(value).upper() for value in review.get("required_checks", [])]
     unit_id = work_unit_ids[0]
@@ -503,26 +571,7 @@ def _materialize_analysis_findings(
             code="LLM_PROVIDER_RESPONSE_INVALID",
         )
     if stage == "SELECTIVE_OL_ADJUDICATION":
-        sources = [
-            dict(item)
-            for item in manifest.get("original_language_sources", [])
-            if isinstance(item, dict)
-        ]
-        ol_roles = [
-            str(item.get("role") or "")
-            for item in sources
-            if str(item.get("role") or "") in {
-                "ORIGINAL_LANGUAGE_HEBREW", "ORIGINAL_LANGUAGE_GREEK"
-            }
-        ]
-        allowed = {str(value) for value in manifest.get("allowed_evidence_ids", [])}
-        if len(ol_roles) != 1 or not {"WIP", "REFERENCE", ol_roles[0]}.issubset(allowed):
-            raise ValidationError(
-                "Selective OL task has an inconsistent routed evidence contract",
-                code=_analysis_error_code(
-                    manifest, "RTC_TASK_CONTRACT_INVALID", "SAW_TASK_CONTRACT_INVALID"
-                ),
-            )
+        ol_roles = _selective_ol_roles(manifest)
         findings = []
         for index, item in enumerate(resolutions, start=1):
             if not isinstance(item, dict):
@@ -543,6 +592,8 @@ def _materialize_analysis_findings(
                 "evidence_ids": ["WIP", "REFERENCE", ol_roles[0]],
                 "grammar_rule_ids": [],
                 "original_language_evidence": item.get("original_language_evidence"),
+                "ol_decision": item.get("decision"),
+                "ol_rationale": item.get("rationale"),
             })
     # Canonical identity and language authority are controller-owned; the provider
     # contributes only the stage-specific semantic fields copied below.
@@ -581,6 +632,7 @@ def _materialize_analysis_findings(
             if isinstance(item, dict) and str(item.get("request_id", "")).strip()
         ],
         "ol_resolutions": resolutions,
+        "candidate_adjudications": semantic.get("candidate_adjudications", []),
         "findings": findings,
     }
 
@@ -998,9 +1050,28 @@ def _assignment(
         "allowed_writes": manifest.get("allowed_writes"),
         "expected_references": manifest.get("expected_references", []),
     }
+    if manifest.get("deterministic_candidates"):
+        common["deterministic_candidates"] = list(manifest["deterministic_candidates"])
     if manifest.get("workflow") == "bic":
         return {**common, **(bic_assignment or {})}
     review = dict(manifest.get("review_requirements") or {})
+    if manifest.get("operation") == "stc":
+        alignment = dict(manifest.get("stc_alignment") or {})
+        common = {
+            **common,
+            # target_reference uses WIP numbering; this lists only verses the OL numbers differently.
+            "wip_to_original_language_verses": list(alignment.get("verse_correspondence") or []),
+            "original_language_missing_for": list(alignment.get("missing_canonical_atoms") or []),
+            "verse_length_outliers": list(alignment.get("length_outliers") or []),
+            "numeric_candidates": dict(alignment.get("numeric_candidates") or {}),
+        }
+    if manifest.get("operation") == "rtc" and isinstance(manifest.get("rtc_policy"), Mapping):
+        policy = dict(manifest["rtc_policy"])
+        # The sealed Text policy: disabled checks are not reported and each USFM context has its mode.
+        common = {
+            **common,
+            "rtc_policy": {"checks": policy.get("checks"), "usfm_contexts": policy.get("usfm_contexts")},
+        }
     return {
         **common,
         "rtc_stage": manifest.get("rtc_stage"),
@@ -1781,8 +1852,9 @@ def _route_measurement(
     transport_bytes = prompt_bytes + schema_bytes + int(projection["model_bytes"])
     return {
         "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
-        "measurement_scope": "routed_analysis_sfm_only",
-        "total_bytes": sfm_bytes,
+        # Every routed read counts against the byte budget; token sizing stays SFM-only, as planned.
+        "measurement_scope": "routed_reads_bytes_and_sfm_tokens",
+        "total_bytes": int(projection["model_bytes"]),
         "total_estimated_tokens": sfm_tokens,
         "routed_sfm_bytes": sfm_bytes,
         "routed_sfm_estimated_tokens": sfm_tokens,
@@ -2034,6 +2106,7 @@ def execute_task(
     act_text = act_path.read_text(encoding="utf-8")
     # Fail closed before any provider contact when a pinned contract is missing or stale.
     protected_contracts = _protected_contracts(config, manifest)
+    _check_analysis_manifest_contract(manifest)
 
     settings = load_llm_settings(config.root)
     executor, provider_status_snapshot, route = _resolve_task_route(

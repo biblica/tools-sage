@@ -12,6 +12,7 @@ from types import SimpleNamespace
 import pytest
 import yaml
 
+from .conftest import submit_with_receipt
 from sage.storage import storage_layout
 from sage.act_outputs import validate_bic_usfm_output
 from sage.act_tasks import create_act_task, load_skill_registry, submit_act_task
@@ -188,7 +189,7 @@ def test_inspect_drops_and_reports_out_of_scope_challenge(
         json.dumps(payload),
         encoding="utf-8",
     )
-    result = submit_act_task(config, manifest)
+    result = submit_with_receipt(config, manifest)
     assert result["status"] == "COMMITTED"
     assert result["validation"]["challenges"] == 0
     assert result["validation"]["dropped_items"] == 1
@@ -224,7 +225,7 @@ def test_inspect_generic_validator_failure_is_rejected_output(
         encoding="utf-8",
     )
     with pytest.raises(ValidationError) as caught:
-        submit_act_task(config, manifest)
+        submit_with_receipt(config, manifest)
     assert caught.value.code == "BIC_OUTPUT_INVALID"
     assert "proposals" in caught.value.message
     assert classify_exception(caught.value)[0] == "TASK_OUTPUT_REJECTED"
@@ -252,7 +253,7 @@ def test_saw_rejects_coverage_without_review_receipt(
         encoding="utf-8",
     )
     with pytest.raises(ValidationError) as caught:
-        submit_act_task(config, manifest)
+        submit_with_receipt(config, manifest)
     assert caught.value.code == "RTC_REVIEW_EVIDENCE_MISSING"
 
 

@@ -59,7 +59,7 @@ from .evidence_policy import (
 )
 from .external_access import validate_external_companion_file, validate_external_file
 from .generations import project_validation_fingerprint
-from .findings import globalize_result_finding_ids, validate_global_finding_ids
+from .findings import dedupe_findings, globalize_result_finding_ids, validate_global_finding_ids
 from .grammar import GrammarProfile, load_grammar_profile
 from .grammar_governance import (
     active_grammar_review,
@@ -119,8 +119,10 @@ from .stc import (
     LEGACY_STC_PLANNER_VERSION,
     STC_PLANNER_VERSION,
     finalize_stc_run,
+    length_outliers,
     plan_stc_work_units,
     stc_authority_family,
+    stc_gap_findings,
     validate_stc_submission,
 )
 from .stc_reporting import publish_stc_reports
@@ -128,10 +130,21 @@ from .rtc_planner import (
     LEGACY_RTC_PLANNER_VERSION,
     RTC_HANDOFF_CONTRACT_VERSION,
     RTC_PLANNER_VERSION,
+    rtc_plan_wip_limit,
     rtc_prompt_schema_projection_version,
     rtc_slicing_policy,
 )
-from .verse_alignment import ProjectVerseIndex, align_records, project_coordinates
+from .marker_checks import load_verse_content, marker_review, packet_marker_candidates
+from .numeric_candidates import numeric_candidates, packet_verses
+from .candidates import candidate_inventory
+from .text_coverage import gap_findings, omission_rows, psalm_title_chapters
+from .verse_alignment import (
+    ProjectVerseIndex,
+    align_records,
+    missing_by_local_ref,
+    project_coordinates,
+    record_correspondence,
+)
 from .scripture import compile_project, compile_project_scope, discover_book_ids
 from .rtc_policy import load_run_policy_snapshot
 from .semantic.diagnostics import analysis_signals_from_scope_evidence
@@ -139,7 +152,7 @@ from .semantic.evidence import scope_evidence_for_project
 from .state import ecosystem_state_path, read_state, utc_now
 from .task_retry import provider_output_contract
 from .transactions import FileTransaction, incomplete_transactions
-from .jobs import JobStore, default_job_name
+from .jobs import RUN_CLOSED_STATUSES, JobStore, default_job_name
 from .workflow_identity import (
     analysis_reason_code,
     canonical_analysis_job_id,
@@ -872,6 +885,13 @@ def _ensure_task_context(
             f"{workflow.upper()} {operation.upper()} requires a source/reference Project"
         )
     store = JobStore(config.root, config.settings_path)
+    if not job_id and workflow == "rtc":
+        # Only the legacy SAW shortcut may still mint a Job; an RTC task belongs to an existing RTC Job.
+        raise ValidationError(
+            "RTC tasks require an existing RTC Job and Run",
+            code="RTC_JOB_REQUIRED",
+            next_action="Create the RTC Job from the Main Menu, then pass --job-id and --run-id.",
+        )
     if not job_id:
         profile = load_workflow_profile(config, config.workflow(workflow))
         if workflow == "bic":
@@ -942,12 +962,7 @@ def _ensure_task_context(
         # Reuse one active scope-owned Run so direct shortcuts obey the same Project/Job/Run grammar as the Control Center.
         reusable = None
         for candidate in store.list_runs(job, include_archived=False):
-            if candidate.status in {
-                "COMPLETE",
-                "COMPLETE_WITH_STRUCTURE_PROBLEMS",
-                "ARCHIVED",
-                "ABANDONED",
-            }:
+            if candidate.status in RUN_CLOSED_STATUSES:
                 continue
             if candidate.operation != run_operation or not scripture_scopes_equal(
                 candidate.scope, scope.label(), workflow=workflow, operation=run_operation,
@@ -1074,6 +1089,37 @@ def validate_act_request_readiness(
     }
 
 
+def _scope_chapters(scopes: Iterable[AnalysisScope]) -> set[int] | None:
+    """Return the chapters the scopes touch, or None when any scope is a whole book."""
+    chapters: set[int] = set()
+    flat = [
+        portion
+        for scope in scopes
+        for portion in (scope.portions if isinstance(scope, ScriptureScopeSet) else (scope,))
+    ]
+    for scope in flat:
+        if scope.start_chapter is None:
+            return None
+        chapters.update(range(scope.start_chapter, (scope.end_chapter or scope.start_chapter) + 1))
+    return chapters
+
+
+def _parser_errors_in_scope(text: str, name: str, usj: Mapping[str, Any], chapters: set[int] | None) -> list[str]:
+    """Return parser errors that affect the requested chapters; errors elsewhere in the book do not block."""
+    errors = list(dict(usj.get("sage") or {}).get("errors", []))
+    if not errors or not chapters:
+        return errors
+    kept: list[str] = []
+    current: int | None = None
+    for line in text.splitlines(keepends=True):
+        match = re.match(r"\s*\\c\s+(\d+)", line)
+        if match:
+            current = int(match.group(1))
+        if current is None or current in chapters:
+            kept.append(line)
+    return list(dict(compile_usfm_text("".join(kept), name).get("sage") or {}).get("errors", []))
+
+
 def _scope_units(
     path: Path,
     scope: ScriptureScope,
@@ -1089,7 +1135,7 @@ def _scope_units(
         usj = compile_usfm_text(text, path.name)
     except (OSError, UnicodeError, ValueError) as exc:
         raise ValidationError(f"Cannot compile task input {path}: {exc}") from exc
-    parser_errors = list(usj.get("sage", {}).get("errors", []))
+    parser_errors = _parser_errors_in_scope(text, path.name, usj, _scope_chapters((scope,)))
     if parser_errors:
         raise ValidationError(f"Task input {path.name} has parser errors: {', '.join(parser_errors[:8])}")
     units = parse_usj_units(usj)
@@ -1269,10 +1315,12 @@ def _write_reference_inventory_usj_packet(
     raw = source.read_bytes()
     text = raw.decode("utf-8-sig")
     usj = compile_usfm_text(text, source.name)
-    parser_errors = list(usj.get("sage", {}).get("errors", []))
+    requested_scopes = [scope for value in reference_values for scope in parse_scope_set(value)]
+    parser_errors = _parser_errors_in_scope(
+        text, source.name, usj, _scope_chapters([parent_scope, *requested_scopes])
+    )
     if parser_errors:
         raise ValidationError(f"Task input {source.name} has parser errors: {', '.join(parser_errors[:8])}")
-    requested_scopes = [scope for value in reference_values for scope in parse_scope_set(value)]
     if not requested_scopes and not allow_empty:
         raise ValidationError("Composite RTC stage reference inventory must not be empty")
     selected: list[dict[str, Any]] = []
@@ -1381,12 +1429,12 @@ def _rtc_canonical_packet_route(
         context_reference_values,
     )
     service = VersificationService(config)
-    wip_index = ProjectVerseIndex.build(
+    wip_index = ProjectVerseIndex.cached(
         output.project_id,
         wip_records,
         service.project_schema(output),
     )
-    reference_index = ProjectVerseIndex.build(
+    reference_index = ProjectVerseIndex.cached(
         reference.project_id,
         reference_records,
         service.project_schema(reference),
@@ -1698,12 +1746,7 @@ def _canonical_gap_source_issues(
     canonical_by_local: dict[VerseRef, set[VerseRef]] = {}
     missing_local: set[VerseRef] = set()
     for record in primary_records:
-        record_missing = primary_index.canonical_refs_for_records((record,)).intersection(
-            missing_canonical
-        )
-        if not record_missing:
-            continue
-        for local_ref in record.refs:
+        for local_ref, record_missing in missing_by_local_ref(record, primary_index, missing_canonical).items():
             missing_local.add(local_ref)
             canonical_by_local.setdefault(local_ref, set()).update(record_missing)
     issues = list(source_text_issues(
@@ -2012,7 +2055,10 @@ def _structural_candidates(
             state = "SPLIT"
         else:
             state = "MAPPED"
-        candidate_id = f"VRS-{len(candidates) + 1:03d}"
+        # Derived from the mapping itself so IDs stay unique across every work unit of a plan.
+        candidate_id = "VRS-" + sha256_bytes(
+            f"{mapping.source}:{mapping.line_number}:{mapping.local.label()}:{mapping.canonical.label()}".encode("utf-8")
+        )[:10].upper()
         candidates.append(
             {
                 "candidate_id": candidate_id,
@@ -2029,6 +2075,176 @@ def _structural_candidates(
     return candidates
 
 
+def _rtc_alignment_inputs(
+    config: EcosystemConfig,
+    workflow: str,
+    output: ProjectSpec,
+    source: ProjectSpec,
+    scope: AnalysisScope,
+) -> tuple[tuple[EvidenceRecord, ...], ProjectVerseIndex, tuple[EvidenceRecord, ...], ProjectVerseIndex, dict[str, Any]]:
+    """Compile WIP and REFERENCE once and index both through their effective VRS schemas."""
+    compiled = _assert_initialized_and_ready(
+        config, workflow, [("RTC WIP", output), ("RTC REFERENCE", source)], scope
+    )
+    wip_records = records_from_project_result(output.project_id, compiled[output.project_id], resource_role="WIP")
+    reference_records = records_from_project_result(
+        source.project_id, compiled[source.project_id], resource_role="REFERENCE"
+    )
+    service = VersificationService(config)
+    wip_index = ProjectVerseIndex.cached(output.project_id, wip_records, service.project_schema(output))
+    reference_index = ProjectVerseIndex.cached(
+        source.project_id, reference_records, service.project_schema(source)
+    )
+    return wip_records, wip_index, reference_records, reference_index, compiled
+
+
+def _rtc_omission_rows(
+    inputs: tuple[Any, ...],
+    output: ProjectSpec,
+    source: ProjectSpec,
+    scope: AnalysisScope,
+) -> list[dict[str, Any]]:
+    """Return REFERENCE text the WIP lacks anywhere in the requested RTC scope."""
+    wip_records, wip_index, reference_records, reference_index, _ = inputs
+    wip_file = _one_book_file(output, scope.book)
+    return omission_rows(
+        wip_records,
+        wip_index,
+        reference_records,
+        reference_index,
+        scope,
+        workflow="RTC",
+        authority_stream="REFERENCE",
+        authority_project_id=source.project_id,
+        wip_project_id=output.project_id,
+        title_chapters=(
+            psalm_title_chapters(wip_file.read_text(encoding="utf-8-sig"))
+            if wip_file is not None and scope.book == "PSA"
+            else ()
+        ),
+    )
+
+
+def _rtc_marker_review(
+    inputs: tuple[Any, ...],
+    output: ProjectSpec,
+    source: ProjectSpec,
+    scope: AnalysisScope,
+) -> dict[str, list[dict[str, Any]]]:
+    """Run the deterministic cross-reference and footnote checks over the WIP verses of the scope."""
+    wip_records, wip_index, _reference_records, reference_index, compiled = inputs
+    return marker_review(
+        [record for record in wip_records if any(scope.contains(ref) for ref in record.refs)],
+        load_verse_content(compiled[output.project_id]),
+        wip_index,
+        reference_index,
+        load_verse_content(compiled[source.project_id]),
+        wip_project_id=output.project_id,
+        reference_project_id=source.project_id,
+    )
+
+
+def _structural_triage(
+    config: EcosystemConfig,
+    workflow: str,
+    output: ProjectSpec,
+    source: ProjectSpec,
+    scope: AnalysisScope,
+    candidates: Sequence[Mapping[str, Any]],
+    inputs: tuple[Any, ...] | None = None,
+) -> dict[str, list[dict[str, Any]]]:
+    """Decide WIP VRS mapping candidates in code from the WIP↔REFERENCE alignment.
+
+    Identity, shift, merge, or split with text on both sides is no finding. Text missing on one side is a
+    deterministic STRUCTURE finding. Only an equivalence group whose sides do not both carry text goes to
+    the model. Returns ``model`` (candidates to adjudicate), ``findings``, and ``resolved`` rows.
+    """
+    triage: dict[str, list[dict[str, Any]]] = {"model": [], "findings": [], "resolved": []}
+    if not candidates:
+        return triage
+    wip_records, wip_index, reference_records, reference_index, _ = inputs or _rtc_alignment_inputs(
+        config, workflow, output, source, scope
+    )
+    for candidate in candidates:
+        local = {atom for value in candidate.get("references", []) for atom in expand_reference_atoms(str(value))}
+        wip_selected = tuple(record for record in wip_records if local.intersection(record.refs))
+        wip_covered = {ref for record in wip_selected for ref in record.refs}
+        wip_has_text = local <= wip_covered and all(
+            str(record.payload.get("body_text") or "").strip() for record in wip_selected
+        )
+        alignment = align_records(wip_selected, wip_index, reference_index) if wip_selected else None
+        canonical = set(alignment.canonical_refs) if alignment else set()
+        reference_selected = alignment.authority_records if alignment else ()
+        reference_has_text = bool(canonical) and not alignment.missing_canonical_refs and all(
+            str(record.payload.get("body_text") or "").strip() for record in reference_selected
+        )
+        row = {
+            "candidate_id": candidate["candidate_id"],
+            "local": candidate.get("local"),
+            "canonical": candidate.get("canonical"),
+            "state": candidate.get("state"),
+            "references": list(candidate.get("references", [])),
+            "reference_spans": [record.reference for record in reference_selected],
+        }
+        if wip_has_text and reference_has_text:
+            triage["resolved"].append({**row, "outcome": "NO_FINDING"})
+        elif alignment is not None and alignment.mapping_precision == "EQUIVALENCE_GROUP":
+            triage["model"].append(dict(candidate))
+        else:
+            missing_side = "WIP" if not wip_has_text else "REFERENCE"
+            present = source.project_id if missing_side == "WIP" else output.project_id
+            absent = output.project_id if missing_side == "WIP" else source.project_id
+            triage["findings"].append(
+                {
+                    "finding_id": f"D-{candidate['candidate_id']}",
+                    "target_reference": "; ".join(row["references"]),
+                    "category": "STRUCTURE",
+                    "issue": (
+                        f"{output.project_id} {candidate.get('local')} maps to {candidate.get('canonical')}, "
+                        f"which has text in {present} but none in {absent}."
+                    ),
+                    "required_action": f"Check whether text is missing from {absent} at this coordinate.",
+                    "action_level": "REVIEW",
+                    "confidence": "HIGH",
+                    "evidence_ids": ["WIP", "REFERENCE"],
+                    "grammar_rule_ids": [],
+                    "original_language_evidence": "",
+                    "detection": "DETERMINISTIC",
+                }
+            )
+            triage["resolved"].append({**row, "outcome": "FINDING", "missing_side": missing_side})
+    return triage
+
+
+def _rtc_task_source_issue_rows(
+    rtc_packet_route: Mapping[str, Any] | None,
+    packet_records: Mapping[str, Any],
+    source: ProjectSpec,
+    output: ProjectSpec,
+    scope: AnalysisScope,
+) -> list[dict[str, Any]]:
+    """Return the REFERENCE coverage gaps of one RTC task's WIP coordinates."""
+    if rtc_packet_route is not None:
+        return list(rtc_packet_route["source_text_issues"])
+    return list(source_text_issues(
+        (
+            ref
+            for value in packet_records["output_project"]["atomic_references"]
+            for ref in expand_reference_atoms(str(value))
+        ),
+        (
+            ref
+            for value in packet_records["contemporary_source"]["atomic_references"]
+            for ref in expand_reference_atoms(str(value))
+        ),
+        workflow="RTC",
+        source_stream="REFERENCE",
+        source_project_id=source.project_id,
+        wip_project_id=output.project_id,
+        scope=scope.label(),
+    ))
+
+
 def _write_analysis_preflight(
     config: EcosystemConfig,
     packet_root: Path,
@@ -2039,18 +2255,43 @@ def _write_analysis_preflight(
     ol_role: str,
     scope: ScriptureScope,
     packet_records: dict[str, Any],
+    *,
+    structural_stage: bool = False,
+    source_issue_rows: Sequence[Mapping[str, Any]] = (),
 ) -> tuple[list[Path], dict[str, Any]]:
     """Write deterministic RTC/legacy preflight evidence and coverage targets."""
     vrs_inputs, _ = _write_vrs_evidence(
         config, packet_root, output, source, ol_project, scope
     )
     candidates = _structural_candidates(config, output, scope)
+    if structural_stage and candidates:
+        # The structural model stage sees only the equivalence groups code could not decide.
+        candidates = _structural_triage(config, workflow, output, source, scope, candidates)["model"]
     expected_refs = list(packet_records["output_project"]["atomic_references"])
+    direct_findings = gap_findings(source_issue_rows)
+    # Numbers the index settles need no model finding; the rest are candidates (NCA checks them in full).
+    numeric = numeric_candidates(config, packet_verses(packet_root / str(packet_records["output_project"]["path"])))
+    marker_candidates = (
+        packet_marker_candidates(
+            packet_root / str(packet_records["output_project"]["path"]),
+            packet_root / str(packet_records["contemporary_source"]["path"]),
+        )
+        if packet_records.get("contemporary_source", {}).get("path")
+        else []
+    )
+    # Each status reflects what the controller actually established for this task.
     mechanical_checks = [
         {
+            # Task creation already refused parser errors in the requested chapters.
             "check_id": "BOUNDED_USFM_PARSE_AND_COORDINATE_INVENTORY",
             "status": "PASS",
             "reviewed_reference_count": len(expected_refs),
+        },
+        {
+            "check_id": "REFERENCE_TEXT_COVERAGE",
+            "status": "GAPS_REPORTED" if direct_findings else "PASS",
+            "gap_count": len(direct_findings),
+            "reference_coordinate_count": len(packet_records["contemporary_source"].get("atomic_references", [])),
         },
         {
             "check_id": "VERSIFICATION_MAPPING_SCAN",
@@ -2066,7 +2307,11 @@ def _write_analysis_preflight(
         "schema_version": "1.0",
         "scope": scope.label(),
         "status": "PREFLIGHT_PASS_WITH_RESTRICTIONS" if candidates else "PREFLIGHT_PASS",
-        "direct_findings": [],
+        # Already reported by SAGE; the model must not restate these text gaps.
+        "direct_findings": direct_findings,
+        # The add and nd marker counts differ from the REFERENCE here; the model reports only material differences.
+        "marker_candidates": marker_candidates,
+        "numeric_candidates": numeric,
         "structural_candidates": candidates,
         "controller_checks": mechanical_checks,
         "controller_owned_outputs": [
@@ -2385,7 +2630,8 @@ def _required_review_checks(
         if checks.get("consistency", True):
             required.extend(["TERMINOLOGY", "PARTICIPANT_REFERENCE"])
         if checks.get("structure_completeness", True):
-            required.extend(["QUOTATION_STRUCTURE", "VERSE_BRIDGE_MAPPING"])
+            # VERSE_BRIDGE_MAPPING is decided in code from the WIP↔REFERENCE alignment, not by the model.
+            required.append("QUOTATION_STRUCTURE")
         required.append("CROSS_REFERENCE")
         return required
     if operation == "focused":
@@ -3169,91 +3415,96 @@ def _partition_selective_ol_cases(
     parent_positions: dict[str, int] = {}
     # Keep request order as the immutable parent aggregate declared it; task IDs and
     # aggregation reconciliation both depend on this stable one-case sequence.
-    for index, request in enumerate(requests, start=1):
-        progress = progress_rows[index - 1]
-        parent_id = str(progress["parent_review_portion_id"])
-        parent_positions[parent_id] = parent_positions.get(parent_id, 0) + 1
-        stage_case_index = parent_positions[parent_id]
-        stage_case_total = parent_totals[parent_id]
-        target_reference = str(request.get("target_reference") or "").strip()
-        atoms = tuple(sorted(set(expand_reference_atoms(target_reference))))
-        if not atoms or any(not scope.contains(ref) for ref in atoms):
-            raise ValidationError(
-                f"Selective OL request {request_ids[index - 1]} is outside the parent scope",
-                code=_analysis_code(workflow, "SAW_OL_REQUEST_INVENTORY_INVALID"),
-                affected_scope=scope.label(),
+    try:
+        for index, request in enumerate(requests, start=1):
+            progress = progress_rows[index - 1]
+            parent_id = str(progress["parent_review_portion_id"])
+            parent_positions[parent_id] = parent_positions.get(parent_id, 0) + 1
+            stage_case_index = parent_positions[parent_id]
+            stage_case_total = parent_totals[parent_id]
+            target_reference = str(request.get("target_reference") or "").strip()
+            atoms = tuple(sorted(set(expand_reference_atoms(target_reference))))
+            if not atoms or any(not scope.contains(ref) for ref in atoms):
+                raise ValidationError(
+                    f"Selective OL request {request_ids[index - 1]} is outside the parent scope",
+                    code=_analysis_code(workflow, "SAW_OL_REQUEST_INVENTORY_INVALID"),
+                    affected_scope=scope.label(),
+                )
+            case_scope = _scope_for_case_atoms(atoms)
+            unit_id = f"{plan_id}-U{index:03d}"
+            atom_labels = [ref.label() for ref in atoms]
+            child = create_act_task(
+                config,
+                workflow=workflow,
+                operation=operation,
+                output_project_id=output_project_id,
+                contemporary_source_id=contemporary_source_id,
+                lexical_donor_id=lexical_donor_id,
+                scope_value=case_scope.label(),
+                focus=focus,
+                check_type=check_type,
+                predecessor_task=predecessor_task,
+                grammar_override_id=grammar_override_id,
+                auto_partition=False,
+                parent_plan_id=plan_id,
+                work_unit_id=unit_id,
+                job_id=job_id,
+                run_id=run_id,
+                rtc_stage="SELECTIVE_OL_ADJUDICATION",
+                rtc_planner_version=rtc_planner_version,
+                rtc_predecessor_files=rtc_predecessor_files,
+                expected_ol_request_ids=[request_ids[index - 1]],
+                expected_ol_requests=[request],
+                rtc_stage_references=atom_labels,
+                ol_referral_contract=ol_referral_contract,
+                review_portion_id=str(progress["review_portion_id"]),
+                review_portion_index=int(progress["review_portion_index"]),
+                review_portion_total=int(progress["review_portion_total"]),
+                review_portion_scope=str(progress["review_portion_scope"]),
+                parent_review_portion_id=parent_id,
+                stage_case_index=stage_case_index,
+                stage_case_total=stage_case_total,
             )
-        case_scope = _scope_for_case_atoms(atoms)
-        unit_id = f"{plan_id}-U{index:03d}"
-        atom_labels = [ref.label() for ref in atoms]
-        child = create_act_task(
-            config,
-            workflow=workflow,
-            operation=operation,
-            output_project_id=output_project_id,
-            contemporary_source_id=contemporary_source_id,
-            lexical_donor_id=lexical_donor_id,
-            scope_value=case_scope.label(),
-            focus=focus,
-            check_type=check_type,
-            predecessor_task=predecessor_task,
-            grammar_override_id=grammar_override_id,
-            auto_partition=False,
-            parent_plan_id=plan_id,
-            work_unit_id=unit_id,
-            job_id=job_id,
-            run_id=run_id,
-            rtc_stage="SELECTIVE_OL_ADJUDICATION",
-            rtc_planner_version=rtc_planner_version,
-            rtc_predecessor_files=rtc_predecessor_files,
-            expected_ol_request_ids=[request_ids[index - 1]],
-            expected_ol_requests=[request],
-            rtc_stage_references=atom_labels,
-            ol_referral_contract=ol_referral_contract,
-            review_portion_id=str(progress["review_portion_id"]),
-            review_portion_index=int(progress["review_portion_index"]),
-            review_portion_total=int(progress["review_portion_total"]),
-            review_portion_scope=str(progress["review_portion_scope"]),
-            parent_review_portion_id=parent_id,
-            stage_case_index=stage_case_index,
-            stage_case_total=stage_case_total,
-        )
-        created_tasks.append(child)
-        manifest = load_json(Path(str(child["manifest_path"])))
-        child_atoms = list(atomic_reference_labels(
-            str(value) for value in manifest.get("expected_references", [])
-        ))
-        child_request_ids = list(
-            dict(manifest.get("review_requirements") or {}).get(
-                "expected_ol_request_ids", []
+            created_tasks.append(child)
+            manifest = load_json(Path(str(child["manifest_path"])))
+            child_atoms = list(atomic_reference_labels(
+                str(value) for value in manifest.get("expected_references", [])
+            ))
+            child_request_ids = list(
+                dict(manifest.get("review_requirements") or {}).get(
+                    "expected_ol_request_ids", []
+                )
             )
-        )
-        if child_atoms != atom_labels or child_request_ids != [request_ids[index - 1]]:
-            raise ValidationError(
-                "Selective OL case task differs from its one-request controller plan",
-                code=_analysis_code(workflow, "SAW_OL_CASE_ISOLATION_INVALID"),
-                affected_scope=case_scope.label(),
-                details={
-                    "unit_id": unit_id,
-                    "planned_request_id": request_ids[index - 1],
-                    "task_request_ids": child_request_ids,
-                    "planned_atoms": atom_labels,
-                    "task_atoms": child_atoms,
-                },
-            )
-        children.append({
-            "unit_id": unit_id,
-            "scope": case_scope.label(),
-            "task_id": child["task_id"],
-            "manifest_path": child["manifest_path"],
-            "task_fingerprint": child["task_fingerprint"],
-            "primary_coverage_atoms": child_atoms,
-            "ol_request_ids": child_request_ids,
-            "context_budget": child.get("context_budget"),
-            **progress,
-            "stage_case_index": stage_case_index,
-            "stage_case_total": stage_case_total,
-        })
+            if child_atoms != atom_labels or child_request_ids != [request_ids[index - 1]]:
+                raise ValidationError(
+                    "Selective OL case task differs from its one-request controller plan",
+                    code=_analysis_code(workflow, "SAW_OL_CASE_ISOLATION_INVALID"),
+                    affected_scope=case_scope.label(),
+                    details={
+                        "unit_id": unit_id,
+                        "planned_request_id": request_ids[index - 1],
+                        "task_request_ids": child_request_ids,
+                        "planned_atoms": atom_labels,
+                        "task_atoms": child_atoms,
+                    },
+                )
+            children.append({
+                "unit_id": unit_id,
+                "scope": case_scope.label(),
+                "task_id": child["task_id"],
+                "manifest_path": child["manifest_path"],
+                "task_fingerprint": child["task_fingerprint"],
+                "primary_coverage_atoms": child_atoms,
+                "ol_request_ids": child_request_ids,
+                "context_budget": child.get("context_budget"),
+                **progress,
+                "stage_case_index": stage_case_index,
+                "stage_case_total": stage_case_total,
+            })
+    except Exception:
+        # A partitioner that fails mid-loop must not leave orphan child tasks behind.
+        _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
+        raise
 
     if len(created_tasks) == 1:
         return {
@@ -3375,8 +3626,12 @@ def _partition_act_request(
                 affected_scope=scope.label(),
             )
     derived = _partition_evidence_policy(workflow, operation, policy)
+    stream_limits: tuple[tuple[str, int], ...] = ()
     if workflow in {"rtc", "saw"} and operation == "rtc" and rtc_stage == "REFERENCE_TEXT_COMPARISON":
-        derived = rtc_slicing_policy(policy, profile.require_rtc_sizing())
+        rtc_sizing = profile.require_rtc_sizing()
+        derived = rtc_slicing_policy(policy, rtc_sizing)
+        # The same WIP limit as the planner, so a partitioned unit cannot fail the task-time WIP check.
+        stream_limits = (("WIP", rtc_plan_wip_limit(rtc_sizing)),)
     plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
     primary_stream_id = "WIP" if is_analysis_workflow(workflow) else "CONTENT_SOURCE"
     canonical_rtc_route = (
@@ -3388,7 +3643,7 @@ def _partition_act_request(
     reference_index: ProjectVerseIndex | None = None
     if canonical_rtc_route:
         service = VersificationService(config)
-        primary_index = ProjectVerseIndex.build(
+        primary_index = ProjectVerseIndex.cached(
             record_project_id,
             records,
             service.project_schema(record_project_id),
@@ -3407,7 +3662,7 @@ def _partition_act_request(
             resource_role="REFERENCE",
         )
         if canonical_rtc_route:
-            reference_index = ProjectVerseIndex.build(
+            reference_index = ProjectVerseIndex.cached(
                 source_project_id,
                 reference_records,
                 service.project_schema(source_project_id),
@@ -3436,6 +3691,7 @@ def _partition_act_request(
             route_id=f"{workflow.upper()}_{operation.upper()}",
             streams=tuple(route_streams),
             target_stream_ids=(primary_stream_id,),
+            stream_hard_token_limits=stream_limits,
             primary_stream_id=primary_stream_id if canonical_rtc_route else None,
             primary_index=primary_index if canonical_rtc_route else None,
         ),
@@ -3449,71 +3705,78 @@ def _partition_act_request(
             next_action="Narrow the requested scope or reduce configured evidence resources.",
         )
     children: list[dict[str, Any]] = []
+    created_children: list[dict[str, Any]] = []
     # Each child is created through the same public task constructor so partitioning cannot bypass authority/read controls.
-    for unit in units:
-        unit_record = unit.to_dict()
-        unit_scope = unit_record["primary_scope"]
-        unit_scope_obj = parse_scope(unit_scope)
-        child_expected_ol_requests = [dict(row) for row in expected_ol_requests if _scope_intersects(unit_scope_obj, str(row.get("target_reference") or ""))]
-        child_expected_ids = [str(row.get("request_id") or "") for row in child_expected_ol_requests]
-        child_stage_references = (
-            [ref.label() for ref in sorted(unit.primary_refs)]
-            if stage_spans
-            else []
-        )
-        child = create_act_task(
-            config,
-            workflow=workflow,
-            operation=operation,
-            output_project_id=output_project_id,
-            contemporary_source_id=contemporary_source_id,
-            lexical_donor_id=lexical_donor_id,
-            scope_value=unit_scope,
-            focus=focus,
-            check_type=check_type,
-            predecessor_task=predecessor_task,
-            grammar_override_id=grammar_override_id,
-            auto_partition=False,
-            parent_plan_id=plan_id,
-            work_unit_id=unit.unit_id,
-            job_id=job_id,
-            run_id=run_id,
-            rtc_stage=rtc_stage,
-            rtc_planner_version=rtc_planner_version,
-            rtc_predecessor_files=rtc_predecessor_files,
-            expected_ol_request_ids=child_expected_ids,
-            expected_ol_requests=child_expected_ol_requests,
-            rtc_stage_references=child_stage_references,
-            context_before_references=unit_record["context_before"],
-            context_after_references=unit_record["context_after"],
-            ol_referral_contract=ol_referral_contract,
-        )
-        child_manifest = load_json(Path(str(child["manifest_path"])))
-        child_atoms = list(atomic_reference_labels(
-            str(value) for value in child_manifest.get("expected_references", [])
-        ))
-        planned_atoms = [ref.label() for ref in sorted(unit.primary_refs)]
-        if child_atoms != planned_atoms:
-            raise ValidationError(
-                f"Partitioned {_analysis_identity(workflow)} work-unit atoms differ from the generated sealed task",
-                code=_analysis_code(workflow, "SAW_RTC_STAGE_COVERAGE_INVALID"),
-                affected_scope=unit_scope,
-                next_action="Restart the affected Run with current settings; coverage boundaries will not change silently.",
-                details={
-                    "unit_id": unit.unit_id,
-                    "planned_atoms": planned_atoms,
-                    "task_atoms": child_atoms,
-                },
+    try:
+        for unit in units:
+            unit_record = unit.to_dict()
+            unit_scope = unit_record["primary_scope"]
+            unit_scope_obj = parse_scope(unit_scope)
+            child_expected_ol_requests = [dict(row) for row in expected_ol_requests if _scope_intersects(unit_scope_obj, str(row.get("target_reference") or ""))]
+            child_expected_ids = [str(row.get("request_id") or "") for row in child_expected_ol_requests]
+            child_stage_references = (
+                [ref.label() for ref in sorted(unit.primary_refs)]
+                if stage_spans
+                else []
             )
-        children.append({
-            "unit_id": unit.unit_id,
-            "scope": unit_scope,
-            "task_id": child["task_id"],
-            "manifest_path": child["manifest_path"],
-            "task_fingerprint": child["task_fingerprint"],
-            "primary_coverage_atoms": child_atoms,
-            "context_budget": child.get("context_budget"),
-        })
+            child = create_act_task(
+                config,
+                workflow=workflow,
+                operation=operation,
+                output_project_id=output_project_id,
+                contemporary_source_id=contemporary_source_id,
+                lexical_donor_id=lexical_donor_id,
+                scope_value=unit_scope,
+                focus=focus,
+                check_type=check_type,
+                predecessor_task=predecessor_task,
+                grammar_override_id=grammar_override_id,
+                auto_partition=False,
+                parent_plan_id=plan_id,
+                work_unit_id=unit.unit_id,
+                job_id=job_id,
+                run_id=run_id,
+                rtc_stage=rtc_stage,
+                rtc_planner_version=rtc_planner_version,
+                rtc_predecessor_files=rtc_predecessor_files,
+                expected_ol_request_ids=child_expected_ids,
+                expected_ol_requests=child_expected_ol_requests,
+                rtc_stage_references=child_stage_references,
+                context_before_references=unit_record["context_before"],
+                context_after_references=unit_record["context_after"],
+                ol_referral_contract=ol_referral_contract,
+            )
+            created_children.append(child)
+            child_manifest = load_json(Path(str(child["manifest_path"])))
+            child_atoms = list(atomic_reference_labels(
+                str(value) for value in child_manifest.get("expected_references", [])
+            ))
+            planned_atoms = [ref.label() for ref in sorted(unit.primary_refs)]
+            if child_atoms != planned_atoms:
+                raise ValidationError(
+                    f"Partitioned {_analysis_identity(workflow)} work-unit atoms differ from the generated sealed task",
+                    code=_analysis_code(workflow, "SAW_RTC_STAGE_COVERAGE_INVALID"),
+                    affected_scope=unit_scope,
+                    next_action="Restart the affected Run with current settings; coverage boundaries will not change silently.",
+                    details={
+                        "unit_id": unit.unit_id,
+                        "planned_atoms": planned_atoms,
+                        "task_atoms": child_atoms,
+                    },
+                )
+            children.append({
+                "unit_id": unit.unit_id,
+                "scope": unit_scope,
+                "task_id": child["task_id"],
+                "manifest_path": child["manifest_path"],
+                "task_fingerprint": child["task_fingerprint"],
+                "primary_coverage_atoms": child_atoms,
+                "context_budget": child.get("context_budget"),
+            })
+    except Exception:
+        # A partitioner that fails mid-loop must not leave orphan child tasks behind.
+        _rollback_unregistered_stage_tasks(config, workflow, run_id, created_children)
+        raise
     expected_refs = [
         atom
         for child in children
@@ -3599,9 +3862,33 @@ def _create_rtc_composite(
             else RTC_PLANNER_VERSION
         )
     )
-    candidates = _structural_candidates(config, output, scope)
     structure_enabled = bool(dict(rtc_policy.get("checks") or {}).get("structure_completeness", True))
-    first_stage = "STRUCTURAL_ADJUDICATION" if candidates and structure_enabled else "REFERENCE_TEXT_COMPARISON"
+    reference_project = config.project(contemporary_source_id)
+    # One compile and one pair of verse indexes serve every deterministic check of this composite.
+    alignment_inputs = (
+        _rtc_alignment_inputs(config, workflow, output, reference_project, scope) if structure_enabled else None
+    )
+    triage = (
+        _structural_triage(
+            config,
+            workflow,
+            output,
+            reference_project,
+            scope,
+            _structural_candidates(config, output, scope),
+            alignment_inputs,
+        )
+        if alignment_inputs is not None
+        else {"model": [], "findings": [], "resolved": []}
+    )
+    marker = (
+        _rtc_marker_review(alignment_inputs, output, reference_project, scope)
+        if alignment_inputs is not None
+        else {"findings": [], "candidates": []}
+    )
+    # Only equivalence groups the code cannot decide reach the model stage.
+    candidates = triage["model"]
+    first_stage = "STRUCTURAL_ADJUDICATION" if candidates else "REFERENCE_TEXT_COMPARISON"
     plan_seed = sha256_bytes(
         json.dumps(
             {
@@ -3722,7 +4009,16 @@ def _create_rtc_composite(
         "output_project": output_project_id,
         "contemporary_source": contemporary_source_id,
         "grammar_override_id": grammar_override_id,
-        "structural_stage_required": bool(candidates and structure_enabled),
+        "structural_stage_required": bool(candidates),
+        # Structural candidates decided in code: findings join the final result, resolutions are provenance.
+        "deterministic_findings": [*triage["findings"], *marker["findings"]],
+        "structural_resolutions": triage["resolved"],
+        # REFERENCE text the WIP lacks; finalization reports these and promotes them to findings.
+        "coverage_gap_issues": (
+            _rtc_omission_rows(alignment_inputs, output, reference_project, scope)
+            if alignment_inputs is not None
+            else []
+        ),
         "rtc_policy": rtc_policy,
         "rtc_planner_version": rtc_planner_version,
         "ol_referral_contract": ol_referral_contract(workflow),
@@ -3775,7 +4071,17 @@ def _bounded_sfm_packet(
         usj = compile_usfm_text(text, source.name)
     except (OSError, UnicodeError, ValueError) as exc:
         raise ValidationError(f"Cannot compile STC Scripture input {source}: {exc}") from exc
-    parser_errors = list(usj.get("sage", {}).get("errors", []))
+    parser_errors = _parser_errors_in_scope(
+        text,
+        source.name,
+        usj,
+        _scope_chapters(
+            [
+                primary_scope,
+                *(scope for value in (*(primary_references or ()), *context_references) for scope in parse_scope_set(value)),
+            ]
+        ),
+    )
     if parser_errors:
         raise ValidationError(f"STC input {source.name} has parser errors: {', '.join(parser_errors[:8])}")
     requested_primary = (
@@ -3937,12 +4243,12 @@ def _create_stc_task(
     ol_index: ProjectVerseIndex | None = None
     if stc_planner_version == STC_PLANNER_VERSION:
         service = VersificationService(config)
-        wip_index = ProjectVerseIndex.build(
+        wip_index = ProjectVerseIndex.cached(
             output.project_id,
             wip_records_all,
             service.project_schema(output),
         )
-        ol_index = ProjectVerseIndex.build(
+        ol_index = ProjectVerseIndex.cached(
             ol_project.project_id,
             ol_records_all,
             service.project_schema(ol_project),
@@ -3971,6 +4277,38 @@ def _create_stc_task(
             planner_version=stc_planner_version,
         )
     )
+    if (
+        stc_planner_version == STC_PLANNER_VERSION
+        and work_unit_id is None
+        and len(units) == 1
+        and not context_before
+        and not context_after
+    ):
+        # A scope that fits one unit still gets the planner's boundary context verses.
+        only_unit = units[0].to_dict()
+        context_before = tuple(only_unit.get("context_before") or ())
+        context_after = tuple(only_unit.get("context_after") or ())
+    # OL text the WIP lacks anywhere in the requested scope, including whole missing chapters.
+    stc_omissions: list[dict[str, Any]] = []
+    if stc_planner_version == STC_PLANNER_VERSION and work_unit_id is None:
+        assert wip_index is not None and ol_index is not None
+        wip_book_file = _one_book_file(output, scope.book)
+        stc_omissions = omission_rows(
+            wip_records_all,
+            wip_index,
+            ol_records_all,
+            ol_index,
+            scope,
+            workflow="STC",
+            authority_stream=f"{family}:PRIMARY",
+            authority_project_id=ol_project.project_id,
+            wip_project_id=output.project_id,
+            title_chapters=(
+                psalm_title_chapters(wip_book_file.read_text(encoding="utf-8-sig"))
+                if wip_book_file is not None and scope.book == "PSA"
+                else ()
+            ),
+        )
     if auto_partition and work_unit_id is None and len(units) > 1:
         seed = sha256_bytes(json.dumps({
             "job_id": job_id, "run_id": run_id, "scope": scope.label(),
@@ -3978,32 +4316,39 @@ def _create_stc_task(
         }, sort_keys=True, separators=(",", ":")).encode("utf-8"))
         plan_id = f"STC-{scope.book}-{seed[:10].upper()}"
         children: list[dict[str, Any]] = []
-        for unit in units:
-            item = unit.to_dict()
-            child = create_act_task(
-                config,
-                workflow=workflow,
-                operation="stc",
-                output_project_id=output.project_id,
-                contemporary_source_id=contemporary_source_id,
-                scope_value=item["primary_scope"],
-                auto_partition=False,
-                parent_plan_id=plan_id,
-                work_unit_id=unit.unit_id,
-                job_id=job_id,
-                run_id=run_id,
-                stc_planner_version=stc_planner_version,
-                context_before_references=item["context_before"],
-                context_after_references=item["context_after"],
-            )
-            children.append({
-                "unit_id": unit.unit_id,
-                "scope": item["primary_scope"],
-                "task_id": child["task_id"],
-                "manifest_path": child["manifest_path"],
-                "task_fingerprint": child["task_fingerprint"],
-                "primary_coverage_atoms": item["primary_coverage_atoms"],
-            })
+        created_children = []
+        try:
+            for unit in units:
+                item = unit.to_dict()
+                child = create_act_task(
+                    config,
+                    workflow=workflow,
+                    operation="stc",
+                    output_project_id=output.project_id,
+                    contemporary_source_id=contemporary_source_id,
+                    scope_value=item["primary_scope"],
+                    auto_partition=False,
+                    parent_plan_id=plan_id,
+                    work_unit_id=unit.unit_id,
+                    job_id=job_id,
+                    run_id=run_id,
+                    stc_planner_version=stc_planner_version,
+                    context_before_references=item["context_before"],
+                    context_after_references=item["context_after"],
+                )
+                created_children.append(child)
+                children.append({
+                    "unit_id": unit.unit_id,
+                    "scope": item["primary_scope"],
+                    "task_id": child["task_id"],
+                    "manifest_path": child["manifest_path"],
+                    "task_fingerprint": child["task_fingerprint"],
+                    "primary_coverage_atoms": item["primary_coverage_atoms"],
+                })
+        except Exception:
+            # A partitioner that fails mid-loop must not leave orphan child tasks behind.
+            _rollback_unregistered_stage_tasks(config, workflow, run_id, created_children)
+            raise
         expected = [ref.label() for ref in sorted({ref for unit in units for ref in unit.primary_refs})]
         plan = {
             "schema_version": "1.0", "status": "PARTITIONED", "plan_id": plan_id,
@@ -4013,6 +4358,7 @@ def _create_stc_task(
             "authority_family": family, "authority_role": "PRIMARY",
             "stc_planner_version": stc_planner_version,
             "expected_references": expected, "work_units": children,
+            "coverage_gap_issues": stc_omissions,
         }
         plan_path = plan_container(config.workflow(workflow), run_id) / f"{plan_id}.json"
         atomic_write_json(plan_path, plan)
@@ -4054,6 +4400,21 @@ def _create_stc_task(
             "missing_canonical_atoms": [
                 ref.label() for ref in sorted(primary_alignment.missing_canonical_refs)
             ],
+            # WIP verses whose original-language verses carry other numbers (shift, merge, or split).
+            "verse_correspondence": record_correspondence(primary_wip, wip_index, ol_index),
+            # Verses far shorter or longer than their OL text: candidates for omissions and additions.
+            "length_outliers": length_outliers(primary_wip, wip_records_all, wip_index, ol_index),
+            "numeric_candidates": numeric_candidates(
+                config,
+                [
+                    (
+                        VerseRef(record.book, record.chapter, record.verse_start),
+                        record.reference,
+                        str(record.payload.get("body_text") or ""),
+                    )
+                    for record in primary_wip
+                ],
+            ),
         }
         stc_source_issue_rows = _canonical_gap_source_issues(
             primary_wip,
@@ -4064,7 +4425,7 @@ def _create_stc_task(
             source_project_id=ol_project.project_id,
             wip_project_id=output.project_id,
             scope=scope.label(),
-        )
+        ) + stc_omissions
     seed = sha256_bytes(json.dumps({
         "job_id": job_id, "run_id": run_id, "scope": scope.label(),
         "wip": output.project_id, "ol": ol_project.project_id, "family": family,
@@ -4194,6 +4555,10 @@ def _create_stc_task(
             "workflow": workflow, "operation": "stc", "rtc_stage": None,
             "stc_planner_version": stc_planner_version,
             "stc_alignment": stc_alignment,
+            "deterministic_candidates": candidate_inventory(
+                numeric=(stc_alignment or {}).get("numeric_candidates"),
+                lengths=(stc_alignment or {}).get("length_outliers", []),
+            ),
             "skill_id": skill.skill_id,
             "job_id": job_id, "run_id": run_id,
             "resource_bindings": resource_bindings,
@@ -4273,7 +4638,12 @@ def _create_stc_task(
             "## Task", "",
             "Compare OL element/phrase/construction with the WIP rendering. Do not assume one-to-one lexical alignment.",
             "Report only governed OMISSION, ADDITION, VARIATION, or CONSISTENCY findings established by the bounded evidence.",
-            "Review every assigned primary coordinate even if there are zero findings.", "",
+            "Review every assigned primary coordinate even if there are zero findings.",
+            "Cite `target_reference` in WIP verse numbering; `wip_to_original_language_verses` lists the WIP verses whose OL verses carry other numbers.",
+            "Quote `wip_evidence` and `ol_evidence` verbatim from the supplied slice; SAGE checks every quotation against it.",
+            "SAGE already reports text present on only one side as OMISSION or ADDITION; do not restate those coordinates.",
+            "Check each `verse_length_outliers` verse closely for a material omission or addition; its length alone is not a finding.",
+            "Numbers: `numeric_candidates` compares WIP digits with the number index (see its caveat). Report no number finding for a `MATCH` verse; the NCA tool checks numbers in full.", "",
             *(
                 [
                     "## Structural issues", "",
@@ -5334,7 +5704,13 @@ def create_act_task(
         if is_analysis_workflow(workflow):
             extra_inputs, preflight = _write_analysis_preflight(
                 config, packet_root, workflow, output, source, ol_project if route_ol else None,
-                ol_role, scope, packet_records
+                ol_role, scope, packet_records,
+                structural_stage=rtc_stage == "STRUCTURAL_ADJUDICATION",
+                source_issue_rows=(
+                    _rtc_task_source_issue_rows(rtc_packet_route, packet_records, source, output, scope)
+                    if workflow in {"rtc", "saw"} and operation == "rtc"
+                    else ()
+                ),
             )
         else:
             target_vrs_scope = (
@@ -5602,25 +5978,7 @@ def create_act_task(
                 "target_scope": bic_alignment["target_scope"],
             }
         source_issue_rows = (
-            list(rtc_packet_route["source_text_issues"])
-            if rtc_packet_route is not None
-            else list(source_text_issues(
-                (
-                    ref
-                    for value in expected_references
-                    for ref in expand_reference_atoms(str(value))
-                ),
-                (
-                    ref
-                    for value in packet_records["contemporary_source"]["atomic_references"]
-                    for ref in expand_reference_atoms(str(value))
-                ),
-                workflow="RTC",
-                source_stream="REFERENCE",
-                source_project_id=source.project_id,
-                wip_project_id=output.project_id,
-                scope=scope.label(),
-            ))
+            _rtc_task_source_issue_rows(rtc_packet_route, packet_records, source, output, scope)
             if workflow in {"rtc", "saw"} and operation == "rtc"
             else []
         )
@@ -5984,6 +6342,15 @@ def create_act_task(
             "resource_fingerprints": resource_fingerprints,
             "expected_references": expected_references,
             "structural_candidate_ids": structural_candidate_ids,
+            # Differences code found but cannot judge; the meaning stage adjudicates each one.
+            "deterministic_candidates": (
+                candidate_inventory(
+                    markers=(preflight or {}).get("marker_candidates", []),
+                    numeric=(preflight or {}).get("numeric_candidates"),
+                )
+                if workflow in {"rtc", "saw"} and operation == "rtc" and rtc_stage == "REFERENCE_TEXT_COMPARISON"
+                else []
+            ),
             "allowed_evidence_ids": evidence_ids,
             "governance_inputs": governance_inputs,
             "allowed_reads": allowed_reads,
@@ -6141,7 +6508,6 @@ def create_act_task(
             "## Process brief",
             "",
             f"Canonical report narrative MUST use the Job-owned language tag `{narrative_language['tag']}`.",
-            "WIP, REFERENCE, SOURCE, original-language evidence, interface localization, and downstream secondary localization MUST NOT determine canonical narrative language.",
             "Preserve explicitly supplied source quotations verbatim; keep canonical JSON keys, identifiers, and governed enum values unchanged.",
             "",
         ])
@@ -6235,7 +6601,9 @@ def create_act_task(
                     "5. Treat each WIP or Reference verse bridge as one indivisible record while reviewing every coordinate it covers. Check bridge mapping under structure/completeness and check the complete bridged text against all corresponding WIP and Reference content under translation/meaning, whether their bridge shapes match or differ.",
                     "6. Do not read original-language Scripture in this stage.",
                     referral_instruction,
-                    "8. Review every WIP and Reference cross-reference span (`\\x ... \\x*`) under the sealed x-context policy. At minimum verify balanced containers and valid field structure. In NORMAL mode also compare presence, payload, ordering, and Scripture targets; report missing, malformed, unexpected, or materially mismatched cross-references at the owning WIP coordinate.",
+                    "8. Review every WIP and Reference cross-reference span (`\\x ... \\x*`) under the sealed x-context policy. At minimum verify balanced containers and valid field structure. In NORMAL mode also compare presence, payload, and ordering; report missing, malformed, unexpected, or materially mismatched cross-references at the owning WIP coordinate. SAGE compares Scripture target numbers and footnote origin and text in code.",
+                    "9. SAGE already reports the routed preflight `direct_findings` (WIP/REFERENCE text gaps); do not restate them. For each preflight `marker_candidates` entry, decide whether the differing `\\add` or `\\nd` usage is material and report only material differences.",
+                    "10. Numbers: the preflight `numeric_candidates` compares WIP digits with the number index. Report no number finding for a `MATCH` verse; check `DIFFERS` and `NOT_IN_DIGITS` verses against the Reference. The NCA tool checks numbers in full.",
                 ])
             else:
                 act_lines.extend([
@@ -6243,7 +6611,7 @@ def create_act_task(
                     f"2. Compare {output.project_id} and {source.project_id} with the testament-correct Job-bound Hebrew (OT) or Greek (NT) packet.",
                     "3. Decide which rendering is closer to the routed source, whether both are defensible, or whether the evidence is inconclusive. Do not broaden this internal adjudication into the separate detailed Original-Language Review operation or into grammar, structure, style, consistency, or general RTC.",
                     "4. Return exactly one structured ol_resolutions object per inherited request. A FINDING outcome must use that request's deferred_finding_id, cite actual routed OL evidence, and explain the source-text basis for the adjudication.",
-                    f"5. For Operator-facing drift adjudication, state the source comparison as one of: {output.project_id} CLOSER TO SOURCE; {source.project_id} CLOSER TO SOURCE; BOTH DEFENSIBLE; INCONCLUSIVE. Do not emit bare WIP/REFERENCE role labels as the decision.",
+                    f"5. Set `decision` to exactly one of WIP_CLOSER_TO_SOURCE ({output.project_id} is closer to the source), REFERENCE_CLOSER_TO_SOURCE ({source.project_id} is closer), BOTH_DEFENSIBLE, or INCONCLUSIVE, consistent with `outcome`: FINDING goes with REFERENCE_CLOSER_TO_SOURCE (or INCONCLUSIVE), NO_FINDING with WIP_CLOSER_TO_SOURCE or BOTH_DEFENSIBLE, and INSUFFICIENT_EVIDENCE with INCONCLUSIVE. In `rationale`, name the Projects as {output.project_id} and {source.project_id}, not by role labels.",
                 ])
         elif operation == "focused":
             act_lines.extend([
@@ -6438,7 +6806,10 @@ def create_act_task(
             "final_serialized_bytes": int(planning_handoff["total_bytes"]),
             "final_estimated_tokens": int(planning_handoff["total_estimated_tokens"]),
             "routed_sfm": planning_handoff,
-            "governance_context": governance_telemetry,
+            "governance_context": {
+                **governance_telemetry,
+                "final_serialized_bytes": int(governance_telemetry.get("serialized_bytes", 0) or 0),
+            },
             "policy": policy.to_dict(),
         }
         fingerprint = sha256_bytes(
@@ -6452,50 +6823,8 @@ def create_act_task(
             "task_fingerprint": fingerprint,
             "created_utc": created_utc,
         }
-        # Re-measure both representations after the complete manifest exists. Provider
-        # prompt construction intentionally ignores fingerprint/context-budget fields,
-        # so a change here indicates contract drift and is retained visibly in telemetry.
-        final_governance = _context_measurement(config.root, budget_reads, act_text, manifest)
-        final_handoff = _measure_task_route(config, manifest=manifest, act_text=act_text)
-        identity["context_budget"]["final_serialized_bytes"] = int(final_handoff["total_bytes"])
-        identity["context_budget"]["final_estimated_tokens"] = int(final_handoff["total_estimated_tokens"])
-        identity["context_budget"]["routed_sfm"] = final_handoff
-        identity["context_budget"]["governance_context"] = {
-            **governance_telemetry,
-            "final_serialized_bytes": int(final_governance["serialized_bytes"]),
-        }
-        fingerprint = sha256_bytes(
-            json.dumps(identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        )
-        manifest = {
-            **identity,
-            "task_id": task_id,
-            "task_root": _relative(config.root, task_root),
-            "submit_commands": {"posix": submit_posix, "windows": submit_windows},
-            "task_fingerprint": fingerprint,
-            "created_utc": created_utc,
-        }
-        try:
-            _enforce_context_budget(
-                {
-                    "serialized_bytes": int(identity["context_budget"]["final_serialized_bytes"]),
-                    "estimated_tokens": int(identity["context_budget"]["final_estimated_tokens"]),
-                },
-                policy,
-                operation=budget_operation,
-                scope=scope,
-                primary_verse_units=len(expected_references),
-            )
-            _enforce_rtc_sizing(
-                config,
-                final_handoff,
-                workflow=workflow,
-                operation=operation,
-                rtc_stage=rtc_stage,
-                scope=scope,
-            )
-        except EvidenceLimitError as exc:
-            return partition_after_evidence_limit(exc)
+        # Prompt construction ignores the fingerprint and context-budget fields, so the planning
+        # measurement and budget check above are final; inputs are not re-read to check them again.
         atomic_write_json(manifest_path, manifest)
         atomic_write_text(act_path, act_text)
         manifest_sha256 = sha256_file(manifest_path)
@@ -6669,6 +6998,26 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
             "authority_role": "PRIMARY",
         })
         accepted_results.append(normalized)
+    plan_gaps = [dict(row) for row in plan.get("coverage_gap_issues") or [] if isinstance(row, dict)]
+    if plan_gaps and accepted_results:
+        # Plan-level omissions (including whole missing chapters) belong to no single unit; the first
+        # accepted result carries them so finalization and reports include them once.
+        carrier = accepted_results[0]
+        carrier["source_text_issues"] = unique_source_text_issues(
+            [*carrier.get("source_text_issues", []), *plan_gaps]
+        )
+        known = {str(row.get("finding_id")) for row in carrier.get("findings", [])}
+        carrier["findings"] = [
+            *carrier.get("findings", []),
+            *(
+                row
+                for row in stc_gap_findings(
+                    plan_gaps, work_unit_id=str(plan["plan_id"]), authority_family=family
+                )
+                if row["finding_id"] not in known
+            ),
+        ]
+        carrier["finding_count"] = len(carrier["findings"])
     canonical_root = path.with_name(f"{plan['plan_id']}-stc")
     artifacts = (
         finalize_stc_run(
@@ -7005,6 +7354,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             "source_text_issues": unit_source_issues,
             "structural_issues": unit_source_issues,
         })
+    findings, _duplicates = dedupe_findings(findings)
     validate_global_finding_ids(findings)
     if len(expected) != len(set(expected)):
         raise ValidationError(
@@ -7132,7 +7482,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         aggregate_lines.extend([authority_notice, ""])
     aggregate_lines.extend(render_execution_section(aggregate["execution_routes"]))
     aggregate_lines.extend(render_exceptions_section(exception_rows))
-    atomic_write_text(report_path, "\\n".join(aggregate_lines))
+    atomic_write_text(report_path, "\n".join(aggregate_lines).rstrip() + "\n")
     plan["status"] = "FINALIZED"
     plan["aggregate_path"] = str(aggregate_path)
     plan["aggregate_sha256"] = sha256_file(aggregate_path)
@@ -7163,6 +7513,14 @@ def _update_control(path: Path, value: dict[str, Any]) -> None:
         os.chmod(path, 0o444)
     except OSError:
         pass
+
+
+def _optional_text(path: Path) -> str | None:
+    """Read one routed packet as text, or None when the task has no such packet."""
+    try:
+        return path.read_text(encoding="utf-8-sig")
+    except OSError:
+        return None
 
 
 def _record_salvage_exceptions(
@@ -7233,24 +7591,24 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             next_action="Use Restart active Run from the Job menu; the old Run will be preserved.",
         )
     if resolve_persisted_path(config.root, str(control.get("manifest_path", "")), "ACT manifest") != path:
-        raise ValidationError("ACT manifest path differs from the trusted control record")
+        raise ValidationError("ACT manifest path differs from the trusted control record", code="TASK_SUBMISSION_TAMPERED")
     if resolve_persisted_path(config.root, str(control.get("task_root", "")), "ACT task root") != task_root:
-        raise ValidationError("ACT task root differs from the trusted control record")
+        raise ValidationError("ACT task root differs from the trusted control record", code="TASK_SUBMISSION_TAMPERED")
     if sha256_file(path) != control.get("manifest_sha256"):
-        raise ValidationError("ACT task manifest changed after task creation")
+        raise ValidationError("ACT task manifest changed after task creation", code="TASK_SUBMISSION_TAMPERED")
     act_path = resolve_persisted_path(config.root, str(control.get("act_path", "")), "ACT prompt")
     if act_path != (task_root / "ACT.md").resolve() or not act_path.is_file():
-        raise ValidationError("ACT prompt path differs from the trusted control record")
+        raise ValidationError("ACT prompt path differs from the trusted control record", code="TASK_SUBMISSION_TAMPERED")
     if sha256_file(act_path) != control.get("act_sha256"):
-        raise ValidationError("ACT prompt changed after task creation")
+        raise ValidationError("ACT prompt changed after task creation", code="TASK_SUBMISSION_TAMPERED")
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValidationError(f"Invalid ACT task manifest: {exc}") from exc
     if raw.get("task_id") != task_id:
-        raise ValidationError("ACT task_id differs from its directory and trusted control")
+        raise ValidationError("ACT task_id differs from its directory and trusted control", code="TASK_SUBMISSION_TAMPERED")
     if raw.get("task_fingerprint") != control.get("task_fingerprint"):
-        raise ValidationError("ACT task fingerprint differs from trusted control")
+        raise ValidationError("ACT task fingerprint differs from trusted control", code="TASK_SUBMISSION_TAMPERED")
     identity = {
         key: value
         for key, value in raw.items()
@@ -7260,11 +7618,11 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         json.dumps(identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     )
     if recomputed != raw.get("task_fingerprint"):
-        raise ValidationError("ACT task fingerprint cannot be recomputed from the manifest")
+        raise ValidationError("ACT task fingerprint cannot be recomputed from the manifest", code="TASK_SUBMISSION_TAMPERED")
     if raw.get("execution_mode") != "SAGE_GOVERNED_TASK_V1":
         raise ValidationError("ACT task execution_mode is not a supported governed task mode")
     if raw.get("workflow") != workflow or raw.get("operation") != control.get("operation"):
-        raise ValidationError("ACT workflow or operation differs from trusted control")
+        raise ValidationError("ACT workflow or operation differs from trusted control", code="TASK_SUBMISSION_TAMPERED")
     if raw.get("schema_version") != "2.4":
         raise ValidationError("ACT task schema_version must be 2.4")
     expected_narrative_language = _narrative_language_contract(config)
@@ -7313,15 +7671,18 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         if not read_path.is_file():
             raise ValidationError(f"ACT conditional input is missing: {item.get('path')}")
         if sha256_file(read_path) != item.get("sha256"):
-            raise ValidationError(f"ACT conditional input changed after task creation: {item.get('path')}")
+            raise ValidationError(
+                f"ACT conditional input changed after task creation: {item.get('path')}",
+                code="ACT_INPUT_STALE",
+            )
 
     operation = str(raw.get("operation", ""))
     expected_writes = _expected_outputs(workflow, operation)
     allowed_writes = tuple(str(value) for value in control.get("allowed_writes", []))
     if allowed_writes != expected_writes:
-        raise ValidationError("Trusted ACT control write allowlist is corrupt")
+        raise ValidationError("Trusted ACT control write allowlist is corrupt", code="TASK_SUBMISSION_TAMPERED")
     if tuple(raw.get("allowed_writes", [])) != expected_writes:
-        raise ValidationError("ACT write allowlist differs from trusted control")
+        raise ValidationError("ACT write allowlist differs from trusted control", code="TASK_SUBMISSION_TAMPERED")
     output_paths = {value: _safe_task_output(task_root, value) for value in allowed_writes}
     missing = [value for value, output_path in output_paths.items() if not output_path.is_file()]
     if missing:
@@ -7345,7 +7706,9 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             output_hashes=output_hashes,
         )
     except ValidationError as exc:
-        if exc.code != "EXECUTION_RECEIPT_MISSING":
+        if exc.code != "EXECUTION_RECEIPT_MISSING" or is_analysis_workflow(workflow):
+            # RTC and STC output must come from a recorded provider route; only legacy BIC/NCA
+            # fixtures may still be submitted without a receipt.
             raise
         # Pre-release preserved tasks and manually supplied Alpha fixtures may lack
         # a runtime receipt; record the absence without claiming a current route.
@@ -7660,6 +8023,21 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 authority_family=authority_family,
                 task_fingerprint=str(raw.get("task_fingerprint", "")),
                 narrative_language=str(dict(raw.get("narrative_language") or {}).get("tag") or ""),
+                wip_text=_optional_text(task_root / "packet" / "wip.sfm"),
+                ol_text=_optional_text(task_root / "packet" / "original-language.sfm"),
+                expected_candidates=list(raw.get("deterministic_candidates") or []),
+            )
+        stc_salvage = list(normalized.pop("salvage_records", []) or [])
+        if stc_salvage:
+            _record_salvage_exceptions(
+                job_store.load_run(owning_job, run_id).root,
+                workflow=workflow,
+                job_id=job_id,
+                run_id=run_id,
+                task_id=task_id,
+                stage="STC",
+                scope=str(raw.get("scope") or ""),
+                items=stc_salvage,
             )
         normalized_issues = unique_source_text_issues(
             dict(row)
@@ -7689,6 +8067,18 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         normalized["source_comparison_status"] = source_comparison_status(
             normalized["source_text_issues"]
         )
+        # Text gaps found in code are findings too; the model only reviews the text both sides carry.
+        known_ids = {str(row.get("finding_id")) for row in normalized["findings"]}
+        normalized["findings"].extend(
+            row
+            for row in stc_gap_findings(
+                normalized_issues,
+                work_unit_id=str(raw.get("work_unit_id") or task_id),
+                authority_family=authority_family,
+            )
+            if row["finding_id"] not in known_ids
+        )
+        normalized["finding_count"] = len(normalized["findings"])
         validation_root = task_root / "validation"
         atomic_write_json(validation_root / "normalized-findings.json", normalized)
         validation_details = {
@@ -7785,6 +8175,33 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                     else None
                 ),
                 workflow=workflow,
+                source_text_drift_adjudication=(
+                    str(
+                        dict(dict(raw.get("rtc_policy") or {}).get("original_language") or {}).get(
+                            "source_text_drift_adjudication", "PROHIBITED"
+                        )
+                    )
+                    if operation == "rtc"
+                    else None
+                ),
+                rtc_policy=(
+                    dict(raw["rtc_policy"])
+                    if operation == "rtc" and isinstance(raw.get("rtc_policy"), Mapping)
+                    else None
+                ),
+                expected_candidates=list(raw.get("deterministic_candidates") or []),
+            )
+        salvage_records = list(normalized.pop("salvage_records", []) or [])
+        if salvage_records:
+            _record_salvage_exceptions(
+                job_store.load_run(owning_job, run_id).root,
+                workflow=workflow,
+                job_id=job_id,
+                run_id=run_id,
+                task_id=task_id,
+                stage=str(normalized.get("stage") or operation.upper()),
+                scope=str(raw.get("scope") or ""),
+                items=salvage_records,
             )
         validation_details = {
             "format": (

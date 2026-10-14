@@ -14,7 +14,8 @@ The Job view also shows `AI Routing` and a compact `SKILL | PROVIDER | MODEL | R
 table. Idle rows are current recommendations. An active attempt uses its immutable execution receipt.
 Normal Setup chooses a provider only. The audited advanced override is the single manual route
 control. Automatic routing uses exact qualification data when present; in a true no-data state it
-always uses Codex native `medium` and displays `PROVISIONAL_UNQUALIFIED`, regardless of release state. Failed, unreliable, stale, or
+uses the Operator's pinned no-data default when one is set, otherwise Codex native `medium`, and
+displays `PROVISIONAL_UNQUALIFIED`, regardless of release state. Failed, unreliable, stale, or
 unavailable evidence does not trigger fallback. The advanced override cannot bypass per-Skill
 qualification.
 
@@ -30,7 +31,9 @@ Marker context controls **finding elevation**, never finding severity:
 - `MATERIAL_ONLY` — non-material wording/style detections are omitted; material semantic/consistency/structural issues are reported at their normal severity.
 - `STRUCTURE_ONLY` — only marker/USFM structure is evaluated as a finding source.
 
-Defaults: `\add` and `\nd` = `MATERIAL_ONLY`; `\f` = `STRUCTURE_ONLY`; `\x` = `NORMAL`. Cross-references are therefore checked for structure, presence, payload, ordering, and Scripture targets by default. Quotations are checked normally and are not an Operator policy toggle. The effective policy is snapshotted into the Run.
+Defaults: `\add` and `\nd` = `MATERIAL_ONLY`; `\f` = `STRUCTURE_ONLY`; `\x` = `NORMAL`. Cross-references are therefore checked for structure, presence, payload, and ordering by default; SAGE compares their Scripture target numbers and footnote origins in code. Quotation structure belongs to the structure/completeness group, so turning that group off also turns off quotation checks. The effective policy is snapshotted into the Run.
+
+The Job menu offers **Run RTC on <WIP> with defaults** and **RTC defaults setting**. The defaults screen (titled `JOB defaults`) holds the check groups and text policy every later Run uses; there is no separate per-Run toggle screen, and defaults cannot change while a Run is open.
 
 ### Selective source referral
 
@@ -46,6 +49,10 @@ Natural-language entry may request Reference Text Comparison (RTC) or Source Tex
 
 ## Run state
 
-A successful RTC/STC Run progresses through governed tasks and becomes `FINALIZED` only after required findings, coverage, and report outputs pass their contracts. RTC/STC never edit Scripture Projects. Aggregation, coverage reconciliation, report composition, report naming, and publication are deterministic Python work with no LLM tokenization. Optional secondary-language rendering is one reported item per request and cannot change the canonical result.
+A successful RTC/STC Run progresses through governed tasks and ends `COMPLETE` after required findings, coverage, and report outputs pass their contracts (`COMPLETE_WITH_STRUCTURE_PROBLEMS` or `COMPLETE_WITH_EXCEPTIONS` when structure differences or `NOT_ASSESSED` work units are reported). Plans and work units are `FINALIZED` internally; a Run is not. RTC/STC never edit Scripture Projects. Aggregation, coverage reconciliation, report composition, report naming, and publication are deterministic Python work. Optional secondary-language rendering calls the model for the rendered text; it is assistive and cannot change the canonical result.
+
+A work unit that keeps failing is reported `NOT_ASSESSED` after three attempts and the Run continues; its coordinates are listed under "Exceptions — not assessed". Defective items inside a usable result are dropped or corrected and recorded in the Run's exception report.
+
+An RTC chapter report consolidates every Run of the Job that reviewed that chapter: a coordinate reviewed in any Run counts as reviewed, repeated findings are merged, and conflicting conclusions are marked for human review.
 
 Progress uses `Review range` for the Run, `Review portion` for the immutable approved partition, and local `Structural check` / `Source check` counters inside that portion. A source case never increases or renumbers the approved portion denominator.

@@ -59,6 +59,14 @@ _PATH_AND_CONTRACT_CODES = frozenset(
         "RESULT_COVERAGE_DRIFT",
         "DUPLICATE_WORK_UNIT_RESULT",
         "MISSING_WORK_UNIT_RESULT",
+        "RTC_TASK_CONTRACT_INVALID",
+        "STC_TASK_CONTRACT_INVALID",
+        "STC_OL_AUTHORITY_MISMATCH",
+        "LLM_RESPONSE_ROUTE_MISMATCH",
+        "TASK_SUBMISSION_TAMPERED",
+        "EXECUTION_RECEIPT_MISSING",
+        "LLM_ANALYSIS_WORK_UNIT_LAYOUT_INVALID",
+        "LLM_SAW_WORK_UNIT_LAYOUT_INVALID",
     }
 )
 INTEGRITY_CODES = frozenset(
@@ -74,6 +82,17 @@ INTEGRITY_CODES = frozenset(
 _INTEGRITY_FRAGMENTS = ("STALE", "FINGERPRINT_MISMATCH", "BINDING_MISMATCH", "HASH_MISMATCH", "PATH_ESCAPE")
 # Environment conditions (login, provider outage) say nothing about content, so they pause the Run.
 _ENVIRONMENT_DISPOSITIONS = frozenset({"INPUT_REQUIRED", "TASK_PAUSED"})
+# Provider, configuration, and controller failures: retrying them only seals good work NOT_ASSESSED.
+RUN_STOP_CODES = frozenset(
+    {
+        "CODEX_EXECUTION_NOT_READY",
+        "MENU_CONTROLLER_COMMAND_FAILED",
+        "CONFIGURATION_ERROR",
+        "PROVIDER_ROUTE_UNAVAILABLE",
+    }
+)
+# A non-content code that already cost this many units is systemic: the next one stops the Run.
+CIRCUIT_BREAKER_UNITS = 2
 
 
 def is_integrity_code(code: str) -> bool:
@@ -122,15 +141,22 @@ def unit_failure_action(
     attempts: int,
     *,
     cap: int = MAX_UNIT_ATTEMPTS,
+    prior_not_assessed_codes: Sequence[str] = (),
 ) -> str:
     """Decide what the plan runner does after one failed work-unit attempt.
 
-    ``attempts`` counts failures so far, including this one: integrity codes and environment
-    conditions STOP; anything else RETRYs until ``cap`` failures, then the unit is NOT_ASSESSED.
+    ``attempts`` counts failures so far, including this one: integrity codes, environment conditions,
+    and provider/configuration/controller failures STOP; anything else RETRYs until ``cap`` failures,
+    then the unit is NOT_ASSESSED. ``prior_not_assessed_codes`` are the codes of units this Run already
+    sealed NOT_ASSESSED: a non-content code that recurs that often trips the circuit breaker and STOPs.
     """
-    if is_integrity_code(code):
+    value = str(code or "").strip().upper()
+    if is_integrity_code(value) or value in RUN_STOP_CODES:
         return "STOP"
     if str(disposition or "").upper() in _ENVIRONMENT_DISPOSITIONS:
+        return "STOP"
+    content = str(disposition or "").upper() == "TASK_OUTPUT_REJECTED"
+    if not content and sum(1 for item in prior_not_assessed_codes if str(item).upper() == value) >= CIRCUIT_BREAKER_UNITS:
         return "STOP"
     return "RETRY" if attempts < cap else NOT_ASSESSED
 
@@ -271,3 +297,56 @@ def render_exceptions_section(records: Iterable[Mapping[str, Any]], *, language:
             lines.append(f"- Evidence: `{row['evidence_path']}`")
         lines.append("")
     return lines
+
+
+def apply_unit_failure(
+    run_root: Path,
+    manifest_path: Path,
+    *,
+    tool: str,
+    code: str,
+    message: str,
+    disposition: str,
+    run_id: str | None = None,
+    job_id: str | None = None,
+    work_unit: str | None = None,
+    stage: str | None = None,
+    evidence_path: str | None = None,
+) -> tuple[str, int]:
+    """Apply the one work-unit failure policy shared by the menu and the CLI.
+
+    Records the failed attempt and seals the unit NOT_ASSESSED once the cap is reached; returns the action
+    (``STOP``, ``RETRY``, or ``NOT_ASSESSED``) and the attempt number. ``STOP`` records nothing, so the Run
+    stays resumable exactly where it stopped.
+    """
+    from .references import atomic_reference_labels
+
+    manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    task_id = str(manifest.get("task_id") or "")
+    attempts = failed_attempts(run_root, task_id) + 1
+    action = unit_failure_action(
+        code,
+        disposition,
+        attempts,
+        prior_not_assessed_codes=[str(row.get("code") or "") for row in not_assessed_rows(exceptions_for_run(run_root))],
+    )
+    if action == "STOP":
+        return action, attempts
+    record = ExceptionRecord(
+        tool=tool,
+        code=code,
+        message=message,
+        effect="RETRY" if action == "RETRY" else NOT_ASSESSED,
+        run_id=run_id,
+        job_id=job_id,
+        task_id=task_id,
+        work_unit=work_unit,
+        stage=stage,
+        coordinates=tuple(atomic_reference_labels(str(value) for value in manifest.get("expected_references") or [])),
+        attempts=attempts,
+        evidence_path=evidence_path,
+    )
+    record_exception(run_root, record)
+    if action == NOT_ASSESSED:
+        write_not_assessed_result(Path(manifest_path), record)
+    return action, attempts

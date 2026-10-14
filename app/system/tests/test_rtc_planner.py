@@ -6,7 +6,7 @@ import pytest
 
 from sage.errors import EvidenceLimitError, ValidationError
 from sage.evidence import EvidencePolicy, RTCSizingPolicy
-from sage.rtc_planner import RTC_PLANNER_VERSION, plan_rtc_work_units
+from sage.rtc_planner import RTC_PLAN_HEADROOM_TOKENS, RTC_PLANNER_VERSION, plan_rtc_work_units
 from sage.verse_alignment import ProjectVerseIndex
 from sage.vrs import parse_vrs_file
 from sage.work_units import EvidenceRecord
@@ -284,7 +284,8 @@ def test_reference_heavy_rtc_package_is_resliced_after_wip_boundary_planning() -
 
     assert len(units) > 1
     assert effective.target_estimated_tokens == 6000
-    assert effective.hard_estimated_tokens == 32000
+    # The plan keeps RTC_PLAN_HEADROOM_TOKENS below the task-time route limit.
+    assert effective.hard_estimated_tokens == 32000 - RTC_PLAN_HEADROOM_TOKENS
     assert all(item["wip"]["estimated_tokens"] < 8000 for item in packages)
     assert all(item["route"]["estimated_tokens"] <= 32000 for item in packages)
     assert all(item["route"]["serialized_bytes"] <= 224000 for item in packages)
@@ -327,8 +328,8 @@ def test_rtc_planning_reports_missing_reference_coordinate_without_blocking() ->
     assert issue["reference"] == "MAT 1:2"
 
 
-def test_reference_bridge_moves_internal_wip_boundary_to_its_far_edge() -> None:
-    """A REFERENCE 3-4 span keeps WIP atoms 3 and 4 in one primary owner."""
+def test_reference_bridge_moves_internal_wip_boundary_back_before_it() -> None:
+    """A REFERENCE 3-4 span keeps WIP atoms 3 and 4 in one owner; the boundary moves back, not forward."""
     wip = tuple(_record(verse, "w" * 6000, role="WIP") for verse in range(1, 7))
     reference = (
         _record(1, "r" * 200, role="REFERENCE"),
@@ -362,18 +363,14 @@ def test_reference_bridge_moves_internal_wip_boundary_to_its_far_edge() -> None:
         for unit in units
         for ref in unit.primary_refs
     }
-    assert len(units) == 2
     assert owners["MAT 1:3"] == owners["MAT 1:4"]
-    assert packages[0]["source_spans"]["REFERENCE"] == [
-        "MAT 1:1", "MAT 1:2", "MAT 1:3-4"
-    ]
-    assert packages[0]["primary_coverage_atoms"] == [
-        "MAT 1:1", "MAT 1:2", "MAT 1:3", "MAT 1:4"
-    ]
+    assert packages[0]["source_spans"]["REFERENCE"] == ["MAT 1:1", "MAT 1:2"]
+    assert packages[0]["primary_coverage_atoms"] == ["MAT 1:1", "MAT 1:2"]
+    assert "MAT 1:3-4" in packages[1]["source_spans"]["REFERENCE"]
 
 
 def test_opposing_wip_and_reference_bridges_close_boundary_until_stable() -> None:
-    """REF 3-4 reaches WIP 4-5, so the stable far edge is after atom 5."""
+    """REF 3-4 reaches WIP 4-5, so the stable boundary moves back before atom 3."""
     wip = (
         _record(1, "w" * 6000, role="WIP"),
         _record(2, "w" * 6000, role="WIP"),
@@ -410,21 +407,52 @@ def test_opposing_wip_and_reference_bridges_close_boundary_until_stable() -> Non
         reference_records=reference,
     )
 
-    assert len(units) == 2
-    assert [ref.label() for ref in sorted(units[0].primary_refs)] == [
-        "MAT 1:1", "MAT 1:2", "MAT 1:3", "MAT 1:4", "MAT 1:5"
-    ]
-    assert packages[0]["source_spans"]["WIP"][-1] == "MAT 1:4-5"
-    assert "MAT 1:3-4" in packages[0]["source_spans"]["REFERENCE"]
+    owners = {ref.label(): unit.unit_id for unit in units for ref in unit.primary_refs}
+    assert [ref.label() for ref in sorted(units[0].primary_refs)] == ["MAT 1:1", "MAT 1:2"]
+    assert owners["MAT 1:3"] == owners["MAT 1:4"] == owners["MAT 1:5"]
+    assert "MAT 1:4-5" in packages[1]["source_spans"]["WIP"]
+    assert "MAT 1:3-4" in packages[1]["source_spans"]["REFERENCE"]
 
 
-def test_bridge_integrity_blocks_when_far_edge_exceeds_hard_wip_limit() -> None:
-    """A hard WIP limit wins over the soft target without splitting REF 3-5."""
+def test_bridge_boundary_moves_back_when_its_far_edge_exceeds_hard_wip_limit() -> None:
+    """Extending through REF 3-5 would exceed the WIP limit, so the boundary moves back before it."""
     wip = tuple(_record(verse, "w" * 6500, role="WIP") for verse in range(1, 7))
     reference = (
         _record(1, "r" * 200, role="REFERENCE"),
         _record(2, "r" * 200, role="REFERENCE"),
         _bridge_record(3, 5, "r" * 600, role="REFERENCE"),
+        _record(6, "r" * 200, role="REFERENCE"),
+    )
+    base = EvidencePolicy(
+        target_estimated_tokens=28000,
+        hard_estimated_tokens=32000,
+        hard_serialized_bytes=224000,
+        minimum_target_tokens=6000,
+        maximum_primary_verse_units=220,
+        context_before_verses=0,
+        context_after_verses=0,
+    )
+
+    units, _, _ = plan_rtc_work_units(
+        wip,
+        base,
+        _sizing(),
+        unit_prefix="SAW-RTC-MAT-BRIDGE-BACK",
+        shared={},
+        wip_context_pool=wip,
+        reference_records=reference,
+    )
+
+    owners = {ref.label(): unit.unit_id for unit in units for ref in unit.primary_refs}
+    assert owners["MAT 1:3"] == owners["MAT 1:4"] == owners["MAT 1:5"]
+    assert owners["MAT 1:2"] != owners["MAT 1:3"]
+
+
+def test_bridge_integrity_blocks_when_the_bridge_alone_exceeds_hard_wip_limit() -> None:
+    """A hard WIP limit wins over the soft target without splitting REF 1-5."""
+    wip = tuple(_record(verse, "w" * 6500, role="WIP") for verse in range(1, 7))
+    reference = (
+        _bridge_record(1, 5, "r" * 1000, role="REFERENCE"),
         _record(6, "r" * 200, role="REFERENCE"),
     )
     base = EvidencePolicy(
@@ -451,3 +479,36 @@ def test_bridge_integrity_blocks_when_far_edge_exceeds_hard_wip_limit() -> None:
 
     assert caught.value.code == "SAW_RTC_UNSPLITTABLE_BRIDGE"
     assert caught.value.details["required_spans"]
+
+
+def test_rtc_v5_flags_only_the_bridge_verse_whose_reference_is_missing(tmp_path) -> None:
+    """A WIP 2-3 bridge with REFERENCE verse 3 missing flags MAT 1:3, not the whole bridge."""
+    wip = (_record(1, "wip", role="WIP"), _bridge_record(2, 3, "wip bridge", role="WIP"))
+    reference = (_record(1, "ref", role="REFERENCE"), _record(2, "ref", role="REFERENCE"))
+    wip_index = ProjectVerseIndex.build("WIP", wip, _schema(tmp_path, "bridge-wip.vrs", "MAT 1:3\n"))
+    reference_index = ProjectVerseIndex.build(
+        "REFERENCE", reference, _schema(tmp_path, "bridge-ref.vrs", "MAT 1:3\n")
+    )
+
+    _, packages, _ = plan_rtc_work_units(
+        wip,
+        EvidencePolicy(
+            target_estimated_tokens=100,
+            hard_estimated_tokens=32000,
+            hard_serialized_bytes=224000,
+            minimum_target_tokens=1,
+            maximum_primary_verse_units=220,
+            context_before_verses=0,
+            context_after_verses=0,
+        ),
+        _sizing(),
+        unit_prefix="RTC-MAT-BRIDGE-GAP",
+        shared={},
+        wip_context_pool=wip,
+        reference_records=reference,
+        wip_index=wip_index,
+        reference_index=reference_index,
+        workflow="rtc",
+    )
+
+    assert [issue["reference"] for issue in packages[0]["source_text_issues"]] == ["MAT 1:3"]

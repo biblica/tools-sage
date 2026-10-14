@@ -11,6 +11,8 @@ from pathlib import Path
 import pytest
 import yaml
 
+from .conftest import submit_with_receipt
+from sage.exception_reports import exceptions_for_run
 from sage.storage import storage_layout
 from sage.act_outputs import (
     render_action_report,
@@ -132,6 +134,95 @@ def test_rtc_long_target_reference_survives_ol_request_and_resolution(long_citat
     assert result["ol_resolutions"][0]["target_reference"] == citation
 
 
+def test_rtc_defective_findings_are_dropped_or_corrected_item_by_item(long_citation_submission) -> None:
+    """One out-of-scope or uncited finding no longer rejects the unit; fixable fields are corrected."""
+    document, _citation, validate = long_citation_submission
+    good = dict(document["findings"][0])
+    document["findings"] = [
+        {**good, "finding_id": "F001", "action_level": "CHANGE", "confidence": "LOW", "required_action": ""},
+        {**good, "finding_id": "F002", "target_reference": "PSA 120:1"},
+        {**good, "finding_id": "F003", "category": "GRAMMAR", "grammar_rule_ids": ["NOT-A-RULE"]},
+        {**good, "finding_id": "F004", "evidence_ids": ["WIP", "MADE-UP"]},
+    ]
+    result = validate(workflow="rtc")
+
+    assert [row["finding_id"] for row in result["findings"]] == ["F001", "F004"]
+    corrected = result["findings"][0]
+    assert corrected["action_level"] == "REVIEW"
+    assert corrected["required_action"]
+    assert result["findings"][1]["evidence_ids"] == ["WIP"]
+    codes = [(row["submitted_id"], row["code"], row["effect"]) for row in result["salvage_records"]]
+    assert codes == [
+        ("F001", "RTC_FINDING_CORRECTED", "CORRECTED"),
+        ("F002", "RTC_FINDING_DROPPED", "FLAGGED"),
+        ("F003", "RTC_FINDING_DROPPED", "FLAGGED"),
+        ("F004", "RTC_FINDING_CORRECTED", "CORRECTED"),
+    ]
+    assert "A repeated expression" in result["salvage_records"][1]["message"]
+
+
+def test_rtc_text_policy_filters_disabled_checks_and_immaterial_context_findings(long_citation_submission) -> None:
+    """The sealed Text policy now has effect: disabled checks and immaterial \\nd findings are not reported."""
+    document, _citation, validate = long_citation_submission
+    good = dict(document["findings"][0])
+    document["findings"] = [
+        {**good, "finding_id": "F001", "category": "GRAMMAR", "grammar_rule_ids": []},
+        {**good, "finding_id": "F002", "usfm_context": "nd", "material": False},
+        {**good, "finding_id": "F003", "usfm_context": "nd", "material": True},
+    ]
+    policy = {
+        "checks": {"language_readability": False},
+        "usfm_contexts": {"add": "MATERIAL_ONLY", "nd": "MATERIAL_ONLY", "f": "STRUCTURE_ONLY", "x": "NORMAL"},
+    }
+    result = validate(workflow="rtc", rtc_policy=policy)
+
+    assert [row["finding_id"] for row in result["findings"]] == ["F003"]
+    assert result["findings"][0]["usfm_context"] == "nd" and result["findings"][0]["material"] is True
+    reasons = [row["message"] for row in result["salvage_records"] if row["code"] == "RTC_FINDING_POLICY_FILTERED"]
+    assert len(reasons) == 1 and "MATERIAL_ONLY" in reasons[0]
+    assert any("language_readability" in row["message"] or "grammar" in row["message"] for row in result["salvage_records"])
+
+
+def test_dedupe_drops_repeats_and_model_restatements_of_deterministic_findings() -> None:
+    """Repeated findings and model STRUCTURE findings at a deterministic finding's verse are dropped."""
+    from sage.findings import dedupe_findings
+
+    base = {"target_reference": "MAT 1:2", "category": "MEANING", "issue": "Same  issue."}
+    rows = [
+        {**base, "finding_id": "A"},
+        {**base, "finding_id": "B", "issue": "same issue."},
+        {"finding_id": "C", "target_reference": "MAT 1:3", "category": "STRUCTURE", "issue": "Gap.", "detection": "DETERMINISTIC"},
+        {"finding_id": "D", "target_reference": "MAT 1:3", "category": "STRUCTURE", "issue": "Missing text."},
+    ]
+    kept, dropped = dedupe_findings(rows)
+    assert [row["finding_id"] for row in kept] == ["A", "C"]
+    assert [row["finding_id"] for row in dropped] == ["B", "D"]
+
+
+def test_ol_resolution_decision_contradicting_outcome_is_flagged(long_citation_submission) -> None:
+    """A NO_FINDING outcome whose decision says REFERENCE is closer is kept but reported INCONCLUSIVE."""
+    document, citation, validate = long_citation_submission
+    document["findings"] = []
+    document["ol_review_requests"] = [_strict_referral(target_reference=citation)]
+    request = validate(ol_referral_contract="RTC_OL_REFERRAL_ADMISSION_V1")["ol_review_requests"][0]
+    document["stage"] = "SELECTIVE_OL_ADJUDICATION"
+    document["ol_review_requests"] = []
+    document["ol_resolutions"] = [{
+        "request_id": request["request_id"], "target_reference": citation,
+        "outcome": "NO_FINDING", "decision": "REFERENCE_CLOSER_TO_SOURCE",
+        "original_language_evidence": "The routed Hebrew evidence favours the Reference.",
+        "rationale": "The Reference follows the Hebrew more closely.",
+    }]
+    result = validate(
+        rtc_stage="SELECTIVE_OL_ADJUDICATION",
+        expected_ol_request_ids=[request["request_id"]], expected_ol_requests=[request],
+    )
+    assert result["ol_resolutions"][0]["decision"] == "INCONCLUSIVE"
+    [record] = result["salvage_records"]
+    assert record["code"] == "RTC_OL_DECISION_OUTCOME_MISMATCH"
+    assert record["effect"] == "CORRECTED"
+
+
 @pytest.mark.parametrize("field", ["findings", "ol_review_requests", "ol_resolutions"])
 def test_rtc_reference_text_budget_still_rejects_oversized_citations(long_citation_submission, field: str) -> None:
     """Reference fields retain the normal output-text budget instead of unlimited input."""
@@ -148,6 +239,11 @@ def test_rtc_reference_text_budget_still_rejects_oversized_citations(long_citati
         options = {"rtc_stage": document["stage"], "expected_ol_request_ids": ["OLR-1"]}
     else:
         document[field][0]["target_reference"] = oversized
+        # An oversized finding citation drops that finding only; the unit is still accepted.
+        result = validate(**options)
+        assert result["findings"] == []
+        assert "exceeds 12000 characters" in result["salvage_records"][0]["message"]
+        return
     with pytest.raises(ValidationError, match="exceeds 12000 characters"):
         validate(**options)
 
@@ -158,8 +254,9 @@ def test_rtc_long_target_reference_retains_scope_and_syntax_checks(long_citation
     document, citation, validate = long_citation_submission
     document["findings"][0]["target_reference"] = citation + "; " + invalid_tail
     expected = "outside the bounded task scope" if invalid_tail != "PSA 119:?" else "Unknown Scripture book"
-    with pytest.raises(ValidationError, match=expected):
-        validate()
+    result = validate()
+    assert result["findings"] == []
+    assert expected in result["salvage_records"][0]["message"]
 
 
 def _plan_json(
@@ -281,7 +378,7 @@ def _submit_inspect(config, task: dict) -> None:
         "challenges": [],
     }
     (manifest.parent / "output" / "inspect-submission.json").write_text(json.dumps(payload), encoding="utf-8")
-    submit_act_task(config, manifest)
+    submit_with_receipt(config, manifest)
 
 
 def _meaning_document(manifest: dict, *, request_ref: str | None = None) -> dict:
@@ -368,7 +465,13 @@ def _strict_referral(**overrides: object) -> dict:
     return request
 
 
-def _validate_strict_meaning(tmp_path: Path, requests: list[dict], *, findings: list[dict] | None = None) -> dict:
+def _validate_strict_meaning(
+    tmp_path: Path,
+    requests: list[dict],
+    *,
+    findings: list[dict] | None = None,
+    drift_policy: str | None = None,
+) -> dict:
     """Validate one exact V1 fixture through the real SAW output boundary."""
     manifest = _strict_meaning_manifest()
     document = _meaning_document(manifest)
@@ -393,7 +496,22 @@ def _validate_strict_meaning(tmp_path: Path, requests: list[dict], *, findings: 
         expected_work_unit_ids=manifest["review_requirements"]["expected_work_unit_ids"],
         narrative_language="en",
         ol_referral_contract=manifest["ol_referral_contract"],
+        source_text_drift_adjudication=drift_policy,
     )
+
+
+def test_prohibited_drift_policy_drops_ol_requests_at_submit(tmp_path: Path) -> None:
+    """Under the default PROHIBITED policy a request is dropped with a record, not left to stall Continue."""
+    result = _validate_strict_meaning(tmp_path, [_strict_referral()], drift_policy="PROHIBITED")
+
+    assert result["ol_review_requests"] == []
+    [record] = result["salvage_records"]
+    assert record["code"] == "SAW_OL_REQUEST_PROHIBITED"
+    assert record["coordinate"] == "JHN 1:1"
+    assert "Which proposition" in record["message"]
+    enabled = _validate_strict_meaning(tmp_path, [_strict_referral()], drift_policy="ENABLED")
+    assert len(enabled["ol_review_requests"]) == 1
+    assert "salvage_records" not in enabled
 
 
 @pytest.mark.parametrize(
@@ -569,13 +687,13 @@ def test_mapped_target_commit_preserves_existing_filename_and_reverts_scope(pack
     rewrite_output = rewrite_manifest.parent / "output" / "rewrite.usfm"
     rewrite_output.write_text("\\id MAT Candidate\n\\c 1\n\\p\n\\v 1 NEW ONE\n", encoding="utf-8")
     _write_bic_assessment(rewrite, rewrite_output)
-    submit_act_task(config, rewrite_manifest)
+    submit_with_receipt(config, rewrite_manifest)
     check = create_act_task(config, workflow="bic", operation="self_check", output_project_id="usBOLx1", contemporary_source_id="idKKHv0", scope_value="MAT 1:1", predecessor_task=str(rewrite_manifest))
     check_manifest = Path(check["manifest_path"])
     check_output = check_manifest.parent / "output" / "self-check.usfm"
     check_output.write_text("\\id MAT Candidate\n\\c 1\n\\p\n\\v 1 NEW ONE\n", encoding="utf-8")
     _write_bic_assessment(check, check_output)
-    result = submit_act_task(config, check_manifest)
+    result = submit_with_receipt(config, check_manifest)
 
     assert Path(result["commit"]["target_file"]) == target.resolve()
     assert sorted(path.name for path in external.glob("*.SFM")) == ["41MAT.SFM"]
@@ -857,7 +975,7 @@ def test_saw_submission_canonicalizes_provider_local_finding_id_syntax(package_r
     output_path = manifest_path.parent / "output" / "findings.json"
     output_path.write_text(json.dumps(document), encoding="utf-8")
 
-    result = submit_act_task(config, manifest_path)
+    result = submit_with_receipt(config, manifest_path)
 
     assert result["status"] == "FINALIZED"
     normalized = json.loads(
@@ -915,7 +1033,11 @@ def test_rtc_task_reports_empty_reference_coordinate_without_aborting(
     config = load_ecosystem(root / "ecosystem.yml")
     output_path = manifest_path.parent / "output/findings.json"
     output_path.write_text(json.dumps(_meaning_document(manifest)), encoding="utf-8")
-    submit_act_task(config, manifest_path)
+    # RTC output without a provider receipt is an integrity failure, not an UNRECORDED route.
+    with pytest.raises(ValidationError) as missing_receipt:
+        submit_act_task(config, manifest_path)
+    assert missing_receipt.value.code == "EXECUTION_RECEIPT_MISSING"
+    submit_with_receipt(config, manifest_path)
     final = continue_saw_plan(config, Path(plan["plan_path"]))
     aggregate = json.loads(Path(final["aggregate_path"]).read_text(encoding="utf-8"))
     assert aggregate["source_comparison_status"] == "COMPLETE_WITH_STRUCTURE_PROBLEMS"
@@ -950,7 +1072,7 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     assert "OT requests to the Job-bound Hebrew resource and NT requests to the Job-bound Greek resource" in act_text
     assert "one issue at the smallest necessary Scripture scope" in act_text
     (meaning_path.parent / "output" / "findings.json").write_text(json.dumps(_meaning_document(meaning, request_ref="MAT 1:2")), encoding="utf-8")
-    submit_act_task(config, meaning_path)
+    submit_with_receipt(config, meaning_path)
     next_stage = continue_saw_plan(config, Path(plan["plan_path"]))
     ol_path = Path(next_stage["next_unit"]["manifest_path"])
     assert next_stage["next_unit"]["review_portion_index"] == 1
@@ -1052,7 +1174,7 @@ def test_selective_ol_stage_is_exactly_scoped_and_requires_ol_evidence(package_r
     good["findings"] = []
     output_path = ol_path.parent / "output" / "findings.json"
     output_path.write_text(json.dumps(good), encoding="utf-8")
-    submit_act_task(config, ol_path)
+    submit_with_receipt(config, ol_path)
     final = continue_saw_plan(config, Path(plan["plan_path"]))
     aggregate = json.loads(Path(final["aggregate_path"]).read_text(encoding="utf-8"))
     assert aggregate["ol_review_requests"][0]["request_id"] == request_id
@@ -1109,7 +1231,7 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
         json.dumps(meaning),
         encoding="utf-8",
     )
-    submit_act_task(config, meaning_path)
+    submit_with_receipt(config, meaning_path)
 
     next_stage = continue_saw_plan(config, Path(plan["plan_path"]))
     assert next_stage["status"] == "NEXT_WORK_UNIT"
@@ -1208,7 +1330,7 @@ def test_partitioned_selective_ol_stage_preserves_inherited_request_contracts(
         (manifest_path.parent / "output" / "findings.json").write_text(
             json.dumps(document), encoding="utf-8"
         )
-        submit_act_task(config, manifest_path)
+        submit_with_receipt(config, manifest_path)
 
     store = JobStore(root, root / "ecosystem.yml")
     job = store.load_job(str(composite["job_id"]), tool="saw")
@@ -1465,7 +1587,7 @@ def test_partitioned_rtc_aggregate_preserves_source_text_issues(
             json.dumps(_meaning_document(manifest)),
             encoding="utf-8",
         )
-        submit_act_task(config, manifest_path)
+        submit_with_receipt(config, manifest_path)
 
     aggregate = aggregate_act_plan(config, stage_plan_path)
 
@@ -1690,6 +1812,12 @@ def test_cross_chapter_structural_stage_keeps_scripture_atom_order(
     projects_root = storage_layout(root).projects_root
     (projects_root / "usWIP" / "custom.vrs").write_text(
         "#! &MAT 1:1-12 = MAT 1:1\n",
+        encoding="utf-8",
+    )
+    # The REFERENCE side of the equivalence group has no text, so code cannot decide it.
+    reference_text = projects_root / "usNIVv2" / "41MAT.SFM"
+    reference_text.write_text(
+        reference_text.read_text(encoding="utf-8").replace("\\v 1 Chapter one, verse 1.\n", "\\v 1\n", 1),
         encoding="utf-8",
     )
     settings = root / "ecosystem.yml"
@@ -2028,7 +2156,8 @@ def test_operator_approved_saw_plan_reconciles_verse_bridge_coordinates(
         assert manifest["stage_case_index"] == 1
         assert manifest["stage_case_total"] == 1
     required_checks = manifest["review_requirements"]["required_checks"]
-    assert "VERSE_BRIDGE_MAPPING" in required_checks
+    # Bridge mapping is decided in code from the WIP/REFERENCE alignment; the model checks bridge content.
+    assert "VERSE_BRIDGE_MAPPING" not in required_checks
     assert "VERSE_BRIDGE_CONTENT" in required_checks
     assert "CROSS_REFERENCE" in required_checks
     act_text = (manifest_path.parent / "ACT.md").read_text(encoding="utf-8")
@@ -2042,6 +2171,14 @@ def test_structural_stage_covers_only_candidate_coordinates(package_root: Path, 
     """Structural adjudication must use candidate coordinates rather than claiming parent RTC coverage."""
     root = make_workspace(qualification_status="VALIDATED", verse_max=3)
     (storage_layout(root).projects_root / "usWIP/custom.vrs").write_text("#! &MAT 1:2-3 = MAT 1:2\n", encoding="utf-8")
+    reference_text = storage_layout(root).projects_root / "usNIVv2/41MAT.SFM"
+    reference_text.write_text(
+        "\n".join(
+            "\\v 2" if line.startswith("\\v 2 ") else line
+            for line in reference_text.read_text(encoding="utf-8").splitlines()
+        ) + "\n",
+        encoding="utf-8",
+    )
     settings = root / "ecosystem.yml"
     settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
     settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
@@ -2056,7 +2193,9 @@ def test_structural_stage_covers_only_candidate_coordinates(package_root: Path, 
     manifest = json.loads(Path(plan["manifest_path"]).read_text(encoding="utf-8"))
     assert manifest["scope"] == "MAT 1:1-3"
     assert manifest["expected_references"] == ["MAT 1:2", "MAT 1:3"]
-    assert manifest["structural_candidate_ids"] == ["VRS-001"]
+    [candidate_id] = manifest["structural_candidate_ids"]
+    # Plan-global identity is derived from the VRS mapping, not a per-unit counter.
+    assert candidate_id.startswith("VRS-") and len(candidate_id) == 14
 
 
 def test_vrs_candidate_crossing_approved_portions_is_reported_without_blocking(
@@ -2318,27 +2457,29 @@ def test_saw_finding_discontiguous_portion_must_remain_inside_work_unit(tmp_path
     }
     path = tmp_path / "findings.json"
     path.write_text(json.dumps(payload), encoding="utf-8")
-    with pytest.raises(ValidationError, match="outside the bounded task scope"):
-        validate_saw_findings(
-            path,
-            task_id="saw-rtc-amo-fixture",
-            operation="rtc",
-            rtc_stage="REFERENCE_TEXT_COMPARISON",
-            scope_value="AMO 1:11-15",
-            focus=None,
-            check_type=None,
-            expected_references=["AMO 1:11"],
-            structural_candidate_ids=[],
-            grammar_rule_ids=[],
-            allowed_evidence_ids=["REFERENCE", "WIP"],
-            task_fingerprint="fixture-fingerprint",
-            required_review_checks=["MEANING"],
-            expected_work_unit_ids=["WU-AMO-1"],
-        )
+    result = validate_saw_findings(
+        path,
+        task_id="saw-rtc-amo-fixture",
+        operation="rtc",
+        rtc_stage="REFERENCE_TEXT_COMPARISON",
+        scope_value="AMO 1:11-15",
+        focus=None,
+        check_type=None,
+        expected_references=["AMO 1:11"],
+        structural_candidate_ids=[],
+        grammar_rule_ids=[],
+        allowed_evidence_ids=["REFERENCE", "WIP"],
+        task_fingerprint="fixture-fingerprint",
+        required_review_checks=["MEANING"],
+        expected_work_unit_ids=["WU-AMO-1"],
+    )
+    # The out-of-scope finding is dropped and recorded; the unit itself is still accepted.
+    assert result["findings"] == []
+    assert "outside the bounded task scope" in result["salvage_records"][0]["message"]
 
 
-def test_meaning_stage_rejects_stale_original_language_filler(package_root: Path, make_workspace) -> None:
-    """A non-OL RTC stage cannot preserve legacy 'not consulted/prohibited' OL text."""
+def test_meaning_stage_strips_stale_original_language_filler(package_root: Path, make_workspace) -> None:
+    """A non-OL RTC stage drops legacy 'not consulted/prohibited' OL text and records the correction."""
     root = make_workspace(qualification_status="VALIDATED", verse_max=2)
     _initialize(package_root, root)
     config = load_ecosystem(root / "ecosystem.yml")
@@ -2362,8 +2503,11 @@ def test_meaning_stage_rejects_stale_original_language_filler(package_root: Path
         "original_language_evidence": "Not consulted, as prohibited for this stage.",
     }]
     (manifest_path.parent / "output" / "findings.json").write_text(json.dumps(document), encoding="utf-8")
-    with pytest.raises(ValidationError, match="must be empty outside an OL review stage"):
-        submit_act_task(config, manifest_path)
+    submit_with_receipt(config, manifest_path)
+    normalized = json.loads((manifest_path.parent / "validation" / "normalized-findings.json").read_text(encoding="utf-8"))
+    assert normalized["findings"][0]["original_language_evidence"] == ""
+    records = exceptions_for_run(manifest_path.parents[2])
+    assert [(row["code"], row["effect"]) for row in records] == [("SAW_FINDING_CORRECTED", "CORRECTED")]
 
 
 def test_scoped_predecessor_projection_drops_unrelated_large_chapter_payload() -> None:
@@ -2397,3 +2541,54 @@ def test_scoped_predecessor_projection_drops_unrelated_large_chapter_payload() -
     assert [row["finding_id"] for row in scoped["findings"]] == ["F1"]
     assert [row["request_id"] for row in scoped["ol_review_requests"]] == ["OL1"]
     assert [row["scope"] for row in scoped["work_units"]] == ["DAN 1:1"]
+
+
+def _vrs_workspace(package_root: Path, make_workspace, mapping: str, *, blank_reference_verse: int | None = None):
+    """Build a MAT 1:1-3 workspace with one WIP VRS mapping and optionally one empty REFERENCE verse."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=3)
+    (storage_layout(root).projects_root / "usWIP/custom.vrs").write_text(mapping, encoding="utf-8")
+    if blank_reference_verse is not None:
+        reference_text = storage_layout(root).projects_root / "usNIVv2/41MAT.SFM"
+        reference_text.write_text(
+            "\n".join(
+                f"\\v {blank_reference_verse}" if line.startswith(f"\\v {blank_reference_verse} ") else line
+                for line in reference_text.read_text(encoding="utf-8").splitlines()
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+    settings = root / "ecosystem.yml"
+    settings_data = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    settings_data["projects"]["usWIP"]["versification"]["custom_file"] = "custom.vrs"
+    settings.write_text(yaml.safe_dump(settings_data, sort_keys=False), encoding="utf-8")
+    _initialize(package_root, root)
+    return load_ecosystem(root / "ecosystem.yml")
+
+
+def test_vrs_merge_with_text_on_both_sides_is_decided_without_the_model(package_root: Path, make_workspace) -> None:
+    """A WIP merge whose WIP and REFERENCE both carry text is no finding and needs no structural stage."""
+    config = _vrs_workspace(package_root, make_workspace, "#! &MAT 1:2-3 = MAT 1:2\n")
+    plan = create_act_task(
+        config, workflow="saw", operation="rtc", output_project_id="usWIP",
+        contemporary_source_id="usNIVv2", scope_value="MAT 1:1-3",
+    )
+    assert plan["current_stage"] == "REFERENCE_TEXT_COMPARISON"
+    composite = json.loads(Path(plan["plan_path"]).read_text(encoding="utf-8"))
+    assert composite["structural_stage_required"] is False
+    assert [row["outcome"] for row in composite["structural_resolutions"]] == ["NO_FINDING"]
+    assert composite["deterministic_findings"] == []
+
+
+def test_vrs_shift_with_missing_reference_text_is_a_deterministic_finding(package_root: Path, make_workspace) -> None:
+    """A coordinate shift whose REFERENCE verse is empty becomes a STRUCTURE finding without a model call."""
+    config = _vrs_workspace(package_root, make_workspace, "MAT 1:3 = MAT 1:2\n", blank_reference_verse=2)
+    plan = create_act_task(
+        config, workflow="saw", operation="rtc", output_project_id="usWIP",
+        contemporary_source_id="usNIVv2", scope_value="MAT 1:1-3",
+    )
+    composite = json.loads(Path(plan["plan_path"]).read_text(encoding="utf-8"))
+    [finding] = composite["deterministic_findings"]
+    assert finding["category"] == "STRUCTURE"
+    assert finding["target_reference"] == "MAT 1:3"
+    assert "none in usNIVv2" in finding["issue"]
+    assert plan["current_stage"] == "REFERENCE_TEXT_COMPARISON"

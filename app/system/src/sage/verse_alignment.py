@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import json
 from copy import deepcopy
 from dataclasses import dataclass, field
 from types import MappingProxyType
-from typing import Iterable, Mapping
+from typing import Any, Iterable, Mapping, Sequence
 
 from .errors import ValidationError
 from .references import BOOK_ORDER
@@ -13,6 +14,9 @@ from .vrs import VerseRef, VersificationSchema
 from .work_units import EvidenceRecord
 
 RecordKey = tuple[str, int, int, int]
+# Verse indexes reused across the tasks of a Run; a few Projects at most are live at once.
+_INDEX_CACHE: dict[tuple[Any, ...], "ProjectVerseIndex"] = {}
+_INDEX_CACHE_LIMIT = 8
 
 
 def _record_key(record: EvidenceRecord) -> RecordKey:
@@ -124,6 +128,36 @@ class ProjectVerseIndex:
         compare=False,
     )
     _existing_local_refs: frozenset[VerseRef] = field(repr=False, compare=False)
+
+    @classmethod
+    def cached(
+        cls,
+        project_id: str,
+        records: Sequence[EvidenceRecord],
+        schema: VersificationSchema,
+    ) -> ProjectVerseIndex:
+        """Return one index per Project content and effective VRS, built once per process.
+
+        The key covers every record's coordinates and text and the full effective schema, so a Run's
+        tasks share one index instead of rebuilding it for every work unit, and changed content never
+        reuses a stale one.
+        """
+        records = tuple(records)
+        key = (
+            str(project_id),
+            tuple(
+                (_record_key(record), hash(str(record.payload.get("body_text") or "")))
+                for record in records
+            ),
+            json.dumps(schema.to_dict(), sort_keys=True, default=str),
+        )
+        index = _INDEX_CACHE.get(key)
+        if index is None:
+            if len(_INDEX_CACHE) >= _INDEX_CACHE_LIMIT:
+                _INDEX_CACHE.pop(next(iter(_INDEX_CACHE)))
+            index = cls.build(project_id, records, schema)
+            _INDEX_CACHE[key] = index
+        return index
 
     @classmethod
     def build(
@@ -314,3 +348,51 @@ def project_coordinates(
         precision=precision,
         is_deterministic=precision == "COORDINATE",
     )
+
+
+def record_correspondence(
+    primary_records: Iterable[EvidenceRecord],
+    primary_index: ProjectVerseIndex,
+    authority_index: ProjectVerseIndex,
+) -> list[dict[str, Any]]:
+    """Return each Primary record whose Authority records carry different coordinates.
+
+    Identity rows are omitted: the model only needs the shifts, merges, and splits.
+    """
+    rows: list[dict[str, Any]] = []
+    for aligned in primary_index._aligned_for_records(primary_records):
+        authority = authority_index.records_for_canonical(aligned.canonical_refs)
+        labels = [record.reference for record in authority]
+        if labels == [aligned.record.reference]:
+            continue
+        rows.append(
+            {
+                "wip": aligned.record.reference,
+                "original_language": labels,
+                "precision": aligned.mapping_precision,
+            }
+        )
+    return rows
+
+
+def missing_by_local_ref(
+    record: EvidenceRecord,
+    index: ProjectVerseIndex,
+    missing_canonical: frozenset[VerseRef],
+) -> dict[VerseRef, set[VerseRef]]:
+    """Map each local verse of ``record`` to the missing canonical verses it owns.
+
+    A bridge whose one canonical atom is missing flags only the local verse that maps to it. When no
+    single local verse maps to the gap (an equivalence group), every verse of the record carries it.
+    """
+    record_missing = index.canonical_refs_for_records((record,)).intersection(missing_canonical)
+    if not record_missing:
+        return {}
+    owned = {
+        local_ref: set(index._schema.canonical_set({local_ref}).intersection(record_missing))
+        for local_ref in record.refs
+    }
+    owned = {local_ref: refs for local_ref, refs in owned.items() if refs}
+    if not owned:
+        return {local_ref: set(record_missing) for local_ref in record.refs}
+    return owned

@@ -1,6 +1,6 @@
 # RTC Check Policy — Beta
 
-Reference Text Comparison (RTC) can split work into four check groups: structure/completeness, translation/meaning, language/readability, and consistency. All are enabled by default and may be toggled before the Run starts.
+Reference Text Comparison (RTC) can split work into four check groups: structure/completeness, translation/meaning, language/readability, and consistency. All are enabled by default. They are set once per Job under **RTC defaults setting** and apply to every later **Run RTC on <WIP> with defaults**; they cannot change while a Run is open. Findings of a disabled group are filtered out in code even if the model reports them.
 
 Actual multi-coordinate verse records remain indivisible source spans throughout planning. Every
 internal RTC boundary is closed against both WIP and REFERENCE source-record bridges, while
@@ -19,39 +19,39 @@ Text-context policy is marker-class based:
 | `MATERIAL_ONLY` | Detect normally, but omit non-material wording/style findings. Material semantic, consistency, or structural findings retain their normal severity. |
 | `STRUCTURE_ONLY` | Evaluate marker/USFM structure only; enclosed content is not elevated as translation findings. |
 
-Default contexts: `\\add` and `\\nd` = `MATERIAL_ONLY`; `\\f` = `STRUCTURE_ONLY`. Cross-references and quotations are checked by fixed policy rather than an Operator toggle.
+Default contexts: `\\add` and `\\nd` = `MATERIAL_ONLY`; `\\f` = `STRUCTURE_ONLY`. Cross-references are always checked (`\\x` = `NORMAL`); SAGE compares their target numbers and footnote origins in code. Quotation structure is part of the structure/completeness group. Each finding states its USFM context and whether it is material, and SAGE applies the mode to it in code.
 
 **Suppression never means LOW priority.** The policy answers whether a detection becomes a finding; it must not downgrade the finding's severity. The effective policy is written immutably to `check-policy.json` inside the Run.
 ## Finding references
 
 RTC finding citations, original-language review requests, and their resolutions use the normal 12,000-character output-text limit. Long semicolon-separated citations are preserved in both action reports and plain-text notes. Every citation portion must still parse as a Scripture reference and satisfy the existing task-scope and stage-evidence checks; a longer citation does not expand the authorized scope.
 
-## Operator setup screen
+## RTC defaults screen
 
-The classic UI presents primary actions first, then check toggles and text-policy selectors.
+The Job menu's **RTC defaults setting** opens this screen. It saves the Job's defaults; there is no per-Run toggle screen.
 
 ```text
 ╔══════════════════════════════════════════════════════════════════════╗
-║ STANDARD RTC: LUK 1:1-10                                             ║
+║ REFERENCE TEXT COMPARISON (RTC): JOB defaults                        ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
-  1. Run Reference Text Comparison (RTC)
+  1. Save RTC defaults
   2. Restore defaults
 
 > Checks [Choose number to toggle ON/OFF]
 ────────────────────────────────────────────────────────────────────────
 
-  3. Structure and completeness        ON
-  4. Translation and meaning           ON
-  5. Language and readability          ON
-  6. Consistency                       ON
+  3. Check structure and completeness        ON
+  4. Check translation and meaning           ON
+  5. Check language and readability          ON
+  6. Check consistency                       ON
 
 > Text policy [Choose number to cycle]
 ────────────────────────────────────────────────────────────────────────
 
-  7. Added text       \add...\add*     MATERIAL ONLY
-  8. Name of Deity    \nd...\nd*       MATERIAL ONLY
-  9. Footnotes        \f...\f*         STRUCTURE ONLY
+  7. Check added text        \add...\add*     MATERIAL ONLY
+  8. Check Name of Deity     \nd...\nd*       MATERIAL ONLY
+  9. Check footnotes         \f...\f*         STRUCTURE ONLY
 > Original-language evidence [Choose number to toggle]
 ────────────────────────────────────────────────────────────────────────
 

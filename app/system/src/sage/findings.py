@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Mapping, Sequence
 
 from .errors import ValidationError
 from .references import parse_scope_set
@@ -281,3 +281,35 @@ def validate_finding_references(
             raise ValidationError(
                 f"{field} is not authorized by the primary canonical equivalence group"
             )
+
+
+def dedupe_findings(findings: Sequence[Mapping[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Drop repeated findings deterministically; return ``(kept, dropped)`` in input order.
+
+    Two findings repeat when they share reference, category, and whitespace-normalized issue text (work
+    units with overlapping context, or two stages reporting the same thing). A model STRUCTURE or
+    VERSIFICATION finding at the same reference as a deterministic finding repeats it as well.
+    """
+    deterministic_refs = {
+        str(row.get("target_reference") or "")
+        for row in findings
+        if str(row.get("detection") or "") == "DETERMINISTIC"
+    }
+    seen: set[tuple[str, str, str]] = set()
+    kept: list[dict[str, Any]] = []
+    dropped: list[dict[str, Any]] = []
+    for row in findings:
+        reference = str(row.get("target_reference") or "")
+        category = str(row.get("category") or "").upper()
+        key = (reference, category, " ".join(str(row.get("issue") or "").lower().split()))
+        model_repeat = (
+            str(row.get("detection") or "") != "DETERMINISTIC"
+            and category in {"STRUCTURE", "VERSIFICATION"}
+            and reference in deterministic_refs
+        )
+        if key in seen or model_repeat:
+            dropped.append(dict(row))
+            continue
+        seen.add(key)
+        kept.append(dict(row))
+    return kept, dropped

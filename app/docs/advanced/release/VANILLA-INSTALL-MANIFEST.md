@@ -818,7 +818,6 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/rtc-focused-check/agents`
 - `system/skills/rtc-focused-check/agents/openai.yaml`
 - `system/skills/rtc-focused-check/references`
-- `system/skills/rtc-focused-check/references/EXECUTION-RULES.md`
 - `system/skills/rtc-focused-check/references/ORIGINAL-WORKFLOW-PROMPT.md`
 - `system/skills/rtc-focused-check/references/RUN-CHECK.md`
 - `system/skills/rtc-original-language-review`
@@ -826,14 +825,12 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/rtc-original-language-review/agents`
 - `system/skills/rtc-original-language-review/agents/openai.yaml`
 - `system/skills/rtc-original-language-review/references`
-- `system/skills/rtc-original-language-review/references/EXECUTION-RULES.md`
 - `system/skills/rtc-original-language-review/references/ORIGINAL-WORKFLOW-PROMPT.md`
 - `system/skills/rtc-original-language-review/references/RUN-OL.md`
 - `system/skills/rtc/SKILL.md`
 - `system/skills/rtc/agents`
 - `system/skills/rtc/agents/openai.yaml`
 - `system/skills/rtc/references`
-- `system/skills/rtc/references/EXECUTION-RULES.md`
 - `system/skills/rtc/references/LEGACY-WORKFLOW-PROMPT.md`
 - `system/skills/stc`
 - `system/skills/stc/SKILL.md`
@@ -898,6 +895,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/local_assistive.py`
 - `system/src/sage/locale_data.py`
 - `system/src/sage/locking.py`
+- `system/src/sage/marker_checks.py`
 - `system/src/sage/menu.py`
 - `system/src/sage/model_evaluation.py`
 - `system/src/sage/model_language_competency.py`
@@ -947,6 +945,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/target.py`
 - `system/src/sage/numbers/telemetry.py`
 - `system/src/sage/numbers/transport.py`
+- `system/src/sage/numeric_candidates.py`
+- `system/src/sage/candidates.py`
 - `system/src/sage/ol_referrals.py`
 - `system/src/sage/ollama_admin.py`
 - `system/src/sage/ollama_policy.py`
@@ -1019,6 +1019,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/structural_issues.py`
 - `system/src/sage/structure_policy.py`
 - `system/src/sage/task_retry.py`
+- `system/src/sage/text_coverage.py`
 - `system/src/sage/transactions.py`
 - `system/src/sage/tui.py`
 - `system/src/sage/ui_format.py`
@@ -1103,6 +1104,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_bootstrap_runtime.py`
 - `system/tests/test_build_locale_data.py`
 - `system/tests/test_bundled_regional_profiles.py`
+- `system/tests/test_candidates.py`
 - `system/tests/test_cardinality.py`
 - `system/tests/test_cli_dev3.py`
 - `system/tests/test_clone_and_install.py`
@@ -1130,12 +1132,14 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_local_ai_assistive.py`
 - `system/tests/test_locale_data.py`
 - `system/tests/test_locale_ldml_conventions.py`
+- `system/tests/test_marker_checks.py`
 - `system/tests/test_memory_governance.py`
 - `system/tests/test_menu_localization.py`
 - `system/tests/test_menu_projects.py`
 - `system/tests/test_model_evaluation.py`
 - `system/tests/test_model_language_competency.py`
 - `system/tests/test_natural_language_routing.py`
+- `system/tests/test_numeric_candidates.py`
 - `system/tests/test_ol_authority_profiles.py`
 - `system/tests/test_ol_referrals.py`
 - `system/tests/test_ollama_admin.py`
@@ -1168,6 +1172,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_rewrite_risk.py`
 - `system/tests/test_routing_override.py`
 - `system/tests/test_rtc_planner.py`
+- `system/tests/test_rtc_stc_regressions.py`
 - `system/tests/test_runtime.py`
 - `system/tests/test_schema_validation.py`
 - `system/tests/test_scope_and_auto_resolution.py`
@@ -1198,6 +1203,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_storage_layout.py`
 - `system/tests/test_storage_rtc_boundaries.py`
 - `system/tests/test_structural_issues.py`
+- `system/tests/test_text_coverage.py`
 - `system/tests/test_transactions_and_memory.py`
 - `system/tests/test_tui_services.py`
 - `system/tests/test_tui_textual.py`

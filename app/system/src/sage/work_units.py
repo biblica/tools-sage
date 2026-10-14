@@ -614,6 +614,8 @@ def _close_required_span_boundaries(
     ranges: list[tuple[int, int]],
     records: tuple[EvidenceRecord, ...],
     required_spans: Iterable[Iterable[VerseRef]],
+    *,
+    backward_first: bool = False,
 ) -> tuple[list[tuple[int, int]], list[list[str]]]:
     """Move proposed boundaries through every intersecting indivisible source span.
 
@@ -621,6 +623,9 @@ def _close_required_span_boundaries(
     additionally protects spans from another active source (for RTC, REFERENCE)
     and VRS equivalence groups.  Extending one boundary through a span naturally
     repeats until it reaches a stable boundary, including opposing bridge chains.
+    With ``backward_first`` a boundary first moves back before the span, so the
+    unit shrinks instead of growing; it extends forward only when no earlier
+    boundary exists inside the unit.
     """
     positions = {
         ref: index
@@ -648,6 +653,12 @@ def _close_required_span_boundaries(
         if proposed_end < start:
             continue
         end = proposed_end
+        if backward_first and end in forbidden:
+            earlier = end
+            while earlier >= start and earlier in forbidden:
+                earlier -= 1
+            if earlier >= start:
+                end = earlier
         while end < final_index and end in forbidden:
             end += 1
         closed.append((start, end))
@@ -884,11 +895,30 @@ def _plan_work_units_with_sizer(
         context_positions,
         sizer,
     )
-    ranges, active_required_spans = _close_required_span_boundaries(
+    required_span_values = [tuple(values) for values in required_spans]
+
+    def _all_fit(candidate: list[tuple[int, int]]) -> bool:
+        """Return whether every closed unit stays within the governed limits."""
+        return all(
+            _fits(ordered, unit_start, unit_end, policy, full_context, context_positions, sizer)
+            for unit_start, unit_end in candidate
+        )
+
+    # Prefer moving a boundary back before an indivisible span; extend forward only when that does not fit.
+    backward, active_required_spans = _close_required_span_boundaries(
         ranges,
         ordered,
-        required_spans,
+        required_span_values,
+        backward_first=True,
     )
+    if backward == ranges or _all_fit(backward):
+        ranges = backward
+    else:
+        ranges, active_required_spans = _close_required_span_boundaries(
+            ranges,
+            ordered,
+            required_span_values,
+        )
 
     for unit_start, unit_end in ranges:
         if not _fits(
