@@ -13,7 +13,14 @@ separate contracts and do not inherit the product version.
 
 ## Current release line
 
-`0.02b1` is the first group-testing Beta of the 0.02 line. It includes the full development branch and retains `public_release_ready=false`. NCA runtime and SQS confidence checks remain future implementation work.
+`0.02b1` is the first group-testing Beta of the 0.02 line. It includes the full development branch and retains `public_release_ready=false`.
+
+## Development branches
+
+`0.02aN` branches (currently `0.02a3`) are non-release development branches. They keep `VERSION` at the
+current release identity (`0.02b1`) and change no synchronized version surface until an approved
+promotion. Branch-only work is recorded against the branch milestone (`MS-02A3`) in the PM ledgers:
+the NCA runtime is implemented there, and SQS integration is tracked under `MS-SQS`.
 
 ## Promotion sequence
 

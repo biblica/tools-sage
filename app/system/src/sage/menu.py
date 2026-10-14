@@ -3575,6 +3575,11 @@ class SageControlCenter:
                 boundary_hint="TASK_ATTEMPT",
                 pause=False,
             )
+            preserved = dict(dict((exc.details or {}).get("payload") or {}).get("details") or {}).get(
+                "provider_attempt_path"
+            )
+            if preserved and not getattr(self, "_compact_saw_progress", False):
+                self.io.write(f"Provider response preserved: {operator_path(self.root, str(preserved))}")
             self.io.write(f"Task remains resumable: {manifest_path}")
             self.io.pause()
             return False

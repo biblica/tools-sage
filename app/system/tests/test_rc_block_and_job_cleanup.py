@@ -11,11 +11,16 @@ from pathlib import Path
 import pytest
 
 from sage.storage import storage_layout
-from sage.errors import ValidationError
+from sage.errors import MemoryGovernanceError, ValidationError
 from sage.execution_events import classify_exception, record_exception_event
 from sage.executors.codex_cli import CodexCLIExecutor
 from sage.job_layout import audit_job_layout, migrate_job_layout, write_job_layout_audit
-from sage.task_retry import archive_rejected_task_output
+from sage.task_retry import (
+    archive_rejected_task_output,
+    preserve_failed_provider_responses,
+    provider_output_contract,
+    write_provider_responses,
+)
 from sage.cli import _configure_utf8_standard_streams, command_launcher_shortcut
 
 
@@ -52,6 +57,67 @@ def test_execution_event_dispositions_are_boundary_specific(tmp_path: Path) -> N
         "REBUILD_AFFECTED_STAGE",
     )
     assert classify_exception(scope)[0:2] == ("BLOCKED", "WORK_UNIT")
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "BIC_OUTPUT_INVALID",
+        "STC_OUTPUT_INVALID",
+        "RTC_OUTPUT_INVALID",
+        "RTC_OL_REFERRAL_DUPLICATE",
+        "SAW_OL_REFERRAL_SCOPE_INVALID",
+        "RTC_OL_REFERRAL_FIELDS_MISSING",
+        "USFM_PROTECTED_MARKER_MISMATCH",
+        "STC_REPORT_LANGUAGE_MISMATCH",
+        "LLM_REPORT_LANGUAGE_RETRY_EXHAUSTED",
+        "LLM_FOLLOWUP_CONTEXT_LIMIT_EXCEEDED",
+        "LLM_CONDITIONAL_SCOPE_INVALID",
+        "INSPECT_SCOPE_MISMATCH",
+        "INSPECT_REFERENCE_INVALID",
+        "INSPECT_REFERENCE_OUTSIDE_SCOPE",
+        "BIC_OL_MICROSCOPE_INVALID",
+        "BIC_OL_MICROSCOPE_NOT_SINGLE_VERSE",
+    ],
+)
+def test_provider_output_defects_are_rejected_for_same_task_retry(code: str) -> None:
+    """Output defects must archive the attempt; an ERROR leaves the output in place to be resubmitted forever."""
+    assert classify_exception(ValidationError("bad output", code=code)) == (
+        "TASK_OUTPUT_REJECTED",
+        "TASK_ATTEMPT",
+        "RETRY_SAME_TASK",
+    )
+
+
+@pytest.mark.parametrize(
+    ("code", "disposition"),
+    [
+        ("ACT_REPORT_LANGUAGE_MISMATCH", "ERROR"),
+        ("LLM_HANDOFF_CONTEXT_LIMIT_EXCEEDED", "ERROR"),
+        ("BIC_OL_MICROSCOPE_EVIDENCE_INVALID", "ERROR"),
+        ("INSPECT_REQUIRED", "INPUT_REQUIRED"),
+        ("EXECUTION_RECEIPT_OUTPUT_MISMATCH", "ERROR"),
+    ],
+)
+def test_task_and_evidence_defects_are_not_treated_as_rejected_output(code: str, disposition: str) -> None:
+    """A retry cannot fix a sealed-task or evidence defect, so these codes never archive provider output."""
+    assert classify_exception(ValidationError("not an output defect", code=code))[0] == disposition
+
+
+def test_provider_output_contract_recodes_only_generic_validator_codes() -> None:
+    """Generic validator codes become output-invalid; specific codes keep their own classification."""
+    with pytest.raises(ValidationError) as caught:
+        with provider_output_contract("BIC_OUTPUT_INVALID", affected_scope="MAT 1"):
+            raise MemoryGovernanceError("proposals must be a list of mappings")
+    assert caught.value.code == "BIC_OUTPUT_INVALID"
+    assert caught.value.affected_scope == "MAT 1"
+    assert caught.value.message == "proposals must be a list of mappings"
+    assert classify_exception(caught.value)[0] == "TASK_OUTPUT_REJECTED"
+
+    with pytest.raises(ValidationError) as caught:
+        with provider_output_contract("BIC_OUTPUT_INVALID"):
+            raise ValidationError("marker drift", code="USFM_PROTECTED_MARKER_MISMATCH")
+    assert caught.value.code == "USFM_PROTECTED_MARKER_MISMATCH"
 
 
 def test_execution_event_persists_sanitized_jsonl_and_markdown(tmp_path: Path) -> None:
@@ -128,6 +194,50 @@ def test_rejected_task_output_is_archived_for_same_task_retry(tmp_path: Path) ->
     assert (attempt / "validation" / "llm-execution-receipt.json").is_file()
     assert list((task / "output").iterdir()) == []
     assert json.loads((attempt / "attempt-receipt.json").read_text(encoding="utf-8"))["event_id"] == "EVT-1"
+
+
+def test_rejected_task_output_archive_keeps_raw_provider_responses(tmp_path: Path) -> None:
+    """The raw provider response travels with the rejected attempt, so the retry cannot overwrite it."""
+    task = tmp_path / "task"
+    (task / "output").mkdir(parents=True)
+    manifest = task / "task.json"
+    manifest.write_text('{"task_id":"task-1"}', encoding="utf-8")
+    (task / "output" / "findings.json").write_text('{"bad":true}', encoding="utf-8")
+    write_provider_responses(task / "validation" / "provider-responses", ['{"raw":1}', '{"raw":2}'])
+    receipt = archive_rejected_task_output(manifest, reason_code="STC_OUTPUT_INVALID", message="bad")
+    attempt = Path(receipt["attempt_path"])
+    responses = attempt / "validation" / "provider-responses"
+    assert (responses / "response-01.txt").read_text(encoding="utf-8") == '{"raw":1}'
+    assert (responses / "response-02.txt").read_text(encoding="utf-8") == '{"raw":2}'
+    assert not (task / "validation" / "provider-responses").exists()
+    archived = {row["path"] for row in receipt["archived_files"]}
+    assert "validation/provider-responses/response-02.txt" in archived
+
+
+def test_failed_execution_preserves_raw_responses_without_touching_outputs(tmp_path: Path) -> None:
+    """An execution that fails after a provider reply archives the reply; the task stays open to re-execute."""
+    task = tmp_path / "task"
+    (task / "output").mkdir(parents=True)
+    manifest = task / "task.json"
+    manifest.write_text('{"task_id":"task-1"}', encoding="utf-8")
+    first = preserve_failed_provider_responses(
+        manifest, ["not json"], reason_code="LLM_PROVIDER_RESPONSE_INVALID", message="bad",
+        status="TASK_OUTPUT_REJECTED",
+    )
+    second = preserve_failed_provider_responses(
+        manifest, ["ok", "timeout"], reason_code="CODEX_APP_SERVER_TIMEOUT", message="slow",
+        status="TASK_PAUSED",
+    )
+    assert Path(first["attempt_path"]).name.startswith("attempt-001-rejected-")
+    assert Path(second["attempt_path"]).name.startswith("attempt-002-failed-")
+    assert (Path(first["attempt_path"]) / "provider-responses" / "response-01.txt").read_text(
+        encoding="utf-8"
+    ) == "not json"
+    receipt = json.loads((Path(second["attempt_path"]) / "attempt-receipt.json").read_text(encoding="utf-8"))
+    assert receipt["stage"] == "PROVIDER_EXECUTION"
+    assert receipt["status"] == "TASK_PAUSED"
+    assert len(receipt["archived_files"]) == 2
+    assert list((task / "output").iterdir()) == []
 
 
 def test_job_layout_audit_hash_is_stable_and_migration_is_dry_run_first(tmp_path: Path) -> None:

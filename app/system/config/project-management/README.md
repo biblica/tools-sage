@@ -4,6 +4,14 @@ This directory is the source-controlled project-management ledger for SAGE. It t
 the release identity in the root `VERSION` file without mixing planning records with mutable
 Operator data, Job evidence, or generated reports.
 
+## Where to look
+
+- **What is being worked on now?** [TODO](TODO.md) → *Active development*, in execution order.
+- **Which outcomes are open?** [Milestones](MILESTONES.md) → *Active milestones*.
+- **What was finished, and how was it verified?** [Implemented Updates](IMPLEMENTED-UPDATES.md), newest
+  first.
+- **What blocks a release?** [Build Issues](BUILD-ISSUES.md) and [Release Cleanup](RELEASE-CLEANUP.md).
+
 ## Files
 
 - [Build Issues](BUILD-ISSUES.md) records build, packaging, test-environment, and release-gate
@@ -25,6 +33,9 @@ Operator data, Job evidence, or generated reports.
 - `docs/advanced/release/RELEASE-NOTES.md` remains the release-facing summary.
 - `system/config/DEVELOPMENT-STATUS.md` remains the internal capability and qualification statement.
 - `system/config/NEXT-DEVELOPMENT-WORK.md` remains the internal higher-level development roadmap.
+- The repository-root `TODO.md` is only a pointer list into [TODO](TODO.md); do not track work there.
+- `NEXT-DEVELOPMENT-WORK.md` holds roadmap ideas that are not yet accepted work. Once accepted, an
+  item moves into [TODO](TODO.md) and the roadmap keeps only a link.
 - These files provide the operational PM trace between those documents.
 
 ## Entry rules

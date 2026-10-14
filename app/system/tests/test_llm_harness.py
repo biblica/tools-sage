@@ -12,6 +12,7 @@ from sage.storage import storage_layout
 from sage.atomic import atomic_write_json
 from sage.errors import ValidationError
 from sage.evidence_policy import AUTHORIZED_CONTENT_EVIDENCE, task_evidence_policy
+from sage.execution_events import classify_exception
 from sage.executors.base import ModelCapability, ProviderRequest, ProviderResponse, ProviderStatus, ReasoningEffortOption
 from sage.executors.codex_cli import CodexCLIExecutor
 from sage.executors.http import validate_local_endpoint
@@ -537,6 +538,45 @@ def test_task_executor_materializes_only_exact_allowlist(make_workspace, monkeyp
     files = [p.relative_to(manifest.parent).as_posix() for p in manifest.parent.rglob("*") if p.is_file()]
     assert "output/result.txt" in files
     assert not any(path.startswith("output/") and path != "output/result.txt" for path in files)
+    raw = manifest.parent / "validation" / "provider-responses" / "response-01.txt"
+    assert result["provider_responses"] == [
+        {"phase": 1, "path": "validation/provider-responses/response-01.txt", "sha256": sha256_file(raw)}
+    ]
+    assert sha256_file(raw) == result["provider_response_sha256"][0]
+
+
+def test_rejected_provider_response_is_preserved_and_task_stays_open(make_workspace, monkeypatch) -> None:
+    """A response that fails parsing is archived verbatim and classified for a same-task retry."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest = _synthetic_task(root)
+    config = load_ecosystem(root / "ecosystem.yml")
+
+    class FakeExecutor:
+        """Return a response that is not the governed JSON envelope."""
+
+        def status(self, **_kwargs):
+            """Expose a deterministic live catalog for policy routing."""
+            return _fake_codex_status()
+
+        def execute(self, request):
+            """Return prose instead of the response envelope."""
+            return ProviderResponse(
+                "codex", request.model, "I could not finish.", {"fake": True}, request.reasoning_effort
+            )
+
+    monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
+    with pytest.raises(ValidationError) as caught:
+        execute_task(config, task_manifest=manifest)
+    assert caught.value.code == "LLM_PROVIDER_RESPONSE_INVALID"
+    assert classify_exception(caught.value)[0] == "TASK_OUTPUT_REJECTED"
+    attempt = Path(caught.value.details["provider_attempt_path"])
+    assert attempt.parent == manifest.parent / "attempts"
+    assert (attempt / "provider-responses" / "response-01.txt").read_text(encoding="utf-8") == "I could not finish."
+    receipt = json.loads((attempt / "attempt-receipt.json").read_text(encoding="utf-8"))
+    assert receipt["status"] == "TASK_OUTPUT_REJECTED"
+    assert receipt["reason_code"] == "LLM_PROVIDER_RESPONSE_INVALID"
+    assert not (manifest.parent / "output").exists() or not any((manifest.parent / "output").rglob("*"))
+    assert not (manifest.parent / "validation" / "llm-execution-receipt.json").exists()
 
 
 def test_provisional_execution_receipt_uses_policy_basis_not_qualification_evidence(

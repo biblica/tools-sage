@@ -16,6 +16,7 @@ from sage.act_tasks import create_act_task, submit_act_task
 from sage.bounded_target import extract_scope_usfm
 from sage.bic_memory import record_human_memory_review
 from sage.errors import InputRequiredError, ConfigurationError, MemoryGovernanceError, ValidationError
+from sage.execution_events import classify_exception
 from sage.hashing import sha256_file
 from sage.registry import load_ecosystem
 from sage.jobs import JobStore
@@ -544,8 +545,11 @@ def test_plain_text_bic_usfm_is_rejected(package_root, make_workspace):
     invalid_output = rewrite_manifest.parent / "output" / "rewrite.usfm"
     invalid_output.write_text("plain text\n", encoding="utf-8")
     write_bic_assessment(rewrite, invalid_output)
-    with pytest.raises(ValidationError, match="USFM"):
+    with pytest.raises(ValidationError, match="USFM") as caught:
         submit_act_task(config, rewrite_manifest)
+    # A generic validator code would leave this output in place and resubmit it on every Continue.
+    assert caught.value.code == "BIC_OUTPUT_INVALID"
+    assert classify_exception(caught.value)[0] == "TASK_OUTPUT_REJECTED"
 
 
 def test_bic_rewrite_and_self_check_are_separate_and_commit(package_root, make_workspace):

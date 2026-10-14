@@ -123,6 +123,7 @@ from .rtc_policy import load_run_policy_snapshot
 from .semantic.diagnostics import analysis_signals_from_scope_evidence
 from .semantic.evidence import scope_evidence_for_project
 from .state import ecosystem_state_path, read_state, utc_now
+from .task_retry import provider_output_contract
 from .transactions import FileTransaction, incomplete_transactions
 from .jobs import JobStore, default_job_name
 from .workflow_identity import (
@@ -7260,12 +7261,13 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         final_status = "FINALIZED"
     elif workflow == "bic" and operation == "inspect":
         fingerprints = dict(raw.get("resource_fingerprints", {}))
-        normalized = validate_bic_inspect_output(
-            output_paths["output/inspect-submission.json"],
-            task_id=task_id,
-            scope_value=str(raw["scope"]),
-            resource_fingerprints=fingerprints,
-        )
+        with provider_output_contract("BIC_OUTPUT_INVALID", affected_scope=str(raw["scope"])):
+            normalized = validate_bic_inspect_output(
+                output_paths["output/inspect-submission.json"],
+                task_id=task_id,
+                scope_value=str(raw["scope"]),
+                resource_fingerprints=fingerprints,
+            )
         commit = submit_inspect_transactionally(
             normalized,
             memory_root=_memory_root(config),
@@ -7297,23 +7299,24 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         }
         expected_markers = tuple(raw["packets"]["contemporary_source"]["marker_sequence"])
         output_key = "output/rewrite.usfm" if operation == "rewrite" else "output/self-check.usfm"
-        usfm_validation = validate_bic_usfm_output(
-            output_paths[output_key],
-            expected_book=target_scope.book,
-            expected_references=expected_refs,
-            source_marker_sequence=expected_markers,
-            marker_policy=str(raw.get("marker_policy") or "SEMANTIC_STRUCTURE_V1"),
-        )
         grammar = raw.get("project_grammar") or {}
-        assessment = validate_grammar_assessment(
-            output_paths["output/grammar-assessment.json"],
-            task_id=task_id,
-            scope_value=str(raw["scope"]),
-            profile_id=str(grammar.get("profile_id", "")),
-            profile_sha256=str(grammar.get("profile_sha256", "")),
-            output_path=output_paths[output_key],
-            required_rule_ids=list(grammar.get("rule_ids", [])),
-        )
+        with provider_output_contract("BIC_OUTPUT_INVALID", affected_scope=str(raw["scope"])):
+            usfm_validation = validate_bic_usfm_output(
+                output_paths[output_key],
+                expected_book=target_scope.book,
+                expected_references=expected_refs,
+                source_marker_sequence=expected_markers,
+                marker_policy=str(raw.get("marker_policy") or "SEMANTIC_STRUCTURE_V1"),
+            )
+            assessment = validate_grammar_assessment(
+                output_paths["output/grammar-assessment.json"],
+                task_id=task_id,
+                scope_value=str(raw["scope"]),
+                profile_id=str(grammar.get("profile_id", "")),
+                profile_sha256=str(grammar.get("profile_sha256", "")),
+                output_path=output_paths[output_key],
+                required_rule_ids=list(grammar.get("rule_ids", [])),
+            )
         challenge_document: dict[str, Any] | None = None
         if operation == "rewrite":
             inherited_path = task_root / "packet" / "translation-challenges.json"
@@ -7321,21 +7324,22 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             inherited_ids = [str(row.get("challenge_id", "")).upper() for row in inherited_rows if isinstance(row, dict)]
             source_project = config.project(str(raw["contemporary_source"]))
             target_project = config.project(str(raw["output_project"]))
-            challenge_document = validate_rewrite_challenges(
-                output_paths["output/translation-challenges.json"],
-                task_id=task_id,
-                operation=operation,
-                scope_value=str(raw["scope"]),
-                output_path=output_paths[output_key],
-                inherited_challenge_ids=inherited_ids,
-                human_output=config.human_output,
-                source_language=source_project.language_code,
-                target_language=target_project.language_code,
-                ol_evidence_available=any(
-                    str(item.get("path", "")).endswith("original-language.sfm")
-                    for item in raw.get("conditional_reads", [])
-                ),
-            )
+            with provider_output_contract("BIC_OUTPUT_INVALID", affected_scope=str(raw["scope"])):
+                challenge_document = validate_rewrite_challenges(
+                    output_paths["output/translation-challenges.json"],
+                    task_id=task_id,
+                    operation=operation,
+                    scope_value=str(raw["scope"]),
+                    output_path=output_paths[output_key],
+                    inherited_challenge_ids=inherited_ids,
+                    human_output=config.human_output,
+                    source_language=source_project.language_code,
+                    target_language=target_project.language_code,
+                    ol_evidence_available=any(
+                        str(item.get("path", "")).endswith("original-language.sfm")
+                        for item in raw.get("conditional_reads", [])
+                    ),
+                )
             challenge_document["execution_route"] = execution_route
             conditional_ol_evidence_used = any(
                 bool((item.get("ol_referral") or {}).get("performed", False))
@@ -7470,16 +7474,17 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "STC task original-language authority identity is invalid",
                 code="STC_OL_AUTHORITY_MISMATCH",
             )
-        normalized = validate_stc_submission(
-            output_paths["output/findings.json"],
-            task_id=task_id,
-            work_unit_id=str(raw.get("work_unit_id") or task_id),
-            scope_value=str(raw["scope"]),
-            expected_references=list(raw.get("expected_references", [])),
-            authority_family=authority_family,
-            task_fingerprint=str(raw.get("task_fingerprint", "")),
-            narrative_language=str(dict(raw.get("narrative_language") or {}).get("tag") or ""),
-        )
+        with provider_output_contract("STC_OUTPUT_INVALID", affected_scope=str(raw["scope"])):
+            normalized = validate_stc_submission(
+                output_paths["output/findings.json"],
+                task_id=task_id,
+                work_unit_id=str(raw.get("work_unit_id") or task_id),
+                scope_value=str(raw["scope"]),
+                expected_references=list(raw.get("expected_references", [])),
+                authority_family=authority_family,
+                task_fingerprint=str(raw.get("task_fingerprint", "")),
+                narrative_language=str(dict(raw.get("narrative_language") or {}).get("tag") or ""),
+            )
         normalized_issues = unique_source_text_issues(
             dict(row)
             for row in raw.get("structural_issues", raw.get("source_text_issues", []))
@@ -7574,7 +7579,10 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                     affected_scope=str(raw.get("scope") or ""),
                     next_action="Rebuild the affected selective OL stage from its inherited request ledger.",
                 )
-        try:
+        with provider_output_contract(
+            _analysis_code(workflow, "SAW_OUTPUT_INVALID"),
+            affected_scope=str(raw.get("scope") or ""),
+        ):
             normalized = validate_analysis_findings(
                 output_paths["output/findings.json"],
                 task_id=task_id,
@@ -7602,16 +7610,6 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 ),
                 workflow=workflow,
             )
-        except ValidationError as exc:
-            if exc.code != "VALIDATION_ERROR":
-                raise
-            raise ValidationError(
-                exc.message,
-                code=_analysis_code(workflow, "SAW_OUTPUT_INVALID"),
-                affected_scope=exc.affected_scope or str(raw.get("scope") or ""),
-                next_action="Retry the same sealed task with corrected provider output.",
-                details=exc.details,
-            ) from exc
         validation_details = {
             "format": (
                 "SAW_FINDINGS_2.0"
