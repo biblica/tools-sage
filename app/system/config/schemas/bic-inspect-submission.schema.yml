@@ -23,3 +23,8 @@ memory_rules:
   automatic_approval: forbidden
   usable_state: APPROVED_FOR_USE
   commit: locked_journaled_multi_file_transaction
+model_contract:
+  model_returns: [proposals, challenges]
+  proposal_payload: payload_json_text_decoded_by_controller
+  controller_sets: [schema_version, operation_id, scope, resource_fingerprints, submitted_id]
+  owner: LOCAL_CONTROLLER

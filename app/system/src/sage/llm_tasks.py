@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
+from . import bic_output_contract
 from .atomic import atomic_write_json, atomic_write_text
 from .bounded_target import extract_scope_usfm, merge_bounded_usfm
 from .errors import ConfigurationError, EvidenceLimitError, SageError, ValidationError
@@ -916,17 +917,44 @@ def _model_read_content(path: str, content: str, evidence_class: str) -> tuple[s
     )
 
 
-def _output_schema(manifest: dict[str, Any]) -> dict[str, Any]:
+def _bic_narrative_note(manifest: dict[str, Any]) -> str:
+    """Return the report-language instruction shared by every BIC narrative schema field."""
+    return (
+        f"Write generated prose in {_report_language_label(_narrative_language_tag(manifest))}. "
+        "Preserve only explicitly quoted source wording verbatim."
+    )
+
+
+def _bic_assignment(config: EcosystemConfig, manifest: dict[str, Any]) -> dict[str, Any] | None:
+    """Return the BIC-only assignment keys, or None for any other workflow."""
+    if str(manifest.get("workflow") or "").lower() != "bic":
+        return None
+    return bic_output_contract.assignment(config, manifest)
+
+
+def _bic_file_schemas(config: EcosystemConfig, manifest: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Return the real JSON schema of each BIC semantic file the task may write."""
+    if str(manifest.get("workflow") or "").lower() != "bic":
+        return {}
+    return bic_output_contract.file_schemas(config, manifest, _bic_narrative_note(manifest))
+
+
+def _output_schema(
+    manifest: dict[str, Any], bic_schemas: dict[str, dict[str, Any]] | None = None
+) -> dict[str, Any]:
     """Build the exact response envelope from the immutable write allowlist."""
     task_id = str(manifest.get("task_id", ""))
     narrative_tag = _narrative_language_tag(manifest)
     allowed = manifest.get("allowed_writes", [])
     if not isinstance(allowed, list) or not allowed or any(not isinstance(item, str) for item in allowed):
         raise ValidationError("Task allowed_writes must be a non-empty string list", code="LLM_TASK_WRITE_INVALID")
+    bic_schemas = bic_schemas or {}
     properties = {
         item: (
             _analysis_findings_file_schema(manifest)
             if is_analysis_workflow(str(manifest.get("workflow") or "")) and item == "output/findings.json"
+            else bic_schemas[item]
+            if item in bic_schemas
             else {
                 "type": "string",
                 "description": (
@@ -956,12 +984,41 @@ def _output_schema(manifest: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _assignment(
+    manifest: dict[str, Any], narrative_tag: str, bic_assignment: dict[str, Any] | None
+) -> dict[str, Any]:
+    """Return the controller assignment object: BIC gets only its own keys, analysis keeps its own."""
+    common = {
+        "task_id": manifest.get("task_id"),
+        "workflow": manifest.get("workflow"),
+        "operation": manifest.get("operation"),
+        "narrative_language": {"tag": narrative_tag, "authority": "CANONICAL_REPORT_NARRATIVE"},
+        "scope": manifest.get("scope"),
+        "allowed_writes": manifest.get("allowed_writes"),
+        "expected_references": manifest.get("expected_references", []),
+    }
+    if manifest.get("workflow") == "bic":
+        return {**common, **(bic_assignment or {})}
+    review = dict(manifest.get("review_requirements") or {})
+    return {
+        **common,
+        "rtc_stage": manifest.get("rtc_stage"),
+        "expected_work_unit_ids": review.get("expected_work_unit_ids", []),
+        "required_checks": review.get("required_checks", []),
+        "structural_candidate_ids": manifest.get("structural_candidate_ids", []),
+        "allowed_evidence_ids": manifest.get("allowed_evidence_ids", []),
+        "original_language_sources": manifest.get("original_language_sources", []),
+        "expected_ol_requests": review.get("expected_ol_requests", []),
+    }
+
+
 def _prompt(
     *,
     manifest: dict[str, Any],
     act_text: str,
     reads: list[tuple[str, str, str]],
     protected_contracts: Sequence[dict[str, Any]] = (),
+    bic_assignment: dict[str, Any] | None = None,
 ) -> str:
     """Assemble the normal sealed prompt from a compact ACT capsule and authorized evidence."""
     narrative_tag = _narrative_language_tag(manifest)
@@ -1009,53 +1066,13 @@ def _prompt(
         [
             "=== END AUTHORIZED READS ===",
             "",
-            "Controller-supplied assignment (only the response-envelope task_id is copied; SAGE materializes analysis identity, coverage, checks, and receipts):",
-            json.dumps(
-                {
-                    "task_id": manifest.get("task_id"),
-                    "workflow": manifest.get("workflow"),
-                    "operation": manifest.get("operation"),
-                    "narrative_language": {
-                        "tag": narrative_tag,
-                        "authority": "CANONICAL_REPORT_NARRATIVE",
-                    },
-                    "rtc_stage": manifest.get("rtc_stage"),
-                    "scope": manifest.get("scope"),
-                    **(
-                        {
-                            "source_primary_references": manifest.get(
-                                "source_primary_references",
-                                manifest.get("expected_references", []),
-                            ),
-                            "target_scope": manifest.get(
-                                "target_scope", manifest.get("scope")
-                            ),
-                            "expected_output_references": manifest.get(
-                                "expected_output_references",
-                                manifest.get("expected_references", []),
-                            ),
-                        }
-                        if manifest.get("workflow") == "bic"
-                        else {}
-                    ),
-                    "allowed_writes": manifest.get("allowed_writes"),
-                    "expected_references": manifest.get("expected_references", []),
-                    "expected_work_unit_ids": dict(
-                        manifest.get("review_requirements") or {}
-                    ).get("expected_work_unit_ids", []),
-                    "required_checks": dict(manifest.get("review_requirements") or {}).get(
-                        "required_checks", []
-                    ),
-                    "structural_candidate_ids": manifest.get("structural_candidate_ids", []),
-                    "allowed_evidence_ids": manifest.get("allowed_evidence_ids", []),
-                    "original_language_sources": manifest.get("original_language_sources", []),
-                    "expected_ol_requests": dict(
-                        manifest.get("review_requirements") or {}
-                    ).get("expected_ol_requests", []),
-                },
-                ensure_ascii=False,
-                sort_keys=True,
+            (
+                "Controller-supplied assignment (only the response-envelope task_id is copied; "
+                "SAGE sets output identity, scope, fingerprints, hashes, and derived fields):"
+                if manifest.get("workflow") == "bic"
+                else "Controller-supplied assignment (only the response-envelope task_id is copied; SAGE materializes analysis identity, coverage, checks, and receipts):"
             ),
+            json.dumps(_assignment(manifest, narrative_tag, bic_assignment), ensure_ascii=False, sort_keys=True),
         ]
     )
     return "\n".join(lines)
@@ -1575,11 +1592,8 @@ def _apply_bic_ol_micro_result(
         updated["output/rewrite.usfm"] = rewrite
     risk = dict(current.get("risk") or {})
     risk["after_ol"] = int(result["after_ol_risk"])
-    risk["urgency"] = int(result["after_ol_risk"])
     current["risk"] = risk
     current["recommended_candidate_id"] = after_candidate
-    if "selected_candidate_id" in current:
-        current["selected_candidate_id"] = after_candidate
     current["recommended_action"] = str(result["recommended_action"]).strip()
     current["ol_referral"] = {
         "performed": True,
@@ -1653,12 +1667,10 @@ def _apply_bic_ol_micro_result(
                 code="LLM_PROVIDER_RESPONSE_INVALID",
             )
         grammar_document["unresolved"] = list(dict.fromkeys([*unresolved, *[item.strip() for item in additions if item.strip()]]))
-        grammar_document["output_sha256"] = sha256_bytes(rewrite.encode("utf-8"))
         updated["output/grammar-assessment.json"] = json.dumps(
             grammar_document, ensure_ascii=False, indent=2
         ) + "\n"
 
-    challenge_document["output_sha256"] = sha256_bytes(rewrite.encode("utf-8"))
     updated["output/translation-challenges.json"] = json.dumps(
         challenge_document, ensure_ascii=False, indent=2
     ) + "\n"
@@ -1750,12 +1762,13 @@ def _measure_task_route(
     execution. Full governance context remains separately measurable by the controller.
     """
     reads = [_verified_read(config, dict(item)) for item in manifest.get("allowed_reads", [])]
-    schema = _output_schema(manifest)
+    schema = _output_schema(manifest, _bic_file_schemas(config, manifest))
     prompt = _prompt(
         manifest=manifest,
         act_text=act_text,
         reads=reads,
         protected_contracts=_protected_contracts(config, manifest),
+        bic_assignment=_bic_assignment(config, manifest),
     )
     return _route_measurement(prompt, schema, reads)
 
@@ -1990,7 +2003,7 @@ def execute_task(
     ]
     normal_reads = [_verified_read(config, dict(item)) for item in manifest.get("allowed_reads", [])]
     conditional_reads = [_verified_read(config, dict(item)) for item in manifest.get("conditional_reads", [])]
-    schema = _output_schema(manifest)
+    schema = _output_schema(manifest, _bic_file_schemas(config, manifest))
     protected_contract_receipt = [
         {key: contract[key] for key in ("id", "sha256", "bytes")} for contract in protected_contracts
     ]
@@ -1999,6 +2012,7 @@ def execute_task(
         act_text=act_text,
         reads=normal_reads,
         protected_contracts=protected_contracts,
+        bic_assignment=_bic_assignment(config, manifest),
     )
     prompt_sha = sha256_bytes(prompt.encode("utf-8"))
     first_handoff = _enforce_routed_sfm_budget(config, manifest, _route_measurement(prompt, schema, normal_reads))
@@ -2183,6 +2197,8 @@ def execute_task(
             final_files = _apply_bic_ol_micro_result(final_files, manifest, conditional_request, micro_result)
             final_prompt_sha = sha256_bytes(conditional_prompt.encode("utf-8"))
             phase_count = phase_number
+        # Identity, hashes, and derived fields are set once, after every OL merge has settled the candidate.
+        final_files = bic_output_contract.materialize_files(config, manifest, final_files)
 
     output_hashes: dict[str, str] = {}
     for relative, content in final_files.items():

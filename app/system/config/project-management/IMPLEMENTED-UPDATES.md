@@ -9,6 +9,36 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261014-002 — BIC identity is controller-injected; BIC output has real JSON schemas
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261013`
+- **TODO:** `TODO-20261013-002`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** new `bic_output_contract.py`. After the last OL micro merge, `materialize_files`
+  sets `schema_version`, `operation_id`, `scope`, `resource_fingerprints` (INSPECT); `schema_version`,
+  `task_id`, `scope`, `profile_id`, `profile_sha256`, `output_sha256` (grammar assessment); and
+  `schema_version`, `task_id`, `operation`, `scope`, `output_sha256`, `reporting_languages` (challenge
+  ledger), so live INSPECT, REWRITE without an OL step, and SELF-CHECK no longer fail for fields the model
+  was never given. The OL merge no longer patches `output_sha256`, `urgency`, or `selected_candidate_id`.
+  The three BIC files now have strict provider JSON schemas (rule-ID enum from the manifest; record,
+  challenge, category, confidence, trigger, band, source, and rejection enums from `bic_memory.py` and
+  `rewrite_risk.py`; integer 0–4 scores). Derived fields left the model contract: `submitted_id`,
+  `lexical_burden.overall`, `risk.after_ol`, `risk.urgency`, `selected_candidate_id`, the whole
+  `ol_referral` (the controller writes `performed: false` and the OL micro merge sets the real record),
+  and `minor_summary.total`. INSPECT proposal payloads travel as `payload_json` text and are decoded by the
+  controller, because a free-form object cannot satisfy a strict provider schema. The assignment block
+  sent for BIC now carries BIC-only keys plus `grammar_rule_ids`, `marker_policy`, and
+  `reporting_languages`, and its header no longer says "analysis identity".
+- **Not changed:** the `bic-inspect` Skill line that still says to set `operation_id` (the Skill is
+  not sent to the model; its cleanup belongs to `TODO-20261013-004`). Item-level salvage and
+  OL `performed` derived from what ran remain `TODO-20261013-020`.
+- **Verification:** full `system/tests` suite on 2026-10-14: 2069 passed, 2 skipped, 5 failed. Those 5 were
+  the new module missing from `VANILLA-INSTALL-MANIFEST.md` (three package and release-builder tests)
+  and an undocumented nested test helper, now fixed; the re-run of those files passes (115). The harness
+  test feeds the materialized REWRITE output through the real `validate_rewrite_challenges` and
+  `validate_grammar_assessment`; new tests cover INSPECT payload decoding and SELF-CHECK binding.
+
 ### IMP-20261014-001 — BIC protected contracts reach the model verbatim
 
 - **Version:** `0.02a3` (development branch)

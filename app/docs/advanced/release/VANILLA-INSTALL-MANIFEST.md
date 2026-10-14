@@ -849,6 +849,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/atomic.py`
 - `system/src/sage/auto_resolution.py`
 - `system/src/sage/bic_memory.py`
+- `system/src/sage/bic_output_contract.py`
 - `system/src/sage/bounded_target.py`
 - `system/src/sage/build_policy.py`
 - `system/src/sage/canon.py`

@@ -16,6 +16,7 @@ from sage.act_tasks import (
     submit_act_task,
     validate_act_request_readiness,
 )
+from sage import bic_output_contract
 from sage.bounded_target import preflight_bounded_target_commit
 from sage.errors import ValidationError
 from sage.hashing import sha256_bytes, sha256_file
@@ -233,6 +234,7 @@ def test_bic_task_projects_source_coverage_to_target_local_coordinates(
         manifest=task,
         act_text=Path(task["act_path"]).read_text(encoding="utf-8"),
         reads=[],
+        bic_assignment=bic_output_contract.assignment(load_ecosystem(root / "ecosystem.yml"), task),
     )
     assignment = json.loads(
         prompt.split("Controller-supplied assignment (only the response-envelope task_id is copied; ", 1)[
