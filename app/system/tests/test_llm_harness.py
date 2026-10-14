@@ -91,6 +91,15 @@ def _synthetic_task(
         ),
         "allowed_writes": writes,
     }
+    if conditional:
+        from sage.act_tasks import (
+            _load_bic_protected_rewrite_contract,
+            _load_bic_protected_verb_selection_contract,
+        )
+
+        pinned = load_ecosystem(root / "ecosystem.yml")
+        manifest["protected_rewrite_contract"] = _load_bic_protected_rewrite_contract(pinned)
+        manifest["protected_verb_selection_contract"] = _load_bic_protected_verb_selection_contract(pinned)
     path = task / "task-manifest.json"
     atomic_write_json(path, manifest)
     if qualified:
@@ -1152,6 +1161,24 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
     assert "SAGE BIC CONDITIONAL OL MICRO-ADJUDICATION" in prompts[1]
     assert "LOCAL EVIDENCE BOUNDARY: CONTENT EVIDENCE IS SAGE-LOCAL ONLY." in prompts[0]
     assert "READ CLASS: AUTHORIZED_CONTENT_EVIDENCE" in prompts[0]
+    rewrite_contract = (root / "system/skills/bic-rewrite/references/PROTECTED-REWRITE-DETAIL-RULES.md").read_text(encoding="utf-8")
+    verb_policy = (root / "system/config/contracts/bic-verb-selection-policy.yml").read_text(encoding="utf-8")
+    for prompt in prompts:
+        assert "=== PROTECTED CONTRACTS ===" in prompt
+        assert rewrite_contract in prompt
+        assert verb_policy in prompt
+        assert "deterministic projection of the bounded USJ" in prompt
+    reads_start = prompts[0].index("=== AUTHORIZED READS ===")
+    assert prompts[0].index("=== END ACT CAPSULE ===") < prompts[0].index("=== PROTECTED CONTRACTS ===") < reads_start
+    assert [item["id"] for item in result["protected_contracts"]] == [
+        "BIC4_PROTECTED_REWRITE_DETAIL_RULES",
+        "BIC_PROTECTED_VERB_SELECTION_POLICY",
+    ]
+    assert [item["bytes"] for item in result["protected_contracts"]] == [
+        len(rewrite_contract.encode("utf-8")),
+        len(verb_policy.encode("utf-8")),
+    ]
+    assert all(len(item["sha256"]) == 64 for item in result["protected_contracts"])
     assert efforts == ["high", "high"]
     assert result["phase_reasoning_efforts"] == ["high", "high"]
     assert result["routing_mode"] == "AUTOMATIC"
@@ -1163,6 +1190,32 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
     ledger = json.loads((manifest.parent / "output" / "translation-challenges.json").read_text(encoding="utf-8"))
     assert ledger["challenges"][0]["recommended_candidate_id"] == "C2"
     assert ledger["challenges"][0]["ol_referral"]["performed"] is True
+
+
+def test_bic_rewrite_fails_closed_without_matching_protected_contracts(make_workspace, monkeypatch) -> None:
+    """A REWRITE task never reaches the provider without both sealed, pin-matching contracts."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest_path = _synthetic_task(root, conditional=True)
+    config = load_ecosystem(root / "ecosystem.yml")
+    monkeypatch.setattr(
+        "sage.llm_tasks.make_executor",
+        lambda provider, settings: pytest.fail("provider must not run without protected contracts"),
+    )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    missing = dict(manifest)
+    del missing["protected_verb_selection_contract"]
+    atomic_write_json(manifest_path, missing)
+    with pytest.raises(ValidationError) as caught:
+        execute_task(config, task_manifest=manifest_path, dry_run=True)
+    assert caught.value.code == "BIC_PROTECTED_CONTRACT_MISSING"
+
+    stale = json.loads(json.dumps(manifest))
+    stale["protected_rewrite_contract"]["sha256"] = "0" * 64
+    atomic_write_json(manifest_path, stale)
+    with pytest.raises(ValidationError) as caught:
+        execute_task(config, task_manifest=manifest_path, dry_run=True)
+    assert caught.value.code == "BIC_PROTECTED_CONTRACT_STALE"
 
 
 def test_task_execution_rejects_direct_route_bypass(make_workspace) -> None:
