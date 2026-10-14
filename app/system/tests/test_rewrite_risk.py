@@ -246,19 +246,20 @@ def test_lexical_burden_formula_uses_fixed_weights() -> None:
     ) == 2
 
 
-def test_low_semantic_risk_rejects_unnecessary_automatic_ol(tmp_path: Path) -> None:
-    """Verify that lexical burden alone cannot trigger routine OL consultation."""
+def test_low_semantic_risk_does_not_count_a_claimed_ol_check(tmp_path: Path) -> None:
+    """Lexical burden alone cannot trigger OL: a claimed check is cleared, corrected, and reported."""
     output = tmp_path / "candidate.usfm"
     output.write_text("fixture", encoding="utf-8")
     document = _challenge_document({"task_id": "TASK", "scope": "MAT 1:1"}, output, resolved=True)
     challenge = document["challenges"][0]
     challenge["risk"] = {"before_ol": 1, "after_ol": 1, "material_triggers": []}
-    path = tmp_path / "translation-challenges.json"
-    path.write_text(json.dumps(document), encoding="utf-8")
-    with pytest.raises(ValidationError, match="without both the risk threshold"):
-        validate_rewrite_challenges(
-            path, task_id="TASK", operation="rewrite", scope_value="MAT 1:1", output_path=output
-        )
+    result = _validate_fixture(tmp_path, document, output)
+    referral = result["challenges"][0]["ol_referral"]
+    assert referral["performed"] is False and referral["unavailable"] is False
+    assert referral["question"] == "" and referral["evidence_summary"] == ""
+    assert [(row["code"], row["field"]) for row in result["salvage_records"]] == [
+        ("VALUE_CORRECTED", "challenges[1].ol_referral.performed")
+    ]
 
 
 def test_resolved_ol_referral_updates_candidate_without_operator_gate(
@@ -593,10 +594,15 @@ def test_unavailable_ol_check_keeps_the_pass_one_candidate(tmp_path: Path) -> No
     assert row["risk"]["after_ol"] == row["risk"]["before_ol"] == 2
     assert row["selected_candidate_id"] == "REMAIN"
     assert [item["code"] for item in result["salvage_records"]] == ["OL_UNAVAILABLE"]
-    # Without the unavailable marker the controller still requires the OL check to have run.
+    # Without the marker, a required check that did not run is still accepted and reported.
     challenge["ol_referral"] = {"performed": False}
-    with pytest.raises(ValidationError, match="requires one bounded OL check"):
-        _validate_fixture(tmp_path, document, output)
+    result = _validate_fixture(tmp_path, document, output)
+    assert result["challenges"][0]["ol_referral"]["unavailable_code"] == "OL_NOT_PERFORMED"
+    assert [item["code"] for item in result["salvage_records"]] == ["OL_UNAVAILABLE"]
+    # An incomplete OL record cannot count as an OL check either.
+    challenge["ol_referral"] = {"performed": True, "question": "Q"}
+    result = _validate_fixture(tmp_path, document, output)
+    assert result["challenges"][0]["ol_referral"]["unavailable_code"] == "OL_EVIDENCE_INCOMPLETE"
 
 
 def test_bic_ol_evidence_is_conditional_not_an_ordinary_read(
@@ -620,8 +626,8 @@ def test_bic_ol_evidence_is_conditional_not_an_ordinary_read(
     assert inspect["conditional_reads"] == []
 
 
-def test_challenge_validator_rejects_unrouted_ol_evidence(tmp_path: Path) -> None:
-    """Verify a challenge cannot cite OL evidence when no conditional packet was routed."""
+def test_challenge_validator_reports_ol_when_no_packet_was_routed(tmp_path: Path) -> None:
+    """With no conditional OL packet routed, a required check is reported unavailable and the pass-1 result stands."""
     output = tmp_path / "candidate.usfm"
     output.write_text("fixture", encoding="utf-8")
     document = _challenge_document(
@@ -631,12 +637,17 @@ def test_challenge_validator_rejects_unrouted_ol_evidence(tmp_path: Path) -> Non
     )
     path = tmp_path / "translation-challenges.json"
     path.write_text(json.dumps(document), encoding="utf-8")
-    with pytest.raises(ValidationError, match="was not conditionally routed"):
-        validate_rewrite_challenges(
-            path,
-            task_id="TASK",
-            operation="rewrite",
-            scope_value="MAT 1:1",
-            output_path=output,
-            ol_evidence_available=False,
-        )
+    result = validate_rewrite_challenges(
+        path,
+        task_id="TASK",
+        operation="rewrite",
+        scope_value="MAT 1:1",
+        output_path=output,
+        ol_evidence_available=False,
+    )
+    row = result["challenges"][0]
+    assert row["ol_referral"]["performed"] is False
+    assert row["ol_referral"]["unavailable_code"] == "OL_NOT_ROUTED"
+    # The claimed post-OL risk (1) is discarded; the pre-OL risk (2) stands.
+    assert row["risk"]["after_ol"] == row["risk"]["before_ol"] == 2
+    assert {item["code"] for item in result["salvage_records"]} == {"OL_UNAVAILABLE", "VALUE_CORRECTED"}

@@ -98,7 +98,9 @@ ol_policy:
   conditional_read_from_level: 2
   requires_material_trigger: true
   lexical_difficulty_alone: false
-  performed_must_equal_controller_requirement: true
+  performed_records_what_actually_ran: true
+  required_check_that_did_not_run: ACCEPT_AS_OL_UNAVAILABLE_AND_KEEP_PASS_1_CANDIDATE
+  claimed_check_not_required_or_unsupported: CLEAR_OL_FIELDS_AND_RECORD
   no_ol_means_no_ol_evidence_fields: true
   risk_3_behavior: REPORT_AND_CONTINUE
   risk_4_behavior: CRITICAL_REPORT_AND_CONTINUE

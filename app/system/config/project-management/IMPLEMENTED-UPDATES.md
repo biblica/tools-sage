@@ -14,7 +14,7 @@ lines record the suites re-run on 2026-10-13 against `6bce03f`.
 - **Version:** `0.02a3` (development branch)
 - **Milestone:** `MS-REVIEW-20261013`
 - **TODO:** `TODO-20261013-020` (stays `IN_PROGRESS`; the STC, RTC, planner, and report-translation parts
-  and the OL `performed` flag for a model that mis-states it are still open)
+  are still open)
 - **Commits:** the commits that introduced this entry (INSPECT part: `46b1d8a`).
 - **Implemented:** BIC no longer rejects a whole unit for one defective item.
   - INSPECT: a defective proposal or challenge (bad payload JSON, unsupported type, invalid or
@@ -38,6 +38,12 @@ lines record the suites re-run on 2026-10-13 against `6bce03f`.
     existing TARGET text. A passing verse is also held back when it shares continuation (poetry) lines with a
     failing neighbour (`expand_unsafe_drops`, code `BIC_VERSE_SPLICE_RISK`). Markers that cannot be attributed
     to verses, or a candidate with no passing verse, are still rejected as a whole.
+  - OL `performed` (`rewrite_risk`): the flag records what actually ran, and the controller no longer
+    rejects the unit when it disagrees with the requirement. A required check that did not run (no OL packet
+    routed: `OL_NOT_ROUTED`; not performed: `OL_NOT_PERFORMED`; incomplete OL record:
+    `OL_EVIDENCE_INCOMPLETE`; micro-call failure: its failure code) keeps the pass-1 candidate and risk and is
+    recorded as `OL_UNAVAILABLE`. A claimed check that was not required has its OL fields cleared and is
+    recorded as `VALUE_CORRECTED`.
   - Each dropped, corrected, or flagged item is written to the Run's `diagnostics/EXCEPTION-REPORTS.jsonl`.
 - **Verification:** new tests in `test_rewrite_risk.py`, `test_llm_harness.py`, `test_core_hardening.py`, and
   `test_hardening_and_segmentation.py`; full suite re-run with the `textual` extra installed.
