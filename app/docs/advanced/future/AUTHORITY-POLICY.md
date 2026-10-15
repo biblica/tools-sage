@@ -1,6 +1,6 @@
 # Future Policy — SAGE Authority Roles per Function
 
-**Status: APPROVED 2026-10-07; not yet implemented.** The "Current" column
+**Status: APPROVED 2026-10-07; partly implemented.** `OL_ANALYSIS` is implemented as a check of the original-language words models cite (STC, RTC original-language adjudication, BIC original-language checks; see [Original-Language Resources](../projects-and-resources/ORIGINAL-LANGUAGE-RESOURCES.md#original-language-analysis-macula)) and in the NCA number index; the rest is not yet implemented. The "Current" column
 records what the workflow profiles enforce today; the "Proposed" column is the direction under
 review. Nothing here changes a Job, Run, schema, or model handover until it is approved and
 implemented.

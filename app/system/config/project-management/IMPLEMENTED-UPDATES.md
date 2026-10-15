@@ -9,6 +9,34 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261015-006 — Model claims about original-language words checked against MACULA (TODO-20261015-007)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261015-007`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - **Package:** new pinned original-language analysis package `SAGE_OL_ANALYSIS_2026-10-15`
+    (`system/resources/ol-analysis/2026-10-15/`; plain TSV, 50 MB unpacked, about 9.5 MB compressed in git and release ZIPs, because the source package may not contain nested archives). It holds every MACULA Hebrew and Greek word with its
+    lemma, Strong's number, morphology fields, and a gloss. It is pinned by `system/config/ol-analysis-reference.json`,
+    checksum-verified on load, and built reproducibly by `system/tools/build_ol_analysis.py` (`verify` requires
+    byte-identical output). The UBS domain fields are excluded.
+  - **Claims:** STC findings, RTC original-language adjudications, and BIC original-language checks now return
+    `ol_words`: the source words a conclusion depends on, with lemma and parse fields restricted to MACULA's own
+    vocabularies. `ol_analysis.check_ol_words` checks each one for the verse and its neighbours: `VERIFIED`,
+    `MISMATCH` (naming MACULA's value), `NOT_FOUND`, or `NOT_CHECKED` (package unavailable).
+  - **Effect:** a mismatch keeps the finding, marks it `ol_analysis_verified: false`, and records an
+    `OL_CLAIM_UNVERIFIED` exception. Nothing blocks. SAGE computes the checks itself at validation, so
+    check results in model output are ignored.
+  - **Reports:** RTC original-language adjudications and BIC challenge reports show MACULA's lemma, parse, and
+    gloss for checked words.
+  - **Docs:** the notices page lists the glosses that now ship (Cherith CC BY, Berean public domain).
+    `ORIGINAL-LANGUAGE-RESOURCES.md` documents the checks, and `AUTHORITY-POLICY.md` marks `OL_ANALYSIS`
+    as partly implemented.
+- **Verification:** new `test_ol_analysis.py`, which covers Hebrew and Greek checks, the schema vocabularies,
+  tamper degradation, STC flagging, RTC resolution checks, and report lines. New BIC test in
+  `test_rewrite_risk.py`, where a check result planted in the file is overridden. Full suite re-run.
+
 ### IMP-20261015-005 — Calibrated token estimator, scaled budgets, accent-free routed Hebrew (TODO-20261015-005)
 
 - **Version:** `0.02a3` (development branch)

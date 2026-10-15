@@ -15,6 +15,7 @@ from .errors import ValidationError
 from .evidence import TOKEN_ESTIMATOR, EvidenceMeasurement, EvidencePolicy
 from .exception_reports import NOT_ASSESSED, coverage_document, render_exceptions_section
 from .hashing import sha256_bytes
+from .ol_analysis import summarize_ol_checks, unverified_message
 from .references import expand_reference_atoms, parse_scope
 from .sfm_slicer import (
     SfmAnalysisRoute,
@@ -458,11 +459,14 @@ def validate_stc_submission(
     wip_text: str | None = None,
     ol_text: str | None = None,
     expected_candidates: Iterable[Mapping[str, Any]] = (),
+    ol_checker: Callable[[Sequence[Mapping[str, Any]], str], list[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     """Validate provider STC semantics and materialize deterministic identity/coverage.
 
     With the routed ``wip_text`` and ``ol_text``, each finding's quotations are checked against them; a
-    quotation that cannot be found keeps its finding but marks it ``evidence_verified: false``.
+    quotation that cannot be found keeps its finding but marks it ``evidence_verified: false``. With an
+    ``ol_checker`` (``ol_analysis.make_ol_checker``), each finding's ``ol_words`` claims are checked
+    against MACULA; a mismatch keeps the finding but marks it ``ol_analysis_verified: false``.
     """
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
@@ -550,6 +554,22 @@ def validate_stc_submission(
             for label, quote, source_text in (("WIP", wip_evidence, wip_text), ("OL", ol_evidence, ol_text))
             if source_text is not None and not evidence_is_verbatim(quote, source_text)
         ]
+        claims = [item for item in value.get("ol_words") or [] if isinstance(item, Mapping)]
+        if claims and ol_checker is not None:
+            checks = ol_checker(claims, reference)
+            normalized["ol_word_checks"] = checks
+            verdict = summarize_ol_checks(checks)
+            if verdict is not None:
+                normalized["ol_analysis_verified"] = verdict
+            if verdict is False:
+                salvage_records.append(
+                    {
+                        "code": "OL_CLAIM_UNVERIFIED",
+                        "coordinate": reference,
+                        "effect": "FLAGGED",
+                        "message": unverified_message(f"finding {normalized['finding_id']}", checks),
+                    }
+                )
         if unverified:
             normalized["evidence_verified"] = False
             salvage_records.append(

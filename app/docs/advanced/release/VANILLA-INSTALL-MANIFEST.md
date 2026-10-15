@@ -196,6 +196,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/model-policy.yml`
 - `system/config/model-qualification-seeds.json`
 - `system/config/numbers-reference.json`
+- `system/config/ol-analysis-reference.json`
 - `system/config/profiles`
 - `system/config/profiles/grammar`
 - `system/config/profiles/grammar/README.md`
@@ -590,6 +591,12 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/requirements.txt`
 - `system/resources`
 - `system/resources/numbers`
+- `system/resources/ol-analysis`
+- `system/resources/ol-analysis/2026-10-15`
+- `system/resources/ol-analysis/2026-10-15/CHECKSUMS.sha256`
+- `system/resources/ol-analysis/2026-10-15/MANIFEST.json`
+- `system/resources/ol-analysis/2026-10-15/greek.tsv`
+- `system/resources/ol-analysis/2026-10-15/hebrew.tsv`
 - `system/resources/numbers/2026-09-09`
 - `system/resources/numbers/2026-09-09/CHECKSUMS.sha256`
 - `system/resources/numbers/2026-09-09/FILE_MANIFEST.json`
@@ -954,6 +961,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/transport.py`
 - `system/src/sage/numeric_candidates.py`
 - `system/src/sage/candidates.py`
+- `system/src/sage/ol_analysis.py`
 - `system/src/sage/ol_referrals.py`
 - `system/src/sage/ollama_admin.py`
 - `system/src/sage/ollama_policy.py`
@@ -1150,6 +1158,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_model_language_competency.py`
 - `system/tests/test_natural_language_routing.py`
 - `system/tests/test_numeric_candidates.py`
+- `system/tests/test_ol_analysis.py`
 - `system/tests/test_ol_authority_profiles.py`
 - `system/tests/test_ol_referrals.py`
 - `system/tests/test_ollama_admin.py`
@@ -1233,6 +1242,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/build_locale_data.py`
 - `system/tools/build_model_evaluation_cases.py`
 - `system/tools/build_numbers_index.py`
+- `system/tools/build_ol_analysis.py`
 - `system/tools/build_release.py`
 - `system/tools/clone_and_install.cmd`
 - `system/tools/clone_and_install.py`

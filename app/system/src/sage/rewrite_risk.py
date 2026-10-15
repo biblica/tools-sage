@@ -5,11 +5,12 @@ from __future__ import annotations
 import json
 import math
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from .act_outputs import aggregate_execution_routes, render_execution_section
 from .errors import ValidationError
 from .hashing import sha256_file
+from .ol_analysis import render_ol_word_checks, summarize_ol_checks, unverified_message
 from .human_output import (
     HumanOutputSpec,
     TranslationChallengeChannel,
@@ -389,8 +390,13 @@ def validate_rewrite_challenges(
     source_language: str | None = None,
     target_language: str | None = None,
     ol_evidence_available: bool = True,
+    ol_checker: Callable[[Sequence[Mapping[str, Any]], str], list[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
-    """Validate REWRITE linguistic judgments while deriving workflow state locally."""
+    """Validate REWRITE linguistic judgments while deriving workflow state locally.
+
+    With an ``ol_checker``, the ``ol_words`` claims of a performed OL check are checked against MACULA here;
+    check results present in the file are ignored, so a model cannot certify its own analysis.
+    """
     try:
         document = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
@@ -589,6 +595,19 @@ def validate_rewrite_challenges(
                     derived="(cleared: no OL check was performed)",
                     coordinate=reference,
                 )
+        ol_claims = [dict(item) for item in ol.get("ol_words") or [] if isinstance(item, Mapping)] if performed else []
+        ol_checks = ol_checker(ol_claims, evidence_scope) if ol_claims and ol_checker is not None else []
+        ol_verdict = summarize_ol_checks(ol_checks)
+        if ol_verdict is False:
+            salvage.append(
+                {
+                    "code": "OL_CLAIM_UNVERIFIED",
+                    "effect": "FLAGGED",
+                    "coordinate": reference,
+                    "challenge_id": challenge_id,
+                    "message": unverified_message(f"the OL check for {challenge_id}", ol_checks),
+                }
+            )
         candidate_changed = bool(performed and before_candidate_id != recommended_candidate_id)
         resolved = bool(performed and after_ol <= 2)
         if performed and "candidate_changed" in ol and bool(ol.get("candidate_changed")) != candidate_changed:
@@ -700,6 +719,9 @@ def validate_rewrite_challenges(
                     "after_candidate_id": recommended_candidate_id if performed else "",
                     "unavailable": ol_unavailable,
                     "unavailable_code": unavailable_code,
+                    **({"ol_words": ol_claims} if ol_claims else {}),
+                    **({"ol_word_checks": ol_checks} if ol_checks else {}),
+                    **({"ol_analysis_verified": ol_verdict} if ol_verdict is not None else {}),
                 },
                 "untranslated_languages": untranslated,
                 "inherited_challenge_ids": inherited_ids,
@@ -903,6 +925,7 @@ def render_rewrite_challenge_report(
                 ],
                 f"- {label('label.risk')}: {risk_text}",
                 f"- {label('label.evidence')}: {evidence_text}",
+                *[line for line in render_ol_word_checks(first.get("ol_referral", {}).get("ol_word_checks") or []) if line],
                 f"- {label('label.action')}: {action_text}",
                 *(
                     [f"- {label('label.untranslated_languages')}: `{', '.join(first['untranslated_languages'])}`"]

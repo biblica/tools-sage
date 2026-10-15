@@ -83,3 +83,29 @@ The operator can configure Greek or Hebrew separately, validate both, or restore
 ## Authority boundary
 
 OL resources are always externally read-only. They never gain BIC TARGET write capability, and Project-code naming never assigns a workflow role. Conditional BIC/RTC/STC OL routing remains governed by the workflow's existing evidence and material-risk rules. Only the two governed bundled directories are permitted to contain Scripture inside a clean SAGE distribution; Job, Project, and operator Scripture remains local workspace data.
+
+## Original-language analysis (MACULA)
+
+SAGE also ships a pinned word-level analysis of the Hebrew and Greek text: package
+`SAGE_OL_ANALYSIS_2026-10-15` under `system/resources/ol-analysis/2026-10-15/`, pinned by
+`system/config/ol-analysis-reference.json` and checked against its checksums whenever it is loaded. It holds
+every MACULA Hebrew (WLC) and Greek (SBLGNT) word with its lemma, Strong's number, morphology fields, and an
+English gloss, in MACULA's own numbering. It is the `OL_ANALYSIS` role of the
+[authority policy](../future/AUTHORITY-POLICY.md): it may decide lemma and morphology, never the wording of
+`@HEB`/`@GRK`.
+
+When an STC finding, an RTC original-language adjudication, or a BIC original-language check rests on
+particular source words, the model lists them in `ol_words` with the lemma and parse it relies on. SAGE checks
+each entry against MACULA for the verse and its immediate neighbours:
+
+| Result | Meaning | Effect |
+|---|---|---|
+| `VERIFIED` | MACULA has the word with the claimed lemma and every claimed parse field | The report shows MACULA's lemma, parse, and gloss |
+| `MISMATCH` | MACULA has the word but contradicts the lemma or a parse field | The finding is kept, marked `ol_analysis_verified: false`, and an `OL_CLAIM_UNVERIFIED` exception names MACULA's value |
+| `NOT_FOUND` | MACULA has no such word in those verses (edition or numbering difference) | Neutral; nothing is flagged |
+| `NOT_CHECKED` | The package is missing or failed its integrity check | Neutral; the reason is recorded and the Run continues |
+
+SAGE computes these checks itself when it validates the output; check results written by the model are
+ignored. Rebuild the package with `system/tools/build_ol_analysis.py build --date YYYY-MM-DD` from the
+MACULA tables fetched by `system/tools/build_numbers_index.py fetch`; `verify` rebuilds it and requires
+byte-identical files. Licenses and attribution: [Third-Party Data Notices](THIRD-PARTY-NOTICES.md).

@@ -16,6 +16,7 @@ from .errors import ConfigurationError, EvidenceLimitError, SageError, Validatio
 from .exception_reports import is_integrity_code
 from .execution_events import classify_exception
 from .evidence import TOKEN_ESTIMATOR
+from .ol_analysis import load_ol_analysis, ol_family_for_book, ol_words_schema
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
     AUTHORITY_INTERPRETATION_RULES,
@@ -130,9 +131,10 @@ def _load_json(path: Path, *, label: str) -> dict[str, Any]:
     return value
 
 
-def _stc_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
+def _stc_findings_file_schema(manifest: dict[str, Any], ol_analysis: Any = None) -> dict[str, Any]:
     """Build the compact STC-only semantic response schema."""
     narrative_tag = _narrative_language_tag(manifest)
+    family = ol_family_for_book(_manifest_book(manifest)) or ""
     finding = {
         "type": "object",
         "additionalProperties": False,
@@ -142,8 +144,10 @@ def _stc_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
             "summary",
             "wip_evidence",
             "ol_evidence",
+            "ol_words",
         ],
         "properties": {
+            "ol_words": ol_words_schema(ol_analysis, family),
             "category": {
                 "type": "string",
                 "enum": sorted(STC_FINDING_CATEGORIES),
@@ -197,6 +201,19 @@ def _stc_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _manifest_book(manifest: Mapping[str, Any]) -> str:
+    """The canonical book code of a task's scope."""
+    return str(manifest.get("scope") or "").strip().split(" ")[0]
+
+
+def _task_ol_analysis(config: EcosystemConfig) -> Any:
+    """The pinned MACULA analysis for response schemas, or None when it cannot be loaded."""
+    try:
+        return load_ol_analysis(config.root)
+    except (SageError, OSError, ValueError, KeyError):
+        return None
+
+
 def _task_manifest_path(config: EcosystemConfig, value: Path) -> Path:
     """Resolve a task manifest inside governed Core/localdata storage."""
     raw = value.expanduser()
@@ -225,10 +242,10 @@ def _analysis_error_code(manifest: dict[str, Any], current: str, legacy: str) ->
     return legacy if legacy_saw_workflow(workflow) else current
 
 
-def _analysis_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
+def _analysis_findings_file_schema(manifest: dict[str, Any], ol_analysis: Any = None) -> dict[str, Any]:
     """Build a stage-specific semantic analysis schema without controller boilerplate."""
     if str(manifest.get("operation") or "").lower() == "stc":
-        return _stc_findings_file_schema(manifest)
+        return _stc_findings_file_schema(manifest, ol_analysis)
     narrative_tag = _narrative_language_tag(manifest)
     string_array = {"type": "array", "items": {"type": "string"}}
     allowed_evidence_ids = [
@@ -388,6 +405,7 @@ def _analysis_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
             "finding_id",
             "decision",
             "original_language_evidence",
+            "ol_words",
             "rationale",
             "issue",
             "required_action",
@@ -395,6 +413,7 @@ def _analysis_findings_file_schema(manifest: dict[str, Any]) -> dict[str, Any]:
             "confidence",
         ],
         "properties": {
+            "ol_words": ol_words_schema(ol_analysis, ol_family_for_book(_manifest_book(manifest)) or ""),
             "request_id": {"type": "string"},
             "target_reference": {"type": "string", "description": "One bounded Scripture scope or semicolon-separated bounded portions; use canonical book codes and keep every portion inside the task scope."},
             "outcome": {
@@ -994,7 +1013,9 @@ def _bic_file_schemas(config: EcosystemConfig, manifest: dict[str, Any]) -> dict
 
 
 def _output_schema(
-    manifest: dict[str, Any], bic_schemas: dict[str, dict[str, Any]] | None = None
+    manifest: dict[str, Any],
+    bic_schemas: dict[str, dict[str, Any]] | None = None,
+    ol_analysis: Any = None,
 ) -> dict[str, Any]:
     """Build the exact response envelope from the immutable write allowlist."""
     task_id = str(manifest.get("task_id", ""))
@@ -1005,7 +1026,7 @@ def _output_schema(
     bic_schemas = bic_schemas or {}
     properties = {
         item: (
-            _analysis_findings_file_schema(manifest)
+            _analysis_findings_file_schema(manifest, ol_analysis)
             if is_analysis_workflow(str(manifest.get("workflow") or "")) and item == "output/findings.json"
             else bic_schemas[item]
             if item in bic_schemas
@@ -1418,7 +1439,7 @@ def _challenge_for_request(files: dict[str, str], challenge_id: str) -> dict[str
 
 
 def _bic_ol_micro_schema(
-    manifest: dict[str, Any], request: dict[str, str], challenge: dict[str, Any]
+    manifest: dict[str, Any], request: dict[str, str], challenge: dict[str, Any], ol_analysis: Any = None
 ) -> dict[str, Any]:
     """Build one question-specific BIC OL micro-response schema without full-output regeneration."""
     candidate_ids = [
@@ -1446,6 +1467,7 @@ def _bic_ol_micro_schema(
             "challenge_id",
             "scripture_reference",
             "ol_evidence_summary",
+            "ol_words",
             "recommended_candidate_id",
             "after_ol_risk",
             "replacement_usfm",
@@ -1461,6 +1483,9 @@ def _bic_ol_micro_schema(
                 "const": request["scripture_reference"],
             },
             "ol_evidence_summary": {"type": "string"},
+            "ol_words": ol_words_schema(
+                ol_analysis, ol_family_for_book(str(request["scripture_reference"]).split(" ")[0]) or ""
+            ),
             "recommended_candidate_id": {"type": "string", "enum": candidate_ids},
             "after_ol_risk": {"type": "integer", "enum": [0, 1, 2, 3, 4]},
             "replacement_usfm": {"type": "string"},
@@ -1718,6 +1743,8 @@ def _apply_bic_ol_micro_result(
         "question": request["question"],
         "evidence_scope": request["scripture_reference"],
         "evidence_summary": str(result["ol_evidence_summary"]).strip(),
+        # Claims only: SAGE recomputes their MACULA checks when it validates the challenge ledger.
+        "ol_words": [dict(item) for item in result.get("ol_words") or [] if isinstance(item, dict)],
         "resolved": int(result["after_ol_risk"]) <= 2,
         "candidate_changed": before_candidate != after_candidate,
         "before_candidate_id": before_candidate,
@@ -1879,7 +1906,7 @@ def _measure_task_route(
     execution. Full governance context remains separately measurable by the controller.
     """
     reads = [_verified_read(config, dict(item)) for item in manifest.get("allowed_reads", [])]
-    schema = _output_schema(manifest, _bic_file_schemas(config, manifest))
+    schema = _output_schema(manifest, _bic_file_schemas(config, manifest), _task_ol_analysis(config))
     prompt = _prompt(
         manifest=manifest,
         act_text=act_text,
@@ -2121,7 +2148,7 @@ def execute_task(
     ]
     normal_reads = [_verified_read(config, dict(item)) for item in manifest.get("allowed_reads", [])]
     conditional_reads = [_verified_read(config, dict(item)) for item in manifest.get("conditional_reads", [])]
-    schema = _output_schema(manifest, _bic_file_schemas(config, manifest))
+    schema = _output_schema(manifest, _bic_file_schemas(config, manifest), _task_ol_analysis(config))
     protected_contract_receipt = [
         {key: contract[key] for key in ("id", "sha256", "bytes")} for contract in protected_contracts
     ]
@@ -2282,7 +2309,7 @@ def execute_task(
                     conditional_reads,
                     conditional_request["scripture_reference"],
                 )
-                micro_schema = _bic_ol_micro_schema(manifest, conditional_request, challenge)
+                micro_schema = _bic_ol_micro_schema(manifest, conditional_request, challenge, _task_ol_analysis(config))
                 conditional_prompt = _bic_ol_micro_prompt(
                     manifest=manifest,
                     reads=focused_reads,

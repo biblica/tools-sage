@@ -916,8 +916,11 @@ def test_stc_provider_schema_uses_only_stc_semantics() -> None:
     assert "ol_review_requests" not in findings_schema["properties"]
     finding = findings_schema["properties"]["findings"]["items"]
     assert set(finding["required"]) == {
-        "category", "target_reference", "summary", "wip_evidence", "ol_evidence"
+        "category", "target_reference", "summary", "wip_evidence", "ol_evidence", "ol_words"
     }
+    # Claimed original-language words carry MACULA's own vocabularies so SAGE can check them exactly.
+    ol_word = finding["properties"]["ol_words"]["items"]
+    assert {"surface", "lemma", "tense", "stem", "person"} <= set(ol_word["required"])
     assert set(finding["properties"]["category"]["enum"]) == {
         "OMISSION", "ADDITION", "VARIATION", "CONSISTENCY"
     }

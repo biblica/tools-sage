@@ -651,3 +651,27 @@ def test_challenge_validator_reports_ol_when_no_packet_was_routed(tmp_path: Path
     # The claimed post-OL risk (1) is discarded; the pre-OL risk (2) stands.
     assert row["risk"]["after_ol"] == row["risk"]["before_ol"] == 2
     assert {item["code"] for item in result["salvage_records"]} == {"OL_UNAVAILABLE", "VALUE_CORRECTED"}
+
+
+def test_ol_check_claims_are_checked_against_macula_and_forged_results_ignored(tmp_path: Path) -> None:
+    """SAGE recomputes the MACULA checks of a performed OL check; checks written into the file are ignored."""
+    from sage.ol_analysis import make_ol_checker
+
+    output = tmp_path / "candidate.usfm"
+    output.write_text("fixture", encoding="utf-8")
+    document = _challenge_document({"task_id": "TASK", "scope": "MAT 1:1"}, output, resolved=True)
+    referral = document["challenges"][0]["ol_referral"]
+    parse = {field: None for field in ("pos", "type", "tense", "voice", "mood", "stem", "person", "number", "gender", "case", "state")}
+    referral["ol_words"] = [{"surface": "Βίβλος", "lemma": "βιβλίον", **parse}]
+    referral["ol_word_checks"] = [{"surface": "Βίβλος", "status": "VERIFIED"}]  # forged by the model
+    referral["ol_analysis_verified"] = True
+    path = tmp_path / "translation-challenges.json"
+    path.write_text(json.dumps(document), encoding="utf-8")
+    checker, _ = make_ol_checker(Path(__file__).resolve().parents[2], "MAT")
+    result = validate_rewrite_challenges(
+        path, task_id="TASK", operation="rewrite", scope_value="MAT 1:1", output_path=output, ol_checker=checker,
+    )
+    checked = result["challenges"][0]["ol_referral"]
+    assert checked["ol_analysis_verified"] is False
+    assert checked["ol_word_checks"][0]["differences"]["lemma"]["macula"] == "βίβλος"
+    assert [row["code"] for row in result["salvage_records"]] == ["OL_CLAIM_UNVERIFIED"]

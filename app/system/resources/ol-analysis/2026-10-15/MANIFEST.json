@@ -1,0 +1,220 @@
+{
+  "changes": "Column selection (no MACULA ids or morphology codes; ref identifies the word), NFC normalization of text and lemma; no values altered. UBS SDBH and MARBLE domain fields are not included.",
+  "columns": [
+    "ref",
+    "text",
+    "lemma",
+    "strong",
+    "pos",
+    "type",
+    "tense",
+    "voice",
+    "mood",
+    "stem",
+    "person",
+    "number",
+    "gender",
+    "case",
+    "state",
+    "gloss"
+  ],
+  "families": {
+    "GRK": {
+      "attribution": "MACULA Greek Linguistic Datasets, available at https://github.com/Clear-Bible/macula-greek/",
+      "edition": "SBL Greek New Testament (MACULA Greek)",
+      "file": "greek.tsv",
+      "gloss_source": "Berean Interlinear gloss (MACULA `gloss`), public domain",
+      "rows": 137741,
+      "source_commit": "076282a3926625a5e670823b0738ce5f1e619528",
+      "source_sha256": "7f71504fdee8659bdd9f85342e4103d645864c2851b8205915bb298f0c004cc5",
+      "source_url": "https://raw.githubusercontent.com/Clear-Bible/macula-greek/076282a3926625a5e670823b0738ce5f1e619528/SBLGNT/tsv/macula-greek-SBLGNT.tsv",
+      "vocabulary": {
+        "case": [
+          "accusative",
+          "dative",
+          "genitive",
+          "nominative",
+          "vocative"
+        ],
+        "gender": [
+          "feminine",
+          "masculine",
+          "neuter"
+        ],
+        "mood": [
+          "imperative",
+          "indicative",
+          "infinitive",
+          "optative",
+          "participle",
+          "subjunctive"
+        ],
+        "number": [
+          "plural",
+          "singular"
+        ],
+        "person": [
+          "first",
+          "second",
+          "third"
+        ],
+        "pos": [
+          "adj",
+          "adv",
+          "conj",
+          "det",
+          "intj",
+          "noun",
+          "num",
+          "prep",
+          "pron",
+          "ptcl",
+          "verb"
+        ],
+        "tense": [
+          "aorist",
+          "future",
+          "imperfect",
+          "perfect",
+          "pluperfect",
+          "present"
+        ],
+        "type": [
+          "adverbial",
+          "common",
+          "demonstrative",
+          "indefinite",
+          "interrogative",
+          "personal",
+          "possessive",
+          "proper",
+          "relative",
+          "substantive"
+        ],
+        "voice": [
+          "active",
+          "middle",
+          "passive"
+        ]
+      }
+    },
+    "HEB": {
+      "attribution": "MACULA Hebrew Linguistic Datasets, available at https://github.com/Clear-Bible/macula-hebrew/",
+      "edition": "Westminster Leningrad Codex (MACULA Hebrew, OSHB morphology)",
+      "file": "hebrew.tsv",
+      "gloss_source": "Cherith Glosses for the Hebrew Old Testament by Andi Wu (MACULA `english`), CC BY 4.0",
+      "rows": 475911,
+      "source_commit": "df1ea5d85c8cb194278a874d6c670cd1d8abd97f",
+      "source_sha256": "965cb0599beed2fe31283b615bcc369178141c0e718a66d97518d94309cfc124",
+      "source_url": "https://media.githubusercontent.com/media/Clear-Bible/macula-hebrew/df1ea5d85c8cb194278a874d6c670cd1d8abd97f/WLC/tsv/macula-hebrew.tsv",
+      "vocabulary": {
+        "gender": [
+          "both",
+          "common",
+          "feminine",
+          "masculine"
+        ],
+        "number": [
+          "dual",
+          "plural",
+          "singular"
+        ],
+        "person": [
+          "first",
+          "second",
+          "third"
+        ],
+        "pos": [
+          "adjective",
+          "adverb",
+          "conjunction",
+          "noun",
+          "particle",
+          "preposition",
+          "pronoun",
+          "suffix",
+          "verb"
+        ],
+        "state": [
+          "absolute",
+          "construct",
+          "determined"
+        ],
+        "stem": [
+          "aphel",
+          "haphel",
+          "hiphil",
+          "hishtaphel",
+          "hithpaal",
+          "hithpael",
+          "hithpalpel",
+          "hithpeel",
+          "hithpolel",
+          "hophal",
+          "ithpaal",
+          "ithpeel",
+          "ithpoel",
+          "niphal",
+          "nithpael",
+          "pael",
+          "palel",
+          "peal",
+          "pealal",
+          "peil",
+          "piel",
+          "pilel",
+          "pilpel",
+          "poal",
+          "poel",
+          "polal",
+          "polel",
+          "polpal",
+          "pual",
+          "pulal",
+          "qal",
+          "qal passive",
+          "saphel",
+          "shaphel"
+        ],
+        "type": [
+          "adjective",
+          "affirmation",
+          "cardinal number",
+          "cohortative",
+          "common",
+          "definite article",
+          "demonstrative",
+          "direct object marker",
+          "directional he",
+          "exhortation",
+          "gentilic",
+          "imperative",
+          "indefinite",
+          "infinitive absolute",
+          "infinitive construct",
+          "interjection",
+          "interrogative",
+          "jussive",
+          "negative",
+          "ordinal number",
+          "paragogic he",
+          "paragogic nun",
+          "participle active",
+          "participle passive",
+          "personal",
+          "pronominal",
+          "proper",
+          "qatal",
+          "relative",
+          "wayyiqtol",
+          "weqatal",
+          "yiqtol"
+        ]
+      }
+    }
+  },
+  "license": "CC BY 4.0 (MACULA, (c) 2022-2024 Biblica, Inc.); see docs/advanced/projects-and-resources/THIRD-PARTY-NOTICES.md",
+  "package_id": "SAGE_OL_ANALYSIS_2026-10-15",
+  "schema_version": "1.0",
+  "versification": "MACULA original-language numbering (Hebrew BHS / Greek SBLGNT); map to Western numbering through eng.vrs."
+}

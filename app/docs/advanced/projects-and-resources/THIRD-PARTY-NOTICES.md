@@ -32,22 +32,29 @@ package `SAGE_NUMBERS_TYPED_2026-10-09`) is built from these tables by
 the verses that contain numbers, and MACULA word identifiers as source references. NCA reports quote
 that verse text.
 
+The original-language analysis package (`system/resources/ol-analysis/2026-10-15/`, package
+`SAGE_OL_ANALYSIS_2026-10-15`, built by `system/tools/build_ol_analysis.py`) ships every MACULA word with its
+text, lemma, Strong's number, morphology fields, and gloss. SAGE uses it to check the original-language
+words a model cites in STC findings, RTC original-language adjudications, and BIC original-language checks,
+and reports quote MACULA's lemma, parse, and gloss for those words.
+
 **Changes made (CC BY 4.0 §3(a)(1)(B)).** SAGE reads only the identity, surface text, lemma, morphology,
 Strong's and gloss columns; normalizes text to Unicode NFC; maps MACULA's Hebrew/Greek verse numbering to
 English versification; and derives typed number values (cardinal, ordinal, fraction, date, and so on)
-from the words. The typed values and review decisions are SAGE's own; they are not part of MACULA.
+from the words. The typed values and review decisions are SAGE's own; they are not part of MACULA. The
+analysis package keeps MACULA's values unchanged; it selects columns and normalizes text and lemmas to NFC.
 
 **Data inside MACULA from other sources.** MACULA includes material under its own terms. SAGE ships
 only the parts listed above:
 
 | Source inside MACULA | Terms | SAGE use |
 |---|---|---|
-| Westminster Leningrad Codex (Hebrew text) | Public domain (tanach.us: "may be viewed or copied without restriction") | Verse text and number words |
-| [Open Scriptures Hebrew Bible](https://github.com/openscriptures/morphhb) lemma and morphology | CC BY 4.0. Credit: "Open Scriptures Hebrew Bible Project" | Read to find and type number words |
-| [SBL Greek New Testament](https://github.com/LogosBible/SBLGNT) | CC BY 4.0. "Copyright 2010 by the Society of Biblical Literature and Logos Bible Software" | Verse text and number words |
+| Westminster Leningrad Codex (Hebrew text) | Public domain (tanach.us: "may be viewed or copied without restriction") | Verse text, number words, and analysis package |
+| [Open Scriptures Hebrew Bible](https://github.com/openscriptures/morphhb) lemma and morphology | CC BY 4.0. Credit: "Open Scriptures Hebrew Bible Project" | Number typing; lemma and morphology in the analysis package |
+| [SBL Greek New Testament](https://github.com/LogosBible/SBLGNT) | CC BY 4.0. "Copyright 2010 by the Society of Biblical Literature and Logos Bible Software" | Verse text, number words, and analysis package |
 | Westminster Hebrew Syntax (J. Alan Groves Center) | CC BY 4.0 | Not used |
-| Cherith Glosses (Andi Wu, Cherith Analytics) | CC BY 4.0 | Read during the build; not shipped |
-| Berean Interlinear glosses (Greek `gloss`) | Public domain since 2023-04-30 | Read during the build; not shipped |
+| Cherith Glosses for the Hebrew Old Testament (Andi Wu, © 2022 Cherith Analytics) | CC BY 4.0. Credit: "Cherith Glosses for the Hebrew Old Testament, by Andi Wu, Copyright (C) 2022 by Cherith Analytics" | Hebrew glosses in the analysis package |
+| Berean Interlinear glosses (Greek `gloss`) | Public domain since 2023-04-30 | Greek glosses in the analysis package |
 | UBS Semantic Dictionary of Biblical Hebrew (`sdbh`, `*domain`) and MARBLE / Louw-Nida (`ln`, `domain`) | © United Bible Societies, "used with permission" in MACULA; not covered by Biblica's CC BY grant | **Never read or shipped.** Any future use needs UBS terms first. |
 
 ## Other data SAGE ships or quotes
