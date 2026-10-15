@@ -16,6 +16,7 @@ from .atomic import atomic_write_bytes, atomic_write_json, atomic_write_text
 from .bounded_target import preflight_bounded_target_commit
 from .config import load_json, load_yaml
 from .errors import EvidenceLimitError, ValidationError
+from .evidence import TOKEN_ESTIMATOR
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
     AUTHORIZED_LEXICAL_EVIDENCE,
@@ -64,6 +65,7 @@ from .runtime_paths import (
 from .stc import (
     LEGACY_STC_PLANNER_VERSION,
     STC_PLANNER_VERSION,
+    routed_ol_text_filter_for_book,
     stc_authority_family,
 )
 from .rtc_planner import (
@@ -1357,7 +1359,8 @@ def create_act_task(
             ol_packet = packet_root / "original-language.usj.json"
             packet_records["original_language"], ol_semantic_usfm = (
                 _write_reference_inventory_usj_packet(
-                    ol_file, stage_reference_values, ol_packet, parent_scope=scope
+                    ol_file, stage_reference_values, ol_packet, parent_scope=scope,
+                    text_filter=routed_ol_text_filter_for_book(scope.book),
                 )
                 if workflow in {"rtc", "saw"} and operation == "rtc" and stage_reference_values
                 else _write_scope_usj_packet(ol_file, scope, ol_packet)
@@ -2631,7 +2634,7 @@ def create_act_task(
         except EvidenceLimitError as exc:
             return partition_after_evidence_limit(exc)
         identity["context_budget"] = {
-            "estimator": str(planning_handoff.get("estimator") or "SAGE_MULTILINGUAL_HEURISTIC_1"),
+            "estimator": str(planning_handoff.get("estimator") or TOKEN_ESTIMATOR),
             "measurement_scope": "routed_analysis_sfm_only",
             "planning_basis": "ROUTED_SFM_ONLY",
             "serialized_bytes": int(planning_handoff["total_bytes"]),

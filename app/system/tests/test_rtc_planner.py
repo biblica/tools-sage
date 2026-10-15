@@ -5,7 +5,7 @@ import json
 import pytest
 
 from sage.errors import EvidenceLimitError, ValidationError
-from sage.evidence import EvidencePolicy, RTCSizingPolicy
+from sage.evidence import EvidencePolicy, RTCSizingPolicy, estimate_tokens
 from sage.rtc_planner import RTC_PLAN_HEADROOM_TOKENS, RTC_PLANNER_VERSION, plan_rtc_work_units
 from sage.verse_alignment import ProjectVerseIndex
 from sage.vrs import parse_vrs_file
@@ -35,6 +35,12 @@ def _record(
     )
 
 
+def _letters(letter: str, tokens: int) -> str:
+    """Return a run of one ASCII letter whose estimated size is `tokens`, whatever the estimator weights."""
+    per_letter = estimate_tokens(letter * 10_000) / 10_000
+    return letter * round(tokens / per_letter)
+
+
 def _schema(tmp_path, name: str, content: str):
     """Parse one compact Project VRS fixture for RTC correlation tests."""
     path = tmp_path / name
@@ -62,7 +68,7 @@ def _sizing() -> RTCSizingPolicy:
     """Return the release-governed RTC sizing fixture."""
     return RTCSizingPolicy.from_mapping({
         "provider": "codex",
-        "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
+        "estimator": "SAGE_MULTILINGUAL_HEURISTIC_2",
         "wip_target_min_tokens": 6000,
         "wip_target_max_tokens": 7000,
         "wip_hard_exclusive_tokens": 8000,
@@ -219,13 +225,13 @@ def test_rtc_v4_package_fixture_remains_byte_identical() -> None:
     assert serialized == (
         b'[{"analysis_route":"REFERENCE_TEXT_COMPARISON","primary_coverage_atoms":'
         b'["MAT 1:1"],"projection":"SAGE_RTC_SFM_ROUTE_PLANNER_V4","ref":'
-        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":10,"estimator":'
-        b'"SAGE_MULTILINGUAL_HEURISTIC_1","serialized_bytes":20},"route":'
-        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":20,"estimator":'
-        b'"SAGE_MULTILINGUAL_HEURISTIC_1","serialized_bytes":40},"sizing_basis":'
+        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":12,"estimator":'
+        b'"SAGE_MULTILINGUAL_HEURISTIC_2","serialized_bytes":20},"route":'
+        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":24,"estimator":'
+        b'"SAGE_MULTILINGUAL_HEURISTIC_2","serialized_bytes":40},"sizing_basis":'
         b'"ROUTED_SFM_ONLY","source_spans":{"REFERENCE":["MAT 1:1"],"WIP":'
         b'["MAT 1:1"]},"source_text_issues":[],"wip":{"basis":"ROUTED_SFM_ONLY",'
-        b'"estimated_tokens":10,"estimator":"SAGE_MULTILINGUAL_HEURISTIC_1",'
+        b'"estimated_tokens":12,"estimator":"SAGE_MULTILINGUAL_HEURISTIC_2",'
         b'"serialized_bytes":20}}]'
     )
 
@@ -258,9 +264,9 @@ def test_rtc_planning_requires_a_canonical_66_book_paratext_id() -> None:
 
 def test_reference_heavy_rtc_package_is_resliced_after_wip_boundary_planning() -> None:
     """A REF-heavy completed package is resliced even when the initial WIP slice fits."""
-    wip = tuple(_record(verse, "w" * 1800, role="WIP") for verse in range(1, 13))
+    wip = tuple(_record(verse, _letters("w", 450), role="WIP") for verse in range(1, 13))
     reference = tuple(
-        _record(verse, "r" * 9000, role="REFERENCE") for verse in range(1, 13)
+        _record(verse, _letters("r", 2250), role="REFERENCE") for verse in range(1, 13)
     )
     base = EvidencePolicy(
         target_estimated_tokens=28000,
@@ -330,13 +336,13 @@ def test_rtc_planning_reports_missing_reference_coordinate_without_blocking() ->
 
 def test_reference_bridge_moves_internal_wip_boundary_back_before_it() -> None:
     """A REFERENCE 3-4 span keeps WIP atoms 3 and 4 in one owner; the boundary moves back, not forward."""
-    wip = tuple(_record(verse, "w" * 6000, role="WIP") for verse in range(1, 7))
+    wip = tuple(_record(verse, _letters("w", 1500), role="WIP") for verse in range(1, 7))
     reference = (
-        _record(1, "r" * 200, role="REFERENCE"),
-        _record(2, "r" * 200, role="REFERENCE"),
-        _bridge_record(3, 4, "r" * 400, role="REFERENCE"),
-        _record(5, "r" * 200, role="REFERENCE"),
-        _record(6, "r" * 200, role="REFERENCE"),
+        _record(1, _letters("r", 50), role="REFERENCE"),
+        _record(2, _letters("r", 50), role="REFERENCE"),
+        _bridge_record(3, 4, _letters("r", 100), role="REFERENCE"),
+        _record(5, _letters("r", 50), role="REFERENCE"),
+        _record(6, _letters("r", 50), role="REFERENCE"),
     )
     base = EvidencePolicy(
         target_estimated_tokens=28000,
@@ -372,20 +378,20 @@ def test_reference_bridge_moves_internal_wip_boundary_back_before_it() -> None:
 def test_opposing_wip_and_reference_bridges_close_boundary_until_stable() -> None:
     """REF 3-4 reaches WIP 4-5, so the stable boundary moves back before atom 3."""
     wip = (
-        _record(1, "w" * 6000, role="WIP"),
-        _record(2, "w" * 6000, role="WIP"),
-        _record(3, "w" * 6000, role="WIP"),
-        _bridge_record(4, 5, "w" * 12000, role="WIP"),
-        _record(6, "w" * 6000, role="WIP"),
-        _record(7, "w" * 6000, role="WIP"),
+        _record(1, _letters("w", 1500), role="WIP"),
+        _record(2, _letters("w", 1500), role="WIP"),
+        _record(3, _letters("w", 1500), role="WIP"),
+        _bridge_record(4, 5, _letters("w", 3000), role="WIP"),
+        _record(6, _letters("w", 1500), role="WIP"),
+        _record(7, _letters("w", 1500), role="WIP"),
     )
     reference = (
-        _record(1, "r" * 200, role="REFERENCE"),
-        _record(2, "r" * 200, role="REFERENCE"),
-        _bridge_record(3, 4, "r" * 400, role="REFERENCE"),
-        _record(5, "r" * 200, role="REFERENCE"),
-        _record(6, "r" * 200, role="REFERENCE"),
-        _record(7, "r" * 200, role="REFERENCE"),
+        _record(1, _letters("r", 50), role="REFERENCE"),
+        _record(2, _letters("r", 50), role="REFERENCE"),
+        _bridge_record(3, 4, _letters("r", 100), role="REFERENCE"),
+        _record(5, _letters("r", 50), role="REFERENCE"),
+        _record(6, _letters("r", 50), role="REFERENCE"),
+        _record(7, _letters("r", 50), role="REFERENCE"),
     )
     base = EvidencePolicy(
         target_estimated_tokens=28000,
@@ -416,12 +422,12 @@ def test_opposing_wip_and_reference_bridges_close_boundary_until_stable() -> Non
 
 def test_bridge_boundary_moves_back_when_its_far_edge_exceeds_hard_wip_limit() -> None:
     """Extending through REF 3-5 would exceed the WIP limit, so the boundary moves back before it."""
-    wip = tuple(_record(verse, "w" * 6500, role="WIP") for verse in range(1, 7))
+    wip = tuple(_record(verse, _letters("w", 1625), role="WIP") for verse in range(1, 7))
     reference = (
-        _record(1, "r" * 200, role="REFERENCE"),
-        _record(2, "r" * 200, role="REFERENCE"),
-        _bridge_record(3, 5, "r" * 600, role="REFERENCE"),
-        _record(6, "r" * 200, role="REFERENCE"),
+        _record(1, _letters("r", 50), role="REFERENCE"),
+        _record(2, _letters("r", 50), role="REFERENCE"),
+        _bridge_record(3, 5, _letters("r", 150), role="REFERENCE"),
+        _record(6, _letters("r", 50), role="REFERENCE"),
     )
     base = EvidencePolicy(
         target_estimated_tokens=28000,
@@ -450,10 +456,10 @@ def test_bridge_boundary_moves_back_when_its_far_edge_exceeds_hard_wip_limit() -
 
 def test_bridge_integrity_blocks_when_the_bridge_alone_exceeds_hard_wip_limit() -> None:
     """A hard WIP limit wins over the soft target without splitting REF 1-5."""
-    wip = tuple(_record(verse, "w" * 6500, role="WIP") for verse in range(1, 7))
+    wip = tuple(_record(verse, _letters("w", 1625), role="WIP") for verse in range(1, 7))
     reference = (
-        _bridge_record(1, 5, "r" * 1000, role="REFERENCE"),
-        _record(6, "r" * 200, role="REFERENCE"),
+        _bridge_record(1, 5, _letters("r", 250), role="REFERENCE"),
+        _record(6, _letters("r", 50), role="REFERENCE"),
     )
     base = EvidencePolicy(
         target_estimated_tokens=28000,

@@ -167,13 +167,13 @@ def test_stc_v1_package_fixture_remains_byte_identical() -> None:
 
     assert json.dumps(packages, sort_keys=True, separators=(",", ":")).encode() == (
         b'[{"analysis_route":"STC_CORRESPONDENCE","ol":{"basis":"ROUTED_SFM_ONLY",'
-        b'"estimated_tokens":10,"estimator":"SAGE_MULTILINGUAL_HEURISTIC_1",'
+        b'"estimated_tokens":12,"estimator":"SAGE_MULTILINGUAL_HEURISTIC_2",'
         b'"serialized_bytes":20},"primary_coverage_atoms":["JHN 1:1"],"route":'
-        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":20,"estimator":'
-        b'"SAGE_MULTILINGUAL_HEURISTIC_1","serialized_bytes":40},"sizing_basis":'
+        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":24,"estimator":'
+        b'"SAGE_MULTILINGUAL_HEURISTIC_2","serialized_bytes":40},"sizing_basis":'
         b'"ROUTED_SFM_ONLY","source_text_issues":[],"structural_issues":[],"wip":'
-        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":10,"estimator":'
-        b'"SAGE_MULTILINGUAL_HEURISTIC_1","serialized_bytes":20}}]'
+        b'{"basis":"ROUTED_SFM_ONLY","estimated_tokens":12,"estimator":'
+        b'"SAGE_MULTILINGUAL_HEURISTIC_2","serialized_bytes":20}}]'
     )
 
 

@@ -15,6 +15,7 @@ from .bounded_target import extract_scope_usfm, merge_bounded_usfm
 from .errors import ConfigurationError, EvidenceLimitError, SageError, ValidationError
 from .exception_reports import is_integrity_code
 from .execution_events import classify_exception
+from .evidence import TOKEN_ESTIMATOR
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
     AUTHORITY_INTERPRETATION_RULES,
@@ -1851,7 +1852,7 @@ def _route_measurement(
     sfm_tokens = int(projection["routed_sfm_estimated_tokens"])
     transport_bytes = prompt_bytes + schema_bytes + int(projection["model_bytes"])
     return {
-        "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
+        "estimator": TOKEN_ESTIMATOR,
         # Every routed read counts against the byte budget; token sizing stays SFM-only, as planned.
         "measurement_scope": "routed_reads_bytes_and_sfm_tokens",
         "total_bytes": int(projection["model_bytes"]),

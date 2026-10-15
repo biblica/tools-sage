@@ -56,7 +56,7 @@ def test_rtc_partition_policy_keeps_wip_soft_target_but_uses_complete_route_hard
     )
     sizing = RTCSizingPolicy.from_mapping({
         "provider": "codex",
-        "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
+        "estimator": "SAGE_MULTILINGUAL_HEURISTIC_2",
         "wip_target_min_tokens": 6000,
         "wip_target_max_tokens": 7000,
         "wip_hard_exclusive_tokens": 8000,
@@ -78,7 +78,7 @@ def test_rtc_sizing_rejects_route_cap_below_wip_hard_limit() -> None:
     """RTC configuration must fail when the routed-SFM hard guard cannot contain WIP."""
     value = {
         "provider": "codex",
-        "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
+        "estimator": "SAGE_MULTILINGUAL_HEURISTIC_2",
         "wip_target_min_tokens": 6000,
         "wip_target_max_tokens": 7000,
         "wip_hard_exclusive_tokens": 8000,

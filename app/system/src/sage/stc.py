@@ -6,17 +6,24 @@ import json
 import re
 import unicodedata
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from .atomic import atomic_write_json, atomic_write_text
 from .candidates import reconcile_adjudications
 from .canon import NT_27, OT_39
 from .errors import ValidationError
-from .evidence import EvidenceMeasurement, EvidencePolicy
+from .evidence import TOKEN_ESTIMATOR, EvidenceMeasurement, EvidencePolicy
 from .exception_reports import NOT_ASSESSED, coverage_document, render_exceptions_section
 from .hashing import sha256_bytes
 from .references import expand_reference_atoms, parse_scope
-from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
+from .sfm_slicer import (
+    SfmAnalysisRoute,
+    SfmStream,
+    measure_sfm_slice,
+    measure_sfm_text,
+    plan_sfm_work_units,
+    render_sfm_slice,
+)
 from .source_coverage import source_text_issues
 from .source_coverage import source_comparison_status, unique_source_text_issues
 from .structural_issues import normalize_structure_problem
@@ -27,9 +34,36 @@ from .vrs import VerseRef
 STC_FINDING_CATEGORIES = {"OMISSION", "ADDITION", "VARIATION", "CONSISTENCY"}
 STC_ANALYSIS_ROUTE = "STC_CORRESPONDENCE"
 STC_RESULT_VERSION = "1.0"
-STC_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_1"
+STC_ESTIMATOR = TOKEN_ESTIMATOR
 STC_PLANNER_VERSION = "SAGE_STC_SFM_ROUTE_PLANNER_V2"
 LEGACY_STC_PLANNER_VERSION = "SAGE_STC_SFM_ROUTE_PLANNER_V1"
+
+
+# Hebrew cantillation accents (U+0591-U+05AF) are chant and prosody marks. Routed Hebrew evidence drops
+# them and keeps consonants, vowel points, maqaf, and sof pasuq: about 22% fewer model tokens per Hebrew
+# verse, and STC's verbatim-quote check already matches quotes with or without accents.
+HEBREW_CANTILLATION_RE = re.compile("[\u0591-\u05AF]")
+
+
+def strip_hebrew_cantillation(text: str) -> str:
+    """Remove Hebrew cantillation accents, keeping every letter, vowel point, and punctuation mark."""
+    return HEBREW_CANTILLATION_RE.sub("", text)
+
+
+def routed_ol_text_filter(family: str) -> Callable[[str], str] | None:
+    """Return the text filter for original-language evidence routed to a model, if any."""
+    return strip_hebrew_cantillation if str(family).strip().upper() == "HEB" else None
+
+
+def routed_ol_text_filter_for_book(book: str) -> Callable[[str], str] | None:
+    """Return the routed original-language text filter for one book; Hebrew Old Testament books only."""
+    return strip_hebrew_cantillation if str(book).strip().upper() in OT_39 else None
+
+
+def _routed_ol(text: str, family: str) -> str:
+    """Apply the routed original-language text filter for one family."""
+    text_filter = routed_ol_text_filter(family)
+    return text_filter(text) if text_filter is not None else text
 
 
 def stc_authority_family(book: str) -> str:
@@ -77,6 +111,7 @@ def plan_stc_work_units(
                 ol,
                 require_primary_coverage=False,
                 verse_index=ol_index if indexed else None,
+                text_filter=routed_ol_text_filter(family),
             ),
         ),
         primary_stream_id="WIP" if indexed else None,
@@ -241,7 +276,7 @@ def stc_package_measurements(
             "structural_issues": issues,
             "source_text_issues": issues,
             "wip": _component(measure_sfm_slice(wip_slice)),
-            "ol": _component(measure_sfm_slice(ol_slice)),
+            "ol": _component(measure_sfm_text(_routed_ol(render_sfm_slice(ol_slice), family))),
             "route": _component(unit.measurement),
         }
         if version == STC_PLANNER_VERSION:

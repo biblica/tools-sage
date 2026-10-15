@@ -56,7 +56,7 @@ constraints:
   provider_native_reasoning_identity_required: true
 
 routed_sfm_budget:
-  estimator: SAGE_MULTILINGUAL_HEURISTIC_1
+  estimator: SAGE_MULTILINGUAL_HEURISTIC_2
   measurement_scope: routed_analysis_sfm_only
   enforcement: immediately_before_each_provider_execute
   excluded_from_sizing: [prompt, output_schema, controller_json, profiles, microtransactions, ids, hashes, diagnostics]

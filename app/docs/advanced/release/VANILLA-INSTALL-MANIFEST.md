@@ -64,6 +64,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/models-and-ai/MODEL-LANGUAGE-COMPETENCY.md`
 - `docs/advanced/models-and-ai/MODEL-SELECTION-AND-REASONING.md`
 - `docs/advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md`
+- `docs/advanced/models-and-ai/TOKEN-ESTIMATOR-CALIBRATION.md`
 - `docs/advanced/projects-and-resources`
 - `docs/advanced/projects-and-resources/FLEX-COMBINE-INTERCHANGE.md`
 - `docs/advanced/projects-and-resources/GRAMMAR-PROFILES.md`
@@ -1214,6 +1215,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_storage_rtc_boundaries.py`
 - `system/tests/test_structural_issues.py`
 - `system/tests/test_text_coverage.py`
+- `system/tests/test_token_estimator.py`
 - `system/tests/test_transactions_and_memory.py`
 - `system/tests/test_tui_services.py`
 - `system/tests/test_tui_textual.py`

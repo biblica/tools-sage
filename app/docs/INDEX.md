@@ -52,6 +52,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Skill Routing and Model Qualification](advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md) — provider-only Setup, per-Skill route evidence, global override, and operator reporting design.
 - [Model Handoff Optimization](advanced/models-and-ai/MODEL-HANDOFF-OPTIMIZATION.md) — governed projections, response contracts, and token telemetry.
 - [Model Language Competency](advanced/models-and-ai/MODEL-LANGUAGE-COMPETENCY.md) — per-model-release estimated capability.
+- [Token Estimator Calibration](advanced/models-and-ai/TOKEN-ESTIMATOR-CALIBRATION.md) — per-script token estimator, its accuracy, budget scaling, and Hebrew cantillation removal.
 - [Local AI Assistive Mode](advanced/models-and-ai/LOCAL-AI-ASSISTIVE-MODE.md) — restricted local administration support.
 - [Local-First Design Rule](advanced/models-and-ai/LOCAL-FIRST-DESIGN-RULE.md) — deterministic-local versus model-reasoning boundary.
 - [Local Evidence and General Linguistic Competence](advanced/models-and-ai/LOCAL-EVIDENCE-AND-LINGUISTIC-COMPETENCE.md) — canonical closed evidence boundary.

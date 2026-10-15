@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Callable, Iterable
 
 from .errors import ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy, WORD_RE, estimate_tokens
@@ -20,6 +20,8 @@ class SfmStream:
     records: tuple[EvidenceRecord, ...]
     require_primary_coverage: bool = True
     verse_index: ProjectVerseIndex | None = None
+    # Applied to the rendered slice before measuring, so sizing counts exactly what the packet routes.
+    text_filter: Callable[[str], str] | None = None
 
 
 @dataclass(frozen=True)
@@ -250,6 +252,8 @@ class _SfmSizer:
                     code="SFM_ROUTE_PRIMARY_COVERAGE_MISMATCH",
                 )
             text = render_sfm_slice(selected)
+            if stream.text_filter is not None:
+                text = stream.text_filter(text)
             byte_count += len(text.encode("utf-8"))
             char_count += len(text)
             word_count += len(WORD_RE.findall(text))

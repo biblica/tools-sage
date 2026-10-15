@@ -8,19 +8,19 @@ workflow:
 bindings: {}
 evidence_policies:
   default:
-    target_estimated_tokens: 12000
-    hard_estimated_tokens: 18000
+    target_estimated_tokens: 17500
+    hard_estimated_tokens: 26000
     hard_serialized_bytes: 126000
-    minimum_target_tokens: 3500
+    minimum_target_tokens: 5000
     maximum_primary_verse_units: 120
     context_before_verses: 1
     context_after_verses: 1
     allow_cross_chapter_units: true
   stc:
-    target_estimated_tokens: 12000
-    hard_estimated_tokens: 18000
+    target_estimated_tokens: 17500
+    hard_estimated_tokens: 26000
     hard_serialized_bytes: 126000
-    minimum_target_tokens: 3500
+    minimum_target_tokens: 5000
     maximum_primary_verse_units: 120
     maximum_primary_discourse_units: 0
     context_before_verses: 1

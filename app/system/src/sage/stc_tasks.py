@@ -32,6 +32,7 @@ from .atomic import atomic_write_json
 from .candidates import candidate_inventory
 from .errors import EvidenceLimitError
 from .errors import ValidationError
+from .evidence import TOKEN_ESTIMATOR
 from .evidence_policy import AUTHORITY_INTERPRETATION_RULES
 from .evidence_policy import AUTHORIZED_CONTENT_EVIDENCE
 from .evidence_policy import LINGUISTIC_COMPETENCE_RULES
@@ -57,6 +58,7 @@ from .state import utc_now
 from .stc import STC_PLANNER_VERSION
 from .stc import length_outliers
 from .stc import plan_stc_work_units
+from .stc import routed_ol_text_filter_for_book
 from .stc import stc_authority_family
 from .text_coverage import omission_rows
 from .task_sealing import seal_task
@@ -329,6 +331,7 @@ def _create_stc_task(
             primary_references=ol_primary_references,
             context_references=ol_context_references,
             allow_empty=True,
+            text_filter=routed_ol_text_filter_for_book(scope.book),
         )
         expected_references = list(wip_packet["primary_references"])
         source_issue_rows = (
@@ -485,7 +488,7 @@ def _create_stc_task(
             "output_grammar": "STC_FINDINGS_1.0",
             "review_requirements": {"required_checks": ["STC_CORRESPONDENCE"], "controller_checks": [], "expected_work_unit_ids": [work_unit_id or task_id]},
             "context_budget": {
-                "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1", "measurement_scope": "routed_analysis_sfm",
+                "estimator": TOKEN_ESTIMATOR, "measurement_scope": "routed_analysis_sfm",
                 "planning_basis": "ROUTED_SFM_ONLY", "serialized_bytes": route_bytes, "estimated_tokens": route_tokens,
                 "final_serialized_bytes": route_bytes, "final_estimated_tokens": route_tokens, "policy": policy.to_dict(),
             },

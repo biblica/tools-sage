@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import re
+import unicodedata
 from dataclasses import asdict, dataclass
 from typing import Any, Mapping
 
@@ -207,18 +208,92 @@ def serialize_evidence(value: Any) -> bytes:
     ).encode("utf-8")
 
 
+TOKEN_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_2"
+
+# Tokens per character by Unicode script block, fitted on 2026-10-15 against the o200k_base tokenizer
+# (the governed Codex provider) over SFM books in 30 Paratext Projects and the bundled GRK/HEB; see
+# docs/advanced/models-and-ai/TOKEN-ESTIMATOR-CALIBRATION.md. Held-out books land within 0.80-1.28x of
+# real tokens. Scripts without calibration data cost 1.0 per character, deliberately on the high side.
+_SCRIPT_BLOCKS: tuple[tuple[int, int, str], ...] = (
+    (0x0591, 0x05AF, "hebrew_cantillation"),
+    (0x0590, 0x05FF, "hebrew"),
+    (0x0370, 0x03FF, "greek"),
+    (0x1F00, 0x1FFF, "greek"),
+    (0x0400, 0x052F, "cyrillic"),
+    (0x0600, 0x06FF, "arabic"),
+    (0x0750, 0x077F, "arabic"),
+    (0x08A0, 0x08FF, "arabic"),
+    (0xFB50, 0xFDFF, "arabic"),
+    (0xFE70, 0xFEFF, "arabic"),
+    (0x0900, 0x097F, "devanagari"),
+    (0x0980, 0x09FF, "bengali"),
+    (0x0A00, 0x0A7F, "gurmukhi"),
+    (0x0B00, 0x0B7F, "oriya"),
+    (0x0D00, 0x0D7F, "malayalam"),
+    (0x0D80, 0x0DFF, "sinhala"),
+    (0x0E00, 0x0E7F, "thai"),
+    (0x0E80, 0x0EFF, "lao"),
+    (0x1200, 0x139F, "ethiopic"),
+    (0x3000, 0x9FFF, "cjk"),
+    (0xFF00, 0xFFEF, "cjk"),
+)
+_TOKENS_PER_CHARACTER: dict[str, float] = {
+    "ascii_alnum": 0.1608,
+    "ascii_punct": 2.1525,  # USFM markers (\v, \q1) and punctuation: almost every one is its own token
+    "ascii_space": 0.4702,
+    "latin_ext": 0.5,  # floor: too rare in the calibration texts to fit; protects e.g. Vietnamese
+    "symbol": 0.5,  # floor for non-ASCII punctuation such as curly quotes and dashes
+    "hebrew": 0.9708,
+    "hebrew_cantillation": 2.1091,
+    "greek": 0.7345,
+    "cyrillic": 0.2927,
+    "arabic": 0.3277,
+    "arabic_mark": 1.0901,
+    "devanagari": 0.3388,
+    "bengali": 0.3095,
+    "gurmukhi": 0.4756,
+    "oriya": 1.1086,
+    "malayalam": 0.3267,
+    "sinhala": 0.4986,
+    "thai": 0.2422,
+    "lao": 1.6574,
+    "ethiopic": 2.1597,
+    "cjk": 1.0026,
+}
+_UNCALIBRATED_TOKENS_PER_CHARACTER = 1.0
+_character_cost_cache: dict[str, float] = {}
+
+
+def _character_cost(char: str) -> float:
+    """Return the calibrated token cost of one character."""
+    cost = _character_cost_cache.get(char)
+    if cost is not None:
+        return cost
+    point = ord(char)
+    if point < 128:
+        kind = "ascii_alnum" if char.isalnum() else "ascii_space" if char.isspace() else "ascii_punct"
+    else:
+        kind = next((name for start, end, name in _SCRIPT_BLOCKS if start <= point <= end), "")
+        category = unicodedata.category(char)
+        if kind == "arabic" and category.startswith("M"):
+            kind = "arabic_mark"
+        elif not kind:
+            if point <= 0x024F or 0x1E00 <= point <= 0x1EFF or 0x0300 <= point <= 0x036F:
+                kind = "latin_ext"
+            elif category[0] in "PSZ":
+                kind = "symbol"
+    cost = _TOKENS_PER_CHARACTER.get(kind, _UNCALIBRATED_TOKENS_PER_CHARACTER)
+    _character_cost_cache[char] = cost
+    return cost
+
+
 def estimate_tokens(text: str) -> int:
-    """Return a conservative multilingual token estimate.
+    """Return a multilingual token estimate calibrated per script (`TOKEN_ESTIMATOR`).
 
     SAGE records this as an estimate, never as an exact model-token count. The
     actual serialized byte count remains an independent hard guard.
     """
-    ascii_count = sum(1 for char in text if ord(char) < 128)
-    non_ascii_count = len(text) - ascii_count
-    word_count = len(WORD_RE.findall(text))
-    character_estimate = ascii_count / 4.0 + non_ascii_count / 2.0
-    word_estimate = word_count * 1.35
-    return max(1, math.ceil(max(character_estimate, word_estimate)))
+    return max(1, math.ceil(sum(_character_cost(char) for char in text)))
 
 
 def evidence_within_limits(

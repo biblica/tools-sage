@@ -6,7 +6,7 @@ from typing import Any, Iterable
 
 from .canon import PROTESTANT_66
 from .errors import ConfigurationError, EvidenceLimitError, ValidationError
-from .evidence import EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy
+from .evidence import TOKEN_ESTIMATOR, EvidenceMeasurement, EvidencePolicy, RTCSizingPolicy
 from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_slice, plan_sfm_work_units
 from .source_coverage import source_text_issues
 from .verse_alignment import ProjectVerseIndex, missing_by_local_ref
@@ -19,7 +19,7 @@ LEGACY_RTC_PLANNER_VERSION = "SAGE_RTC_SFM_ROUTE_PLANNER_V4"
 RTC_HANDOFF_CONTRACT_VERSION = "SAGE_GOVERNED_TASK_V1"
 RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "RTC_REFERENCE_TEXT_COMPARISON_V1"
 LEGACY_RTC_PROMPT_SCHEMA_PROJECTION_VERSION = "SAW_RTC_REFERENCE_TEXT_COMPARISON_V1"
-RTC_ESTIMATOR = "SAGE_MULTILINGUAL_HEURISTIC_1"
+RTC_ESTIMATOR = TOKEN_ESTIMATOR
 # Plan-time sizing stays this far below the task-time limits: the sealed task packet adds headers
 # (~18 tokens today) that the planner does not measure, and a unit planned at the edge would be
 # rejected at task creation as a permanently stale plan.
