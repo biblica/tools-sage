@@ -354,13 +354,32 @@ class JobStore:
         assert job is not None
         return self.tool_root(tool) / job
 
-    def discover(self, tool: str | None = None, *, include_archived: bool = False) -> list[Job]:
-        """Load current Jobs in stable canonical-name order."""
+    def discover(
+        self,
+        tool: str | None = None,
+        *,
+        include_archived: bool = False,
+        include_unloadable: bool = False,
+    ) -> list[Job]:
+        """Load current Jobs in stable canonical-name order.
+
+        A Job that fails its full load (a LEGACY or action-needed Job; `discover_report` explains why)
+        is skipped, or, with `include_unloadable`, returned from its structure-valid manifest so it can
+        still be listed, archived, deleted, or counted as a Project user.
+        """
         tools: Iterable[str] = (tool.strip().lower(),) if tool else PERSISTED_JOB_TOOLS
         result: list[Job] = []
         for tool_id in tools:
             for manifest in sorted(self.tool_root(tool_id).glob("*/job.yml")):
-                job = self.load_job(manifest.parent.name, tool=tool_id)
+                try:
+                    job = self.load_job(manifest.parent.name, tool=tool_id)
+                except SageError:
+                    if not include_unloadable:
+                        continue
+                    try:
+                        job = self._load_job_metadata(manifest.parent.name, tool=tool_id)
+                    except SageError:
+                        continue
                 if include_archived or job.status != "ARCHIVED":
                     result.append(job)
         return sorted(result, key=lambda item: (item.tool, item.job_id.casefold()))
@@ -417,6 +436,19 @@ class JobStore:
 
                 bundle = resolve_reference_package(load_ecosystem(self.settings_path), str(package["package_id"]))
             except ValidationError as exc:
+                if exc.code == "NCA_REFERENCE_NOT_IMPORTED":
+                    # A Job pinned to a package that is no longer installed is LEGACY under the
+                    # pre-release compatibility policy: kept, readable, deletable, but not runnable.
+                    raise ConfigurationError(
+                        f"Job {job.job_id} uses NCA reference package {package['package_id']}, which is not "
+                        "installed in this SAGE. This Job is LEGACY: its reports stay readable, but it cannot run.",
+                        code="NCA_JOB_LEGACY_PACKAGE",
+                        next_action=(
+                            f"Delete or archive Job {job.job_id}, then create a new NCA Job for "
+                            f"{job.bindings.get('wip', 'the WIP')} to use the current package."
+                        ),
+                        details={**dict(exc.details), "package_id": str(package["package_id"])},
+                    ) from exc
                 raise ConfigurationError(
                     exc.message,
                     code=exc.code,
@@ -1174,7 +1206,10 @@ class JobStore:
         raw["configuration_revision"] = revision + 1
         raw["revised_utc"] = _utc_now()
         atomic_write_text(project.manifest_path, _safe_yaml(raw))
-        updated = self.load_job(project.job_id, tool=project.tool)
+        # A status-only change (archive, deactivate) needs no resource trust, so LEGACY Jobs can be archived.
+        status_only = all(value is None for value in (display_name, bindings, profiles, defaults, reporting))
+        load = self._load_job_metadata if status_only else self.load_job
+        updated = load(project.job_id, tool=project.tool)
         atomic_write_text(updated.root / "README.md", self._render_project_readme(raw))
         # NCA check defaults and display metadata govern the next Run only. Avoid
         # rewriting an open Run's otherwise identical ACT settings fingerprint.
@@ -1185,7 +1220,7 @@ class JobStore:
         )
         if not nca_runtime_unchanged:
             self.write_runtime_files(updated)
-        return self.load_job(project.job_id, tool=project.tool)
+        return load(project.job_id, tool=project.tool)
 
     def refresh_job_snapshot(
         self,
@@ -1328,7 +1363,8 @@ class JobStore:
 
     def remove_job(self, project: Job, *, remove_reports: bool = False) -> None:
         """Remove all Job-owned work and optionally its separately published reports."""
-        current = self.load_job(project.job_id, tool=project.tool)
+        # Deletion needs only a structure-valid manifest, so LEGACY Jobs can always be removed.
+        current = self._load_job_metadata(project.job_id, tool=project.tool)
         if self.active_jobs().get(current.tool) == current.job_id:
             self.set_active_job(current.tool, None)
         if self.last_run_path.is_file():

@@ -151,7 +151,7 @@ def manage_jobs(center, tool: str) -> None:
         entries = sorted([*report.jobs, *report.issues], key=lambda item: item.job_id.casefold())
         context = [
             f"  - {item.job_id}" + (" [ACTIVE]" if item.job_id == active_id else "")
-            + (" [ACTION NEEDED]" if isinstance(item, JobLoadIssue) else "")
+            + (f" [{_issue_label(item)}]" if isinstance(item, JobLoadIssue) else "")
             for item in entries
         ] or [f"No {label} JOBs exist."]
         options = [
@@ -190,17 +190,35 @@ def manage_jobs(center, tool: str) -> None:
                 center.io.pause()
 
 
+def _issue_label(issue: JobLoadIssue) -> str:
+    """Short list tag for a Job that cannot load: LEGACY when its contract is retired."""
+    return "LEGACY - cannot run" if issue.code == "NCA_JOB_LEGACY_PACKAGE" else "ACTION NEEDED"
+
+
 def _pick_job(center, tool: str, verb: str) -> Job | None:
-    """Choose one existing Job of this type for a management action."""
+    """Choose one existing Job of this type for a management action.
+
+    Delete and Archive also offer Jobs that cannot load (LEGACY or action-needed), so a retired
+    Job can always be removed; Refresh offers only loadable Jobs.
+    """
     label = _label(tool)
-    candidates = center.store.discover(tool, include_archived=True)
+    unloadable_allowed = verb in {"Delete", "Archive"}
+    candidates = center.store.discover(tool, include_archived=True, include_unloadable=unloadable_allowed)
     if not candidates:
         center.io.write(f"No {label} JOBs exist.")
         center.io.pause()
         return None
+    issues = {
+        issue.job_id: issue
+        for issue in center.store.discover_report(tool, include_archived=True).issues
+    } if unloadable_allowed else {}
     choice = center.io.choose(
         f"{verb.upper()} {label} JOB",
-        [(str(index), f"{job.job_id}: {job.display_name}") for index, job in enumerate(candidates, 1)]
+        [
+            (str(index), f"{job.job_id}: {job.display_name}"
+             + (f" [{_issue_label(issues[job.job_id])}]" if job.job_id in issues else ""))
+            for index, job in enumerate(candidates, 1)
+        ]
         + [("B", "Back")],
     )
     return None if choice == "B" else candidates[int(choice) - 1]
