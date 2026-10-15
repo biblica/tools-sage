@@ -6,7 +6,7 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from .bic_memory import validate_inspect_submission
 from .candidates import reconcile_adjudications
@@ -15,6 +15,7 @@ from .exception_reports import render_exceptions_section
 from .hashing import sha256_file
 from .human_output import catalogue_text, render_report_language_authority
 from .iso_languages import iso_language
+from .ol_analysis import render_ol_word_checks, summarize_ol_checks, unverified_message
 from .language_identification import resolve_country
 from .ol_referrals import (
     is_ol_referral_contract,
@@ -711,8 +712,12 @@ def validate_analysis_findings(
     source_text_drift_adjudication: str | None = None,
     rtc_policy: Mapping[str, Any] | None = None,
     expected_candidates: Sequence[Mapping[str, Any]] = (),
+    ol_checker: Callable[[Sequence[Mapping[str, Any]], str], list[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     """Validate staged analysis findings, complete coverage, and bounded answers.
+
+    With an ``ol_checker`` (``ol_analysis.make_ol_checker``), each OL resolution's ``ol_words`` claims are
+    checked against MACULA; the resolution and its finding carry the checks, and a mismatch is flagged.
 
     ``rtc_policy`` is the sealed Run Text policy: findings of disabled checks, and findings in a USFM
     context whose mode does not elevate them, are filtered out with a record.
@@ -1039,7 +1044,22 @@ def validate_analysis_findings(
             f"ol_resolutions[{index}].original_language_evidence",
             maximum=4000,
         )
+        claims = [item for item in resolution.get("ol_words") or [] if isinstance(item, Mapping)]
+        ol_checks = ol_checker(claims, target_reference) if claims and ol_checker is not None else []
+        ol_verdict = summarize_ol_checks(ol_checks)
+        if ol_verdict is False:
+            salvage_records.append(
+                {
+                    "code": "OL_CLAIM_UNVERIFIED",
+                    "coordinate": target_reference,
+                    "submitted_id": request_id,
+                    "effect": "FLAGGED",
+                    "message": unverified_message(f"OL resolution {request_id}", ol_checks),
+                }
+            )
         ol_resolutions.append({
+            **({"ol_word_checks": ol_checks} if ol_checks else {}),
+            **({"ol_analysis_verified": ol_verdict} if ol_verdict is not None else {}),
             "request_id": request_id,
             "deferred_finding_id": deferred_id,
             "target_reference": target_reference,
@@ -1230,6 +1250,9 @@ def validate_analysis_findings(
             resolution = resolution_by_finding[finding["finding_id"]]
             if finding["target_reference"] != resolution["target_reference"]:
                 raise ValidationError("Selective OL finding reference must match its OL resolution")
+            for key in ("ol_word_checks", "ol_analysis_verified"):
+                if key in resolution:
+                    finding[key] = resolution[key]
     if operation == "rtc" and stage_name == "STRUCTURAL_ADJUDICATION":
         structural_finding_ids = {
             str(row["finding_id"]) for row in adjudications.values() if row["outcome"] == "FINDING"
@@ -1514,6 +1537,7 @@ def _render_ol_resolutions(document: Mapping[str, Any]) -> list[str]:
         rationale = str(row.get("rationale") or "").strip()
         if rationale:
             lines.extend(["", operator_finding_text(rationale, document, row)])
+        lines.extend(render_ol_word_checks(row.get("ol_word_checks") or []))
         lines.append("")
     return lines
 

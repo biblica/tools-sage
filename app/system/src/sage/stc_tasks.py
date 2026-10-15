@@ -519,7 +519,8 @@ def _create_stc_task(
             "Quote `wip_evidence` and `ol_evidence` verbatim from the supplied slice; SAGE checks every quotation against it.",
             "SAGE already reports text present on only one side as OMISSION or ADDITION; do not restate those coordinates.",
             "Check each `verse_length_outliers` verse closely for a material omission or addition; its length alone is not a finding.",
-            "Numbers: `numeric_candidates` compares WIP digits with the number index (see its caveat). Report no number finding for a `MATCH` verse; the NCA tool checks numbers in full.", "",
+            "Numbers: `numeric_candidates` compares WIP digits with the number index (see its caveat). Report no number finding for a `MATCH` verse; the NCA tool checks numbers in full.",
+            "Original-language words: in each finding's `ol_words`, list the original-language words the finding depends on, with their lemma and parse; SAGE checks each against MACULA and marks a finding whose analysis MACULA contradicts as unverified.", "",
             *(
                 [
                     "## Structural issues", "",

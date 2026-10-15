@@ -32,6 +32,7 @@ from .hashing import sha256_bytes
 from .hashing import sha256_file
 from .human_output import report_language_authority
 from .jobs import Job, JobStore
+from .ol_analysis import make_ol_checker
 from .locking import WorkspaceLock
 from .references import parse_scope
 from .registry import EcosystemConfig
@@ -511,6 +512,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                         str(item.get("path", "")).endswith("original-language.sfm")
                         for item in raw.get("conditional_reads", [])
                     ),
+                    ol_checker=make_ol_checker(config.root, str(raw["scope"]).split(" ")[0])[0],
                 )
             challenge_document["execution_route"] = execution_route
             _record_salvage_exceptions(
@@ -674,6 +676,11 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 wip_text=_optional_text(task_root / "packet" / "wip.sfm"),
                 ol_text=_optional_text(task_root / "packet" / "original-language.sfm"),
                 expected_candidates=list(raw.get("deterministic_candidates") or []),
+                ol_checker=make_ol_checker(
+                    config.root,
+                    str(raw["scope"]).split(" ")[0],
+                    dict(raw.get("stc_alignment") or {}).get("verse_correspondence") or [],
+                )[0],
             )
         stc_salvage = list(normalized.pop("salvage_records", []) or [])
         if stc_salvage:
@@ -838,6 +845,11 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                     else None
                 ),
                 expected_candidates=list(raw.get("deterministic_candidates") or []),
+                ol_checker=(
+                    make_ol_checker(config.root, str(raw["scope"]).split(" ")[0])[0]
+                    if raw.get("rtc_stage") == "SELECTIVE_OL_ADJUDICATION" or operation == "ol"
+                    else None
+                ),
             )
         salvage_records = list(normalized.pop("salvage_records", []) or [])
         if salvage_records:
