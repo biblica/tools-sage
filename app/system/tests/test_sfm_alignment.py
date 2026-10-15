@@ -239,15 +239,16 @@ def test_actual_authority_bridge_projects_to_primary_boundary_but_vrs_mapping_al
     )
     assert mapping_only_route.protected_spans() == ()
 
+    # Sized for SAGE_MULTILINGUAL_HEURISTIC_2: verses 2-3 cannot share a unit with both neighbours.
     bridge_units = plan_sfm_work_units(
         wip,
-        _policy(target=28, hard=38),
+        _policy(target=28, hard=52),
         unit_prefix="BRIDGE",
         route=bridge_route,
     )
     mapping_only_units = plan_sfm_work_units(
         wip,
-        _policy(target=28, hard=38),
+        _policy(target=28, hard=52),
         unit_prefix="MAPPING",
         route=mapping_only_route,
     )

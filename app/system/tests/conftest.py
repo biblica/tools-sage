@@ -323,7 +323,7 @@ def make_workspace(tmp_path: Path):
             },
             "rtc_sizing": {
                 "provider": "codex",
-                "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1",
+                "estimator": "SAGE_MULTILINGUAL_HEURISTIC_2",
                 "wip_target_min_tokens": 6000,
                 "wip_target_max_tokens": 7000,
                 "wip_hard_exclusive_tokens": 8000,

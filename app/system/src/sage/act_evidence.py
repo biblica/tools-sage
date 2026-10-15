@@ -60,6 +60,7 @@ from .work_units import records_from_project_result
 from .work_units import select_records_for_scope
 from pathlib import Path
 from typing import Any
+from typing import Callable
 from typing import Iterable
 from typing import Mapping
 from typing import Sequence
@@ -365,8 +366,12 @@ def _write_reference_inventory_usj_packet(
     *,
     parent_scope: ScriptureScope,
     allow_empty: bool = False,
+    text_filter: Callable[[str], str] | None = None,
 ) -> tuple[dict[str, Any], str]:
-    """Write exact composite-RTC coordinates as deterministic bounded comparison USJ."""
+    """Write exact composite-RTC coordinates as deterministic bounded comparison USJ.
+
+    `text_filter` is applied to the bounded SFM after coordinate selection (e.g. Hebrew cantillation removal).
+    """
     raw = source.read_bytes()
     text = raw.decode("utf-8-sig")
     usj = compile_usfm_text(text, source.name)
@@ -412,6 +417,8 @@ def _write_reference_inventory_usj_packet(
             current_chapter = chapter
         lines.extend(str(line) for line in unit.get("lines", []))
     bounded_usfm = "\n".join(lines).rstrip() + "\n"
+    if text_filter is not None:
+        bounded_usfm = text_filter(bounded_usfm)
     atomic_write_json(
         destination,
         _comparison_usj(
@@ -1484,8 +1491,12 @@ def _bounded_sfm_packet(
     primary_references: Sequence[str] | None = None,
     context_references: Sequence[str] = (),
     allow_empty: bool = False,
+    text_filter: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Write only bounded Scripture SFM selected by primary scope plus explicit context."""
+    """Write only bounded Scripture SFM selected by primary scope plus explicit context.
+
+    `text_filter` is applied after coordinate selection (e.g. Hebrew cantillation removal).
+    """
     try:
         raw = source.read_bytes()
         text = raw.decode("utf-8-sig")
@@ -1554,6 +1565,8 @@ def _bounded_sfm_packet(
             raise ValidationError(f"Compiled STC unit in {source.name} has no retained SFM lines")
         lines.extend(str(line) for line in raw_lines)
     bounded = "\n".join(lines).rstrip() + "\n"
+    if text_filter is not None:
+        bounded = text_filter(bounded)
     atomic_write_text(destination, bounded)
     primary_atoms = [
         ref.label()

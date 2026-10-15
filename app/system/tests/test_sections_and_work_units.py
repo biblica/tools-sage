@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from sage.storage import storage_layout
-from sage.evidence import EvidencePolicy
+from sage.evidence import EvidencePolicy, estimate_tokens
 from sage.errors import EvidenceLimitError
 from sage.registry import load_ecosystem
 from sage.scripture import compile_project
@@ -274,6 +274,16 @@ def test_short_jude_sections_coalesce_into_one_fitting_work_unit() -> None:
     assert units[0].split_boundary == "END_OF_SCOPE"
 
 
+def _repeat_to_tokens(fragment: str, tokens: float) -> str:
+    """Repeat `fragment` until the text reaches `tokens` estimated tokens, whatever the estimator weights."""
+    per_fragment = estimate_tokens(fragment * 100) / 100
+    return fragment * round(tokens / per_fragment)
+
+
+def _fixture_text(fragment: str, count: int) -> str:
+    """Body text sized as these fixtures were designed: `count` repeats at four ASCII characters per token."""
+    return _repeat_to_tokens(fragment, len(fragment) * count / 4)
+
 def test_oversized_section_is_split_into_balanced_story_parts() -> None:
     """Lookahead should avoid a near-ceiling packet followed by a tiny section tail."""
     records = tuple(
@@ -282,7 +292,7 @@ def test_oversized_section_is_split_into_balanced_story_parts() -> None:
             chapter=1,
             verse_start=verse,
             verse_end=verse,
-            payload={"body_text": (f"paragraph-{verse} " * 180)},
+            payload={"body_text": _fixture_text(f"paragraph-{verse} ", 180)},
             boundaries_before=(
                 ({"kind": "PARAGRAPH", "marker": "p", "score": 30},)
                 if verse > 1 else ()
@@ -528,7 +538,7 @@ def test_rtc_wip_policy_balances_near_six_thousand_without_packing_to_hard_max()
             chapter=1,
             verse_start=verse,
             verse_end=verse,
-            payload={"body_text": (f"word{verse} " * 550)},
+            payload={"body_text": _fixture_text(f"word{verse} ", 550)},
             boundaries_before=(
                 ({"kind": "PARAGRAPH", "marker": "p", "score": 30},)
                 if verse > 1 else ()
@@ -566,7 +576,7 @@ def test_rtc_soft_pack_limit_does_not_merge_clean_sections_toward_eight_thousand
             chapter=1,
             verse_start=verse,
             verse_end=verse,
-            payload={"body_text": (f"word{verse} " * 800)},
+            payload={"body_text": _fixture_text(f"word{verse} ", 800)},
             boundaries_before=(
                 ({"kind": "SECTION", "marker": "s1", "score": 80},)
                 if verse == 4 else ()

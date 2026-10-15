@@ -57,11 +57,13 @@ Every model review item records two deliberately separate measurement classes:
 
 A token estimator must never be called on controller JSON, microtransactions, prompts, schemas, profiles, IDs, hashes, diagnostics, or USJ projections.
 
+The estimator is `SAGE_MULTILINGUAL_HEURISTIC_2`: a per-script cost per character calibrated against the governed provider's tokenizer (see [Token Estimator Calibration](TOKEN-ESTIMATOR-CALIBRATION.md)). Hebrew original-language text routed to STC and to RTC original-language adjudication has its cantillation accents removed first, and the planner measures that same accent-free text.
+
 ## 6. Review-item planning and focus batching
 
 Task creation records `context_budget.routed_sfm` with `planning_basis: ROUTED_SFM_ONLY`. New Jobs weight analytical progress by `ROUTED_SFM_ESTIMATED_TOKENS`; historical progress records may retain the legacy basis for read compatibility only.
 
-The general SFM slicer owns deterministic Scripture planning for BIC, RTC, STC, Targeted Check, and Original-Language Review. Each operation/profile declares the streams for its actual review item. Current RTC geometry keeps a WIP target around 6,000 tokens, prefers WIP boundaries around 5,000–7,000, and rejects an individual WIP slice at 8,000 tokens or above; the complete required WIP+REFERENCE route is independently guarded by the configured routed-SFM hard limit. OL Scripture is not pre-reserved into the normal RTC route. A qualifying selective OL adjudication becomes a new bounded review item and sizes only the SFM routed to that item.
+The general SFM slicer owns deterministic Scripture planning for BIC, RTC, STC, Targeted Check, and Original-Language Review. Each operation/profile declares the streams for its actual review item. Current RTC geometry keeps a WIP target around 7,500 tokens, prefers WIP boundaries up to 9,000, and rejects an individual WIP slice at 10,000 tokens or above; the complete required WIP+REFERENCE route is independently guarded by the configured routed-SFM hard limit. OL Scripture is not pre-reserved into the normal RTC route. A qualifying selective OL adjudication becomes a new bounded review item and sizes only the SFM routed to that item.
 
 STC uses the same general slicer with a different route profile: WIP plus the testament-appropriate PRIMARY OL authority (GRK for NT, HEB for OT). BIC INSPECT partitions using its routed Scripture SFM; REWRITE and SELF-CHECK inherit approved scope.
 

@@ -9,6 +9,34 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261015-005 — Calibrated token estimator, scaled budgets, accent-free routed Hebrew (TODO-20261015-005)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261015-005`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - **Estimator:** `evidence.estimate_tokens` is now `SAGE_MULTILINGUAL_HEURISTIC_2` (`evidence.TOKEN_ESTIMATOR`):
+    a cost per character by Unicode script block, fitted against `o200k_base` on John and Psalms from 30 local
+    translations in 13 scripts plus `@GRK`/`@HEB`. Held-out books now land within 0.81-1.28x of real tokens,
+    against 0.26-1.36x for the old formula.
+  - **Budgets:** the BIC, RTC, STC, and legacy combined-analysis profile token budgets were scaled by the measured
+    new-to-old ratio for each routed mix (x1.25 for translations, x1.45 for STC, x1.35 for legacy OL Review),
+    so typical work units keep their size. Byte limits are unchanged.
+  - **Hebrew cantillation:** `stc.strip_hebrew_cantillation` removes U+0591-U+05AF from Hebrew routed to STC
+    packets and to RTC original-language adjudication packets, and the STC planner and package projection
+    measure that same text (`SfmStream.text_filter`, `routed_ol_text_filter_for_book`). This saves 18-25% of
+    the real tokens in those Hebrew packets. The Hebrew authority profile says missing accents are never a
+    textual difference. BIC's conditional original-language reads are unchanged.
+  - **Effect on existing work:** RTC plans approved under the old estimator become stale through their sealed
+    sizing contract and must be rebuilt and approved again.
+  - **Docs:** method and results are in `docs/advanced/models-and-ai/TOKEN-ESTIMATOR-CALIBRATION.md`; the RTC
+    sizing numbers in `STRUCTURE-PLANNING.md` and `MODEL-HANDOFF-OPTIMIZATION.md` are updated.
+- **Verification:** new `test_token_estimator.py` (per-script costs, the cantillation stripper, and the STC
+  and RTC packets and STC sizing on accent-free Hebrew). Fixture text in the RTC planner and work-unit tests
+  is now sized from the estimator, not character counts. Legacy V4 RTC and V1 STC package fixtures carry the
+  new estimator ID and values with an unchanged shape. Full suite re-run.
+
 ### IMP-20261015-004 — LEGACY NCA Jobs no longer crash Job management (TODO-20261015-004)
 
 - **Version:** `0.02a3` (development branch)

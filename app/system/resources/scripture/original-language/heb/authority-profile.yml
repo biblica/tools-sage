@@ -51,6 +51,11 @@ notation_conventions:
       prefixed with two asterisks, is the qere (the form read aloud). The pair stands for one word of the
       text. Compare the WIP with either form, say which one it follows, and never report the pair as two
       words or as an addition.
+  - notation: "cantillation omitted"
+    meaning: >-
+      STC and RTC original-language packets omit the cantillation accents (chant and prosody marks); the
+      consonants, vowel points, maqaf, and sof pasuq are unchanged. The missing accents are not a textual
+      difference and never support a finding. Quote the text exactly as the packet supplies it.
 language_ranges:
   - language: Biblical Aramaic
     language_code: arc
