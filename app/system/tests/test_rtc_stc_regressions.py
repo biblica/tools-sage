@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -14,6 +18,7 @@ from sage.references import parse_scope
 from sage.registry import load_ecosystem
 from sage.scripture import compile_project_scope
 from sage.stc import finalize_stc_run
+from sage.storage import storage_layout
 
 from .test_storage_rtc_boundaries import _initialize
 
@@ -90,6 +95,105 @@ def test_each_reachable_approved_plan_stale_cause_is_reported(package_root, make
         )
     assert caught.value.code in {"SAW_APPROVED_PLAN_STALE", "SAW_APPROVED_PLAN_INVALID"}
     assert "Rebuild and approve" in str(caught.value.next_action or "") or cause == "run_identity"
+
+
+def approve_planned_rtc_run(package_root: Path, store: JobStore, job, run) -> tuple[dict, Path]:
+    """Plan an RTC Run through the public CLI, record Operator approval, and return the plan and its path."""
+    runtime_settings = store.ensure_runtime_files(job)
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(package_root / "system" / "src")
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    planned = subprocess.run(
+        [
+            sys.executable, "-m", "sage.cli", "--settings", str(runtime_settings), "--json",
+            "workflow", "plan", "--workflow", job.tool, "--operation", "rtc", "--scope", run.scope,
+            "--output", str(run.root / "plans" / "PREVIEW.json"),
+        ],
+        text=True,
+        capture_output=True,
+        env=env,
+        check=False,
+        timeout=60,
+    )
+    assert planned.returncode == 0, planned.stderr + planned.stdout
+    approved = json.loads(planned.stdout)
+    approved.update({
+        "approval_status": "OPERATOR_APPROVED",
+        "approved_job_id": job.job_id,
+        "approved_run_id": run.run_id,
+    })
+    approved_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
+    approved_path.write_text(json.dumps(approved), encoding="utf-8")
+    store.update_run(run, approved_work_plan_path=str(approved_path))
+    return approved, approved_path
+
+
+def _drop_last_reference(plan: dict) -> None:
+    """Remove the last primary coordinate from the plan's last unit so the plan no longer reconciles."""
+    unit = plan["units"][-1]
+    unit["primary_references"] = unit["primary_references"][:-1]
+    if "primary_coverage_atoms" in unit:
+        unit["primary_coverage_atoms"] = unit["primary_coverage_atoms"][:-1]
+
+
+PLANNER_STALE_CAUSES = {
+    "reference_binding": lambda plan: plan.update(reference_project_id="usNIRVv2"),
+    "sizing_policy": lambda plan: plan["rtc_sizing"].update(
+        wip_target_max_tokens=plan["rtc_sizing"]["wip_target_max_tokens"] + 1
+    ),
+    "planner_contract": lambda plan: plan["rtc_planner"].update(handoff_contract_version="RETIRED"),
+    "unit_over_size_limit": lambda plan: plan["units"][0]["rtc_package"]["wip"].update(estimated_tokens=10**9),
+    "coordinates_no_longer_reconcile": _drop_last_reference,
+}
+
+
+STALE_MESSAGES = {
+    "reference_binding": "REFERENCE binding changed",
+    "sizing_policy": "sizing policy changed",
+    "planner_contract": "planner/prompt/schema contract changed",
+    "unit_over_size_limit": "no longer fits RTC sizing limits",
+    "coordinates_no_longer_reconcile": "no longer reconcile exact WIP coordinates",
+    "reference_text_changed": "REFERENCE or its planning contract changed",
+}
+
+
+@pytest.mark.parametrize("cause", list(STALE_MESSAGES))
+def test_each_planner_built_plan_stale_cause_is_reported(package_root, make_workspace, cause: str) -> None:
+    """A planner-built (schema 1.3+) approved plan goes stale on every planning-contract change it seals."""
+    root = make_workspace(qualification_status="VALIDATED", verse_max=3)
+    _initialize(package_root, root)
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="rtc",
+        job_id="RTC-usWIP_20260901",
+        display_name="RTC stale plan",
+        bindings={"wip": "usWIP", "reference": "usNIVv2"},
+        imported_at=datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc),
+    )
+    run = store.create_run(job, operation="rtc", scope="MAT 1:1-3")
+    approved, approved_path = approve_planned_rtc_run(package_root, store, job, run)
+    assert approved["schema_version"] in {"1.3", "1.4"}
+    if cause == "reference_text_changed":
+        reference = storage_layout(root).projects_root / "usNIVv2" / "41MAT.SFM"
+        reference.write_text(reference.read_text(encoding="utf-8").replace("Verse 2.", "Verse two."), encoding="utf-8")
+    else:
+        PLANNER_STALE_CAUSES[cause](approved)
+        approved_path.write_text(json.dumps(approved), encoding="utf-8")
+
+    with pytest.raises(ValidationError) as caught:
+        create_act_task(
+            load_ecosystem(store.ensure_runtime_files(job)),
+            workflow="rtc",
+            operation="rtc",
+            output_project_id="usWIP",
+            contemporary_source_id="usNIVv2",
+            scope_value=run.scope,
+            job_id=job.job_id,
+            run_id=run.run_id,
+        )
+    assert caught.value.code == "RTC_APPROVED_PLAN_STALE", caught.value
+    assert STALE_MESSAGES[cause] in str(caught.value)
+    assert "Rebuild and approve" in str(caught.value.next_action or "")
 
 
 def test_stc_finalizer_guards_duplicate_ownership_and_coverage_drift(tmp_path) -> None:

@@ -9,6 +9,40 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261015-002 — RTC/STC multi-portion and planner stale-plan tests (completes TODO-20261014-020)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-020`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** `test_rtc_stc_multi_portion.py` runs `1CH 5-6; 24` end to end under canonical `rtc` and
+  `stc` Jobs: CLI planning and Operator approval (RTC), one task per review portion, receipt-backed
+  submission, aggregation, and Run completion. Both assert exact coverage of the six selected verses,
+  Hebrew routing for STC, and chapter reports for 005, 006, and 024 only. `test_rtc_stc_regressions.py`
+  now builds a real planner (schema 1.3+) plan and checks every planning-contract staleness cause:
+  REFERENCE binding, sizing policy, planner/prompt/schema contract, REFERENCE text, a unit over the size
+  limit, and coordinates that no longer reconcile. Each raises `RTC_APPROVED_PLAN_STALE` with its own
+  message and a rebuild instruction.
+- **Verification:** `test_rtc_stc_multi_portion.py`, `test_rtc_stc_regressions.py`; full suite re-run.
+
+### IMP-20261015-001 — RTC/STC task builders, ACT rendering, sealing, and submit integrity split out (completes TODO-20261014-018)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261014-018`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** the composite RTC builders (`_create_approved_rtc_stage`, `_partition_selective_ol_cases`,
+  `_create_rtc_composite`) move to `rtc_tasks.py` and the STC builder to `stc_tasks.py`; both import
+  `create_act_task` at call time because `act_tasks` imports them. The per-operation ACT process brief
+  moves to `act_render.process_brief_lines`. `task_sealing.seal_task` writes the manifest, ACT.md, and
+  control record and makes them read-only for both the generic and STC builders, replacing two copies.
+  `act_submit.verify_sealed_submission` holds every integrity check (control record, manifest
+  fingerprint, routed inputs, write allowlist, execution receipt) and returns a `SealedSubmission`;
+  `submit_act_task` keeps only per-workflow validation and commit. Imports left unused by the split are
+  removed from `act_tasks.py`, which drops from 3,997 to about 2,700 lines; every name other modules or
+  tests import from it is still re-exported.
+- **Verification:** full suite re-run.
+
 ### IMP-20261014-025 — Hardening copies the in-tree SQS service (TODO-20261014-023)
 
 - **Version:** `0.02a3` (development branch)
