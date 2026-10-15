@@ -460,3 +460,54 @@ def test_provider_readiness_failure_publishes_no_run(
     store = JobStore(root, root / "ecosystem.yml")
     assert store.list_runs(job) == []
     assert store.active_run(job) is None
+
+
+def _legacy_nca_job(make_workspace):
+    """Create an NCA Job, then remove its package so the Job pins one this SAGE no longer has."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    config, _style_bytes = _prepare_nca_workspace(root)
+    job = create_nca_job(config, wip="usWIP", package_id="SYNTHETIC_NCA_REFERENCE_1", style_selector="fixture-style/1")
+    shutil.rmtree(storage_layout(root).resources_root / "numbers/SYNTHETIC_NCA_REFERENCE_1")
+    return root, job
+
+
+def test_job_pinned_to_a_missing_package_is_legacy_and_still_manageable(make_workspace) -> None:
+    """A retired-package NCA Job is LEGACY: discovery does not crash, and it can be archived and deleted."""
+    root, job = _legacy_nca_job(make_workspace)
+    store = JobStore(root, root / "ecosystem.yml")
+
+    with pytest.raises(ConfigurationError) as caught:
+        store.load_job(job.job_id, tool="nca")
+    assert caught.value.code == "NCA_JOB_LEGACY_PACKAGE"
+    assert "LEGACY" in str(caught.value) and "Delete or archive" in str(caught.value.next_action)
+    assert store.discover("nca", include_archived=True) == []
+    assert [item.code for item in store.discover_report("nca", include_archived=True).issues] == ["NCA_JOB_LEGACY_PACKAGE"]
+    assert [item.job_id for item in store.discover("nca", include_archived=True, include_unloadable=True)] == [job.job_id]
+
+    archived = store.revise_job(job, status="ARCHIVED")
+    assert archived.status == "ARCHIVED"
+    store.remove_job(archived)
+    assert not job.root.exists()
+
+
+def test_manage_jobs_deletes_a_legacy_nca_job_without_crashing(make_workspace) -> None:
+    """Manage NCA JOBs -> Delete lists the LEGACY Job with its tag and removes it after confirmation."""
+    from sage.job_menus import manage_jobs
+    from ..test_primary_workflow_menus import _center
+
+    root, job = _legacy_nca_job(make_workspace)
+    center, output = _center(root, "y")
+    prompts = []
+
+    def choose(title, options, **kwargs):
+        """Delete -> the only Job -> leave Manage NCA JOBs."""
+        prompts.append((title, dict(options), kwargs.get("context")))
+        return {1: "3", 2: "1"}.get(len(prompts), "B")
+
+    center.io.choose = choose
+    manage_jobs(center, "nca")
+
+    assert any("[LEGACY - cannot run]" in line for line in prompts[0][2])
+    assert prompts[1][1]["1"].endswith("[LEGACY - cannot run]")
+    assert f"Deleted Job: {job.job_id}" in output.getvalue()
+    assert not job.root.exists()

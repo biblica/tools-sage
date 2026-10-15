@@ -9,6 +9,22 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261015-004 — LEGACY NCA Jobs no longer crash Job management (TODO-20261015-004)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261015-004`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** `JobStore.load_job` reports a Job whose NCA reference package is no longer installed as
+  `NCA_JOB_LEGACY_PACKAGE`: its reports stay readable, it cannot run, and the next action is to delete or
+  archive it and create a new Job. `JobStore.discover` skips Jobs that fail to load instead of raising, or
+  with `include_unloadable=True` returns them from their structure-valid manifest. `remove_job` and a
+  status-only `revise_job` (archive) no longer need resource trust. Manage JOBs lists such a Job as
+  `[LEGACY - cannot run]`; Delete and Archive offer it, Refresh does not. The Project-in-use check, the
+  Project's Jobs list, and the global diagnostics export include unloadable Jobs, so a LEGACY Job still protects its Projects.
+- **Verification:** `tests/numbers/test_nca_jobs.py` (two new tests; both fail with the original
+  `NCA_REFERENCE_NOT_IMPORTED` crash without the fix); full suite re-run.
+
 ### IMP-20261015-003 — Third-party data notices and MACULA attribution (TODO-20261015-003)
 
 - **Version:** `0.02a3` (development branch)

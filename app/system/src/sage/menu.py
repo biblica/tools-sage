@@ -5265,7 +5265,7 @@ class SageControlCenter:
                 continue
             project = self.store.active_job(tool)
             if choice == "7":
-                candidates = self.store.discover(tool, include_archived=True)
+                candidates = self.store.discover(tool, include_archived=True, include_unloadable=True)
                 if not candidates:
                     self.io.write(f"No {tool_label} Jobs exist.")
                     self.io.pause()
@@ -7142,7 +7142,7 @@ class SageControlCenter:
         """Return every active, inactive, or archived Job bound to one Project."""
         return tuple(
             job
-            for job in self.store.discover(include_archived=True)
+            for job in self.store.discover(include_archived=True, include_unloadable=True)
             if project_id in job.bindings.values()
         )
 
@@ -7440,7 +7440,7 @@ class SageControlCenter:
     def _project_jobs_menu(self, project_id: str) -> None:
         """Show workflow purposes as Job bindings, never as intrinsic Project roles."""
         found = False
-        for job in self.store.discover(include_archived=False):
+        for job in self.store.discover(include_archived=False, include_unloadable=True):
             for key, value in job.bindings.items():
                 if value != project_id:
                     continue
@@ -8383,7 +8383,7 @@ class SageControlCenter:
                     "root": str(project.root),
                     "runtime_settings": str(project.runtime_settings_path),
                 }
-                for project in self.store.discover(include_archived=True)
+                for project in self.store.discover(include_archived=True, include_unloadable=True)
             ],
         }
         destination.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
