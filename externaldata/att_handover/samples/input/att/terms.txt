@@ -1,0 +1,7 @@
+# One SOURCE-language term per line.
+# These are resolved only against the configured SOURCE translation.
+# Examples only:
+covenant
+righteousness
+justify
+Holy Spirit

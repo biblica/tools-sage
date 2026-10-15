@@ -1,0 +1,5 @@
+att_reference_mode: DUAL_HIERARCHICAL
+primary_reference: REF_PRIMARY_EXAMPLE_V1
+secondary_reference: REF_SECONDARY_EXAMPLE_V1
+target_id: TARGET_PROJECT_TEXT
+local_att_input: input/att
