@@ -97,6 +97,10 @@ directory contains an earlier label.
   resource, plugin, and local-settings data. Version changes may invalidate and regenerate explicitly
   derived `.system` state, but they must not delete persistent Operator data. The managed runtime at
   `localdata/.system/runtime/python` and `venv` are fingerprinted and repaired/rebuilt when runtime or dependency contracts change.
+- Alpha tester Run data needs no migration. When a Job, Run, task, plan, or result contract changes, an
+  existing Run either stays resumable under its sealed contract or, if it is no longer compatible, is
+  left in place and its reports are marked `LEGACY` (readable, not resumable, and labelled as produced
+  under a retired contract). Never delete or silently rewrite it.
 - Job, Run, workflow, profile, schema, and receipt fields named `schema_version`, `profile_version`,
   or similar are independent contract versions. Change them only when that contract changes.
 - Protected-rule provenance and compatibility fixtures may retain earlier version tokens when they
