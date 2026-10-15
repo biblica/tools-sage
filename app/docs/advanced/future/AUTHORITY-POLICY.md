@@ -48,8 +48,10 @@ Precedence when roles disagree: `PRIMARY_OL` (read through `OL_ANALYSIS`) > `MOD
 - **BSB (added 2026-10-09):** public domain, so unlike the NIV it may be cached and quoted in full; the
   witness cache is `localdata/.system/cache/apparatus/witnesses/engbsb` (from `engbsb_usfm.zip`).
 - **Rights records** (`RESOURCE-RIGHTS-AND-PROVENANCE.md`): NIV — status CONFIRMED, copyright
-  holder Biblica, Inc.; MACULA — CC BY 4.0 with the attribution text from the rebuild
-  [summary](../release/nca-index-rebuild/SUMMARY.md).
+  holder Biblica, Inc.; MACULA — © 2022–2024 Biblica, Inc., CC BY 4.0, with the attribution text from the rebuild
+  [summary](../release/nca-index-rebuild/SUMMARY.md). Licenses, attribution lines, and changes for every shipped
+  source: [Third-Party Data Notices](../projects-and-resources/THIRD-PARTY-NOTICES.md). MACULA's UBS domain fields (SDBH, MARBLE)
+  are outside that grant and stay unused until UBS terms are confirmed.
 
 - **NIV text (decided 2026-10-09, supersedes the 2026-10-07 hosting note below):** no NIV Scripture text is
   committed or quoted. NIV fair use allows at most 500 verses and less than 25% of the work. Verse

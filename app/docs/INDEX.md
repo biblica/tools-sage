@@ -28,6 +28,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Original-Language Resources](advanced/projects-and-resources/ORIGINAL-LANGUAGE-RESOURCES.md) — governed `@GRK` and `@HEB` defaults and overrides.
 - [Versification](advanced/projects-and-resources/VERSIFICATION.md) — base/custom VRS resolution and authority.
 - [Resource Rights and Provenance](advanced/projects-and-resources/RESOURCE-RIGHTS-AND-PROVENANCE.md) — resource permissions, restrictions, provenance, and handover rules.
+- [Third-Party Data Notices](advanced/projects-and-resources/THIRD-PARTY-NOTICES.md) — licenses and attribution for MACULA, SBLGNT, OSHB, BSB, NET notes, and other data SAGE ships or quotes.
 - [RWC and Semantic Domain Indexes](advanced/projects-and-resources/RWC-SEMDOM-INDEXES.md) — local semantic-index evidence and authority boundaries.
 - [FLEx and Combine Interchange](advanced/projects-and-resources/FLEX-COMBINE-INTERCHANGE.md) — lexicon interchange constraints.
 

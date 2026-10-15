@@ -963,13 +963,32 @@ def render_nca_action_report(report: Mapping[str, object]) -> str:
     cited = _cited_sources(report)
     if any((row.get("evidence") or {}).get("bsb_text") for row in findings):
         cited.add("BSB")  # quoted BSB verse text carries its public-domain attribution
-    if cited:
+    # Quoted original-language text comes from MACULA (CC BY 4.0), which requires its attribution line.
+    ol_families = (
+        ({family} if family in OL_TEXT_ATTRIBUTION else set(OL_TEXT_ATTRIBUTION))
+        if any((row.get("evidence") or {}).get("ol_text") for row in findings)
+        else set()
+    )
+    if cited or ol_families:
         from .numbers.index_build.apparatus import ATTRIBUTION
         lines.extend(["", "## " + text("report.nca.attribution"), "",
+                      *[f"- {OL_TEXT_ATTRIBUTION[name]}" for name in OL_TEXT_ATTRIBUTION if name in ol_families],
                       *[f"- {ATTRIBUTION[source]}" for source in ATTRIBUTION if source in cited]])
     lines.extend(["", "## " + text("report.nca.closing_limitation"), "",
                   text("report.nca.capability_limitation"), "", "SQS: `NOT_APPLIED`"])
     return "\n".join(lines).rstrip() + "\n"
+
+
+# Attribution for original-language verse text quoted in NCA reports; see docs/advanced/projects-and-resources/THIRD-PARTY-NOTICES.md.
+OL_TEXT_ATTRIBUTION = {
+    "HEB": "MACULA Hebrew Linguistic Datasets, available at https://github.com/Clear-Bible/macula-hebrew/ "
+           "(© 2022–2024 Biblica, Inc., CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). Hebrew text: "
+           "Westminster Leningrad Codex, public domain. Number values are typed by SAGE from this data.",
+    "GRK": "MACULA Greek Linguistic Datasets, available at https://github.com/Clear-Bible/macula-greek/ "
+           "(© 2022–2024 Biblica, Inc., CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). Greek text: "
+           "SBL Greek New Testament, Copyright 2010 by the Society of Biblical Literature and Logos Bible "
+           "Software, CC BY 4.0. Number values are typed by SAGE from this data.",
+}
 
 
 def _cited_sources(value: object) -> set[str]:

@@ -31,3 +31,13 @@ Run:
 ```
 
 Legacy metadata remains evidence but does not pass schema `1.0` until a responsible human supplies the missing authority fields. SAGE must not infer copyright, license, import authority, or redistribution permission from file presence, project role, or technical validation status.
+
+## Bundled third-party data
+
+Data that SAGE itself ships or quotes (MACULA Hebrew and Greek, SBLGNT, OSHB, BSB, NET notes, and the
+standard versification schemas) is listed with its license, required attribution line, pinned version,
+and the changes SAGE makes in [Third-Party Data Notices](THIRD-PARTY-NOTICES.md). MACULA is
+© 2022–2024 Biblica, Inc. under CC BY 4.0; its UBS semantic-domain fields (SDBH, MARBLE/Louw-Nida) are
+"used with permission" and are not covered by that grant, so SAGE never reads or ships them. A new
+bundled source must be added to that page, with its attribution in every report that quotes it, before
+it ships.
