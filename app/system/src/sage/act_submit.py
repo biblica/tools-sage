@@ -1,4 +1,5 @@
-"""ACT task submission: integrity checks against the sealed control record, per-workflow validation, and salvage records.
+"""ACT task submission: integrity checks against the sealed control record (verify_sealed_submission), then
+per-workflow validation and salvage records (submit_act_task).
 
 Split from act_tasks.py, which re-exports every name defined here.
 """
@@ -30,7 +31,7 @@ from .external_access import validate_external_file
 from .hashing import sha256_bytes
 from .hashing import sha256_file
 from .human_output import report_language_authority
-from .jobs import JobStore
+from .jobs import Job, JobStore
 from .locking import WorkspaceLock
 from .references import parse_scope
 from .registry import EcosystemConfig
@@ -55,6 +56,7 @@ from .transactions import FileTransaction
 from .vrs import VerseRef
 from .workflow_identity import is_analysis_workflow
 from .workflow_identity import legacy_saw_workflow
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from typing import Mapping
@@ -140,8 +142,30 @@ def _record_salvage_exceptions(
         )
 
 
-def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, Any]:
-    """Validate immutable controls, exact reads, output grammar, and governed commit."""
+@dataclass(frozen=True)
+class SealedSubmission:
+    """A submission whose sealed task, inputs, outputs, and execution receipt passed integrity checks."""
+
+    config: EcosystemConfig
+    task_root: Path
+    workflow_hint: str
+    job_id: str
+    run_id: str
+    job_store: JobStore
+    owning_job: Job
+    workflow: str
+    task_id: str
+    control_path: Path
+    control: dict[str, Any]
+    raw: dict[str, Any]
+    operation: str
+    allowed_writes: tuple[str, ...]
+    output_paths: dict[str, Path]
+    execution_route: dict[str, Any]
+
+
+def verify_sealed_submission(config: EcosystemConfig, task_manifest: Path) -> SealedSubmission:
+    """Check a task's immutable controls, exact reads, outputs, and receipt before any per-tool validation."""
     # Revalidate immutable controls before interpreting model output or committing workflow state.
     path = task_manifest.expanduser().resolve()
     task_root = path.parent
@@ -310,6 +334,45 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             "receipt_path": None,
             "receipt_sha256": None,
         }
+    return SealedSubmission(
+        config=config,
+        task_root=task_root,
+        workflow_hint=workflow_hint,
+        job_id=job_id,
+        run_id=run_id,
+        job_store=job_store,
+        owning_job=owning_job,
+        workflow=workflow,
+        task_id=task_id,
+        control_path=control_path,
+        control=control,
+        raw=raw,
+        operation=operation,
+        allowed_writes=allowed_writes,
+        output_paths=output_paths,
+        execution_route=execution_route,
+    )
+
+
+def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, Any]:
+    """Validate immutable controls, exact reads, output grammar, and governed commit."""
+    sealed = verify_sealed_submission(config, task_manifest)
+    config = sealed.config
+    task_root = sealed.task_root
+    workflow_hint = sealed.workflow_hint
+    job_id = sealed.job_id
+    run_id = sealed.run_id
+    job_store = sealed.job_store
+    owning_job = sealed.owning_job
+    workflow = sealed.workflow
+    task_id = sealed.task_id
+    control_path = sealed.control_path
+    control = sealed.control
+    raw = sealed.raw
+    operation = sealed.operation
+    allowed_writes = sealed.allowed_writes
+    output_paths = sealed.output_paths
+    execution_route = sealed.execution_route
 
     validation_details: dict[str, Any]
     commit: dict[str, Any] | None = None

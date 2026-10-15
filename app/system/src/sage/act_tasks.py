@@ -1,53 +1,21 @@
 """Provider-neutral governed task creation.
 
 Helpers, evidence packets, submission, and aggregation live in act_common, act_evidence, act_submit, and
-act_aggregation; this module re-exports their names so existing imports keep working.
+act_aggregation; the RTC and STC builders live in rtc_tasks and stc_tasks. This module re-exports their
+names so existing imports keep working.
 """
 
 from __future__ import annotations
 
 import json
-import os
-import re
-from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
-from .storage import StorageError, declare_governed_path, resolve_declared_path, resolve_persisted_path
-from .act_outputs import (
-    aggregate_execution_routes,
-    execution_route_from_receipt,
-    marker_sequence,
-    render_action_report,
-    render_execution_section,
-    render_operator_note_text,
-    validate_bic_inspect_output,
-    classify_bic_usfm_verses,
-    validate_grammar_assessment,
-    validate_analysis_findings,
-)
+from .act_render import process_brief_lines
 from .atomic import atomic_write_bytes, atomic_write_json, atomic_write_text
-from .rewrite_risk import (
-    render_rewrite_challenge_report,
-    validate_rewrite_challenges,
-)
-from .bounded_target import (
-    drop_verse_blocks,
-    expand_unsafe_drops,
-    merge_bounded_usfm,
-    preflight_bounded_target_commit,
-    record_target_commit,
-)
-from .bic_memory import (
-    eligible_memory_records,
-    inspect_completion_and_review_status,
-    submit_inspect_transactionally,
-)
-from .canon import BOOK_ORDER, NT_27, OT_39, resolve_expected_books
-from .config import load_json, load_yaml, require_mapping, require_string
-from .errors import ConfigurationError, EvidenceLimitError, InputRequiredError, ValidationError
-from .evidence import EvidencePolicy
+from .bounded_target import preflight_bounded_target_commit
+from .config import load_json, load_yaml
+from .errors import EvidenceLimitError, ValidationError
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
     AUTHORIZED_LEXICAL_EVIDENCE,
@@ -61,48 +29,24 @@ from .evidence_policy import (
     task_evidence_policy,
     validate_read_class,
 )
-from .external_access import validate_external_companion_file, validate_external_file
 from .generations import project_validation_fingerprint
-from .findings import dedupe_findings, globalize_result_finding_ids, validate_global_finding_ids
-from .grammar import GrammarProfile, load_grammar_profile
+from .grammar import GrammarProfile
 from .grammar_governance import (
     active_grammar_review,
     grammar_profile_is_approved,
     grammar_review_by_decision_id,
 )
 from .hashing import sha256_bytes, sha256_file
-from .human_output import report_language_authority, render_report_language_authority
-from .locking import WorkspaceLock
-from .llm_settings import load_llm_settings
-from .language_codes import canonical_language_tag
-from .linguistic_profiles import complete_language_profile_contract
-from .original_language_resources import OL_AUTHORITY_PROFILE_FILE
-from .ol_referrals import (
-    is_ol_referral_contract,
-    ol_referral_contract,
-)
-from .exception_reports import (
-    NOT_ASSESSED,
-    ExceptionRecord,
-    coverage_document,
-    load_not_assessed_result,
-    record_exception,
-    render_exceptions_section,
-)
+from .human_output import report_language_authority
+from .ol_referrals import is_ol_referral_contract
 from .references import (
-    AnalysisScope,
     ScriptureScope,
-    ScriptureScopeSet,
-    analysis_scope_portions,
     atomic_reference_labels,
     expand_reference_atoms,
-    scripture_scopes_equal,
     validate_scripture_scope,
     parse_scope,
-    parse_scope_set,
 )
 from .profiles import load_workflow_profile
-from .paratext_filenames import paratext_book_digits, template_book_filename
 from .platform_commands import render_sage_command
 from .project_context import (
     identity_bindings,
@@ -116,69 +60,35 @@ from .runtime_paths import (
     task_container,
     task_is_governed,
     validate_context_id,
-    workflow_memory_root,
-    workflow_for_task,
 )
 from .stc import (
     LEGACY_STC_PLANNER_VERSION,
     STC_PLANNER_VERSION,
-    finalize_stc_run,
-    length_outliers,
-    plan_stc_work_units,
     stc_authority_family,
-    stc_gap_findings,
-    validate_stc_submission,
 )
-from .stc_reporting import publish_stc_reports
 from .rtc_planner import (
     LEGACY_RTC_PLANNER_VERSION,
-    RTC_HANDOFF_CONTRACT_VERSION,
     RTC_PLANNER_VERSION,
     rtc_plan_wip_limit,
-    rtc_prompt_schema_projection_version,
     rtc_slicing_policy,
 )
-from .marker_checks import load_verse_content, marker_review, packet_marker_candidates
-from .numeric_candidates import numeric_candidates, packet_verses
 from .candidates import candidate_inventory
-from .text_coverage import gap_findings, omission_rows, psalm_title_chapters
-from .verse_alignment import (
-    ProjectVerseIndex,
-    align_records,
-    missing_by_local_ref,
-    project_coordinates,
-    record_correspondence,
-)
-from .scripture import compile_project, compile_project_scope, discover_book_ids
+from .verse_alignment import ProjectVerseIndex
+from .scripture import compile_project_scope
 from .rtc_policy import load_run_policy_snapshot
 from .semantic.diagnostics import analysis_signals_from_scope_evidence
 from .semantic.evidence import scope_evidence_for_project
-from .state import ecosystem_state_path, read_state, utc_now
-from .task_retry import provider_output_contract
-from .transactions import FileTransaction, incomplete_transactions
-from .jobs import RUN_CLOSED_STATUSES, JobStore, default_job_name
-from .workflow_identity import (
-    analysis_reason_code,
-    canonical_analysis_job_id,
-    is_analysis_workflow,
-    legacy_saw_workflow,
-)
-from .project_inventory import require_project_imported_at
-from .usj import compile_usfm_file, compile_usfm_text, parse_usj_units
-from .vrs import VerseRef, resolve_project_vrs_paths
+from .state import utc_now
+from .jobs import JobStore
+from .workflow_identity import is_analysis_workflow
 from .versification_service import VersificationService
 from .vocabulary import (
     CANONICAL_TARGET_TEXT_OPERATION,
     require_canonical_operation_set,
     require_canonical_target_text_vocabulary,
 )
-from .work_units import EvidenceRecord, records_from_project_result, select_records_for_scope
-from .sfm_slicer import SfmAnalysisRoute, SfmStream, measure_sfm_text, plan_sfm_work_units
-from .source_coverage import (
-    source_comparison_status,
-    source_text_issues,
-    unique_source_text_issues,
-)
+from .work_units import records_from_project_result, select_records_for_scope
+from .sfm_slicer import SfmAnalysisRoute, SfmStream, plan_sfm_work_units
 
 from .act_common import (  # noqa: F401 - re-exported task API
     one_book_file,
@@ -273,6 +183,13 @@ from .act_submit import (  # noqa: F401 - re-exported task API
     _update_control,
     submit_act_task,
 )
+from .rtc_tasks import (  # noqa: F401 - re-exported task API
+    _create_approved_rtc_stage,
+    _create_rtc_composite,
+    _partition_selective_ol_cases,
+)
+from .stc_tasks import _create_stc_task  # noqa: F401 - re-exported task API
+from .task_sealing import seal_task
 from .act_aggregation import (  # noqa: F401 - re-exported task API
     _aggregate_stc_plan,
     _coverage_reconciliation_details,
@@ -413,187 +330,6 @@ require_canonical_operation_set(ACT_OPERATIONS["bic"])
 
 
 
-def _create_approved_rtc_stage(
-    config: EcosystemConfig,
-    *,
-    workflow: str,
-    approved_plan: Mapping[str, Any],
-    output_project_id: str,
-    contemporary_source_id: str,
-    scope: AnalysisScope,
-    grammar_override_id: str | None,
-    parent_plan_id: str,
-    job_id: str,
-    run_id: str,
-    rtc_stage: str,
-    rtc_predecessor_files: Sequence[str],
-    ol_referral_contract: str | None,
-    rtc_stage_references: Sequence[str] = (),
-) -> dict[str, Any]:
-    """Create the exact approved work units for a partitionable RTC stage."""
-    units = [dict(item) for item in approved_plan.get("units", [])]
-    rtc_planner_version = str(
-        dict(approved_plan.get("rtc_planner") or {}).get("version")
-        or LEGACY_RTC_PLANNER_VERSION
-    )
-    references_by_portion: dict[str, list[str]] = {}
-    # Structural evidence is report-only and may cross approved RTC boundaries.
-    # Route each atomic coordinate to its existing parent; meaning stages retain
-    # every approved portion and source-record bridges were protected at planning.
-    for reference in rtc_stage_references:
-        progress = _review_portion_for_reference(
-            units, str(reference), workflow=workflow
-        )
-        references_by_portion.setdefault(progress["review_portion_id"], []).append(
-            str(reference)
-        )
-    if references_by_portion:
-        units = [
-            unit
-            for unit in units
-            if str(unit["review_portion_id"]) in references_by_portion
-        ]
-    stage_plan_id = f"{parent_plan_id}-{rtc_stage}"
-    children: list[dict[str, Any]] = []
-    created_tasks: list[dict[str, Any]] = []
-    for unit in units:
-        stage_unit_references = references_by_portion.get(
-            str(unit["review_portion_id"]),
-            [],
-        )
-        raw_atoms = stage_unit_references or unit.get("primary_coverage_atoms")
-        if not isinstance(raw_atoms, list) or not raw_atoms:
-            raw_atoms = unit.get("primary_references", [])
-        unit_atoms = list(atomic_reference_labels(str(value) for value in raw_atoms))
-        try:
-            child = create_act_task(
-                config,
-                workflow=workflow,
-                operation="rtc",
-                output_project_id=output_project_id,
-                contemporary_source_id=contemporary_source_id,
-                scope_value=str(unit["primary_scope"]),
-                grammar_override_id=grammar_override_id,
-                auto_partition=False,
-                parent_plan_id=stage_plan_id,
-                work_unit_id=str(unit["unit_id"]),
-                job_id=job_id,
-                run_id=run_id,
-                rtc_stage=rtc_stage,
-                rtc_planner_version=rtc_planner_version,
-                rtc_predecessor_files=rtc_predecessor_files,
-                ol_referral_contract=ol_referral_contract,
-                review_portion_id=str(unit["review_portion_id"]),
-                review_portion_index=int(unit["review_portion_index"]),
-                review_portion_total=int(unit["review_portion_total"]),
-                review_portion_scope=str(unit["review_portion_scope"]),
-                parent_review_portion_id=(
-                    str(unit["review_portion_id"])
-                    if stage_unit_references
-                    else None
-                ),
-                stage_case_index=1 if stage_unit_references else None,
-                stage_case_total=1 if stage_unit_references else None,
-                rtc_stage_references=stage_unit_references,
-                context_before_references=[str(value) for value in unit.get("context_before", [])],
-                context_after_references=[str(value) for value in unit.get("context_after", [])],
-            )
-        except EvidenceLimitError as exc:
-            _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
-            raise ValidationError(
-                f"Approved {_analysis_identity(workflow)} RTC work-unit boundaries no longer fit the exact provider handoff",
-                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
-                affected_scope=str(unit.get("primary_scope") or scope.label()),
-                next_action=f"Rebuild and approve the affected {_analysis_identity(workflow)} Run plan; boundaries will not change silently.",
-                details={"limit_error": exc.to_dict()},
-            ) from exc
-        except Exception:
-            _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
-            raise
-        created_tasks.append(child)
-        child_manifest = load_json(Path(str(child["manifest_path"])))
-        child_atoms = list(child_manifest.get("expected_references", []))
-        if child_atoms != unit_atoms:
-            _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
-            raise ValidationError(
-                f"Approved {_analysis_identity(workflow)} RTC work-unit atoms differ from the generated sealed task",
-                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
-                affected_scope=str(unit.get("primary_scope") or scope.label()),
-                next_action=f"Rebuild and approve the affected {_analysis_identity(workflow)} Run plan.",
-                details={
-                    "unit_id": str(unit.get("unit_id") or ""),
-                    "planned_atoms": unit_atoms,
-                    "task_atoms": child_atoms,
-                },
-            )
-        package = dict(unit.get("rtc_package") or {})
-        children.append({
-            "unit_id": str(unit["unit_id"]),
-            "scope": str(unit["primary_scope"]),
-            "task_id": child["task_id"],
-            "manifest_path": child["manifest_path"],
-            "task_fingerprint": child["task_fingerprint"],
-            "primary_coverage_atoms": unit_atoms,
-            "source_spans": dict(package.get("source_spans") or {}),
-            "context_budget": child.get("context_budget"),
-            "review_portion_id": unit["review_portion_id"],
-            "review_portion_index": unit["review_portion_index"],
-            "review_portion_total": unit["review_portion_total"],
-            "review_portion_scope": unit["review_portion_scope"],
-            "parent_review_portion_id": (
-                unit["review_portion_id"] if stage_unit_references else None
-            ),
-            "stage_case_index": 1 if stage_unit_references else None,
-            "stage_case_total": 1 if stage_unit_references else None,
-        })
-    if len(children) == 1:
-        child = children[0]
-        manifest = load_json(Path(str(child["manifest_path"])))
-        return {
-            "schema_version": "1.0",
-            "status": "TASK_CREATED",
-            "task_id": child["task_id"],
-            "manifest_path": child["manifest_path"],
-            "act_path": str(Path(str(child["manifest_path"])).parent / "ACT.md"),
-            "task_fingerprint": child["task_fingerprint"],
-            "scope": child["scope"],
-            "expected_references": manifest.get("expected_references", []),
-            "context_budget": child.get("context_budget"),
-            "review_portion_id": child.get("review_portion_id"),
-            "review_portion_index": child.get("review_portion_index"),
-            "review_portion_total": child.get("review_portion_total"),
-            "review_portion_scope": child.get("review_portion_scope"),
-        }
-    plan = {
-        "schema_version": "1.0",
-        "status": "PARTITIONED",
-        "plan_id": stage_plan_id,
-        "workflow": workflow,
-        "operation": "rtc",
-        "rtc_stage": rtc_stage,
-        "ol_referral_contract": ol_referral_contract,
-        "requested_scope": scope.label(),
-        "output_project": output_project_id,
-        "contemporary_source": contemporary_source_id,
-        "job_id": job_id,
-        "run_id": run_id,
-        "approved_work_plan_path": approved_plan.get("approved_manifest_path"),
-        "approved_work_plan_fingerprint": approved_plan.get("plan_fingerprint"),
-        "expected_references": [
-            atom
-            for unit in children
-            for atom in unit.get("primary_coverage_atoms", [])
-        ],
-        "work_units": children,
-        "created_utc": utc_now(),
-    }
-    plan_path = plan_container(config.workflow(workflow), run_id) / f"{stage_plan_id}.json"
-    try:
-        atomic_write_json(plan_path, plan)
-    except Exception:
-        _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
-        raise
-    return {**plan, "plan_path": str(plan_path)}
 
 
 
@@ -605,207 +341,6 @@ def _create_approved_rtc_stage(
 
 
 
-def _partition_selective_ol_cases(
-    config: EcosystemConfig,
-    *,
-    workflow: str,
-    operation: str,
-    output_project_id: str,
-    contemporary_source_id: str,
-    lexical_donor_id: str | None,
-    scope: ScriptureScope,
-    focus: str | None,
-    check_type: str | None,
-    predecessor_task: str | None,
-    grammar_override_id: str | None,
-    plan_seed: str,
-    job_id: str | None,
-    run_id: str | None,
-    rtc_planner_version: str,
-    rtc_predecessor_files: Sequence[str],
-    expected_ol_request_ids: Sequence[str],
-    expected_ol_requests: Sequence[Mapping[str, Any]],
-    ol_referral_contract: str | None,
-) -> dict[str, Any]:
-    """Create exactly one isolated model task for each inherited selective-OL case."""
-    requests = [dict(row) for row in expected_ol_requests]
-    declared_ids = [str(value).strip().upper() for value in expected_ol_request_ids]
-    request_ids = [str(row.get("request_id") or "").strip().upper() for row in requests]
-    if not requests or any(not value for value in request_ids):
-        raise ValidationError(
-            "Selective OL adjudication requires a nonempty inherited request inventory",
-            code=_analysis_code(workflow, "SAW_OL_REQUEST_INVENTORY_INVALID"),
-        )
-    if request_ids != declared_ids or len(request_ids) != len(set(request_ids)):
-        raise ValidationError(
-            "Selective OL request identities must be exact, ordered, and run-unique",
-            code=_analysis_code(workflow, "SAW_OL_REQUEST_INVENTORY_INVALID"),
-        )
-
-    parent_totals: dict[str, int] = {}
-    progress_rows: list[dict[str, Any]] = []
-    for request in requests:
-        parent_id = str(request.get("parent_review_portion_id") or "").strip()
-        portion_id = str(request.get("review_portion_id") or parent_id).strip()
-        try:
-            portion_index = int(request["review_portion_index"])
-            portion_total = int(request["review_portion_total"])
-        except (KeyError, TypeError, ValueError) as exc:
-            raise ValidationError(
-                "Selective OL request lacks inherited review-portion progress",
-                code=_analysis_code(workflow, "SAW_STAGE_CASE_PORTION_MISMATCH"),
-            ) from exc
-        portion_scope = str(request.get("review_portion_scope") or "").strip()
-        if not parent_id or portion_id != parent_id or not portion_scope:
-            raise ValidationError(
-                "Selective OL request has inconsistent review-portion provenance",
-                code=_analysis_code(workflow, "SAW_STAGE_CASE_PORTION_MISMATCH"),
-            )
-        progress_rows.append(
-            {
-                "review_portion_id": portion_id,
-                "review_portion_index": portion_index,
-                "review_portion_total": portion_total,
-                "review_portion_scope": portion_scope,
-                "parent_review_portion_id": parent_id,
-            }
-        )
-        parent_totals[parent_id] = parent_totals.get(parent_id, 0) + 1
-
-    policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy(operation)
-    plan_id = f"{workflow.upper()}-{operation.upper()}-{scope.book}-{plan_seed[:10].upper()}"
-    children: list[dict[str, Any]] = []
-    created_tasks: list[dict[str, Any]] = []
-    parent_positions: dict[str, int] = {}
-    # Keep request order as the immutable parent aggregate declared it; task IDs and
-    # aggregation reconciliation both depend on this stable one-case sequence.
-    try:
-        for index, request in enumerate(requests, start=1):
-            progress = progress_rows[index - 1]
-            parent_id = str(progress["parent_review_portion_id"])
-            parent_positions[parent_id] = parent_positions.get(parent_id, 0) + 1
-            stage_case_index = parent_positions[parent_id]
-            stage_case_total = parent_totals[parent_id]
-            target_reference = str(request.get("target_reference") or "").strip()
-            atoms = tuple(sorted(set(expand_reference_atoms(target_reference))))
-            if not atoms or any(not scope.contains(ref) for ref in atoms):
-                raise ValidationError(
-                    f"Selective OL request {request_ids[index - 1]} is outside the parent scope",
-                    code=_analysis_code(workflow, "SAW_OL_REQUEST_INVENTORY_INVALID"),
-                    affected_scope=scope.label(),
-                )
-            case_scope = _scope_for_case_atoms(atoms)
-            unit_id = f"{plan_id}-U{index:03d}"
-            atom_labels = [ref.label() for ref in atoms]
-            child = create_act_task(
-                config,
-                workflow=workflow,
-                operation=operation,
-                output_project_id=output_project_id,
-                contemporary_source_id=contemporary_source_id,
-                lexical_donor_id=lexical_donor_id,
-                scope_value=case_scope.label(),
-                focus=focus,
-                check_type=check_type,
-                predecessor_task=predecessor_task,
-                grammar_override_id=grammar_override_id,
-                auto_partition=False,
-                parent_plan_id=plan_id,
-                work_unit_id=unit_id,
-                job_id=job_id,
-                run_id=run_id,
-                rtc_stage="SELECTIVE_OL_ADJUDICATION",
-                rtc_planner_version=rtc_planner_version,
-                rtc_predecessor_files=rtc_predecessor_files,
-                expected_ol_request_ids=[request_ids[index - 1]],
-                expected_ol_requests=[request],
-                rtc_stage_references=atom_labels,
-                ol_referral_contract=ol_referral_contract,
-                review_portion_id=str(progress["review_portion_id"]),
-                review_portion_index=int(progress["review_portion_index"]),
-                review_portion_total=int(progress["review_portion_total"]),
-                review_portion_scope=str(progress["review_portion_scope"]),
-                parent_review_portion_id=parent_id,
-                stage_case_index=stage_case_index,
-                stage_case_total=stage_case_total,
-            )
-            created_tasks.append(child)
-            manifest = load_json(Path(str(child["manifest_path"])))
-            child_atoms = list(atomic_reference_labels(
-                str(value) for value in manifest.get("expected_references", [])
-            ))
-            child_request_ids = list(
-                dict(manifest.get("review_requirements") or {}).get(
-                    "expected_ol_request_ids", []
-                )
-            )
-            if child_atoms != atom_labels or child_request_ids != [request_ids[index - 1]]:
-                raise ValidationError(
-                    "Selective OL case task differs from its one-request controller plan",
-                    code=_analysis_code(workflow, "SAW_OL_CASE_ISOLATION_INVALID"),
-                    affected_scope=case_scope.label(),
-                    details={
-                        "unit_id": unit_id,
-                        "planned_request_id": request_ids[index - 1],
-                        "task_request_ids": child_request_ids,
-                        "planned_atoms": atom_labels,
-                        "task_atoms": child_atoms,
-                    },
-                )
-            children.append({
-                "unit_id": unit_id,
-                "scope": case_scope.label(),
-                "task_id": child["task_id"],
-                "manifest_path": child["manifest_path"],
-                "task_fingerprint": child["task_fingerprint"],
-                "primary_coverage_atoms": child_atoms,
-                "ol_request_ids": child_request_ids,
-                "context_budget": child.get("context_budget"),
-                **progress,
-                "stage_case_index": stage_case_index,
-                "stage_case_total": stage_case_total,
-            })
-    except Exception:
-        # A partitioner that fails mid-loop must not leave orphan child tasks behind.
-        _rollback_unregistered_stage_tasks(config, workflow, run_id, created_tasks)
-        raise
-
-    if len(created_tasks) == 1:
-        return {
-            **created_tasks[0],
-            "partition_basis": "ONE_OL_REQUEST_PER_MODEL_TASK",
-        }
-
-    expected_refs = sorted({
-        atom
-        for child in children
-        for atom in child["primary_coverage_atoms"]
-    }, key=lambda value: next(iter(expand_reference_atoms(value))))
-    plan = {
-        "schema_version": "1.0",
-        "status": "PARTITIONED",
-        "plan_id": plan_id,
-        "workflow": workflow,
-        "operation": operation,
-        "rtc_stage": "SELECTIVE_OL_ADJUDICATION",
-        "ol_referral_contract": ol_referral_contract,
-        "partition_basis": "ONE_OL_REQUEST_PER_MODEL_TASK",
-        "requested_scope": scope.label(),
-        "output_project": output_project_id,
-        "contemporary_source": contemporary_source_id,
-        "lexical_donor": None,
-        "job_id": job_id,
-        "run_id": run_id,
-        "policy": policy.to_dict(),
-        "expected_references": expected_refs,
-        "expected_ol_request_ids": request_ids,
-        "work_units": children,
-        "created_utc": utc_now(),
-    }
-    plan_root = plan_container(config.workflow(workflow), run_id)
-    plan_path = plan_root / f"{plan_id}.json"
-    atomic_write_json(plan_path, plan)
-    return {**plan, "plan_path": str(plan_path)}
 
 
 def _partition_act_request(
@@ -1073,234 +608,6 @@ def _partition_act_request(
 
 
 
-def _create_rtc_composite(
-    config: EcosystemConfig,
-    *,
-    workflow: str,
-    output_project_id: str,
-    contemporary_source_id: str,
-    scope: AnalysisScope,
-    grammar_override_id: str | None,
-    job_id: str,
-    run_id: str,
-    auto_partition: bool,
-) -> dict[str, Any]:
-    """Create the first governed stage of one composite RTC Run."""
-    output = config.project(output_project_id)
-    job_store = JobStore(config.root, config.settings_path)
-    owning_job = _load_owning_job(config, job_id, workflow)
-    run = job_store.load_run(owning_job, run_id)
-    rtc_policy = load_run_policy_snapshot(
-        run.root,
-        profile_path=config.workflow(workflow).profile_path,
-        workflow=workflow,
-    )
-    approved_work_plan = _approved_rtc_work_plan(
-        config,
-        workflow=workflow,
-        job_id=job_id,
-        run_id=run_id,
-        output_project_id=output_project_id,
-        scope=scope,
-    )
-    rtc_planner_version = str(
-        dict((approved_work_plan or {}).get("rtc_planner") or {}).get("version")
-        or (
-            LEGACY_RTC_PLANNER_VERSION
-            if approved_work_plan is not None
-            else RTC_PLANNER_VERSION
-        )
-    )
-    structure_enabled = bool(dict(rtc_policy.get("checks") or {}).get("structure_completeness", True))
-    reference_project = config.project(contemporary_source_id)
-    # One compile and one pair of verse indexes serve every deterministic check of this composite.
-    alignment_inputs = (
-        _rtc_alignment_inputs(config, workflow, output, reference_project, scope) if structure_enabled else None
-    )
-    triage = (
-        _structural_triage(
-            config,
-            workflow,
-            output,
-            reference_project,
-            scope,
-            _structural_candidates(config, output, scope),
-            alignment_inputs,
-        )
-        if alignment_inputs is not None
-        else {"model": [], "findings": [], "resolved": []}
-    )
-    marker = (
-        _rtc_marker_review(alignment_inputs, output, reference_project, scope)
-        if alignment_inputs is not None
-        else {"findings": [], "candidates": []}
-    )
-    # Only equivalence groups the code cannot decide reach the model stage.
-    candidates = triage["model"]
-    first_stage = "STRUCTURAL_ADJUDICATION" if candidates else "REFERENCE_TEXT_COMPARISON"
-    plan_seed = sha256_bytes(
-        json.dumps(
-            {
-                "job_id": job_id,
-                "run_id": run_id,
-                "scope": scope.label(),
-                "wip": output_project_id,
-                "reference": contemporary_source_id,
-            },
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
-    )
-    plan_id = f"RTC-{scope.book}-{plan_seed[:10].upper()}"
-    # The approved inventory is copied into lightweight progress provenance; the
-    # signed/approved source plan itself is never rewritten by stage creation.
-    review_portions = (
-        [
-            {
-                "review_portion_id": str(unit["review_portion_id"]),
-                "review_portion_index": int(unit["review_portion_index"]),
-                "review_portion_total": int(unit["review_portion_total"]),
-                "review_portion_scope": str(unit["review_portion_scope"]),
-            }
-            for unit in approved_work_plan.get("units", [])
-        ]
-        if approved_work_plan is not None
-        else [
-            {
-                "review_portion_id": f"{plan_id}-P001",
-                "review_portion_index": 1,
-                "review_portion_total": 1,
-                "review_portion_scope": scope.label(),
-            }
-        ]
-    )
-    stage_references = (
-        [ref.label() for ref in sorted({
-            atom
-            for candidate in candidates
-            for reference in candidate.get("references", [])
-            for atom in expand_reference_atoms(str(reference))
-        })]
-        if first_stage == "STRUCTURAL_ADJUDICATION"
-        else []
-    )
-    if approved_work_plan is not None and stage_references:
-        approved_atoms = {
-            atom
-            for unit in approved_work_plan.get("units", [])
-            for value in (
-                unit.get("primary_coverage_atoms")
-                or unit.get("primary_references")
-                or []
-            )
-            for atom in expand_reference_atoms(str(value))
-        }
-        stage_references = [
-            value
-            for value in stage_references
-            if tuple(expand_reference_atoms(value))[0] in approved_atoms
-        ]
-        if first_stage == "STRUCTURAL_ADJUDICATION" and not stage_references:
-            first_stage = "REFERENCE_TEXT_COMPARISON"
-    if approved_work_plan is not None:
-        result = _create_approved_rtc_stage(
-            config,
-            workflow=workflow,
-            approved_plan=approved_work_plan,
-            output_project_id=output_project_id,
-            contemporary_source_id=contemporary_source_id,
-            scope=scope,
-            grammar_override_id=grammar_override_id,
-            parent_plan_id=plan_id,
-            job_id=job_id,
-            run_id=run_id,
-            rtc_stage=first_stage,
-            rtc_predecessor_files=(),
-            ol_referral_contract=ol_referral_contract(workflow),
-            rtc_stage_references=stage_references,
-        )
-    else:
-        if isinstance(scope, ScriptureScopeSet):
-            raise ValidationError(
-                "A discontinuous RTC Run requires its approved work-unit plan",
-                code=_analysis_code(workflow, "SAW_APPROVED_PLAN_INVALID"),
-                affected_scope=scope.label(),
-                next_action="Build and approve the RTC Run plan, then retry task creation.",
-            )
-        result = create_act_task(
-            config,
-            workflow=workflow,
-            operation="rtc",
-            output_project_id=output_project_id,
-            contemporary_source_id=contemporary_source_id,
-            scope_value=scope.label(),
-            grammar_override_id=grammar_override_id,
-            auto_partition=auto_partition,
-            parent_plan_id=plan_id,
-            job_id=job_id,
-            run_id=run_id,
-            rtc_stage=first_stage,
-            rtc_planner_version=rtc_planner_version,
-            rtc_stage_references=stage_references,
-            ol_referral_contract=ol_referral_contract(workflow),
-        )
-    stage = _stage_record(result, first_stage)
-    plan = {
-        "schema_version": "1.0",
-        "plan_type": "SAW_RTC_COMPOSITE" if workflow == "saw" else "RTC_COMPOSITE",
-        "status": "COMPOSITE_IN_PROGRESS",
-        "plan_id": plan_id,
-        "workflow": workflow,
-        "operation": "rtc",
-        "job_id": job_id,
-        "run_id": run_id,
-        "requested_scope": scope.label(),
-        "output_project": output_project_id,
-        "contemporary_source": contemporary_source_id,
-        "grammar_override_id": grammar_override_id,
-        "structural_stage_required": bool(candidates),
-        # Structural candidates decided in code: findings join the final result, resolutions are provenance.
-        "deterministic_findings": [*triage["findings"], *marker["findings"]],
-        "structural_resolutions": triage["resolved"],
-        # REFERENCE text the WIP lacks; finalization reports these and promotes them to findings.
-        "coverage_gap_issues": (
-            _rtc_omission_rows(alignment_inputs, output, reference_project, scope)
-            if alignment_inputs is not None
-            else []
-        ),
-        "rtc_policy": rtc_policy,
-        "rtc_planner_version": rtc_planner_version,
-        "ol_referral_contract": ol_referral_contract(workflow),
-        "review_portions": review_portions,
-        "approved_work_plan_path": (
-            approved_work_plan.get("approved_manifest_path")
-            if approved_work_plan is not None
-            else None
-        ),
-        "approved_work_plan_fingerprint": (
-            approved_work_plan.get("plan_fingerprint")
-            if approved_work_plan is not None
-            else None
-        ),
-        "stages": [stage],
-        "created_utc": utc_now(),
-    }
-    plan_root = plan_container(config.workflow(workflow), run_id)
-    plan_path = plan_root / f"{plan_id}.json"
-    atomic_write_json(plan_path, plan)
-    response = {
-        **(dict(result) if stage["kind"] == "TASK" else {}),
-        **plan,
-        "status": "COMPOSITE",
-        "plan_path": str(plan_path),
-        "task_manifests": list(stage["task_manifests"]),
-        "current_stage": first_stage,
-    }
-    if stage["kind"] == "TASK":
-        for key in ("task_id", "manifest_path", "act_path", "task_fingerprint", "scope", "expected_references", "structural_candidate_ids"):
-            if key in result:
-                response[key] = result[key]
-    return response
 
 
 
@@ -1308,486 +615,6 @@ def _create_rtc_composite(
 
 
 
-def _create_stc_task(
-    config: EcosystemConfig,
-    *,
-    workflow: str,
-    output_project_id: str,
-    scope: AnalysisScope,
-    contemporary_source_id: str | None,
-    grammar_override_id: str | None,
-    auto_partition: bool,
-    parent_plan_id: str | None,
-    work_unit_id: str | None,
-    job_id: str,
-    run_id: str,
-    stc_planner_version: str,
-    context_before: Sequence[str],
-    context_after: Sequence[str],
-) -> dict[str, Any]:
-    """Create STC independently from Reference, routing only bounded WIP+primary-OL SFM."""
-    # STC maintenance boundary: controller identity and validation stay outside model evidence;
-    # only bounded WIP+OL SFM and their complete canonical profiles are routed to the provider.
-    if grammar_override_id:
-        raise ValidationError("STC does not accept ad-hoc grammar-profile overrides; recreate the Job profile binding instead")
-    output = config.project(output_project_id)
-    _assert_enabled(output, "STC WIP")
-    _assert_project_scope(output, scope, "STC WIP")
-    if "WIP" not in output.scope.roles or output.content_state != "UNDER_REVIEW":
-        raise ValidationError(f"STC requires an UNDER_REVIEW WIP Project: {output.project_id}")
-    ol_role, ol_project = _select_ol_project(config, scope, required=True, workflow=workflow, job_id=job_id)
-    assert ol_project is not None
-    family = stc_authority_family(scope.book)
-    expected_role = "ORIGINAL_LANGUAGE_GREEK" if family == "GRK" else "ORIGINAL_LANGUAGE_HEBREW"
-    if ol_role != expected_role:
-        raise ValidationError("STC testament routing differs from the selected primary OL authority", code="STC_OL_AUTHORITY_MISMATCH")
-    compiled = _assert_initialized_and_ready(
-        config,
-        workflow,
-        [("STC WIP", output), ("Original-language", ol_project)],
-        scope,
-    )
-    wip_records_all = records_from_project_result(output.project_id, compiled[output.project_id], resource_role="WIP")
-    ol_records_all = records_from_project_result(ol_project.project_id, compiled[ol_project.project_id], resource_role=family)
-    wip_index: ProjectVerseIndex | None = None
-    ol_index: ProjectVerseIndex | None = None
-    if stc_planner_version == STC_PLANNER_VERSION:
-        service = VersificationService(config)
-        wip_index = ProjectVerseIndex.cached(
-            output.project_id,
-            wip_records_all,
-            service.project_schema(output),
-        )
-        ol_index = ProjectVerseIndex.cached(
-            ol_project.project_id,
-            ol_records_all,
-            service.project_schema(ol_project),
-        )
-    policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy("stc")
-    units = tuple(
-        unit
-        for portion_index, portion in enumerate(analysis_scope_portions(scope), start=1)
-        for unit in plan_stc_work_units(
-            select_records_for_scope(wip_records_all, portion),
-            (
-                ol_records_all
-                if stc_planner_version == STC_PLANNER_VERSION
-                else tuple(
-                    record
-                    for record in ol_records_all
-                    if any(portion.contains(ref) for ref in record.refs)
-                )
-            ),
-            policy,
-            unit_prefix=(parent_plan_id or f"STC-{scope.book}")
-            + f"-P{portion_index:03d}",
-            wip_index=wip_index,
-            ol_index=ol_index,
-            context_pool=wip_records_all,
-            planner_version=stc_planner_version,
-        )
-    )
-    if (
-        stc_planner_version == STC_PLANNER_VERSION
-        and work_unit_id is None
-        and len(units) == 1
-        and not context_before
-        and not context_after
-    ):
-        # A scope that fits one unit still gets the planner's boundary context verses.
-        only_unit = units[0].to_dict()
-        context_before = tuple(only_unit.get("context_before") or ())
-        context_after = tuple(only_unit.get("context_after") or ())
-    # OL text the WIP lacks anywhere in the requested scope, including whole missing chapters.
-    stc_omissions: list[dict[str, Any]] = []
-    if stc_planner_version == STC_PLANNER_VERSION and work_unit_id is None:
-        assert wip_index is not None and ol_index is not None
-        wip_book_file = _one_book_file(output, scope.book)
-        stc_omissions = omission_rows(
-            wip_records_all,
-            wip_index,
-            ol_records_all,
-            ol_index,
-            scope,
-            workflow="STC",
-            authority_stream=f"{family}:PRIMARY",
-            authority_project_id=ol_project.project_id,
-            wip_project_id=output.project_id,
-            title_chapters=(
-                psalm_title_chapters(wip_book_file.read_text(encoding="utf-8-sig"))
-                if wip_book_file is not None and scope.book == "PSA"
-                else ()
-            ),
-        )
-    if auto_partition and work_unit_id is None and len(units) > 1:
-        seed = sha256_bytes(json.dumps({
-            "job_id": job_id, "run_id": run_id, "scope": scope.label(),
-            "wip": output.project_id, "ol": ol_project.project_id, "family": family,
-        }, sort_keys=True, separators=(",", ":")).encode("utf-8"))
-        plan_id = f"STC-{scope.book}-{seed[:10].upper()}"
-        children: list[dict[str, Any]] = []
-        created_children = []
-        try:
-            for unit in units:
-                item = unit.to_dict()
-                child = create_act_task(
-                    config,
-                    workflow=workflow,
-                    operation="stc",
-                    output_project_id=output.project_id,
-                    contemporary_source_id=contemporary_source_id,
-                    scope_value=item["primary_scope"],
-                    auto_partition=False,
-                    parent_plan_id=plan_id,
-                    work_unit_id=unit.unit_id,
-                    job_id=job_id,
-                    run_id=run_id,
-                    stc_planner_version=stc_planner_version,
-                    context_before_references=item["context_before"],
-                    context_after_references=item["context_after"],
-                )
-                created_children.append(child)
-                children.append({
-                    "unit_id": unit.unit_id,
-                    "scope": item["primary_scope"],
-                    "task_id": child["task_id"],
-                    "manifest_path": child["manifest_path"],
-                    "task_fingerprint": child["task_fingerprint"],
-                    "primary_coverage_atoms": item["primary_coverage_atoms"],
-                })
-        except Exception:
-            # A partitioner that fails mid-loop must not leave orphan child tasks behind.
-            _rollback_unregistered_stage_tasks(config, workflow, run_id, created_children)
-            raise
-        expected = [ref.label() for ref in sorted({ref for unit in units for ref in unit.primary_refs})]
-        plan = {
-            "schema_version": "1.0", "status": "PARTITIONED", "plan_id": plan_id,
-            "workflow": workflow, "operation": "stc", "job_id": job_id, "run_id": run_id,
-            "requested_scope": scope.label(), "output_project": output.project_id,
-            "contemporary_source": None, "primary_ol_authority": ol_project.project_id,
-            "authority_family": family, "authority_role": "PRIMARY",
-            "stc_planner_version": stc_planner_version,
-            "expected_references": expected, "work_units": children,
-            "coverage_gap_issues": stc_omissions,
-        }
-        plan_path = plan_container(config.workflow(workflow), run_id) / f"{plan_id}.json"
-        atomic_write_json(plan_path, plan)
-        return {**plan, "plan_path": str(plan_path), "task_manifests": [row["manifest_path"] for row in children]}
-
-    output_file = _one_book_file(output, scope.book)
-    ol_file = _one_book_file(ol_project, scope.book)
-    assert output_file is not None and ol_file is not None
-    all_context = tuple(context_before) + tuple(context_after)
-    stc_alignment: dict[str, Any] | None = None
-    stc_source_issue_rows: list[dict[str, Any]] | None = None
-    ol_primary_references: list[str] | None = None
-    ol_context_references: list[str] = list(all_context)
-    if stc_planner_version == STC_PLANNER_VERSION:
-        assert wip_index is not None and ol_index is not None
-        primary_wip = select_records_for_scope(wip_records_all, scope)
-        context_wip = _records_intersecting_reference_values(
-            wip_records_all,
-            all_context,
-        )
-        primary_alignment = align_records(primary_wip, wip_index, ol_index)
-        context_alignment = align_records(context_wip, wip_index, ol_index)
-        authority_stream = f"{family}:PRIMARY"
-        ol_primary_references = [
-            record.reference for record in primary_alignment.authority_records
-        ]
-        ol_context_references = [
-            record.reference for record in context_alignment.authority_records
-        ]
-        stc_alignment = {
-            "primary_local_atoms": [
-                ref.label() for ref in sorted(primary_alignment.primary_local_refs)
-            ],
-            "canonical_atoms": [
-                ref.label() for ref in sorted(primary_alignment.canonical_refs)
-            ],
-            "authority_stream": authority_stream,
-            "authority_local_spans": ol_primary_references,
-            "missing_canonical_atoms": [
-                ref.label() for ref in sorted(primary_alignment.missing_canonical_refs)
-            ],
-            # WIP verses whose original-language verses carry other numbers (shift, merge, or split).
-            "verse_correspondence": record_correspondence(primary_wip, wip_index, ol_index),
-            # Verses far shorter or longer than their OL text: candidates for omissions and additions.
-            "length_outliers": length_outliers(primary_wip, wip_records_all, wip_index, ol_index),
-            "numeric_candidates": numeric_candidates(
-                config,
-                [
-                    (
-                        VerseRef(record.book, record.chapter, record.verse_start),
-                        record.reference,
-                        str(record.payload.get("body_text") or ""),
-                    )
-                    for record in primary_wip
-                ],
-            ),
-        }
-        stc_source_issue_rows = _canonical_gap_source_issues(
-            primary_wip,
-            wip_index,
-            primary_alignment.missing_canonical_refs,
-            workflow="STC",
-            source_stream=authority_stream,
-            source_project_id=ol_project.project_id,
-            wip_project_id=output.project_id,
-            scope=scope.label(),
-        ) + stc_omissions
-    seed = sha256_bytes(json.dumps({
-        "job_id": job_id, "run_id": run_id, "scope": scope.label(),
-        "wip": output.project_id, "ol": ol_project.project_id, "family": family,
-        "work_unit_id": work_unit_id, "context": list(all_context),
-        "stc_planner_version": stc_planner_version,
-        "stc_alignment": stc_alignment,
-    }, sort_keys=True, separators=(",", ":")).encode("utf-8"))
-    base_task_id = f"stc-{scope.book.lower()}-{seed[:12]}"
-    task_id = base_task_id
-    active_root = task_container(config.workflow(workflow), run_id)
-    sequence = 1
-    while (active_root / task_id).exists():
-        sequence += 1
-        task_id = f"{base_task_id}-r{sequence}"
-    task_root = active_root / task_id
-    packet_root = task_root / "packet"
-    output_root = task_root / "output"
-    packet_root.mkdir(parents=True, exist_ok=False)
-    output_root.mkdir(parents=True, exist_ok=False)
-    try:
-        wip_path = packet_root / "wip.sfm"
-        ol_path = packet_root / "original-language.sfm"
-        wip_packet = _bounded_sfm_packet(output_file, scope, wip_path, context_references=all_context)
-        ol_packet = _bounded_sfm_packet(
-            ol_file,
-            scope,
-            ol_path,
-            primary_references=ol_primary_references,
-            context_references=ol_context_references,
-            allow_empty=True,
-        )
-        expected_references = list(wip_packet["primary_references"])
-        source_issue_rows = (
-            stc_source_issue_rows
-            if stc_source_issue_rows is not None
-            else list(source_text_issues(
-                (ref for value in expected_references for ref in expand_reference_atoms(value)),
-                (
-                    ref
-                    for value in ol_packet["primary_references"]
-                    for ref in expand_reference_atoms(str(value))
-                ),
-                workflow="STC",
-                source_stream=f"{family}:PRIMARY",
-                source_project_id=ol_project.project_id,
-                wip_project_id=output.project_id,
-                scope=scope.label(),
-            ))
-        )
-        target_grammar_path, target_profile = _write_grammar_contract(config, output, packet_root, "wip")
-        if target_grammar_path is None or target_profile is None:
-            raise ValidationError(
-                f"STC WIP {output.project_id} has no canonical LANGUAGE_PROFILE",
-                code="LINGUISTIC_PROFILE_MISSING",
-            )
-        bound_job = _load_owning_job(config, job_id, workflow)
-        report_grammar_path, report_profile = _write_report_language_contract(
-            config,
-            bound_job.primary_report_language,
-            packet_root,
-            "report-primary",
-        )
-        if sha256_file(report_grammar_path) == sha256_file(target_grammar_path):
-            report_grammar_path.unlink(missing_ok=True)
-            report_grammar_path = target_grammar_path
-        ol_profile_path = packet_root / "ol-authority-profile.yml"
-        ol_profile = _copy_ol_authority_profile(ol_project, family, ol_profile_path)
-        ol_profile["path"] = _relative(config.root, ol_profile_path)
-        skill_registry = load_skill_registry(config.root)
-        skill = skill_registry.get((workflow, "stc")) or skill_registry[("saw", "stc")]
-        skill_files = [{"path": _relative(config.root, item), "sha256": sha256_file(item)} for item in _skill_files(skill)]
-        allowed_reads = [
-            {"path": _relative(config.root, wip_path), "sha256": sha256_file(wip_path), "evidence_class": SUBJECT_TEXT},
-            {"path": _relative(config.root, ol_path), "sha256": sha256_file(ol_path), "evidence_class": AUTHORIZED_CONTENT_EVIDENCE},
-            {"path": _relative(config.root, target_grammar_path), "sha256": sha256_file(target_grammar_path), "evidence_class": LINGUISTIC_COMPETENCE_RULES},
-            {"path": _relative(config.root, ol_profile_path), "sha256": sha256_file(ol_profile_path), "evidence_class": AUTHORITY_INTERPRETATION_RULES},
-        ]
-        if report_grammar_path != target_grammar_path:
-            allowed_reads.append({
-                "path": _relative(config.root, report_grammar_path),
-                "sha256": sha256_file(report_grammar_path),
-                "evidence_class": LINGUISTIC_COMPETENCE_RULES,
-            })
-        governance_inputs = [
-            {"path": _relative(config.root, config.workflow(workflow).profile_path), "sha256": sha256_file(config.workflow(workflow).profile_path), "evidence_class": PROCESS_CONTROL},
-            *[{"path": item["path"], "sha256": item["sha256"], "evidence_class": PROCESS_CONTROL} for item in skill_files],
-        ]
-        narrative_language = _narrative_language_contract(config)
-        ol_binding_key = expected_role
-        project_identities = resolve_project_identities(
-            config.root,
-            {"WIP": output.project_id, ol_binding_key: ol_project.project_id},
-            config.projects,
-            compiled,
-        )
-        resource_bindings = identity_bindings(project_identities)
-        resource_display_names = identity_display_names(project_identities)
-        project_fingerprints = {
-            identity.project_id: identity.content_fingerprint
-            for identity in project_identities.values()
-        }
-        route_bytes = int(wip_packet["serialized_bytes"]) + int(ol_packet["serialized_bytes"])
-        route_tokens = int(wip_packet["estimated_tokens"]) + int(ol_packet["estimated_tokens"])
-        if route_bytes > policy.hard_serialized_bytes or route_tokens > policy.hard_estimated_tokens:
-            raise EvidenceLimitError(
-                "STC routed WIP+OL SFM exceeds the hard review-item limit",
-                affected_scope=scope.label(),
-                details={"serialized_bytes": route_bytes, "estimated_tokens": route_tokens},
-            )
-        linguistic_profile_bindings = [
-            {
-                "stream_id": "WIP", "profile_class": "LANGUAGE_PROFILE",
-                "profile_id": target_profile.profile_id, "language": target_profile.language,
-                "path": _relative(config.root, target_grammar_path), "sha256": sha256_file(target_grammar_path),
-            },
-            {
-                "stream_id": "REPORT:PRIMARY", "profile_class": "LANGUAGE_PROFILE",
-                "profile_id": report_profile.profile_id, "language": report_profile.language,
-                "path": _relative(config.root, report_grammar_path), "sha256": sha256_file(report_grammar_path),
-            },
-            {
-                "stream_id": f"{family}:PRIMARY", **ol_profile,
-            },
-        ]
-        identity = {
-            "schema_version": "2.4", "execution_mode": "SAGE_GOVERNED_TASK_V1",
-            "workflow": workflow, "operation": "stc", "rtc_stage": None,
-            "stc_planner_version": stc_planner_version,
-            "stc_alignment": stc_alignment,
-            "deterministic_candidates": candidate_inventory(
-                numeric=(stc_alignment or {}).get("numeric_candidates"),
-                lengths=(stc_alignment or {}).get("length_outliers", []),
-            ),
-            "skill_id": skill.skill_id,
-            "job_id": job_id, "run_id": run_id,
-            "resource_bindings": resource_bindings,
-            "resource_display_names": resource_display_names,
-            "output_project": output.project_id, "output_content_state": output.content_state,
-            "contemporary_source": None, "primary_ol_authority": ol_project.project_id,
-            "original_language_sources": [{
-                "role": expected_role, "project": ol_project.project_id, "routing": "DIRECT",
-                "authority_family": family, "authority_role": "PRIMARY",
-            }],
-            "lexical_donor": None, "scope": scope.label(), "focus": None, "check_type": None,
-            "parent_plan_id": parent_plan_id, "work_unit_id": work_unit_id or task_id,
-            "context_references": {"mode": "CONTEXT_ONLY", "before": list(context_before), "after": list(context_after)},
-            "skill": {
-                "id": skill.skill_id, "entrypoint": _relative(config.root, skill.path), "files": skill_files,
-                "source_system": skill.source_system, "source_version": skill.source_version,
-                "original_file": _relative(config.root, skill.original_file), "original_sha256": skill.original_sha256,
-                "adapted_sha256": skill.adapted_sha256, "qualification_status": skill.qualification_status,
-            },
-            "project_grammar": {
-                "profile_id": target_profile.profile_id, "language": target_profile.language,
-                "status": target_profile.status, "profile_sha256": target_profile.sha256,
-                "rule_ids": [row["rule_id"] for row in target_profile.checks],
-                "contract": _relative(config.root, target_grammar_path),
-            },
-            "source_grammar": None,
-            "linguistic_profile_bindings": linguistic_profile_bindings,
-            "evidence_policy": task_evidence_policy(workflow),
-            "packets": {"wip": wip_packet, "original_language": {**ol_packet, "evidence_id": expected_role}},
-            "structural_issues": source_issue_rows,
-            "source_text_issues": source_issue_rows,
-            "preflight": None,
-            "resource_fingerprints": {
-                "settings": sha256_file(config.settings_path), "workflow_profile": sha256_file(config.workflow(workflow).profile_path),
-                "skill_entrypoint": sha256_file(skill.path),
-                f"project.{output.project_id}": project_fingerprints[output.project_id],
-                f"project.{ol_project.project_id}": project_fingerprints[ol_project.project_id],
-                "packet.wip": sha256_file(wip_path), "packet.original_language": sha256_file(ol_path),
-                "profile.wip": sha256_file(target_grammar_path),
-                "profile.report_primary": sha256_file(report_grammar_path),
-                "profile.ol": sha256_file(ol_profile_path),
-            },
-            "expected_references": expected_references, "primary_coverage": expected_references,
-            "structural_candidate_ids": [], "allowed_evidence_ids": ["WIP", expected_role],
-            "governance_inputs": governance_inputs, "allowed_reads": allowed_reads, "conditional_reads": [],
-            "allowed_writes": ["output/findings.json"],
-            "narrative_language": narrative_language,
-            "human_output": {
-                "logs_and_reports": {"primary_language": config.human_output.logs_and_reports.primary_language, "secondary_language": config.human_output.logs_and_reports.secondary_language, "bilingual": config.human_output.logs_and_reports.bilingual},
-            },
-            "output_grammar": "STC_FINDINGS_1.0",
-            "review_requirements": {"required_checks": ["STC_CORRESPONDENCE"], "controller_checks": [], "expected_work_unit_ids": [work_unit_id or task_id]},
-            "context_budget": {
-                "estimator": "SAGE_MULTILINGUAL_HEURISTIC_1", "measurement_scope": "routed_analysis_sfm",
-                "planning_basis": "ROUTED_SFM_ONLY", "serialized_bytes": route_bytes, "estimated_tokens": route_tokens,
-                "final_serialized_bytes": route_bytes, "final_estimated_tokens": route_tokens, "policy": policy.to_dict(),
-            },
-            "forbidden_actions": ["broaden_scope", "read_unlisted_files", "use_external_content_evidence", "modify_locked_projects"],
-        }
-        fingerprint = sha256_bytes(json.dumps(identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8"))
-        submit_argv = ["--settings", config.settings_path.name, "task", "submit", "--task", _relative(config.root, task_root / "task-manifest.json")]
-        submit_commands = {"posix": render_sage_command(submit_argv, windows=False), "windows": render_sage_command(submit_argv, windows=True)}
-        manifest = {**identity, "task_id": task_id, "task_root": _relative(config.root, task_root), "submit_commands": submit_commands, "task_fingerprint": fingerprint, "created_utc": utc_now()}
-        manifest_path = task_root / "task-manifest.json"
-        act_path = task_root / "ACT.md"
-        act_text = "\n".join([
-            f"# SAGE ACT Task: {task_id}", "", "SAGE EXECUTION MODE: GOVERNED TASK V1", "",
-            "Execute only this bounded Source Text Correspondence (STC) review.",
-            f"- WIP: `{output.project_id}`", f"- Primary OL authority: `{ol_project.project_id}` (`{family}`, PRIMARY)",
-            f"- Scope: `{scope.label()}`", f"- Work unit: `{work_unit_id or task_id}`", "",
-            "## Evidence", "",
-            "Use only the supplied WIP + OL slice as evidence.",
-            "Do not use ANY information outside that slice to form or support a finding.",
-            "If a finding cannot be established from the supplied WIP + OL slice, do not report it.",
-            "The complete routed linguistic profiles govern language, dialect, and historical register but are not Scripture evidence.",
-            "Do not infer canonical language identity from the text; obey the bound profiles.", "",
-            "## Task", "",
-            "Compare OL element/phrase/construction with the WIP rendering. Do not assume one-to-one lexical alignment.",
-            "Report only governed OMISSION, ADDITION, VARIATION, or CONSISTENCY findings established by the bounded evidence.",
-            "Review every assigned primary coordinate even if there are zero findings.",
-            "Cite `target_reference` in WIP verse numbering; `wip_to_original_language_verses` lists the WIP verses whose OL verses carry other numbers.",
-            "Quote `wip_evidence` and `ol_evidence` verbatim from the supplied slice; SAGE checks every quotation against it.",
-            "SAGE already reports text present on only one side as OMISSION or ADDITION; do not restate those coordinates.",
-            "Check each `verse_length_outliers` verse closely for a material omission or addition; its length alone is not a finding.",
-            "Numbers: `numeric_candidates` compares WIP digits with the number index (see its caveat). Report no number finding for a `MATCH` verse; the NCA tool checks numbers in full.", "",
-            *(
-                [
-                    "## Structural issues", "",
-                    "Do not invent wording for source coordinates reported as absent; continue the run using only supplied evidence.",
-                    *[f"- `{row['reference']}` — {row['message']}" for row in source_issue_rows], "",
-                ]
-                if source_issue_rows
-                else []
-            ),
-            "## Allowed model reads", "",
-            *[f"- `{item['path']}` — `{item['evidence_class']}`" for item in allowed_reads], "",
-            "## Allowed writes", "", "- `output/findings.json`", "",
-            f"Canonical generated narrative language: `{narrative_language['tag']}`.",
-        ])
-        atomic_write_json(manifest_path, manifest)
-        atomic_write_text(act_path, act_text)
-        control_path = config.workflow(workflow).state_root / "act-tasks" / f"{task_id}.json"
-        control = {
-            "schema_version": "2.0", "task_id": task_id, "workflow": workflow, "operation": "stc",
-            "job_id": job_id, "run_id": run_id, "task_root": _relative(config.root, task_root),
-            "manifest_path": _relative(config.root, manifest_path), "manifest_sha256": sha256_file(manifest_path),
-            "act_path": _relative(config.root, act_path), "act_sha256": sha256_file(act_path),
-            "task_fingerprint": fingerprint, "settings_sha256": sha256_file(config.settings_path),
-            "allowed_writes": ["output/findings.json"], "status": "CREATED", "created_utc": utc_now(),
-        }
-        atomic_write_json(control_path, control)
-        for immutable in (manifest_path, act_path, control_path):
-            try: os.chmod(immutable, 0o444)
-            except OSError: pass
-        return {**manifest, "manifest_path": str(manifest_path), "manifest_sha256": sha256_file(manifest_path), "control_path": str(control_path), "act_path": str(act_path), "act_sha256": sha256_file(act_path)}
-    except Exception:
-        import shutil
-        shutil.rmtree(task_root, ignore_errors=True)
-        raise
 
 def create_act_task(
     config: EcosystemConfig,
@@ -3621,121 +2448,17 @@ def create_act_task(
             "Preserve explicitly supplied source quotations verbatim; keep canonical JSON keys, identifiers, and governed enum values unchanged.",
             "",
         ])
-        if workflow == "bic" and operation == "inspect":
-            act_lines.extend([
-                "1. Inspect only the bounded SOURCE packet, decontextualized DONOR vocabulary evidence, and routed source-language grammar evidence; routine INSPECT does not route OL Scripture.",
-                "2. SOURCE is the sole content and translation authority. DONOR supplies vocabulary only and must not be reconstructed into verse wording, syntax, propositions, or sequence.",
-                "3. Existing TARGET Scripture is not input evidence and is not routed. Use approved memory as evidence; propose additions but never approve them.",
-                "4. Record translation challenges and memory proposals in one governed JSON object. Do not draft TARGET Scripture.",
-            ])
-        elif workflow == "bic" and operation == "rewrite":
-            act_lines.extend([
-                "1. Use the committed INSPECT record, SOURCE, decontextualized DONOR vocabulary evidence, applicable approved memory, routed source and target grammar contracts, and protected rewrite rules; do not open conditional OL files during ordinary drafting.",
-                "2. SOURCE is the sole content authority; DONOR may suggest lexical forms only. Never derive content, propositions, participant structure, syntax, or verse wording from DONOR, and never read an existing TARGET as evidence.",
-                "3. Produce one bounded USFM candidate with exact coordinate coverage and protected semantic-marker integrity.",
-                "4. Preserve source content and genuine ambiguity; do not add, omit, harmonise, or doctrinally clarify.",
-                "5. Score candidate lexical burden on the governed 0-4 rubric; use Longman bands only when licensed evidence is routed and never invent a band.",
-                "6. At material semantic-risk level 2 or higher, run one automatic bounded OL check per material challenge when a trigger exists: it is question-specific, and raw SOURCE and OL Scripture are restricted to that challenge's single verse. For VERB_CHOICE resolve only the disputed verb's verbal sense/function. Do not route OL merely because a verb is uncommon.",
-                "7. If bounded OL evidence supports a better candidate, update the USFM candidate, recheck grammar, and report the before/after risk and candidate change.",
-                "8. If post-OL risk remains level 3 or 4, complete REWRITE with the recommended candidate, retain concise material alternatives and rejection reasons, and elevate the risk-rated report; REWRITE accepts no Operator candidate input.",
-                "9. Linguistic uncertainty elevates the report; it does not block completion of the current REWRITE operation.",
-                "10. Complete the rule-by-rule grammar assessment and concise translation-challenge report: list material urgency 2–4 items, consolidate repeated causes, and aggregate lower-level or automatically resolved matters.",
-            ])
-        elif workflow == "bic":
-            act_lines.extend([
-                "1. Review only the sealed predecessor rewrite candidate in this fresh task context.",
-                "2. Read the routed predecessor material-challenge ledger and verify the completed REWRITE candidate independently. REWRITE has no Operator candidate-selection path.",
-                "3. Do not read or reproduce first-pass rationale.",
-                "4. Correct only supported fidelity, USFM, project-grammar, or governed candidate-decision issues.",
-                "5. Complete the rule-by-rule grammar assessment for the final candidate.",
-            ])
-        elif operation == "rtc":
-            act_lines.append(f"Composite RTC stage: `{rtc_stage}`.")
-            if rtc_stage == "STRUCTURAL_ADJUDICATION":
-                act_lines.extend([
-                    "1. Adjudicate only the supplied deterministic structural candidates.",
-                    "2. Do not perform the translation-and-meaning review in this stage.",
-                    "3. VRS mappings and coordinate differences are report-only structural evidence: they never block RTC or make a review portion indivisible. Ordinary mappings are not findings unless the bounded evidence proves a real structural difference.",
-                    "4. Do not request or use original-language Scripture in this stage.",
-                ])
-            elif rtc_stage == "REFERENCE_TEXT_COMPARISON":
-                drift_enabled = str(
-                    dict((rtc_policy or {}).get("original_language") or {}).get(
-                        "source_text_drift_adjudication", "PROHIBITED"
-                    )
-                ).upper() == "ENABLED"
-                if not drift_enabled:
-                    referral_instruction = (
-                        "7. Source-text drift adjudication is PROHIBITED. Do not emit "
-                        "ol_review_requests; assess only from the authorized non-OL evidence "
-                        "routed to this stage."
-                    )
-                elif is_ol_referral_contract(ol_referral_contract):
-                    referral_instruction = (
-                        "7. Automatic WIP-Reference source adjudication is ENABLED under "
-                        f"{ol_referral_contract}. Emit an ol_review_requests entry if and "
-                        "only if every admission rule passes: (1) the difference changes the "
-                        "core proposition; (2) WIP and REFERENCE communicate incompatible "
-                        "meanings; (3) conflict_class is exactly one of "
-                        "NEGATION_OR_POLARITY_CONFLICT, "
-                        "PARTICIPANT_IDENTITY_OR_ROLE_CONFLICT, "
-                        "CORE_EVENT_OR_STATE_CONFLICT, or "
-                        "CORE_PROPOSITION_OMISSION_OR_ADDITION; (4) correctness genuinely "
-                        "requires the applicable original-language text; (5) routed non-OL "
-                        "evidence cannot settle the issue; (6) the request contains one issue "
-                        "at the smallest necessary Scripture scope; and (7) the same normalized "
-                        "conflict is not requested twice. Do not refer lexical nuance or "
-                        "intensity, style, register, readability, grammar, spelling, punctuation, "
-                        "USFM structure, ordinary consistency, equivalent paraphrase, or any "
-                        "issue resolvable from routed non-OL evidence. Do not finalize the same "
-                        "issue as an RTC finding. SAGE routes OT requests to the Job-bound Hebrew "
-                        "resource and NT requests to the Job-bound Greek resource."
-                    )
-                else:
-                    referral_instruction = (
-                        f"7. Automatic WIP-Reference source adjudication is ENABLED. Defer every "
-                        f"material content-bearing variance where choosing between "
-                        f"{output.project_id} and {source.project_id} depends on the source text. "
-                        "Emit one bounded ol_review_requests entry per variance and do not "
-                        "finalize that same issue in this stage. SAGE routes OT requests to the "
-                        "Job-bound Hebrew resource and NT requests to the Job-bound Greek "
-                        "resource. Grammar, readability, punctuation, spelling, USFM/structure, "
-                        "style, and ordinary consistency defects remain direct RTC findings and "
-                        "must not be routed to OL."
-                    )
-                act_lines.extend([
-                    "1. Perform only the RTC checks enabled in the sealed rtc_policy across every bounded primary coordinate in this work unit.",
-                    "2. SAGE has already formed and bounded this work unit deterministically. Do not re-plan, split, merge, or certify its mechanical boundaries.",
-                    f"3. Use {source.project_id} as the authorized Reference Project, the {output.project_id} grammar contract, local semantic evidence, any routed structural-stage result, and the explicitly labeled boundary context when present.",
-                    "4. Context-only coordinates may inform interpretation but must not appear in ordinary findings or OL requests.",
-                    "5. Treat each WIP or Reference verse bridge as one indivisible record while reviewing every coordinate it covers. Check bridge mapping under structure/completeness and check the complete bridged text against all corresponding WIP and Reference content under translation/meaning, whether their bridge shapes match or differ.",
-                    "6. Do not read original-language Scripture in this stage.",
-                    referral_instruction,
-                    "8. Review every WIP and Reference cross-reference span (`\\x ... \\x*`) under the sealed x-context policy. At minimum verify balanced containers and valid field structure. In NORMAL mode also compare presence, payload, and ordering; report missing, malformed, unexpected, or materially mismatched cross-references at the owning WIP coordinate. SAGE compares Scripture target numbers and footnote origin and text in code.",
-                    "9. SAGE already reports the routed preflight `direct_findings` (WIP/REFERENCE text gaps); do not restate them. For each preflight `marker_candidates` entry, decide whether the differing `\\add` or `\\nd` usage is material and report only material differences.",
-                    "10. Numbers: the preflight `numeric_candidates` compares WIP digits with the number index. Report no number finding for a `MATCH` verse; check `DIFFERS` and `NOT_IN_DIGITS` verses against the Reference. The NCA tool checks numbers in full.",
-                ])
-            else:
-                act_lines.extend([
-                    "1. Automatically adjudicate exactly the material WIP-Reference variance requests inherited from the meaning stage.",
-                    f"2. Compare {output.project_id} and {source.project_id} with the testament-correct Job-bound Hebrew (OT) or Greek (NT) packet.",
-                    "3. Decide which rendering is closer to the routed source, whether both are defensible, or whether the evidence is inconclusive. Do not broaden this internal adjudication into the separate detailed Original-Language Review operation or into grammar, structure, style, consistency, or general RTC.",
-                    "4. Return exactly one structured ol_resolutions object per inherited request. A FINDING outcome must use that request's deferred_finding_id, cite actual routed OL evidence, and explain the source-text basis for the adjudication.",
-                    f"5. Set `decision` to exactly one of WIP_CLOSER_TO_SOURCE ({output.project_id} is closer to the source), REFERENCE_CLOSER_TO_SOURCE ({source.project_id} is closer), BOTH_DEFENSIBLE, or INCONCLUSIVE, consistent with `outcome`: FINDING goes with REFERENCE_CLOSER_TO_SOURCE (or INCONCLUSIVE), NO_FINDING with WIP_CLOSER_TO_SOURCE or BOTH_DEFENSIBLE, and INSUFFICIENT_EVIDENCE with INCONCLUSIVE. In `rationale`, name the Projects as {output.project_id} and {source.project_id}, not by role labels.",
-                ])
-        elif operation == "focused":
-            act_lines.extend([
-                "1. Answer the one focus question only, using the routed evidence and check type.",
-                "2. Do not broaden into Reference Text Comparison (RTC).",
-                "3. Semantically review every assigned primary coordinate and structural candidate; SAGE owns mechanical coverage and receipts.",
-            ])
-        else:
-            act_lines.extend([
-                f"1. Compare {output.project_id} directly with the relevant authoritative OL packet for the one question.",
-                f"2. Use {source.project_id} as the authorized Reference Project.",
-                "3. Do not broaden into commentary or a general book study.",
-                "4. Semantically review every assigned primary coordinate and structural candidate; SAGE owns mechanical coverage and receipts.",
-            ])
+        act_lines.extend(
+            process_brief_lines(
+                workflow=workflow,
+                operation=operation,
+                rtc_stage=rtc_stage,
+                rtc_policy=rtc_policy,
+                ol_referral_contract=ol_referral_contract,
+                output_project_id=output.project_id,
+                source_project_id=source.project_id,
+            )
+        )
         act_lines.extend([
             "",
             "## Local Evidence Boundary",
@@ -3935,44 +2658,19 @@ def create_act_task(
         }
         # Prompt construction ignores the fingerprint and context-budget fields, so the planning
         # measurement and budget check above are final; inputs are not re-read to check them again.
-        atomic_write_json(manifest_path, manifest)
-        atomic_write_text(act_path, act_text)
-        manifest_sha256 = sha256_file(manifest_path)
-        act_sha256 = sha256_file(act_path)
-        control_path = config.workflow(workflow).state_root / "act-tasks" / f"{task_id}.json"
-        control = {
-            "schema_version": "2.0",
-            "task_id": task_id,
-            "workflow": workflow,
-            "operation": operation,
-            "job_id": job_id,
-            "run_id": run_id,
-            "task_root": _relative(config.root, task_root),
-            "manifest_path": _relative(config.root, manifest_path),
-            "manifest_sha256": manifest_sha256,
-            "act_path": _relative(config.root, act_path),
-            "act_sha256": act_sha256,
-            "task_fingerprint": fingerprint,
-            "settings_sha256": sha256_file(config.settings_path),
-            "allowed_writes": list(expected_outputs),
-            "status": "CREATED",
-            "created_utc": utc_now(),
-        }
-        atomic_write_json(control_path, control)
-        try:
-            os.chmod(manifest_path, 0o444)
-            os.chmod(act_path, 0o444)
-            os.chmod(control_path, 0o444)
-        except OSError:
-            pass
-        return {
-            **manifest,
-            "manifest_path": str(manifest_path),
-            "manifest_sha256": manifest_sha256,
-            "control_path": str(control_path),
-            "act_path": str(act_path),
-            "act_sha256": act_sha256,
-        }
+        return seal_task(
+            config,
+            workflow=workflow,
+            operation=operation,
+            job_id=job_id,
+            run_id=run_id,
+            task_root=task_root,
+            manifest_path=manifest_path,
+            manifest=manifest,
+            act_path=act_path,
+            act_text=act_text,
+            allowed_writes=expected_outputs,
+        )
     except Exception:
         import shutil
         shutil.rmtree(task_root, ignore_errors=True)

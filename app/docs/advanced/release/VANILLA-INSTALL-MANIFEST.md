@@ -845,6 +845,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/act_common.py`
 - `system/src/sage/act_evidence.py`
 - `system/src/sage/act_outputs.py`
+- `system/src/sage/act_render.py`
 - `system/src/sage/act_submit.py`
 - `system/src/sage/act_tasks.py`
 - `system/src/sage/atomic.py`
@@ -982,6 +983,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/routing_override.py`
 - `system/src/sage/rtc_planner.py`
 - `system/src/sage/rtc_policy.py`
+- `system/src/sage/rtc_tasks.py`
 - `system/src/sage/runtime_paths.py`
 - `system/src/sage/runtime_status.py`
 - `system/src/sage/saw_policy.py`
@@ -1019,10 +1021,12 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/state.py`
 - `system/src/sage/stc.py`
 - `system/src/sage/stc_reporting.py`
+- `system/src/sage/stc_tasks.py`
 - `system/src/sage/storage.py`
 - `system/src/sage/structural_issues.py`
 - `system/src/sage/structure_policy.py`
 - `system/src/sage/task_retry.py`
+- `system/src/sage/task_sealing.py`
 - `system/src/sage/text_coverage.py`
 - `system/src/sage/transactions.py`
 - `system/src/sage/tui.py`
@@ -1176,6 +1180,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_rewrite_risk.py`
 - `system/tests/test_routing_override.py`
 - `system/tests/test_rtc_planner.py`
+- `system/tests/test_rtc_stc_multi_portion.py`
 - `system/tests/test_rtc_stc_regressions.py`
 - `system/tests/test_runtime.py`
 - `system/tests/test_schema_validation.py`
