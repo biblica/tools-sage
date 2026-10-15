@@ -9,6 +9,25 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261015-003 — Third-party data notices and MACULA attribution (TODO-20261015-003)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261015-003`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** new `docs/advanced/projects-and-resources/THIRD-PARTY-NOTICES.md` lists every data source SAGE ships or quotes with its
+  license, required attribution line, and where it is used. It records MACULA Hebrew and Greek as © 2022–2024
+  Biblica, Inc. under CC BY 4.0 with the pinned commits and SHA-256 values, and states the changes SAGE makes
+  (column selection, NFC normalization, versification mapping, typed number values) as CC BY 4.0 requires. It
+  credits the sources inside MACULA (WLC, OSHB, SBLGNT), and notes that the UBS SDBH and MARBLE domain fields are
+  "used with permission", are outside Biblica's grant, and are never read. It also says the bundled `@GRK`/`@HEB`
+  provenance is still unresolved. The page is linked from `README.md`, `docs/INDEX.md`, `OPERATOR-GUIDE.md`,
+  `NCA-CHEAT-SHEET.md`, `RESOURCE-RIGHTS-AND-PROVENANCE.md`, and `AUTHORITY-POLICY.md`. NCA action reports
+  that quote original-language verse text now print the MACULA attribution line in **Sources and attribution**,
+  with the WLC credit for Hebrew or the SBLGNT copyright credit for Greek
+  (`nca_reporting.OL_TEXT_ATTRIBUTION`).
+- **Verification:** `tests/numbers/test_reporting.py`; full suite re-run.
+
 ### IMP-20261015-002 — RTC/STC multi-portion and planner stale-plan tests (completes TODO-20261014-020)
 
 - **Version:** `0.02a3` (development branch)

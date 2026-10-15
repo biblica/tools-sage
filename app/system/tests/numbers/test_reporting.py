@@ -352,12 +352,18 @@ def test_action_reports_follow_the_rtc_template_per_chapter():
         assert expected in first, expected
     # The NIV is cited by reference and numbers only; the quoted BSB text carries its attribution.
     assert "**NIV evidence**" not in first
-    assert "Berean Standard Bible, public domain" in first.split("## Sources and attribution", 1)[1]
+    attribution = first.split("## Sources and attribution", 1)[1]
+    assert "Berean Standard Bible, public domain" in attribution
+    # Quoted Greek text carries the MACULA CC BY 4.0 attribution and the SBLGNT credit, not the Hebrew one.
+    assert "MACULA Greek Linguistic Datasets, available at https://github.com/Clear-Bible/macula-greek/" in attribution
+    assert "Society of Biblical Literature and Logos Bible Software" in attribution
+    assert "MACULA Hebrew" not in attribution
     # Technical plumbing stays in Run diagnostics, never the operator report.
     for absent in ("unit-1", "Planned extraction", "presentation", "Groups without extraction", "c" * 64 + "`)"):
         assert absent not in first
     second = render_nca_action_report(reports[1])
     assert "No actionable findings were submitted." in second
+    assert "MACULA" not in second
     assert "1 without indexed numbers" in second
 
 

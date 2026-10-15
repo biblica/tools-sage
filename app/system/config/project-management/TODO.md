@@ -82,6 +82,7 @@ Rows are in execution order.
 | `TODO-20261013-016` | 2026-10-13 | `0.02a3` | `MS-02A3` | HIGH | OPEN | NCA qualification: build the gold set and live benchmark gate (FAIL precision at least 90%), run live-model NCA qualification, and record a release-gate receipt for the typed package `SAGE_NUMBERS_TYPED_2026-10-09`. | Guided INIT of a live test Project |
 | `TODO-20261013-017` | 2026-10-13 | `0.02a3` | `MS-SQS` | HIGH | IN_PROGRESS | SQS: close the open items in `docs/superpowers/plans/2026-09-18-SQS-INTEGRATION-PLAN.md` (19 open, 46 done): provision and secure the server (systemd units, TLS, `sqs-uploader` account, known hosts, signature policy), run the first real end-to-end dry run, extend evaluation-pack coverage, and fix the noted worker and language-coverage fragilities. | Server provisioning |
 | `TODO-20261013-018` | 2026-10-13 | `0.02a3` | `MS-02A3` | MEDIUM | BLOCKED | BIC: adopt the standard Job menu shape already used by RTC, STC, and NCA (`job_menus.py`). | BIC tester feedback |
+| `TODO-20261015-003` | 2026-10-15 | `0.02a3` | `MS-02A3` | HIGH | DONE | Third-party data license compliance: MACULA Hebrew and Greek are © 2022–2024 Biblica, Inc. under CC BY 4.0 (`Clear-Bible/macula-hebrew` commit `a89ba8f`). Publish one notices page with each shipped or quoted source's license, attribution line, pinned version, and the changes SAGE makes; link it from the relevant docs; and print the MACULA attribution in every NCA report that quotes original-language text. Done: `IMP-20261015-003`. | None |
 
 ## `0.02b1` release line
 

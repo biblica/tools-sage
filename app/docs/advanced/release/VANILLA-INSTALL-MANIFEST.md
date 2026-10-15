@@ -74,6 +74,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/projects-and-resources/PROJECT-SCOPE-AND-CANON.md`
 - `docs/advanced/projects-and-resources/RESOURCE-RIGHTS-AND-PROVENANCE.md`
 - `docs/advanced/projects-and-resources/RWC-SEMDOM-INDEXES.md`
+- `docs/advanced/projects-and-resources/THIRD-PARTY-NOTICES.md`
 - `docs/advanced/projects-and-resources/VERSIFICATION.md`
 - `docs/advanced/release`
 - `docs/advanced/release/ADMINISTRATIVE-AI-ROUTING-DESIGN.md`

@@ -6,7 +6,7 @@
 
 SAGE ships one typed reference package, `SAGE_NUMBERS_TYPED_2026-10-09` (format `sage-numbers-typed-1.1`) under `system/resources/numbers/2026-10-09`, pinned by `system/config/numbers-reference.json`. No archive import is required. It indexes 3,814 verses with 5,345 original-language values and 5,021 NIV values, and records what each number counts.
 
-- The original-language layer is built in SAGE from MACULA Hebrew (WLC) and MACULA Greek (SBLGNT) word data. It is Authority 1 and the only basis for a FAIL against the source.
+- The original-language layer is built in SAGE from MACULA Hebrew (WLC) and MACULA Greek (SBLGNT) word data. It is Authority 1 and the only basis for a FAIL against the source. MACULA is © Biblica, Inc. under CC BY 4.0; licenses and attribution for every source are in [Third-Party Data Notices](advanced/projects-and-resources/THIRD-PARTY-NOTICES.md).
 - The NIV layer (Biblica) is secondary evidence. It never silently replaces an original-language value.
 - Every index review item has been decided; the package has no provisional rows. Build and review records are in the [index rebuild summary](advanced/release/nca-index-rebuild/SUMMARY.md), [NIV layer summary](advanced/release/nca-index-rebuild/NIV-SUMMARY.md) and [apparatus summary](advanced/release/nca-index-rebuild/APPARATUS-SUMMARY.md).
 - The earlier `SAGE_NUMBERS_REFERENCE_2026-09-09` package remains in Core for comparison only; its text-critical registries (variants, footnote guidance, unit conversions) are carried into the typed package.
