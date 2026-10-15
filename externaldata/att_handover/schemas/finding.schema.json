@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SAGE ATT Finding",
+  "type": "object",
+  "required": [
+    "finding_id",
+    "run_id",
+    "stream",
+    "source_ref_id",
+    "item_id",
+    "finding_type",
+    "source_locations",
+    "target_renderings"
+  ],
+  "properties": {
+    "finding_id": {"type": "string"},
+    "run_id": {"type": "string"},
+    "stream": {"type": "string", "enum": ["LEXICAL", "PHRASE", "COMBINED"]},
+    "source_ref_id": {"type": "string"},
+    "item_id": {"type": "string"},
+    "finding_type": {
+      "type": "string",
+      "enum": [
+        "CONSISTENT",
+        "MORPHOLOGICAL_VARIANT",
+        "ORTHOGRAPHIC_VARIANT",
+        "APPROVED_RENDERING_VARIANT",
+        "CONTEXTUAL_VARIANT",
+        "UNIQUE_RENDERING",
+        "POSSIBLE_INCONSISTENCY",
+        "REFERENCE_PATTERN_DIVERGENCE",
+        "UNRESOLVED_LOCAL_INPUT",
+        "AMBIGUOUS_LOCAL_INPUT"
+      ]
+    },
+    "source_locations": {"type": "array", "items": {"type": "string"}},
+    "target_renderings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rendering", "count"],
+        "properties": {
+          "rendering": {"type": "string"},
+          "count": {"type": "integer", "minimum": 0},
+          "locations": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "dominant_rendering": {"type": ["string", "null"]},
+    "correlation_status": {"type": ["string", "null"]},
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "exception_status": {"type": ["string", "null"]},
+    "rationale": {"type": ["string", "null"]}
+  }
+}

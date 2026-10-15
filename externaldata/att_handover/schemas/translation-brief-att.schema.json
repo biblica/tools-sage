@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SAGE ATT Translation Brief Configuration",
+  "type": "object",
+  "required": ["att_reference_mode", "target_id"],
+  "properties": {
+    "att_reference_mode": {
+      "type": "string",
+      "enum": ["SINGLE", "DUAL_HIERARCHICAL", "DUAL_COAUTHORITATIVE"]
+    },
+    "primary_reference": {"type": ["string", "null"]},
+    "secondary_reference": {"type": ["string", "null"]},
+    "reference_a": {"type": ["string", "null"]},
+    "reference_b": {"type": ["string", "null"]},
+    "target_id": {"type": "string"},
+    "local_att_input": {"type": "string", "default": "input/att"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"att_reference_mode": {"const": "SINGLE"}}},
+      "then": {"required": ["primary_reference"]}
+    },
+    {
+      "if": {"properties": {"att_reference_mode": {"const": "DUAL_HIERARCHICAL"}}},
+      "then": {"required": ["primary_reference", "secondary_reference"]}
+    },
+    {
+      "if": {"properties": {"att_reference_mode": {"const": "DUAL_COAUTHORITATIVE"}}},
+      "then": {"required": ["reference_a", "reference_b"]}
+    }
+  ]
+}

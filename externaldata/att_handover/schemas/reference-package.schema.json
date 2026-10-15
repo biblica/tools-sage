@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SAGE ATT Reference Package Manifest",
+  "type": "object",
+  "required": [
+    "ref_id",
+    "display_name",
+    "language",
+    "edition",
+    "resource_version",
+    "index_schema_version",
+    "text_checksum",
+    "indexes"
+  ],
+  "properties": {
+    "ref_id": {"type": "string"},
+    "display_name": {"type": "string"},
+    "language": {"type": "string"},
+    "edition": {"type": "string"},
+    "versification": {"type": ["string", "null"]},
+    "textual_tradition": {"type": ["string", "null"]},
+    "resource_version": {"type": "string"},
+    "index_schema_version": {"type": "string"},
+    "text_checksum": {"type": "string"},
+    "license_class": {
+      "type": "string",
+      "enum": ["PUBLIC", "LICENSED_SERVER", "INDEX_ONLY", "LOCAL_ONLY", "UNKNOWN"]
+    },
+    "indexes": {
+      "type": "object",
+      "required": ["occurrence", "lexical", "phrase"],
+      "properties": {
+        "occurrence": {"type": "string"},
+        "lexical": {"type": "string"},
+        "phrase": {"type": "string"},
+        "entity": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

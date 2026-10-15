@@ -1,0 +1,23 @@
+SAGE ATT HANDOVER SUMMARY
+
+ATT = Advanced Term Tool
+Purpose = recurring SOURCE term/phrase consistency review in TARGET
+Not RTC/STC
+
+PHASE 1
+- Static versioned reference indexes shipped with SAGE
+- SOURCE authority comes from Translation Brief
+- Modes: SINGLE, DUAL_HIERARCHICAL, DUAL_COAUTHORITATIVE
+- Local-only project additions via input/att/terms.txt and input/att/phrases.txt
+- Local entries reference the configured SOURCE only
+- TARGET indexed dynamically
+- No SQS dependency
+- No OL fallback unless OL itself is configured as SOURCE
+
+PHASE 2
+- SQS Reference Data Service
+- Registry, upload, validation, versioning, licensing, publishing, caching
+- Same package schema as Phase 1
+- Future migration of OL resources to SQS possible
+
+Start Claude CLI with prompts/CLAUDE-CLI-HANDOVER.md.

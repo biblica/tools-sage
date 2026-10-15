@@ -1,0 +1,7 @@
+# One SOURCE-language phrase per line.
+# Literal/normalized phrase resolution for Phase 1.
+# Examples only:
+kingdom of God
+it is written
+grace and peace
+according to the flesh
