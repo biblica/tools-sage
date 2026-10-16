@@ -71,7 +71,7 @@
       "source_version": "2026-08-28",
       "original_file": "system/skills/stc/references/LEGACY-PLANNING-HANDOVER.md",
       "original_sha256": "01d2b68198e98d43932516379e35431c322a4b5907d2791cce7cad655e8a745e",
-      "adapted_sha256": "8467d0c3e2e17231b6928b177ce990f19ccc1b8f101dfca841ad6bb3a289a1b3",
+      "adapted_sha256": "8689f2827c0d755041481868dcb99d97cfd0c030b1821e73f7385cc3fe43b5a6",
       "qualification_status": "VALIDATED",
       "transformation_summary": "Canonical Source Text Correspondence routing with legacy source traceability. Consolidates the former SAW Skill and routes pinned global evidence and analysis execution rules.",
       "shared_references": [
