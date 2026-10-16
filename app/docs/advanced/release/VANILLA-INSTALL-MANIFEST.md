@@ -915,6 +915,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/model_language_competency.py`
 - `system/src/sage/model_policy.py`
 - `system/src/sage/model_service.py`
+- `system/src/sage/name_alignment.py`
 - `system/src/sage/natural_language.py`
 - `system/src/sage/nca.py`
 - `system/src/sage/nca_cli.py`
@@ -1156,6 +1157,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_menu_projects.py`
 - `system/tests/test_model_evaluation.py`
 - `system/tests/test_model_language_competency.py`
+- `system/tests/test_name_alignment.py`
 - `system/tests/test_natural_language_routing.py`
 - `system/tests/test_numeric_candidates.py`
 - `system/tests/test_ol_analysis.py`
@@ -1248,6 +1250,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/clone_and_install.py`
 - `system/tools/clone_and_install.sh`
 - `system/tools/deep_audit.py`
+- `system/tools/evaluate_name_alignment.py`
 - `system/tools/hardening.py`
 - `system/tools/reset_project_state.py`
 - `system/tools/validate_numbers_reference.py`

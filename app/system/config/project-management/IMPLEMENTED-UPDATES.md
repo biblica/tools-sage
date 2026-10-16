@@ -9,6 +9,37 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261016-001 — STC name check: MACULA names aligned with the WIP (TODO-20261015-006, names part)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261014`
+- **TODO:** `TODO-20261015-006` (names; key terms remain open)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - **Aligner:** new `name_alignment.py` (`SAGE_NAME_ALIGNMENT_V2`). It aligns MACULA proper names with the
+    words of the whole WIP using IBM Model 1 restricted to names, with a NULL word. It learns each name's
+    spelling stems and the WIP's inflection endings, measured in letters so that Indic vowel signs do not
+    count. It is deterministic and cached per WIP text and package in `system/cache/name-alignment/`.
+  - **STC:** the task manifest gains `stc_alignment.name_check` (`CHECKED` or `NOT_CHECKED` with the reason;
+    it never blocks). `VARIANT` and `SUBSTITUTION` verses become `NAME` deterministic candidates
+    (`NM-<ref>-<hash>`) that the model adjudicates. The STC Skill and task instructions explain how to judge
+    them.
+  - **ABSENT is withheld from STC:** in an LLM-judged audit of 84 sampled candidates from six WIPs
+    (Ukrainian, NIV, Arabic, Swahili, Malayalam, Hindi), 3 of 59 `ABSENT` candidates were worth a reviewer's
+    time. The other kinds scored 7 of 25. Detection was correct for 54 of 59 `ABSENT`, 10 of 16 `VARIANT`,
+    and 5 of 9 `SUBSTITUTION` candidates.
+  - **Docs:** the name check section of `ORIGINAL-LANGUAGE-RESOURCES.md`; measurement tool
+    `system/tools/evaluate_name_alignment.py` (synthetic injection, no hand labelling).
+- **Verification:** new `test_name_alignment.py`; STC manifest test updated. Synthetic injection on nine WIPs
+  (GEN, 1CH, JHN, ACT, 60 planted errors per book). In spaced scripts, each book recovers 67-95% of planted
+  misspellings (most 75-95%) and 75-100% of swapped names. In Thai and Chinese, misspellings are not detected by design.
+  Counting endings in letters cut false Malayalam `VARIANT`s (3 of the 4 found by the audit). Malayalam
+  `VARIANT` volume fell from 125 to 81, and its misspelling recall moved from 56/75 to 53/75. The other five
+  audited WIPs were unchanged. Full suite re-run.
+- **Known limits (from the audit):** `SUBSTITUTION` can misfire where Greek and WIP verse boundaries differ
+  (ACT 13:38). A name's learned rendering can attach to a neighbouring name in a list (1CH Galal). A person
+  and a place that share a lemma can mislearn one rendering (Penuel/Peniel, Nazareth/Nazarene).
+
 ### IMP-20261015-006 — Model claims about original-language words checked against MACULA (TODO-20261015-007)
 
 - **Version:** `0.02a3` (development branch)

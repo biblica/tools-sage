@@ -85,11 +85,15 @@ class OlAnalysis:
         self._blobs = dict(blobs)
         self._verses: dict[str, dict[VerseRef, list[OlWord]]] = {}
 
-    def words(self, family: str, references: Iterable[VerseRef]) -> list[OlWord]:
-        """MACULA words of one family in the given verses, in order."""
+    def verses(self, family: str) -> Mapping[VerseRef, list[OlWord]]:
+        """Every MACULA verse of one family with its words."""
         if family not in self._verses:
             self._verses[family] = _read_family(self._blobs[FAMILY_FILES[family]], family) if family in FAMILY_FILES else {}
-        table = self._verses[family]
+        return self._verses[family]
+
+    def words(self, family: str, references: Iterable[VerseRef]) -> list[OlWord]:
+        """MACULA words of one family in the given verses, in order."""
+        table = self.verses(family)
         return [word for ref in references for word in table.get(ref, [])]
 
     def vocabulary(self, family: str) -> dict[str, list[str]]:

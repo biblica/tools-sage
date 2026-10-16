@@ -109,3 +109,30 @@ SAGE computes these checks itself when it validates the output; check results wr
 ignored. Rebuild the package with `system/tools/build_ol_analysis.py build --date YYYY-MM-DD` from the
 MACULA tables fetched by `system/tools/build_numbers_index.py fetch`; `verify` rebuilds it and requires
 byte-identical files. Licenses and attribution: [Third-Party Data Notices](THIRD-PARTY-NOTICES.md).
+
+### Name check (STC)
+
+MACULA marks every proper name. When SAGE builds an STC task, it learns how the WIP renders each name across
+all its books with a small word aligner (IBM Model 1 restricted to names, with a NULL word). Each name gets
+spelling stems that cover its inflected forms. Code learns names from the whole WIP and caches them per WIP
+text and package in `system/cache/name-alignment/`. A verse whose original-language text has a name but
+whose WIP text lacks that name's usual rendering becomes a `NAME` candidate (`CONFIRM`/`REJECT`/`UNSURE`):
+
+| Kind | Meaning |
+|---|---|
+| `VARIANT` | The verse has a rare word spelled one or two letters away from the usual rendering |
+| `SUBSTITUTION` | The verse has another well-established name that its original-language verse does not have |
+
+Code also recognizes `ABSENT` (neither of the above), but STC does not receive it. In an audit of 84 sampled
+candidates from six WIPs, judged by an LLM, 3 of 59 `ABSENT` candidates were worth a reviewer's time; most were
+pronouns or restructured sentences. STC's own review already looks for omissions.
+
+A name needs at least three WIP verses, with its stems covering at least half of them, before it is checked.
+A misspelling after the stem looks like inflection and is not flagged. Endings are learned from the WIP
+itself: an ending of up to four letters (vowel signs and viramas do not count) that alternates in the forms
+of at least five names. In scripts written without spaces (Chinese, Thai), `VARIANT` is not detected. The model judges each candidate: a different spelling, another
+name, or an omission that changes the meaning is a `CONSISTENCY` finding, and a pronoun or a restructured
+sentence is not. A missing package or a WIP that does not compile records `name_check: NOT_CHECKED` and the
+task continues. Measure the check on a real WIP with `system/tools/evaluate_name_alignment.py`. It plants
+misspellings, swapped names, and removed names, then reports how many come back as candidates. A removed name
+comes back as `ABSENT`, which STC does not receive.

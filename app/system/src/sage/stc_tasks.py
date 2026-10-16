@@ -6,6 +6,7 @@ Split from act_tasks.py, which re-exports every name defined here.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 from typing import Sequence
 
@@ -31,6 +32,7 @@ from .act_evidence import _write_report_language_contract
 from .atomic import atomic_write_json
 from .candidates import candidate_inventory
 from .errors import EvidenceLimitError
+from .errors import SageError
 from .errors import ValidationError
 from .evidence import TOKEN_ESTIMATOR
 from .evidence_policy import AUTHORITY_INTERPRETATION_RULES
@@ -40,6 +42,10 @@ from .evidence_policy import PROCESS_CONTROL
 from .evidence_policy import SUBJECT_TEXT
 from .evidence_policy import task_evidence_policy
 from .hashing import sha256_bytes
+from .name_alignment import NAME_ALIGNER_VERSION
+from .name_alignment import wip_name_candidate_table
+from .ol_analysis import load_ol_analysis
+from .scripture import compile_project
 from .hashing import sha256_file
 from .numeric_candidates import numeric_candidates
 from .platform_commands import render_sage_command
@@ -70,6 +76,40 @@ from .versification_service import VersificationService
 from .vrs import VerseRef
 from .work_units import records_from_project_result
 from .work_units import select_records_for_scope
+
+
+def _stc_name_check(
+    config: EcosystemConfig,
+    output: Any,
+    service: VersificationService,
+    primary_wip: Sequence[Any],
+) -> dict[str, Any]:
+    """Name candidates for the primary verses, learned from the whole WIP; never blocks the task.
+
+    Any failure (no MACULA package, a book that does not compile) leaves the names unchecked with the reason.
+    """
+    try:
+        analysis = load_ol_analysis(config.root)
+        if analysis is None:
+            return {"status": "NOT_CHECKED", "reason": "SAGE has no original-language analysis package", "candidates": []}
+        compiled_wip = compile_project(config, output)
+        usable = {**compiled_wip, "files": [row for row in compiled_wip.get("files", []) if Path(str(row.get("cache", ""))).is_file()]}
+        records = records_from_project_result(output.project_id, usable, resource_role="WIP")
+        index = ProjectVerseIndex.cached(output.project_id, records, service.project_schema(output))
+        table = wip_name_candidate_table(
+            analysis,
+            records,
+            index.records_for_canonical,
+            cache_dir=config.cache_root / "name-alignment",
+        )
+    except (SageError, OSError, ValueError, KeyError) as exc:
+        return {"status": "NOT_CHECKED", "reason": f"name check unavailable: {exc}", "candidates": []}
+    return {
+        "status": "CHECKED",
+        "aligner": NAME_ALIGNER_VERSION,
+        "package_id": analysis.package_id,
+        "candidates": [row for record in primary_wip for row in table.get(record.reference, [])],
+    }
 
 
 def _create_stc_task(
@@ -279,6 +319,8 @@ def _create_stc_task(
             "verse_correspondence": record_correspondence(primary_wip, wip_index, ol_index),
             # Verses far shorter or longer than their OL text: candidates for omissions and additions.
             "length_outliers": length_outliers(primary_wip, wip_records_all, wip_index, ol_index),
+            # Verses missing the WIP's usual rendering of an original-language name.
+            "name_check": _stc_name_check(config, output, service, primary_wip),
             "numeric_candidates": numeric_candidates(
                 config,
                 [
@@ -434,6 +476,7 @@ def _create_stc_task(
             "deterministic_candidates": candidate_inventory(
                 numeric=(stc_alignment or {}).get("numeric_candidates"),
                 lengths=(stc_alignment or {}).get("length_outliers", []),
+                names=((stc_alignment or {}).get("name_check") or {}).get("candidates", []),
             ),
             "skill_id": skill.skill_id,
             "job_id": job_id, "run_id": run_id,
@@ -518,6 +561,7 @@ def _create_stc_task(
             "Cite `target_reference` in WIP verse numbering; `wip_to_original_language_verses` lists the WIP verses whose OL verses carry other numbers.",
             "Quote `wip_evidence` and `ol_evidence` verbatim from the supplied slice; SAGE checks every quotation against it.",
             "SAGE already reports text present on only one side as OMISSION or ADDITION; do not restate those coordinates.",
+            "Names: a `NAME` candidate is a verse whose original-language text has a name but whose WIP text lacks the WIP's usual rendering of it. Report a CONSISTENCY finding when the name is spelled differently, replaced by another name, or left out so the meaning changes; a pronoun or restructured sentence that keeps the meaning is not a finding.",
             "Check each `verse_length_outliers` verse closely for a material omission or addition; its length alone is not a finding.",
             "Numbers: `numeric_candidates` compares WIP digits with the number index (see its caveat). Report no number finding for a `MATCH` verse; the NCA tool checks numbers in full.",
             "Original-language words: in each finding's `ol_words`, list the original-language words the finding depends on, with their lemma and parse; SAGE checks each against MACULA and marks a finding whose analysis MACULA contradicts as unverified.", "",

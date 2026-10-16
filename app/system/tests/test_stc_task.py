@@ -264,8 +264,12 @@ def test_stc_task_routes_ol_by_its_persisted_planner_version(
                 {"wip": "MAT 1:3", "original_language": ["MAT 1:2"], "precision": "COORDINATE"}
             ],
             "length_outliers": [],
+            "name_check": manifest["stc_alignment"]["name_check"],
             "numeric_candidates": manifest["stc_alignment"]["numeric_candidates"],
         }
+        # The fixture workspace may not carry the MACULA package; the name check then degrades, never blocks.
+        assert manifest["stc_alignment"]["name_check"]["status"] in {"CHECKED", "NOT_CHECKED"}
+        assert manifest["stc_alignment"]["name_check"]["candidates"] == []
         assert manifest["stc_alignment"]["numeric_candidates"]["caveat"].startswith("Index values follow")
     else:
         assert manifest["stc_alignment"] is None

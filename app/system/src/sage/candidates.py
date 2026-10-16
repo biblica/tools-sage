@@ -1,13 +1,15 @@
 """Deterministic candidates the model adjudicates (CONFIRM, REJECT, or UNSURE) in RTC and STC.
 
 Code finds differences it cannot judge on its own: \\add and \\nd usage, digits that disagree with the
-number index, numbers written in words, and (STC) verses far shorter or longer than their OL text. Each
+number index, numbers written in words, and (STC) verses far shorter or longer than their OL text or missing
+the WIP's usual rendering of an original-language name (``name_alignment``). Each
 becomes one candidate with a stable ID; the model returns one adjudication per candidate, and a CONFIRM
 points at the finding that reports it.
 """
 
 from __future__ import annotations
 
+import hashlib
 from typing import Any, Iterable, Mapping, Sequence
 
 VERDICTS = ("CONFIRM", "REJECT", "UNSURE")
@@ -23,6 +25,7 @@ def candidate_inventory(
     markers: Iterable[Mapping[str, Any]] = (),
     numeric: Mapping[str, Any] | None = None,
     lengths: Iterable[Mapping[str, Any]] = (),
+    names: Iterable[Mapping[str, Any]] = (),
 ) -> list[dict[str, Any]]:
     """Build the task's candidate list with stable IDs from the deterministic checks."""
     rows: list[dict[str, Any]] = []
@@ -68,6 +71,17 @@ def candidate_inventory(
                     f"for its original-language text ({row.get('relative_length')}x the book's usual ratio). "
                     "Is something omitted or added?"
                 ),
+            }
+        )
+    for row in names:
+        reference = str(row.get("wip_reference") or "")
+        name_id = hashlib.sha256(str(row.get("name_key") or "").encode("utf-8")).hexdigest()[:8].upper()
+        rows.append(
+            {
+                "candidate_id": f"NM-{_ref_key(reference)}-{name_id}",
+                "kind": "NAME",
+                "target_reference": reference,
+                "question": str(row.get("question") or ""),
             }
         )
     unique: dict[str, dict[str, Any]] = {}
