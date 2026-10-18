@@ -88,6 +88,9 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/release/NCA-OPTIMIZATION-QUALIFICATION.md`
 - `docs/advanced/release/NCA-QUALIFICATION.md`
 - `docs/advanced/release/NCA-REFERENCE-QUALIFICATION.json`
+- `docs/advanced/release/NCA-RELEASE-GATE-2026-10-18-DEVELOPMENT.json`
+- `docs/advanced/release/NCA-RELEASE-GATE-2026-10-18-HELDOUT.json`
+- `docs/advanced/release/NCA-RELEASE-GATE.md`
 - `docs/advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-DESIGN.md`
 - `docs/advanced/release/PROVISIONAL-MEDIUM-SKILL-ROUTING-IMPLEMENTATION-PLAN.md`
 - `docs/advanced/release/RELEASE-GATES.md`
@@ -1104,6 +1107,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_projection.py`
 - `system/tests/numbers/test_reference.py`
 - `system/tests/numbers/test_reference_release.py`
+- `system/tests/numbers/test_release_gate.py`
 - `system/tests/numbers/test_replay.py`
 - `system/tests/numbers/test_reporting.py`
 - `system/tests/numbers/test_resources.py`
@@ -1252,6 +1256,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/deep_audit.py`
 - `system/tools/evaluate_name_alignment.py`
 - `system/tools/hardening.py`
+- `system/tools/qualify_nca.py`
 - `system/tools/reset_project_state.py`
 - `system/tools/validate_numbers_reference.py`
 - `system/tools/validate_package.py`

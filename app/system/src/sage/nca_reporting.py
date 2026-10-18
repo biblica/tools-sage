@@ -515,6 +515,18 @@ _ACTION_TEXT = {
     "report.nca.action.APPARATUS_VARIANT":
         "{ref}: Please confirm which reading the translation follows ({wip}) and add or check the footnote; "
         "the original-language text has {expected}.",
+    "report.nca.issue.ONE_ONLY_DIFFERENCE":
+        "The translation has {wip} and the {authority} has {expected}; they differ only by the number one.",
+    "report.nca.action.ONE_ONLY_DIFFERENCE":
+        "{ref}: Please check the word \"one\" in this verse. Saying \"one talent\" for \"a talent\" or "
+        "leaving out a repeated \"one\" is usually faithful; no change is needed if the meaning is the same.",
+    "report.nca.issue.VALUE_OMITTED":
+        "The translation has {wip}; the {authority} has {expected}. The translation leaves out {omitted} and adds "
+        "no other number.",
+    "report.nca.action.VALUE_OMITTED":
+        "{ref}: Please check whether leaving out {omitted} is a deliberate style choice (a repeated number "
+        "stated once, an idiom, \"each\" or \"both\") and whether it is consistent with how the translation "
+        "handles the same construction elsewhere; restore the number if it was dropped by mistake.",
     "report.nca.apparatus_heading": "Apparatus evidence",
     "report.nca.attribution": "Sources and attribution",
     "report.nca.no_apparatus": "No apparatus entry; registered by SAGE guidance only.",
@@ -656,6 +668,8 @@ def _finding_text(finding: Mapping[str, object], group: Mapping[str, object], te
             wip_pairs=", ".join(f"{p.get('wip_counts') or '?'} {p.get('wip_value')}" for p in pairs) or wip,
             source_pairs=", ".join(f"{item.get('referent') or '?'} {item.get('value')}"
                                    for item in context.get("source_items") or ()) or expected)
+    if kind == "VALUE_OMITTED":
+        values.update(omitted=_list(context.get("omitted"), text))
     if kind in {"MALFORMED_NUMERAL", "NUMBER_NOT_IN_SOURCE"}:
         values.update(numerals=", ".join(str(item) for item in context.get("numerals") or ()) or wip)
     if kind == "CONVENTION_EDGE_CASE":

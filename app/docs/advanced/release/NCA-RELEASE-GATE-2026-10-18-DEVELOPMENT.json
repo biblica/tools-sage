@@ -1,0 +1,7526 @@
+{
+  "checks": {
+    "extraction_recall": true,
+    "fail_precision": false,
+    "planted_detection": true,
+    "two_languages": true
+  },
+  "code_sha256": "ebe6f2da7a69f705b51241e244c7cdd33b6c36f8a44bb43c8506a27d372f2adc",
+  "comparison_mode": "UNORDERED",
+  "gate": "NCA_RELEASE_GATE",
+  "judge_rule": "gold values only where all judges agree; FAIL is GENUINE only when all judges say so",
+  "judges": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5"
+  ],
+  "languages": [
+    {
+      "cases": [
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "23"
+          ],
+          "extracted_values": [
+            "23"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "23"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1CH 2:22"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "5",
+            "22034"
+          ],
+          "extracted_values": [
+            "5",
+            "22034"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5",
+            "22034"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1CH 7:7"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "120000"
+          ],
+          "extracted_values": [
+            "120000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "120000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1CH 12:37"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE",
+            "MULTI"
+          ],
+          "expected_values": [
+            "1000",
+            "7000",
+            "20000",
+            "100"
+          ],
+          "extracted_values": [
+            "1000",
+            "7000",
+            "20000",
+            "100"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1000",
+            "7000",
+            "20000",
+            "100"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1CH 18:4"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "70000"
+          ],
+          "extracted_values": [
+            "70000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "70000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1CH 21:14"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "1KI 5:12"
+          ]
+        },
+        {
+          "classes": [
+            "MEASURE"
+          ],
+          "expected_values": [
+            "20",
+            "20",
+            "20"
+          ],
+          "extracted_values": [
+            "20",
+            "20",
+            "20"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "20",
+            "20",
+            "20"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 6:20"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "12",
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "extracted_values": [
+            "12",
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12",
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 7:25"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "10",
+            "4",
+            "1",
+            "4",
+            "3"
+          ],
+          "extracted_values": [
+            "10",
+            "4",
+            "4",
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10",
+            "4",
+            "4",
+            "3"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "1KI 7:27"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "3/2"
+          ],
+          "extracted_values": [
+            "1",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "3/2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "1KI 7:31"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION"
+          ],
+          "expected_values": [
+            "4",
+            "3/2"
+          ],
+          "extracted_values": [
+            "4",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4",
+            "3/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 7:32"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "ONE"
+          ],
+          "expected_values": [
+            "4",
+            "4",
+            "1"
+          ],
+          "extracted_values": [
+            "4",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4",
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "VALUE_OMITTED",
+          "western_references": [
+            "1KI 7:34"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION"
+          ],
+          "expected_values": [
+            "1/2"
+          ],
+          "extracted_values": [
+            "1/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 7:35"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "10"
+          ],
+          "extracted_values": [
+            "10"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 11:35"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "450"
+          ],
+          "extracted_values": [
+            "450"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "450"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 18:22"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "4"
+          ],
+          "extracted_values": [
+            "4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "1KI 18:34"
+          ]
+        },
+        {
+          "classes": [
+            "MEASURE"
+          ],
+          "expected_values": [
+            "3",
+            "2"
+          ],
+          "extracted_values": [
+            "3",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3",
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1SA 2:21"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "1SA 3:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "1SA 6:17"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "1SA 9:15"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1SA 20:27"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": false,
+          "gold_values": [],
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "1SA 27:1"
+          ]
+        },
+        {
+          "classes": [
+            "MEASURE"
+          ],
+          "expected_values": [
+            "20",
+            "20",
+            "600"
+          ],
+          "extracted_values": [
+            "20",
+            "20",
+            "600"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "20",
+            "20",
+            "600"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 3:8"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "COMPOUND",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "2",
+            "35",
+            "5"
+          ],
+          "extracted_values": [
+            "2",
+            "35",
+            "5"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "35",
+            "5"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "2CH 3:15"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "COMPOUND",
+            "MEASURE",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1",
+            "666"
+          ],
+          "extracted_values": [
+            "666"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "666"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "2CH 9:13"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "180000"
+          ],
+          "extracted_values": [
+            "180000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "180000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 11:1"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "14",
+            "22",
+            "16"
+          ],
+          "extracted_values": [
+            "14",
+            "22",
+            "16"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "14",
+            "22",
+            "16"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 13:21"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "LARGE"
+          ],
+          "expected_values": [
+            "300000"
+          ],
+          "extracted_values": [
+            "300000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "300000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "2CH 17:14"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "25",
+            "29"
+          ],
+          "extracted_values": [
+            "25",
+            "29"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "25",
+            "29"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 29:1"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "extracted_values": [
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 29:21"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "14",
+            "2"
+          ],
+          "extracted_values": [
+            "14",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "14",
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 30:15"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "2CH 33:5"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "2600",
+            "300"
+          ],
+          "extracted_values": [
+            "2600",
+            "3000"
+          ],
+          "extraction_correct": true,
+          "fail_verdict": "GENUINE",
+          "fail_verdicts_by_judge": {
+            "claude-opus-5-5": "GENUINE",
+            "claude-sonnet-5-5": "GENUINE"
+          },
+          "gold_values": [
+            "2600",
+            "3000"
+          ],
+          "outcome": "FAIL",
+          "review_kind": "VALUE_DIFFERENCE",
+          "western_references": [
+            "2CH 35:8"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "2KI 4:18"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "25",
+            "16"
+          ],
+          "extracted_values": [
+            "25",
+            "16"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "25",
+            "16"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2KI 15:33"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "4",
+            "7"
+          ],
+          "extracted_values": [
+            "4",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2KI 18:9"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "2KI 21:13"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "100"
+          ],
+          "extracted_values": [
+            "100",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "100",
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "2KI 23:33"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "100"
+          ],
+          "extracted_values": [
+            "100"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "100"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2SA 3:14"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "18000"
+          ],
+          "extracted_values": [
+            "18000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "18000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2SA 8:13"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "2SA 17:21"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1000",
+            "15",
+            "20"
+          ],
+          "extracted_values": [
+            "1000",
+            "15",
+            "20"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1000",
+            "15",
+            "20"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2SA 19:17"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "40"
+          ],
+          "extracted_values": [
+            "40"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "40"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "AMO 2:10"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "DAN 7:4"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "3"
+          ],
+          "extracted_values": [
+            "1",
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "3"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "DAN 7:8"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": false,
+          "gold_values": [],
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "DEU 4:32"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "2",
+            "1",
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "DEU 25:14"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "ECC 2:14"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "EXO 12:46"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "EXO 12:49"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "1/10"
+          ],
+          "extracted_values": [
+            "1/10"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/10"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EXO 16:36"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "5/2",
+            "3/2"
+          ],
+          "extracted_values": [
+            "5/2",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5/2",
+            "3/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EXO 25:17"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS"
+          ],
+          "expected_values": [
+            "2",
+            "2"
+          ],
+          "extracted_values": [
+            "2",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "EXO 25:18"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "30",
+            "4",
+            "1",
+            "1",
+            "11"
+          ],
+          "extracted_values": [
+            "1",
+            "30",
+            "4",
+            "11"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "30",
+            "4",
+            "11"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "EXO 26:8"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE",
+            "ONE"
+          ],
+          "expected_values": [
+            "10",
+            "3/2",
+            "1"
+          ],
+          "extracted_values": [
+            "10",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10",
+            "3/2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 26:16"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 29:22"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "1/10",
+            "1/4",
+            "1/4",
+            "1"
+          ],
+          "extracted_values": [
+            "1/10",
+            "1/4",
+            "1/4",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/10",
+            "1/4",
+            "1/4",
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "EXO 29:40"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 30:10"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "TIME"
+          ],
+          "expected_values": [
+            "6",
+            "7"
+          ],
+          "extracted_values": [
+            "6",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "6",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EXO 31:17"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE",
+            "ONE"
+          ],
+          "expected_values": [
+            "10",
+            "3/2",
+            "1"
+          ],
+          "extracted_values": [
+            "10",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10",
+            "3/2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 36:21"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "5/2",
+            "3/2"
+          ],
+          "extracted_values": [
+            "5/2",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5/2",
+            "3/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EXO 37:6"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "2",
+            "3/2"
+          ],
+          "extracted_values": [
+            "2",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "3/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EXO 37:10"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "1",
+            "1",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "1",
+            "2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "EXO 37:25"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "LARGE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1/2",
+            "20",
+            "603550"
+          ],
+          "extracted_values": [
+            "603550",
+            "20",
+            "1",
+            "1/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "603550",
+            "20",
+            "1",
+            "1/2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 38:26"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "EXO 39:5"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "EZK 4:8"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "LARGE",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "10000"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EZK 16:7"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1",
+            "5",
+            "1"
+          ],
+          "extracted_values": [
+            "1",
+            "1",
+            "5",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "1",
+            "5",
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "EZK 40:7"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EZK 40:8"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "50",
+            "25"
+          ],
+          "extracted_values": [
+            "50",
+            "25"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "50",
+            "25"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZK 40:29"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2",
+            "6",
+            "7"
+          ],
+          "extracted_values": [
+            "2",
+            "6",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "6",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZK 41:3"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE",
+            "ONE"
+          ],
+          "expected_values": [
+            "2",
+            "1",
+            "4"
+          ],
+          "extracted_values": [
+            "2",
+            "1",
+            "4",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "1",
+            "4",
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "EZK 43:14"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MULTI"
+          ],
+          "expected_values": [
+            "14",
+            "14",
+            "4",
+            "1/2"
+          ],
+          "extracted_values": [
+            "14",
+            "14",
+            "1",
+            "1/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "14",
+            "14",
+            "1",
+            "1/2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EZK 43:17"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "COMPOUND",
+            "MEASURE",
+            "MULTI"
+          ],
+          "expected_values": [
+            "20",
+            "20",
+            "25",
+            "15"
+          ],
+          "extracted_values": [
+            "20",
+            "20",
+            "25",
+            "15"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "20",
+            "20",
+            "25",
+            "15"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "EZK 45:12"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "1/6"
+          ],
+          "extracted_values": [
+            "1/6",
+            "1/6"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/6",
+            "1/6"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EZK 45:13"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "112"
+          ],
+          "extracted_values": [
+            "112"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "112"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 2:18"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "725"
+          ],
+          "extracted_values": [
+            "725"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "725"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 2:33"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "LARGE"
+          ],
+          "expected_values": [
+            "435",
+            "6720"
+          ],
+          "extracted_values": [
+            "435",
+            "6720"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "435",
+            "6720"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 2:67"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "TIME"
+          ],
+          "expected_values": [
+            "2",
+            "2",
+            "20"
+          ],
+          "extracted_values": [
+            "2",
+            "2",
+            "20"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "2",
+            "20"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 3:8"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 4:24"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "MULTI"
+          ],
+          "expected_values": [
+            "12",
+            "96",
+            "77",
+            "12"
+          ],
+          "extracted_values": [
+            "12",
+            "96",
+            "77",
+            "12"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12",
+            "96",
+            "77",
+            "12"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 8:35"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "7",
+            "7"
+          ],
+          "extracted_values": [
+            "7",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 2:2"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "7"
+          ],
+          "extracted_values": [
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 2:3"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "207"
+          ],
+          "extracted_values": [
+            "207"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "207"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 11:21"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "GEN 22:8"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "30",
+            "40",
+            "10",
+            "20",
+            "10"
+          ],
+          "extracted_values": [
+            "30",
+            "40",
+            "10",
+            "20",
+            "10"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "30",
+            "40",
+            "10",
+            "20",
+            "10"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 32:15"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "GEN 34:15"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "7"
+          ],
+          "extracted_values": [
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 41:7"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "17",
+            "147"
+          ],
+          "extracted_values": [
+            "17",
+            "147"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "17",
+            "147"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 47:28"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "20",
+            "10",
+            "50",
+            "20"
+          ],
+          "extracted_values": [
+            "20",
+            "10",
+            "50",
+            "20"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "20",
+            "10",
+            "50",
+            "20"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "HAG 2:16"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "3"
+          ],
+          "extracted_values": [
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "HEB 11:23"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "50"
+          ],
+          "extracted_values": [
+            "50"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "50"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "ISA 3:3"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI"
+          ],
+          "expected_values": [
+            "6",
+            "6",
+            "2",
+            "2",
+            "2"
+          ],
+          "extracted_values": [
+            "6",
+            "2",
+            "2",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "6",
+            "2",
+            "2",
+            "2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "ISA 6:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "ISA 51:19"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "ISA 58:5"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1000"
+          ],
+          "extracted_values": [
+            "1000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 9:49"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "23"
+          ],
+          "extracted_values": [
+            "23"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "23"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 10:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION"
+          ],
+          "expected_values": [
+            "1/2",
+            "1/2",
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "VALUE_OMITTED",
+          "western_references": [
+            "JDG 16:3"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "3000"
+          ],
+          "extracted_values": [
+            "3000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 16:27"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "400000"
+          ],
+          "extracted_values": [
+            "400000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "400000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 20:17"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "3"
+          ],
+          "extracted_values": [
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 20:30"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "4"
+          ],
+          "extracted_values": [
+            "4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JER 51:59"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "JER 52:7"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JHN 11:6"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "JHN 12:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "JHN 17:12"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "5"
+          ],
+          "extracted_values": [
+            "5"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JOS 10:16"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "JOS 11:19"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1"
+          ],
+          "extracted_values": [
+            "1",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "JOS 12:11"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "COMPOUND",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "31"
+          ],
+          "extracted_values": [
+            "1",
+            "31"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "31"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "JOS 12:24"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION"
+          ],
+          "expected_values": [
+            "19/2"
+          ],
+          "extracted_values": [
+            "9"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "9"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "JOS 13:7"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION"
+          ],
+          "expected_values": [
+            "19/2"
+          ],
+          "extracted_values": [
+            "19/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "19/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JOS 14:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "LEV 4:9"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "4"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "LEV 11:27"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "5"
+          ],
+          "extracted_values": [
+            "5"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 19:25"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "TIME"
+          ],
+          "expected_values": [
+            "7",
+            "8"
+          ],
+          "extracted_values": [
+            "7",
+            "8"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7",
+            "8"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 23:36"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "MULTI",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "15",
+            "7",
+            "7",
+            "1",
+            "8"
+          ],
+          "extracted_values": [
+            "15",
+            "7",
+            "7",
+            "1",
+            "8"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "15",
+            "7",
+            "7",
+            "1",
+            "8"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 23:39"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "7"
+          ],
+          "extracted_values": [
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 25:20"
+          ]
+        },
+        {
+          "classes": [
+            "MEASURE",
+            "TIME"
+          ],
+          "expected_values": [
+            "20",
+            "60",
+            "50"
+          ],
+          "extracted_values": [
+            "20",
+            "60",
+            "50"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "20",
+            "60",
+            "50"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 27:3"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LUK 7:18"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "LUK 8:22"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS"
+          ],
+          "expected_values": [
+            "12"
+          ],
+          "extracted_values": [
+            "12"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "LUK 9:1"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "12"
+          ],
+          "extracted_values": [
+            "12"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "MAT 11:1"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI",
+            "TIME"
+          ],
+          "expected_values": [
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "extracted_values": [
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "extraction_correct": null,
+          "gold_values": null,
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "MAT 12:40"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "3"
+          ],
+          "extracted_values": [
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "MAT 13:33"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "200"
+          ],
+          "extracted_values": [
+            "200"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "200"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "MRK 6:37"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "652"
+          ],
+          "extracted_values": [
+            "652"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "652"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:10"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "845"
+          ],
+          "extracted_values": [
+            "845"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "845"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:13"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "112"
+          ],
+          "extracted_values": [
+            "112"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "112"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:24"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1017"
+          ],
+          "extracted_values": [
+            "1017"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1017"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:42"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1000",
+            "50",
+            "530"
+          ],
+          "extracted_values": [
+            "1000",
+            "50",
+            "530"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1000",
+            "50",
+            "530"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:70"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1",
+            "7"
+          ],
+          "extracted_values": [
+            "1",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 8:2"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "284"
+          ],
+          "extracted_values": [
+            "284"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "284"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 11:18"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "2",
+            "2"
+          ],
+          "extracted_values": [
+            "1",
+            "2",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "2",
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 1:1"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "10"
+          ],
+          "extracted_values": [
+            "10"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 7:66"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "2",
+            "5",
+            "5",
+            "5"
+          ],
+          "extracted_values": [
+            "2",
+            "5",
+            "5",
+            "5",
+            "1"
+          ],
+          "extraction_correct": null,
+          "gold_values": null,
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "NUM 7:77"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI"
+          ],
+          "expected_values": [
+            "12",
+            "10",
+            "10",
+            "120"
+          ],
+          "extracted_values": [
+            "12",
+            "10",
+            "120"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12",
+            "10",
+            "120"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "NUM 7:86"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "70"
+          ],
+          "extracted_values": [
+            "70"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "70"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 11:16"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1"
+          ],
+          "extracted_values": [
+            "1",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "NUM 15:16"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "1/2",
+            "1/3",
+            "1/4"
+          ],
+          "extracted_values": [
+            "1/2",
+            "1/3",
+            "1/4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/2",
+            "1/3",
+            "1/4"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 28:14"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1",
+            "14"
+          ],
+          "extracted_values": [
+            "1",
+            "14"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "14"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 28:16"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "MULTI"
+          ],
+          "expected_values": [
+            "3",
+            "11",
+            "2",
+            "14"
+          ],
+          "extracted_values": [
+            "3",
+            "11",
+            "2",
+            "14",
+            "1"
+          ],
+          "extraction_correct": false,
+          "gold_values": [
+            "3",
+            "11",
+            "2",
+            "14"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "NUM 29:20"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "PRO 14:1"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "3",
+            "4"
+          ],
+          "extracted_values": [
+            "3",
+            "4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3",
+            "4"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "PRO 30:29"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "PSA 88:4"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "PSA 127:4"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [],
+          "extracted_values": [],
+          "extraction_correct": null,
+          "gold_values": null,
+          "outcome": "NOT_ASSESSED",
+          "review_kind": null,
+          "western_references": [
+            "PSA 144:9"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "7",
+            "7",
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "extracted_values": [
+            "7",
+            "7",
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7",
+            "7",
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 1:20"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "12000",
+            "12000",
+            "12000"
+          ],
+          "extracted_values": [
+            "12000",
+            "12000",
+            "12000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12000",
+            "12000",
+            "12000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 7:6"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION"
+          ],
+          "expected_values": [
+            "1/2"
+          ],
+          "extracted_values": [
+            "1/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 8:1"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2",
+            "2"
+          ],
+          "extracted_values": [
+            "2",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 11:4"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "TIME"
+          ],
+          "expected_values": [
+            "7/2"
+          ],
+          "extracted_values": [
+            "7/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 11:9"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1600"
+          ],
+          "extracted_values": [
+            "1600"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1600"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 14:20"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "ROM 3:30"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "1/2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "RUT 3:8"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "5"
+          ],
+          "extracted_values": [
+            "5"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "ZEC 7:3"
+          ]
+        }
+      ],
+      "excluded_books": {
+        "ACT": "NCA_MAPPING_BASELINE_MISMATCH"
+      },
+      "extraction_recall": {
+        "denominator": 153,
+        "numerator": 150,
+        "percent": 98.0
+      },
+      "extraction_recall_by_class": {
+        "APPARATUS": {
+          "denominator": 65,
+          "numerator": 64,
+          "percent": 98.5
+        },
+        "COMPOUND": {
+          "denominator": 20,
+          "numerator": 20,
+          "percent": 100.0
+        },
+        "DATE": {
+          "denominator": 20,
+          "numerator": 18,
+          "percent": 90.0
+        },
+        "FRACTION": {
+          "denominator": 20,
+          "numerator": 20,
+          "percent": 100.0
+        },
+        "LARGE": {
+          "denominator": 19,
+          "numerator": 19,
+          "percent": 100.0
+        },
+        "MEASURE": {
+          "denominator": 23,
+          "numerator": 23,
+          "percent": 100.0
+        },
+        "MULTI": {
+          "denominator": 18,
+          "numerator": 17,
+          "percent": 94.4
+        },
+        "NIV_ONLY": {
+          "denominator": 18,
+          "numerator": 18,
+          "percent": 100.0
+        },
+        "OL_ONLY": {
+          "denominator": 20,
+          "numerator": 19,
+          "percent": 95.0
+        },
+        "ONE": {
+          "denominator": 41,
+          "numerator": 39,
+          "percent": 95.1
+        },
+        "PLAIN": {
+          "denominator": 18,
+          "numerator": 18,
+          "percent": 100.0
+        },
+        "TIME": {
+          "denominator": 20,
+          "numerator": 19,
+          "percent": 95.0
+        }
+      },
+      "fail_precision": {
+        "denominator": 1,
+        "numerator": 1,
+        "percent": 100.0
+      },
+      "fail_verdicts": {
+        "GENUINE": 1
+      },
+      "gold_disputed": 3,
+      "indexed_groups": 156,
+      "language": "uk-UA",
+      "outcomes": {
+        "FAIL": 1,
+        "NEEDS_REVIEW": 48,
+        "NOT_ASSESSED": 1,
+        "PASS": 106
+      },
+      "planted_detection": {
+        "denominator": 83,
+        "numerator": 83,
+        "percent": 100.0
+      },
+      "project_id": "ukrNPUv1",
+      "provider_failed": []
+    },
+    {
+      "cases": [
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "23"
+          ],
+          "extracted_values": [
+            "23"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "23"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1CH 2:22"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "5",
+            "22034"
+          ],
+          "extracted_values": [
+            "5",
+            "22034"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5",
+            "22034"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1CH 7:7"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "120000"
+          ],
+          "extracted_values": [
+            "1/2",
+            "120000"
+          ],
+          "extraction_correct": false,
+          "fail_verdict": "FALSE_ALARM",
+          "fail_verdicts_by_judge": {
+            "claude-opus-5-5": "FALSE_ALARM",
+            "claude-sonnet-5-5": "FALSE_ALARM"
+          },
+          "gold_values": [
+            "120000"
+          ],
+          "outcome": "FAIL",
+          "review_kind": "VALUE_DIFFERENCE",
+          "western_references": [
+            "1CH 12:37"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE",
+            "MULTI"
+          ],
+          "expected_values": [
+            "1000",
+            "7000",
+            "20000",
+            "100"
+          ],
+          "extracted_values": [
+            "1000",
+            "7000",
+            "20000",
+            "100"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1000",
+            "7000",
+            "20000",
+            "100"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1CH 18:4"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "70000"
+          ],
+          "extracted_values": [
+            "70000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "70000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1CH 21:14"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "1KI 5:12"
+          ]
+        },
+        {
+          "classes": [
+            "MEASURE"
+          ],
+          "expected_values": [
+            "20",
+            "20",
+            "20"
+          ],
+          "extracted_values": [
+            "20",
+            "20",
+            "20"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "20",
+            "20",
+            "20"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 6:20"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "12",
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "extracted_values": [
+            "12",
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "extraction_correct": null,
+          "gold_values": null,
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "1KI 7:25"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "10",
+            "4",
+            "1",
+            "4",
+            "3"
+          ],
+          "extracted_values": [
+            "10",
+            "4",
+            "4",
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10",
+            "4",
+            "4",
+            "3"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "1KI 7:27"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "3/2"
+          ],
+          "extracted_values": [
+            "1",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "3/2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "1KI 7:31"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION"
+          ],
+          "expected_values": [
+            "4",
+            "3/2"
+          ],
+          "extracted_values": [
+            "4",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4",
+            "3/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 7:32"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "ONE"
+          ],
+          "expected_values": [
+            "4",
+            "4",
+            "1"
+          ],
+          "extracted_values": [
+            "4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "1KI 7:34"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION"
+          ],
+          "expected_values": [
+            "1/2"
+          ],
+          "extracted_values": [
+            "1/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 7:35"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "10"
+          ],
+          "extracted_values": [
+            "10"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 11:35"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "450"
+          ],
+          "extracted_values": [
+            "450"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "450"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1KI 18:22"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "4"
+          ],
+          "extracted_values": [
+            "4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "1KI 18:34"
+          ]
+        },
+        {
+          "classes": [
+            "MEASURE"
+          ],
+          "expected_values": [
+            "3",
+            "2"
+          ],
+          "extracted_values": [
+            "3",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3",
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1SA 2:21"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": false,
+          "gold_values": [],
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "1SA 3:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1",
+            "1",
+            "1",
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "1SA 6:17"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "1SA 9:15"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "1SA 20:27"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": false,
+          "gold_values": [],
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "1SA 27:1"
+          ]
+        },
+        {
+          "classes": [
+            "MEASURE"
+          ],
+          "expected_values": [
+            "20",
+            "20",
+            "600"
+          ],
+          "extracted_values": [
+            "20",
+            "600"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "20",
+            "600"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "VALUE_OMITTED",
+          "western_references": [
+            "2CH 3:8"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "COMPOUND",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "2",
+            "35",
+            "5"
+          ],
+          "extracted_values": [
+            "2",
+            "35",
+            "5"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "35",
+            "5"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "2CH 3:15"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "COMPOUND",
+            "MEASURE",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1",
+            "666"
+          ],
+          "extracted_values": [
+            "666"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "666"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "2CH 9:13"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "180000"
+          ],
+          "extracted_values": [
+            "180000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "180000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 11:1"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "14",
+            "22",
+            "16"
+          ],
+          "extracted_values": [
+            "14",
+            "22",
+            "16"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "14",
+            "22",
+            "16"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 13:21"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "LARGE"
+          ],
+          "expected_values": [
+            "300000"
+          ],
+          "extracted_values": [
+            "1000",
+            "300000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1000",
+            "300000"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "2CH 17:14"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "25",
+            "29"
+          ],
+          "extracted_values": [
+            "25",
+            "29"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "25",
+            "29"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 29:1"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "extracted_values": [
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 29:21"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "14",
+            "2"
+          ],
+          "extracted_values": [
+            "14",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "14",
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 30:15"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "2CH 33:5"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "2600",
+            "300"
+          ],
+          "extracted_values": [
+            "2600",
+            "300"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2600",
+            "300"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2CH 35:8"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": false,
+          "gold_values": [],
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "2KI 4:18"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "25",
+            "16"
+          ],
+          "extracted_values": [
+            "25",
+            "16"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "25",
+            "16"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2KI 15:33"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "4",
+            "7"
+          ],
+          "extracted_values": [
+            "4",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2KI 18:9"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "2KI 21:13"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "100"
+          ],
+          "extracted_values": [
+            "100",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "100",
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "2KI 23:33"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "100"
+          ],
+          "extracted_values": [
+            "100"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "100"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2SA 3:14"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "18000"
+          ],
+          "extracted_values": [
+            "18000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "18000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2SA 8:13"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "2SA 17:21"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1000",
+            "15",
+            "20"
+          ],
+          "extracted_values": [
+            "1000",
+            "15",
+            "20"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1000",
+            "15",
+            "20"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "2SA 19:17"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "40"
+          ],
+          "extracted_values": [
+            "40"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "40"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "AMO 2:10"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "DAN 7:4"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "3"
+          ],
+          "extracted_values": [
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "DAN 7:8"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "DEU 4:32"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "2",
+            "1",
+            "1"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "DEU 25:14"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "ECC 2:14"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": null,
+          "gold_values": null,
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "EXO 12:46"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 12:49"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "1/10"
+          ],
+          "extracted_values": [
+            "1/10"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/10"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EXO 16:36"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "5/2",
+            "3/2"
+          ],
+          "extracted_values": [
+            "5/2",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5/2",
+            "3/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EXO 25:17"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS"
+          ],
+          "expected_values": [
+            "2",
+            "2"
+          ],
+          "extracted_values": [
+            "2",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "EXO 25:18"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "30",
+            "4",
+            "1",
+            "1",
+            "11"
+          ],
+          "extracted_values": [
+            "11",
+            "30",
+            "4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "11",
+            "30",
+            "4"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 26:8"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE",
+            "ONE"
+          ],
+          "expected_values": [
+            "10",
+            "3/2",
+            "1"
+          ],
+          "extracted_values": [
+            "10",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10",
+            "3/2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 26:16"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "EXO 29:22"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "1/10",
+            "1/4",
+            "1/4",
+            "1"
+          ],
+          "extracted_values": [
+            "1/10",
+            "1/4",
+            "1/4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/10",
+            "1/4",
+            "1/4"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 29:40"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 30:10"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "TIME"
+          ],
+          "expected_values": [
+            "6",
+            "7"
+          ],
+          "extracted_values": [
+            "6",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "6",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EXO 31:17"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE",
+            "ONE"
+          ],
+          "expected_values": [
+            "10",
+            "3/2",
+            "1"
+          ],
+          "extracted_values": [
+            "10",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10",
+            "3/2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EXO 36:21"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "5/2",
+            "3/2"
+          ],
+          "extracted_values": [
+            "5/2",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5/2",
+            "3/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EXO 37:6"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "2",
+            "3/2"
+          ],
+          "extracted_values": [
+            "2",
+            "1",
+            "3/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "1",
+            "3/2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "EXO 37:10"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "1",
+            "1",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "1",
+            "2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "EXO 37:25"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "LARGE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1/2",
+            "20",
+            "603550"
+          ],
+          "extracted_values": [
+            "20",
+            "603550",
+            "1/2"
+          ],
+          "extraction_correct": false,
+          "gold_values": [
+            "20",
+            "603550",
+            "1",
+            "1/2"
+          ],
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "EXO 38:26"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "EXO 39:5"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "EZK 4:8"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "LARGE",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "10000"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EZK 16:7"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1",
+            "5",
+            "1"
+          ],
+          "extracted_values": [
+            "1",
+            "5",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "5",
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "EZK 40:7"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EZK 40:8"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "50",
+            "25"
+          ],
+          "extracted_values": [
+            "50",
+            "25"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "50",
+            "25"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZK 40:29"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2",
+            "6",
+            "7"
+          ],
+          "extracted_values": [
+            "2",
+            "6",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "6",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZK 41:3"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE",
+            "ONE"
+          ],
+          "expected_values": [
+            "2",
+            "1",
+            "4"
+          ],
+          "extracted_values": [
+            "2",
+            "1",
+            "4",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "1",
+            "4",
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "EZK 43:14"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MULTI"
+          ],
+          "expected_values": [
+            "14",
+            "14",
+            "4",
+            "1/2"
+          ],
+          "extracted_values": [
+            "14",
+            "14",
+            "1/2",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "14",
+            "14",
+            "1/2",
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EZK 43:17"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "COMPOUND",
+            "MEASURE",
+            "MULTI"
+          ],
+          "expected_values": [
+            "20",
+            "20",
+            "25",
+            "15"
+          ],
+          "extracted_values": [
+            "1",
+            "20",
+            "1",
+            "60"
+          ],
+          "extraction_correct": true,
+          "fail_verdict": "GENUINE",
+          "fail_verdicts_by_judge": {
+            "claude-opus-5-5": "GENUINE",
+            "claude-sonnet-5-5": "GENUINE"
+          },
+          "gold_values": [
+            "1",
+            "20",
+            "1",
+            "60"
+          ],
+          "outcome": "FAIL",
+          "review_kind": "VALUE_DIFFERENCE",
+          "western_references": [
+            "EZK 45:12"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "1/6"
+          ],
+          "extracted_values": [
+            "1/6",
+            "1/6"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/6",
+            "1/6"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "EZK 45:13"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "112"
+          ],
+          "extracted_values": [
+            "112"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "112"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 2:18"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "725"
+          ],
+          "extracted_values": [
+            "725"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "725"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 2:33"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "LARGE"
+          ],
+          "expected_values": [
+            "435",
+            "6720"
+          ],
+          "extracted_values": [
+            "435",
+            "6720"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "435",
+            "6720"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 2:67"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "TIME"
+          ],
+          "expected_values": [
+            "2",
+            "2",
+            "20"
+          ],
+          "extracted_values": [
+            "2",
+            "2",
+            "20"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "2",
+            "20"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 3:8"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 4:24"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "MULTI"
+          ],
+          "expected_values": [
+            "12",
+            "96",
+            "77",
+            "12"
+          ],
+          "extracted_values": [
+            "12",
+            "96",
+            "77",
+            "12"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12",
+            "96",
+            "77",
+            "12"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "EZR 8:35"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "7",
+            "7"
+          ],
+          "extracted_values": [
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "VALUE_OMITTED",
+          "western_references": [
+            "GEN 2:2"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "7"
+          ],
+          "extracted_values": [
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 2:3"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "207"
+          ],
+          "extracted_values": [
+            "207"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "207"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 11:21"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "GEN 22:8"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "30",
+            "40",
+            "10",
+            "20",
+            "10"
+          ],
+          "extracted_values": [
+            "30",
+            "40",
+            "10",
+            "20",
+            "10"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "30",
+            "40",
+            "10",
+            "20",
+            "10"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 32:15"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "GEN 34:15"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "7"
+          ],
+          "extracted_values": [
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 41:7"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "17",
+            "147"
+          ],
+          "extracted_values": [
+            "17",
+            "147"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "17",
+            "147"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "GEN 47:28"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "20",
+            "10",
+            "50",
+            "20"
+          ],
+          "extracted_values": [
+            "20",
+            "10",
+            "50",
+            "20"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "20",
+            "10",
+            "50",
+            "20"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "HAG 2:16"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "3"
+          ],
+          "extracted_values": [
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "HEB 11:23"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "50"
+          ],
+          "extracted_values": [],
+          "extraction_correct": false,
+          "gold_values": [
+            "50"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "VALUE_OMITTED",
+          "western_references": [
+            "ISA 3:3"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI"
+          ],
+          "expected_values": [
+            "6",
+            "6",
+            "2",
+            "2",
+            "2"
+          ],
+          "extracted_values": [
+            "6",
+            "2",
+            "2",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "6",
+            "2",
+            "2",
+            "2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "ISA 6:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "ISA 51:19"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "ISA 58:5"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1000"
+          ],
+          "extracted_values": [
+            "1000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 9:49"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND",
+            "TIME"
+          ],
+          "expected_values": [
+            "23"
+          ],
+          "extracted_values": [
+            "23"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "23"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 10:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION"
+          ],
+          "expected_values": [
+            "1/2",
+            "1/2",
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "JDG 16:3"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "3000"
+          ],
+          "extracted_values": [
+            "3000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 16:27"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "400000"
+          ],
+          "extracted_values": [
+            "400000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "400000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 20:17"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "3"
+          ],
+          "extracted_values": [
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JDG 20:30"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "4"
+          ],
+          "extracted_values": [
+            "4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JER 51:59"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "JER 52:7"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JHN 11:6"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "JHN 12:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "JHN 17:12"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "5"
+          ],
+          "extracted_values": [
+            "5"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "JOS 10:16"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "JOS 11:19"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "JOS 12:11"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "COMPOUND",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "31"
+          ],
+          "extracted_values": [
+            "31"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "31"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "JOS 12:24"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION"
+          ],
+          "expected_values": [
+            "19/2"
+          ],
+          "extracted_values": [
+            "9"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "9"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "JOS 13:7"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION"
+          ],
+          "expected_values": [
+            "19/2"
+          ],
+          "extracted_values": [
+            "19/2"
+          ],
+          "extraction_correct": null,
+          "gold_values": null,
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "JOS 14:2"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "LEV 4:9"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "4"
+          ],
+          "extracted_values": [
+            "4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "4"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "LEV 11:27"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "5"
+          ],
+          "extracted_values": [
+            "5"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 19:25"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "TIME"
+          ],
+          "expected_values": [
+            "7",
+            "8"
+          ],
+          "extracted_values": [
+            "7",
+            "8"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7",
+            "8"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 23:36"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "MULTI",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "15",
+            "7",
+            "7",
+            "1",
+            "8"
+          ],
+          "extracted_values": [
+            "15",
+            "7",
+            "7",
+            "1",
+            "8"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "15",
+            "7",
+            "7",
+            "1",
+            "8"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 23:39"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "7"
+          ],
+          "extracted_values": [
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 25:20"
+          ]
+        },
+        {
+          "classes": [
+            "MEASURE",
+            "TIME"
+          ],
+          "expected_values": [
+            "20",
+            "60",
+            "50"
+          ],
+          "extracted_values": [
+            "20",
+            "60",
+            "50"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "20",
+            "60",
+            "50"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LEV 27:3"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2"
+          ],
+          "extracted_values": [
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "LUK 7:18"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": false,
+          "gold_values": [],
+          "outcome": "PASS",
+          "review_kind": null,
+          "western_references": [
+            "LUK 8:22"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS"
+          ],
+          "expected_values": [
+            "12"
+          ],
+          "extracted_values": [
+            "12"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "LUK 9:1"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "12"
+          ],
+          "extracted_values": [
+            "12"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "MAT 11:1"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI",
+            "TIME"
+          ],
+          "expected_values": [
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "extracted_values": [
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3",
+            "3",
+            "3",
+            "3"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "MAT 12:40"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "3"
+          ],
+          "extracted_values": [
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "MAT 13:33"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "200"
+          ],
+          "extracted_values": [
+            "6"
+          ],
+          "extraction_correct": true,
+          "fail_verdict": "GENUINE",
+          "fail_verdicts_by_judge": {
+            "claude-opus-5-5": "GENUINE",
+            "claude-sonnet-5-5": "GENUINE"
+          },
+          "gold_values": [
+            "6"
+          ],
+          "outcome": "FAIL",
+          "review_kind": "VALUE_DIFFERENCE",
+          "western_references": [
+            "MRK 6:37"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "652"
+          ],
+          "extracted_values": [
+            "652"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "652"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:10"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "845"
+          ],
+          "extracted_values": [
+            "845"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "845"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:13"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "112"
+          ],
+          "extracted_values": [
+            "112"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "112"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:24"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1017"
+          ],
+          "extracted_values": [
+            "1017"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1017"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:42"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1000",
+            "50",
+            "530"
+          ],
+          "extracted_values": [
+            "1000",
+            "50",
+            "530"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1000",
+            "50",
+            "530"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 7:70"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1",
+            "7"
+          ],
+          "extracted_values": [
+            "1",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 8:2"
+          ]
+        },
+        {
+          "classes": [
+            "COMPOUND"
+          ],
+          "expected_values": [
+            "284"
+          ],
+          "extracted_values": [
+            "284"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "284"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NEH 11:18"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "2",
+            "2"
+          ],
+          "extracted_values": [
+            "1",
+            "2",
+            "2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1",
+            "2",
+            "2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 1:1"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "10"
+          ],
+          "extracted_values": [
+            "10"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 7:66"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "2",
+            "5",
+            "5",
+            "5"
+          ],
+          "extracted_values": [
+            "2",
+            "5",
+            "5",
+            "5",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "2",
+            "5",
+            "5",
+            "5",
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "NUM 7:77"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "MULTI"
+          ],
+          "expected_values": [
+            "12",
+            "10",
+            "10",
+            "120"
+          ],
+          "extracted_values": [
+            "12",
+            "10",
+            "120"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12",
+            "10",
+            "120"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "NUM 7:86"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "70"
+          ],
+          "extracted_values": [
+            "70"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "70"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 11:16"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1",
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "NUM 15:16"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "MEASURE"
+          ],
+          "expected_values": [
+            "1/2",
+            "1/3",
+            "1/4"
+          ],
+          "extracted_values": [
+            "1/2",
+            "1/3",
+            "1/4"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/2",
+            "1/3",
+            "1/4"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 28:14"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "ONE",
+            "TIME"
+          ],
+          "expected_values": [
+            "1",
+            "14"
+          ],
+          "extracted_values": [
+            "14",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "14",
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "NUM 28:16"
+          ]
+        },
+        {
+          "classes": [
+            "DATE",
+            "MULTI"
+          ],
+          "expected_values": [
+            "3",
+            "11",
+            "2",
+            "14"
+          ],
+          "extracted_values": [
+            "3",
+            "11",
+            "2",
+            "14",
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3",
+            "11",
+            "2",
+            "14",
+            "1"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "ONE_ONLY_DIFFERENCE",
+          "western_references": [
+            "NUM 29:20"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "PRO 14:1"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "3",
+            "4"
+          ],
+          "extracted_values": [
+            "3"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "3"
+          ],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "VALUE_OMITTED",
+          "western_references": [
+            "PRO 30:29"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "PSA 88:4"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "NIV_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "NIV_ONLY_AUTHORITY",
+          "western_references": [
+            "PSA 127:4"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "10"
+          ],
+          "extracted_values": [
+            "10"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "10"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "PSA 144:9"
+          ]
+        },
+        {
+          "classes": [
+            "MULTI"
+          ],
+          "expected_values": [
+            "7",
+            "7",
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "extracted_values": [
+            "7",
+            "7",
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7",
+            "7",
+            "7",
+            "7",
+            "7",
+            "7"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 1:20"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "12000",
+            "12000",
+            "12000"
+          ],
+          "extracted_values": [
+            "12000",
+            "12000",
+            "12000"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "12000",
+            "12000",
+            "12000"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 7:6"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION"
+          ],
+          "expected_values": [
+            "1/2"
+          ],
+          "extracted_values": [
+            "1/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 8:1"
+          ]
+        },
+        {
+          "classes": [
+            "PLAIN"
+          ],
+          "expected_values": [
+            "2",
+            "2"
+          ],
+          "extracted_values": [
+            "2",
+            "2",
+            "2"
+          ],
+          "extraction_correct": null,
+          "fail_verdict": "FALSE_ALARM",
+          "fail_verdicts_by_judge": {
+            "claude-opus-5-5": "FALSE_ALARM",
+            "claude-sonnet-5-5": "FALSE_ALARM"
+          },
+          "gold_values": null,
+          "outcome": "FAIL",
+          "review_kind": "VALUE_DIFFERENCE",
+          "western_references": [
+            "REV 11:4"
+          ]
+        },
+        {
+          "classes": [
+            "FRACTION",
+            "TIME"
+          ],
+          "expected_values": [
+            "7/2"
+          ],
+          "extracted_values": [
+            "7/2"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "7/2"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 11:9"
+          ]
+        },
+        {
+          "classes": [
+            "LARGE"
+          ],
+          "expected_values": [
+            "1600"
+          ],
+          "extracted_values": [
+            "1600"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1600"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "REV 14:20"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "OL_ONLY",
+            "ONE"
+          ],
+          "expected_values": [
+            "1"
+          ],
+          "extracted_values": [
+            "1"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "1"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": null,
+          "review_kind": null,
+          "western_references": [
+            "ROM 3:30"
+          ]
+        },
+        {
+          "classes": [
+            "APPARATUS",
+            "FRACTION",
+            "OL_ONLY"
+          ],
+          "expected_values": [
+            "1/2"
+          ],
+          "extracted_values": [],
+          "extraction_correct": true,
+          "gold_values": [],
+          "outcome": "NEEDS_REVIEW",
+          "review_kind": "MATCHES_SECONDARY_AUTHORITY",
+          "western_references": [
+            "RUT 3:8"
+          ]
+        },
+        {
+          "classes": [
+            "DATE"
+          ],
+          "expected_values": [
+            "5"
+          ],
+          "extracted_values": [
+            "5"
+          ],
+          "extraction_correct": true,
+          "gold_values": [
+            "5"
+          ],
+          "outcome": "PASS",
+          "planted_outcome": "FAIL",
+          "review_kind": null,
+          "western_references": [
+            "ZEC 7:3"
+          ]
+        }
+      ],
+      "excluded_books": {
+        "ACT": "NCA_MAPPING_BASELINE_MISMATCH"
+      },
+      "extraction_recall": {
+        "denominator": 152,
+        "numerator": 145,
+        "percent": 95.4
+      },
+      "extraction_recall_by_class": {
+        "APPARATUS": {
+          "denominator": 64,
+          "numerator": 59,
+          "percent": 92.2
+        },
+        "COMPOUND": {
+          "denominator": 20,
+          "numerator": 20,
+          "percent": 100.0
+        },
+        "DATE": {
+          "denominator": 20,
+          "numerator": 20,
+          "percent": 100.0
+        },
+        "FRACTION": {
+          "denominator": 19,
+          "numerator": 18,
+          "percent": 94.7
+        },
+        "LARGE": {
+          "denominator": 19,
+          "numerator": 17,
+          "percent": 89.5
+        },
+        "MEASURE": {
+          "denominator": 23,
+          "numerator": 23,
+          "percent": 100.0
+        },
+        "MULTI": {
+          "denominator": 19,
+          "numerator": 19,
+          "percent": 100.0
+        },
+        "NIV_ONLY": {
+          "denominator": 18,
+          "numerator": 16,
+          "percent": 88.9
+        },
+        "OL_ONLY": {
+          "denominator": 19,
+          "numerator": 17,
+          "percent": 89.5
+        },
+        "ONE": {
+          "denominator": 40,
+          "numerator": 36,
+          "percent": 90.0
+        },
+        "PLAIN": {
+          "denominator": 18,
+          "numerator": 17,
+          "percent": 94.4
+        },
+        "TIME": {
+          "denominator": 21,
+          "numerator": 16,
+          "percent": 76.2
+        }
+      },
+      "fail_precision": {
+        "denominator": 4,
+        "numerator": 2,
+        "percent": 50.0
+      },
+      "fail_verdicts": {
+        "FALSE_ALARM": 2,
+        "GENUINE": 2
+      },
+      "gold_disputed": 4,
+      "indexed_groups": 156,
+      "language": "es-419",
+      "outcomes": {
+        "FAIL": 4,
+        "NEEDS_REVIEW": 53,
+        "PASS": 99
+      },
+      "planted_detection": {
+        "denominator": 78,
+        "numerator": 78,
+        "percent": 100.0
+      },
+      "project_id": "spaNVIv3",
+      "provider_failed": []
+    }
+  ],
+  "limits": "Measured on the selected coordinates and WIPs only. Labels are LLM-built (no hand labelling); judge agreement is not proof of correctness. WIP text is kept out of this receipt.",
+  "package": {
+    "package_id": "SAGE_NUMBERS_TYPED_2026-10-09",
+    "qualification_status": "QUALIFIED",
+    "sha256": "c2460a76c1dc7a12aa77cc209d01e33093ec7c824bd6ed3693ed0adc035df9be"
+  },
+  "recorded_utc": "2026-10-18T17:33:19+00:00",
+  "route": {
+    "capability_fingerprint": "532d876f1d7d95d2e2f9aa0c81fcdacf508a4a37b9028255adda9968ac31a003",
+    "model": "gpt-5.6-sol",
+    "provider": "codex",
+    "qualification_evidence_sha256": null,
+    "qualification_status": "PROVISIONAL_UNQUALIFIED",
+    "reasoning_effort": "medium",
+    "route_id": "e56a8ae60f19a9e8b521c98a01384e91627eb135d9e7669c489a5b5cfa1c4141",
+    "routing_policy_version": "alpha1-1"
+  },
+  "schema_version": "1.0",
+  "selection": {
+    "coordinates": 160,
+    "excluded_selections": [],
+    "per_class": 20,
+    "seed": "nca-gate-1",
+    "sha256": "4f7f632d9e0c65f30987195a9e270a5291cb6269b1219311b01d2b19fa534a73"
+  },
+  "sqs_status": "NOT_APPLIED",
+  "status": "FAIL",
+  "thresholds": {
+    "extraction_recall": "19/20",
+    "fail_precision": "9/10",
+    "planted_detection": "19/20"
+  },
+  "totals": {
+    "extraction_recall": {
+      "denominator": 305,
+      "numerator": 295,
+      "percent": 96.7
+    },
+    "fail_precision": {
+      "denominator": 5,
+      "numerator": 3,
+      "percent": 60.0
+    },
+    "planted_detection": {
+      "denominator": 161,
+      "numerator": 161,
+      "percent": 100.0
+    }
+  }
+}

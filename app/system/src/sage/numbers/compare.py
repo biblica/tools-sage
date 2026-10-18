@@ -59,6 +59,8 @@ REVIEW_KINDS = frozenset({
     "NO_INDEXED_VALUES",
     "PROVISIONAL_INDEX",
     "APPARATUS_VARIANT",
+    "ONE_ONLY_DIFFERENCE",
+    "VALUE_OMITTED",
     "WRONG_ASSOCIATION",  # on NIV-only or mixed groups (BLOCKING only under OL authority)
 })
 # FAIL kinds: a value differs from the source, a number sits on the wrong item, a numeral is
@@ -202,6 +204,17 @@ def _edge_case_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...],
     return bool(extra) and not (extra - edge)
 
 
+def _one_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...]) -> bool:
+    """Whether the WIP differs from the source only by added or missing values of 1."""
+    difference = (Counter(wip) - Counter(expected)) + (Counter(expected) - Counter(wip))
+    return bool(difference) and set(difference) == {Fraction(1)}
+
+
+def _omission_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...]) -> bool:
+    """Whether every WIP value is in the source and the WIP only leaves some source values out."""
+    return not (Counter(wip) - Counter(expected)) and bool(Counter(expected) - Counter(wip))
+
+
 def _source_referents(rows: Sequence[ReferenceRow], expected: Tuple[Fraction, ...]) -> tuple[list, list]:
     """Source values with what each counts: NIV wording when it has the same numbers, else the OL gloss."""
     niv_items = [item for row in rows for item in row.niv_items]
@@ -295,6 +308,16 @@ def compare_group(
     if _edge_case_only(wip_values, expected, wip_kinds):
         return _review("CONVENTION_EDGE_CASE", mode, wip_values, expected, authority, evidence,
                        wip_kinds=list(wip_kinds))
+    if _one_only(wip_values, expected):
+        # Release gate 2026-10-18: "one" is where languages differ most (an implied singular made
+        # explicit, "year-old" read as 1); both judges called every such FAIL a false alarm.
+        return _review("ONE_ONLY_DIFFERENCE", mode, wip_values, expected, authority, evidence)
+    if _omission_only(wip_values, expected):
+        # Release gate 2026-10-18: a WIP that states a repeated number once ("twenty cubits long and
+        # wide") or folds it into an idiom is a style choice to confirm; every measured genuine FAIL
+        # was a different value, never a pure omission. PO decision 2026-10-18: review, not BLOCKING.
+        return _review("VALUE_OMITTED", mode, wip_values, expected, authority, evidence,
+                       omitted=[str(value) for value in (Counter(expected) - Counter(wip_values)).elements()])
     if any(row.metadata.get("TC_STATUS") == "VARIANT_ATTESTED" for row in rows):
         # The apparatus records a number variant here: the WIP may follow another witness. Review.
         return _review("APPARATUS_VARIANT", mode, wip_values, expected, authority, evidence)

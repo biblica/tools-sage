@@ -90,8 +90,9 @@ def test_simplified_fixture_has_the_historical_32_unit_coverage():
     assert len(cases) == 32
     assert {case["case_id"] for case in cases} == {f"mat-5-{n}" for n in range(1, 33)}
     passes = [case for case in cases if case["expected_outcome"] == "PASS"]
-    fails = [case for case in cases if case["expected_outcome"] == "FAIL"]
-    assert len(passes) == 24 and len(fails) == 8
+    # The eight missing-number cases are pure omissions: NEEDS_REVIEW since the 2026-10-18 gate decision.
+    omissions = [case for case in cases if case["expected_outcome"] == "NEEDS_REVIEW"]
+    assert len(passes) == 24 and len(omissions) == 8
     for case in cases:
         assert case["reference_row"]["values"]
         assert isinstance(case["extracted_values"], list)
@@ -158,7 +159,8 @@ def test_outcome_changes_when_a_case_no_longer_reports_its_reference_number(tmp_
     assert receipt["qualification_status"] == "FAIL"
     changed_diff = next(item for item in receipt["outcome_diffs"] if item["case_id"] == "mat-5-1")
     assert changed_diff["matches_expected"] is False
-    assert changed_diff["observed_outcome"] == "FAIL"
+    # The number vanished entirely: a pure omission, reported for review rather than BLOCKING.
+    assert changed_diff["observed_outcome"] == "NEEDS_REVIEW"
     assert all(item["matches_expected"] for item in receipt["outcome_diffs"] if item["case_id"] != "mat-5-1")
 
 

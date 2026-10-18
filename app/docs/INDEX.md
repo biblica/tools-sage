@@ -77,6 +77,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [Legacy Review Portions and OL Referral Admission Design](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-DESIGN.md) — historical design record for the pre-RTC identity.
 - [Legacy Review Portions and OL Referral Admission Implementation Plan](advanced/release/SAW-REVIEW-PORTIONS-AND-OL-REFERRAL-IMPLEMENTATION-PLAN.md) — historical implementation record for the pre-RTC identity.
 - [NCA Index Rebuild](advanced/release/nca-index-rebuild/SUMMARY.md), [NCA NIV Layer](advanced/release/nca-index-rebuild/NIV-SUMMARY.md), and [NCA Apparatus Check](advanced/release/nca-index-rebuild/APPARATUS-SUMMARY.md) — build, review, and text-critical evidence records for the typed NCA reference package.
+- [NCA Release Gate](advanced/release/NCA-RELEASE-GATE.md) — live qualification of the typed package (2026-10-18: FAIL on FAIL precision), with receipts.
 - [NCA Qualification](advanced/release/NCA-QUALIFICATION.md), [NCA Optimization Qualification](advanced/release/NCA-OPTIMIZATION-QUALIFICATION.md), and [Bundled NCA Reference Validation](advanced/release/NCA-BUNDLED-REFERENCE-VALIDATION.md) — historical records for the earlier 2026-09-09 package and pipeline.
 - [Vanilla Installation Manifest](advanced/release/VANILLA-INSTALL-MANIFEST.md) — complete clean package inventory.
 

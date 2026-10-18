@@ -174,6 +174,8 @@ _MESSAGES = {
     "NO_INDEXED_VALUES": "The index lists this coordinate without numeric values, but the WIP has numbers.",
     "PROVISIONAL_INDEX": "Numeric values differ from a rebuilt index value that is not yet reviewed.",
     "APPARATUS_VARIANT": "Numeric values differ where the textual apparatus records a number variant.",
+    "ONE_ONLY_DIFFERENCE": "The only difference is an added or missing value of one.",
+    "VALUE_OMITTED": "The translation leaves out some of the source's numbers and adds none.",
 }
 
 

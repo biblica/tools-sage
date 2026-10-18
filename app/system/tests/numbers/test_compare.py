@@ -79,18 +79,19 @@ def test_ordered_mode_fails_when_multiset_also_disagrees():
         assert result.outcome == 'FAIL'
 
 
-def test_missing_and_added_values_fail_under_both_modes():
-    """A missing or an extra value is a real FAIL, not a reordering question."""
+def test_missing_values_review_and_added_values_fail_under_both_modes():
+    """A missing value is VALUE_OMITTED review (style choice); an extra value is a real FAIL."""
     reference = row((3, 4))
-    assert compare_values(values(3), reference, mode='ORDERED').outcome == 'FAIL'
+    omitted = compare_values(values(3), reference, mode='ORDERED')
+    assert omitted.outcome == 'NEEDS_REVIEW' and omitted.review_context['kind'] == 'VALUE_OMITTED'
     assert compare_values(values(3, 4, 5), reference, mode='UNORDERED').outcome == 'FAIL'
 
 
 def test_repeated_values_are_not_collapsed_into_a_set():
-    """Multiplicity matters: two missing duplicates is a real FAIL under UNORDERED too."""
+    """Multiplicity matters: two missing duplicates are not a PASS under UNORDERED, and are named."""
     reference = row((10000, 10000, 1000, 1000))
     result = compare_values(values(10000, 1000), reference, mode='UNORDERED')
-    assert result.outcome == 'FAIL'
+    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['omitted'] == ['10000', '1000']
 
 
 def test_ol_is_authority_one_niv_is_fallback():
@@ -281,6 +282,22 @@ def test_swapped_items_are_a_wrong_association_fail():
         'gold dishes', 'silver dishes', 'silver pans'}
 
 
+def test_one_gloss_on_different_numbers_is_not_a_wrong_association():
+    """1KI 7:25: "12 bulls, 3 [bulls] facing north, ..." -- the gloss cannot tell the items apart."""
+    pairs = ((12, "bulls"), (3, "facing north"), (3, "facing west"), (3, "facing south"), (3, "facing east"))
+    result = compare_values(values(12, 3, 3, 3, 3), _typed_row(pairs), mode='UNORDERED',
+                            wip_counts_en=("bulls",) * 5)
+    assert result.outcome == 'PASS'
+
+
+def test_an_unglossed_source_item_keeps_a_mismatch_undecided():
+    """GEN 18:28: the source's 50 has no referent, so "righteous people 50" cannot be called a swap."""
+    pairs = ((5, "less"), (50, ""), (5, "people"), (45, "find"))
+    result = compare_values(values(5, 50, 5, 45), _typed_row(pairs), mode='UNORDERED',
+                            wip_counts_en=("", "righteous people", "", ""))
+    assert result.outcome == 'PASS'
+
+
 def test_swapped_items_on_an_niv_only_row_are_for_review_not_blocking():
     """BLOCKING needs original-language authority: an NIV-only swap is reported for review."""
     items = tuple({"VALUE": str(value), "REFERENT": referent} for value, referent in EZR_1_9)
@@ -325,3 +342,25 @@ def test_text_critical_note_records_which_reading_the_wip_follows():
     assert note['kind'] == 'TEXT_CRITICAL' and note['follows'] == 'NIV' and note['footnote_in_wip'] is True
     agree = row((3,), (3,))
     assert text_critical_note([agree], Extraction((Fraction(3),), 'COMPLETE'), target, bundle) is None
+
+
+def test_a_difference_of_only_one_is_for_review_not_blocking():
+    """2KI 23:33 "one talent" for "a talent"; EXO 26:8 a repeated "one" left out: review, never FAIL."""
+    row = _typed_row(((100, "talents of silver"),))
+    added = compare_values(values(100, 1), row, mode='UNORDERED')
+    assert added.outcome == 'NEEDS_REVIEW' and added.review_context['kind'] == 'ONE_ONLY_DIFFERENCE'
+    dropped = compare_values(values(30, 4), _typed_row(((1, "curtain"), (30, "cubits"), (4, "cubits"))),
+                             mode='UNORDERED')
+    assert dropped.review_context['kind'] == 'ONE_ONLY_DIFFERENCE'
+    assert compare_values(values(100, 2), row, mode='UNORDERED').outcome == 'FAIL'
+
+
+def test_a_pure_omission_is_for_review_not_blocking():
+    """2CH 3:8 "twenty cubits long and wide" for 20, 20: a repeated number stated once is a style choice."""
+    row = _typed_row(((20, "cubits long"), (20, "cubits wide"), (600, "talents")))
+    result = compare_values(values(20, 600), row, mode='UNORDERED')
+    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['kind'] == 'VALUE_OMITTED'
+    assert result.review_context['omitted'] == ['20']
+    assert compare_values(values(), row, mode='UNORDERED').review_context['kind'] == 'VALUE_OMITTED'
+    # A different value is still a translation error: 2CH 35:8, 300 rendered as 3000.
+    assert compare_values(values(20, 3000), row, mode='UNORDERED').outcome == 'FAIL'

@@ -9,6 +9,42 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261018-001 — NCA release gate for the typed package: built, run, FAIL recorded (TODO-20261013-016)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261013-016`; follow-ups `TODO-20261018-001` (precision) and `TODO-20261018-002` (Acts)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - **Gate tool:** new `system/tools/qualify_nca.py`, with no hand labelling. It makes a seeded gold
+    selection stratified over twelve hard classes of the typed package, then runs the production NCA
+    route over those verses in each WIP. Two independent Claude judges label the expected values (a verse
+    has gold values only when both agree) and give a `GENUINE`/`FALSE_ALARM` verdict on every FAIL. A
+    planted-error check changes one index value. The receipt holds coordinates, values and verdict labels,
+    never WIP text. Steps are cached: comparison changes reuse sealed extraction phases. Provider failures
+    are left out of every measure and make the receipt `INCOMPLETE`. `--exclude` builds a held-out set.
+  - **Association check fix:** when one gloss lands different WIP numbers on the same source item
+    (1KI 7:25, GEN 47:28, NUM 28:14), the numbers stay undecided instead of becoming a BLOCKING
+    `WRONG_ASSOCIATION` FAIL.
+  - **Association check, unglossed items:** when a source item has no distinguishing words, a mismatch
+    stays undecided (GEN 18:28).
+  - **`ONE_ONLY_DIFFERENCE`:** a WIP that differs from the source only by added or missing values of one
+    is NEEDS_REVIEW, with its own report wording. Before the change, the judges called 14 of 16 such FAILs
+    false alarms.
+  - **`VALUE_OMITTED` (PO decision 2026-10-18):** a WIP that leaves out source numbers and adds none is
+    NEEDS_REVIEW. The translator note asks whether the omission is a deliberate style choice consistent with
+    the rest of the translation. The synthetic benchmark fixture's eight missing-number cases now expect
+    NEEDS_REVIEW.
+  - **Offline rescoring:** `--replay-route` replays sealed extraction phases under a recorded route with no
+    provider call.
+- **Evidence:** [NCA release gate](../../../docs/advanced/release/NCA-RELEASE-GATE.md) and both receipts.
+  WIPs `ukrNPUv1` and `spaNVIv3`; route codex `gpt-5.6-sol`/medium; judges `claude-opus-5-5` and
+  `claude-sonnet-5-5`. Development set (312 verses): FAIL precision 4/32 as found and 3/5 after the changes,
+  extraction recall 295/305, planted errors 161/161: **FAIL**. Held-out set, Ukrainian (167 verses):
+  precision 0/6 as found and no FAILs after the changes, recall 152/158, planted 91/91. The Spanish held-out half did not run (codex workspace
+  out of credits): `INCOMPLETE`. NCA stays `PROVISIONAL_UNQUALIFIED`.
+- **Verification:** `pytest system/tests/numbers` (gate, association and one-only tests included).
+
 ### IMP-20261016-001 — STC name check: MACULA names aligned with the WIP (TODO-20261015-006, names part)
 
 - **Version:** `0.02a3` (development branch)

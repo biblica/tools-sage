@@ -444,3 +444,14 @@ def test_bsb_citation_points_to_the_original_language_niv_and_versions():
     assert ("- **[Berean Standard Bible (public domain)](https://ebible.org/find/show.php?id=engbsb)** — MAT 1:2: "
             "“AGREES_NIV: 4 — “On the fourth day they said.”” Also see: MT 7; NIV 4; LXX 4.") in report
     assert "Berean Standard Bible, public domain" in report.split("## Sources and attribution", 1)[1]
+
+
+def test_value_omitted_note_names_the_missing_number_and_asks_about_consistency():
+    """The translator note lists the omitted value and asks whether the style is consistent."""
+    from sage.nca_reporting import _ENGLISH, _finding_text
+
+    group = {"comparison": {"authority": "OL", "review_context": {"kind": "VALUE_OMITTED", "omitted": ["20"]}}}
+    finding = {"kind": "VALUE_OMITTED", "target_references": ["2CH 3:8"],
+               "wip_values": ["20", "600"], "expected_values": ["20", "20", "600"]}
+    issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
+    assert "20" in issue and "2CH 3:8" in action and "consistent" in action

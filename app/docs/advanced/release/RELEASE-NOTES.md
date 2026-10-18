@@ -20,7 +20,7 @@
 - Menu: NCA Jobs use the standard RTC/STC Job menu shape with a two-step Job delete. The style options are "Use standard language profile data" and "Upload style data from template". The package diagnostics block prints once per package per session as readable lines. The preflight screen shows only what the operator confirms; counters, batching and group IDs go to `last-preflight.json`.
 - Review fixes: a style profile with unit forms no longer fails every Run (convention re-selection kept unit forms); a scope with nothing to extract publishes its `NOT_ASSESSED` verses instead of failing; a number's text is anchored to a whole token (a "7" inside "17" no longer yields a false FAIL); malformed model kinds are retried instead of crashing; no-break spaces group like a configured space and "30 40" is two numerals; suffixed digit ordinals ("2nd") are edge cases, not stray cardinals; a gap under a different WIP versification is no longer excused as covered; `WRONG_ASSOCIATION` is BLOCKING only under original-language authority; malformed numerals are reported in unindexed and partly read verses; diagnostics translator notes use the per-kind wording; the reconstructed style profile keeps the translation's digit script and never sets one mark for grouping and decimal.
 
-Open: no release-gate receipt exists yet for the typed package; live-model qualification and SQS confidence checks have not been performed.
+Release gate (2026-10-18): live qualification of the typed package ran and **failed** on FAIL precision (60%; the bar is 90%). Recall and planted errors pass; see the [NCA release gate](NCA-RELEASE-GATE.md). SQS confidence checks have not been performed.
 
 ## 0.02b1 — 2026-09-09
 

@@ -71,7 +71,7 @@
         ]
       },
       "extracted_values": [],
-      "expected_outcome": "FAIL"
+      "expected_outcome": "NEEDS_REVIEW"
     },
     {
       "case_id": "mat-5-5",
@@ -141,7 +141,7 @@
         ]
       },
       "extracted_values": [],
-      "expected_outcome": "FAIL"
+      "expected_outcome": "NEEDS_REVIEW"
     },
     {
       "case_id": "mat-5-9",
@@ -211,7 +211,7 @@
         ]
       },
       "extracted_values": [],
-      "expected_outcome": "FAIL"
+      "expected_outcome": "NEEDS_REVIEW"
     },
     {
       "case_id": "mat-5-13",
@@ -281,7 +281,7 @@
         ]
       },
       "extracted_values": [],
-      "expected_outcome": "FAIL"
+      "expected_outcome": "NEEDS_REVIEW"
     },
     {
       "case_id": "mat-5-17",
@@ -351,7 +351,7 @@
         ]
       },
       "extracted_values": [],
-      "expected_outcome": "FAIL"
+      "expected_outcome": "NEEDS_REVIEW"
     },
     {
       "case_id": "mat-5-21",
@@ -421,7 +421,7 @@
         ]
       },
       "extracted_values": [],
-      "expected_outcome": "FAIL"
+      "expected_outcome": "NEEDS_REVIEW"
     },
     {
       "case_id": "mat-5-25",
@@ -491,7 +491,7 @@
         ]
       },
       "extracted_values": [],
-      "expected_outcome": "FAIL"
+      "expected_outcome": "NEEDS_REVIEW"
     },
     {
       "case_id": "mat-5-29",
@@ -561,7 +561,7 @@
         ]
       },
       "extracted_values": [],
-      "expected_outcome": "FAIL"
+      "expected_outcome": "NEEDS_REVIEW"
     }
   ]
 }

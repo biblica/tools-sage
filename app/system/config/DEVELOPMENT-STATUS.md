@@ -115,4 +115,4 @@ The non-release `0.02a3` branch implements the NCA runtime as Main Menu #5 (comm
 - Menu: the style options are "Use standard language profile data" and "Upload style data from template". Package diagnostics print once per package per session. The preflight screen is reduced to operator-relevant fields, and the full plan is in `last-preflight.json`.
 - Runtime review fixes: style profiles with unit forms, scopes with nothing to extract, whole-token anchoring of number text, malformed model kinds, no-break-space grouping, digit ordinals, versification-safe gap coverage, authority-aware `WRONG_ASSOCIATION` severity, malformed numerals in unindexed or partly read verses, per-kind diagnostics notes, and digit script in the reconstructed style profile.
 
-Open: no release-gate receipt for the typed package; live-model NCA qualification and SQS confidence checks remain outstanding.
+Release gate (2026-10-18): FAIL on FAIL precision (60%; the bar is 90%); see `docs/advanced/release/NCA-RELEASE-GATE.md`. Open: `TODO-20261018-001` (precision), `TODO-20261018-002` (Acts), and SQS confidence checks.
