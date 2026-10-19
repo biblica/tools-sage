@@ -11,6 +11,22 @@ from .models import ProjectedUnit, ReferenceBundle, TargetUnit
 from .projection import _BOUNDARIES, _same_schema, project_units
 
 
+# Rules an immutable package's ENG-to-ORG mapping omits by mistake. Each one is
+# taken from the configured eng.vrs baseline, and only when the baseline declares
+# exactly that rule; every other disagreement still stops the task.
+_PACKAGE_ERRATA = {
+    'SAGE_NUMBERS_TYPED_2026-10-09': frozenset({('ACT 19:40-41', 'ACT 19:40', True)}),
+}
+
+
+def _with_errata(package: VersificationSchema, western_schema: VersificationSchema, package_id: str) -> VersificationSchema:
+    """Add the baseline's copy of each registered rule the package is known to omit."""
+    errata = _PACKAGE_ERRATA.get(package_id, frozenset())
+    adopted = [rule for rule in western_schema.mappings
+               if (rule.local.label(), rule.canonical.label(), rule.continuation) in errata]
+    return replace(package, mappings=[*package.mappings, *adopted]) if adopted else package
+
+
 def _coordinates(schema: VersificationSchema, book: str) -> tuple[VerseRef, ...]:
     """Enumerate valid local coordinates independently of whether target text exists."""
     return tuple(VerseRef(book, chapter, verse)
@@ -58,7 +74,8 @@ def project_scope(
     """
     bundle.require_qualified()
     _validate_scope(scope, target_schema)
-    package = parse_vrs_file(mapping_path, schema_id='nca-western', canonical_id=western_schema.canonical_id)
+    package = _with_errata(parse_vrs_file(mapping_path, schema_id='nca-western', canonical_id=western_schema.canonical_id),
+                           western_schema, bundle.package_id)
     continuation_difference = _continuation_coordinates(package, scope.book) ^ _continuation_coordinates(western_schema, scope.book)
     disagreement = tuple(ref.label() for ref in _coordinates(western_schema, scope.book)
         if ref in continuation_difference or package.local_to_canonical(ref) != western_schema.local_to_canonical(ref))

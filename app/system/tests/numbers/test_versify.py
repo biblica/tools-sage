@@ -31,7 +31,10 @@ def test_english_numbered_sources_keep_their_label_where_eng_vrs_has_it(package_
 
 
 def test_package_mapping_rules_agree_with_eng_vrs(package_root):
-    """The runtime package's Western mapping is eng.vrs for the 66 books (one known ACT 19:40 span)."""
+    """The runtime package's Western mapping is eng.vrs for the 66 books (one known ACT 19:40 span).
+
+    `numbers/scope.py` adopts that span from eng.vrs as a registered package erratum.
+    """
     from sage.canon import NT_27, OT_39
     canon = set(OT_39) | set(NT_27)
     pin = json.loads((package_root / "system/config/numbers-reference.json").read_text(encoding="utf-8"))

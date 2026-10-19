@@ -75,7 +75,9 @@ would only be measured on the same 312 verses. The next step is a fresh held-out
 
 NCA cannot run on Acts. The package mapping `eng_org_map_rules.txt` lacks the `ACT 19:40-41`
 continuation that `eng.vrs` declares, so `project_scope` stops with `NCA_MAPPING_BASELINE_MISMATCH`.
-The gate leaves Acts out and lists it in each receipt. Follow-up: `TODO-20261018-002`.
+The 2026-10-18 gate left Acts out and lists it in each receipt. Resolved 2026-10-19 (`TODO-20261018-002`,
+`IMP-20261019-001`): `project_scope` takes this one continuation from `eng.vrs` for this package, so the
+next gate run includes Acts.
 
 ## Limits
 

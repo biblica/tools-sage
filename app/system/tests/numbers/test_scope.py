@@ -1,10 +1,14 @@
 """Runtime NCA scope preserves target-local selection and package Western authority."""
+import json
+from dataclasses import replace
+
 import pytest
 
 from sage.errors import ValidationError
+from sage.numbers.reference import load_reference
 from sage.numbers.scope import project_scope
 from sage.references import parse_scope
-from sage.vrs import VerseRef
+from sage.vrs import VerseRef, parse_vrs_file
 
 from .test_projection import bundle, schema, unit
 
@@ -234,3 +238,36 @@ def test_inventory_groups_offset_purposes_for_bounded_note_batching(tmp_path):
     plan = plan_batches(inventory.stream_inputs, policy=EvidencePolicy())
     assert len(plan.batches) == 2
     assert tuple(value for batch in plan.batches for value in batch.inputs) == inventory.stream_inputs
+
+
+def test_package_erratum_adopts_only_the_baseline_act_continuation(tmp_path):
+    """The pinned package's missing ACT 19:40-41 continuation comes from eng.vrs; other packages still fail."""
+    target = schema(tmp_path, 'org.vrs', 'ACT 19:40\n')
+    western = schema(tmp_path, 'eng.vrs', 'ACT 19:41\n&ACT 19:40-41 = ACT 19:40\n')
+    mapping = tmp_path / 'mapping.txt'
+    mapping.write_text('MAT 1:1 = MAT 1:1\n')
+    rows = bundle()
+    pinned = replace(rows, package_id='SAGE_NUMBERS_TYPED_2026-10-09')
+    projected, expected = project_scope((unit('ACT', 19, 40, 'Both verses.'),), scope=parse_scope('ACT 19:40'),
+        target_schema=target, western_schema=western, bundle=pinned, mapping_path=mapping)
+    assert expected == (VerseRef('ACT', 19, 40), VerseRef('ACT', 19, 41))
+    assert [item.target.main_text for item in projected] == ['Both verses.']
+    with pytest.raises(ValidationError) as caught:
+        project_scope((), scope=parse_scope('ACT 19'), target_schema=target, western_schema=western,
+            bundle=rows, mapping_path=mapping)
+    assert caught.value.code == 'NCA_MAPPING_BASELINE_MISMATCH'
+
+
+@pytest.mark.parametrize('target_vrs', ['eng.vrs', 'org.vrs'])
+def test_pinned_package_projects_every_indexed_book(package_root, target_vrs):
+    """Every book with package rows can open an NCA scope under the bundled Western baseline."""
+    pin = json.loads((package_root / 'system/config/numbers-reference.json').read_text(encoding='utf-8'))
+    root = package_root / pin['path']
+    rows = load_reference(root)
+    scripture = package_root / 'system/resources/scripture'
+    western = parse_vrs_file(scripture / 'eng.vrs', schema_id='eng.vrs', canonical_id='org.vrs')
+    target = parse_vrs_file(scripture / target_vrs, schema_id=target_vrs, canonical_id='org.vrs')
+    for book in sorted({ref.book for ref in rows.rows}):
+        _, expected = project_scope((), scope=parse_scope(book), target_schema=target, western_schema=western,
+            bundle=rows, mapping_path=root / 'reference/eng_org_map_rules.txt')
+        assert expected, book

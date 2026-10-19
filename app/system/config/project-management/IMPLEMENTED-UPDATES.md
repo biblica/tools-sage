@@ -9,6 +9,25 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261019-001 — NCA runs on Acts: package erratum for the ACT 19:40-41 continuation (TODO-20261018-002)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261018-002`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - `project_scope` (`sage/numbers/scope.py`) keeps a per-package erratum list. For
+    `SAGE_NUMBERS_TYPED_2026-10-09` it takes the `&ACT 19:40-41 = ACT 19:40` continuation from the
+    configured `eng.vrs`, and only when `eng.vrs` declares exactly that rule. The pinned package stays
+    byte-for-byte unchanged. Every other mapping disagreement still stops with
+    `NCA_MAPPING_BASELINE_MISMATCH`.
+  - Western ACT 19:41 now maps to ORG ACT 19:40, so an org-numbered WIP's ACT 19:40 covers both
+    English verses instead of leaving 19:41 unmapped.
+  - The release gate no longer has to leave Acts out; it is included on the next run (`TODO-20261018-001`).
+- **Verification:** new tests in `tests/numbers/test_scope.py`: the erratum is applied for the pinned
+  package and refused for any other package; every indexed book of the pinned package opens a scope
+  under `eng.vrs` and `org.vrs` targets (both fail without the erratum). `tests/numbers`: 740 passed, 2 skipped.
+
 ### IMP-20261018-001 — NCA release gate for the typed package: built, run, FAIL recorded (TODO-20261013-016)
 
 - **Version:** `0.02a3` (development branch)
