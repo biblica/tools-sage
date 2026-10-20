@@ -239,6 +239,7 @@ def _unit_conversions(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...],
     kinds = dict(zip(wip, wip_kinds)) if len(wip_kinds) == len(wip) else {}
     glosses = dict(zip(wip, wip_counts_en)) if len(wip_counts_en) == len(wip) else {}
     def unit(value: Fraction) -> dict[str, str] | None:
+        """The OL item that carries this value, with its unit and role."""
         return next((item for item in items if Fraction(item["VALUE"]) == value), None)
     conversions: list[dict[str, str]] = []
     for value in list(missing.elements()):

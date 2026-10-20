@@ -53,6 +53,7 @@ def test_vanilla_install_manifest_matches_source_tree(package_root: Path) -> Non
         path.relative_to(package_root).as_posix()
         for path in package_root.rglob("*")
         if not any(part in ephemeral for part in path.relative_to(package_root).parts)
+        and path.relative_to(package_root).parts[:4] != ("system", "config", "project-management", "private")
     }
     assert documented == actual, {
         "missing_from_manifest": sorted(actual - documented),

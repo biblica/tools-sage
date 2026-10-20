@@ -472,4 +472,5 @@ def test_unit_conversion_note_shows_wip_value_and_original_unit():
     issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
     assert "5 talents (original language) as 5000 coins" in issue
     assert "hour 11 of the day (original language) as 5 o'clock" in issue
-    assert "MAT 25:15" in action and "consistency" in action.lower() and "talents" in action
+    assert action == ("MAT 25:15: Check consistency: talents converted to modern measures; "
+                      "hour of the day converted to clock time.")

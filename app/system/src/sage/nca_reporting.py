@@ -530,8 +530,9 @@ _ACTION_TEXT = {
     "report.nca.issue.UNIT_CONVERSION":
         "The translation states the source value in another unit: {conversions}.",
     "report.nca.action.UNIT_CONVERSION":
-        "{ref}: Consistency and style: please confirm that converting {units} is the translation's chosen "
-        "style and that it is applied the same way wherever the unit occurs; no change is needed if it is.",
+        "{ref}: Check consistency: {checks}.",
+    "report.nca.check.HOUR_TO_CLOCK": "hour of the day converted to clock time",
+    "report.nca.check.UNIT_SCALED": "{ol_unit} converted to modern measures",
     "report.nca.conversion.HOUR_TO_CLOCK": "hour {ol_value} of the day (original language) as {wip_value} o'clock",
     "report.nca.conversion.UNIT_SCALED": "{ol_value} {ol_unit} (original language) as {wip_value} {wip_unit}",
     "report.nca.apparatus_heading": "Apparatus evidence",
@@ -682,8 +683,8 @@ def _finding_text(finding: Mapping[str, object], group: Mapping[str, object], te
         values.update(
             conversions="; ".join(text("report.nca.conversion." + str(item.get("conversion"))).format(
                 **{"wip_unit": "", **item}).strip() for item in conversions) or wip,
-            units=", ".join(sorted({"hours of the day" if item.get("conversion") == "HOUR_TO_CLOCK"
-                                    else str(item.get("ol_unit")) for item in conversions})) or "the unit")
+            checks="; ".join(dict.fromkeys(text("report.nca.check." + str(item.get("conversion"))).format(**item)
+                                           for item in conversions)) or "unit converted to modern measures")
     if kind in {"MALFORMED_NUMERAL", "NUMBER_NOT_IN_SOURCE"}:
         values.update(numerals=", ".join(str(item) for item in context.get("numerals") or ()) or wip)
     if kind == "CONVENTION_EDGE_CASE":

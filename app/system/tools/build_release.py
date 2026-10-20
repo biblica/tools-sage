@@ -98,6 +98,8 @@ FORBIDDEN_PARTS = {
     "htmlcov",
 }
 FORBIDDEN_NAMES = {".coverage", ".DS_Store", "Thumbs.db", "desktop.ini"}
+# Git-ignored maintainer material (project-management/README.md, "Private"): never shipped or audited.
+PRIVATE_WORKSPACE_DIR = ("system", "config", "project-management", "private")
 ARCHIVE_SUFFIXES = {".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".7z", ".rar"}
 FIXED_TIME = (2026, 1, 1, 0, 0, 0)
 PACKAGE_NAME = f"SAGE-v{(APP_ROOT / 'VERSION').read_text(encoding='utf-8').strip()}-Full-Distribution"
@@ -109,6 +111,8 @@ def _should_skip(path: Path, root: Path) -> bool:
     return (
         path.name in FORBIDDEN_NAMES
         or any(part in FORBIDDEN_PARTS for part in relative.parts)
+        or any(relative.parts[index:index + len(PRIVATE_WORKSPACE_DIR)] == PRIVATE_WORKSPACE_DIR
+               for index in range(len(relative.parts)))
         or path.suffix.lower() in {".pyc", ".pyo"}
     )
 
@@ -168,6 +172,7 @@ def _copy_source_tree(root: Path, stage: Path) -> list[str]:
     for path in list(stage.rglob("*")):
         if path.is_file() and _should_skip(path, stage):
             path.unlink()
+    shutil.rmtree(stage.joinpath("app", *PRIVATE_WORKSPACE_DIR), ignore_errors=True)
     return unknown
 
 

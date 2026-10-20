@@ -206,6 +206,8 @@ LEGACY_REWRITE_PATHS = {
     "system/config/schemas/bic-operator-decisions.schema.yml",
 }
 
+# Git-ignored maintainer material (project-management/README.md, "Private"): never shipped or audited.
+PRIVATE_WORKSPACE_DIR = ("system", "config", "project-management", "private")
 EPHEMERAL_PARTS = {
     ".venv",
     "__pycache__",
@@ -486,7 +488,8 @@ def validate_package(root: Path) -> dict[str, Any]:
         current_release_tokens.add(current_rc_match.group(0).casefold())
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root)
-        if any(part in EPHEMERAL_PARTS for part in relative.parts):
+        if any(part in EPHEMERAL_PARTS for part in relative.parts) \
+                or relative.parts[:len(PRIVATE_WORKSPACE_DIR)] == PRIVATE_WORKSPACE_DIR:
             continue
         if path.is_symlink():
             symlinks.append(str(relative).replace("\\", "/"))

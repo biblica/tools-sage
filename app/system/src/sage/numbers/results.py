@@ -178,7 +178,7 @@ _MESSAGES = {
     "ONE_ONLY_DIFFERENCE": "The only difference is an added or missing value of one.",
     "VALUE_OMITTED": "The translation leaves out some of the source's numbers and adds none.",
     "UNIT_CONVERSION": "The translation states a source value in another unit (clock time, a modern measure or "
-                       "currency); check consistency and style.",
+                       "currency); noted for consistency and style.",
 }
 
 

@@ -32,6 +32,8 @@ FORBIDDEN_DIRS = {
 FORBIDDEN_NAMES = {".coverage", ".DS_Store", "Thumbs.db", "desktop.ini"}
 FORBIDDEN_SUFFIXES = {".pyc", ".pyo", ".tmp", ".swp", ".swo", ".bak"}
 LOCAL_ENVIRONMENT_DIRS = {".git", ".venv"}
+# Git-ignored maintainer material (project-management/README.md, "Private"): never shipped or audited.
+PRIVATE_WORKSPACE_DIR = ("system", "config", "project-management", "private")
 WINDOWS_RESERVED_BASENAMES = {
     "CON",
     "PRN",
@@ -967,7 +969,8 @@ def iter_audit_paths(root: Path, mode: str):
         if mode == "workspace" and relative_directory.parts and relative_directory.parts[0] in {"cache", "workspace_data"}:
             dirnames[:] = []
             continue
-        dirnames[:] = sorted(dirnames)
+        dirnames[:] = sorted(name for name in dirnames
+                             if (relative_directory / name).parts[-len(PRIVATE_WORKSPACE_DIR):] != PRIVATE_WORKSPACE_DIR)
         for name in sorted(dirnames):
             yield directory_path / name
         for name in sorted(filenames):

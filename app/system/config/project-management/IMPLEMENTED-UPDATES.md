@@ -31,7 +31,8 @@ lines record the suites re-run on 2026-10-13 against `6bce03f`.
     "5 cubits" stays FAIL). The review context lists each conversion with the OL value and unit and
     the WIP value and unit. Findings of this kind have category `CONSISTENCY`.
   - `nca_reporting.py`: the Operator note names each conversion ("5 talents (original language) as
-    5000 coins") and asks the Operator to confirm the style is deliberate and applied consistently.
+    5000 coins") and the action names what to check ("Check consistency: talents converted to modern
+    measures"); it asks for no Operator decision (PO decision 2026-10-20).
   - `.gitignore`: `app/system/config/project-management/private/` holds material the public
     repository must not carry; only its README is tracked. The held-out 2 receipt and notes are there.
 - **Verification:** new tests in `tests/numbers/test_index_build.py`, `test_typed_reference.py`,
