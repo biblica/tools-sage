@@ -2,6 +2,7 @@
 
 from fractions import Fraction
 import importlib.util
+import json
 from pathlib import Path
 import sys
 
@@ -81,6 +82,44 @@ def test_fail_verdict_is_split_unless_judges_agree():
     assert gate.verdict({"a": {"verdict": "GENUINE"}}, ["a", "b"]) == "SPLIT"
 
 
+def test_fail_cause_decides_the_verdict_and_reading_is_decided_by_code():
+    """Only VALUE_CHANGED is GENUINE; a FAIL is READ_CORRECTLY only when extraction equals gold."""
+    changed, restructured = {"cause": "VALUE_CHANGED"}, {"cause": "RESTRUCTURED"}
+    assert gate.verdict({"a": changed, "b": changed}, ["a", "b"]) == "GENUINE"
+    assert gate.verdict({"a": restructured, "b": {"cause": "NOT_A_QUANTITY"}}, ["a", "b"]) == "FALSE_ALARM"
+    assert gate.verdict({"a": changed, "b": restructured}, ["a", "b"]) == "SPLIT"
+    assert gate.fail_cause({"a": restructured, "b": restructured}, ["a", "b"]) == "RESTRUCTURED"
+    assert gate.fail_cause({"a": changed, "b": restructured}, ["a", "b"]) == "MIXED"
+    assert gate.fail_reading([Fraction(2), Fraction(3)], [Fraction(3), Fraction(2)], True) == "READ_CORRECTLY"
+    assert gate.fail_reading([Fraction(3)], [Fraction(1), Fraction(3)], True) == "MISREAD"
+    assert gate.fail_reading([Fraction(3)], [Fraction(3)], False) == "MISREAD"
+    assert gate.fail_reading(None, [Fraction(3)], True) == "DISPUTED"
+
+
+def test_judges_see_one_fail_per_call_with_kind_and_referents(tmp_path):
+    """Each FAIL is judged alone, so a rescore that adds or drops a FAIL cannot move another verdict."""
+    bundle = _Bundle([_row("JOS 4:2", ("12",)), _row("JOS 4:8", ("12",))])
+    groups = [_group("JOS 4:2", "FAIL", ("13",), ("12",)), _group("JOS 4:8", "FAIL", ("11",), ("12",))]
+    prompts = []
+
+    def judge(system, prompt, schema):
+        """Record each prompt and answer every case it holds."""
+        prompts.append((system, json.loads(prompt)))
+        key = "cases" if "cases" in prompt else "verses"
+        items = [{"id": item["id"], "cause": "VALUE_CHANGED", "reason": "r"} if key == "cases"
+                 else {"id": item["id"], "values": [], "kinds": []} for item in json.loads(prompt)[key]]
+        return {"output": {"items": items}, "cost_usd": 0}
+
+    labels = gate.judge_cases(groups, "uk-UA", {"a": judge}, tmp_path, bundle)
+    # Judge calls run on worker threads, so order the recorded prompts by case.
+    verdict_prompts = sorted((prompt for system, prompt in prompts if "cases" in prompt),
+                             key=lambda prompt: prompt["cases"][0]["id"])
+    assert [len(prompt["cases"]) for prompt in verdict_prompts] == [1, 1]
+    assert verdict_prompts[0]["cases"][0]["fail_kind"] == "VALUE_DIFFERENCE"
+    assert verdict_prompts[0]["cases"][0]["wip_values_read_by_checker"] == [{"value": "13", "counts": ""}]
+    assert labels["verdicts"]["c1"]["a"]["cause"] == "VALUE_CHANGED"
+
+
 def _group(label: str, outcome: str, values: tuple, expected: tuple) -> dict:
     """Build one serialized group as qualify_nca reads it from sut.json."""
     return {"western_references": [label], "evidence": {"wip_text": "text"},
@@ -108,24 +147,53 @@ def test_metrics_and_gate_pool_languages_and_apply_thresholds():
                          "c1": {"a": {"values": ["12"]}, "b": {"values": ["12"]}}},
               "verdicts": {"c1": {"a": {"verdict": "FALSE_ALARM"}, "b": {"verdict": "FALSE_ALARM"}}}}
     measured = gate.language_metrics(sut, labels, ["a", "b"], bundle, "UNORDERED", {"JOS 4:2": ["PLAIN"]})
-    assert measured["fail_precision"] == {"numerator": 0, "denominator": 1, "percent": 0.0}
+    assert measured["fail_precision"] == {"numerator": 0, "denominator": 1, "percent": 0.0,
+                                          "wilson95_percent": [0.0, 79.3]}
     assert measured["extraction_recall"]["numerator"] == 1 and measured["extraction_recall"]["denominator"] == 2
-    assert measured["planted_detection"] == {"numerator": 1, "denominator": 1, "percent": 100.0}
+    assert measured["planted_detection"]["numerator"] == 1 and measured["planted_detection"]["denominator"] == 1
     assert measured["cases"][1]["fail_verdict"] == "FALSE_ALARM"
+    # The judges read 12 where the checker read nothing: the FAIL rests on a misreading.
+    assert measured["cases"][1]["fail_reading"] == "MISREAD"
+    assert measured["false_fail_rate"]["numerator"] == 1 and measured["false_fail_rate"]["denominator"] == 2
+    assert measured["false_fails_by_reading"] == {"MISREAD": 1}
     result = gate.gate_status([measured, {**measured, "language": "es-419"}])
     assert result["status"] == "FAIL"
-    assert result["checks"] == {"fail_precision": False, "extraction_recall": False,
-                                "planted_detection": True, "two_languages": True}
+    # Two false FAILs in four verses and 2/4 recall are past their bars across the whole interval;
+    # 2/2 planted errors is too little evidence to pass, and no text plants ran.
+    assert result["checks"] == {"false_fail_rate": "FAIL", "extraction_recall": "FAIL",
+                                "planted_detection": "INSUFFICIENT_EVIDENCE",
+                                "text_plant_detection": "INSUFFICIENT_EVIDENCE", "two_languages": "PASS"}
+    # Precision is still reported, but it is not a gate check.
     assert result["totals"]["fail_precision"]["denominator"] == 2
+    assert result["totals"]["false_fail_rate"]["denominator"] == 4
 
 
-def test_gate_without_fails_has_no_precision_evidence():
-    """Zero FAILs is no evidence of precision, so that check does not pass."""
-    empty = {"numerator": 0, "denominator": 0, "percent": None}
-    full = {"numerator": 10, "denominator": 10, "percent": 100.0}
-    languages = [{"language": language, "fail_precision": empty, "extraction_recall": full,
-                  "planted_detection": full} for language in ("uk-UA", "es-419")]
-    assert gate.gate_status(languages)["checks"]["fail_precision"] is False
+def test_checks_need_enough_evidence_to_pass_and_a_clear_shortfall_to_fail():
+    """A ratio PASSes on enough cases at the bar, FAILs below its interval, and is otherwise undecided."""
+    bar = Fraction(9, 10)
+    assert gate.check_ratio({"numerator": 19, "denominator": 20}, bar, 20) == "PASS"
+    assert gate.check_ratio({"numerator": 4, "denominator": 4}, bar, 20) == "INSUFFICIENT_EVIDENCE"
+    assert gate.check_ratio({"numerator": 1, "denominator": 4}, bar, 20) == "FAIL"
+    # 85% of 40 is under the bar, but the interval still reaches it.
+    assert gate.check_ratio({"numerator": 34, "denominator": 40}, bar, 20) == "INSUFFICIENT_EVIDENCE"
+    low, high = gate.wilson_interval(1, 4)
+    assert round(low, 3) == 0.046 and round(high, 3) == 0.699
+
+
+def test_gate_needs_enough_verses_to_bound_false_fails():
+    """No false FAIL in a few verses is no evidence; enough verses with almost none pass."""
+    full = {"numerator": 200, "denominator": 200}
+    def languages(false, verses):
+        """Two WIPs with the given false FAILs and verses each, every other measure passing."""
+        return [{"language": language, "false_fail_rate": {"numerator": false, "denominator": verses},
+                 "extraction_recall": full, "planted_detection": full, "text_plant_detection": full}
+                for language in ("uk-UA", "es-419")]
+    assert gate.gate_status(languages(0, 10))["status"] == "INSUFFICIENT_EVIDENCE"
+    assert gate.gate_status(languages(0, 160))["status"] == "PASS"
+    # 2/318 (0.6%) is above the bar but its interval still reaches below it; 6/318 does not.
+    assert gate.gate_status(languages(1, 159))["checks"]["false_fail_rate"] == "INSUFFICIENT_EVIDENCE"
+    assert gate.gate_status(languages(3, 159))["checks"]["false_fail_rate"] == "FAIL"
+    assert gate.check_rate({"numerator": 1, "denominator": 300}, Fraction(1, 200), 300) == "PASS"
 
 
 def test_held_out_selection_avoids_development_coordinates():
@@ -145,3 +213,111 @@ def test_provider_failures_are_not_scored_and_make_the_gate_incomplete():
                                      {"values": {}, "verdicts": {}}, ["a", "b"], bundle, "UNORDERED", {})
     assert measured["provider_failed"] == ["JOS 4:2"] and measured["extraction_recall"]["denominator"] == 0
     assert gate.gate_status([measured, {**measured, "language": "uk-UA"}])["status"] == "INCOMPLETE"
+
+
+BOOK = ("\\id GEN\n\\c 1\n\\p\n\\v 1 Seven days and seven nights. \\v 2 Two \\w men|strong=\"H1\"\\w* came.\n"
+        "\\c 10\n\\p\n\\v 1 Ten men.\n")
+
+
+def test_text_plant_changes_only_its_own_verse():
+    """An edit is applied inside its verse and kept only when that verse alone changes as planned."""
+    text, applied = gate.plant_book_text(BOOK, "01GEN.SFM", {"GEN:10:1": ("Ten", "Eleven")})
+    assert applied == ["GEN:10:1"] and "\\v 1 Eleven men." in text and "Seven days" in text
+    # "seven" twice in its verse is ambiguous; "men" crosses markup in 1:2; 1:9 does not exist.
+    _same, applied = gate.plant_book_text(BOOK, "01GEN.SFM", {"GEN:1:1": ("even", "ight"),
+                                                              "GEN:1:2": ("Two men", "Three men"),
+                                                              "GEN:1:9": ("x", "y")})
+    assert applied == [] and _same == BOOK
+    # A verse-1 edit lands in the chapter it names, not in chapter 1.
+    text, applied = gate.plant_book_text(BOOK, "01GEN.SFM", {"GEN:1:1": ("Seven days", "Eight days")})
+    assert applied == ["GEN:1:1"] and text.count("Ten men") == 1 and "Eight days and seven nights" in text
+
+
+def test_plant_candidates_are_seeded_and_need_an_exact_reading():
+    """Plants come only from PASS verses read exactly as the judges read them, in seeded order."""
+    bundle = _Bundle([_row("JOS 4:2", ("12",)), _row("JOS 4:3", ("12",)), _row("JOS 4:4", ("3/2",))])
+    groups = []
+    for label, values in (("JOS 4:2", ("12",)), ("JOS 4:3", ("12",)), ("JOS 4:4", ("3/2",))):
+        group = _group(label, "PASS", values, values)
+        group["unit_id"] = f"{'0' * 64}:JOS:4:{label[-1]}"
+        groups.append(group)
+    labels = {"values": {"c0": {"a": {"values": ["12"]}}, "c1": {"a": {"values": ["11"]}},
+                         "c2": {"a": {"values": ["3/2"]}}}}
+    found = gate.plant_candidates(groups, labels, ["a"], bundle, seed="s", limit=5)
+    # 4:3 was misread (gold 11) and 4:4 holds a fraction: only 4:2 is planted, 12 -> 13.
+    assert [(plant["key"], plant["from"], plant["to"], plant["planned_values"]) for plant in found] == [
+        ("JOS:4:2", "12", "13", ["13"])]
+    assert found == gate.plant_candidates(groups, labels, ["a"], bundle, seed="s", limit=5)
+
+
+def test_plants_are_kept_only_when_every_judge_counts_the_planned_values(tmp_path):
+    """A plant whose rewrite the judges do not count as planned is not measured."""
+    candidates = [{"id": "p0", "key": "JOS:4:2", "western_references": ["JOS 4:2"], "text": "twelve stones",
+                   "values": ["12"], "position": 1, "from": "12", "to": "13", "planned_values": ["13"]},
+                  {"id": "p1", "key": "JOS:4:3", "western_references": ["JOS 4:3"], "text": "twelve men",
+                   "values": ["12"], "position": 1, "from": "12", "to": "13", "planned_values": ["13"]}]
+
+    def judge(system, prompt, schema):
+        """Plant both verses; count 13 in the first rewrite and 12 in the second."""
+        request = json.loads(prompt)
+        if "change" in prompt:
+            items = [{"id": verse["id"], "old": "twelve", "new": "thirteen"} for verse in request["verses"]]
+        else:
+            items = [{"id": verse["id"], "values": ["13" if "stones" in verse["text"] else "12"], "kinds": []}
+                     for verse in request["verses"]]
+        return {"output": {"items": items}, "cost_usd": 0}
+
+    plants = gate.make_plants(candidates, "en", {"a": judge, "b": judge}, tmp_path)
+    assert [(plant["planted_text"], plant["verified"]) for plant in plants] == [
+        ("thirteen stones", True), ("thirteen men", False)]
+    sut = {"applied": ["JOS:4:2"], "groups": [{**_group("JOS 4:2", "FAIL", ("13",), ("12",)),
+                                               "unit_id": f"{'1' * 64}:JOS:4:2"}]}
+    measured = gate.plant_metrics({"plants": plants}, sut)
+    assert measured["text_plant_detection"]["numerator"] == 1 and measured["text_plant_detection"]["denominator"] == 1
+    assert measured["text_plants"]["verified"] == 1 and measured["text_plant_cases"][0]["read_exactly"] is True
+
+
+class _Identity:
+    """Route identity as NcaModelTasks pins it."""
+    model_id, reasoning_id = "m", "medium"
+
+
+class _Tasks:
+    """Just the parts of NcaModelTasks the provider probe reads."""
+    def __init__(self, executor):
+        """Pin a fake route, status and executor."""
+        self._route = type("Route", (), {"identity": _Identity()})()
+        self._provider_status = "status"
+        self._executor = executor
+
+
+def test_provider_probe_reports_a_refusal_and_passes_an_answer():
+    """One tiny request shows a signed-in provider that refuses calls, such as one out of credits."""
+    class Refusing:
+        """A provider whose workspace has no credits."""
+        def execute_prevalidated(self, request, status):
+            """Refuse like the codex CLI does."""
+            raise RuntimeError("ERROR: Your workspace is out of credits.")
+
+    class Answering:
+        """A provider that answers; records the request it got."""
+        def execute(self, request):
+            """Accept the request."""
+            self.request = request
+
+    assert "out of credits" in gate.provider_probe(_Tasks(Refusing()))
+    answering = Answering()
+    assert gate.provider_probe(_Tasks(answering)) is None
+    assert answering.request.model == "m" and answering.request.reasoning_effort == "medium"
+
+
+def test_provider_is_probed_only_when_a_result_will_be_made(tmp_path):
+    """Cached and replayed results need no provider, so a run that only rescores never probes."""
+    assert gate.provider_needed("all", tmp_path, ["p"], 50, False)
+    assert not gate.provider_needed("all", tmp_path, ["p"], 50, True)
+    assert not gate.provider_needed("gate", tmp_path, ["p"], 50, False)
+    (tmp_path / "p").mkdir()
+    (tmp_path / "p" / "sut.json").write_text("{}")
+    assert not gate.provider_needed("sut", tmp_path, ["p"], 50, False)
+    assert gate.provider_needed("plant", tmp_path, ["p"], 50, False)
+    assert not gate.provider_needed("plant", tmp_path, ["p"], 0, False)

@@ -13,14 +13,30 @@ No hand labelling. Every label is deterministic code or LLM-built:
               (a) the values the counting convention counts in the WIP verse; a gold value list
                   exists only where both judges agree, and disputed verses are reported, never
                   silently resolved;
-              (b) for every FAIL, whether the WIP really says a different number than the
-                  original (GENUINE) or the FAIL is a reading/counting artifact (FALSE_ALARM).
+              (b) for every FAIL, one call per FAIL so a verdict never depends on its batch
+                  neighbours: the cause, judged against the product policy (only a changed
+                  quantity is a FAIL; omissions, additions, conversions and restructurings are
+                  review). VALUE_CHANGED is GENUINE; every other cause is a FALSE_ALARM.
 4. gate    -- deterministic metrics and the release-gate receipt:
               * FAIL precision = FAILs both judges call GENUINE / all FAILs (a split verdict
                 counts against precision);
+              * false-FAIL rate = FAILs not called GENUINE / assessed verses: unlike precision it
+                does not depend on how many real errors the WIPs happen to contain;
+              * each FAIL is also marked, by code, READ_CORRECTLY (the extracted values equal the
+                gold values, so the comparison or convention made the call) or MISREAD;
               * extraction recall = verses whose extracted values equal the gold values;
               * planted-error detection = verses that PASS are compared again against the index
                 with one expected value changed, which must FAIL.
+5. plant   -- end-to-end planted errors in real WIP text: for verses that PASS with gold values,
+              one judge rewrites the verse with one counted number raised by one; every judge
+              must then count exactly the planned values in the rewritten verse. The edit is
+              applied inside that verse of the book's USFM (kept only when recompiling changes
+              that verse alone, as planned) and the production route runs on it; it must FAIL.
+              Every ratio carries a Wilson 95% interval. A check FAILs when the whole interval is
+              on the wrong side of its bar, PASSes when the measured value is on the right side on
+              enough evidence, and is otherwise INSUFFICIENT_EVIDENCE. The gate checks the
+              false-FAIL rate, extraction recall, both planted-error measures and two languages;
+              FAIL precision is reported beside them.
               A verse the provider never answered is left out of every measure and makes the
               receipt INCOMPLETE; rerun the sut step for that WIP once the provider is available.
 
@@ -50,10 +66,19 @@ from typing import Callable, Iterable, Mapping, Sequence
 APP_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(APP_ROOT / "system" / "src"))
 
-GATE_SCHEMA = "1.0"
-FAIL_PRECISION_MIN = Fraction(9, 10)
+GATE_SCHEMA = "1.2"
+# FAIL precision is reported, not gated: it depends on how many real errors the WIPs happen to
+# contain (about 0.3% of verses), so a run of a few hundred verses cannot show it. The gate bounds
+# the false-FAIL rate per verse instead, which is what a reviewer pays for.
+FALSE_FAIL_RATE_MAX = Fraction(1, 200)
 EXTRACTION_RECALL_MIN = Fraction(19, 20)
 PLANTED_DETECTION_MIN = Fraction(19, 20)
+TEXT_PLANT_DETECTION_MIN = Fraction(19, 20)
+# Fewest measured cases on which a ratio may PASS; below this a check can only FAIL or be
+# INSUFFICIENT_EVIDENCE.
+MIN_EVIDENCE = {"false_fail_rate": 300, "extraction_recall": 100, "planted_detection": 100,
+                "text_plant_detection": 60}
+WILSON_Z = 1.96
 # Hard classes, filled rarest first so every class is represented before common ones.
 CLASS_ORDER = ("APPARATUS", "FRACTION", "NIV_ONLY", "OL_ONLY", "DATE", "LARGE", "MEASURE",
                "COMPOUND", "MULTI", "ONE", "TIME", "PLAIN")
@@ -159,10 +184,12 @@ def _book_files(project_path: Path, book: str) -> list[Path]:
                   if path.is_file() and path.suffix.upper() in {".SFM", ".USFM"} and book in path.stem[:6])
 
 
-def build_inputs(config, project_id: str, policy: Mapping[str, object], bundle, selected: Sequence[str]):
+def build_inputs(config, project_id: str, policy: Mapping[str, object], bundle, selected: Sequence[str],
+                 texts: Mapping[str, str] | None = None):
     """Project the WIP books holding the selected verses and keep only their units.
 
-    Returns the inputs and the books that could not be projected, with the reason code.
+    ``texts`` replaces the USFM of a book (by book code), for text plants. Returns the inputs and
+    the books that could not be projected, with the reason code.
     """
     from sage.numbers.execution import ExecutionInputs, package_root
     from sage.numbers.scope import project_scope
@@ -188,7 +215,7 @@ def build_inputs(config, project_id: str, policy: Mapping[str, object], bundle, 
         files = _book_files(Path(project.path), book)
         if not files:
             continue
-        text = files[0].read_bytes().decode("utf-8-sig")
+        text = (texts or {}).get(book) or files[0].read_bytes().decode("utf-8-sig")
         usj = compile_usfm_text(text, files[0].name)
         digest = _sha256(_canonical(usj))
         documents[digest] = usj
@@ -284,8 +311,48 @@ def replay_tasks(route: Mapping[str, object]):
     return ReplayModelTasks()
 
 
+PROBE_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["ok"],
+                "properties": {"ok": {"type": "boolean"}}}
+
+
+def provider_probe(tasks) -> str | None:
+    """Send one tiny request on the route under test: the provider's error, or None when it answers.
+
+    A provider that is signed in can still refuse every call (a workspace out of credits); only a
+    real request shows it, and finding out halfway through a run leaves an INCOMPLETE receipt. This
+    reads the task object's route and executor directly, because a public method on NcaModelTasks
+    would change a sealed phase-contract module and void every sealed phase.
+    """
+    from sage.executors import ProviderRequest
+
+    identity = tasks._route.identity
+    request = ProviderRequest(prompt='Reply with {"ok": true}.', schema=PROBE_SCHEMA, model=identity.model_id,
+                              reasoning_effort=None if identity.reasoning_id == "provider-default"
+                              else identity.reasoning_id, timeout_seconds=120)
+    execute = getattr(tasks._executor, "execute_prevalidated", None)
+    try:
+        if callable(execute):
+            execute(request, tasks._provider_status)
+        else:
+            tasks._executor.execute(request)
+    except Exception as exc:  # any refusal means the run would fail; report it, do not start
+        return str(exc).strip() or type(exc).__name__
+    return None
+
+
+def provider_needed(step: str, work: Path, projects: Sequence[str], plants: int, replaying: bool) -> bool:
+    """True when this invocation will call the route under test (a missing, non-replayed SUT result)."""
+    if replaying:
+        return False
+    missing = [work / project / name for project in projects
+               for name, steps in (("sut.json", {"sut", "all"}), ("plants-sut.json", {"plant", "all"}))
+               if step in steps and (name == "sut.json" or plants > 0)]
+    return any(not path.exists() for path in missing)
+
+
 def run_sut(config, project_id: str, language: str, script: str, bundle, selected: Sequence[str],
-            session: Path, replay_route: Mapping[str, object] | None = None) -> dict[str, object]:
+            session: Path, replay_route: Mapping[str, object] | None = None,
+            texts: Mapping[str, str] | None = None) -> dict[str, object]:
     """Run the production extraction route once (or replay it) and serialize every indexed group."""
     from sage.numbers.engine import evaluate_optimized_run
     from sage.numbers.model_tasks import NcaModelTasks
@@ -294,7 +361,7 @@ def run_sut(config, project_id: str, language: str, script: str, bundle, selecte
 
     tasks = replay_tasks(replay_route) if replay_route is not None else NcaModelTasks(config)
     policy = gate_policy(config, bundle, tasks.route_snapshot, project_id, language, script)
-    inputs, excluded = build_inputs(config, project_id, policy, bundle, selected)
+    inputs, excluded = build_inputs(config, project_id, policy, bundle, selected, texts)
     session.mkdir(parents=True, exist_ok=True)
     fingerprint = _sha256(_canonical({"policy": policy, "units": list(inputs.expected_unit_ids)}))
     result = evaluate_optimized_run(inputs, model_tasks=tasks, run_id=f"gate-{project_id}",
@@ -316,23 +383,34 @@ Return an item for every input id, with empty lists when nothing counts.
 
 """
 
-VERDICT_INSTRUCTIONS = """You audit findings from an automatic number check of a Bible translation (the WIP).
-Each case gives the WIP verse, the original-language verse, an English reference translation (BSB), the numbers the
-checker expected from the original language (counted by the convention below) and the numbers it read from the WIP.
-The checker reported that the WIP numbers differ.
+VERDICT_INSTRUCTIONS = """You audit a FAIL finding from an automatic number check of a Bible translation (the WIP).
+Each case gives the WIP verse, the original-language verse, an English reference translation (BSB), the kind of FAIL,
+the numbers the checker expected from the original language (counted by the convention below), and the numbers it
+read from the WIP with what the checker took each one to count.
 
-Decide one verdict per case:
-- GENUINE: the WIP really states a different number or quantity than the original, or adds or drops one, or replaces
-  a source number with a different explicit one (for example "three and a half years" for "a time, times and half a
-  time"). A translator should fix it or consciously confirm it.
-- FALSE_ALARM: the WIP conveys the same numeric content and the difference comes from how the numbers were read or
-  counted: the same number in another construction ("twelve times a year" for "twelve crops", "both" for "the two"),
-  an implied singular made explicit ("one measure" for "a measure"), a pronoun or "another" read as a number, or a
-  number the checker missed or misread in the WIP.
+A FAIL is reserved for one thing: the WIP states a different quantity for the same thing than the original does (a
+reader of the WIP learns a different number of people, a different date, a different size), or, for a
+WRONG_ASSOCIATION FAIL, attaches the original's numbers to the wrong things. By product decision every other
+difference is reported for review, not as a FAIL: a number left out, a number added from context, an implied
+singular made explicit, a unit or time-of-day conversion (talents as coins, the ninth hour as three in the afternoon),
+and the same quantities in another construction (a repeated number stated once, "the two" for "one ... the second",
+"twelve times a year" for "twelve crops").
+
+Give one cause per case:
+- VALUE_CHANGED: the FAIL is right: the WIP states a different quantity, or attaches numbers to the wrong things.
+- CHECKER_MISREAD: the checker missed a number in the WIP or read one with the wrong value.
+- NOT_A_QUANTITY: the checker counted a number word that states no quantity here (an idiom such as "the next day"
+  written with "second", a title or a name, "another", a pronoun).
+- RESTRUCTURED: the WIP states the same quantities in another construction.
+- REVIEW_CLASS: an omission, an addition from context, an implied singular made explicit, or a conversion.
+- EXPECTED_WRONG: the expected numbers are not what the convention counts in the original.
 
 Give a short reason in English. Do not quote more than three words of any text.
 
 """
+
+FAIL_CAUSES = ("VALUE_CHANGED", "CHECKER_MISREAD", "NOT_A_QUANTITY", "RESTRUCTURED", "REVIEW_CLASS",
+               "EXPECTED_WRONG")
 
 EXTRACT_SCHEMA = {
     "type": "object", "additionalProperties": False, "required": ["items"],
@@ -345,8 +423,8 @@ EXTRACT_SCHEMA = {
 VERDICT_SCHEMA = {
     "type": "object", "additionalProperties": False, "required": ["items"],
     "properties": {"items": {"type": "array", "items": {
-        "type": "object", "additionalProperties": False, "required": ["id", "verdict", "reason"],
-        "properties": {"id": {"type": "string"}, "verdict": {"enum": ["GENUINE", "FALSE_ALARM"]},
+        "type": "object", "additionalProperties": False, "required": ["id", "cause", "reason"],
+        "properties": {"id": {"type": "string"}, "cause": {"enum": list(FAIL_CAUSES)},
                        "reason": {"type": "string"}}}}},
 }
 
@@ -382,10 +460,10 @@ def _cached_call(cache: Path, judge_id: str, judge, system: str, prompt: str,
     return response
 
 
-def _batches(items: Sequence[Mapping[str, object]]) -> Iterable[list[Mapping[str, object]]]:
+def _batches(items: Sequence[Mapping[str, object]], size: int = JUDGE_BATCH) -> Iterable[list[Mapping[str, object]]]:
     """Split judge cases into fixed-size batches in stable order."""
-    for start in range(0, len(items), JUDGE_BATCH):
-        yield list(items[start:start + JUDGE_BATCH])
+    for start in range(0, len(items), size):
+        yield list(items[start:start + size])
 
 
 def judge_cases(groups: Sequence[Mapping[str, object]], language: str, judges: Mapping[str, object],
@@ -399,22 +477,32 @@ def judge_cases(groups: Sequence[Mapping[str, object]], language: str, judges: M
             continue
         refs = [_verse(label) for label in group["western_references"]]
         rows = [bundle.lookup(ref) for ref in refs if bundle.lookup(ref) is not None]
+        extraction = group["extraction"]
         fails.append({"id": f"c{index}", "wip_text": group["evidence"]["wip_text"],
                       "original_text": " ".join(row.ol_text for row in rows),
                       "bsb_text": " ".join(row.bsb_text for row in rows),
+                      "fail_kind": (group["comparison"]["review_context"] or {}).get("kind") or "VALUE_DIFFERENCE",
                       "expected_values": group["comparison"]["expected_values"],
-                      "wip_values_read_by_checker": group["comparison"]["wip_values"]})
+                      "wip_values_read_by_checker": [
+                          {"value": value, "counts": counts}
+                          for value, counts in zip(extraction["values"], extraction["counts_en"])]})
     jobs = []
     for judge_id, judge in judges.items():
         for batch in _batches(verses):
             jobs.append(("values", judge_id, judge, EXTRACT_INSTRUCTIONS + convention,
                          json.dumps({"language": language, "verses": batch}, ensure_ascii=False), EXTRACT_SCHEMA))
-        for batch in _batches(fails):
+        # One FAIL per call: a verdict must not change with the other FAILs of a rescore.
+        for batch in _batches(fails, 1):
             jobs.append(("verdicts", judge_id, judge, VERDICT_INSTRUCTIONS + convention,
                          json.dumps({"wip_language": language, "cases": batch}, ensure_ascii=False), VERDICT_SCHEMA))
+    return _ask(jobs, cache, ("values", "verdicts"))
+
+
+def _ask(jobs: Sequence[tuple], cache: Path, kinds: Sequence[str]) -> dict[str, dict[str, dict[str, object]]]:
+    """Run (kind, judge_id, judge, system, prompt, schema) jobs and key every item by kind, id, judge."""
     with ThreadPoolExecutor(max_workers=4) as pool:
         responses = list(pool.map(lambda job: (job[0], job[1], _cached_call(cache, job[1], *job[2:])), jobs))
-    labels: dict[str, dict[str, dict[str, object]]] = {"values": {}, "verdicts": {}}
+    labels: dict[str, dict[str, dict[str, object]]] = {kind: {} for kind in kinds}
     for kind, judge_id, response in responses:
         for item in response["output"].get("items", []):
             labels[kind].setdefault(str(item.get("id")), {})[judge_id] = dict(item)
@@ -447,10 +535,35 @@ def consensus_values(by_judge: Mapping[str, Mapping[str, object]], judge_ids: Se
     return lists[0]
 
 
+def judge_verdict(item: Mapping[str, object] | None) -> str:
+    """One judge's GENUINE/FALSE_ALARM, from its cause (or the verdict of a 1.0 label file)."""
+    item = item or {}
+    if item.get("cause") in FAIL_CAUSES:
+        return "GENUINE" if item["cause"] == "VALUE_CHANGED" else "FALSE_ALARM"
+    return str(item.get("verdict") or "MISSING")
+
+
 def verdict(by_judge: Mapping[str, Mapping[str, object]], judge_ids: Sequence[str]) -> str:
     """GENUINE or FALSE_ALARM when the judges agree, SPLIT otherwise."""
-    found = {str((by_judge.get(judge_id) or {}).get("verdict") or "MISSING") for judge_id in judge_ids}
+    found = {judge_verdict(by_judge.get(judge_id)) for judge_id in judge_ids}
     return found.pop() if len(found) == 1 and found <= {"GENUINE", "FALSE_ALARM"} else "SPLIT"
+
+
+def fail_cause(by_judge: Mapping[str, Mapping[str, object]], judge_ids: Sequence[str]) -> str:
+    """The cause every judge gave, MIXED when they differ, or UNKNOWN for a 1.0 label file."""
+    found = {str((by_judge.get(judge_id) or {}).get("cause") or "UNKNOWN") for judge_id in judge_ids}
+    return found.pop() if len(found) == 1 else "MIXED"
+
+
+def fail_reading(gold: Sequence[Fraction] | None, extracted: Sequence[Fraction], complete: bool) -> str:
+    """Whether a FAIL rests on a correct reading of the WIP, by code from the gold values.
+
+    READ_CORRECTLY: the checker read what the judges read, so the comparison, the convention or the
+    index made the call. MISREAD: extraction differs from gold. DISPUTED: no gold values.
+    """
+    if gold is None:
+        return "DISPUTED"
+    return "READ_CORRECTLY" if complete and Counter(extracted) == Counter(gold) else "MISREAD"
 
 
 def planted_rows(rows: Sequence[object]) -> list[object] | None:
@@ -466,14 +579,22 @@ def planted_rows(rows: Sequence[object]) -> list[object] | None:
     return None
 
 
-def planted_outcome(group: Mapping[str, object], bundle, mode: str) -> str | None:
-    """Compare one PASS group's real extraction against its index with one value changed."""
-    from sage.numbers.compare import compare_group
-
+def plantable_rows(group: Mapping[str, object], bundle) -> list[object] | None:
+    """The index rows of a group, or None when they only ever review (provisional or apparatus)."""
     rows = [bundle.lookup(_verse(label)) for label in group["western_references"]]
     rows = [row for row in rows if row is not None]
     if (not rows or any(row.metadata.get("OL_REVIEW_STATUS") == "PROVISIONAL"
                         or str(row.metadata.get("TC_STATUS") or "NONE") not in {"", "NONE"} for row in rows)):
+        return None
+    return rows
+
+
+def planted_outcome(group: Mapping[str, object], bundle, mode: str) -> str | None:
+    """Compare one PASS group's real extraction against its index with one value changed."""
+    from sage.numbers.compare import compare_group
+
+    rows = plantable_rows(group, bundle)
+    if rows is None:
         return None
     changed = planted_rows(rows)
     if changed is None:
@@ -484,14 +605,28 @@ def planted_outcome(group: Mapping[str, object], bundle, mode: str) -> str | Non
                          wip_issues=tuple(extraction["issues"])).outcome
 
 
+def wilson_interval(numerator: int, denominator: int) -> tuple[float, float] | None:
+    """Wilson score 95% interval of one proportion, or None without evidence."""
+    if denominator == 0:
+        return None
+    p, z2 = numerator / denominator, WILSON_Z ** 2
+    centre = (p + z2 / (2 * denominator)) / (1 + z2 / denominator)
+    spread = (WILSON_Z / (1 + z2 / denominator)) * (p * (1 - p) / denominator + z2 / (4 * denominator ** 2)) ** 0.5
+    return max(0.0, centre - spread), min(1.0, centre + spread)
+
+
 def _ratio(numerator: int, denominator: int) -> dict[str, object]:
-    """Express one measured ratio exactly and as a rounded percentage."""
+    """Express one measured ratio exactly, as a rounded percentage and with its 95% interval."""
+    interval = wilson_interval(numerator, denominator)
     return {"numerator": numerator, "denominator": denominator,
-            "percent": None if denominator == 0 else round(100 * numerator / denominator, 1)}
+            "percent": None if denominator == 0 else round(100 * numerator / denominator, 1),
+            "wilson95_percent": None if interval is None else [round(100 * bound, 1) for bound in interval]}
 
 
 def language_metrics(sut: Mapping[str, object], labels: Mapping[str, object], judge_ids: Sequence[str],
-                     bundle, mode: str, classes: Mapping[str, Sequence[str]]) -> dict[str, object]:
+                     bundle, mode: str, classes: Mapping[str, Sequence[str]],
+                     plants: Mapping[str, object] | None = None,
+                     plants_sut: Mapping[str, object] | None = None) -> dict[str, object]:
     """Score one WIP's extraction, FAILs and planted errors against the LLM-built labels."""
     cases, provider_failed = [], []
     for index, group in enumerate(sut["groups"]):
@@ -514,27 +649,39 @@ def language_metrics(sut: Mapping[str, object], labels: Mapping[str, object], ju
             "extraction_correct": None if gold is None else (complete and Counter(extracted) == Counter(gold)),
         }
         if outcome == "FAIL":
-            case["fail_verdict"] = verdict(labels["verdicts"].get(case_id, {}), judge_ids)
-            case["fail_verdicts_by_judge"] = {
-                judge_id: (labels["verdicts"].get(case_id, {}).get(judge_id) or {}).get("verdict")
-                for judge_id in judge_ids}
+            by_judge = labels["verdicts"].get(case_id, {})
+            case["fail_verdict"] = verdict(by_judge, judge_ids)
+            case["fail_verdicts_by_judge"] = {judge_id: judge_verdict(by_judge.get(judge_id))
+                                              for judge_id in judge_ids}
+            case["fail_cause"] = fail_cause(by_judge, judge_ids)
+            case["fail_causes_by_judge"] = {judge_id: (by_judge.get(judge_id) or {}).get("cause")
+                                            for judge_id in judge_ids}
+            case["fail_reading"] = fail_reading(gold, extracted, complete)
         if outcome == "PASS" and case["extraction_correct"]:
             case["planted_outcome"] = planted_outcome(group, bundle, mode)
         cases.append(case)
     fails = [case for case in cases if case["outcome"] == "FAIL"]
+    false_fails = [case for case in fails if case["fail_verdict"] != "GENUINE"]
+    assessed = sum(1 for case in cases if case["outcome"] != "NOT_ASSESSED")
     labelled = [case for case in cases if case["extraction_correct"] is not None]
     planted = [case for case in cases if case.get("planted_outcome") is not None]
     per_class = {}
     for name in CLASS_ORDER:
         members = [case for case in labelled if name in case["classes"]]
         per_class[name] = _ratio(sum(1 for case in members if case["extraction_correct"]), len(members))
+    text_plants = plant_metrics(plants, plants_sut) if plants is not None and plants_sut is not None else {}
     return {
+        **text_plants,
         "project_id": sut["project_id"], "language": sut["language"],
         "excluded_books": sut.get("excluded_books", {}), "indexed_groups": len(cases),
-        "provider_failed": provider_failed,
+        "provider_failed": provider_failed + list(text_plants.get("text_plant_provider_failed", [])),
         "outcomes": dict(sorted(Counter(case["outcome"] for case in cases).items())),
         "fail_precision": _ratio(sum(1 for case in fails if case["fail_verdict"] == "GENUINE"), len(fails)),
         "fail_verdicts": dict(sorted(Counter(case["fail_verdict"] for case in fails).items())),
+        "false_fail_rate": _ratio(len(false_fails), assessed),
+        "genuine_fail_rate": _ratio(len(fails) - len(false_fails), assessed),
+        "false_fails_by_cause": dict(sorted(Counter(case["fail_cause"] for case in false_fails).items())),
+        "false_fails_by_reading": dict(sorted(Counter(case["fail_reading"] for case in false_fails).items())),
         "extraction_recall": _ratio(sum(1 for case in labelled if case["extraction_correct"]), len(labelled)),
         "gold_disputed": len(cases) - len(labelled),
         "extraction_recall_by_class": per_class,
@@ -543,30 +690,228 @@ def language_metrics(sut: Mapping[str, object], labels: Mapping[str, object], ju
     }
 
 
-def _meets(ratio: Mapping[str, int], minimum: Fraction) -> bool:
-    """True when a measured ratio has evidence and reaches the minimum."""
-    return ratio["denominator"] > 0 and Fraction(ratio["numerator"], ratio["denominator"]) >= minimum
+def check_ratio(ratio: Mapping[str, int], minimum: Fraction, min_evidence: int) -> str:
+    """PASS on enough evidence at or above the bar, FAIL when the whole 95% interval is below it.
+
+    Anything in between, including no evidence at all, is INSUFFICIENT_EVIDENCE.
+    """
+    numerator, denominator = ratio["numerator"], ratio["denominator"]
+    if denominator == 0:
+        return "INSUFFICIENT_EVIDENCE"
+    if wilson_interval(numerator, denominator)[1] < minimum:
+        return "FAIL"
+    if denominator >= min_evidence and Fraction(numerator, denominator) >= minimum:
+        return "PASS"
+    return "INSUFFICIENT_EVIDENCE"
+
+
+def check_rate(ratio: Mapping[str, int], maximum: Fraction, min_evidence: int) -> str:
+    """The mirror of check_ratio for a rate that must stay at or below its bar."""
+    flipped = {"numerator": ratio["denominator"] - ratio["numerator"], "denominator": ratio["denominator"]}
+    return check_ratio(flipped, 1 - maximum, min_evidence)
 
 
 def gate_status(languages: Sequence[Mapping[str, object]]) -> dict[str, object]:
     """Pool every WIP's counts and apply the release thresholds."""
     def pooled(name: str) -> dict[str, object]:
-        """Sum one ratio across every WIP."""
-        return _ratio(sum(item[name]["numerator"] for item in languages),
-                      sum(item[name]["denominator"] for item in languages))
+        """Sum one ratio across every WIP; a WIP that did not measure it adds nothing."""
+        empty = {"numerator": 0, "denominator": 0}
+        return _ratio(sum(item.get(name, empty)["numerator"] for item in languages),
+                      sum(item.get(name, empty)["denominator"] for item in languages))
 
-    totals = {name: pooled(name) for name in ("fail_precision", "extraction_recall", "planted_detection")}
-    checks = {
-        "fail_precision": _meets(totals["fail_precision"], FAIL_PRECISION_MIN),
-        "extraction_recall": _meets(totals["extraction_recall"], EXTRACTION_RECALL_MIN),
-        "planted_detection": _meets(totals["planted_detection"], PLANTED_DETECTION_MIN),
-        "two_languages": len({item["language"] for item in languages}) >= 2,
-    }
+    maximums = {"false_fail_rate": FALSE_FAIL_RATE_MAX}
+    minimums = {"extraction_recall": EXTRACTION_RECALL_MIN, "planted_detection": PLANTED_DETECTION_MIN,
+                "text_plant_detection": TEXT_PLANT_DETECTION_MIN}
+    totals = {name: pooled(name) for name in (*maximums, *minimums, "fail_precision", "genuine_fail_rate")}
+    checks = {name: check_rate(totals[name], maximum, MIN_EVIDENCE[name]) for name, maximum in maximums.items()}
+    checks.update({name: check_ratio(totals[name], minimum, MIN_EVIDENCE[name])
+                   for name, minimum in minimums.items()})
+    checks["two_languages"] = "PASS" if len({item["language"] for item in languages}) >= 2 else "FAIL"
     incomplete = any(item.get("provider_failed") for item in languages)
-    status = "INCOMPLETE" if incomplete else ("PASS" if all(checks.values()) else "FAIL")
+    found = set(checks.values())
+    status = ("INCOMPLETE" if incomplete else "FAIL" if "FAIL" in found
+              else "INSUFFICIENT_EVIDENCE" if "INSUFFICIENT_EVIDENCE" in found else "PASS")
     return {"totals": totals, "checks": checks, "status": status,
-            "thresholds": {"fail_precision": str(FAIL_PRECISION_MIN), "extraction_recall": str(EXTRACTION_RECALL_MIN),
-                           "planted_detection": str(PLANTED_DETECTION_MIN)}}
+            "thresholds": {**{name: f"<= {maximum}" for name, maximum in maximums.items()},
+                           **{name: f">= {minimum}" for name, minimum in minimums.items()}},
+            "min_evidence": dict(MIN_EVIDENCE)}
+
+
+# --- 5. text plants: end-to-end planted errors in real WIP text ------------------------------
+
+PLANT_INSTRUCTIONS = """You build test cases for a benchmark of an automatic number check of Bible translations.
+For each verse (written in the language named in the input), change the number at the given position of its listed
+values (counted in reading order by the convention below) from its value to the new value. Edit as few words as
+possible, keep the grammar correct (agreement, case, word order) and the style of the verse, and change nothing else.
+Write the new number the way the verse writes the old one (in words or in digits).
+Return "old": the shortest exact substring of the verse that contains the whole change, copied character for
+character, and "new": its replacement.
+
+"""
+
+PLANT_SCHEMA = {
+    "type": "object", "additionalProperties": False, "required": ["items"],
+    "properties": {"items": {"type": "array", "items": {
+        "type": "object", "additionalProperties": False, "required": ["id", "old", "new"],
+        "properties": {"id": {"type": "string"}, "old": {"type": "string"}, "new": {"type": "string"}}}}},
+}
+
+
+def unit_key(group: Mapping[str, object]) -> str:
+    """BOOK:chapter:number of a group's verse, independent of the book text's hash."""
+    return str(group["unit_id"]).split(":", 1)[1]
+
+
+def plant_candidates(groups: Sequence[Mapping[str, object]], labels: Mapping[str, object], judge_ids: Sequence[str],
+                     bundle, *, seed: str, limit: int) -> list[dict[str, object]]:
+    """Seeded choice of PASS verses read exactly as the judges read them, with one value to raise by one.
+
+    Only whole-number gold values on rows that can FAIL are used, so the planted verse must FAIL.
+    """
+    found = []
+    for index, group in enumerate(groups):
+        if group["comparison"]["outcome"] != "PASS" or group["extraction"]["status"] != "COMPLETE":
+            continue
+        gold = consensus_values(labels["values"].get(f"c{index}", {}), judge_ids)
+        extracted = [Fraction(value) for value in group["extraction"]["values"]]
+        if (not gold or any(value.denominator != 1 for value in gold) or Counter(extracted) != Counter(gold)
+                or plantable_rows(group, bundle) is None):
+            continue
+        key = unit_key(group)
+        position = int(rank_label(key, f"{seed}:plant"), 16) % len(gold)
+        planned = list(gold)
+        planned[position] += 1
+        found.append({"id": f"p{index}", "key": key, "western_references": group["western_references"],
+                      "text": group["evidence"]["wip_text"], "values": [str(value) for value in gold],
+                      "position": position + 1, "from": str(gold[position]), "to": str(planned[position]),
+                      "planned_values": [str(value) for value in planned]})
+    found.sort(key=lambda plant: rank_label(plant["key"], f"{seed}:plant"))
+    return found[:limit]
+
+
+def make_plants(candidates: Sequence[Mapping[str, object]], language: str, judges: Mapping[str, object],
+                cache: Path) -> list[dict[str, object]]:
+    """Have the first judge write each plant and keep it only when every judge counts the planned values."""
+    convention = CONVENTION.read_text(encoding="utf-8")
+    judge_ids = list(judges)
+    planter = judge_ids[0]
+    requests = [{"id": plant["id"], "text": plant["text"], "values": plant["values"],
+                 "change": {"position": plant["position"], "from": plant["from"], "to": plant["to"]}}
+                for plant in candidates]
+    edits = _ask([("plants", planter, judges[planter], PLANT_INSTRUCTIONS + convention,
+                   json.dumps({"language": language, "verses": batch}, ensure_ascii=False), PLANT_SCHEMA)
+                  for batch in _batches(requests)], cache, ("plants",))["plants"]
+    plants = []
+    for plant in candidates:
+        edit = edits.get(plant["id"], {}).get(planter) or {}
+        old, new = str(edit.get("old") or ""), str(edit.get("new") or "")
+        usable = bool(old) and old != new and plant["text"].count(old) == 1
+        plants.append({**plant, "old": old, "new": new, "usable_edit": usable,
+                       "planted_text": plant["text"].replace(old, new, 1) if usable else None})
+    usable = [{"id": plant["id"], "text": plant["planted_text"]} for plant in plants if plant["usable_edit"]]
+    counted = _ask([("values", judge_id, judge, EXTRACT_INSTRUCTIONS + convention,
+                     json.dumps({"language": language, "verses": batch}, ensure_ascii=False), EXTRACT_SCHEMA)
+                    for judge_id, judge in judges.items() for batch in _batches(usable)], cache, ("values",))["values"]
+    for plant in plants:
+        values = consensus_values(counted.get(plant["id"], {}), judge_ids) if plant["usable_edit"] else None
+        plant["verified"] = (values is not None
+                             and Counter(values) == Counter(Fraction(value) for value in plant["planned_values"]))
+    return plants
+
+
+def _verse_span(text: str, chapter: str, number: str) -> tuple[int, int] | None:
+    """Character span of one verse's USFM after its \\v marker, up to the next verse or chapter."""
+    import re
+    chapter_at = re.search(rf"\\c\s+{re.escape(chapter)}(?!\d)", text)
+    if chapter_at is None:
+        return None
+    verse = re.compile(rf"\\v\s+{re.escape(number)}(?=\s)").search(text, chapter_at.end())
+    next_chapter = re.compile(r"\\c\s").search(text, chapter_at.end())
+    if verse is None or (next_chapter is not None and next_chapter.start() < verse.start()):
+        return None
+    following = re.compile(r"\\[cv]\s").search(text, verse.end())
+    return verse.end(), following.start() if following else len(text)
+
+
+def plant_book_text(text: str, name: str, edits: Mapping[str, tuple[str, str]]) -> tuple[str, list[str]]:
+    """Apply (old, new) edits keyed BOOK:chapter:number inside their verses of one USFM book.
+
+    An edit is kept only when recompiling changes that verse's text exactly as planned and no
+    other verse; otherwise it is left out. Returns the new text and the keys applied.
+    """
+    from sage.numbers.target import target_units
+    from sage.usj import compile_usfm_text
+
+    def verses(source: str) -> dict[str, str]:
+        """Compiled main text per verse key."""
+        usj = compile_usfm_text(source, name)
+        return {unit.unit_id.split(":", 1)[1]: unit.main_text
+                for unit in target_units(usj, source_sha256=_sha256(_canonical(usj)))}
+
+    before, applied = verses(text), []
+    for key, (old, new) in sorted(edits.items()):
+        _book, chapter, number = key.split(":", 2)
+        span = _verse_span(text, chapter, number)
+        if (not old or old == new or before.get(key, "").count(old) != 1 or span is None
+                or text[span[0]:span[1]].count(old) != 1):
+            continue
+        at = text.index(old, span[0], span[1])
+        candidate = text[:at] + new + text[at + len(old):]
+        after = verses(candidate)
+        if after == {**before, key: before[key].replace(old, new, 1)}:
+            text, before = candidate, after
+            applied.append(key)
+    return text, applied
+
+
+def plant_metrics(plants: Mapping[str, object], plants_sut: Mapping[str, object]) -> dict[str, object]:
+    """Score the production route on planted verses: each must FAIL."""
+    groups = {unit_key(group): group for group in plants_sut["groups"]}
+    applied = set(plants_sut.get("applied", ()))
+    cases, provider_failed = [], []
+    for plant in plants["plants"]:
+        group = groups.get(plant["key"]) if plant["key"] in applied else None
+        if group is None:
+            continue
+        if any(PROVIDER_FAILURE in item for item in group["extraction"]["limitations"]):
+            provider_failed.extend(group["western_references"])
+            continue
+        extracted = Counter(Fraction(value) for value in group["extraction"]["values"])
+        cases.append({"western_references": group["western_references"], "from": plant["from"], "to": plant["to"],
+                      "outcome": group["comparison"]["outcome"],
+                      "review_kind": (group["comparison"]["review_context"] or {}).get("kind"),
+                      "read_exactly": extracted == Counter(Fraction(value) for value in plant["planned_values"])})
+    return {
+        "text_plant_detection": _ratio(sum(1 for case in cases if case["outcome"] == "FAIL"), len(cases)),
+        "text_plants": {"candidates": len(plants["plants"]),
+                        "verified": sum(1 for plant in plants["plants"] if plant["verified"]),
+                        "applied": len(applied), "measured": len(cases),
+                        "outcomes": dict(sorted(Counter(case["outcome"] for case in cases).items())),
+                        "read_exactly": _ratio(sum(1 for case in cases if case["read_exactly"]), len(cases))},
+        "text_plant_cases": cases,
+        "text_plant_provider_failed": provider_failed,
+    }
+
+
+def run_plants(config, project: str, language: str, script: str, bundle, plants: Sequence[Mapping[str, object]],
+               session: Path, replay_route: Mapping[str, object] | None) -> dict[str, object]:
+    """Apply the verified plants to the WIP's books and run the production route on those verses."""
+    root = Path(config.project(project).path)
+    by_book: dict[str, dict[str, tuple[str, str]]] = {}
+    for plant in plants:
+        if plant["verified"]:
+            by_book.setdefault(plant["key"].split(":", 1)[0], {})[plant["key"]] = (plant["old"], plant["new"])
+    texts, applied = {}, []
+    for book, edits in sorted(by_book.items()):
+        files = _book_files(root, book)
+        if not files:
+            continue
+        texts[book], keys = plant_book_text(files[0].read_bytes().decode("utf-8-sig"), files[0].name, edits)
+        applied.extend(keys)
+    selected = sorted({label for plant in plants if plant["key"] in applied for label in plant["western_references"]})
+    result = (run_sut(config, project, language, script, bundle, selected, session, replay_route=replay_route,
+                      texts=texts) if selected else {"groups": []})
+    return {**result, "applied": applied}
 
 
 # --- orchestration ---------------------------------------------------------------------------
@@ -605,7 +950,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--judge", action="append", default=None, help="Claude model id (repeat; default opus+sonnet)")
     parser.add_argument("--replay-route", type=Path,
                         help="an earlier receipt.json: rescore from sealed phases under its route, with no provider calls")
-    parser.add_argument("--step", choices=("select", "sut", "judge", "gate", "all"), default="all")
+    parser.add_argument("--plants", type=int, default=50, help="text plants per WIP (0 skips the plant step)")
+    parser.add_argument("--step", choices=("select", "sut", "judge", "plant", "gate", "all"), default="all")
     args = parser.parse_args(argv)
     judge_ids = args.judge or ["claude-opus-5-5", "claude-sonnet-5-5"]
     replay_route = (json.loads(args.replay_route.read_text(encoding="utf-8"))["route"]
@@ -614,6 +960,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     work = args.work.expanduser().resolve()
     config0 = load_ecosystem(wips[0][1])
     bundle = resolve_reference_package(config0, args.package)
+    if provider_needed(args.step, work, [wip[0] for wip in wips], args.plants, replay_route is not None):
+        from sage.numbers.model_tasks import NcaModelTasks
+        refused = provider_probe(NcaModelTasks(config0))
+        if refused:
+            print(f"NCA route under test is not answering; nothing was run: {refused}", file=sys.stderr)
+            return 2
 
     selection_path = work / "selection.json"
     excluded = frozenset(case["reference"] for path in args.exclude
@@ -641,26 +993,46 @@ def main(argv: Sequence[str] | None = None) -> int:
             continue
         sut = json.loads(sut_path.read_text(encoding="utf-8"))
         labels_path = work / project / "labels.json"
+        judges = {judge_id: claude_judge(judge_id) for judge_id in judge_ids}
         if args.step in {"judge", "all"}:
-            judges = {judge_id: claude_judge(judge_id) for judge_id in judge_ids}
             _write_json(labels_path, judge_cases(sut["groups"], language, judges, work / "judge-cache", bundle))
-        if labels_path.exists():
-            languages.append((sut, json.loads(labels_path.read_text(encoding="utf-8"))))
+        if not labels_path.exists():
+            continue
+        labels = json.loads(labels_path.read_text(encoding="utf-8"))
+        plants_path, plants_sut_path = work / project / "plants.json", work / project / "plants-sut.json"
+        if args.step in {"plant", "all"} and args.plants > 0 and not plants_path.exists():
+            candidates = plant_candidates(sut["groups"], labels, judge_ids, bundle,
+                                          seed=selection["seed"], limit=args.plants)
+            _write_json(plants_path, {"seed": selection["seed"], "planter": judge_ids[0],
+                                      "plants": make_plants(candidates, language, judges, work / "judge-cache")})
+        if args.step in {"plant", "all"} and plants_path.exists() and not plants_sut_path.exists():
+            plants = json.loads(plants_path.read_text(encoding="utf-8"))["plants"]
+            _write_json(plants_sut_path, run_plants(config, project, language, script, bundle, plants,
+                                                    work / project / "plants-phases", replay_route))
+        planted = [json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+                   for path in (plants_path, plants_sut_path)]
+        languages.append((sut, labels, *planted))
 
     if args.step not in {"gate", "all"} or len(languages) != len(wips):
         return 0
     mode = languages[0][0]["comparison_mode"]
-    measured = [language_metrics(sut, labels, judge_ids, bundle, mode, classes) for sut, labels in languages]
+    measured = [language_metrics(sut, labels, judge_ids, bundle, mode, classes, plants, plants_sut)
+                for sut, labels, plants, plants_sut in languages]
     receipt = {
         "schema_version": GATE_SCHEMA, "gate": "NCA_RELEASE_GATE",
         "recorded_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "package": {"package_id": bundle.package_id, "sha256": bundle.sha256,
                     "qualification_status": bundle.qualification_status},
         "route": languages[0][0]["route"], "comparison_mode": mode,
-        "judges": judge_ids, "judge_rule": "gold values only where all judges agree; FAIL is GENUINE only when all judges say so",
+        "judges": judge_ids,
+        "judge_rule": ("gold values only where all judges agree; FAIL is GENUINE only when every judge gives "
+                       "cause VALUE_CHANGED (only a changed quantity is a FAIL; other differences are review)"),
         "selection": {"seed": selection["seed"], "per_class": selection["per_class"],
                       "excluded_selections": selection.get("excluded_selections", []),
                       "coordinates": len(selected), "sha256": _sha256(_canonical(selection["cases"]))},
+        "text_plants": {"per_wip": args.plants, "planter": judge_ids[0],
+                        "rule": "one counted value raised by one; kept only when every judge counts the planned values "
+                                "and recompiling changes that verse alone"},
         "code_sha256": _code_identity(),
         **gate_status(measured),
         "languages": measured,
