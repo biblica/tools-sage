@@ -1,8 +1,13 @@
 # NCA release gate: typed package `SAGE_NUMBERS_TYPED_2026-10-09`
 
-**Result, 2026-10-18: FAIL.** FAIL precision is 60%, below the 90% bar. Extraction recall and
-planted-error detection pass. NCA stays `PROVISIONAL_UNQUALIFIED`; every FAIL in a report still needs
-a reviewer's judgment.
+**Latest, 2026-10-20 (gate schema 1.2, held-out 3): `INCOMPLETE`.** The false-FAIL rate is 1/317 verses
+(0.3%, bar 0.5%), and planted errors in the index (151/151) and in WIP text (82/82) are detected. The run
+is incomplete because the codex workspace ran out of credits during 13 Spanish text plants, and extraction
+recall (93.3%) is still `INSUFFICIENT_EVIDENCE`. See [Measurement review](#measurement-review-2026-10-20).
+NCA stays `PROVISIONAL_UNQUALIFIED`; every FAIL in a report still needs a reviewer's judgment.
+
+**First result, 2026-10-18: FAIL.** FAIL precision was 60%, below the 90% bar then in force. Extraction
+recall and planted-error detection passed.
 
 Receipts: [development set](NCA-RELEASE-GATE-2026-10-18-DEVELOPMENT.json) (FAIL) and
 [held-out set](NCA-RELEASE-GATE-2026-10-18-HELDOUT.json) (`INCOMPLETE`: the Spanish half did not run
@@ -112,7 +117,7 @@ credits during the Spanish text plants, so 13 of them never ran.
 
 | Check | Measured | 95% interval | Result |
 |---|---:|---:|---|
-| False-FAIL rate (at most 0.5%) | 3/317 (0.9%) | 0.3-2.7% | `INSUFFICIENT_EVIDENCE` |
+| False-FAIL rate (at most 0.5%) | 3/317 (0.9%); 1/317 (0.3%) after `RESTRUCTURED` | 0.3-2.7%; 0.1-1.8% | `INSUFFICIENT_EVIDENCE`; PASS after |
 | Extraction recall (at least 95%) | 293/314 (93.3%) | 90.0-95.6% | `INSUFFICIENT_EVIDENCE` |
 | Planted errors, index (at least 95%) | 151/151 | 97.5-100% | PASS |
 | Text plants (at least 95%) | 82/82 | 95.5-100% | PASS |
@@ -125,6 +130,12 @@ raised to 20,001 came back as `UNIT_CONVERSION` review, because the conversion r
 the first source item with that value (cors) while the WIP had changed the baths of oil. The rule now
 checks the units of every source item with that value. Replaying the sealed phases with the fix (no
 provider calls) detects 82/82 plants and changes no outcome on the 318 held-out verses.
+
+The two `RESTRUCTURED` false alarms are now consistency review (`IMP-20261020-003`): a repeated number
+stated once with an implied "one" made explicit (EZK 45:23), and "one ... the second" stated as two
+(2KI 25:17). Recomputing every saved gate result with and without the rule changes only those two verses.
+The one false FAIL left in held-out 3 is NUM 33:3 (`NOT_A_QUANTITY`: Ukrainian "другого дня", "the next
+day").
 
 
 ## Also found

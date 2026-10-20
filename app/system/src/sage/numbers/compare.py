@@ -63,6 +63,7 @@ REVIEW_KINDS = frozenset({
     "VALUE_OMITTED",
     "VALUE_ADDED",
     "UNIT_CONVERSION",
+    "RESTRUCTURED",
     "WRONG_ASSOCIATION",  # on NIV-only or mixed groups (BLOCKING only under OL authority)
 })
 # FAIL kinds: a value differs from the source, a number sits on the wrong item, a numeral is
@@ -226,6 +227,39 @@ def _words(text: str) -> set[str]:
     """Lowercased content words of an English gloss, plural -s removed ("talents" -> "talent")."""
     from .association import _tokens
     return _tokens(text.replace(".", " "))
+
+
+def _restructured(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...], rows: Sequence[ReferenceRow],
+                  wip_counts_en: Sequence[str]) -> list[dict[str, str]]:
+    """How the WIP states the source's quantities in another construction; [] unless a pattern explains it all.
+
+    Two deterministic patterns from the release gate (2026-10-20, both judges: same quantities):
+    REPEAT_STATED_ONCE -- a repeated source number stated fewer times but still stated, and an
+    implied singular made explicit as "one" for an item no missing number counts (EZK 45:23 "the
+    seven days ... seven days" stated once, and "a male goat" as "one goat"). A "one" whose gloss
+    shares a word with a missing item ("one goat" for "seven goats") stays a FAIL.
+    PAIR_AS_TWO -- "the one [pillar] ... the second" stated as "the two" (2KI 25:17): one "one"
+    becomes one "two" and the source names a "second" that the convention does not count (a
+    counted "second year" is a date, so that "two" stays a FAIL).
+    """
+    missing = Counter(expected) - Counter(wip)
+    extra = Counter(wip) - Counter(expected)
+    if not missing or not extra:
+        return []
+    one = Fraction(1)
+    if set(extra) == {one} and all(value in wip for value in missing) and len(wip_counts_en) == len(wip):
+        counted = set().union(*(_words(str(item.get("REFERENT") or "")) | _words(str(item.get("UNIT") or ""))
+                                for row in rows for item in row.ol_items if Fraction(item["VALUE"]) in missing))
+        glosses = [gloss for value, gloss in zip(wip, wip_counts_en) if value == one]
+        if counted and all(gloss and not (_words(gloss) & counted) for gloss in glosses):
+            return [{"pattern": "REPEAT_STATED_ONCE",
+                     "omitted": [str(value) for value in missing.elements()],
+                     "made_explicit": [gloss for gloss in glosses if gloss]}]
+    two = Fraction(2)
+    if (missing == Counter({one: 1}) and extra == Counter({two: 1}) and two not in expected
+            and "second" in _words(" ".join(row.bsb_text for row in rows))):
+        return [{"pattern": "PAIR_AS_TWO"}]
+    return []
 
 
 def _unit_conversions(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...], rows: Sequence[ReferenceRow],
@@ -396,6 +430,12 @@ def compare_group(
         # an added number is always review, never BLOCKING.
         return _review("VALUE_ADDED", mode, wip_values, expected, authority, evidence,
                        added=[str(value) for value in (Counter(wip_values) - Counter(expected)).elements()])
+    restructured = _restructured(wip_values, expected, rows, wip_counts_en)
+    if restructured:
+        # Release gate 2026-10-20: the same quantities in another construction are a consistency
+        # question, like an omission or an explicit "one" on its own.
+        return _review("RESTRUCTURED", mode, wip_values, expected, authority, evidence,
+                       restructured=restructured)
     if any(row.metadata.get("TC_STATUS") == "VARIANT_ATTESTED" for row in rows):
         # The apparatus records a number variant here: the WIP may follow another witness. Review.
         return _review("APPARATUS_VARIANT", mode, wip_values, expected, authority, evidence)

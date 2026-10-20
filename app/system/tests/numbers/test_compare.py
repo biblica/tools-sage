@@ -345,6 +345,59 @@ def test_a_wrong_value_in_the_same_unit_is_still_a_fail():
     assert result.outcome == 'FAIL' and result.review_context['kind'] == 'VALUE_DIFFERENCE'
 
 
+def _restructure_row(ref, items, bsb=''):
+    """One OL-authority row from (value, referent, unit) items with the given BSB text."""
+    ol = tuple({"VALUE": str(v), "KIND": "CARDINAL", "ROLE": "COUNT", "REFERENT": referent, "UNIT": unit}
+               for v, referent, unit in items)
+    vals = tuple(Fraction(v) for v, *_ in items)
+    return ReferenceRow(VerseRef(*ref), ' '.join(map(str, ref)), 'HEB', '', vals, bsb, vals,
+                        {'MATCH_STATUS': 'PASS_EXACT', 'OL_REVIEW_STATUS': 'AGREES'}, ol_items=ol)
+
+
+EZK_45_23 = (("EZK", 45, 23), [(7, "days festival", "the.days"), (7, "bulls", "young.bulls"), (7, "rams", "rams"),
+                               (7, "days", "days")])
+
+
+def test_a_repeat_stated_once_with_an_explicit_one_is_restructured_review():
+    """EZK 45:23: "seven days" said once and "a male goat" as "one goat" -- the same quantities."""
+    result = compare_values(values(7, 7, 7, 1), _restructure_row(*EZK_45_23), mode='UNORDERED',
+                            wip_counts_en=("days of the festival", "young bulls", "rams", "male goat"))
+    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['kind'] == 'RESTRUCTURED'
+    assert result.review_context['restructured'] == [
+        {"pattern": "REPEAT_STATED_ONCE", "omitted": ["7"], "made_explicit": ["male goat"]}]
+
+
+def test_a_one_that_replaces_a_missing_item_is_still_a_fail():
+    """"One bull" for seven bulls shares the missing item's word; a number no longer stated is not a repeat."""
+    row = _restructure_row(*EZK_45_23)
+    replaced = compare_values(values(7, 7, 7, 1), row, mode='UNORDERED',
+                              wip_counts_en=("days of the festival", "rams", "days", "young bull"))
+    assert replaced.outcome == 'FAIL' and replaced.review_context['kind'] == 'VALUE_DIFFERENCE'
+    unglossed = compare_values(values(7, 7, 7, 1), row, mode='UNORDERED', wip_counts_en=("", "", "", ""))
+    assert unglossed.outcome == 'FAIL'
+    gone = compare_values(values(1), _restructure_row(("NUM", 7, 87), [(12, "bulls", "bulls")]), mode='UNORDERED',
+                          wip_counts_en=("male goat",))
+    assert gone.outcome == 'FAIL'
+
+
+def test_one_and_the_second_stated_as_two_is_restructured_review():
+    """2KI 25:17: "one pillar ... the second pillar" as "the two columns"."""
+    row = _restructure_row(("2KI", 25, 17), [(18, "cubits", "cubit[s]"), (1, "height pillar", "the.height"),
+                                             (3, "height capital", "the.height")],
+                           bsb="Each pillar was eighteen cubits tall. The bronze capital atop one pillar was three "
+                               "cubits high. The second pillar, with its network, was similar.")
+    result = compare_values(values(18, 3, 2), row, mode='UNORDERED', wip_counts_en=("cubits", "cubits", "columns"))
+    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['restructured'] == [{"pattern": "PAIR_AS_TWO"}]
+
+
+def test_one_as_two_beside_a_counted_second_is_still_a_fail():
+    """In "the second year ... one ram", "second" is a counted date, so "two rams" is a changed value."""
+    row = _restructure_row(("NUM", 7, 15), [(2, "year", "year"), (1, "ram", "ram")],
+                           bsb="In the second year he brought one ram.")
+    result = compare_values(values(2, 2), row, mode='UNORDERED', wip_counts_en=("year", "rams"))
+    assert result.outcome == 'FAIL' and result.review_context['kind'] == 'VALUE_DIFFERENCE'
+
+
 def test_a_changed_value_in_one_of_several_units_is_still_a_fail():
     """2CH 2:10 with 20,001 baths of oil: the value also measures cors, but the WIP kept baths."""
     row = _ol_row(('2CH', 2, 10), [(20000, "CARDINAL", "MEASURE", "cors"), (20000, "CARDINAL", "MEASURE", "cors"),

@@ -477,6 +477,23 @@ def test_value_added_note_names_the_added_number():
     assert "adds 2" in issue and action.startswith("REV 11:4: Check consistency: 2 added")
 
 
+def test_restructured_note_names_the_construction():
+    """EZK 45:23 and 2KI 25:17: the note says how the quantities were restated, as a consistency check."""
+    from sage.nca_reporting import _ENGLISH, _finding_text
+
+    restructured = [{"pattern": "REPEAT_STATED_ONCE", "omitted": ["7"], "made_explicit": ["male goat"]}]
+    group = {"comparison": {"authority": "OL",
+                            "review_context": {"kind": "RESTRUCTURED", "restructured": restructured}}}
+    finding = {"kind": "RESTRUCTURED", "target_references": ["EZK 45:23"],
+               "wip_values": ["7", "7", "7", "1"], "expected_values": ["7", "7", "7", "7"]}
+    issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
+    assert "another construction" in issue
+    assert action == 'EZK 45:23: Check consistency: the repeated 7 stated once, and "one" made explicit for male goat.'
+    group["comparison"]["review_context"]["restructured"] = [{"pattern": "PAIR_AS_TWO"}]
+    _issue, action = _finding_text({**finding, "target_references": ["2KI 25:17"]}, group, lambda key: _ENGLISH[key])
+    assert action == '2KI 25:17: Check consistency: "one ... the second" stated as two.'
+
+
 def test_unit_conversion_note_shows_wip_value_and_original_unit():
     """MAT 25:15 talents as coins: the note names both sides of the conversion and asks about style."""
     from sage.nca_reporting import _ENGLISH, _finding_text

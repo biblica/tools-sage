@@ -529,6 +529,14 @@ _ACTION_TEXT = {
         "source number.",
     "report.nca.action.VALUE_ADDED":
         "{ref}: Check consistency: {added} added (a number made explicit from the context, such as \"these two witnesses\").",
+    "report.nca.issue.RESTRUCTURED":
+        "The translation has {wip}; the {authority} has {expected}. The translation states the same quantities in "
+        "another construction: {restructured}.",
+    "report.nca.action.RESTRUCTURED":
+        "{ref}: Check consistency: {restructured}.",
+    "report.nca.restructured.REPEAT_STATED_ONCE":
+        "the repeated {omitted} stated once, and \"one\" made explicit for {made_explicit}",
+    "report.nca.restructured.PAIR_AS_TWO": "\"one ... the second\" stated as two",
     "report.nca.issue.UNIT_CONVERSION":
         "The translation states the source value in another unit: {conversions}.",
     "report.nca.action.UNIT_CONVERSION":
@@ -693,6 +701,12 @@ def _finding_text(finding: Mapping[str, object], group: Mapping[str, object], te
         values.update(omitted=_list(context.get("omitted"), text))
     if kind == "VALUE_ADDED":
         values.update(added=_list(context.get("added"), text))
+    if kind == "RESTRUCTURED":
+        values.update(restructured="; ".join(
+            text("report.nca.restructured." + str(item.get("pattern"))).format(
+                omitted=_list(item.get("omitted"), text),
+                made_explicit=", ".join(str(gloss) for gloss in item.get("made_explicit") or ()) or "an item")
+            for item in context.get("restructured") or () if isinstance(item, Mapping)) or wip)
     if kind == "UNIT_CONVERSION":
         conversions = [item for item in context.get("conversions") or () if isinstance(item, Mapping)]
         values.update(

@@ -9,6 +9,46 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261020-003 — NCA: restructured quantities are consistency review (TODO-20261018-001)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261018-001` (partial: the restructured-quantity false alarms)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - `numbers/compare.py`: new review kind `RESTRUCTURED` (category `CONSISTENCY`) for two deterministic
+    patterns. `REPEAT_STATED_ONCE`: a repeated source number stated fewer times but still stated, plus an
+    implied singular made explicit as "one" whose WIP gloss shares no word with any missing source item
+    (EZK 45:23). `PAIR_AS_TWO`: one "one" becomes one "two" where the BSB names a "second" that the
+    convention does not count (2KI 25:17 "one pillar ... the second" as "the two columns"). "One bull"
+    for seven bulls, an unglossed "one", a number no longer stated, and "two" beside a counted "second
+    year" all stay FAIL.
+  - `numbers/results.py`, `nca_reporting.py`: finding message and translator note ("Check consistency:
+    the repeated 7 stated once, and "one" made explicit for male goat"); no Operator input asked.
+- **Verification:** new tests in `test_compare.py` (both patterns and four FAIL guards) and
+  `test_reporting.py`. Recomputing every saved gate result with and without the rule (development,
+  held-out 1-3, 95 text plants) changes only Spanish 2KI 25:17 and EZK 45:23. Held-out 3 replayed
+  (no provider calls): false-FAIL rate 1/317 (0.3%) PASS; the one false FAIL left is NUM 33:3, an
+  idiom; 2KI 25:27 still a genuine FAIL; planted errors 151/151 and text plants 82/82 unchanged.
+
+### IMP-20261020-002 — NCA release gate: precision-check review, schema 1.2, credit check (TODO-20261018-001)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261018-001` (measurement part)
+- **Commits:** `d8f87af`, `1659fb8`.
+- **Implemented:**
+  - `tools/qualify_nca.py`: verdict judges answer against the current product policy and name a cause,
+    one FAIL per call; code marks each FAIL `READ_CORRECTLY` or `MISREAD`; Wilson 95% intervals with an
+    `INSUFFICIENT_EVIDENCE` outcome; the gate checks the false-FAIL rate per verse (at most 0.5%, PO
+    decision 2026-10-20) and reports FAIL precision; text plants test detection end to end on real WIP
+    text; one tiny request on the route under test before any step that calls it.
+  - `numbers/compare.py`: a unit conversion checks every unit a repeated source value carries
+    (2CH 2:10, found by text plants).
+- **Verification:** `tests/numbers/test_release_gate.py`, `test_compare.py`; held-out 3 rejudged and
+  replayed (see [NCA release gate](../../../docs/advanced/release/NCA-RELEASE-GATE.md)); the credit check
+  stopped a live run against an empty workspace with exit code 2 before writing anything.
+
 ### IMP-20261020-001 — NCA: index referent fix, nested-item association, unit conversions as consistency review (TODO-20261020-001)
 
 - **Version:** `0.02a3` (development branch)
