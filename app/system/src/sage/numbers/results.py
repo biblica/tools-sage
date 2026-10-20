@@ -177,6 +177,7 @@ _MESSAGES = {
     "APPARATUS_VARIANT": "Numeric values differ where the textual apparatus records a number variant.",
     "ONE_ONLY_DIFFERENCE": "The only difference is an added or missing value of one.",
     "VALUE_OMITTED": "The translation leaves out some of the source's numbers and adds none.",
+    "VALUE_ADDED": "The translation keeps every source number and adds numbers the source does not state.",
     "UNIT_CONVERSION": "The translation states a source value in another unit (clock time, a modern measure or "
                        "currency); noted for consistency and style.",
 }

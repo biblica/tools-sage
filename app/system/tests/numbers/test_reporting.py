@@ -125,7 +125,7 @@ def test_needs_review_finding_gets_a_copy_paste_translator_note():
     """A NEEDS_REVIEW finding must render a plain-language note an Operator can paste as-is."""
     report = render_nca_report(report_document())
     assert "Note for translator (copy below):" in report
-    assert "> MAT 1:2: The numbers 4, 3 appear in a different order than the source (3, 4)." in report
+    assert "> MAT 1:2: Check consistency: the numbers 4, 3 appear in a different order than the source (3, 4)" in report
     assert 'the source reads: "three men and four women"' in report
     # The translator note is plain prose -- no internal jargon leaks into it.
     note_line = next(line for line in report.splitlines() if line.startswith("> MAT 1:2"))
@@ -142,8 +142,7 @@ def test_fail_finding_gets_its_own_translator_note_with_the_authority_named():
 
     report = render_nca_report(document)
 
-    assert "> MAT 1:2: Please check the numbers in this verse." in report
-    assert "based on the original-language text, it should have 3, 4." in report
+    assert "> MAT 1:2: Correct the numbers: the translation has 4, 3; the original-language text has 3, 4." in report
 
 
 def test_pass_and_not_assessed_outcomes_produce_no_translator_note():
@@ -283,7 +282,7 @@ def test_normalized_ol_review_note_does_not_claim_the_original_language_text():
     report = render_nca_report(document)
     note_line = next(line for line in report.splitlines() if line.startswith("> MAT 1:2"))
     assert "based on the original-language text" not in note_line
-    assert "This may not be an error" in note_line
+    assert "The index does not read every number-like word" in note_line
     assert 'Original-language text: "OL fixture text"' in note_line
     assert 'Reference translation (BSB): "BSB fixture text". Also see the NIV' in note_line
 
@@ -334,6 +333,11 @@ def _action_document():
     return document
 
 
+def closing_text(report: str) -> str:
+    """The end-of-report summary section of one action report."""
+    return report.split("## Summary: no issue and not checked", 1)[1].split("## ", 1)[0]
+
+
 def test_action_reports_follow_the_rtc_template_per_chapter():
     """NCA operator reports use the RTC/STC action-report template, one per chapter."""
     from sage.nca_reporting import build_chapter_reports, render_nca_action_report
@@ -341,13 +345,13 @@ def test_action_reports_follow_the_rtc_template_per_chapter():
     assert [(r["book"], r["chapter"]) for r in reports] == [("MAT", 1), ("MAT", 2)]
     first = render_nca_action_report(reports[0])
     assert first.startswith("# Number Consistency & Accuracy (NCA) — NCA Action Report\n")
-    for expected in ("- Projects: `WIP` checked against `GRK OL` (secondary: `NIV`)", "- Scope: `MAT 1`",
+    for expected in ("- Projects: WIP checked against the Greek original language (also see: NIV)", "- Scope: `MAT 1`",
                      "## Authority and analyzed snapshot", "Number reference package",
                      "## Execution route", "## Actionable findings",
-                     "### NUMBERS_RUN-1_UNIT-1_0001 — MAT 1:2", "- Action level: `BLOCKING`",
+                     "### NUMBERS_RUN-1_UNIT-1_0001 — MAT 1:2", "- Result: Variance", "- Category: Accuracy",
                      "**Issue — English**", "**Proposed action — English**",
-                     "based on the original-language text, it should have 3.",
-                     "**WIP evidence**", "Four women and three men.", "**GRK OL evidence**", "τρεῖς ἄνδρες",
+                     "the original-language text has 3.",
+                     "**WIP evidence**", "Four women and three men.", "**Greek original language evidence**", "τρεῖς ἄνδρες",
                      "**BSB evidence**", "**Also see — NIV (other reference)**", "SQS: `NOT_APPLIED`"):
         assert expected in first, expected
     # The NIV is cited by reference and numbers only; the quoted BSB text carries its attribution.
@@ -364,7 +368,12 @@ def test_action_reports_follow_the_rtc_template_per_chapter():
     second = render_nca_action_report(reports[1])
     assert "No actionable findings were submitted." in second
     assert "MACULA" not in second
-    assert "1 without indexed numbers" in second
+    assert "1 without numbers" in second and "`" not in closing_text(second)
+    # No-issue and not-checked verses are summarized at the end, after the findings.
+    closing = second.split("## Summary: no issue and not checked", 1)
+    assert len(closing) == 2 and "## Actionable findings" in closing[0]
+    assert "- No numbers in the source or the index (1):" in closing[1]
+    assert "1 without numbers" not in closing[0]
 
 
 def test_attested_variant_finding_carries_footnote_guidance():
@@ -381,7 +390,7 @@ def test_attested_variant_finding_carries_footnote_guidance():
     document["findings"][0].update(code="NCA_NUMBER_NEEDS_REVIEW", severity="REVIEW", kind="ATTESTED_VARIANT_READING")
     report = render_nca_action_report(build_chapter_reports(document, primary_language="en",
                                                             secondary_language=None)[0])
-    assert "- Action level: `REVIEW`" in report
+    assert "- Result: Consistency check" in report
     assert "A footnote is required. Suggested note: Some manuscripts add four women." in report
 
 
@@ -398,7 +407,7 @@ def test_action_report_lists_text_critical_decisions_and_order_notes():
          "pairings": [{"wip_value": "1000", "wip_counts": "silver dishes"}, {"wip_value": "30", "wip_counts": "gold dishes"}]},
     ]
     report = render_nca_action_report(build_chapter_reports(document, primary_language="en", secondary_language=None)[0])
-    assert "## Text-critical decisions (operator)" in report
+    assert "## Text-critical variants" in report
     assert "| MAT 1:2 | 2 | 30, 42 | NIV | **no** | Hebrew does not have thirty. |" in report
     assert "## Notes (no action needed)" in report and "silver dishes 1000" in report
 
@@ -447,14 +456,25 @@ def test_bsb_citation_points_to_the_original_language_niv_and_versions():
 
 
 def test_value_omitted_note_names_the_missing_number_and_asks_about_consistency():
-    """The translator note lists the omitted value and asks whether the style is consistent."""
+    """The translator note names the omitted value as a consistency check, without asking for input."""
     from sage.nca_reporting import _ENGLISH, _finding_text
 
     group = {"comparison": {"authority": "OL", "review_context": {"kind": "VALUE_OMITTED", "omitted": ["20"]}}}
     finding = {"kind": "VALUE_OMITTED", "target_references": ["2CH 3:8"],
                "wip_values": ["20", "600"], "expected_values": ["20", "20", "600"]}
     issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
-    assert "20" in issue and "2CH 3:8" in action and "consistent" in action
+    assert "20" in issue and action.startswith("2CH 3:8: Check consistency: 20 left out")
+
+
+def test_value_added_note_names_the_added_number():
+    """REV 11:4 "these two witnesses": the note names the added number as a consistency check."""
+    from sage.nca_reporting import _ENGLISH, _finding_text
+
+    group = {"comparison": {"authority": "OL", "review_context": {"kind": "VALUE_ADDED", "added": ["2"]}}}
+    finding = {"kind": "VALUE_ADDED", "target_references": ["REV 11:4"],
+               "wip_values": ["2", "2", "2"], "expected_values": ["2", "2"]}
+    issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
+    assert "adds 2" in issue and action.startswith("REV 11:4: Check consistency: 2 added")
 
 
 def test_unit_conversion_note_shows_wip_value_and_original_unit():

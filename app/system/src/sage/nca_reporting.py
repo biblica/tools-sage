@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -34,10 +34,10 @@ _ENGLISH = {
     "report.nca.result": "Result",
     "report.nca.confidence_basis": "Confidence basis",
     "report.nca.groups": "Groups",
-    "report.nca.passes": "Passes",
-    "report.nca.failures": "Failures",
-    "report.nca.needs_review": "Needs review",
-    "report.nca.not_assessed": "Not assessed",
+    "report.nca.passes": "No issue",
+    "report.nca.failures": "Variances",
+    "report.nca.needs_review": "Consistency checks",
+    "report.nca.not_assessed": "Not checked",
     "report.nca.noteworthy_notes": "Noteworthy notes",
     "report.nca.extraction_status": "Extraction status",
     "report.nca.wip_values": "WIP values",
@@ -77,11 +77,9 @@ _ENGLISH.update({
     'report.nca.translator_note_heading': 'Note for translator (copy below)',
     'report.nca.passes_not_listed': 'counted here, not listed below',
     'report.nca.translator_note_normalized':
-        '{ref}: Please check the numbers in this verse. The translation currently has {wip}; '
-        'the number index lists {expected}. This may not be an error: the index does not read every '
-        'number-like word in the original-language text here as a number{detail}, so please confirm '
-        'against the source before changing anything. Original-language text: "{ol_text}". '
-        'Reference translation (BSB): "{bsb_text}". Also see the NIV ({niv}).',
+        '{ref}: Check consistency: the translation has {wip}; the number index lists {expected}. The index '
+        'does not read every number-like word in the original-language text here as a number{detail}. '
+        'Original-language text: "{ol_text}". Reference translation (BSB): "{bsb_text}". Also see the NIV ({niv}).',
 })
 _ENGLISH_LANGUAGES = frozenset({"en", "en-US", "en-GB"})
 _CATALOG_LANGUAGES = _ENGLISH_LANGUAGES | {"id", "fr", "ru", "pt-BR", "uk"}
@@ -436,9 +434,8 @@ def render_nca_report(
     lines.extend(f"- `{identity}`" for identity in identities)
     if not identities:
         lines.append("- `NOT RECORDED`")
-    lines.extend(
+    closing = (
         [
-            "",
             f"## {text('report.nca.summary')}",
             "",
             f"- {text('report.nca.groups')}: `{summary.get('groups', 0)}`",
@@ -459,12 +456,12 @@ def render_nca_report(
             f"- {text('report.nca.confidence_basis')}: `{coverage.get('confidence_basis', 'NOT RECORDED')}`",
             f"- {text('report.nca.restrictions')}: {_joined(coverage.get('restrictions'))}",
             "",
-            f"## {text('report.nca.chapters')}",
-            "",
         ]
     )
+    lines.extend(["", f"## {text('report.nca.chapters')}", ""])
     lines.extend(_optimized_metrics(document, text))
     lines.extend(_chapter_lines(document, text))
+    lines.extend(closing)
     lines.extend(
         [
             f"## {text('report.nca.limitations')}",
@@ -490,7 +487,13 @@ _ACTION_TEXT = {
     "report.nca.authority_label.MIXED": "original-language and NIV readings",
     "report.nca.authority_label.NONE": "number index",
     "report.nca.no_numbers": "no numbers",
-    "report.nca.coverage_line": "{checked} indexed coordinate(s) checked; {not_indexed} without indexed numbers",
+    "report.nca.coverage_line": "{checked} verse(s) checked; {not_indexed} without numbers",
+    "report.nca.closing_summary": "Summary: no issue and not checked",
+    "report.nca.coverage_status": "Coverage",
+    "report.nca.no_issue": "No issue",
+    "report.nca.without_numbers": "No numbers in the source or the index",
+    "report.nca.not_checked": "Not checked",
+    "report.nca.versification": "Versification differences",
     "report.nca.text_notes": "Text-critical notes",
     "report.nca.evidence_heading": "{label} evidence",
     "report.nca.closing_limitation": "Limitations",
@@ -499,34 +502,33 @@ _ACTION_TEXT = {
         "The numbers match the source, but they are attached to different items: {wip_pairs} in the "
         "translation, {source_pairs} in the source.",
     "report.nca.action.WRONG_ASSOCIATION":
-        "{ref}: Please attach each number to its item as in the source: {source_pairs}.",
+        "{ref}: Attach each number to its item as in the source: {source_pairs}.",
     "report.nca.issue.MALFORMED_NUMERAL": "The numeral(s) {numerals} cannot be read as a well-formed number.",
     "report.nca.action.MALFORMED_NUMERAL":
-        "{ref}: Please correct the numeral(s) {numerals} (digit grouping or decimal mark); the source has "
-        "{expected}.",
+        "{ref}: Correct the numeral(s) {numerals} (digit grouping or decimal mark); the source has {expected}.",
     "report.nca.issue.NUMBER_NOT_IN_SOURCE":
         "The translation has the numeral(s) {numerals}, but the source has no number in this verse.",
     "report.nca.action.NUMBER_NOT_IN_SOURCE":
-        "{ref}: Please check whether {numerals} belongs in this verse (a typing slip or a number from "
-        "another verse).",
+        "{ref}: Remove or correct {numerals}: the source has no number in this verse (a typing slip or a number from another verse).",
     "report.nca.issue.APPARATUS_VARIANT":
         "The translation has {wip}; the {authority} has {expected}, and the textual apparatus records a number "
         "variant here.",
     "report.nca.action.APPARATUS_VARIANT":
-        "{ref}: Please confirm which reading the translation follows ({wip}) and add or check the footnote; "
-        "the original-language text has {expected}.",
+        "{ref}: Check consistency: the translation follows a variant reading ({wip}); the original-language text has {expected}. Footnote the reading followed.",
     "report.nca.issue.ONE_ONLY_DIFFERENCE":
         "The translation has {wip} and the {authority} has {expected}; they differ only by the number one.",
     "report.nca.action.ONE_ONLY_DIFFERENCE":
-        "{ref}: Please check the word \"one\" in this verse. Saying \"one talent\" for \"a talent\" or "
-        "leaving out a repeated \"one\" is usually faithful; no change is needed if the meaning is the same.",
+        "{ref}: Check consistency: the translation differs from the source only by the number one (\"one talent\" for \"a talent\", or a repeated \"one\" left out).",
     "report.nca.issue.VALUE_OMITTED":
         "The translation has {wip}; the {authority} has {expected}. The translation leaves out {omitted} and adds "
         "no other number.",
     "report.nca.action.VALUE_OMITTED":
-        "{ref}: Please check whether leaving out {omitted} is a deliberate style choice (a repeated number "
-        "stated once, an idiom, \"each\" or \"both\") and whether it is consistent with how the translation "
-        "handles the same construction elsewhere; restore the number if it was dropped by mistake.",
+        "{ref}: Check consistency: {omitted} left out (a repeated number stated once, an idiom, \"each\" or \"both\").",
+    "report.nca.issue.VALUE_ADDED":
+        "The translation has {wip}; the {authority} has {expected}. The translation adds {added} and keeps every "
+        "source number.",
+    "report.nca.action.VALUE_ADDED":
+        "{ref}: Check consistency: {added} added (a number made explicit from the context, such as \"these two witnesses\").",
     "report.nca.issue.UNIT_CONVERSION":
         "The translation states the source value in another unit: {conversions}.",
     "report.nca.action.UNIT_CONVERSION":
@@ -539,38 +541,32 @@ _ACTION_TEXT = {
     "report.nca.attribution": "Sources and attribution",
     "report.nca.no_apparatus": "No apparatus entry; registered by SAGE guidance only.",
     "report.nca.footnote_basis": "Suggested footnote basis (the translation has no footnote here)",
-    "report.nca.text_critical": "Text-critical decisions (operator)",
+    "report.nca.text_critical": "Text-critical variants",
     "report.nca.text_critical_intro":
-        "The textual apparatus records a number variant at these verses. These are editorial decisions that "
-        "usually need a footnote; NCA records which reading the translation follows. They are not errors.",
+        "The textual apparatus records a number variant at these verses; NCA records which reading the "
+        "translation follows and whether it has a footnote. They are not errors.",
     "report.nca.order_notes": "Notes (no action needed)",
     "report.nca.order_note":
         "{ref}: the numbers appear in a different order than the source; each is attached to the right item "
         "({pairs}).",
     "report.nca.action.VALUE_DIFFERENCE":
-        "{ref}: Please check the numbers in this verse. The translation currently has {wip}; "
-        "based on the original-language text, it should have {expected}.",
+        "{ref}: Correct the numbers: the translation has {wip}; the original-language text has {expected}.",
     "report.nca.source_reads": 'For reference, the source reads: "{source}"',
     "report.nca.bsb_reads": 'For reference, the BSB reads: "{source}" (also see the NIV: {niv})',
     "report.nca.also_see_niv": "Also see — NIV (other reference)",
     "report.nca.issue.ORDER_DIFFERENCE":
         "The same numbers appear in a different order: translation {wip}, source {expected}.",
     "report.nca.action.ORDER_DIFFERENCE":
-        "{ref}: The numbers {wip} appear in a different order than the source ({expected}). If this is "
-        "simply natural word order in your language, no change is needed. If these numbers describe "
-        "different things, please double-check each number is attached to the correct item.",
+        "{ref}: Check consistency: the numbers {wip} appear in a different order than the source ({expected}); each number must stay attached to its item.",
     "report.nca.issue.NIV_ONLY_AUTHORITY":
         "The original language has no explicit number here. The NIV reads {expected}; the translation has {wip}.",
     "report.nca.action.NIV_ONLY_AUTHORITY":
-        "{ref}: Please check whether this verse should express {expected} as the NIV does. The original "
-        "language has no explicit number here, so no change is needed if the translation's wording is "
-        "already faithful and clear.",
+        "{ref}: Check consistency: the NIV has {expected} where the original language has no explicit number; the translation has {wip}.",
     "report.nca.issue.MIXED_AUTHORITY":
         "Across these bridged verses the expected values ({expected}) combine original-language and "
         "NIV-only readings; the translation has {wip}.",
     "report.nca.action.MIXED_AUTHORITY":
-        "{ref}: Please check the numbers across these verses. The translation has {wip}; the reference "
-        "readings are {expected}, part of which comes from the NIV only.",
+        "{ref}: Check consistency: the translation has {wip}; the reference readings across these verses are {expected}, part of them from the NIV only.",
     "report.nca.issue.ATTESTED_VARIANT_READING":
         "The translation follows an attested alternate reading at {variant} ({alternate}); "
         "scholarship status: {status}.",
@@ -586,28 +582,44 @@ _ACTION_TEXT = {
     "report.nca.issue.MATCHES_SECONDARY_AUTHORITY":
         "The translation matches the NIV ({niv}) but not the original-language reading ({expected}).",
     "report.nca.action.MATCHES_SECONDARY_AUTHORITY":
-        "{ref}: Please check this verse against the original-language text. The translation follows the "
-        "NIV's numbers ({niv}), while the original language reads {expected}.",
+        "{ref}: Check consistency: the translation follows the NIV's numbers ({niv}); the original language reads {expected}.",
     "report.nca.issue.CONVENTION_EDGE_CASE":
         "The only difference is the extra value(s) {extra}, tagged as {kinds} by extraction.",
     "report.nca.action.CONVENTION_EDGE_CASE":
-        "{ref}: Please check the number word(s) {extra} in this verse. They may be ordinal or descriptive "
-        "words (for example \"second\" or \"twice\") that the reference does not count as numbers; no change "
-        "is needed if the wording is faithful.",
+        "{ref}: Check consistency: {extra} is an ordinal or descriptive number word (such as \"second\" or \"twice\") that the reference does not count.",
     "report.nca.issue.NO_INDEXED_VALUES":
         "The index lists this coordinate without numeric values, but the translation has {wip}.",
-    "report.nca.action.NO_INDEXED_VALUES": "{ref}: Please check whether the numbers {wip} belong in this verse.",
+    "report.nca.action.NO_INDEXED_VALUES":
+        "{ref}: Check consistency: the translation has {wip}; the number index has no numbers for this verse.",
     "report.nca.issue.PROVISIONAL_INDEX":
         "The translation has {wip}; the rebuilt index has {expected}, which is not yet reviewed.",
     "report.nca.action.PROVISIONAL_INDEX":
-        "{ref}: Please check the numbers {wip} against the original-language text; the index value here is "
-        "awaiting review.",
+        "{ref}: Check consistency: the translation has {wip}; the rebuilt index has {expected}, not yet reviewed.",
     "report.nca.footnote.REQUIRE": "required",
     "report.nca.footnote.RECOMMEND": "recommended",
     "report.nca.footnote.NONE": "not required",
 }
 _ENGLISH.update(_ACTION_TEXT)
 _NEW_TESTAMENT_START = "MAT"
+# Operator-facing names for the stored codes; the codes stay unchanged in results and diagnostics.
+_FAMILY_NAMES = {"HEB": "Hebrew", "GRK": "Greek"}
+_RESULT_NAMES = {"BLOCKING": "Variance", "REVIEW": "Consistency check"}
+_CATEGORY_NAMES = {"ACCURACY": "Accuracy", "CONSISTENCY": "Consistency"}
+_COVERAGE_NAMES = {"COMPLETE": "complete", "PARTIAL": "partial"}
+_REASON_NAMES = {
+    "NOT_ASSESSED": "not compared",
+    "REGISTERED_ABSENCE": "verse absent in this versification",
+    "COVERED_BY_WIP_GROUP": "checked with a neighbouring verse",
+    "UNMAPPED": "no mapping to the source numbering",
+    "CONTENT_UNREADABLE_BOOK": "book could not be read",
+}
+
+
+def _human_reason(codes: object) -> str:
+    """Plain words for one or more comma-joined reason codes ("MARKUP_ERROR" -> "markup error")."""
+    parts = [part.strip() for part in str(codes or "").split(",") if part.strip()]
+    return "; ".join(_REASON_NAMES.get(part) or part.removeprefix("NCA_").replace("_", " ").lower()
+                     for part in parts) or _REASON_NAMES["NOT_ASSESSED"]
 
 
 def _ol_family(book: str) -> str:
@@ -647,7 +659,8 @@ def _finding_text(finding: Mapping[str, object], group: Mapping[str, object], te
     refs = list(finding.get("target_references") or finding.get("western_references") or ())
     ref = ", ".join(refs)
     family = _ol_family(_coordinate(refs[0])[1]) if refs else "HEB"
-    authority = text("report.nca.authority_label." + str(comparison.get("authority") or "OL")).format(family=family)
+    authority = text("report.nca.authority_label." + str(comparison.get("authority") or "OL")).format(
+        family=_FAMILY_NAMES.get(family, family))
     wip, expected = _list(finding.get("wip_values"), text), _list(finding.get("expected_values"), text)
     values = {
         "ref": ref, "wip": wip, "expected": expected, "authority": authority,
@@ -678,6 +691,8 @@ def _finding_text(finding: Mapping[str, object], group: Mapping[str, object], te
                                    for item in context.get("source_items") or ()) or expected)
     if kind == "VALUE_OMITTED":
         values.update(omitted=_list(context.get("omitted"), text))
+    if kind == "VALUE_ADDED":
+        values.update(added=_list(context.get("added"), text))
     if kind == "UNIT_CONVERSION":
         conversions = [item for item in context.get("conversions") or () if isinstance(item, Mapping)]
         values.update(
@@ -822,6 +837,12 @@ def build_chapter_reports(
             for group in chapter["groups"]
             if set(group.get("limitations") or ()) & {"REGISTERED_ABSENCE", "COVERED_BY_WIP_GROUP"}
         ]
+        listed = {finding.get("work_unit_id") for finding in chapter["findings"]}
+        no_issue = [", ".join(group.get("target_references") or group.get("western_references") or ())
+                    for group in chapter["groups"]
+                    if (group.get("comparison") or {}).get("outcome") == "PASS" and group.get("unit_id") not in listed]
+        not_indexed = [", ".join(group.get("target_references") or group.get("western_references") or ())
+                       for group in chapter["groups"] if (group.get("comparison") or {}).get("outcome") == "NOT_INDEXED"]
         notes = [dict(note, owner=", ".join(group.get("target_references") or group.get("western_references") or ()))
                  for group in chapter["groups"] for note in group.get("notes") or ()]
         report = {
@@ -840,6 +861,8 @@ def build_chapter_reports(
             },
             "authority_header": _authority_lines(document, family=family, snapshot_date=snapshot_date),
             "findings": findings,
+            "no_issue": no_issue,
+            "not_indexed": not_indexed,
             "advisories": advisories,
             "exceptions": exceptions,
             "versification_advisories": versification,
@@ -856,7 +879,6 @@ def build_chapter_reports(
 def render_nca_action_report(report: Mapping[str, object]) -> str:
     """Render one chapter's Operator action report in the shared RTC/STC template."""
     from .act_outputs import _language_display_name, _report_label, render_execution_section
-    from .exception_reports import render_exceptions_section
     from .human_output import render_report_language_authority
     from .report_authority import authority_markdown
 
@@ -872,16 +894,14 @@ def render_nca_action_report(report: Mapping[str, object]) -> str:
     bindings = report.get("resource_bindings") or {}
     wip_id = str(bindings.get("WIP") or "WIP")
     family = next((value for key, value in bindings.items() if key.startswith("ORIGINAL_LANGUAGE_")), "OL")
+    source = f"{_FAMILY_NAMES[family]} original language" if family in _FAMILY_NAMES else "original language"
     coverage = report.get("coverage") or {}
     title = f"Number Consistency & Accuracy (NCA) — {_report_label(report, 'report.nca_action_report')}"
     lines = [
         "# " + title,
         "",
-        f"- Projects: `{wip_id}` checked against `{family} OL` (secondary: `NIV`)",
+        f"- Projects: {wip_id} checked against the {source} (also see: NIV)",
         f"- {_report_label(report, 'label.scope')}: `{report.get('scope', '')}`",
-        f"- {_report_label(report, 'label.coverage')}: `{coverage.get('status', 'NOT RECORDED')}` ("
-        + text("report.nca.coverage_line").format(checked=coverage.get("checked", 0),
-                                                  not_indexed=coverage.get("not_indexed", 0)) + ")",
         f"- Report languages: `{primary}`" + (f"; `{secondary}`" if secondary else ""),
         "",
         *authority_markdown(list(report.get("authority_header") or ())),
@@ -894,18 +914,6 @@ def render_nca_action_report(report: Mapping[str, object]) -> str:
         lines.extend(["", notice])
     if secondary and str(renderings.get("status") or "").upper() == "DEGRADED":
         lines.extend(["", f"> **{catalogue_text(primary, 'message.secondary_rendering_unavailable')}**"])
-    advisories = list(report.get("advisories") or ())
-    if advisories:
-        lines.extend(["", "## Execution advisories", "",
-                      "These coordinates could not be compared; their numbers were not checked.", ""])
-        lines.extend(f"- `{row['reference']}` | `{row['code']}`" for row in advisories)
-    lines.extend(["", *render_exceptions_section(list(report.get("exceptions") or ()), language=primary)]
-                 if report.get("exceptions") else [])
-    versification = list(report.get("versification_advisories") or ())
-    if versification:
-        lines.extend(["", "## Versification advisories", "",
-                      "These coordinate differences did not block NCA execution.", ""])
-        lines.extend(f"- `{row['reference']}` | `{row['code']}`" for row in versification)
     lines.extend(["", "## " + _report_label(report, "report.actionable_findings"), ""])
     findings = list(report.get("findings") or ())
     if not findings:
@@ -916,11 +924,13 @@ def render_nca_action_report(report: Mapping[str, object]) -> str:
         lines.extend([
             f"### {row['finding_id']} — {row['target_reference']}",
             "",
-            f"- Category: `{row['category']}`",
-            f"- Action level: `{row['action_level']}`",
-            f"- Evidence: `{wip_id}`, `{family} OL`, `NIV`",
-            f"- Numbers: translation `{_list(row.get('wip_values'), text)}`; expected "
-            f"`{_list(row.get('expected_values'), text)}` (`{row.get('authority', 'OL')}`)",
+            f"- Result: {_RESULT_NAMES.get(str(row['action_level']), str(row['action_level']))}",
+            f"- Category: {_CATEGORY_NAMES.get(str(row['category']), str(row['category']))}",
+            f"- Evidence: {wip_id}, {source}, NIV",
+            f"- Numbers: translation {_list(row.get('wip_values'), text)}; source "
+            f"{_list(row.get('expected_values'), text)} ("
+            + text("report.nca.authority_label." + str(row.get("authority") or "OL")).format(
+                family=_FAMILY_NAMES.get(family, family)) + ")",
             "",
             f"**Issue — {primary_name}**",
             "",
@@ -936,7 +946,7 @@ def render_nca_action_report(report: Mapping[str, object]) -> str:
                 lines.extend([f"**Issue — {secondary_name}**", "", str(secondary_row["issue"]), ""])
             if str(secondary_row.get("required_action") or "").strip():
                 lines.extend([f"**Proposed action — {secondary_name}**", "", str(secondary_row["required_action"]), ""])
-        for label, value in ((wip_id, evidence.get("wip_text")), (f"{family} OL", evidence.get("ol_text")),
+        for label, value in ((wip_id, evidence.get("wip_text")), (source[:1].upper() + source[1:], evidence.get("ol_text")),
                              ("BSB", evidence.get("bsb_text"))):
             if value:
                 lines.extend([f"**{text('report.nca.evidence_heading').format(label=label)}**", "", str(value), ""])
@@ -971,7 +981,7 @@ def render_nca_action_report(report: Mapping[str, object]) -> str:
             footnote = "yes" if note.get("footnote_in_wip") else "**no**"
             guidance = note.get("suggested_note") or note.get("niv_footnote") or "—"
             lines.append(f"| {note.get('western_reference')} | {_list(note.get('ol_values'), text)} | "
-                         f"{_list(note.get('niv_values'), text)} | {note.get('follows')} | {footnote} | "
+                         f"{_list(note.get('niv_values'), text)} | {'original language' if note.get('follows') == 'OL' else note.get('follows')} | {footnote} | "
                          f"{str(guidance).replace('|', '/')} | {_evidence_labels(note.get('apparatus'))} |")
         for note in critical:
             entries = list(note.get("apparatus") or ())
@@ -989,6 +999,7 @@ def render_nca_action_report(report: Mapping[str, object]) -> str:
                 f"- `{note.get('owner') or note.get('western_reference', '')}` | `{note.get('classification', '')}` "
                 f"| `{note.get('scholarship_status', '')}` — {note.get('manuscript_evidence', '')} "
                 f"(OL `{note.get('ol_values') or '—'}`; alternate `{note.get('alternate_values') or '—'}`)")
+    lines.extend(["", *_closing_summary(report, coverage, text, primary)])
     cited = _cited_sources(report)
     if any((row.get("evidence") or {}).get("bsb_text") for row in findings):
         cited.add("BSB")  # quoted BSB verse text carries its public-domain attribution
@@ -1006,6 +1017,40 @@ def render_nca_action_report(report: Mapping[str, object]) -> str:
     lines.extend(["", "## " + text("report.nca.closing_limitation"), "",
                   text("report.nca.capability_limitation"), "", "SQS: `NOT_APPLIED`"])
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _verse_list(refs: Sequence[str]) -> str:
+    """Compact verse list: "GEN 1:5, 14, 16" within one chapter, full labels otherwise."""
+    if not refs:
+        return "—"
+    prefixes = {ref.rsplit(":", 1)[0] for ref in refs if ":" in ref and "," not in ref}
+    if len(prefixes) == 1 and all(":" in ref and "," not in ref for ref in refs):
+        return f"{refs[0]}" + "".join(", " + ref.rsplit(":", 1)[1] for ref in refs[1:])
+    return "; ".join(refs)
+
+
+def _closing_summary(report: Mapping[str, object], coverage: Mapping[str, object], text, language: str) -> list[str]:
+    """End-of-report summary: verses with no issue, verses without indexed numbers, and what was not checked."""
+    from .exception_reports import render_exceptions_section
+    no_issue = list(report.get("no_issue") or ())
+    not_indexed = list(report.get("not_indexed") or ())
+    advisories = list(report.get("advisories") or ())
+    versification = list(report.get("versification_advisories") or ())
+    lines = ["## " + text("report.nca.closing_summary"), "",
+             f"- {text('report.nca.coverage_status')}: "
+             f"{_COVERAGE_NAMES.get(str(coverage.get('status')), 'not recorded')} ("
+             + text("report.nca.coverage_line").format(checked=coverage.get("checked", 0),
+                                                       not_indexed=coverage.get("not_indexed", 0)) + ")",
+             f"- {text('report.nca.no_issue')} ({len(no_issue)}): {_verse_list(no_issue)}",
+             f"- {text('report.nca.without_numbers')} ({len(not_indexed)}): {_verse_list(not_indexed)}",
+             f"- {text('report.nca.not_checked')} ({len(advisories)}): "
+             + ("; ".join(f"{row['reference']} ({_human_reason(row['code'])})" for row in advisories) or "—")]
+    if versification:
+        lines.append(f"- {text('report.nca.versification')}: "
+                     + "; ".join(f"{row['reference']} ({_human_reason(row['code'])})" for row in versification))
+    if report.get("exceptions"):
+        lines.extend(["", *render_exceptions_section(list(report["exceptions"]), language=language)])
+    return lines
 
 
 # Attribution for original-language verse text quoted in NCA reports; see docs/advanced/projects-and-resources/THIRD-PARTY-NOTICES.md.

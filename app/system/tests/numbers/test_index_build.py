@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from sage.errors import ValidationError
-from sage.numbers.index_build.build import counted_phrase, referent_gloss
+from sage.numbers.index_build.build import counted_phrase, referent_gloss, scope_reason
 from sage.numbers.index_build.compose import compose
 from sage.numbers.index_build.lexicon import classify_greek, classify_hebrew, exclusion_reason, greek_part
 from sage.numbers.index_build.macula import Word, normalized, verify_source
@@ -113,6 +113,23 @@ def test_hebrew_list_entry_after_a_number_belongs_to_the_next_number():
     expressions = compose(words, classify_hebrew, split_adjacent_units=True)
     assert [referent_gloss(counted_phrase(words, expression, "HEB")) for expression in expressions] == [
         "westward", "gates", "the gate of Gad"]
+
+
+def test_hebrew_numbers_in_a_unit_title_are_not_counted():
+    """'captain of fifty', 'officials over tens' are titles; 'commanders: a thousand' (absolute) is a count."""
+    captain = heb("שַׂר", "captain", subtype="common", pos="noun", state="construct")
+    commanders = heb("שַׂר", "commanders", subtype="common", pos="noun", number="plural")
+    fifty = heb("חָמֵשׁ", "fifty", number="plural")
+    tens = heb("עֶשֶׂר", "tens", number="plural")
+
+    def reasons(*words):
+        """Each composed expression's out-of-scope reason (None when counted)."""
+        expressions = compose(list(words), classify_hebrew, split_adjacent_units=True)
+        return [scope_reason(list(words), expression, "HEB") for expression in expressions]
+
+    assert reasons(captain, fifty) == ["UNIT_TITLE"]
+    assert reasons(captain, ARTICLE, tens) == ["UNIT_TITLE"]
+    assert reasons(commanders, THOUSAND) == [None]
 
 
 def test_hebrew_homographs_are_excluded_with_a_reason():

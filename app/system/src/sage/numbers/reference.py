@@ -1160,6 +1160,48 @@ _REFERENT_ERRATA = {
         ("EZR 2:66", "1"): "horses", ("JOS 12:20", "1"): "",
     },
 }
+# OL values an immutable package counted or missed against the counting convention, from the same
+# corrected builder: (WESTERN_REF, EXPR_NO) rows to drop, and rows to add before a given EXPR_NO.
+_VALUE_ERRATA = {
+    "SAGE_NUMBERS_TYPED_2026-10-09": {
+        # A number in a unit title is not counted: שַׂר חֲמִשִּׁים "captain of fifty", שָׂרֵי עֲשָׂרֹת
+        # "officials over tens" (the package already dropped thousands and hundreds).
+        "drop": frozenset({
+            ("EXO 18:21", "1"), ("EXO 18:21", "2"), ("EXO 18:25", "1"), ("EXO 18:25", "2"),
+            ("DEU 1:15", "1"), ("DEU 1:15", "2"), ("1SA 8:12", "1"), ("2KI 1:9", "1"), ("2KI 1:10", "1"),
+            ("2KI 1:11", "1"), ("2KI 1:13", "1"), ("2KI 1:13", "3"), ("ISA 3:3", "1"),
+        }),
+        # שָׂרִים אָלֶף "a thousand officers" (absolute, not a title) was dropped as one.
+        "add": {
+            ("1CH 12:34", "1"): {"WESTERN_REF": "1CH 12:34", "LAYER": "OL", "OL_REF": "1CH 12:35", "LANG": "HEB",
+                                 "VALUE": "1000", "KIND": "CARDINAL", "ROLE": "COUNT", "REFERENT": "commanders",
+                                 "UNIT": "commanders", "SURFACE": "אָ֑לֶף", "SOURCE_IDS": "o130120350031",
+                                 "REVIEW_STATUS": "CONVENTION"},
+        },
+    },
+}
+
+
+def _with_value_errata(values: list[dict[str, str]], package_id: str) -> list[dict[str, str]]:
+    """Apply a package's value errata; EXPR_NO is renumbered in reading order where rows change."""
+    errata = _VALUE_ERRATA.get(package_id)
+    if errata is None:
+        return values
+    rows: list[dict[str, str]] = []
+    for row in values:
+        key = (row["WESTERN_REF"], row["EXPR_NO"])
+        added = errata["add"].get(key) if row["LAYER"] == "OL" else None
+        if added is not None:
+            rows.append({**added, "EXPR_NO": ""})
+        if row["LAYER"] != "OL" or key not in errata["drop"]:
+            rows.append(row)
+    changed = {ref for ref, _ in errata["drop"] | set(errata["add"])}
+    numbering: dict[str, int] = {}
+    for index, row in enumerate(rows):
+        if row["LAYER"] == "OL" and row["WESTERN_REF"] in changed:
+            numbering[row["WESTERN_REF"]] = numbering.get(row["WESTERN_REF"], 0) + 1
+            rows[index] = {**row, "EXPR_NO": str(numbering[row["WESTERN_REF"]])}
+    return rows
 
 
 def is_typed_package(root: Path) -> bool:
@@ -1210,6 +1252,7 @@ def _load_typed(root: Path) -> ReferenceBundle:
                 or not _VALUE_RE.fullmatch(row["VALUE"]):
             raise _reference_error(f"Invalid NCA typed value at values.tsv line {line}",
                                    "NCA_REFERENCE_CONTRACT_CONFLICT", line=line)
+    for row in _with_value_errata(values, package_id):
         corrected = referent_errata.get((row["WESTERN_REF"], row["EXPR_NO"])) if row["LAYER"] == "OL" else None
         if corrected is not None:
             row = {**row, "REFERENT": corrected}

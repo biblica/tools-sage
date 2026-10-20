@@ -61,6 +61,7 @@ REVIEW_KINDS = frozenset({
     "APPARATUS_VARIANT",
     "ONE_ONLY_DIFFERENCE",
     "VALUE_OMITTED",
+    "VALUE_ADDED",
     "UNIT_CONVERSION",
     "WRONG_ASSOCIATION",  # on NIV-only or mixed groups (BLOCKING only under OL authority)
 })
@@ -214,6 +215,11 @@ def _one_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...]) -> bool
 def _omission_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...]) -> bool:
     """Whether every WIP value is in the source and the WIP only leaves some source values out."""
     return not (Counter(wip) - Counter(expected)) and bool(Counter(expected) - Counter(wip))
+
+
+def _addition_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...]) -> bool:
+    """Whether the WIP keeps every source value and only adds numbers the source does not state."""
+    return not (Counter(expected) - Counter(wip)) and bool(Counter(wip) - Counter(expected))
 
 
 def _words(text: str) -> set[str]:
@@ -382,6 +388,11 @@ def compare_group(
         # was a different value, never a pure omission. PO decision 2026-10-18: review, not BLOCKING.
         return _review("VALUE_OMITTED", mode, wip_values, expected, authority, evidence,
                        omitted=[str(value) for value in (Counter(expected) - Counter(wip_values)).elements()])
+    if _addition_only(wip_values, expected):
+        # REV 11:4 "these two witnesses": a number made explicit from context. PO decision 2026-10-20:
+        # an added number is always review, never BLOCKING.
+        return _review("VALUE_ADDED", mode, wip_values, expected, authority, evidence,
+                       added=[str(value) for value in (Counter(wip_values) - Counter(expected)).elements()])
     if any(row.metadata.get("TC_STATUS") == "VARIANT_ATTESTED" for row in rows):
         # The apparatus records a number variant here: the WIP may follow another witness. Review.
         return _review("APPARATUS_VARIANT", mode, wip_values, expected, authority, evidence)

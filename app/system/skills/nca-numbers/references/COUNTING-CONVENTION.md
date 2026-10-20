@@ -9,7 +9,8 @@ difference in counting rules.
 
 Not counted: a word that only implies a number ("tithe", "twice", "double", "sevenfold"); how
 often something happens ("seven times", "three times a year"); a fraction of a group or place
-rather than of a measure or time ("a third of the city", "half the tribe"); a pronoun or idiom
+rather than of a measure or time ("a third of the city", "half the tribe"); a number in a title
+("commanders of thousands", "captain of fifty"); a pronoun or idiom
 ("should one walk", "one of you will", "no one"); a rank or sequence ("the first one", "a third
 time", "first of all"); "both"; "a pair"; and indefinite plurals ("thousands", "tens of
 thousands").
@@ -40,12 +41,18 @@ Return every counted number as a value plus one kind:
 5. Frequency and implied numbers are not counted: "seven times", "three times a year", "twice",
    "once", "double", "sevenfold", "a hundredfold", "tithe". A stated product is one quantity:
    "ten thousand times ten thousand" is 100000000.
-6. Fractions count only as a part of a measure or time unit, as exact rationals: "half a hin" is
-   1/2, "a third of a shekel" is 1/3, "half an hour" is 1/2 (`FRACTION`). "A third of the city",
-   "half the tribe", "a tenth of all" are not counted. A number of fraction measures counts the
-   measures: "three-tenths of an ephah" is 3.
+6. Fractions count only as a part of a measure or time unit named with the fraction, as exact
+   rationals: "half a hin" is 1/2, "a third of a shekel" is 1/3, "half an hour" is 1/2
+   (`FRACTION`). "A third of the city", "half the tribe", "the half-tribe of Manasseh", "a tenth of
+   all" are not counted. A fraction of something already stated, with no measure named beside it,
+   is not counted: "a tenth of an ephah, half of it in the morning and half in the evening" is
+   1/10 only; "half as much" is not counted. A number of fraction measures counts the measures:
+   "three-tenths of an ephah" is 3.
 7. A compound that names one quantity is one value: "a cubit and a half" is 3/2, "two and a
-   half" is 5/2, "forty-two thousand three hundred sixty" is 42360.
+   half" is 5/2, "forty-two thousand three hundred sixty" is 42360. A count followed by half of
+   the same thing is one compound, even when the half is written as its own phrase: "nine and a
+   half tribes" and "nine tribes and the half-tribe" are both 19/2; "two tribes and half a tribe"
+   is 5/2. Only a half standing alone ("the half-tribe of Manasseh") is not counted.
 8. Separate quantities stay separate: "two or three" is 2, 3; "two or three thousand" is 2000,
    3000.
 9. "A thousand", "a hundred" are 1000, 100; the indefinite article alone ("a man") is not a
@@ -53,10 +60,14 @@ Return every counted number as a value plus one kind:
 10. Approximate quantities count at their stated value: "about three thousand" is 3000
     (`APPROX`).
 11. Do not count indefinite plurals without a number ("thousands", "hundreds", "tens of
-    thousands", "commanders of fifties"), "both", "a pair", numbers that are part of a proper
-    name (Kiriath Arba, Three Taverns), verse or chapter numbers, note callers, or
-    cross-references.
-12. Numerals in any script count at their value; digit grouping and decimal marks follow the
+    thousands"), "both", "a pair", numbers that are part of a proper name (Kiriath Arba, Three
+    Taverns), verse or chapter numbers, note callers, or cross-references.
+12. A number that names a military or official unit in a title is not counted, singular or
+    plural, written as a phrase or one word: "commanders of thousands and of hundreds",
+    "captain of fifty", "officials over tens", "a commander of a thousand", "jefes de mil",
+    "сотник". A number of such officers still counts: "two captains of fifty" is 2; "a
+    thousand officers" is 1000.
+13. Numerals in any script count at their value; digit grouping and decimal marks follow the
     supplied parsing conventions.
 
 ## Examples
@@ -76,10 +87,19 @@ Return every counted number as a value plus one kind:
 | bore Jacob a fifth son | — | — |
 | both of them went | — | — |
 | a tenth of an ephah | 1/10 | FRACTION |
+| a tenth of an ephah, half in the morning and half at night | 1/10 | FRACTION |
+| the half-tribe of Manasseh | — | — |
+| nine tribes and the half-tribe | 19/2 | CARDINAL |
+| commanders of thousands and commanders of hundreds | — | — |
+| two captains of fifty with their fifties | 2, 50 | CARDINAL, CARDINAL |
 | Saul has slain his thousands | — | — |
 | двічі | — | — |
 | другого місяця | 2 | ORDINAL |
 | півтора ліктя | 3/2 | CARDINAL |
 | близько трьох тисяч | 3000 | APPROX |
+| половина племені Манасії | — | — |
+| два з половиною коліна | 5/2 | CARDINAL |
+| capitanes de cien hombres | — | — |
+| la mitad por la mañana | — | — |
 | un pour cent | 1 | PERCENT |
 | in Kiriath Arba lived nine | 9 | CARDINAL |

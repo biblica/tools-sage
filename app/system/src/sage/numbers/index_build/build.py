@@ -259,9 +259,11 @@ def scope_reason(words: list[Word], expression: Expression, family: str) -> str 
     word = expression.words[0]
     position = words.index(word)
     following = words[position + 1] if position + 1 < len(words) else None
-    if family == "HEB" and expression.value in _INDEFINITE_PLURALS:
+    if family == "HEB":
+        # שַׂר חֲמִשִּׁים "captain of fifty", שָׂרֵי עֲשָׂרֹת "officials over tens"; not the absolute
+        # שָׂרִים עֶשְׂרִים וּשְׁנַיִם "twenty-two commanders"
         previous = next((item for item in reversed(words[:position]) if item.subtype != "definite article"), None)
-        if previous is not None and previous.lemma == _COMMANDER:
+        if previous is not None and previous.lemma == _COMMANDER and previous.state == "construct":
             return "UNIT_TITLE"
     if family == "HEB" and word.lemma == _ARAMAIC_ONE and following is not None and following.subtype == "cardinal number":
         return "FREQUENCY"  # חַד־שִׁבְעָה "seven times (hotter)"

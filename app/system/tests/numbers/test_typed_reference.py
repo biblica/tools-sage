@@ -49,6 +49,17 @@ def test_pinned_package_referent_errata_are_applied(package_root):
     assert [item["REFERENT"] for item in row.ol_items][:2] == ["west", "gates"]
 
 
+def test_pinned_package_value_errata_are_applied(package_root):
+    """Unit titles ("officials over fifties and tens") are not counted; "a thousand officers" is."""
+    bundle = load_reference(_pinned(package_root))
+    assert bundle.lookup(VerseRef("EXO", 18, 21)).ol_values == ()
+    captain = bundle.lookup(VerseRef("2KI", 1, 13))
+    assert captain.ol_values == (F(50), F(50)) and [item["EXPR_NO"] for item in captain.ol_items] == ["1", "2"]
+    officers = bundle.lookup(VerseRef("1CH", 12, 34))
+    assert officers.ol_values == officers.niv_values == (F(1000), F(37000))
+    assert [item["EXPR_NO"] for item in officers.ol_items] == ["1", "2"]
+
+
 def test_text_critical_registries_carry_over_unchanged(package_root):
     """Textual variants, footnote guidance and unit conversions are the curated 2026-09-09 bytes."""
     typed = _pinned(package_root) / "reference"

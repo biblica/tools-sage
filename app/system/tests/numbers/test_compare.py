@@ -79,12 +79,15 @@ def test_ordered_mode_fails_when_multiset_also_disagrees():
         assert result.outcome == 'FAIL'
 
 
-def test_missing_values_review_and_added_values_fail_under_both_modes():
-    """A missing value is VALUE_OMITTED review (style choice); an extra value is a real FAIL."""
+def test_missing_and_added_values_are_review_under_both_modes():
+    """A missing value is VALUE_OMITTED and an extra one VALUE_ADDED review; a changed value is a FAIL."""
     reference = row((3, 4))
     omitted = compare_values(values(3), reference, mode='ORDERED')
     assert omitted.outcome == 'NEEDS_REVIEW' and omitted.review_context['kind'] == 'VALUE_OMITTED'
-    assert compare_values(values(3, 4, 5), reference, mode='UNORDERED').outcome == 'FAIL'
+    added = compare_values(values(3, 4, 5), reference, mode='UNORDERED')
+    assert added.outcome == 'NEEDS_REVIEW' and added.review_context['kind'] == 'VALUE_ADDED'
+    assert added.review_context['added'] == ['5']
+    assert compare_values(values(3, 5), reference, mode='UNORDERED').outcome == 'FAIL'
 
 
 def test_repeated_values_are_not_collapsed_into_a_set():
@@ -154,7 +157,7 @@ def test_documented_drop_explains_mismatch_only_when_reversal_reproduces_wip():
     explained = compare_values(values(8, 40), reference, mode='UNORDERED')
     assert explained.outcome == 'NEEDS_REVIEW'
     assert explained.review_context['kind'] == 'OL_NORMALIZATION_DIFFERENCE'
-    assert compare_values(values(7, 40), reference, mode='UNORDERED').outcome == 'FAIL'
+    assert compare_values(values(7, 40), reference, mode='UNORDERED').review_context['kind'] == 'VALUE_ADDED'
 
 
 def test_documented_recomposition_reversal_is_review():
@@ -234,7 +237,7 @@ def test_extra_edge_kind_values_are_convention_review():
     assert result.review_context['kind'] == 'CONVENTION_EDGE_CASE'
     untagged = compare_values(values(30, 2, 410, 1000), row((30, 410, 1000), (30, 410, 1000)), mode='UNORDERED',
                               wip_kinds=('CARDINAL',) * 4)
-    assert untagged.outcome == 'FAIL'
+    assert untagged.review_context['kind'] == 'VALUE_ADDED'
 
 
 def test_bridged_group_mixing_ol_and_niv_is_mixed_review():
@@ -396,7 +399,7 @@ def test_a_difference_of_only_one_is_for_review_not_blocking():
     dropped = compare_values(values(30, 4), _typed_row(((1, "curtain"), (30, "cubits"), (4, "cubits"))),
                              mode='UNORDERED')
     assert dropped.review_context['kind'] == 'ONE_ONLY_DIFFERENCE'
-    assert compare_values(values(100, 2), row, mode='UNORDERED').outcome == 'FAIL'
+    assert compare_values(values(200), row, mode='UNORDERED').outcome == 'FAIL'
 
 
 def test_a_pure_omission_is_for_review_not_blocking():
