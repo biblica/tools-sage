@@ -43,6 +43,12 @@ def test_typed_rows_carry_what_each_number_counts(package_root):
     assert row.metadata["MATCH_STATUS"] == "PASS_EXACT"
 
 
+def test_pinned_package_referent_errata_are_applied(package_root):
+    """EZK 48:34: the 4,500 measures the west side and the 3 counts its gates (the package says "gates", "gate")."""
+    row = load_reference(_pinned(package_root)).lookup(VerseRef("EZK", 48, 34))
+    assert [item["REFERENT"] for item in row.ol_items][:2] == ["west", "gates"]
+
+
 def test_text_critical_registries_carry_over_unchanged(package_root):
     """Textual variants, footnote guidance and unit conversions are the curated 2026-09-09 bytes."""
     typed = _pinned(package_root) / "reference"

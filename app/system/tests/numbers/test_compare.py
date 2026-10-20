@@ -298,6 +298,50 @@ def test_an_unglossed_source_item_keeps_a_mismatch_undecided():
     assert result.outcome == 'PASS'
 
 
+def test_nested_source_items_are_one_thing_not_a_wrong_association():
+    """LEV 14:21: "a tenth" (1/10) and "one [tenth of] fine flour" (1) are the measure and its count."""
+    pairs = ((1, "male lamb"), (Fraction(1, 10), "tenth"), (1, "tenth fine flour"))
+    result = compare_values(values(1, Fraction(1, 10), 1), _typed_row(pairs), mode='UNORDERED',
+                            wip_counts_en=("lamb", "an ephah of refined flour mixed with oil", "log of oil"))
+    assert result.outcome == 'PASS'
+
+
+def _ol_row(ref, items, niv=()):
+    """One OL-authority row from typed items (value, kind, role, unit)."""
+    ol = tuple({"VALUE": str(v), "KIND": kind, "ROLE": role, "UNIT": unit, "REFERENT": unit}
+               for v, kind, role, unit in items)
+    return ReferenceRow(VerseRef(*ref), ' '.join(map(str, ref)), 'GRK', '', tuple(Fraction(v) for v, *_ in items),
+                        '', tuple(Fraction(v) for v in niv), {'MATCH_STATUS': 'DIFFERENT_NUMERIC_EXPRESSION',
+                                                              'OL_REVIEW_STATUS': 'AGREES'}, ol_items=ol)
+
+
+def test_hour_of_the_day_as_clock_time_is_a_unit_conversion_review():
+    """MAT 20:9 NVI "about five in the afternoon" for the 11th hour; the stated day's wage is a "one"."""
+    row = _ol_row(('MAT', 20, 9), [(11, "ORDINAL", "DATE", "hour")], niv=(5,))
+    result = compare_values(values(5, 1), row, mode='UNORDERED', wip_kinds=("APPROX", "CARDINAL"),
+                            wip_counts_en=("", "day"))
+    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['kind'] == 'UNIT_CONVERSION'
+    assert result.review_context['conversions'] == [{"ol_value": "11", "ol_unit": "hour of the day",
+                                                     "wip_value": "5", "conversion": "HOUR_TO_CLOCK"}]
+
+
+def test_a_measure_restated_in_another_unit_is_a_unit_conversion_review():
+    """MAT 25:15 NVI "five thousand coins ... two thousand ... one thousand" for 5 and 2 talents."""
+    row = _ol_row(('MAT', 25, 15), [(5, "CARDINAL", "MEASURE", "talents"), (2, "CARDINAL", "MEASURE", "talents")])
+    result = compare_values(values(5000, 2000, 1000), row, mode='UNORDERED', wip_kinds=("CARDINAL",) * 3,
+                            wip_counts_en=("coins", "coins", "coins"))
+    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['kind'] == 'UNIT_CONVERSION'
+    assert [item["wip_value"] for item in result.review_context['conversions']] == ["5000", "2000"]
+    assert result.review_context['conversions'][0]["ol_unit"] == "talents"
+
+
+def test_a_wrong_value_in_the_same_unit_is_still_a_fail():
+    """50 cubits for 5 cubits is a typing slip, not a conversion: the unit did not change."""
+    row = _ol_row(('EZK', 40, 7), [(5, "CARDINAL", "MEASURE", "cubits")])
+    result = compare_values(values(50), row, mode='UNORDERED', wip_kinds=("CARDINAL",), wip_counts_en=("cubits",))
+    assert result.outcome == 'FAIL' and result.review_context['kind'] == 'VALUE_DIFFERENCE'
+
+
 def test_swapped_items_on_an_niv_only_row_are_for_review_not_blocking():
     """BLOCKING needs original-language authority: an NIV-only swap is reported for review."""
     items = tuple({"VALUE": str(value), "REFERENT": referent} for value, referent in EZR_1_9)

@@ -455,3 +455,21 @@ def test_value_omitted_note_names_the_missing_number_and_asks_about_consistency(
                "wip_values": ["20", "600"], "expected_values": ["20", "20", "600"]}
     issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
     assert "20" in issue and "2CH 3:8" in action and "consistent" in action
+
+
+def test_unit_conversion_note_shows_wip_value_and_original_unit():
+    """MAT 25:15 talents as coins: the note names both sides of the conversion and asks about style."""
+    from sage.nca_reporting import _ENGLISH, _finding_text
+
+    conversions = [{"ol_value": "5", "ol_unit": "talents", "wip_value": "5000", "wip_unit": "coins",
+                    "conversion": "UNIT_SCALED"},
+                   {"ol_value": "11", "ol_unit": "hour of the day", "wip_value": "5",
+                    "conversion": "HOUR_TO_CLOCK"}]
+    group = {"comparison": {"authority": "OL",
+                            "review_context": {"kind": "UNIT_CONVERSION", "conversions": conversions}}}
+    finding = {"kind": "UNIT_CONVERSION", "target_references": ["MAT 25:15"],
+               "wip_values": ["5000", "5"], "expected_values": ["5", "11"]}
+    issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
+    assert "5 talents (original language) as 5000 coins" in issue
+    assert "hour 11 of the day (original language) as 5 o'clock" in issue
+    assert "MAT 25:15" in action and "consistency" in action.lower() and "talents" in action

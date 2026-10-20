@@ -140,7 +140,8 @@ def group_findings(group: GroupResult) -> list[dict[str, object]]:
     severity = "REVIEW" if group.comparison.outcome == "NEEDS_REVIEW" else "BLOCKING"
     return [{
         **base,
-        "category": "ACCURACY",
+        # A faithful unit conversion is a question of consistency and style, not of accuracy.
+        "category": "CONSISTENCY" if kind == "UNIT_CONVERSION" else "ACCURACY",
         "code": f"NCA_NUMBER_{group.comparison.outcome}",
         "kind": kind,
         "severity": severity,
@@ -176,6 +177,8 @@ _MESSAGES = {
     "APPARATUS_VARIANT": "Numeric values differ where the textual apparatus records a number variant.",
     "ONE_ONLY_DIFFERENCE": "The only difference is an added or missing value of one.",
     "VALUE_OMITTED": "The translation leaves out some of the source's numbers and adds none.",
+    "UNIT_CONVERSION": "The translation states a source value in another unit (clock time, a modern measure or "
+                       "currency); check consistency and style.",
 }
 
 

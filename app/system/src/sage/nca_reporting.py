@@ -527,6 +527,13 @@ _ACTION_TEXT = {
         "{ref}: Please check whether leaving out {omitted} is a deliberate style choice (a repeated number "
         "stated once, an idiom, \"each\" or \"both\") and whether it is consistent with how the translation "
         "handles the same construction elsewhere; restore the number if it was dropped by mistake.",
+    "report.nca.issue.UNIT_CONVERSION":
+        "The translation states the source value in another unit: {conversions}.",
+    "report.nca.action.UNIT_CONVERSION":
+        "{ref}: Consistency and style: please confirm that converting {units} is the translation's chosen "
+        "style and that it is applied the same way wherever the unit occurs; no change is needed if it is.",
+    "report.nca.conversion.HOUR_TO_CLOCK": "hour {ol_value} of the day (original language) as {wip_value} o'clock",
+    "report.nca.conversion.UNIT_SCALED": "{ol_value} {ol_unit} (original language) as {wip_value} {wip_unit}",
     "report.nca.apparatus_heading": "Apparatus evidence",
     "report.nca.attribution": "Sources and attribution",
     "report.nca.no_apparatus": "No apparatus entry; registered by SAGE guidance only.",
@@ -670,6 +677,13 @@ def _finding_text(finding: Mapping[str, object], group: Mapping[str, object], te
                                    for item in context.get("source_items") or ()) or expected)
     if kind == "VALUE_OMITTED":
         values.update(omitted=_list(context.get("omitted"), text))
+    if kind == "UNIT_CONVERSION":
+        conversions = [item for item in context.get("conversions") or () if isinstance(item, Mapping)]
+        values.update(
+            conversions="; ".join(text("report.nca.conversion." + str(item.get("conversion"))).format(
+                **{"wip_unit": "", **item}).strip() for item in conversions) or wip,
+            units=", ".join(sorted({"hours of the day" if item.get("conversion") == "HOUR_TO_CLOCK"
+                                    else str(item.get("ol_unit")) for item in conversions})) or "the unit")
     if kind in {"MALFORMED_NUMERAL", "NUMBER_NOT_IN_SOURCE"}:
         values.update(numerals=", ".join(str(item) for item in context.get("numerals") or ()) or wip)
     if kind == "CONVENTION_EDGE_CASE":

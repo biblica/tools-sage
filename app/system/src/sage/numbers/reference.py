@@ -1150,6 +1150,16 @@ _TYPED_FILES = ("MANIFEST.json", "reference/values.tsv", "reference/verses.tsv",
                 "reference/unit_conversion_registry.tsv", "reference/provenance_sources.tsv",
                 "reference/eng_org_map_rules.txt")
 _REVIEW_STATUSES = frozenset({"AGREES", "CONVENTION", "REVIEWED", "PROVISIONAL"})
+# OL REFERENT glosses an immutable package got wrong, keyed by (WESTERN_REF, EXPR_NO). Each one is
+# what the corrected builder (``index_build.build.counted_phrase``) produces from the same MACULA
+# words; the package bytes and checksums stay as published.
+_REFERENT_ERRATA = {
+    "SAGE_NUMBERS_TYPED_2026-10-09": {
+        # A noun after a suffixed or named construct noun was credited to the number before it.
+        ("EZK 48:34", "1"): "west", ("EZK 48:34", "2"): "gates",
+        ("EZR 2:66", "1"): "horses", ("JOS 12:20", "1"): "",
+    },
+}
 
 
 def is_typed_package(root: Path) -> bool:
@@ -1194,11 +1204,15 @@ def _load_typed(root: Path) -> ReferenceBundle:
     verses = _read_table(reference_root / "verses.tsv", _TYPED_VERSE_FIELDS)
     values = _read_table(reference_root / "values.tsv", _TYPED_VALUE_FIELDS)
     items: dict[tuple[str, str], list[dict[str, str]]] = {}
+    referent_errata = _REFERENT_ERRATA.get(package_id, {})
     for line, row in enumerate(values, start=2):
         if row["LAYER"] not in {"OL", "NIV"} or row["REVIEW_STATUS"] not in _REVIEW_STATUSES \
                 or not _VALUE_RE.fullmatch(row["VALUE"]):
             raise _reference_error(f"Invalid NCA typed value at values.tsv line {line}",
                                    "NCA_REFERENCE_CONTRACT_CONFLICT", line=line)
+        corrected = referent_errata.get((row["WESTERN_REF"], row["EXPR_NO"])) if row["LAYER"] == "OL" else None
+        if corrected is not None:
+            row = {**row, "REFERENT": corrected}
         items.setdefault((row["WESTERN_REF"], row["LAYER"]), []).append(row)
     rows: dict[VerseRef, ReferenceRow] = {}
     provisional = 0

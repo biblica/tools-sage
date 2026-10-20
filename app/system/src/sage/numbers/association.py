@@ -72,7 +72,15 @@ def check(wip_values: Sequence[Fraction], wip_counts_en: Sequence[str],
         scores = [len(words & tokens) for tokens in distinct]
         best = max(scores) if scores else 0
         matches = [index for index, score in enumerate(scores) if score == best]
-        chosen.append(matches[0] if words and best and len(matches) == 1 else None)
+        index = matches[0] if words and best and len(matches) == 1 else None
+        if index is not None and source_values[index] != value:
+            # Nested items name one thing: "tenth" (1/10) and "tenth fine flour" (1) are the measure
+            # and its count (LEV 14:21), so a gloss landing on either may carry the other's number.
+            nested = [other for other, tokens in enumerate(distinct) if other != index and tokens
+                      and (tokens <= distinct[index] or distinct[index] <= tokens)
+                      and source_values[other] == value]
+            index = nested[0] if nested else index
+        chosen.append(index)
     # A gloss that lands different WIP values on one source item does not tell the items apart
     # ("12 bulls ... 3 [bulls] facing north"): those numbers stay undecided rather than WRONG.
     values_per_item: dict[int, set[Fraction]] = {}

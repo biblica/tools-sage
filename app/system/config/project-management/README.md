@@ -23,6 +23,9 @@ Operator data, Job evidence, or generated reports.
   outcomes.
 - [Release Cleanup](RELEASE-CLEANUP.md) is the repeatable release-closeout checklist and exact
   evidence record.
+- [Private](private/README.md) holds material the public repository must not carry (internal gate
+  receipts, tester feedback, analysis quoting WIP or licensed text). Git ignores everything there
+  except its README; public records may point to a file there but must not quote it.
 - [Versioning Policy](VERSIONING-POLICY.md) governs product-version spelling, promotion gates,
   release states, tags, artifact names, synchronized surfaces, and historical-label handling.
 

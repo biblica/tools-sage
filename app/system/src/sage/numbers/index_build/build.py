@@ -164,6 +164,24 @@ def counted_phrase(words: list[Word], expression: Expression, family: str) -> li
         chain.append(item)
         if item.state != "construct" or len(chain) == 3:
             break
+    if chain and chain[-1].state == "construct":
+        # A construct noun closed by a suffix or a name and then its own absolute numeral is the
+        # next list entry, not this number's item: in פְּאַת־יָמָּה 4500 שַׁעֲרֵיהֶם שְׁלֹשָׁה
+        # שַׁעַר גָּד אֶחָד "their gates" counts 3 and "gate of Gad" 1.
+        rest = words[words.index(chain[-1]) + 1:]
+        following = next((item for item in rest if item.pos != "suffix" and item.subtype != "proper"), None)
+        if following is not None and numeral(following) and following.state == "absolute":
+            # This number then closes the phrase before it: the noun before any suffix, or the
+            # construct noun before a name (מֶלֶךְ שִׁמְרוֹן מְראוֹן אֶחָד "king of Shimron-meron: 1").
+            back = next((index for index in range(first - 1, -1, -1)
+                         if not skip(words[index]) and words[index].pos != "suffix"), None)
+            if back is None:
+                return []
+            item = words[back]
+            if item.subtype == "proper" and back and words[back - 1].pos == "noun" \
+                    and words[back - 1].state == "construct":
+                return [words[back - 1], item]
+            return [item] if item.pos == "noun" and item.subtype != "proper" else []
     return chain
 
 

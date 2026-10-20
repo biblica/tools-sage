@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from sage.errors import ValidationError
+from sage.numbers.index_build.build import counted_phrase, referent_gloss
 from sage.numbers.index_build.compose import compose
 from sage.numbers.index_build.lexicon import classify_greek, classify_hebrew, exclusion_reason, greek_part
 from sage.numbers.index_build.macula import Word, normalized, verify_source
@@ -98,6 +99,20 @@ def test_hebrew_halves_attach_to_their_measure():
     half = heb("חֲצִי", "half", subtype="common", pos="noun")
     assert hebrew_values(cubit, AND, half) == [Fraction(3, 2)]
     assert hebrew_values(cubits, AND, half) == [Fraction(5, 2)]
+
+
+def test_hebrew_list_entry_after_a_number_belongs_to_the_next_number():
+    """EZK 48:34 "west: 4,500; their gates: 3; gate of Gad: 1" -- each number takes the noun before it."""
+    side = heb("יָם", "westward", subtype="common", pos="noun")
+    gates = heb("שַׁעַר", "gates", subtype="common", pos="noun", state="construct")
+    their = heb("הֵם", "their", subtype="pronominal", pos="suffix")
+    gate = heb("שַׁעַר", "the.gate", subtype="common", pos="noun", state="construct")
+    gad = heb("גָּד", "of.Gad", subtype="proper", pos="noun")
+    three = heb("שָׁלֹשׁ", "three")
+    words = [side, FOUR, THOUSANDS, gates, their, three, gate, gad, ONE]
+    expressions = compose(words, classify_hebrew, split_adjacent_units=True)
+    assert [referent_gloss(counted_phrase(words, expression, "HEB")) for expression in expressions] == [
+        "westward", "gates", "the gate of Gad"]
 
 
 def test_hebrew_homographs_are_excluded_with_a_reason():

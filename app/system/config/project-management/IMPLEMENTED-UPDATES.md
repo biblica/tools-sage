@@ -9,6 +9,38 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261020-001 — NCA: index referent fix, nested-item association, unit conversions as consistency review (TODO-20261020-001)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261020-001`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - `index_build.build.counted_phrase`: a construct noun closed by a pronominal suffix or a name and
+    followed by its own absolute numeral is that numeral's list entry; the number before it takes the
+    noun before it instead (EZK 48:34 "west 4500, their gates 3, gate of Gad 1"). A full HEB/GRK
+    rebuild changes 4 of 5,347 typed values (EZK 48:34 ×2, EZR 2:66, JOS 12:20), all corrections.
+  - `numbers/reference.py`: `_REFERENT_ERRATA` applies those 4 OL referents when
+    `SAGE_NUMBERS_TYPED_2026-10-09` loads; the package bytes and checksums are unchanged.
+  - `numbers/association.py`: a gloss that lands on a source item whose words contain (or are contained
+    in) another item's words may carry that item's number ("tenth" 1/10 and "tenth fine flour" 1,
+    LEV 14:21), so it is no longer a `WRONG_ASSOCIATION`.
+  - `numbers/compare.py`: new review kind `UNIT_CONVERSION` for two deterministic patterns: an OL
+    ordinal hour stated as clock time (`(hour + 6) mod 12`), and OL measures restated in a different
+    unit with one scale factor (the WIP gloss shares no word with the OL unit, so "50 cubits" for
+    "5 cubits" stays FAIL). The review context lists each conversion with the OL value and unit and
+    the WIP value and unit. Findings of this kind have category `CONSISTENCY`.
+  - `nca_reporting.py`: the Operator note names each conversion ("5 talents (original language) as
+    5000 coins") and asks the Operator to confirm the style is deliberate and applied consistently.
+  - `.gitignore`: `app/system/config/project-management/private/` holds material the public
+    repository must not carry; only its README is tracked. The held-out 2 receipt and notes are there.
+- **Verification:** new tests in `tests/numbers/test_index_build.py`, `test_typed_reference.py`,
+  `test_compare.py` (nested items, hour and unit conversions, same-unit typo still FAIL) and
+  `test_reporting.py`. Offline rescore of the sealed gate extractions (no provider calls): held-out 2
+  EZK 48:34 and LEV 14:21 PASS, MAT 20:9, MAT 25:15 and ACT 10:3 `UNIT_CONVERSION`; development
+  MRK 6:37 `UNIT_CONVERSION`; no new FAIL in any run. The gate still FAILs on model misreads
+  (`TODO-20261018-001`).
+
 ### IMP-20261019-001 — NCA runs on Acts: package erratum for the ACT 19:40-41 continuation (TODO-20261018-002)
 
 - **Version:** `0.02a3` (development branch)

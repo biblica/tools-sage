@@ -46,3 +46,8 @@ __MACOSX/
 *.zip.sha256
 *.zip.hardening.json
 hardening-report.json
+
+# Private project-management material (internal gate receipts, tester feedback, analysis that quotes
+# WIP or licensed text). This repository is public; only the folder README is tracked.
+/app/system/config/project-management/private/*
+!/app/system/config/project-management/private/README.md

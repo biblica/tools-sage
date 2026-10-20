@@ -61,6 +61,7 @@ REVIEW_KINDS = frozenset({
     "APPARATUS_VARIANT",
     "ONE_ONLY_DIFFERENCE",
     "VALUE_OMITTED",
+    "UNIT_CONVERSION",
     "WRONG_ASSOCIATION",  # on NIV-only or mixed groups (BLOCKING only under OL authority)
 })
 # FAIL kinds: a value differs from the source, a number sits on the wrong item, a numeral is
@@ -215,6 +216,62 @@ def _omission_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...]) ->
     return not (Counter(wip) - Counter(expected)) and bool(Counter(expected) - Counter(wip))
 
 
+def _words(text: str) -> set[str]:
+    """Lowercased content words of an English gloss, plural -s removed ("talents" -> "talent")."""
+    from .association import _tokens
+    return _tokens(text.replace(".", " "))
+
+
+def _unit_conversions(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...], rows: Sequence[ReferenceRow],
+                      wip_kinds: Sequence[str], wip_counts_en: Sequence[str]) -> list[dict[str, str]]:
+    """Source values the WIP states in another unit, each with the WIP value; [] unless that explains it all.
+
+    Two deterministic patterns, as the NVI and NIV render them: an hour of the day as clock time
+    (the 11th hour is 5 in the afternoon: ``(hour + 6) mod 12``), and a measure restated in a
+    different unit with one scale factor for every value (5 and 2 talents as 5,000 and 2,000 coins).
+    A WIP "one" left over may be the stated "a day's wage" or "to another, one [talent]".
+    """
+    items = [item for row in rows for item in row.ol_items]
+    missing = Counter(expected) - Counter(wip)
+    extra = Counter(wip) - Counter(expected)
+    if not missing or not extra:
+        return []
+    kinds = dict(zip(wip, wip_kinds)) if len(wip_kinds) == len(wip) else {}
+    glosses = dict(zip(wip, wip_counts_en)) if len(wip_counts_en) == len(wip) else {}
+    def unit(value: Fraction) -> dict[str, str] | None:
+        return next((item for item in items if Fraction(item["VALUE"]) == value), None)
+    conversions: list[dict[str, str]] = []
+    for value in list(missing.elements()):
+        item = unit(value)
+        if item is None or item.get("KIND") != "ORDINAL" or "hour" not in _words(item.get("UNIT", "")):
+            continue
+        clock = Fraction((int(value) + 6) % 12 or 12) if value.denominator == 1 and 1 <= value <= 12 else None
+        if clock is not None and extra[clock] and kinds.get(clock) != "ORDINAL":
+            conversions.append({"ol_value": str(value), "ol_unit": "hour of the day", "wip_value": str(clock),
+                                "conversion": "HOUR_TO_CLOCK"})
+            missing[value] -= 1
+            extra[clock] -= 1
+    measures = [value for value in (+missing).elements()
+                if (unit(value) or {}).get("ROLE") == "MEASURE" and (unit(value) or {}).get("UNIT")]
+    if measures and len(measures) == sum((+missing).values()):
+        factor = max(extra.elements()) / max(measures)
+        scaled = [value * factor for value in measures]
+        source_units = set().union(*(_words(unit(value)["UNIT"]) for value in measures))
+        changed = all(glosses.get(value) and not (_words(glosses[value]) & source_units) for value in scaled)
+        if factor != 1 and changed and not Counter(scaled) - extra:
+            for value, converted in zip(measures, scaled):
+                conversions.append({"ol_value": str(value), "ol_unit": unit(value)["UNIT"].replace(".", " "),
+                                    "wip_value": str(converted), "wip_unit": glosses[converted],
+                                    "conversion": "UNIT_SCALED"})
+                missing[value] -= 1
+                extra[converted] -= 1
+            if extra[factor] and glosses.get(factor) and not (_words(glosses[factor]) & source_units):
+                extra[factor] -= 1  # "and to another, one [talent]" restated as 1,000 coins
+    if +missing or set((+extra).elements()) - {Fraction(1)}:
+        return []
+    return conversions
+
+
 def _source_referents(rows: Sequence[ReferenceRow], expected: Tuple[Fraction, ...]) -> tuple[list, list]:
     """Source values with what each counts: NIV wording when it has the same numbers, else the OL gloss."""
     niv_items = [item for row in rows for item in row.niv_items]
@@ -302,6 +359,12 @@ def compare_group(
     if Counter(niv) != Counter(expected) and Counter(wip_values) == Counter(niv):
         # Follows the NIV where it differs from the original language (decision D1): review.
         return _review("MATCHES_SECONDARY_AUTHORITY", mode, wip_values, expected, authority, evidence)
+    conversions = _unit_conversions(wip_values, expected, rows, wip_kinds, wip_counts_en)
+    if conversions:
+        # Release gate 2026-10-20: the NVI states hours as clock time and talents as coins, as the
+        # NIV does. A faithful conversion is a consistency and style question, not a wrong number.
+        return _review("UNIT_CONVERSION", mode, wip_values, expected, authority, evidence,
+                       conversions=conversions)
     if any(row.metadata.get("OL_REVIEW_STATUS") == "PROVISIONAL" for row in rows):
         # The index value here is rebuilt but not yet reviewed: report, never FAIL.
         return _review("PROVISIONAL_INDEX", mode, wip_values, expected, authority, evidence)
