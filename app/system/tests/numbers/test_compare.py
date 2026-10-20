@@ -345,6 +345,16 @@ def test_a_wrong_value_in_the_same_unit_is_still_a_fail():
     assert result.outcome == 'FAIL' and result.review_context['kind'] == 'VALUE_DIFFERENCE'
 
 
+def test_a_changed_value_in_one_of_several_units_is_still_a_fail():
+    """2CH 2:10 with 20,001 baths of oil: the value also measures cors, but the WIP kept baths."""
+    row = _ol_row(('2CH', 2, 10), [(20000, "CARDINAL", "MEASURE", "cors"), (20000, "CARDINAL", "MEASURE", "cors"),
+                                   (20000, "CARDINAL", "MEASURE", "baths"), (20000, "CARDINAL", "MEASURE", "baths")])
+    result = compare_values(values(20000, 20000, 20000, 20001), row, mode='UNORDERED', wip_kinds=("CARDINAL",) * 4,
+                            wip_counts_en=("cors of crushed wheat", "cors of barley", "baths of wine",
+                                           "baths of fine olive oil"))
+    assert result.outcome == 'FAIL' and result.review_context['kind'] == 'VALUE_DIFFERENCE'
+
+
 def test_swapped_items_on_an_niv_only_row_are_for_review_not_blocking():
     """BLOCKING needs original-language authority: an NIV-only swap is reported for review."""
     items = tuple({"VALUE": str(value), "REFERENT": referent} for value, referent in EZR_1_9)

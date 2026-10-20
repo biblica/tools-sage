@@ -263,7 +263,10 @@ def _unit_conversions(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...],
     if measures and len(measures) == sum((+missing).values()):
         factor = max(extra.elements()) / max(measures)
         scaled = [value * factor for value in measures]
-        source_units = set().union(*(_words(unit(value)["UNIT"]) for value in measures))
+        # Every unit a source value carries: one value may measure different things (2CH 2:10, 20,000
+        # cors of wheat and 20,000 baths of oil), and a WIP that keeps any of them did not convert.
+        source_units = set().union(*(_words(str(item.get("UNIT") or "")) for item in items
+                                     if Fraction(item["VALUE"]) in set(measures)))
         changed = all(glosses.get(value) and not (_words(glosses[value]) & source_units) for value in scaled)
         if factor != 1 and changed and not Counter(scaled) - extra:
             for value, converted in zip(measures, scaled):
