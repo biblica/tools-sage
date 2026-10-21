@@ -1173,6 +1173,39 @@ def _scope_intersects(scope: ScriptureScope, reference: str) -> bool:
     return False
 
 
+def approved_scope_exclusions(
+    config: EcosystemConfig,
+    *,
+    workflow: str,
+    job_id: str | None,
+    run_id: str | None,
+) -> list[dict[str, Any]]:
+    """Return the chapters the Run's approved plan left out for compile defects, as not-assessed portions."""
+    if not job_id or not run_id:
+        return []
+    store = JobStore(config.root, config.settings_path)
+    run = store.load_run(_load_owning_job(config, job_id, workflow), run_id)
+    if not run.approved_work_plan_path:
+        return []
+    plan_path = resolve_persisted_path(config.root, run.approved_work_plan_path, "approved work plan")
+    if not plan_path.is_file():
+        return []
+    return excluded_portion_rows(load_json(plan_path))
+
+
+def excluded_portion_rows(plan: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Project a plan's excluded chapters onto the shared ``not_assessed_portions`` row shape."""
+    return [
+        {
+            "scope": str(row["scope"]),
+            "code": str(row.get("code") or "SCOPE_CHAPTER_COMPILE_DEFECT"),
+            "message": str(row.get("message") or f"{row['scope']} was left out because of a compile defect."),
+        }
+        for row in plan.get("excluded_portions") or []
+        if isinstance(row, Mapping) and str(row.get("scope") or "").strip()
+    ]
+
+
 def _approved_rtc_work_plan(
     config: EcosystemConfig,
     *,

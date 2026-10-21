@@ -15,7 +15,7 @@ from .registry import EcosystemConfig, ProjectSpec
 from .paratext_filenames import peek_book_code as _peek_book_code, select_scripture_files
 from .sections import section_index_from_usj
 from .structure_policy import load_structure_policy
-from .usj import USJ_COMPILER, compile_usfm_file, parse_usj_units
+from .usj import USJ_COMPILER, compile_usfm_file, compile_usfm_text, parse_usj_units
 from .vrs import VerseRef, VersificationSchema, parse_vrs_file
 from .versification_service import VersificationService
 from .references import AnalysisScope, BOOK_ORDER, ScriptureScope, analysis_scope_portions
@@ -93,6 +93,51 @@ def is_default_vrs_compatible_issue(
     if code in {"COORDINATE_OUTSIDE_VRS", "EXCLUDED_COORDINATE_PRESENT"}:
         return expected_by_default
     return False
+
+_CHAPTER_LINE_RE = re.compile(r"\s*\\c\s+(\d+)")
+
+
+def parser_errors_for_chapters(text: str, name: str, chapters: set[int] | frozenset[int]) -> list[str]:
+    """Compile the book header plus only the given chapters and return their parser errors."""
+    kept: list[str] = []
+    current: int | None = None
+    for line in text.splitlines(keepends=True):
+        match = _CHAPTER_LINE_RE.match(line)
+        if match:
+            current = int(match.group(1))
+        if current is None or current in chapters:
+            kept.append(line)
+    return list(dict(compile_usfm_text("".join(kept), name).get("sage") or {}).get("errors", []))
+
+
+def _localize_parser_issues(issues: list[dict[str, str]], source: Path, book: str) -> list[dict[str, str]]:
+    """File each critical parser error under the chapters that reproduce it on their own.
+
+    An error no single chapter reproduces, or one every chapter reproduces (a defect in the book
+    header), keeps its book reference and so still blocks every scope in the book.
+    """
+    text = source.read_bytes().decode("utf-8-sig")
+    chapters = sorted({
+        int(match.group(1))
+        for line in text.splitlines()
+        if (match := _CHAPTER_LINE_RE.match(line))
+    })
+    by_chapter = {chapter: set(parser_errors_for_chapters(text, source.name, {chapter})) for chapter in chapters}
+    localized: list[dict[str, str]] = []
+    seen: set[tuple[str, str, str]] = set()
+    for issue in issues:
+        rows = [issue]
+        if issue.get("code") == "USFM_PARSER_ERROR":
+            found = [chapter for chapter, errors in by_chapter.items() if issue.get("message") in errors]
+            if found and len(found) < len(by_chapter):
+                rows = [{**issue, "reference": f"{book} {chapter}"} for chapter in found]
+        for row in rows:
+            key = (str(row.get("code")), str(row.get("reference")), str(row.get("message")))
+            if key not in seen:
+                seen.add(key)
+                localized.append(row)
+    return localized
+
 
 def _critical_parser_error(value: str) -> bool:
     """Return the first parser condition that makes bounded Scripture use unsafe."""
@@ -560,6 +605,8 @@ def compile_project(
             schema,
             coverage_policy=project.coverage_policy,
         )
+        if any(issue.get("code") == "USFM_PARSER_ERROR" for issue in result["issues"]):
+            result["issues"] = _localize_parser_issues(result["issues"], source, str(result["book"]))
         section_cache = _section_cache_path(
             config,
             project,
@@ -689,6 +736,47 @@ def _issue_intersects_scope(issue: dict[str, str], scope: AnalysisScope) -> bool
     precise coordinate. Issues with no canonical Scripture coordinate remain
     conservatively blocking.
     """
+    matches = _issue_coordinates(issue)
+    if not matches:
+        return True
+    for book, chapter, start, end in matches:
+        if book != scope.book:
+            continue
+        if chapter is None:
+            return True
+        if start is None:
+            if any(
+                portion.start_chapter is None
+                or portion.start_chapter
+                <= chapter
+                <= (portion.end_chapter or portion.start_chapter)
+                for portion in analysis_scope_portions(scope)
+            ):
+                return True
+            continue
+        assert end is not None
+        if any(scope.contains(VerseRef(scope.book, chapter, verse)) for verse in range(start, end + 1)):
+            return True
+    return False
+
+
+def issue_chapters(issue: dict[str, str], book: str) -> frozenset[int] | None:
+    """Return the chapters of ``book`` one validation issue is located in.
+
+    ``None`` means the issue cannot be tied to a chapter (no coordinate, or a book-level one), so it
+    affects the whole book. An issue located only in other books returns an empty set.
+    """
+    matches = _issue_coordinates(issue)
+    if not matches:
+        return None
+    own = [match for match in matches if match[0] == book]
+    if any(chapter is None for _, chapter, _, _ in own):
+        return None
+    return frozenset(chapter for _, chapter, _, _ in own if chapter is not None)
+
+
+def _issue_coordinates(issue: dict[str, str]) -> list[tuple[str, int | None, int | None, int | None]]:
+    """Return the most specific canonical coordinates named anywhere in one issue."""
     matches: list[tuple[int, str, int | None, int | None, int | None]] = []
     for value in (str(issue.get("reference", "")), str(issue.get("message", ""))):
         for match in _SCOPE_REFERENCE_RE.finditer(value.upper()):
@@ -709,28 +797,9 @@ def _issue_intersects_scope(issue: dict[str, str], scope: AnalysisScope) -> bool
             matches.append((3, book, chapter, start, end))
 
     if not matches:
-        return True
-
+        return []
     specificity = max(item[0] for item in matches)
-    for _, book, chapter, start, end in (item for item in matches if item[0] == specificity):
-        if book != scope.book:
-            continue
-        if chapter is None:
-            return True
-        if start is None:
-            if any(
-                portion.start_chapter is None
-                or portion.start_chapter
-                <= chapter
-                <= (portion.end_chapter or portion.start_chapter)
-                for portion in analysis_scope_portions(scope)
-            ):
-                return True
-            continue
-        assert end is not None
-        if any(scope.contains(VerseRef(scope.book, chapter, verse)) for verse in range(start, end + 1)):
-            return True
-    return False
+    return [item[1:] for item in matches if item[0] == specificity]
 
 
 def compile_project_scope(

@@ -17,6 +17,7 @@ from typing import Sequence
 from .act_common import _analysis_code
 from .act_common import _analysis_identity
 from .act_common import _approved_rtc_work_plan
+from .act_common import excluded_portion_rows
 from .act_common import _load_owning_job
 from .act_common import _review_portion_for_reference
 from .act_common import _rollback_unregistered_stage_tasks
@@ -205,6 +206,7 @@ def _create_approved_rtc_stage(
         if not references_by_portion
         else []
     )
+    excluded_portions = excluded_portion_rows(approved_plan) if not references_by_portion else []
     plan = {
         "schema_version": "1.0",
         "status": "PARTITIONED",
@@ -213,6 +215,7 @@ def _create_approved_rtc_stage(
         "operation": "rtc",
         "rtc_stage": rtc_stage,
         **({"not_assessed_spans": unplannable_spans} if unplannable_spans else {}),
+        **({"not_assessed_portions": excluded_portions} if excluded_portions else {}),
         "ol_referral_contract": ol_referral_contract,
         "requested_scope": scope.label(),
         "output_project": output_project_id,

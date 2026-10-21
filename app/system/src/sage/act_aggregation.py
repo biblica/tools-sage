@@ -578,6 +578,25 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
                 coordinates=tuple(span_atoms),
             ).to_dict()
         )
+    # Chapters left out at planning (compile defects): never planned, so outside coverage reconciliation.
+    left_out_portions: list[str] = []
+    for portion in plan.get("not_assessed_portions") or []:
+        if not isinstance(portion, dict) or not str(portion.get("scope") or "").strip():
+            continue
+        label = str(portion["scope"]).strip()
+        left_out_portions.append(label)
+        exception_rows.append(
+            ExceptionRecord(
+                tool=workflow.upper(),
+                code=str(portion.get("code") or "SCOPE_CHAPTER_COMPILE_DEFECT"),
+                message=str(portion.get("message") or f"{label} was left out because of a compile defect."),
+                effect=NOT_ASSESSED,
+                run_id=str(plan.get("run_id") or "") or None,
+                job_id=str(plan.get("job_id") or "") or None,
+                stage=str(plan.get("rtc_stage") or plan.get("operation") or "").upper() or None,
+                coordinates=(label,),
+            ).to_dict()
+        )
     findings, _duplicates = dedupe_findings(findings)
     validate_global_finding_ids(findings)
     if len(expected) != len(set(expected)):
@@ -658,7 +677,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         "coverage": {
             **coverage_document(
                 [value for value in expected if value not in set(not_assessed_atoms)],
-                not_assessed_atoms,
+                [*not_assessed_atoms, *left_out_portions],
                 findings_present=bool(findings),
             ),
             "legacy_raw_spans_expanded": legacy_raw_spans,
@@ -696,6 +715,7 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         f"- Work units: `{len(child_results)}`",
         f"- Reviewed coordinates: `{len(expected) - len(set(not_assessed_atoms))}`",
         *([f"- Not assessed coordinates: `{len(set(not_assessed_atoms))}`"] if not_assessed_atoms else []),
+        *([f"- Left out (not assessed): `{'; '.join(left_out_portions)}`"] if left_out_portions else []),
         f"- Review receipts: `{len(receipts)}`",
         f"- Findings: `{len(findings)}`",
         f"- Source comparison: `{source_comparison_status(source_issue_rows)}`",

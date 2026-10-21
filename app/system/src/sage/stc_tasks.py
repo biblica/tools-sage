@@ -22,6 +22,7 @@ from .act_common import _relative
 from .act_common import _rollback_unregistered_stage_tasks
 from .act_common import _select_ol_project
 from .act_common import _skill_files
+from .act_common import approved_scope_exclusions
 from .act_common import load_skill_registry
 from .act_evidence import _bounded_sfm_packet
 from .act_evidence import _canonical_gap_source_issues
@@ -31,6 +32,7 @@ from .act_evidence import _write_grammar_contract
 from .act_evidence import _write_report_language_contract
 from .atomic import atomic_write_json
 from .candidates import candidate_inventory
+from .effective_scope import without_excluded_chapters
 from .errors import EvidenceLimitError
 from .errors import SageError
 from .errors import ValidationError
@@ -172,6 +174,13 @@ def _create_stc_task(
     # A portion the WIP has no text for cannot be compared; it is reported NOT_ASSESSED, not a reason to stop.
     absent_portions: list[str] = []
     unplannable_spans: list[dict[str, Any]] = []
+    # Chapters left out at planning for compile defects: reported as not assessed, never routed as context.
+    excluded_portions = (
+        approved_scope_exclusions(config, workflow=workflow, job_id=job_id, run_id=run_id)
+        if auto_partition and work_unit_id is None
+        else []
+    )
+    context_records = without_excluded_chapters(wip_records_all, excluded_portions)
     planned_units: list[Any] = []
     for portion_index, portion in enumerate(analysis_scope_portions(scope), start=1):
         portion_records = tuple(
@@ -198,7 +207,7 @@ def _create_stc_task(
                 + f"-P{portion_index:03d}",
                 wip_index=wip_index,
                 ol_index=ol_index,
-                context_pool=wip_records_all,
+                context_pool=context_records,
                 planner_version=stc_planner_version,
                 excluded=unplannable_spans if work_unit_id is None else None,
             )
@@ -242,7 +251,9 @@ def _create_stc_task(
                 else ()
             ),
         )
-    if auto_partition and work_unit_id is None and (len(units) > 1 or absent_portions or unplannable_spans):
+    if auto_partition and work_unit_id is None and (
+        len(units) > 1 or absent_portions or unplannable_spans or excluded_portions
+    ):
         seed = sha256_bytes(json.dumps({
             "job_id": job_id, "run_id": run_id, "scope": scope.label(),
             "wip": output.project_id, "ol": ol_project.project_id, "family": family,
@@ -310,7 +321,7 @@ def _create_stc_task(
                     "message": f"No work unit could hold {span['references'][0]} within the hard limits, so it was not compared with the original language.",
                 }
                 for span in unplannable_spans
-            ],
+            ] + excluded_portions,
         }
         plan_path = plan_container(config.workflow(workflow), run_id) / f"{plan_id}.json"
         atomic_write_json(plan_path, plan)

@@ -3164,7 +3164,9 @@ class SageControlCenter:
                 continue
             if preflight not in {"READY", "READY_WITH_STRUCTURE_PROBLEMS"}:
                 return
-            run = self.store.create_run(project, operation=operation, scope=scope, focus=focus, check_type=check_type)
+            # Chapters with compile defects were left out at planning; the Run analyzes what remains.
+            run_scope = str(preview.get("operator_scope") or scope)
+            run = self.store.create_run(project, operation=operation, scope=run_scope, focus=focus, check_type=check_type)
             approved_plan_path = run.root / "plans" / "APPROVED-WORK-UNITS.json"
             approved_preview = dict(preview)
             approved_preview.update({
@@ -3280,7 +3282,14 @@ class SageControlCenter:
             else f"{project.tool.upper()} {operation.upper()}"
         )
         self.io.write(f"Operation:     {operation_label}")
-        self.io.write(f"Scope:         {scope}")
+        self.io.write(f"Scope:         {result.get('operator_scope') or scope}")
+        # The plan may have left out chapters with compile defects; they are stated, never asked about.
+        for row in result.get("excluded_portions") or []:
+            first = dict((row.get("issues") or [{}])[0])
+            self.io.write(
+                f"Left out (not assessed): {row.get('scope')} - {first.get('role', '')} "
+                f"{first.get('project_id', '')} {first.get('code', '')}".rstrip()
+            )
         self.io.write(f"Planned work:  {summary.get('work_units', len(units))} work unit(s)")
         if not rtc_preview and not stc_preview and policy.get("hard_estimated_tokens") is not None:
             self.io.write(f"Token limit:   {policy['hard_estimated_tokens']:,}")

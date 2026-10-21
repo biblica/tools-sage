@@ -878,6 +878,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/data/iso-3166-1.json`
 - `system/src/sage/data/iso-639-3.json`
 - `system/src/sage/display_paths.py`
+- `system/src/sage/effective_scope.py`
 - `system/src/sage/errors.py`
 - `system/src/sage/evidence.py`
 - `system/src/sage/evidence_policy.py`
@@ -1142,6 +1143,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_controller_capabilities.py`
 - `system/tests/test_core_hardening.py`
 - `system/tests/test_dev8_governance.py`
+- `system/tests/test_effective_scope.py`
 - `system/tests/test_exception_reports.py`
 - `system/tests/test_display_paths.py`
 - `system/tests/test_documentation_contracts.py`

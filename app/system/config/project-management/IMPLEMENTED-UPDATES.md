@@ -9,6 +9,49 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261021-005 — Chapters with compile defects are left out, not a reason to stop (completes TODO-20261013-020)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261013`
+- **TODO:** `TODO-20261013-020` (now `DONE`)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - New `effective_scope.py`. `decide_effective_scope` compiles every bound project for the requested
+    RTC/STC scope: WIP, plus REFERENCE (RTC) or the testament OL (STC). It leaves out each chapter that has
+    a blocking issue located in it, then recompiles until the rest is ready. Chapter ends for split
+    cross-chapter portions come from the effective VRS.
+  - An issue that cannot be tied to a chapter still blocks with today's error. Examples: a book-level
+    issue, a defect in the book header, or nothing safe left to analyze.
+  - `scripture.issue_chapters` shares the coordinate parse with `_issue_intersects_scope`.
+  - The decision is made once, in `command_plan`. The plan is made for the effective scope and records
+    `requested_scope` and `excluded_portions`. The menu preview lists each chapter that was left out, and
+    the menu creates the Run with the effective scope.
+  - The other readiness checks are unchanged and pass because the Run's scope is already clean: task
+    creation (`REQUESTED_SCOPE_BLOCKED`), approved-plan revalidation, and the Run preview.
+  - A left-out chapter is never routed as boundary context (`without_excluded_chapters`).
+  - RTC stage plans (`excluded_portion_rows`) and STC plans (`approved_scope_exclusions`) carry the
+    left-out chapters as `not_assessed_portions`. `aggregate_act_plan` reports them as `NOT_ASSESSED`
+    (`SCOPE_CHAPTER_COMPILE_DEFECT`) outside coverage reconciliation, so they reach the RTC and STC
+    chapter reports.
+  - Compile-time parser errors:
+    - Errors inside a verse already carried a coordinate (`1CH 6:1:...`) and were already located.
+    - An error outside any verse was filed against the whole book, for example an unclosed marker in a
+      section heading. `_localize_parser_issues` now files it under each chapter that reproduces it on its
+      own. An error in the book header still blocks the book.
+    - `parser_errors_for_chapters` is the one chapter split, shared with the task-time check in
+      `act_evidence.py`.
+- **Not changed:**
+  - Job creation still refuses a WIP with critical parser errors (`TODO-20261013-022`, product-owner
+    decision). This change applies to defects that appear after the Job was created, and to REFERENCE and
+    OL defects.
+  - Under RTC with OL variance enabled, OL defects still block in the Run preview: OL is optional for RTC
+    and is not part of the decision.
+  - BIC and NCA are not affected.
+  - A replacement Run reuses the effective scope. A full-scope Run after the defect is fixed needs a new Run.
+- **Verification:** new `test_effective_scope.py` (6 tests). It covers chapter filing, header defects,
+  the decision (multi-portion, whole-book, cross-chapter, all-excluded), and a full RTC composite Run and
+  an STC Run with the defect planted after Job creation. Full suite re-run.
+
 ### IMP-20261021-004 — Planners leave out an unplannable span instead of stopping (part of TODO-20261013-020)
 
 - **Version:** `0.02a3` (development branch)

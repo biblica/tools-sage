@@ -162,6 +162,7 @@ from .stc import (
     stc_package_measurements,
     stc_package_summary,
 )
+from .effective_scope import decide_effective_scope, without_excluded_chapters
 from .evidence import serialize_evidence
 from .ui_format import menu_item
 from .usj import USJ_COMPILER
@@ -3694,6 +3695,29 @@ def command_plan(args: argparse.Namespace) -> int:
     selected_role = role if project_id == default_project else matching_roles[0]
     project = config.project(project_id)
     scope = validate_scripture_scope(args.scope, workflow=profile.workflow_id, operation=operation)
+    scope_decision = None
+    if selected_role == "WIP" and (
+        (profile.workflow_id in {"rtc", "saw"} and operation == "rtc")
+        or (profile.workflow_id in {"stc", "saw"} and operation == "stc")
+    ):
+        # Chapters with a located compile defect are left out (reported not assessed) instead of blocking.
+        decision_projects = [("WIP", project)]
+        if operation == "rtc" and profile.bindings.get("REFERENCE"):
+            decision_projects.append(("REFERENCE", config.project(profile.bindings["REFERENCE"])))
+        if operation == "stc":
+            decision_ol_binding = (
+                "ORIGINAL_LANGUAGE_GREEK"
+                if stc_authority_family(scope.book) == "GRK"
+                else "ORIGINAL_LANGUAGE_HEBREW"
+            )
+            if profile.bindings.get(decision_ol_binding):
+                decision_projects.append(
+                    (decision_ol_binding, config.project(profile.bindings[decision_ol_binding]))
+                )
+        scope_decision = decide_effective_scope(config, decision_projects, scope)
+        if scope_decision.narrowed:
+            assert scope_decision.effective is not None
+            scope = scope_decision.effective
     scope_portions = analysis_scope_portions(scope)
     result = compile_project_scope(config, project, scope)
     if result.get("status") not in {"READY", "READY_WITH_WARNINGS"}:
@@ -3707,6 +3731,12 @@ def command_plan(args: argparse.Namespace) -> int:
         resource_role=selected_role,
     )
     selected = select_records_for_scope(all_records, scope)
+    # Boundary context never comes from a chapter left out for a compile defect.
+    context_records = (
+        without_excluded_chapters(all_records, scope_decision.excluded)
+        if scope_decision is not None and scope_decision.narrowed
+        else all_records
+    )
     rtc_sizing = None
     reference_project_id: str | None = None
     reference_result: dict[str, Any] | None = None
@@ -3941,7 +3971,7 @@ def command_plan(args: argparse.Namespace) -> int:
                 rtc_sizing,
                 unit_prefix=f"{plan_id}-P{portion_index:03d}",
                 shared=shared,
-                wip_context_pool=all_records,
+                wip_context_pool=context_records,
                 reference_records=reference_records,
                 wip_index=rtc_wip_index,
                 reference_index=rtc_reference_index,
@@ -3963,7 +3993,7 @@ def command_plan(args: argparse.Namespace) -> int:
                 unit_prefix=f"{plan_id}-P{portion_index:03d}",
                 wip_index=stc_wip_index,
                 ol_index=stc_ol_index,
-                context_pool=all_records,
+                context_pool=context_records,
                 planner_version=STC_PLANNER_VERSION,
                 excluded=unplannable_spans,
             ))
@@ -3998,6 +4028,9 @@ def command_plan(args: argparse.Namespace) -> int:
         operation=operation,
         shared_hashes=shared_hashes,
     )
+    if scope_decision is not None and scope_decision.narrowed:
+        document["requested_scope"] = scope_decision.requested.label()
+        document["excluded_portions"] = [dict(row) for row in scope_decision.excluded]
     if rtc_sizing is not None:
         document.update({
             "schema_version": "1.4",
@@ -4088,6 +4121,8 @@ def command_plan(args: argparse.Namespace) -> int:
         print(f"Workflow: {profile.workflow_id.upper()}")
         print(f"Operation: {operation}")
         print(f"Scope: {scope.label()}")
+        for row in document.get("excluded_portions") or []:
+            print(f"Left out (not assessed): {row['scope']} - {row['issues'][0]['code']}")
         print(f"Project: {project_id} ({selected_role})")
         print(f"Work units: {summary['work_units']}")
         print(f"Primary coordinates: {summary['primary_atomic_coordinates']}")

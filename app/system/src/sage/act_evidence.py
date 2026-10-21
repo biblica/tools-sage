@@ -39,6 +39,7 @@ from .references import parse_scope_set
 from .registry import EcosystemConfig
 from .registry import ProjectSpec
 from .scripture import compile_project
+from .scripture import parser_errors_for_chapters
 from .sfm_slicer import measure_sfm_text
 from .source_coverage import source_text_issues
 from .storage import StorageError
@@ -166,15 +167,7 @@ def _parser_errors_in_scope(text: str, name: str, usj: Mapping[str, Any], chapte
     errors = list(dict(usj.get("sage") or {}).get("errors", []))
     if not errors or not chapters:
         return errors
-    kept: list[str] = []
-    current: int | None = None
-    for line in text.splitlines(keepends=True):
-        match = re.match(r"\s*\\c\s+(\d+)", line)
-        if match:
-            current = int(match.group(1))
-        if current is None or current in chapters:
-            kept.append(line)
-    return list(dict(compile_usfm_text("".join(kept), name).get("sage") or {}).get("errors", []))
+    return parser_errors_for_chapters(text, name, chapters)
 
 
 def _scope_units(
