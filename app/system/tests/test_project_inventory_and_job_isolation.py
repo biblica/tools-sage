@@ -866,6 +866,42 @@ def test_stc_preflight_requires_source_but_does_not_validate_reference(make_work
     assert findings["blockers"] == []
 
 
+def test_rtc_preflight_does_not_block_on_original_language_defects(make_workspace) -> None:
+    """RTC uses OL text only for optional adjudication, so an OL defect is reported later, never a blocker."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED", verse_max=2)
+    greek = storage_layout(root).projects_root / "GRK" / "41MAT.SFM"
+    greek.write_text(
+        "\\id MAT Fixture\n\\c 1\n\\p\n\\v 1 One.\n\\v 1 Duplicate.\n",
+        encoding="utf-8",
+    )
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="saw",
+        job_id="SAW_usWIP-usNIVv2",
+        display_name="RTC OL preflight",
+        bindings={
+            "wip": "usWIP",
+            "reference": "usNIVv2",
+            "original_language_greek": "GRK",
+        },
+        profiles={},
+        defaults={},
+    )
+    center = SageControlCenter(
+        sage_root=root,
+        io=MenuIO(input_func=ScriptedInput([]), output=io.StringIO()),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+    preview = {"units": [{"primary_scope": "MAT 1:1-2"}]}
+
+    rtc = center._saw_preview_findings(job, {**preview, "operation": "rtc"}, require_original_language=True)
+    stc = center._saw_preview_findings(job, {**preview, "operation": "stc"}, require_original_language=True)
+
+    assert rtc["blockers"] == []
+    assert any(row["project_id"] == "GRK" for row in stc["blockers"])
+
+
 def test_catalogued_project_without_declared_vrs_defaults_to_eng(make_workspace, tmp_path: Path) -> None:
     """Undeclared Paratext versification uses ENG/KJV, not canonical ORG."""
     root = make_workspace()

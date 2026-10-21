@@ -9,6 +9,39 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261021-006 — RTC: an original-language text defect no longer stops the Run (follow-up to IMP-20261021-005)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261013`
+- **TODO:** follow-up to `TODO-20261013-020`. Closes the RTC gap recorded under "Not changed" in
+  `IMP-20261021-005`.
+- **Commits:** the commit that introduced this entry.
+- **Finding:** with OL variance enabled, a compile defect in the OL text stopped an RTC Run in two places:
+  - The Run preview refused it.
+  - Creating the OL adjudication stage checked OL readiness over the whole requested scope. That happened
+    after the meaning stage had already run, so a defect in any chapter stopped the finished Run.
+- **Implemented:**
+  - The Run preview no longer treats OL compile defects as blockers for RTC (`_saw_preview_findings`).
+    STC, where the OL text is the authority, still blocks. A missing OL binding still blocks.
+  - When the meaning stage hands over its OL requests, `_split_ol_requests_by_text` drops each request
+    whose chapter has an OL compile defect. A defect not tied to a chapter drops every request. This is
+    chapter granularity, matching the OL packet's own parser check.
+  - Dropped requests are kept in the composite plan as `ol_unavailable_requests`. Finalization reports
+    their verses `NOT_ASSESSED` (`RTC_OL_TEXT_UNAVAILABLE`, naming the OL project and defect).
+  - The selective-OL stage checks OL readiness per case reference instead of over the whole scope.
+  - Fixed a bug found while testing (it dates from `d2a8634`). `ProjectVerseIndex.cached` keyed records
+    on coordinates and body text only, but lookups compare whole records. After an edit that changed only
+    markup (for example adding `\wj`), the stale index was reused, and RTC rejected the edited WIP verse
+    with `VERSE_ALIGNMENT_PROJECT_MISMATCH`. This could happen within one menu session. The key now
+    covers the whole record.
+- **Verification:** new tests:
+  - `test_effective_scope.py`: a defect in the requested chapter, and one in another chapter. The second
+    fails without the per-case readiness change.
+  - `test_project_inventory_and_job_isolation.py`: the RTC preview does not block on an OL defect, and the
+    STC preview still does.
+  - `test_verse_alignment.py`: the markup-only cache case, which fails without the fix.
+  - Full suite re-run.
+
 ### IMP-20261021-005 — Chapters with compile defects are left out, not a reason to stop (completes TODO-20261013-020)
 
 - **Version:** `0.02a3` (development branch)

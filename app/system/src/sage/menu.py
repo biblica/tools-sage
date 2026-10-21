@@ -3432,6 +3432,10 @@ class SageControlCenter:
             for role, project_id in bindings:
                 if not project_id:
                     continue
+                if operation == "rtc" and role not in dict(base_bindings):
+                    # RTC uses OL text only for its optional OL adjudication; a defect there is reported
+                    # per request when that stage starts, never a reason to refuse the Run.
+                    continue
                 bound_project = config.project(project_id)
                 result = compile_project_scope(config, bound_project, parsed_scope)
                 status = str(result.get("status") or "BLOCKED")

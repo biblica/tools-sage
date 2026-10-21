@@ -163,3 +163,22 @@ def test_index_rejects_records_from_outside_its_project_evidence(tmp_path: Path)
         index.canonical_refs_for_records((_record("MAT", 1, 2, "foreign"),))
 
     assert caught.value.code == "VERSE_ALIGNMENT_PROJECT_MISMATCH"
+
+
+def test_cached_index_is_not_reused_after_a_markup_only_edit(tmp_path: Path) -> None:
+    """Same coordinates and body text with different markup get their own index, not a stale one."""
+    schema = _schema(tmp_path, "cache.vrs", "MAT 1:1\n")
+    plain = EvidenceRecord(
+        book="MAT", chapter=1, verse_start=1, verse_end=1,
+        payload={"body_text": "Jesus said."}, sfm="\\v 1 Jesus said.\n",
+    )
+    marked = EvidenceRecord(
+        book="MAT", chapter=1, verse_start=1, verse_end=1,
+        payload={"body_text": "Jesus said."}, sfm="\\v 1 \\wj Jesus said.\\wj*\n",
+    )
+
+    first = ProjectVerseIndex.cached("CACHE-EDIT", (plain,), schema)
+    second = ProjectVerseIndex.cached("CACHE-EDIT", (marked,), schema)
+
+    assert second is not first
+    assert second.canonical_refs_for_records((marked,)) == frozenset({VerseRef("MAT", 1, 1)})

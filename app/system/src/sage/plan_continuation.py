@@ -773,6 +773,65 @@ def _run_versification_advisories(plan_path: Path) -> list[dict[str, Any]]:
     return [dict(row) for row in rows if isinstance(row, dict)]
 
 
+def _split_ol_requests_by_text(
+    config: EcosystemConfig,
+    plan: dict[str, Any],
+    requests: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Split OL requests into those the OL text can serve and those in a chapter with an OL compile defect.
+
+    Chapter granularity matches the OL packet's own parser check: a defect anywhere in a chapter makes that
+    chapter's OL text unusable. A defect not tied to a chapter makes every request unavailable.
+    """
+    from .act_common import _select_ol_project
+    from .scripture import compile_project_scope, issue_chapters
+
+    workflow_name = str(plan.get("workflow") or "rtc")
+    scope = parse_analysis_scope(str(plan["requested_scope"]))
+    _, ol_project = _select_ol_project(
+        config, scope, required=False, workflow=workflow_name, job_id=str(plan.get("job_id") or "") or None
+    )
+    if ol_project is None:
+        return requests, []
+    compiled = compile_project_scope(config, ol_project, scope)
+    issues = [dict(row) for row in compiled.get("issues") or []] if compiled.get("status") == "BLOCKED" else []
+    if not issues:
+        return requests, []
+    routable: list[dict[str, Any]] = []
+    unavailable: list[dict[str, Any]] = []
+    for request in requests:
+        target = str(request.get("target_reference") or "").strip()
+        try:
+            target_scope = parse_scope(target)
+        except ValidationError:
+            # An unusable target fails in the OL stage itself, exactly as before.
+            routable.append(request)
+            continue
+        target_chapters = set(
+            range(target_scope.start_chapter, (target_scope.end_chapter or target_scope.start_chapter) + 1)
+        ) if target_scope.start_chapter is not None else None
+        defects = [
+            issue for issue in issues
+            if (located := issue_chapters(issue, scope.book)) is None
+            or target_chapters is None
+            or bool(located & target_chapters)
+        ]
+        if not defects:
+            routable.append(request)
+            continue
+        unavailable.append({
+            "request_id": str(request.get("request_id") or ""),
+            "target_reference": target,
+            "code": _analysis_code(workflow_name, "SAW_OL_TEXT_UNAVAILABLE"),
+            "message": (
+                f"Original-language review of {target} was requested, but {ol_project.project_id} has a "
+                f"compile defect there ({defects[0].get('code', 'UNKNOWN')}: {defects[0].get('message', '')}); "
+                "it was not adjudicated."
+            ),
+        })
+    return routable, unavailable
+
+
 def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str, Any]) -> dict[str, Any]:
     """Merge completed RTC stages and render deterministic Operator-facing outputs."""
     findings: list[dict[str, Any]] = []
@@ -873,6 +932,24 @@ def _finalize_composite_rtc(config: EcosystemConfig, path: Path, plan: dict[str,
         )
     findings, duplicate_findings = dedupe_findings(findings)
     validate_global_finding_ids(findings)
+    for row in plan.get("ol_unavailable_requests") or []:
+        if not isinstance(row, dict) or not str(row.get("target_reference") or "").strip():
+            continue
+        target = str(row["target_reference"]).strip()
+        exception_rows.append(
+            ExceptionRecord(
+                tool=str(plan.get("workflow") or "rtc").upper(),
+                code=str(row.get("code") or "RTC_OL_TEXT_UNAVAILABLE"),
+                message=str(row.get("message") or f"Original-language review of {target} was not adjudicated."),
+                effect=NOT_ASSESSED,
+                run_id=str(plan.get("run_id") or "") or None,
+                job_id=str(plan.get("job_id") or "") or None,
+                work_unit=str(row.get("request_id") or "") or None,
+                stage="SELECTIVE_OL_ADJUDICATION",
+                coordinates=(target,),
+            ).to_dict()
+        )
+        not_assessed_by_stage.setdefault("SELECTIVE_OL_ADJUDICATION", []).append(target)
     # A coordinate any stage could not assess is not assessed, even when the meaning stage reviewed it;
     # otherwise a lost structural or OL adjudication would disappear behind COMPLETE coverage.
     not_assessed_refs = list(
@@ -1035,6 +1112,11 @@ def _continue_rtc_composite(config: EcosystemConfig, path: Path, plan: dict[str,
                     ),
                 )
             return _finalize_composite_rtc(config, path, plan)
+        if requests:
+            # A request whose verse the OL text cannot serve is reported, not a reason to stop the Run.
+            requests, unavailable = _split_ol_requests_by_text(config, plan, requests)
+            if unavailable:
+                plan["ol_unavailable_requests"] = unavailable
         if not requests:
             return _finalize_composite_rtc(config, path, plan)
         next_stage = "SELECTIVE_OL_ADJUDICATION"

@@ -924,7 +924,13 @@ def create_act_task(
         readiness_projects.insert(0, (f"{_analysis_identity(workflow)} WIP", output))
     if lexical_donor is not None:
         readiness_projects.append(("BIC DONOR", lexical_donor))
-    if route_ol:
+    # Selective OL adjudication checks the OL text per case, so a defect elsewhere in the scope stops no case.
+    ol_case_references = (
+        [str(value) for value in rtc_stage_references if str(value).strip()]
+        if route_ol and operation == "rtc" and rtc_stage == "SELECTIVE_OL_ADJUDICATION"
+        else []
+    )
+    if route_ol and not ol_case_references:
         assert ol_project is not None
         readiness_projects.append(("Original-language", ol_project))
     bic_alignment: dict[str, Any] | None = None
@@ -967,6 +973,13 @@ def create_act_task(
             readiness_projects,
             scope,
         )
+    if ol_case_references:
+        assert ol_project is not None
+        for reference in ol_case_references:
+            _assert_initialized_and_ready(
+                config, workflow, [("Original-language", ol_project)], parse_scope(reference)
+            )
+        compiled[ol_project.project_id] = compile_project_scope(config, ol_project, scope)
     if (
         workflow in {"rtc", "saw"}
         and operation == "rtc"

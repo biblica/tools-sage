@@ -138,17 +138,15 @@ class ProjectVerseIndex:
     ) -> ProjectVerseIndex:
         """Return one index per Project content and effective VRS, built once per process.
 
-        The key covers every record's coordinates and text and the full effective schema, so a Run's
-        tasks share one index instead of rebuilding it for every work unit, and changed content never
-        reuses a stale one.
+        The key covers every record in full (coordinates, text, markup, and structure) and the full
+        effective schema, so a Run's tasks share one index instead of rebuilding it for every work unit,
+        and changed content never reuses a stale one. Lookups compare whole records, so a key on body
+        text alone would reuse an index after a markup-only edit and then reject the edited records.
         """
         records = tuple(records)
         key = (
             str(project_id),
-            tuple(
-                (_record_key(record), hash(str(record.payload.get("body_text") or "")))
-                for record in records
-            ),
+            tuple((_record_key(record), hash(repr(record))) for record in records),
             json.dumps(schema.to_dict(), sort_keys=True, default=str),
         )
         index = _INDEX_CACHE.get(key)

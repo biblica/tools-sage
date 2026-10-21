@@ -273,3 +273,64 @@ def test_stc_run_reviews_the_rest_and_reports_the_left_out_chapter(package_root:
     assert aggregate["coverage"]["reviewed_references"] == REVIEWED
     assert aggregate["coverage"]["not_assessed_references"] == ["1CH 6"]
     assert [row["code"] for row in aggregate["exceptions"]] == [SCOPE_CHAPTER_COMPILE_DEFECT]
+
+
+def _rtc_with_ol_request(package_root: Path, make_workspace, *, book: str, request_ref: str, defect: tuple[int, int]):
+    """Run the RTC meaning stage with one OL request, then put an unclosed marker into one OL verse."""
+    if book == "MAT":
+        root = make_workspace(qualification_status="VALIDATED", verse_max=3)
+        _initialize(package_root, root)
+        scope, ol_dir, ol_file = "MAT 1:1-3", "GRK", "41MAT.SFM"
+    else:
+        root = _workspace(package_root, make_workspace, defect="none")
+        scope, ol_dir, ol_file = "1CH 5-6", "HEB", "13CH.SFM"
+    profile_path = root / "system" / "config" / "workflows" / "saw" / "profile.yml"
+    profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
+    profile["check_policy"]["rtc"]["original_language"]["source_text_drift_adjudication"] = "ENABLED"
+    profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
+    config = load_ecosystem(root / "ecosystem.yml")
+    plan = create_act_task(
+        config, workflow="saw", operation="rtc", output_project_id="usWIP",
+        contemporary_source_id="usNIVv2", scope_value=scope,
+    )
+    meaning_path = Path(plan["manifest_path"])
+    _findings(meaning_path, _meaning_document(_manifest(meaning_path), request_ref=request_ref))
+    submit_with_receipt(config, meaning_path)
+    ol_path = storage_layout(root).projects_root / ol_dir / ol_file
+    lines = ol_path.read_text(encoding="utf-8").splitlines(keepends=True)
+    chapter = None
+    for index, line in enumerate(lines):
+        if line.startswith("\\c "):
+            chapter = int(line.split()[1])
+        if chapter == defect[0] and line.startswith(f"\\v {defect[1]} "):
+            lines[index] = line.replace(f"\\v {defect[1]} ", f"\\v {defect[1]} \\wj ", 1)
+            break
+    else:
+        raise AssertionError(f"verse {defect} not found in {ol_file}")
+    ol_path.write_text("".join(lines), encoding="utf-8")
+    return config, plan
+
+
+def test_ol_defect_in_the_requested_chapter_is_reported_instead_of_stopping(package_root: Path, make_workspace) -> None:
+    """RTC finishes without the OL stage; the request's verse is reported not assessed with the OL defect."""
+    config, plan = _rtc_with_ol_request(package_root, make_workspace, book="MAT", request_ref="MAT 1:2", defect=(1, 3))
+    final = continue_saw_plan(config, Path(plan["plan_path"]))
+
+    assert final["status"] == "COMPLETE", final
+    composite = _manifest(plan["plan_path"])
+    assert [stage["stage"] for stage in composite["stages"]][-1] == "REFERENCE_TEXT_COMPARISON"
+    aggregate = _manifest(final["aggregate_path"])
+    assert "MAT 1:2" in aggregate["coverage"]["not_assessed_references"]
+    rows = [row for row in aggregate["exceptions"] if row["code"] == "SAW_OL_TEXT_UNAVAILABLE"]
+    assert len(rows) == 1 and rows[0]["coordinates"] == ["MAT 1:2"]
+    assert "GRK" in rows[0]["message"]
+
+
+def test_ol_defect_in_another_chapter_does_not_stop_the_ol_stage(package_root: Path, make_workspace) -> None:
+    """An OL defect in 1CH 6 no longer blocks the OL stage for a request in 1CH 5."""
+    config, plan = _rtc_with_ol_request(package_root, make_workspace, book="1CH", request_ref="1CH 5:1", defect=(6, 1))
+    next_stage = continue_saw_plan(config, Path(plan["plan_path"]))
+
+    ol = _manifest(next_stage["next_unit"]["manifest_path"])
+    assert ol["rtc_stage"] == "SELECTIVE_OL_ADJUDICATION"
+    assert ol["expected_references"] == ["1CH 5:1"]
