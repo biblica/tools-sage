@@ -232,6 +232,13 @@ def test_rtc_reference_text_budget_still_rejects_oversized_citations(long_citati
     if field == "ol_review_requests":
         document["findings"] = []
         document[field] = [_strict_referral(target_reference=oversized)]
+        # An unusable referral is dropped with a record; the unit is still accepted.
+        result = validate(**options)
+        assert result["ol_review_requests"] == []
+        [record] = result["salvage_records"]
+        assert record["code"] == "RTC_OL_REFERRAL_DROPPED"
+        assert "exceeds 12000 characters" in record["message"]
+        return
     elif field == "ol_resolutions":
         document["findings"] = []
         document["stage"] = "SELECTIVE_OL_ADJUDICATION"
@@ -500,6 +507,74 @@ def _validate_strict_meaning(
     )
 
 
+def _validate_with_document(tmp_path: Path, document: dict) -> dict:
+    """Validate one edited meaning-stage document against the strict fixture."""
+    manifest = _strict_meaning_manifest()
+    output_path = tmp_path / "partial-findings.json"
+    output_path.write_text(json.dumps(document), encoding="utf-8")
+    return validate_saw_findings(
+        output_path,
+        task_id=manifest["task_id"],
+        operation="rtc",
+        rtc_stage="REFERENCE_TEXT_COMPARISON",
+        scope_value=manifest["scope"],
+        focus=None,
+        check_type=None,
+        expected_references=manifest["expected_references"],
+        structural_candidate_ids=[],
+        grammar_rule_ids=[],
+        allowed_evidence_ids=manifest["allowed_evidence_ids"],
+        task_fingerprint=manifest["task_fingerprint"],
+        required_review_checks=manifest["review_requirements"]["required_checks"],
+        expected_work_unit_ids=manifest["review_requirements"]["expected_work_unit_ids"],
+        narrative_language="en",
+        ol_referral_contract=manifest["ol_referral_contract"],
+    )
+
+
+def test_partial_review_coverage_is_accepted_and_the_rest_is_not_assessed(tmp_path: Path) -> None:
+    """A unit that reviewed only some coordinates keeps that work; the others are reported NOT_ASSESSED."""
+    manifest = _strict_meaning_manifest()
+    document = _meaning_document(manifest)
+    document["coverage"] = {"status": "COMPLETE", "reviewed_references": ["JHN 1:1"]}
+    document["review_receipts"][0]["reviewed_references"] = ["JHN 1:1"]
+
+    result = _validate_with_document(tmp_path, document)
+
+    assert result["coverage"]["status"] == "PARTIAL"
+    assert result["coverage"]["reviewed_references"] == ["JHN 1:1"]
+    assert result["coverage"]["not_assessed_references"] == ["JHN 1:2"]
+    [record] = result["salvage_records"]
+    assert record["code"] == "SAW_COVERAGE_PARTIAL"
+    assert record["effect"] == "NOT_ASSESSED"
+    assert record["coordinates"] == ["JHN 1:2"]
+
+
+def test_claimed_coverage_without_receipt_evidence_is_not_assessed(tmp_path: Path) -> None:
+    """Coordinate coverage alone is not review evidence: an unreceipted coordinate is not assessed."""
+    manifest = _strict_meaning_manifest()
+    document = _meaning_document(manifest)
+    document["review_receipts"][0]["reviewed_references"] = ["JHN 1:2"]
+
+    result = _validate_with_document(tmp_path, document)
+
+    assert result["coverage"]["reviewed_references"] == ["JHN 1:2"]
+    assert result["coverage"]["not_assessed_references"] == ["JHN 1:1"]
+
+
+def test_review_with_no_receipted_coordinate_is_still_rejected(tmp_path: Path) -> None:
+    """With nothing reviewed there is no work to keep, so the unit is resubmitted."""
+    manifest = _strict_meaning_manifest()
+    document = _meaning_document(manifest)
+    document["coverage"] = {"status": "COMPLETE", "reviewed_references": ["JHN 1:1"]}
+    document["review_receipts"][0]["reviewed_references"] = ["JHN 1:2"]
+
+    with pytest.raises(ValidationError) as caught:
+        _validate_with_document(tmp_path, document)
+
+    assert caught.value.code == "RTC_REVIEW_EVIDENCE_INCOMPLETE"
+
+
 def test_prohibited_drift_policy_drops_ol_requests_at_submit(tmp_path: Path) -> None:
     """Under the default PROHIBITED policy a request is dropped with a record, not left to stall Continue."""
     result = _validate_strict_meaning(tmp_path, [_strict_referral()], drift_policy="PROHIBITED")
@@ -543,32 +618,32 @@ def test_strict_ol_referral_rejects_missing_admission_fields(tmp_path: Path) -> 
     request = _strict_referral()
     del request["fundamental_impact"]
 
-    with pytest.raises(ValidationError) as caught:
-        _validate_strict_meaning(tmp_path, [request])
+    result = _validate_strict_meaning(tmp_path, [request])
 
-    assert caught.value.code == "SAW_OL_REFERRAL_FIELDS_MISSING"
+    assert result["ol_review_requests"] == []
+    assert [row["code"] for row in result["salvage_records"]] == ["SAW_OL_REFERRAL_FIELDS_MISSING"]
 
 
 def test_strict_ol_referral_rejects_unsupported_conflict_class(tmp_path: Path) -> None:
     """Lexical intensity cannot open the closed referral class vocabulary."""
-    with pytest.raises(ValidationError) as caught:
-        _validate_strict_meaning(
-            tmp_path,
-            [_strict_referral(conflict_class="LEXICAL_INTENSITY_DIFFERENCE")],
-        )
+    result = _validate_strict_meaning(
+        tmp_path,
+        [_strict_referral(conflict_class="LEXICAL_INTENSITY_DIFFERENCE")],
+    )
 
-    assert caught.value.code == "SAW_OL_REFERRAL_CLASS_INVALID"
+    assert result["ol_review_requests"] == []
+    assert [row["code"] for row in result["salvage_records"]] == ["SAW_OL_REFERRAL_CLASS_INVALID"]
 
 
 def test_strict_ol_referral_rejects_equivalent_propositions(tmp_path: Path) -> None:
     """Equivalent propositions cannot be routed merely for different wording."""
-    with pytest.raises(ValidationError) as caught:
-        _validate_strict_meaning(
-            tmp_path,
-            [_strict_referral(reference_proposition=" the subject DID NOT leave. ")],
-        )
+    result = _validate_strict_meaning(
+        tmp_path,
+        [_strict_referral(reference_proposition=" the subject DID NOT leave. ")],
+    )
 
-    assert caught.value.code == "SAW_OL_REFERRAL_ADMISSION_INVALID"
+    assert result["ol_review_requests"] == []
+    assert [row["code"] for row in result["salvage_records"]] == ["SAW_OL_REFERRAL_ADMISSION_INVALID"]
 
 
 def test_strict_ol_referral_rejects_duplicate_normalized_conflict(tmp_path: Path) -> None:
@@ -580,32 +655,32 @@ def test_strict_ol_referral_rejects_duplicate_normalized_conflict(tmp_path: Path
         reference_proposition="THE SUBJECT LEFT.",
     )
 
-    with pytest.raises(ValidationError) as caught:
-        _validate_strict_meaning(tmp_path, [_strict_referral(), duplicate])
+    result = _validate_strict_meaning(tmp_path, [_strict_referral(), duplicate])
 
-    assert caught.value.code == "SAW_OL_REFERRAL_DUPLICATE"
+    assert [row["request_id"] for row in result["ol_review_requests"]] == ["OLR-1"]
+    assert [row["code"] for row in result["salvage_records"]] == ["SAW_OL_REFERRAL_DUPLICATE"]
 
 
 def test_strict_ol_referral_uses_specific_scope_error(tmp_path: Path) -> None:
     """An admitted source question remains bounded by its sealed meaning task."""
-    with pytest.raises(ValidationError) as caught:
-        _validate_strict_meaning(
-            tmp_path,
-            [_strict_referral(target_reference="JHN 1:3")],
-        )
+    result = _validate_strict_meaning(
+        tmp_path,
+        [_strict_referral(target_reference="JHN 1:3")],
+    )
 
-    assert caught.value.code == "SAW_OL_REFERRAL_SCOPE_INVALID"
+    assert result["ol_review_requests"] == []
+    assert [row["code"] for row in result["salvage_records"]] == ["SAW_OL_REFERRAL_SCOPE_INVALID"]
 
 
 def test_strict_ol_referral_uses_specific_evidence_error(tmp_path: Path) -> None:
     """Admission cannot cite evidence that the controller did not route."""
-    with pytest.raises(ValidationError) as caught:
-        _validate_strict_meaning(
-            tmp_path,
-            [_strict_referral(evidence_ids=["EXTERNAL_COMMENTARY"])],
-        )
+    result = _validate_strict_meaning(
+        tmp_path,
+        [_strict_referral(evidence_ids=["EXTERNAL_COMMENTARY"])],
+    )
 
-    assert caught.value.code == "SAW_OL_REFERRAL_EVIDENCE_INVALID"
+    assert result["ol_review_requests"] == []
+    assert [row["code"] for row in result["salvage_records"]] == ["SAW_OL_REFERRAL_EVIDENCE_INVALID"]
 
 
 def test_strict_ol_referral_rejects_final_finding_overlap(tmp_path: Path) -> None:
@@ -623,10 +698,11 @@ def test_strict_ol_referral_rejects_final_finding_overlap(tmp_path: Path) -> Non
         "original_language_evidence": "",
     }
 
-    with pytest.raises(ValidationError) as caught:
-        _validate_strict_meaning(tmp_path, [_strict_referral()], findings=[finding])
+    result = _validate_strict_meaning(tmp_path, [_strict_referral()], findings=[finding])
 
-    assert caught.value.code == "SAW_OL_REFERRAL_FINDING_OVERLAP"
+    assert [row["finding_id"] for row in result["findings"]] == ["OL-F-001"]
+    assert result["ol_review_requests"] == []
+    assert [row["code"] for row in result["salvage_records"]] == ["SAW_OL_REFERRAL_FINDING_OVERLAP"]
 
 
 def test_legacy_meaning_output_without_contract_retains_sealed_schema(tmp_path: Path) -> None:

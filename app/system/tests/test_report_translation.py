@@ -324,6 +324,70 @@ def test_secondary_rendering_sends_exactly_one_report_item_per_provider_request(
     assert set(receipt["events"]) == {"EVT-001"}
 
 
+def test_one_failed_item_keeps_the_other_rendered_items(
+    tmp_path: Path,
+    monkeypatch,
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A single unusable provider response degrades only that item, not the whole rendering."""
+    document = _document()
+    document["findings"].append(
+        {
+            "finding_id": "SAW-RUT-001-0002",
+            "target_reference": "RUT 1:1",
+            "category": "CONSISTENCY",
+            "issue": "A second independent report item.",
+            "required_action": "Review the second item.",
+            "action_level": "REVIEW",
+            "confidence": "MEDIUM",
+            "evidence_ids": ["REFERENCE", "WIP"],
+            "grammar_rule_ids": [],
+            "original_language_evidence": "",
+        }
+    )
+
+    class FakeExecutor:
+        """Answer the first item and return unusable text for the second."""
+
+        def status(self):
+            """Return the live identity inherited from every report item."""
+            return _translation_status()
+
+        def execute(self, request):
+            """Render the enumerated finding, or fail for SAW-RUT-001-0002."""
+            finding_ids = request.schema["properties"]["findings"]["items"]["properties"]["finding_id"]["enum"]
+            if finding_ids == ["SAW-RUT-001-0002"]:
+                return ProviderResponse(provider="codex", model="gpt-test", reasoning_effort="medium", content="not json")
+            return ProviderResponse(
+                provider="codex",
+                model="gpt-test",
+                reasoning_effort="medium",
+                content=json.dumps(
+                    {
+                        "schema_version": "1.0",
+                        "secondary_language": "uk",
+                        "findings": [
+                            {"finding_id": value, "issue": f"UK issue for {value}", "required_action": "UK action"}
+                            for value in finding_ids
+                        ],
+                        "events": [],
+                    }
+                ),
+            )
+
+    monkeypatch.setattr("sage.report_translation.make_executor", lambda provider, settings: FakeExecutor())
+    sage_root = _workspace_with_uk_profile(package_root, make_workspace)
+    document = _bind_execution_route(sage_root, document)
+    rendered = ensure_secondary_saw_report_rendering(sage_root, tmp_path / "RUT_ACTION-REPORT.md", document)
+
+    receipt = rendered["report_renderings"]
+    assert receipt["status"] == "DEGRADED"
+    assert set(receipt["findings"]) == {"SAW-RUT-001-0001"}
+    assert [row["item"] for row in receipt["failed_items"]] == ["finding:SAW-RUT-001-0002"]
+    assert receipt["failed_items"][0]["reason_code"] == "SECONDARY_REPORT_RENDERING_INVALID"
+
+
 def test_stc_summaries_use_the_provisional_originating_route_one_at_a_time(
     tmp_path: Path,
     monkeypatch,

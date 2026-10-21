@@ -25,16 +25,24 @@ VERSES = 2
 EXPECTED = [f"1CH {chapter}:{verse}" for chapter in CHAPTERS for verse in range(1, VERSES + 1)]
 
 
-def _chronicles_workspace(package_root: Path, make_workspace) -> Path:
-    """Return an initialized workspace whose Projects also hold 1 Chronicles 5, 6, and 24."""
+def _chronicles_workspace(package_root: Path, make_workspace, *, wip_lacks: tuple[int, ...] = ()) -> Path:
+    """Return an initialized workspace whose Projects also hold 1 Chronicles 5, 6, and 24.
+
+    ``wip_lacks`` lists chapters the WIP Project leaves out while the versification still declares them.
+    """
     root = make_workspace(configured=True, qualification_status="VALIDATED")
-    lines = ["\\id 1CH Fixture"]
-    for chapter in CHAPTERS:
-        lines += [f"\\c {chapter}", "\\p"]
-        lines += [f"\\v {verse} Chapter {chapter} verse {verse}." for verse in range(1, VERSES + 1)]
+
+    def book(skip: tuple[int, ...]) -> str:
+        """Return the 1 Chronicles SFM text with the ``skip`` chapters left out."""
+        lines = ["\\id 1CH Fixture"]
+        for chapter in (value for value in CHAPTERS if value not in skip):
+            lines += [f"\\c {chapter}", "\\p"]
+            lines += [f"\\v {verse} Chapter {chapter} verse {verse}." for verse in range(1, VERSES + 1)]
+        return "\n".join(lines) + "\n"
+
     for project in storage_layout(root).projects_root.iterdir():
         if project.is_dir():
-            (project / "13CH.SFM").write_text("\n".join(lines) + "\n", encoding="utf-8")
+            (project / "13CH.SFM").write_text(book(wip_lacks if project.name == "usWIP" else ()), encoding="utf-8")
     vrs = " ".join(f"{chapter}:{VERSES}" for chapter in CHAPTERS)
     for name in ("eng.vrs", "org.vrs"):
         path = root / "system" / "resources" / "scripture" / name
@@ -105,6 +113,54 @@ def test_multi_portion_stc_run_reviews_exactly_the_selected_chapters(package_roo
     assert aggregate["primary_ol_authority"] == "HEB"
     assert aggregate["coverage"] == {"status": "COMPLETE", "reviewed_references": EXPECTED}
     assert sorted({Path(path).parent.name for path in aggregate["report_paths"]}) == ["005", "006", "024"]
+
+
+def test_stc_portion_the_wip_lacks_is_not_assessed_and_the_rest_is_reviewed(package_root: Path, make_workspace) -> None:
+    """A selected chapter the WIP has no text for is reported NOT_ASSESSED; the other portions still run."""
+    root = _chronicles_workspace(package_root, make_workspace, wip_lacks=(24,))
+    store = JobStore(root, root / "ecosystem.yml")
+    job = store.create_job(
+        tool="stc",
+        job_id="STC-usWIP_20260901",
+        display_name="STC missing portion",
+        bindings={"wip": "usWIP"},
+        imported_at=IMPORT_TIME,
+    )
+    run = store.create_run(job, operation="stc", scope=SCOPE)
+    config = load_ecosystem(store.ensure_runtime_files(job))
+
+    plan = create_act_task(
+        config,
+        workflow="stc",
+        operation="stc",
+        output_project_id="usWIP",
+        contemporary_source_id=None,
+        scope_value=run.scope,
+        job_id=job.job_id,
+        run_id=run.run_id,
+    )
+
+    assert [portion["scope"] for portion in plan["not_assessed_portions"]] == ["1CH 24"]
+    manifests = [_manifest(unit["manifest_path"]) for unit in plan["work_units"]]
+    reviewed = [ref for manifest in manifests for ref in manifest["expected_references"]]
+    assert reviewed == [ref for ref in EXPECTED if not ref.startswith("1CH 24:")]
+    for unit, manifest in zip(plan["work_units"], manifests, strict=True):
+        manifest_path = Path(unit["manifest_path"])
+        (manifest_path.parent / "output" / "findings.json").write_text(
+            json.dumps({
+                "review_summary": "The assigned primary coordinates were reviewed.",
+                "report_language": manifest["narrative_language"]["tag"],
+                "findings": [],
+            }),
+            encoding="utf-8",
+        )
+        assert submit_with_receipt(config, manifest_path)["status"] == "FINALIZED"
+
+    aggregate = aggregate_act_plan(config, Path(plan["plan_path"]))
+
+    assert aggregate["coverage"]["status"] != "COMPLETE"
+    assert aggregate["coverage"]["not_assessed_references"] == ["1CH 24"]
+    assert [row["code"] for row in aggregate["exceptions"]] == ["STC_WIP_PORTION_MISSING"]
 
 
 def test_multi_portion_rtc_run_reviews_exactly_the_selected_chapters(package_root: Path, make_workspace) -> None:

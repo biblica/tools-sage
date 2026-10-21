@@ -169,29 +169,45 @@ def _create_stc_task(
             service.project_schema(ol_project),
         )
     policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy("stc")
-    units = tuple(
-        unit
-        for portion_index, portion in enumerate(analysis_scope_portions(scope), start=1)
-        for unit in plan_stc_work_units(
-            select_records_for_scope(wip_records_all, portion),
-            (
-                ol_records_all
-                if stc_planner_version == STC_PLANNER_VERSION
-                else tuple(
-                    record
-                    for record in ol_records_all
-                    if any(portion.contains(ref) for ref in record.refs)
-                )
-            ),
-            policy,
-            unit_prefix=(parent_plan_id or f"STC-{scope.book}")
-            + f"-P{portion_index:03d}",
-            wip_index=wip_index,
-            ol_index=ol_index,
-            context_pool=wip_records_all,
-            planner_version=stc_planner_version,
+    # A portion the WIP has no text for cannot be compared; it is reported NOT_ASSESSED, not a reason to stop.
+    absent_portions: list[str] = []
+    planned_units: list[Any] = []
+    for portion_index, portion in enumerate(analysis_scope_portions(scope), start=1):
+        portion_records = tuple(
+            record for record in wip_records_all if any(portion.contains(ref) for ref in record.refs)
         )
-    )
+        if not portion_records and work_unit_id is None:
+            absent_portions.append(portion.label())
+            continue
+        portion_records = select_records_for_scope(wip_records_all, portion)
+        planned_units.extend(
+            plan_stc_work_units(
+                portion_records,
+                (
+                    ol_records_all
+                    if stc_planner_version == STC_PLANNER_VERSION
+                    else tuple(
+                        record
+                        for record in ol_records_all
+                        if any(portion.contains(ref) for ref in record.refs)
+                    )
+                ),
+                policy,
+                unit_prefix=(parent_plan_id or f"STC-{scope.book}")
+                + f"-P{portion_index:03d}",
+                wip_index=wip_index,
+                ol_index=ol_index,
+                context_pool=wip_records_all,
+                planner_version=stc_planner_version,
+            )
+        )
+    if not planned_units:
+        raise ValidationError(
+            f"The WIP has no text in the requested scope {scope.label()}",
+            code="STC_WIP_MISSING",
+            affected_scope=scope.label(),
+        )
+    units = tuple(planned_units)
     if (
         stc_planner_version == STC_PLANNER_VERSION
         and work_unit_id is None
@@ -224,7 +240,7 @@ def _create_stc_task(
                 else ()
             ),
         )
-    if auto_partition and work_unit_id is None and len(units) > 1:
+    if auto_partition and work_unit_id is None and (len(units) > 1 or absent_portions):
         seed = sha256_bytes(json.dumps({
             "job_id": job_id, "run_id": run_id, "scope": scope.label(),
             "wip": output.project_id, "ol": ol_project.project_id, "family": family,
@@ -274,6 +290,14 @@ def _create_stc_task(
             "stc_planner_version": stc_planner_version,
             "expected_references": expected, "work_units": children,
             "coverage_gap_issues": stc_omissions,
+            "not_assessed_portions": [
+                {
+                    "scope": label,
+                    "code": "STC_WIP_PORTION_MISSING",
+                    "message": f"The WIP has no text in {label}, so it was not compared with the original language.",
+                }
+                for label in absent_portions
+            ],
         }
         plan_path = plan_container(config.workflow(workflow), run_id) / f"{plan_id}.json"
         atomic_write_json(plan_path, plan)

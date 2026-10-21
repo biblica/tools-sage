@@ -11,7 +11,7 @@ from .atomic import atomic_write_json
 from .atomic import atomic_write_text
 from .config import load_json
 from .errors import ValidationError
-from .exception_reports import NOT_ASSESSED
+from .exception_reports import NOT_ASSESSED, ExceptionRecord
 from .exception_reports import coverage_document
 from .exception_reports import load_not_assessed_result
 from .exception_reports import render_exceptions_section
@@ -174,6 +174,23 @@ def _aggregate_stc_plan(config: EcosystemConfig, path: Path, plan: dict[str, Any
             "authority_role": "PRIMARY",
         })
         accepted_results.append(normalized)
+    for portion in plan.get("not_assessed_portions") or []:
+        # Scope the WIP has no text for: planned out of the work units, reported as not assessed.
+        if not isinstance(portion, dict) or not str(portion.get("scope") or "").strip():
+            continue
+        exception_rows.append(
+            ExceptionRecord(
+                tool="STC",
+                code=str(portion.get("code") or "STC_WIP_PORTION_MISSING"),
+                message=str(portion.get("message") or "The WIP has no text in this portion."),
+                effect=NOT_ASSESSED,
+                run_id=str(plan.get("run_id") or "") or None,
+                job_id=str(plan.get("job_id") or "") or None,
+                stage="STC",
+                coordinates=(str(portion["scope"]).strip(),),
+            ).to_dict()
+        )
+        not_assessed_atoms.append(str(portion["scope"]).strip())
     plan_gaps = [dict(row) for row in plan.get("coverage_gap_issues") or [] if isinstance(row, dict)]
     if plan_gaps and accepted_results:
         # Plan-level omissions (including whole missing chapters) belong to no single unit; the first
@@ -479,6 +496,11 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
         # fixtures fall back to their already validated normalized result.
         if not unit_atoms:
             unit_atoms = list(result_atoms)
+        result_not_assessed = [
+            str(value) for value in (globalized["coverage"] or {}).get("not_assessed_references", [])
+        ]
+        if result_not_assessed:
+            result_atoms = [*result_atoms, *atomic_reference_labels(result_not_assessed)]
         if (
             len(result_atoms) != len(set(result_atoms))
             or len(unit_atoms) != len(set(unit_atoms))
@@ -500,6 +522,13 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             )
         planned_by_unit.extend(unit_atoms)
         observed.extend(unit_atoms)
+        unit_not_assessed = list(atomic_reference_labels(
+            str(value) for value in (normalized.get("coverage") or {}).get("not_assessed_references", [])
+        ))
+        if unit_not_assessed:
+            # Partial coverage inside a unit: the unreviewed coordinates stay planned but are not assessed.
+            not_assessed_atoms.extend(unit_not_assessed)
+            exception_rows.extend(dict(row) for row in normalized.get("exceptions", []) if isinstance(row, Mapping))
         receipts.extend(globalized.get("review_receipts", []))
         adjudications.extend(globalized.get("structural_adjudications", []))
         ol_review_requests.extend(globalized.get("ol_review_requests", []))

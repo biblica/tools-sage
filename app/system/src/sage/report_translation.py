@@ -29,6 +29,8 @@ from .llm_settings import (
 from .skill_routing import resolve_skill_route, resolve_specific_skill_route
 
 _JSON_FENCE = re.compile(r"^```(?:json)?\s*(.*?)\s*```$", re.IGNORECASE | re.DOTALL)
+# A provider that fails this many items in a row is down; the remaining items are listed, not attempted.
+_MAX_CONSECUTIVE_RENDERING_FAILURES = 3
 
 
 def _canonical_bytes(value: Any) -> bytes:
@@ -461,10 +463,11 @@ def ensure_secondary_analysis_report_rendering(
     provider: str | None = None
     model: str | None = None
     reasoning: str | None = None
+    secondary_rows: dict[str, dict[str, str]] = {}
+    secondary_events: dict[str, dict[str, str]] = {}
+    responses = []
+    failed_items: list[dict[str, str]] = []
     try:
-        secondary_rows: dict[str, dict[str, str]] = {}
-        secondary_events: dict[str, dict[str, str]] = {}
-        responses = []
         item_sources = [
             (f"finding:{row['finding_id']}", {
                 "primary_language": primary,
@@ -483,46 +486,99 @@ def ensure_secondary_analysis_report_rendering(
             for row in source.get("events", [])
         ]
         resolved_routes: dict[str, tuple[Any, Any]] = {}
+        unavailable_routes: dict[str, SageError] = {}
+        consecutive_failures = 0
         for item_key, item_source in item_sources:
-            projection = item_routes[item_key]
-            projected_route_id = str(projection.get("route_id") or "")
-            if projected_route_id not in resolved_routes:
-                resolved_routes[projected_route_id] = _resolved_rendering_route(
-                    root, settings, projection
+            # One failed item never discards the items already rendered; it is listed as not rendered.
+            failure: SageError | OSError | ValueError | None = None
+            if consecutive_failures >= _MAX_CONSECUTIVE_RENDERING_FAILURES:
+                failure = ValidationError(
+                    "Rendering stopped after repeated provider failures; this item was not attempted",
+                    code="SECONDARY_REPORT_RENDERING_SKIPPED",
                 )
-            executor, route = resolved_routes[projected_route_id]
-            provider = route.identity.provider
-            model = route.identity.model_id
-            reasoning = route.identity.reasoning_id
-            item_ids = [row["finding_id"] for row in item_source["findings"]]
-            item_event_ids = [row["event_id"] for row in item_source["events"]]
-            response = executor.execute(
-                ProviderRequest(
-                    prompt=_translation_prompt(item_source, primary_profile, secondary_profile),
-                    schema=_translation_schema(
-                        secondary,
+            else:
+                projection = item_routes[item_key]
+                projected_route_id = str(projection.get("route_id") or "")
+                try:
+                    if projected_route_id in unavailable_routes:
+                        raise unavailable_routes[projected_route_id]
+                    if projected_route_id not in resolved_routes:
+                        try:
+                            resolved_routes[projected_route_id] = _resolved_rendering_route(
+                                root, settings, projection
+                            )
+                        except SageError as exc:
+                            unavailable_routes[projected_route_id] = exc
+                            raise
+                    executor, route = resolved_routes[projected_route_id]
+                    provider = route.identity.provider
+                    model = route.identity.model_id
+                    reasoning = route.identity.reasoning_id
+                    item_ids = [row["finding_id"] for row in item_source["findings"]]
+                    item_event_ids = [row["event_id"] for row in item_source["events"]]
+                    response = executor.execute(
+                        ProviderRequest(
+                            prompt=_translation_prompt(item_source, primary_profile, secondary_profile),
+                            schema=_translation_schema(
+                                secondary,
+                                expected_ids=item_ids,
+                                expected_event_ids=item_event_ids,
+                            ),
+                            model=model,
+                            reasoning_effort=None if reasoning == "provider-default" else reasoning,
+                            timeout_seconds=300,
+                        )
+                    )
+                    item_rows, item_events = _parse_translation_response(
+                        response.content,
+                        secondary_language=secondary,
                         expected_ids=item_ids,
                         expected_event_ids=item_event_ids,
-                    ),
-                    model=model,
-                    reasoning_effort=None if reasoning == "provider-default" else reasoning,
-                    timeout_seconds=300,
+                    )
+                except (SageError, OSError, ValueError) as exc:
+                    failure = exc
+            if failure is not None:
+                consecutive_failures += 1
+                failed_items.append(
+                    {
+                        "item": item_key,
+                        "reason_code": getattr(failure, "code", "SECONDARY_REPORT_RENDERING_FAILED"),
+                        "diagnostic": str(failure),
+                    }
                 )
-            )
-            item_rows, item_events = _parse_translation_response(
-                response.content,
-                secondary_language=secondary,
-                expected_ids=item_ids,
-                expected_event_ids=item_event_ids,
-            )
+                continue
+            consecutive_failures = 0
             secondary_rows.update(item_rows)
             secondary_events.update(item_events)
             responses.append(response)
-        if set(secondary_rows) != set(expected_ids) or set(secondary_events) != set(expected_event_ids):
+        if not failed_items and (
+            set(secondary_rows) != set(expected_ids) or set(secondary_events) != set(expected_event_ids)
+        ):
             raise ValidationError(
                 "Individually rendered report items do not reconcile the exact report inventory",
                 code="SECONDARY_REPORT_RENDERING_INVALID",
             )
+        if failed_items:
+            degraded = {
+                "schema_version": "1.0",
+                "status": "DEGRADED",
+                "authority": "ASSISTIVE_TRANSLATION_ONLY",
+                "primary_language": primary,
+                "secondary_language": secondary,
+                "source_sha256": source_sha256,
+                "provider": provider,
+                "model": model,
+                "reasoning_effort": reasoning,
+                "findings": secondary_rows,
+                "events": secondary_events,
+                "failed_items": failed_items,
+                "reason_code": failed_items[0]["reason_code"],
+                "diagnostic": f"{len(failed_items)} of {expected_request_count} report items were not rendered; "
+                + failed_items[0]["diagnostic"],
+            }
+            atomic_write_json(cache_path, degraded)
+            result["report_renderings"] = degraded
+            return result
         response = responses[-1]
         receipt = {
             "schema_version": "1.0",

@@ -126,6 +126,7 @@ def _record_salvage_exceptions(
     """Report each item the controller dropped, corrected, or flagged while still accepting the unit's output."""
     for item in items:
         coordinate = str(item.get("coordinate") or item.get("reference") or "") or scope
+        coordinates = tuple(str(value) for value in item.get("coordinates") or ()) or (coordinate,)
         record_exception(
             run_root,
             ExceptionRecord(
@@ -138,9 +139,36 @@ def _record_salvage_exceptions(
                 task_id=task_id,
                 work_unit=str(item.get("challenge_id") or item.get("submitted_id") or "") or None,
                 stage=stage,
-                coordinates=(coordinate,),
+                coordinates=coordinates,
             ),
         )
+
+
+def _not_assessed_rows(
+    items: Sequence[Mapping[str, Any]],
+    *,
+    workflow: str,
+    job_id: str,
+    run_id: str,
+    task_id: str,
+    stage: str,
+) -> list[dict[str, Any]]:
+    """Build the result's exception rows for coordinates a salvaged unit left not assessed."""
+    return [
+        ExceptionRecord(
+            tool=workflow.upper(),
+            code=str(item.get("code") or "COVERAGE_PARTIAL"),
+            message=str(item.get("message") or "Coordinates were not assessed."),
+            effect=NOT_ASSESSED,
+            run_id=run_id,
+            job_id=job_id,
+            task_id=task_id,
+            stage=stage,
+            coordinates=tuple(str(value) for value in item.get("coordinates") or ()),
+        ).to_dict()
+        for item in items
+        if item.get("effect") == NOT_ASSESSED
+    ]
 
 
 @dataclass(frozen=True)
@@ -852,6 +880,16 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 ),
             )
         salvage_records = list(normalized.pop("salvage_records", []) or [])
+        partial_rows = _not_assessed_rows(
+            salvage_records,
+            workflow=workflow,
+            job_id=job_id,
+            run_id=run_id,
+            task_id=task_id,
+            stage=str(normalized.get("stage") or operation.upper()),
+        )
+        if partial_rows:
+            normalized["exceptions"] = partial_rows
         if salvage_records:
             _record_salvage_exceptions(
                 job_store.load_run(owning_job, run_id).root,

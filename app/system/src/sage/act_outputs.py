@@ -11,7 +11,7 @@ from typing import Any, Callable, Mapping, Sequence
 from .bic_memory import validate_inspect_submission
 from .candidates import reconcile_adjudications
 from .errors import ValidationError
-from .exception_reports import render_exceptions_section
+from .exception_reports import coverage_document, render_exceptions_section
 from .hashing import sha256_file
 from .human_output import catalogue_text, render_report_language_authority
 from .iso_languages import iso_language
@@ -767,15 +767,14 @@ def validate_analysis_findings(
         raise ValidationError(f"{identity} findings check_type does not match the ACT task")
 
     coverage = _require_mapping(document.get("coverage"), f"{identity} findings coverage")
-    if str(coverage.get("status", "")).upper() != "COMPLETE":
-        raise ValidationError(f"{identity} findings coverage.status must be COMPLETE")
+    # Partial coverage is accepted: what the model did not review is reported NOT_ASSESSED below.
     reviewed = _string_list(
         coverage.get("reviewed_references"),
         f"{identity} findings coverage.reviewed_references",
         allow_empty=False,
     )
-    if set(reviewed) != set(expected_references) or len(reviewed) != len(expected_references):
-        raise ValidationError(f"{identity} findings coverage does not reconcile the exact bounded coordinates")
+    expected_list = list(expected_references)
+    expected_set = set(expected_list)
 
     raw_receipts = document.get("review_receipts")
     if not isinstance(raw_receipts, list) or not raw_receipts:
@@ -819,18 +818,32 @@ def validate_analysis_findings(
             "checks_performed": sorted(checks),
             "evidence_summary": evidence_summary,
         })
-    if len(receipt_refs) != len(set(receipt_refs)) or set(receipt_refs) != set(expected_references):
+    if len(receipt_refs) != len(set(receipt_refs)):
         raise ValidationError(
-            f"{identity} review receipts do not provide exact, non-overlapping evidence coverage",
+            f"{identity} review receipts overlap; each coordinate needs one receipt",
             code="RTC_REVIEW_EVIDENCE_INCOMPLETE",
             affected_scope=scope_value,
         )
-    if expected_work_unit_ids and seen_unit_ids != set(expected_work_unit_ids):
+    if expected_work_unit_ids and not seen_unit_ids <= set(expected_work_unit_ids):
         raise ValidationError(
-            f"{identity} review receipts do not reconcile the exact work-unit inventory",
+            f"{identity} review receipts name a work unit that is not in the exact work-unit inventory",
             code="RTC_REVIEW_EVIDENCE_INCOMPLETE",
             affected_scope=scope_value,
         )
+    # A coordinate counts as reviewed only when the model claims it and a receipt backs it.
+    backed = set(reviewed) & set(receipt_refs)
+    reviewed_effective = [ref for ref in expected_list if ref in backed]
+    if not reviewed_effective:
+        raise ValidationError(
+            f"{identity} findings review none of the bounded coordinates with receipt evidence",
+            code="RTC_REVIEW_EVIDENCE_INCOMPLETE",
+            affected_scope=scope_value,
+        )
+    not_assessed_references = [ref for ref in expected_list if ref not in backed]
+    if not not_assessed_references and set(reviewed) == expected_set and len(reviewed) == len(expected_list):
+        reviewed_output = list(reviewed)
+    else:
+        reviewed_output = reviewed_effective
 
     raw_adjudications = document.get("structural_adjudications", [])
     if not isinstance(raw_adjudications, list):
@@ -909,65 +922,84 @@ def validate_analysis_findings(
         seen_conflict_keys: set[str] = set()
         strict_referrals = is_ol_referral_contract(ol_referral_contract)
         for index, request in enumerate(raw_requests, start=1):
-            admission = (
-                normalize_referral_admission(request, index=index, workflow=workflow)
-                if strict_referrals
-                else {}
-            )
-            request_id = _require_string(request.get("request_id"), f"ol_review_requests[{index}].request_id", maximum=80).upper()
-            if request_id in seen_request_ids:
-                raise ValidationError(f"Duplicate OL review request_id: {request_id}")
-            seen_request_ids.add(request_id)
-            reference = normalize_scope_set(_require_string(request.get("target_reference"), f"ol_review_requests[{index}].target_reference"))
-            if not _scope_contains_reference(parse_scope(scope_value), reference):
-                raise ValidationError(
-                    f"ol_review_requests[{index}].target_reference is outside the task scope",
-                    code=(
-                        reason_code("SAW_OL_REFERRAL_SCOPE_INVALID")
-                        if strict_referrals
-                        else "VALIDATION_ERROR"
-                    ),
+            try:
+                admission = (
+                    normalize_referral_admission(request, index=index, workflow=workflow)
+                    if strict_referrals
+                    else {}
                 )
-            evidence_ids = _string_list(request.get("evidence_ids"), f"ol_review_requests[{index}].evidence_ids", allow_empty=False)
-            if set(evidence_ids) - set(allowed_evidence_ids):
-                raise ValidationError(
-                    f"ol_review_requests[{index}] cites evidence not routed to the task",
-                    code=(
-                        reason_code("SAW_OL_REFERRAL_EVIDENCE_INVALID")
-                        if strict_referrals
-                        else "VALIDATION_ERROR"
-                    ),
-                )
-            deferred_finding_id = _canonical_saw_local_finding_id(
-                request.get("deferred_finding_id"),
-                f"ol_review_requests[{index}].deferred_finding_id",
-            )
-            if deferred_finding_id in seen_deferred_ids:
-                raise ValidationError(f"Duplicate deferred_finding_id: {deferred_finding_id}")
-            seen_deferred_ids.add(deferred_finding_id)
-            conflict_key = ""
-            if strict_referrals:
-                conflict_key = referral_conflict_key(
-                    target_reference=reference,
-                    conflict_class=admission["conflict_class"],
-                    wip_proposition=admission["wip_proposition"],
-                    reference_proposition=admission["reference_proposition"],
-                )
-                if conflict_key in seen_conflict_keys:
+                request_id = _require_string(request.get("request_id"), f"ol_review_requests[{index}].request_id", maximum=80).upper()
+                if request_id in seen_request_ids:
+                    raise ValidationError(f"Duplicate OL review request_id: {request_id}")
+                reference = normalize_scope_set(_require_string(request.get("target_reference"), f"ol_review_requests[{index}].target_reference"))
+                if not _scope_contains_reference(parse_scope(scope_value), reference):
                     raise ValidationError(
-                        f"ol_review_requests[{index}] duplicates an admitted semantic conflict",
-                        code=reason_code("SAW_OL_REFERRAL_DUPLICATE"),
+                        f"ol_review_requests[{index}].target_reference is outside the task scope",
+                        code=(
+                            reason_code("SAW_OL_REFERRAL_SCOPE_INVALID")
+                            if strict_referrals
+                            else "VALIDATION_ERROR"
+                        ),
                     )
-                seen_conflict_keys.add(conflict_key)
-            normalized_request = {
-                "request_id": request_id,
-                "deferred_finding_id": deferred_finding_id,
-                "target_reference": reference,
-                "question": _require_string(request.get("question"), f"ol_review_requests[{index}].question", maximum=1200),
-                "reason": _require_string(request.get("reason"), f"ol_review_requests[{index}].reason", maximum=1600),
-                "evidence_ids": evidence_ids,
-            }
+                evidence_ids = _string_list(request.get("evidence_ids"), f"ol_review_requests[{index}].evidence_ids", allow_empty=False)
+                if set(evidence_ids) - set(allowed_evidence_ids):
+                    raise ValidationError(
+                        f"ol_review_requests[{index}] cites evidence not routed to the task",
+                        code=(
+                            reason_code("SAW_OL_REFERRAL_EVIDENCE_INVALID")
+                            if strict_referrals
+                            else "VALIDATION_ERROR"
+                        ),
+                    )
+                deferred_finding_id = _canonical_saw_local_finding_id(
+                    request.get("deferred_finding_id"),
+                    f"ol_review_requests[{index}].deferred_finding_id",
+                )
+                if deferred_finding_id in seen_deferred_ids:
+                    raise ValidationError(f"Duplicate deferred_finding_id: {deferred_finding_id}")
+                conflict_key = ""
+                if strict_referrals:
+                    conflict_key = referral_conflict_key(
+                        target_reference=reference,
+                        conflict_class=admission["conflict_class"],
+                        wip_proposition=admission["wip_proposition"],
+                        reference_proposition=admission["reference_proposition"],
+                    )
+                    if conflict_key in seen_conflict_keys:
+                        raise ValidationError(
+                            f"ol_review_requests[{index}] duplicates an admitted semantic conflict",
+                            code=reason_code("SAW_OL_REFERRAL_DUPLICATE"),
+                        )
+                normalized_request = {
+                    "request_id": request_id,
+                    "deferred_finding_id": deferred_finding_id,
+                    "target_reference": reference,
+                    "question": _require_string(request.get("question"), f"ol_review_requests[{index}].question", maximum=1200),
+                    "reason": _require_string(request.get("reason"), f"ol_review_requests[{index}].reason", maximum=1600),
+                    "evidence_ids": evidence_ids,
+                }
+            except ValidationError as exc:
+                # An unusable referral is dropped, but its question stays visible for the Operator.
+                question = str(request.get("question") or request.get("reason") or "").strip()
+                salvage_records.append(
+                    {
+                        "code": reason_code(
+                            str(exc.code) if str(exc.code or "") not in {"", "VALIDATION_ERROR"} else "SAW_OL_REFERRAL_DROPPED"
+                        ),
+                        "coordinate": str(request.get("target_reference") or "").strip() or scope_value,
+                        "submitted_id": str(request.get("request_id") or "").strip(),
+                        "effect": "FLAGGED",
+                        "message": (
+                            f"Original-language review request {index} was dropped: {exc.message}"
+                            + (f" Question: {question[:600]}" if question else "")
+                        ),
+                    }
+                )
+                continue
+            seen_request_ids.add(request_id)
+            seen_deferred_ids.add(deferred_finding_id)
             if strict_referrals:
+                seen_conflict_keys.add(conflict_key)
                 normalized_request.update(admission)
                 normalized_request["conflict_key"] = conflict_key
             ol_review_requests.append(normalized_request)
@@ -1228,15 +1260,21 @@ def validate_analysis_findings(
         deferred_ids = {row["deferred_finding_id"] for row in ol_review_requests}
         overlap = deferred_ids & seen_ids
         if overlap:
-            raise ValidationError(
-                "Meaning-stage findings cannot simultaneously be final findings and deferred OL issues: "
-                + ", ".join(sorted(overlap)),
-                code=(
-                    reason_code("SAW_OL_REFERRAL_FINDING_OVERLAP")
-                    if is_ol_referral_contract(ol_referral_contract)
-                    else "VALIDATION_ERROR"
-                ),
-            )
+            # A finding the model made final needs no original-language adjudication; its deferral is dropped.
+            for request in [row for row in ol_review_requests if row["deferred_finding_id"] in overlap]:
+                salvage_records.append(
+                    {
+                        "code": reason_code("SAW_OL_REFERRAL_FINDING_OVERLAP"),
+                        "coordinate": request["target_reference"],
+                        "submitted_id": request["request_id"],
+                        "effect": "CORRECTED",
+                        "message": (
+                            f"Finding {request['deferred_finding_id']} was reported as final and as a deferred "
+                            "original-language issue; the final finding is kept and the request was dropped."
+                        ),
+                    }
+                )
+            ol_review_requests = [row for row in ol_review_requests if row["deferred_finding_id"] not in overlap]
     if operation == "rtc" and stage_name == "SELECTIVE_OL_ADJUDICATION":
         expected_finding_ids = {
             str(row["finding_id"]) for row in ol_resolutions if row["outcome"] == "FINDING"
@@ -1285,6 +1323,26 @@ def validate_analysis_findings(
             code_prefix=identity,
         )
         salvage_records.extend(candidate_records)
+    if not_assessed_references:
+        salvage_records.append(
+            {
+                "code": reason_code("SAW_COVERAGE_PARTIAL"),
+                "coordinate": scope_value,
+                "coordinates": not_assessed_references,
+                "effect": "NOT_ASSESSED",
+                "message": (
+                    f"The review covered {len(reviewed_effective)} of {len(expected_list)} bounded coordinates with "
+                    f"receipt evidence; {len(not_assessed_references)} were not assessed: "
+                    + ", ".join(not_assessed_references[:20])
+                    + (" ..." if len(not_assessed_references) > 20 else "")
+                ),
+            }
+        )
+        coverage_output: dict[str, Any] = coverage_document(
+            reviewed_output, not_assessed_references, findings_present=bool(normalised)
+        )
+    else:
+        coverage_output = {"status": "COMPLETE", "reviewed_references": reviewed_output}
     return {
         "schema_version": "2.0",
         "task_id": task_id,
@@ -1294,7 +1352,7 @@ def validate_analysis_findings(
         "focus": focus,
         "check_type": check_type,
         "answer": str(document.get("answer", "")).strip(),
-        "coverage": {"status": "COMPLETE", "reviewed_references": reviewed},
+        "coverage": coverage_output,
         "review_receipts": receipts,
         "structural_adjudications": [adjudications[item] for item in structural_candidate_ids],
         "ol_review_requests": ol_review_requests,
