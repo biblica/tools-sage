@@ -113,6 +113,81 @@ def test_missing_end_of_chapter_verse_is_inserted_before_next_chapter(tmp_path: 
     assert restored == before
 
 
+def test_scope_in_missing_chapter_creates_the_chapter_in_book_order(tmp_path: Path) -> None:
+    """A book generated one scope at a time gains its next chapter instead of stopping."""
+    from sage.bounded_target import preflight_bounded_target_commit
+
+    before = "\\id 3JN Target\n\\c 1\n\\p\n\\v 1 ONE\n\\c 3\n\\p\n\\v 1 THREE\n"
+    candidate = "\\id 3JN Candidate\n\\c 2\n\\p\n\\v 1 TWO-ONE\n\\v 2-3 TWO-BRIDGE\n"
+    preflight = preflight_bounded_target_commit(before, candidate, "3JN 2:1-3")
+    assert preflight["status"] == "READY"
+    assert preflight["chapters_to_create"] == [2]
+
+    after = merge_bounded_usfm(before, candidate, "3JN 2:1-3")
+    assert after.index("\\v 1 ONE") < after.index("\\c 2") < after.index("\\v 1 TWO-ONE") < after.index("\\c 3")
+    assert extract_scope_usfm(after, "3JN 2:1-3") == "\\c 2\n\\p\n\\v 1 TWO-ONE\n\\v 2-3 TWO-BRIDGE\n"
+
+    target = tmp_path / "643JN.SFM"
+    target.write_text(after, encoding="utf-8")
+    entry = record_target_commit(
+        job_root=tmp_path / "job",
+        target_file=target,
+        scope_value="3JN 2:1-3",
+        before_text=before,
+        after_text=after,
+        transaction_id="ZZZZZZZZZZZZ-chapter",
+        task_id="TASK-1",
+        run_id="RUN-1",
+        created_utc="2026-10-21T20:00:00Z",
+    )
+    assert entry["created_chapters"] == [2]
+    revert_target_scope(
+        job_root=tmp_path / "job",
+        target_file=target,
+        scope_value="3JN 2:1-3",
+        transaction_root=tmp_path / "transactions",
+        allowed_roots=(tmp_path,),
+    )
+    assert target.read_text(encoding="utf-8") == before
+
+
+def test_scope_appends_chapter_after_last_one_and_inserts_bridge_in_existing_chapter() -> None:
+    """New chapters go after the last one; a bridge whose verses are all absent is inserted in place."""
+    before = "\\id 3JN Target\n\\c 1\n\\p\n\\v 1 ONE\n\\v 4 FOUR\n"
+    bridged = merge_bounded_usfm(before, "\\id 3JN\n\\c 1\n\\v 2-3 BRIDGE\n", "3JN 1:2-3")
+    assert bridged.index("\\v 1 ONE") < bridged.index("\\v 2-3 BRIDGE") < bridged.index("\\v 4 FOUR")
+
+    appended = merge_bounded_usfm(bridged, "\\id 3JN\n\\c 2\n\\p\n\\v 1 NEXT\n", "3JN 2:1")
+    assert appended.rstrip().endswith("\\c 2\n\\p\n\\v 1 NEXT")
+
+
+def test_revert_of_insertion_into_partly_filled_scope_restores_previous_verses(tmp_path: Path) -> None:
+    """Reverting a commit that added verses beside existing ones restores the earlier scope exactly."""
+    before = "\\id MAT Target\n\\c 1\n\\v 1 OLD ONE\n\\v 3 THREE\n"
+    after = merge_bounded_usfm(before, "\\id MAT\n\\c 1\n\\v 1 NEW ONE\n\\v 2 NEW TWO\n", "MAT 1:1-2")
+    target = tmp_path / "41MAT.SFM"
+    target.write_text(after, encoding="utf-8")
+    record_target_commit(
+        job_root=tmp_path / "job",
+        target_file=target,
+        scope_value="MAT 1:1-2",
+        before_text=before,
+        after_text=after,
+        transaction_id="ZZZZZZZZZZZZ-partial",
+        task_id="TASK-1",
+        run_id="RUN-1",
+        created_utc="2026-10-21T20:00:00Z",
+    )
+    revert_target_scope(
+        job_root=tmp_path / "job",
+        target_file=target,
+        scope_value="MAT 1:1-2",
+        transaction_root=tmp_path / "transactions",
+        allowed_roots=(tmp_path,),
+    )
+    assert target.read_text(encoding="utf-8") == before
+
+
 def test_target_history_same_second_uses_monotonic_ordering(tmp_path: Path, monkeypatch) -> None:
     """Same-second commits must be ordered by commit time, never transaction-id text."""
     import sage.bounded_target as bounded_target

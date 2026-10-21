@@ -3682,6 +3682,54 @@
       "fr": "Paramètres par défaut NCA",
       "ru": "Настройки NCA по умолчанию",
       "pt-BR": "Configuração padrão do NCA"
+    },
+    "menu.bic.target.output": {
+      "en-US": "BIC TARGET output",
+      "en-GB": "BIC TARGET output",
+      "id": "Keluaran TARGET BIC",
+      "fr": "Sortie TARGET de BIC",
+      "ru": "Вывод TARGET BIC",
+      "pt-BR": "Saída TARGET do BIC"
+    },
+    "menu.sage.localdata": {
+      "en-US": "SAGE localdata",
+      "en-GB": "SAGE localdata",
+      "id": "localdata SAGE",
+      "fr": "localdata SAGE",
+      "ru": "localdata SAGE",
+      "pt-BR": "localdata do SAGE"
+    },
+    "menu.existing.paratext.project": {
+      "en-US": "Existing Paratext project",
+      "en-GB": "Existing Paratext project",
+      "id": "Proyek Paratext yang ada",
+      "fr": "Projet Paratext existant",
+      "ru": "Существующий проект Paratext",
+      "pt-BR": "Projeto Paratext existente"
+    },
+    "menu.target.versification": {
+      "en-US": "TARGET versification",
+      "en-GB": "TARGET versification",
+      "id": "Versifikasi TARGET",
+      "fr": "Versification de TARGET",
+      "ru": "Версификация TARGET",
+      "pt-BR": "Versificação do TARGET"
+    },
+    "menu.source.versification": {
+      "en-US": "SOURCE versification",
+      "en-GB": "SOURCE versification",
+      "id": "Versifikasi SOURCE",
+      "fr": "Versification de SOURCE",
+      "ru": "Версификация SOURCE",
+      "pt-BR": "Versificação do SOURCE"
+    },
+    "menu.donor.versification": {
+      "en-US": "DONOR versification",
+      "en-GB": "DONOR versification",
+      "id": "Versifikasi DONOR",
+      "fr": "Versification de DONOR",
+      "ru": "Версификация DONOR",
+      "pt-BR": "Versificação do DONOR"
     }
   }
 }

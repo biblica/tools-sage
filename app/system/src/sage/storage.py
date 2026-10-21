@@ -202,6 +202,11 @@ class StorageLayout:
         return self.data_root / "exports"
 
     @property
+    def bic_outputs_root(self) -> Path:
+        """Return the root of SAGE-created BIC TARGET folders awaiting review and Paratext import."""
+        return self.exports_root / "bic"
+
+    @property
     def system_root(self) -> Path:
         """Return the hidden SAGE-managed system root."""
         return self.data_root / ".system"

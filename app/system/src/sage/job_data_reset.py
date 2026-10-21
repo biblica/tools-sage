@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .atomic import atomic_write_json
+from .bic_output import release_all_generated_targets
 from .errors import ValidationError
 from .storage import storage_layout
 
@@ -61,6 +62,8 @@ def wipe_all_job_data(sage_root: Path) -> dict[str, Any]:
     )
     for target in targets:
         _remove(target, layout.data_root, removed)
+    # BIC localdata TARGETs are Job output: their folders went with exports, so release their Projects too.
+    released_targets = release_all_generated_targets(root)
 
     # Recreate only the empty ownership roots. Tool-specific folders are created
     # by the next Job, leaving an unambiguous empty post-wipe state.
@@ -84,6 +87,7 @@ def wipe_all_job_data(sage_root: Path) -> dict[str, Any]:
         "root": str(root),
         "data_root": str(layout.data_root),
         "removed": sorted(set(removed)),
+        "released_bic_localdata_targets": released_targets,
         "preserved": [
             "SAGE Core",
             "managed runtime and virtual environment",

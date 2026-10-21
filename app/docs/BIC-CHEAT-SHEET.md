@@ -6,7 +6,24 @@ Use BIC to rewrite one bounded LWC SOURCE into a generated TARGET. A separate DO
 SOURCE + DONOR -> TARGET
 ```
 
-SOURCE is the sole content/translation authority. DONOR is lexical evidence only. TARGET is a write destination and pre-existing TARGET Scripture is not routed during INSPECT or REWRITE.
+SOURCE is the sole content/translation authority. DONOR is lexical evidence only, and its language data (language, region, grammar profile) is the TARGET's language identity. TARGET is a write destination and pre-existing TARGET Scripture is not routed during INSPECT or REWRITE.
+
+## TARGET output
+
+By default BIC writes TARGET into SAGE localdata, not into a Paratext project:
+
+```text
+localdata/exports/bic/<language-tag>_<SOURCE>/     for example en-US_idKKHv0/
+  README.md          what the folder is and how to import it into Paratext
+  sage-output.json   SOURCE, DONOR, language, versification, owning Job
+  custom.vrs         versification copied from SOURCE (default) or DONOR, when it has one
+  41MAT.SFM          one {NN}{BOOK}.SFM file per book
+```
+
+Choose this in the BIC Job wizard (**SAGE localdata**), or omit `--target` on the command line. Add
+`--target-versification donor` to use DONOR versification. An existing Paratext project stays available as
+the secondary option (`--target PROJECT`). Commit history, revert, and generation publish work the same in
+both modes; Job internals stay in `localdata/work/jobs/bic/`.
 
 **Evidence invariant:** content evidence is SAGE-local and governed. Use only sealed SOURCE, lexical-only DONOR, explicitly routed OL, authorized project-index evidence, and derived packs traceable to those sources. Model recall/pretraining, external Scripture/translations/lexicons/commentary, web/search, and unstated facts are prohibited as evidence. General model competence is limited to orthography, morphology, grammar, and syntax and may not supply missing content.
 
@@ -51,8 +68,10 @@ INSPECT
 ./system/bin/bic --settings FILE.yml inspect \
   --source idKKHv0 \
   --donor usNIVv2 \
-  --target usBOLx1 \
   --scope "3JN 1:1-15"
+
+# or write into an existing Paratext project instead of localdata:
+#   add --target usBOLx1
 
 ./system/bin/bic --settings FILE.yml submit \
   --task localdata/.system/workflows/bic/output/active/INSPECT_TASK_ID/task-manifest.json
@@ -78,7 +97,6 @@ This records human attention only. It does not gate REWRITE or promote individua
 ./system/bin/bic --settings FILE.yml rewrite \
   --source idKKHv0 \
   --donor usNIVv2 \
-  --target usBOLx1 \
   --scope "3JN 1:1-15" \
   --grammar-override-id GRAMMAR_REVIEW_ID
 
@@ -98,7 +116,6 @@ Conditional OL evidence may be opened only under the pinned material-risk policy
 ./system/bin/bic --settings FILE.yml self-check \
   --source idKKHv0 \
   --donor usNIVv2 \
-  --target usBOLx1 \
   --scope "3JN 1:1-15" \
   --predecessor-task localdata/.system/workflows/bic/output/active/REWRITE_TASK_ID/task-manifest.json \
   --grammar-override-id GRAMMAR_REVIEW_ID

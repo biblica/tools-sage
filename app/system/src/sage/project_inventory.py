@@ -17,6 +17,7 @@ from .paratext_filenames import peek_book_code, select_scripture_files
 
 SCHEMA_VERSION = "1.0"
 PROJECT_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,7}$")
+GENERATED_PROJECT_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
 
 
 def project_inventory_path(root: Path) -> Path:
@@ -130,10 +131,21 @@ def register_project(
     versification_metadata: Mapping[str, Any] | None = None,
     imported_at: datetime | None = None,
     incomplete_portions: Mapping[str, Mapping[str, tuple[int, ...]]] | None = None,
+    sage_generated: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Add one role-neutral Scripture Project to SAGE and return its stored record."""
+    """Add one role-neutral Scripture Project to SAGE and return its stored record.
+
+    ``sage_generated`` marks a Project SAGE creates itself (a BIC localdata TARGET). It is not
+    a Paratext project, so its code is not bound by the 8-character Paratext short-name rule.
+    """
     project_id = project_id.strip()
-    if not PROJECT_ID_RE.fullmatch(project_id) or not project_code_is_path_safe(project_id):
+    if sage_generated is not None:
+        if not GENERATED_PROJECT_ID_RE.fullmatch(project_id):
+            raise ValidationError(
+                f"SAGE-created Project code is not cross-platform safe: {project_id}",
+                code="PROJECT_ID_INVALID",
+            )
+    elif not PROJECT_ID_RE.fullmatch(project_id) or not project_code_is_path_safe(project_id):
         raise ValidationError(
             "Paratext project code must be at most 8 cross-platform-safe characters and not a Windows reserved path name",
             code="PROJECT_ID_INVALID",
@@ -161,7 +173,11 @@ def register_project(
     base = base_vrs_file.strip()
     if Path(base).name != base or Path(base).suffix.casefold() != ".vrs":
         raise ValidationError("Base VRS must be one .vrs filename", code="BASE_VRS_FILE_INVALID")
-    parts = parse_project_code(project_id, type_codes=type_codes)
+    code_metadata = (
+        {"project_code": project_id, "parse_status": "SAGE_GENERATED", "review_required": False, "notes": []}
+        if sage_generated is not None
+        else parse_project_code(project_id, type_codes=type_codes).to_dict()
+    )
     imported = imported_at or datetime.now(timezone.utc)
     if imported.tzinfo is None or imported.utcoffset() is None:
         raise ValidationError(
@@ -205,11 +221,13 @@ def register_project(
         "versification": {"base_file": base, "custom_file": "auto", **dict(versification_metadata or {})},
         "paratext_metadata": dict(paratext_metadata or {}),
         "allow_empty": bool(allow_empty),
-        "code_metadata": parts.to_dict(),
+        "code_metadata": code_metadata,
         "validation_status": (
             "READY_WITH_WARNINGS" if missing_books else ("VALID" if books or allow_empty else "BLOCKED")
         ),
     }
+    if sage_generated is not None:
+        record["sage_generated"] = dict(sage_generated)
     state["projects"][project_id] = record
     write_project_registry(root, state)
     return record
@@ -285,6 +303,10 @@ def merge_registered_projects(raw: dict[str, Any], root: Path) -> dict[str, Any]
             vrs["base_file"] = default_vrs
             vrs["base_selection"] = "DEFAULT_LEGACY"
             effective["versification"] = vrs
+        if isinstance(effective.get("sage_generated"), dict):
+            # Resolved from the live data root so a moved or restored localdata keeps working.
+            effective["external_path"] = str(storage_layout(root).bic_outputs_root / project_id)
+            effective.setdefault("external_access_mode", "READ_ONLY_SCRIPTURE")
         projects[project_id] = effective
     return raw
 

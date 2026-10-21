@@ -763,7 +763,8 @@ def _resolve_task_proposal(
 
     if output_project:
         argv.extend((("--target" if candidate.workflow == "bic" else "--wip"), output_project))
-    else:
+    elif candidate.workflow != "bic":
+        # BIC without a named TARGET writes into the SAGE localdata TARGET.
         missing.append("output_project")
     if contemporary_source:
         argv.extend((("--source" if candidate.workflow == "bic" else "--reference"), contemporary_source))

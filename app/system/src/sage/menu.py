@@ -133,6 +133,14 @@ from .resource_status_report import (
     build_resource_status_report,
     render_resource_status_report,
 )
+from .bic_output import (
+    ensure_generated_target,
+    generated_target_id,
+    generated_target_record,
+    generated_target_root,
+    language_region,
+    output_summary,
+)
 from .jobs import (
     RUN_CLOSED_STATUSES,
     RUN_COMPLETED_STATUSES,
@@ -2830,6 +2838,10 @@ class SageControlCenter:
             self.io.write(f"SOURCE: {project.bindings.get('content_source')}")
             self.io.write(f"DONOR:  {project.bindings.get('lexical_donor')}")
             self.io.write(f"TARGET: {project.bindings.get('generated_target')}")
+            output = output_summary(self.root, str(project.bindings.get("generated_target") or ""))
+            if output is not None:
+                self.io.write(f"OUTPUT: SAGE localdata {output['folder']}")
+                self.io.write(f"        {len(output['book_files'])} book file(s); versification from {output['versification_from']}")
             self.io.write()
             self._write_job_ai_routing("bic", self.store.active_run(project))
             choice = self.io.choose(
@@ -5188,8 +5200,11 @@ class SageControlCenter:
                 return False
             remove_reports = choice == "1"
 
+        output = output_summary(self.root, str(target.bindings.get("generated_target") or "")) if target.tool == "bic" else None
         self.store.remove_job(target, remove_reports=remove_reports)
         self.io.write(f"Deleted Job: {target.job_id}")
+        if output is not None:
+            self.io.write(f"BIC localdata output preserved: {output['folder']}")
         if report_files and not remove_reports:
             self.io.write(f"Published reports preserved: {operator_path(self.root, report_root)}")
         self.io.pause()
@@ -5478,6 +5493,54 @@ class SageControlCenter:
         """Return an audited Project import timestamp required by RTC/STC snapshots."""
         return require_project_imported_at(self.root, project_id)
 
+    def _choose_bic_target_output(self, source: Any, donor: Any) -> str | None:
+        """Ask where BIC writes TARGET; return SOURCE/DONOR versification for localdata, "" for Paratext, None for Back."""
+        target_id = generated_target_id(donor.language_code, source.project_id)
+        context = [
+            "Recommended: SAGE localdata. Check the output there, then import it into Paratext.",
+            f"SAGE localdata   {generated_target_root(self.root, target_id)}",
+            f"Language         {donor.language_code} from DONOR {donor.project_id}",
+        ]
+        if language_region(donor.language_code) is None:
+            context.append(
+                f"DONOR language {donor.language_code} has no region (for example US or GB); the TARGET name "
+                "will not show one. Set the DONOR's regional language under Manage SAGE Scripture Projects first "
+                "if the region matters."
+            )
+        choice = self.io.choose(
+            "BIC TARGET output",
+            (
+                ("1", "SAGE localdata"),
+                ("2", "Existing Paratext project"),
+                ("B", "Back"),
+            ),
+            context=context,
+        )
+        if choice == "B":
+            return None
+        if choice == "2":
+            return ""
+        existing = generated_target_record(self.root, target_id)
+        if existing is not None:
+            # An existing folder keeps the versification its first commits were built with.
+            return str(existing.get("versification_from") or "SOURCE")
+        choice = self.io.choose(
+            "TARGET versification",
+            (
+                ("1", "SOURCE versification"),
+                ("2", "DONOR versification"),
+                ("B", "Back"),
+            ),
+            context=(
+                f"SOURCE   {source.project_id} {source.versification.base_file}",
+                f"DONOR    {donor.project_id} {donor.versification.base_file}",
+                "Default: SOURCE. Choose the versification of the Paratext project that will receive this output.",
+            ),
+        )
+        if choice == "B":
+            return None
+        return "DONOR" if choice == "2" else "SOURCE"
+
     def create_job_wizard(self, tool: str) -> Job | None:
         """Create one Job by assigning roles to Projects already in the SAGE Project Inventory."""
         # The wizard deliberately resolves every binding before it asks JobStore to persist anything.
@@ -5489,15 +5552,24 @@ class SageControlCenter:
             if not source: return
             donor = self.choose_or_add_resource("CHOOSE BIC <DONOR>", "LEXICAL_DONOR")
             if not donor: return
-            output = self.choose_or_add_resource("CHOOSE BIC <TARGET>", "GENERATED_TARGET")
-            if not output: return
-            self.io.write("The TARGET is the only Project that BIC may modify. All changes remain governed and auditable.")
-            if not self.io.confirm(f"Use {output.project_id} as BIC TARGET?", default=False): return
-            job_id = default_job_name("bic", output.project_id, source.project_id, donor.project_id)
-            name = f"{source.project_id} via {donor.project_id} vocabulary to {output.project_id}"
+            localdata_target = self._choose_bic_target_output(source, donor)
+            if localdata_target is None: return
+            if localdata_target:
+                output = None
+                target_id = generated_target_id(donor.language_code, source.project_id)
+                target_language = donor.language_code
+            else:
+                output = self.choose_or_add_resource("CHOOSE BIC <TARGET>", "GENERATED_TARGET")
+                if not output: return
+                self.io.write("The TARGET is the only Project that BIC may modify. All changes remain governed and auditable.")
+                if not self.io.confirm(f"Use {output.project_id} as BIC TARGET?", default=False): return
+                target_id = output.project_id
+                target_language = output.language_code
+            job_id = default_job_name("bic", target_id, source.project_id, donor.project_id)
+            name = f"{source.project_id} via {donor.project_id} vocabulary to {target_id}"
             greek = active_ol_project_id(self.root, "GRK")
             hebrew = active_ol_project_id(self.root, "HEB")
-            bindings = {"content_source": source.project_id, "lexical_donor": donor.project_id, "generated_target": output.project_id,
+            bindings = {"content_source": source.project_id, "lexical_donor": donor.project_id, "generated_target": target_id,
                         **({"original_language_greek": greek} if greek else {}), **({"original_language_hebrew": hebrew} if hebrew else {})}
             profiles: dict[str, str] = {}
             defaults = {"publication_enabled": True}
@@ -5576,10 +5648,23 @@ class SageControlCenter:
                     ("Date imported", self._sage_import_date(source.project_id)),
                     ("DONOR", donor.project_id),
                     ("Date imported", self._sage_import_date(donor.project_id)),
-                    ("TARGET", output.project_id),
-                    ("Date imported", self._sage_import_date(output.project_id)),
-                    ("TARGET access", "GOVERNED WRITE"),
+                    ("TARGET", target_id),
                 ]
+                if localdata_target:
+                    vrs_project = source if localdata_target == "SOURCE" else donor
+                    review_rows.extend((
+                        ("TARGET output", "SAGE localdata (new)"),
+                        ("TARGET folder", generated_target_root(self.root, target_id)),
+                        ("Language", f"{target_language} (from DONOR)"),
+                        ("Versification", f"{localdata_target}: {vrs_project.project_id} {vrs_project.versification.base_file}"),
+                    ))
+                else:
+                    review_rows.extend((
+                        ("Date imported", self._sage_import_date(target_id)),
+                        ("TARGET output", "Paratext project"),
+                        ("Language", f"{target_language} (grammar from DONOR)"),
+                    ))
+                review_rows.append(("TARGET access", "GOVERNED WRITE"))
             elif tool in {"saw", "rtc"}:
                 assert source is not None
                 review_rows = [
@@ -5635,7 +5720,7 @@ class SageControlCenter:
                 ).human_output.operator_language
                 changed, requested = self._choose_secondary_reporting_language(
                     role="WIP" if tool in {"saw", "rtc", "stc"} else "TARGET",
-                    project_language=output.language_code,
+                    project_language=target_language if tool == "bic" else output.language_code,
                     operator_language=operator_language,
                     current=secondary_report_language,
                 )
@@ -5643,6 +5728,15 @@ class SageControlCenter:
                     secondary_report_language = requested
                 continue
             try:
+                if tool == "bic" and localdata_target:
+                    ensure_generated_target(
+                        self.store.settings_path,
+                        source_id=source.project_id,
+                        donor_id=donor.project_id,
+                        job_id=job_id,
+                        versification_from=localdata_target,
+                    )
+                    invalidate_runtime_settings(self.root)
                 project = self.store.create_job(
                     tool=tool,
                     job_id=job_id,

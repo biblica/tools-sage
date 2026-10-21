@@ -29,4 +29,20 @@ Every BIC model-facing stage receives the complete canonical `LANGUAGE_PROFILE` 
 - SELF-CHECK receives the sealed REWRITE candidate as the object under check, independently validates it, and performs the controlled TARGET commit.
 - Publication is a separate optional operation.
 
+## TARGET output
+
+New BIC Jobs write TARGET into SAGE localdata by default. SAGE creates its own TARGET Project named
+`<language-tag>_<SOURCE>` (for example `en-US_idKKHv0`) in `localdata/exports/bic/`, with plain
+`{NN}{BOOK}.SFM` book files for a later Paratext import. An existing Paratext project remains the
+secondary option.
+
+- TARGET language identity (including region, such as US or GB) and the TARGET grammar profile come
+  from DONOR language data in both modes. A Paratext TARGET is only the write destination.
+- A localdata TARGET's versification comes from SOURCE (default) or DONOR, chosen when the Job is
+  created and fixed for that folder.
+- One localdata folder belongs to one BIC Job. Removing the Job releases the name and keeps the files.
+- A book is built one scope at a time: a scope in a chapter the book does not have yet adds that chapter.
+
 Use `./system/bin/bic --help` for operator syntax. Use `--source`, `--donor`, and `--target` for BIC resource bindings.
+Omit `--target` (or pass `--target-output localdata`) to write into localdata; `--target-versification donor`
+selects DONOR versification for a new localdata TARGET.

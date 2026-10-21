@@ -6,6 +6,7 @@ Split from act_tasks.py, which re-exports every name defined here.
 from __future__ import annotations
 
 from .bic_memory import inspect_completion_and_review_status
+from .bic_output import is_generated_target_folder
 from .canon import BOOK_ORDER
 from .canon import NT_27
 from .canon import OT_39
@@ -818,7 +819,11 @@ def _ensure_task_context(
                     **({"original_language_greek": profile.bindings["ORIGINAL_LANGUAGE_GREEK"]} if profile.bindings.get("ORIGINAL_LANGUAGE_GREEK") else {}),
                     **({"original_language_hebrew": profile.bindings["ORIGINAL_LANGUAGE_HEBREW"]} if profile.bindings.get("ORIGINAL_LANGUAGE_HEBREW") else {}),
                 },
-                profiles={"source_grammar": source.profile_ref, "target_grammar": output.profile_ref},
+                # Without an explicit TARGET variant the Job resolves TARGET grammar from DONOR language data.
+                profiles={
+                    "source_grammar": source.profile_ref,
+                    **({"target_grammar": output.profile_ref} if output.profile_variant else {}),
+                },
                 defaults={},
             )
             lexical_donor_id = donor_id
@@ -1100,10 +1105,11 @@ def _target_book_filename(project: ProjectSpec, book: str) -> str:
             f"BIC TARGET project {project.project_id} has inconsistent Scripture filename conventions",
             code="TARGET_BOOK_FILENAME_AMBIGUOUS",
         )
+    # A SAGE-created localdata TARGET uses plain {NN}{BOOK}.SFM names for a clean Paratext import.
     suffix, extension = (
         next(iter(conventions))
         if conventions
-        else (project.project_id, ".SFM")
+        else ("" if is_generated_target_folder(project.path) else project.project_id, ".SFM")
     )
     return f"{paratext_book_digits(book)}{book}{suffix}{extension}"
 

@@ -238,13 +238,8 @@ def preflight_bounded_target_commit(
         return {"status": "READY_NEW_TARGET", "scope": scope.label(), "source_shapes": list(source_ranges)}
     target_ranges, target_chapters = _scope_shape(target_text, scope)
     required_chapters = {chapter for chapter, _start, _end in source_ranges}
+    # A book generated one scope at a time legitimately lacks later chapters; the merge creates them.
     missing_chapters = sorted(required_chapters - set(target_chapters))
-    if missing_chapters:
-        raise ValidationError(
-            f"TARGET book is missing chapter(s) required for bounded commit: {', '.join(str(value) for value in missing_chapters)}",
-            code="TARGET_SCOPE_CHAPTER_MISSING",
-            details={"scope": scope.label(), "chapters": missing_chapters},
-        )
     source_set = set(source_ranges)
     target_set = set(target_ranges)
     incompatible_existing = sorted(target_set - source_set)
@@ -254,19 +249,13 @@ def preflight_bounded_target_commit(
             code="TARGET_SCOPE_VERSE_SHAPE_MISMATCH",
             details={"scope": scope.label(), "target_only_shapes": incompatible_existing, "source_shapes": list(source_ranges)},
         )
-    missing_bridges = sorted(shape for shape in source_set - target_set if shape[1] != shape[2])
-    if missing_bridges:
-        raise ValidationError(
-            "TARGET is missing a bridged verse shape that bounded commit cannot insert automatically",
-            code="TARGET_SCOPE_INSERT_BRIDGE_UNSUPPORTED",
-            details={"scope": scope.label(), "missing_bridges": missing_bridges},
-        )
     return {
         "status": "READY",
         "scope": scope.label(),
         "source_shapes": list(source_ranges),
         "target_shapes": list(target_ranges),
         "ordinary_insertions_allowed": [list(shape) for shape in sorted(source_set - target_set)],
+        "chapters_to_create": missing_chapters,
     }
 
 
@@ -326,6 +315,69 @@ def drop_verse_blocks(candidate_text: str, drop: Iterable[tuple[int, int, int]])
     return _render_blocks(kept)
 
 
+def _is_chapter_marker(block: RawBlock | VerseBlock, chapter: int | None = None) -> bool:
+    """Return whether a block carries a ``\\c`` marker, optionally for one chapter number."""
+    if not isinstance(block, RawBlock):
+        return False
+    for line in block.lines:
+        match = _CHAPTER_RE.match(line)
+        if match and (chapter is None or int(match.group(1)) == chapter):
+            return True
+    return False
+
+
+def _chapter_marker_index(blocks: list[RawBlock | VerseBlock], chapter: int) -> int | None:
+    """Return the index of the block carrying one chapter marker, if the book has it."""
+    for idx, block in enumerate(blocks):
+        if _is_chapter_marker(block, chapter):
+            return idx
+    return None
+
+
+def _insert_chapter_marker(blocks: list[RawBlock | VerseBlock], chapter: int) -> int:
+    """Insert a bare chapter marker before the next higher chapter, or at the end of the book."""
+    insert_at = len(blocks)
+    for idx, block in enumerate(blocks):
+        if not isinstance(block, RawBlock):
+            continue
+        numbers = [int(match.group(1)) for line in block.lines if (match := _CHAPTER_RE.match(line))]
+        if numbers and numbers[0] > chapter:
+            insert_at = idx
+            break
+    blocks.insert(insert_at, RawBlock((f"\\c {chapter}",)))
+    return insert_at
+
+
+def chapter_numbers(text: str) -> set[int]:
+    """Return every chapter number declared by ``\\c`` markers in one book."""
+    numbers: set[int] = set()
+    for _, fragment in iter_logical_usfm_lines(text):
+        match = _CHAPTER_RE.match(fragment.strip())
+        if match:
+            numbers.add(int(match.group(1)))
+    return numbers
+
+
+def _remove_empty_chapters(text: str, chapters: Iterable[int]) -> str:
+    """Drop bare chapter markers for the given chapters when no verse remains in them."""
+    wanted = set(chapters)
+    if not wanted:
+        return text
+    blocks = _parse_blocks(text)
+    occupied = {block.chapter for block in blocks if isinstance(block, VerseBlock)}
+    kept = [
+        block
+        for block in blocks
+        if not (
+            isinstance(block, RawBlock)
+            and len(block.lines) == 1
+            and (match := _CHAPTER_RE.fullmatch(block.lines[0].strip()))
+            and int(match.group(1)) in wanted - occupied
+        )
+    ]
+    return _render_blocks(kept)
+
+
 def merge_bounded_usfm(
     target_text: str,
     candidate_text: str,
@@ -380,33 +432,19 @@ def merge_bounded_usfm(
         output.append(replacement)
         used.add(key)
 
-    missing = [block for key, block in candidate_by_range.items() if key not in used]
+    missing = sorted(
+        (block for key, block in candidate_by_range.items() if key not in used),
+        key=lambda block: (block.chapter, block.start_verse),
+    )
     if missing:
-        # Insert missing ordinary verse blocks inside their existing chapter. Never
-        # search globally by verse coordinate: doing so can place a verse after the
-        # next ``\c`` marker when the insertion belongs at the end of a chapter.
+        # Insert missing verse blocks inside their chapter, creating the chapter in book
+        # order when the TARGET does not have it yet. Never search globally by verse
+        # coordinate: doing so can place a verse after the next ``\c`` marker when the
+        # insertion belongs at the end of a chapter.
         for new_block in missing:
-            if new_block.start_verse != new_block.end_verse:
-                raise ValidationError(
-                    "Cannot insert a new bridged verse into an existing TARGET book automatically",
-                    code="TARGET_SCOPE_INSERT_BRIDGE_UNSUPPORTED",
-                )
-            chapter_marker_index: int | None = None
-            for idx, item in enumerate(output):
-                if not isinstance(item, RawBlock):
-                    continue
-                if any(
-                    (match := _CHAPTER_RE.match(line))
-                    and int(match.group(1)) == new_block.chapter
-                    for line in item.lines
-                ):
-                    chapter_marker_index = idx
-                    break
+            chapter_marker_index = _chapter_marker_index(output, new_block.chapter)
             if chapter_marker_index is None:
-                raise ValidationError(
-                    f"TARGET book has no chapter {new_block.chapter}; create the book/chapter explicitly before bounded insertion",
-                    code="TARGET_SCOPE_CHAPTER_MISSING",
-                )
+                chapter_marker_index = _insert_chapter_marker(output, new_block.chapter)
 
             insert_at: int | None = None
             last_same_chapter_verse: int | None = None
@@ -416,6 +454,17 @@ def merge_bounded_usfm(
                     break
                 if not isinstance(item, VerseBlock) or item.chapter != new_block.chapter:
                     continue
+                if item.start_verse <= new_block.end_verse and new_block.start_verse <= item.end_verse:
+                    # Only reachable for verses outside the scope; SAGE will not guess a bridge split/merge.
+                    raise ValidationError(
+                        "Cannot insert a verse/bridge that overlaps an existing TARGET verse",
+                        code="TARGET_SCOPE_INSERT_BRIDGE_UNSUPPORTED",
+                        details={
+                            "scope": scope.label(),
+                            "candidate": (new_block.chapter, new_block.start_verse, new_block.end_verse),
+                            "target": (item.chapter, item.start_verse, item.end_verse),
+                        },
+                    )
                 if item.start_verse > new_block.start_verse:
                     insert_at = idx
                     break
@@ -474,7 +523,9 @@ def _validate_bounded_merge(
             },
         )
     before_outside = remove_scope_usfm(before_text, scope_value)
-    after_outside = remove_scope_usfm(merged_text, scope_value)
+    # Chapter markers the merge created for new in-scope verses are the only permitted addition.
+    created = chapter_numbers(merged_text) - chapter_numbers(before_text)
+    after_outside = _remove_empty_chapters(remove_scope_usfm(merged_text, scope_value), created)
     if before_outside != after_outside:
         raise ValidationError(
             "Bounded TARGET merge changed content outside the requested scope",
@@ -553,6 +604,7 @@ def record_target_commit(
         "after_scope_sha256": sha256_bytes(after_scope.encode("utf-8")),
         "before_book_sha256": sha256_bytes(before_text.encode("utf-8")),
         "after_book_sha256": sha256_bytes(after_text.encode("utf-8")),
+        "created_chapters": sorted(chapter_numbers(after_text) - chapter_numbers(before_text)) if before_text.strip() else [],
     }
     atomic_write_json(entry / "manifest.json", manifest)
     return {**manifest, "history_path": str(entry / "manifest.json")}
@@ -611,10 +663,12 @@ def revert_target_scope(
             code="TARGET_REVERT_CONFLICT",
             details={"expected": latest["after_scope_sha256"], "current": current_scope_hash},
         )
+    # Remove the committed scope first so verses the commit inserted do not read as a shape
+    # mismatch, then put the historical verses back and drop chapters the commit created.
+    restored = remove_scope_usfm(current_text, scope_value)
     if before_scope.strip():
-        restored = merge_bounded_usfm(current_text, before_scope, scope_value)
-    else:
-        restored = remove_scope_usfm(current_text, scope_value)
+        restored = merge_bounded_usfm(restored, before_scope, scope_value)
+    restored = _remove_empty_chapters(restored, latest.get("created_chapters") or ())
     restored_scope = extract_scope_usfm(restored, scope_value)
     if restored_scope != before_scope:
         raise ValidationError(

@@ -7,7 +7,7 @@ The visible layout separates ownership and purpose:
 - `inputs/` — Operator-supplied resources, style guides, and semantic-domain data
 - `work/` — active SAGE Projects, Jobs, and Runs, plus intermediate working material
 - `reports/` — finalized human-facing reports
-- `exports/` — portable export packages
+- `exports/` — portable export packages and BIC TARGET output (`exports/bic/<language-tag>_<SOURCE>/`) awaiting Paratext import
 - `plugins/` — locally installed extensions
 - `.system/` — SAGE-managed settings, state, caches, logs, and Python runtime
 

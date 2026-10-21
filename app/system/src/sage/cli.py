@@ -2402,6 +2402,54 @@ def command_task_execute(args: argparse.Namespace) -> int:
             print(f"Conditional second pass: {result['conditional_second_pass']}")
     return 0
 
+def _resolve_task_output_project(args: argparse.Namespace, config: EcosystemConfig) -> str:
+    """Return the task's TARGET/WIP, creating the BIC localdata TARGET when none is named."""
+    target_output = getattr(args, "target_output", None)
+    if args.workflow_id != "bic":
+        if target_output:
+            raise ValidationError("--target-output applies to BIC only", code="CLI_ARGUMENT_INVALID")
+        if not args.output_project:
+            raise ValidationError(
+                f"{args.workflow_id.upper()} requires --wip (the translation to check)",
+                code="CLI_ARGUMENT_INVALID",
+            )
+        return args.output_project
+    if target_output == "paratext" and not args.output_project:
+        raise ValidationError(
+            "BIC --target-output paratext requires --target with the Paratext project to write into",
+            code="CLI_ARGUMENT_INVALID",
+        )
+    if args.output_project and target_output != "localdata":
+        return args.output_project
+    if getattr(args, "job_id", None):
+        job = JobStore(config.root, config.settings_path).load_job(args.job_id, tool="bic")
+        return job.bindings["generated_target"]
+    from .bic_output import ensure_generated_target, generated_target_id
+    from .jobs import default_job_name
+
+    source_id = args.contemporary_source
+    if not source_id:
+        raise ValidationError("BIC requires --source", code="CLI_ARGUMENT_INVALID")
+    donor_id = getattr(args, "lexical_donor", None) or load_workflow_profile(
+        config, config.workflow("bic")
+    ).bindings.get("LEXICAL_DONOR")
+    if not donor_id:
+        raise ValidationError("BIC requires --donor", code="CLI_ARGUMENT_INVALID")
+    target_id = generated_target_id(config.project(donor_id).language_code, config.project(source_id).project_id)
+    if args.output_project and args.output_project != target_id:
+        raise ValidationError(
+            f"BIC localdata TARGET for {source_id} via {donor_id} is {target_id}, not {args.output_project}",
+            code="CLI_ARGUMENT_INVALID",
+        )
+    return ensure_generated_target(
+        config.settings_path,
+        source_id=source_id,
+        donor_id=donor_id,
+        job_id=default_job_name("bic", target_id, source_id, donor_id),
+        versification_from=str(getattr(args, "target_versification", "source")).upper(),
+    )
+
+
 def command_act_create(args: argparse.Namespace) -> int:
     """Generate one isolated provider-neutral governed task."""
     from .nca_cli import validate_task_options
@@ -2416,11 +2464,14 @@ def command_act_create(args: argparse.Namespace) -> int:
             for key, value in result.items():
                 print(f'{key}: {value}')
         return 0
+    output_project = _resolve_task_output_project(args, config)
+    if output_project != args.output_project:
+        config, _ = _load(args)
     result = create_act_task(
         config,
         workflow=args.workflow_id,
         operation=args.operation,
-        output_project_id=args.output_project,
+        output_project_id=output_project,
         contemporary_source_id=args.contemporary_source,
         lexical_donor_id=getattr(args, "lexical_donor", None),
         scope_value=args.scope,
@@ -4681,8 +4732,24 @@ def _add_task_create_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--output-project", "--target", "--wip",
         dest="output_project",
-        required=True,
-        help="BIC TARGET write destination or RTC/STC/NCA WIP translation",
+        help=(
+            "BIC TARGET write destination or RTC/STC/NCA WIP translation; BIC may omit it to write "
+            "into SAGE localdata"
+        ),
+    )
+    parser.add_argument(
+        "--target-output",
+        choices=("localdata", "paratext"),
+        help=(
+            "BIC only: localdata (default without --target) writes to localdata/exports/bic/<language>_<SOURCE>; "
+            "paratext writes into the --target Paratext project"
+        ),
+    )
+    parser.add_argument(
+        "--target-versification",
+        choices=("source", "donor"),
+        default="source",
+        help="BIC localdata only: versification of the new TARGET (default source)",
     )
     parser.add_argument(
         "--contemporary-source", "--source", "--reference",

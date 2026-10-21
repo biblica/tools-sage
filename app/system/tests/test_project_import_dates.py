@@ -421,7 +421,7 @@ def test_bic_job_review_reports_all_selected_project_import_dates(
     center = SageControlCenter(
         sage_root=root,
         settings_path=root / "ecosystem.yml",
-        io=MenuIO(input_func=ScriptedInput(["yes", "a"]), output=output),
+        io=MenuIO(input_func=ScriptedInput(["2", "yes", "a"]), output=output),
         skip_setup=True,
         dry_run_provider=True,
     )
@@ -795,3 +795,35 @@ def test_partial_project_import_and_refresh_preserve_scope_and_identity(make_wor
     assert after["imported_utc"] == before["imported_utc"]
     assert after["imported_date"] == before["imported_date"]
     assert sealed_path.read_bytes() == sealed_before
+
+
+def test_bic_wizard_defaults_to_a_localdata_target_named_from_donor_language_and_source(
+    make_workspace,
+    monkeypatch,
+) -> None:
+    """The first BIC TARGET option creates the SAGE localdata TARGET and its Job."""
+    from sage.bic_output import generated_target_root, target_output_mode
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    config = load_ecosystem(root / "ecosystem.yml")
+    selected = iter((config.project("idKKHv0"), config.project("usNIVv2")))
+    output = io.StringIO()
+    center = SageControlCenter(
+        sage_root=root,
+        settings_path=root / "ecosystem.yml",
+        io=MenuIO(input_func=ScriptedInput(["1", "1", "1", ""]), output=output),
+        skip_setup=True,
+        dry_run_provider=True,
+    )
+    monkeypatch.setattr(center, "choose_or_add_resource", lambda *_args, **_kwargs: next(selected))
+
+    job = center.create_job_wizard("bic")
+
+    rendered = output.getvalue()
+    assert job is not None
+    assert job.job_id == "BIC_idKKHv0-usNIVv2-en_idKKHv0"
+    assert job.bindings["generated_target"] == "en_idKKHv0"
+    assert "TARGET output       SAGE localdata (new)" in rendered
+    assert "has no region" in rendered
+    assert target_output_mode(center.root, "en_idKKHv0") == "LOCALDATA"
+    assert generated_target_root(center.root, "en_idKKHv0").is_dir()

@@ -16,6 +16,7 @@ from typing import Any, Callable, Iterable, Mapping
 import yaml
 
 from .atomic import atomic_write_json, atomic_write_text
+from .bic_output import ensure_generated_target_folder, generated_target_record, release_generated_target
 from .config import load_json, load_yaml, require_mapping, require_string
 from .errors import ConfigurationError, SageError, ValidationError
 from .job_snapshots import capture_wip_snapshot, seal_run_snapshot, verify_wip_snapshot
@@ -819,6 +820,13 @@ class JobStore:
                         f"BIC original-language resource {resource.project_id} must be LOCKED",
                         code="PROJECT_BINDING_MISMATCH",
                     )
+            generated = generated_target_record(self.sage_root, target.project_id)
+            if generated is not None and generated.get("owning_job") != job_id:
+                raise ValidationError(
+                    f"BIC localdata TARGET {target.project_id} belongs to Job {generated.get('owning_job')}",
+                    code="BIC_GENERATED_TARGET_OWNED",
+                    details={"project_id": target.project_id, "owning_job": generated.get("owning_job")},
+                )
             if donor.language_code != target.language_code:
                 raise ValidationError(
                     f"BIC DONOR language {donor.language_code} must match TARGET language {target.language_code}",
@@ -827,7 +835,9 @@ class JobStore:
             expected_profiles = {
                 "source_grammar": resolve_profile(source, "CONTENT_SOURCE", "source_grammar"),
                 "donor_grammar": resolve_profile(donor, "LEXICAL_DONOR", "donor_grammar"),
-                "target_grammar": resolve_profile(target, "GENERATED_TARGET", "target_grammar"),
+                # DONOR language data is the TARGET's language evidence in every destination mode;
+                # the TARGET Project is only the write destination (US/UK identity comes from DONOR).
+                "target_grammar": resolve_profile(donor, "GENERATED_TARGET", "target_grammar"),
             }
         elif tool in {"saw", "rtc"}:
             wip = bound("wip", "WIP")
@@ -1384,6 +1394,9 @@ class JobStore:
             published_reports = self.storage.reports_root / current.job_id
             if published_reports.exists():
                 shutil.rmtree(published_reports)
+        if current.tool == "bic":
+            # A SAGE-created localdata TARGET is released for reuse; its book files stay for the Operator.
+            release_generated_target(self.sage_root, current.bindings.get("generated_target", ""), delete_folder=False)
 
     @staticmethod
     def _exportable_project_files(project: Job, destination: Path) -> list[Path]:
@@ -1593,6 +1606,9 @@ class JobStore:
         paths["runtime_state_root"] = controller_token
         raw["paths"] = paths
 
+        if project.tool == "bic":
+            # A SAGE-created localdata TARGET folder may have been removed by a data reset.
+            ensure_generated_target_folder(self.sage_root, project.bindings["generated_target"])
         registered = require_mapping(raw.get("projects", {}), "projects")
         bound_ids = set(role_bindings.values())
         # Each workflow is isolated; enable only this Job's bound resources.
