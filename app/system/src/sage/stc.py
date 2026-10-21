@@ -90,8 +90,12 @@ def plan_stc_work_units(
     ol_index: ProjectVerseIndex | None = None,
     context_pool: Iterable[EvidenceRecord] | None = None,
     planner_version: str | None = None,
+    excluded: list[dict[str, Any]] | None = None,
 ) -> tuple[WorkUnit, ...]:
-    """Plan bounded WIP+primary-OL work units with exact canonical coverage."""
+    """Plan bounded WIP+primary-OL work units with exact canonical coverage.
+
+    With ``excluded`` given, a span no work unit can hold is left out and appended there instead of stopping.
+    """
     selected = tuple(wip_records)
     if not selected:
         raise ValidationError("STC planning requires WIP Scripture records", code="STC_WIP_MISSING")
@@ -124,6 +128,7 @@ def plan_stc_work_units(
         unit_prefix=unit_prefix,
         route=route,
         context_pool=tuple(context_pool) if context_pool is not None else selected,
+        excluded=excluded,
     )
 
 

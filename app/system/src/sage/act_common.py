@@ -1368,6 +1368,12 @@ def _approved_rtc_work_plan(
     )
     selected = select_records_for_scope(records, scope)
     expected_refs = [ref for record in selected for ref in sorted(record.refs)]
+    # Spans no work unit could hold were planned out and are reported not assessed, not reconciled to a unit.
+    unplannable_refs: set[VerseRef] = set()
+    for span in plan.get("not_assessed_spans") or []:
+        if isinstance(span, Mapping):
+            unplannable_refs.update(expand_reference_atoms(str(value) for value in span.get("references") or []))
+    expected_refs = [ref for ref in expected_refs if ref not in unplannable_refs]
     observed_refs: list[VerseRef] = []
     seen_unit_ids: set[str] = set()
     for index, unit in enumerate(units, start=1):

@@ -259,6 +259,7 @@ def plan_rtc_work_units(
     reference_index: ProjectVerseIndex | None = None,
     workflow: str = "rtc",
     planner_version: str | None = None,
+    excluded: list[dict[str, Any]] | None = None,
 ) -> tuple[tuple[WorkUnit, ...], tuple[dict[str, Any], ...], EvidencePolicy]:
     """Plan RTC from actual WIP+Reference SFM while retaining WIP soft-target behavior."""
     del shared  # Controller metadata is deliberately absent from review-item sizing.
@@ -292,6 +293,7 @@ def plan_rtc_work_units(
             unit_prefix=unit_prefix,
             route=route,
             context_pool=context,
+            excluded=excluded,
         )
     except EvidenceLimitError as exc:
         prefix = "SAW_RTC" if str(workflow).strip().lower() == "saw" else "RTC"

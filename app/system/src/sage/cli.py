@@ -3930,6 +3930,7 @@ def command_plan(args: argparse.Namespace) -> int:
     }
     rtc_packages: tuple[dict[str, Any], ...] = ()
     stc_packages: tuple[dict[str, Any], ...] = ()
+    unplannable_spans: list[dict[str, Any]] = []
     if rtc_sizing is not None:
         planned_units = []
         planned_packages: list[dict[str, Any]] = []
@@ -3946,6 +3947,7 @@ def command_plan(args: argparse.Namespace) -> int:
                 reference_index=rtc_reference_index,
                 workflow=profile.workflow_id,
                 planner_version=RTC_PLANNER_VERSION,
+                excluded=unplannable_spans,
             )
             planned_units.extend(portion_units)
             planned_packages.extend(portion_packages)
@@ -3963,6 +3965,7 @@ def command_plan(args: argparse.Namespace) -> int:
                 ol_index=stc_ol_index,
                 context_pool=all_records,
                 planner_version=STC_PLANNER_VERSION,
+                excluded=unplannable_spans,
             ))
         units = tuple(planned_units)
         stc_packages = stc_package_measurements(
@@ -4014,6 +4017,8 @@ def command_plan(args: argparse.Namespace) -> int:
         for unit_document, package in zip(document["units"], rtc_packages, strict=True):
             unit_document["rtc_package"] = package
         document["summary"].update(package_summary(rtc_packages))
+        if unplannable_spans:
+            document["not_assessed_spans"] = unplannable_spans
     elif stc_ol_result is not None:
         document.update({
             "primary_ol_project_id": stc_ol_project_id,
@@ -4026,6 +4031,8 @@ def command_plan(args: argparse.Namespace) -> int:
         for unit_document, package in zip(document["units"], stc_packages, strict=True):
             unit_document["stc_package"] = package
         document["summary"].update(stc_package_summary(stc_packages))
+        if unplannable_spans:
+            document["not_assessed_spans"] = unplannable_spans
     output = _workflow_output_path(
         args.output,
         workflow.output_root,

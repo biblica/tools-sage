@@ -200,6 +200,11 @@ def _create_approved_rtc_stage(
             "review_portion_total": child.get("review_portion_total"),
             "review_portion_scope": child.get("review_portion_scope"),
         }
+    unplannable_spans = (
+        [dict(item) for item in approved_plan.get("not_assessed_spans") or [] if isinstance(item, Mapping)]
+        if not references_by_portion
+        else []
+    )
     plan = {
         "schema_version": "1.0",
         "status": "PARTITIONED",
@@ -207,6 +212,7 @@ def _create_approved_rtc_stage(
         "workflow": workflow,
         "operation": "rtc",
         "rtc_stage": rtc_stage,
+        **({"not_assessed_spans": unplannable_spans} if unplannable_spans else {}),
         "ol_referral_contract": ol_referral_contract,
         "requested_scope": scope.label(),
         "output_project": output_project_id,
@@ -219,6 +225,10 @@ def _create_approved_rtc_stage(
             atom
             for unit in children
             for atom in unit.get("primary_coverage_atoms", [])
+        ] + [
+            atom
+            for span in unplannable_spans
+            for atom in span.get("references", [])
         ],
         "work_units": children,
         "created_utc": utc_now(),

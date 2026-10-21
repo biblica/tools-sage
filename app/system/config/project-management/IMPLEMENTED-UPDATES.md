@@ -9,6 +9,33 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261021-004 — Planners leave out an unplannable span instead of stopping (part of TODO-20261013-020)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261013`
+- **TODO:** `TODO-20261013-020` (stays `IN_PROGRESS`; only the compile-defect chapters remain)
+- **Commits:** the commit that introduced this entry.
+- **Finding:** the other parts of the TODO were already done: BIC in `IMP-20261014-004`, STC and RTC
+  findings in `IMP-20261014-012`, and partial coverage, missing STC portions, and per-item report
+  translation in `46add75`. Over-budget work was already bisected by the planner and `_partition_act_request`.
+  What still stopped a Run was a span that no work unit can hold: one verse record over a hard limit, or an
+  indivisible bridge or equivalence span over a hard limit.
+- **Implemented:**
+  - `work_units.py`: both errors now carry `code`, `affected_scope`, and `details.unplannable_references`
+    (for a required span, only the records inside the span, not the whole range).
+  - `plan_sfm_work_units(..., excluded=[...])`: with a list given, the unplannable span is removed, recorded
+    as `{references, code, message}`, and the rest of the scope is planned again. Without the list the error
+    is raised as before, so the task-time guards are unchanged.
+  - ACT/RTC partitioner, the RTC plan (`plan_rtc_work_units`, `command_plan`, approved-plan reconciliation
+    in `act_common.py`, `rtc_tasks.py` stage plans), and STC planning pass the list. The plan carries
+    `not_assessed_spans` (STC reuses `not_assessed_portions`); `aggregate_act_plan` reports those
+    coordinates as `NOT_ASSESSED` with an exception row, so they are never claimed as reviewed.
+- **Not changed:** excluding chapters with compile defects instead of blocking the requested scope.
+  Blocking is checked at four independent points (plan, task creation, approved-plan revalidation, Run
+  preview), each against the requested scope, and chapter coordinates cannot be expanded to atoms without a
+  clean compile. It needs one shared "effective scope" decision.
+- **Verification:** new tests in `test_sfm_slicer.py` and `test_exception_reports.py`; full suite re-run.
+
 ### IMP-20261021-003 — Model catalog refresh records new models and reasoning levels (TODO-20261020-004)
 
 - **Version:** `0.02a3` (development branch)

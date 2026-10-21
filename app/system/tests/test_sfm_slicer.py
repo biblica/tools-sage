@@ -98,3 +98,21 @@ def test_operator_sizing_labels_name_routed_sfm_not_packets() -> None:
     assert "Largest serialized packet bytes" not in human_output
     assert "Largest estimated routed-SFM tokens" in human_output
     assert "Largest routed-SFM bytes" in human_output
+
+
+def test_oversized_single_verse_is_left_out_instead_of_stopping_the_plan() -> None:
+    """With an exclusion list, one verse over the hard limit is reported and the rest is still planned."""
+    import pytest
+
+    from sage.errors import EvidenceLimitError
+
+    rows = tuple(_record(i, "word " * (400 if i == 3 else 5)) for i in range(1, 6))
+    route = SfmAnalysisRoute("RTC", (SfmStream("WIP", rows),))
+    with pytest.raises(EvidenceLimitError):
+        plan_sfm_work_units(rows, _policy(), unit_prefix="A", route=route)
+    excluded: list[dict] = []
+    units = plan_sfm_work_units(rows, _policy(), unit_prefix="A", route=route, excluded=excluded)
+    assert [row["references"] for row in excluded] == [["MAT 1:3"]]
+    assert excluded[0]["code"] == "WORK_UNIT_RECORD_EXCEEDS_LIMIT"
+    planned = sorted(ref.label() for unit in units for ref in unit.primary_refs)
+    assert planned == ["MAT 1:1", "MAT 1:2", "MAT 1:4", "MAT 1:5"]

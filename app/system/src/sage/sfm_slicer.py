@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Iterable
+from typing import Any, Callable, Iterable
 
-from .errors import ValidationError
+from .errors import EvidenceLimitError, ValidationError
 from .evidence import EvidenceMeasurement, EvidencePolicy, WORD_RE, estimate_tokens
 from .verse_alignment import ProjectVerseIndex
 from .vrs import VerseRef
@@ -274,19 +274,46 @@ def plan_sfm_work_units(
     route: SfmAnalysisRoute,
     context_pool: Iterable[EvidenceRecord] | None = None,
     required_spans: Iterable[Iterable[VerseRef]] = (),
+    excluded: list[dict[str, Any]] | None = None,
 ) -> tuple[WorkUnit, ...]:
-    """Plan deterministic work units using only routed analytical SFM as the size basis."""
+    """Plan deterministic work units using only routed analytical SFM as the size basis.
+
+    With ``excluded`` given, a span no work unit can hold (one record, or an indivisible bridge or
+    equivalence span, over a hard limit) is left out of the plan and appended there as
+    ``{"references", "code", "message"}``, so the rest of the scope is still planned.
+    """
     ordered = tuple(records)
     full_context = tuple(context_pool) if context_pool is not None else ordered
     protected = tuple(required_spans) + route.protected_spans()
-    return _plan_work_units_with_sizer(
-        ordered,
-        policy,
-        unit_prefix=unit_prefix,
-        context_pool=full_context,
-        required_spans=protected,
-        sizer=_SfmSizer(ordered, route),
-    )
+    spans = tuple(tuple(values) for values in protected)
+    while True:
+        try:
+            return _plan_work_units_with_sizer(
+                ordered,
+                policy,
+                unit_prefix=unit_prefix,
+                context_pool=full_context,
+                required_spans=spans,
+                sizer=_SfmSizer(ordered, route),
+            )
+        except EvidenceLimitError as exc:
+            labels = {str(value) for value in exc.details.get("unplannable_references") or ()}
+            kept = tuple(
+                record for record in ordered
+                if not any(ref.label() in labels for ref in record.refs)
+            )
+            if excluded is None or not labels or len(kept) == len(ordered):
+                raise
+            excluded.append({
+                "references": [
+                    ref.label() for record in ordered for ref in record.refs if ref.label() in labels
+                ],
+                "code": exc.code,
+                "message": str(exc),
+            })
+            ordered = kept
+            if not ordered:
+                return ()
 
 
 def route_streams_from_records(**streams: tuple[EvidenceRecord, ...]) -> SfmAnalysisRoute:

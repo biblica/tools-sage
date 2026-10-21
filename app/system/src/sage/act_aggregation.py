@@ -559,6 +559,25 @@ def aggregate_act_plan(config: EcosystemConfig, plan_path: Path) -> dict[str, An
             "source_text_issues": unit_source_issues,
             "structural_issues": unit_source_issues,
         })
+    for span in plan.get("not_assessed_spans") or []:
+        # A span no work unit can hold within the hard limits: planned out of the units, reported as not assessed.
+        if not isinstance(span, dict) or not span.get("references"):
+            continue
+        span_atoms = [str(value) for value in span["references"]]
+        planned_by_unit.extend(span_atoms)
+        not_assessed_atoms.extend(span_atoms)
+        exception_rows.append(
+            ExceptionRecord(
+                tool=workflow.upper(),
+                code=str(span.get("code") or "WORK_UNIT_SPAN_EXCEEDS_LIMIT"),
+                message=str(span.get("message") or "No work unit can hold this span within the hard limits."),
+                effect=NOT_ASSESSED,
+                run_id=str(plan.get("run_id") or "") or None,
+                job_id=str(plan.get("job_id") or "") or None,
+                stage=str(plan.get("rtc_stage") or plan.get("operation") or "").upper() or None,
+                coordinates=tuple(span_atoms),
+            ).to_dict()
+        )
     findings, _duplicates = dedupe_findings(findings)
     validate_global_finding_ids(findings)
     if len(expected) != len(set(expected)):

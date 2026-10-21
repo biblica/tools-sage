@@ -484,6 +484,7 @@ def _partition_act_request(
             ol_project_id, compiled[ol_project_id], resource_role=f"ORIGINAL_LANGUAGE_{family}"
         )
         route_streams.append(SfmStream(f"OL:{family}", tuple(ol_records)))
+    unplannable_spans: list[dict[str, Any]] = []
     units = plan_sfm_work_units(
         selected,
         derived,
@@ -498,8 +499,9 @@ def _partition_act_request(
         ),
         context_pool=records,
         required_spans=stage_spans,
+        excluded=unplannable_spans if is_analysis_workflow(workflow) else None,
     )
-    if len(units) <= 1:
+    if len(units) <= 1 and not unplannable_spans:
         raise EvidenceLimitError(
             f"A single planned unit still exceeds the complete ACT context budget for {scope.label()}",
             affected_scope=scope.label(),
@@ -583,6 +585,8 @@ def _partition_act_request(
         for child in children
         for atom in child["primary_coverage_atoms"]
     ]
+    for span in unplannable_spans:
+        expected_refs.extend(span["references"])
     plan = {
         "schema_version": "1.0",
         "status": "PARTITIONED",
@@ -591,6 +595,7 @@ def _partition_act_request(
         "operation": operation,
         "rtc_stage": rtc_stage,
         "ol_referral_contract": ol_referral_contract,
+        **({"not_assessed_spans": unplannable_spans} if unplannable_spans else {}),
         "requested_scope": scope.label(),
         "output_project": output_project_id,
         "contemporary_source": contemporary_source_id,

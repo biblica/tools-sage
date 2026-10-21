@@ -532,7 +532,10 @@ def _plan_section_ranges(
             raise EvidenceLimitError(
                 f"Single verse record {records[start].reference} exceeds hard limits: "
                 f"bytes={measurement.serialized_bytes}, tokens={measurement.estimated_tokens}, "
-                f"atomic_coordinates={count}"
+                f"atomic_coordinates={count}",
+                code="WORK_UNIT_RECORD_EXCEEDS_LIMIT",
+                affected_scope=records[start].reference,
+                details={"unplannable_references": [ref.label() for ref in records[start].refs]},
             )
         end = _balanced_section_end(
             records,
@@ -930,11 +933,20 @@ def _plan_work_units_with_sizer(
             context_positions,
             sizer,
         ):
+            range_records = ordered[unit_start : unit_end + 1]
+            span_labels = {label for span in active_required_spans for label in span}
+            # Only the records that belong to an indivisible span are unplannable; the rest of the range is not.
+            unplannable = [
+                ref.label()
+                for record in range_records
+                if any(ref.label() in span_labels for ref in record.refs)
+                for ref in record.refs
+            ] or [ref.label() for record in range_records for ref in record.refs]
             raise EvidenceLimitError(
                 "Preserving an indivisible source bridge/equivalence span exceeds a governed work-unit limit",
                 code="WORK_UNIT_REQUIRED_SPAN_EXCEEDS_LIMIT",
-                affected_scope=_range_label(ordered[unit_start : unit_end + 1]),
-                details={"required_spans": active_required_spans},
+                affected_scope=_range_label(range_records),
+                details={"required_spans": active_required_spans, "unplannable_references": unplannable},
             )
 
     units: list[WorkUnit] = []

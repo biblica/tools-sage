@@ -171,6 +171,7 @@ def _create_stc_task(
     policy = load_workflow_profile(config, config.workflow(workflow)).evidence_policy("stc")
     # A portion the WIP has no text for cannot be compared; it is reported NOT_ASSESSED, not a reason to stop.
     absent_portions: list[str] = []
+    unplannable_spans: list[dict[str, Any]] = []
     planned_units: list[Any] = []
     for portion_index, portion in enumerate(analysis_scope_portions(scope), start=1):
         portion_records = tuple(
@@ -199,9 +200,10 @@ def _create_stc_task(
                 ol_index=ol_index,
                 context_pool=wip_records_all,
                 planner_version=stc_planner_version,
+                excluded=unplannable_spans if work_unit_id is None else None,
             )
         )
-    if not planned_units:
+    if not planned_units and not unplannable_spans:
         raise ValidationError(
             f"The WIP has no text in the requested scope {scope.label()}",
             code="STC_WIP_MISSING",
@@ -240,7 +242,7 @@ def _create_stc_task(
                 else ()
             ),
         )
-    if auto_partition and work_unit_id is None and (len(units) > 1 or absent_portions):
+    if auto_partition and work_unit_id is None and (len(units) > 1 or absent_portions or unplannable_spans):
         seed = sha256_bytes(json.dumps({
             "job_id": job_id, "run_id": run_id, "scope": scope.label(),
             "wip": output.project_id, "ol": ol_project.project_id, "family": family,
@@ -297,6 +299,17 @@ def _create_stc_task(
                     "message": f"The WIP has no text in {label}, so it was not compared with the original language.",
                 }
                 for label in absent_portions
+            ] + [
+                {
+                    "scope": (
+                        span["references"][0]
+                        if len(span["references"]) == 1
+                        else f"{span['references'][0]}-{span['references'][-1]}"
+                    ),
+                    "code": span["code"],
+                    "message": f"No work unit could hold {span['references'][0]} within the hard limits, so it was not compared with the original language.",
+                }
+                for span in unplannable_spans
             ],
         }
         plan_path = plan_container(config.workflow(workflow), run_id) / f"{plan_id}.json"

@@ -234,6 +234,27 @@ def test_aggregation_reports_partial_coverage_instead_of_failing(make_workspace)
     assert "\\n" not in report and report.count("\n") > 5
 
 
+def test_aggregation_reports_an_unplannable_span_as_not_assessed(make_workspace) -> None:
+    """A span no work unit could hold is planned out, reported once, and never claimed as reviewed."""
+    config = load_ecosystem(make_workspace() / "ecosystem.yml")
+    plan_path = _plan(config, "SAW-RTC-NA-SPAN", ("FINALIZED", "FINALIZED"))
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["expected_references"].append("MAT 1:3")
+    plan["not_assessed_spans"] = [{
+        "references": ["MAT 1:3"],
+        "code": "WORK_UNIT_RECORD_EXCEEDS_LIMIT",
+        "message": "Single verse record MAT 1:3 exceeds hard limits.",
+    }]
+    plan_path.write_text(json.dumps(plan) + "\n", encoding="utf-8")
+    result = aggregate_act_plan(config, plan_path)
+
+    coverage = result["coverage"]
+    assert coverage["status"] == "PARTIAL"
+    assert coverage["reviewed_references"] == ["MAT 1:1", "MAT 1:2"]
+    assert coverage["not_assessed_references"] == ["MAT 1:3"]
+    assert [row["code"] for row in result["exceptions"]] == ["WORK_UNIT_RECORD_EXCEEDS_LIMIT"]
+
+
 def test_aggregation_of_a_fully_assessed_plan_is_unchanged(make_workspace) -> None:
     """With nothing lost, coverage keeps its original COMPLETE shape and no exceptions section appears."""
     config = load_ecosystem(make_workspace() / "ecosystem.yml")
