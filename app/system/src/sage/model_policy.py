@@ -133,20 +133,104 @@ def catalog_cache_path(root: Path, provider: str = "codex") -> Path:
     return storage_layout(root).state_root / "model-catalog" / f"{provider}.json"
 
 
+def _catalog_shape(models: Any) -> dict[str, list[str]]:
+    """Return ``{model: [reasoning efforts]}`` from snapshot rows or live capabilities."""
+    shape: dict[str, list[str]] = {}
+    for item in models or ():
+        row = item.to_dict() if hasattr(item, "to_dict") else item
+        if not isinstance(row, dict) or not row.get("model") or row.get("hidden"):
+            continue
+        efforts = [
+            str(option.get("reasoning_effort"))
+            for option in row.get("supported_reasoning_efforts") or ()
+            if isinstance(option, dict) and option.get("reasoning_effort")
+        ]
+        shape[str(row["model"])] = efforts
+    return shape
+
+
+def diff_catalog_shape(previous: dict[str, list[str]], current: dict[str, list[str]]) -> dict[str, Any]:
+    """Return the models and reasoning levels added or removed between two catalog shapes."""
+    return {
+        "added_models": sorted(set(current) - set(previous)),
+        "removed_models": sorted(set(previous) - set(current)),
+        "added_efforts": {
+            model: [value for value in current[model] if value not in previous[model]]
+            for model in sorted(set(current) & set(previous))
+            if any(value not in previous[model] for value in current[model])
+        },
+        "removed_efforts": {
+            model: [value for value in previous[model] if value not in current[model]]
+            for model in sorted(set(current) & set(previous))
+            if any(value not in current[model] for value in previous[model])
+        },
+    }
+
+
+def describe_catalog_change(change: dict[str, Any] | None) -> list[str]:
+    """Return operator-facing lines for a recorded catalog change; empty when there is none."""
+    if not isinstance(change, dict):
+        return []
+    lines = [f"Model list changed {str(change.get('detected_utc') or 'UNKNOWN')[:10]}:"]
+    if change.get("added_models"):
+        lines.append(f"  New models: {', '.join(change['added_models'])}")
+    for model, efforts in (change.get("added_efforts") or {}).items():
+        lines.append(f"  New reasoning levels on {model}: {', '.join(efforts)}")
+    if change.get("removed_models"):
+        lines.append(f"  No longer offered: {', '.join(change['removed_models'])}")
+    for model, efforts in (change.get("removed_efforts") or {}).items():
+        lines.append(f"  Reasoning levels removed from {model}: {', '.join(efforts)}")
+    lines.append("  New models and levels are UNQUALIFIED until evaluated; automatic routing keeps its current choices.")
+    return lines
+
+
 def cache_provider_catalog(root: Path, status: ProviderStatus) -> Path:
-    """Persist a non-secret provider capability snapshot for diagnostics and audit."""
+    """Persist a non-secret provider capability snapshot and record what changed since the last one.
+
+    The first snapshot is a baseline and records no change. Later snapshots keep ``last_change`` (the
+    most recent difference in models or reasoning levels, with the Codex CLI and SAGE versions it was
+    seen under) until a newer difference replaces it. New routes stay unqualified: a change here never
+    adds or alters qualification evidence.
+    """
+    from . import __version__
+
     path = catalog_cache_path(root, status.provider)
     path.parent.mkdir(parents=True, exist_ok=True)
+    previous = load_cached_catalog(root, status.provider)
+    now = _utc_now()
+    shape = _catalog_shape(status.model_capabilities)
+    last_change = (previous or {}).get("last_change")
+    if previous is not None:
+        delta = diff_catalog_shape(_catalog_shape(previous.get("models")), shape)
+        if any(delta.values()):
+            old_runtime = previous.get("provider_runtime_version")
+            old_sage = previous.get("sage_version")
+            if old_runtime != status.version:
+                trigger = "PROVIDER_CLI_VERSION"
+            elif old_sage != __version__:
+                trigger = "SAGE_VERSION"
+            else:
+                trigger = "PROVIDER_CATALOG"
+            last_change = {
+                "detected_utc": now,
+                "trigger": trigger,
+                "previous_provider_runtime_version": old_runtime,
+                "previous_sage_version": old_sage,
+                **delta,
+            }
     payload = {
-        "schema_version": "1.0",
-        "queried_utc": _utc_now(),
+        "schema_version": "1.1",
+        "queried_utc": now,
         "provider": status.provider,
+        "provider_runtime_version": status.version,
+        "sage_version": __version__,
         "auth_mode": status.auth_mode,
         "account_plan_type": status.account_plan_type,
         "ready": status.ready,
         "selected_model": status.selected_model,
         "selected_reasoning_effort": status.selected_reasoning_effort,
         "models": [item.to_dict() for item in status.model_capabilities],
+        "last_change": last_change,
         "diagnostic": status.diagnostic,
     }
     atomic_write_json(path, payload)

@@ -29,6 +29,7 @@ from .model_language_competency import (
 from .storage import storage_layout
 from .model_policy import (
     cache_provider_catalog,
+    load_cached_catalog,
     load_model_policy,
     recommend_model,
 )
@@ -141,6 +142,11 @@ class ModelService:
         status = CodexCLIExecutor().install()
         return status.to_dict()
 
+    def update_codex(self) -> dict[str, Any]:
+        """Update Codex CLI after the caller has obtained explicit operator consent."""
+        status = CodexCLIExecutor().update()
+        return status.to_dict()
+
     def connect_chatgpt(self, *, device_auth: bool = False) -> dict[str, Any]:
         """Connect Codex to OpenAI through ChatGPT-managed CLI sign-in; never accept API credentials."""
         executor = CodexCLIExecutor()
@@ -172,13 +178,17 @@ class ModelService:
             "account_plan_type": status.account_plan_type,
             "model_count": len(status.model_capabilities) if status.model_capabilities else len(status.models),
             "catalog_cache": str(cache_path) if cache_path else None,
+            "catalog_changes": (load_cached_catalog(self.root, provider_id) or {}).get("last_change")
+            if cache_path
+            else None,
         }
 
     def list_models(self, provider: str) -> dict[str, Any]:
         """Return live model rows with Codex reasoning levels and SAGE qualification."""
         provider_id = provider.strip().lower()
         settings = self.settings()
-        status, cache_path = self.probe(provider_id, use_selection=False, settings=settings, cache_catalog=False)
+        # A live listing refreshes the saved snapshot so a changed model or reasoning list is recorded.
+        status, cache_path = self.probe(provider_id, use_selection=False, settings=settings)
         selected_item = settings["providers"].get(provider_id, {})
         selected_model = selected_item.get("model")
         rows: list[dict[str, Any]] = []
@@ -227,6 +237,9 @@ class ModelService:
             "selection_mode": selected_item.get("selection_mode"),
             "models": rows,
             "catalog_cache": str(cache_path) if cache_path else None,
+            "catalog_changes": (load_cached_catalog(self.root, provider_id) or {}).get("last_change")
+            if cache_path
+            else None,
             "diagnostic": status.diagnostic,
         }
 

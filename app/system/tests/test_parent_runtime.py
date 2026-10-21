@@ -349,6 +349,36 @@ def test_windows_codex_install_is_noninteractive_and_returns_to_sage(monkeypatch
     assert all(argv != [str(installed)] for argv, _ in calls)
 
 
+def test_windows_install_with_slow_first_version_call_still_returns_to_sign_in(monkeypatch, tmp_path: Path) -> None:
+    """A slow first `--version` after install must not demand a restart or hide the sign-in offer."""
+    local_app_data = tmp_path / "LocalAppData"
+    installed = local_app_data / "Programs" / "OpenAI" / "Codex" / "bin" / "codex.exe"
+    monkeypatch.setenv("LOCALAPPDATA", str(local_app_data))
+    monkeypatch.setenv("PATH", "C:\\Windows\\System32")
+    monkeypatch.delenv("SAGE_CODEX_COMMAND", raising=False)
+    monkeypatch.setattr(CodexCLIExecutor, "_is_windows", staticmethod(lambda: True))
+    monkeypatch.setattr(
+        "sage.executors.codex_cli.shutil.which",
+        lambda name: "powershell.exe" if name in {"powershell", "pwsh"} else None,
+    )
+
+    def fake_run(args, **kwargs):
+        """Install successfully, then time out on every verification call."""
+        argv = [str(item) for item in args]
+        if argv and argv[0] == "powershell.exe":
+            installed.parent.mkdir(parents=True, exist_ok=True)
+            installed.write_text("fake codex", encoding="utf-8")
+            return subprocess.CompletedProcess(args, 0, stdout="installed successfully", stderr="")
+        raise subprocess.TimeoutExpired(argv, kwargs.get("timeout"))
+
+    monkeypatch.setattr("sage.executors.codex_cli.subprocess.run", fake_run)
+    status = CodexCLIExecutor().install()
+
+    assert status.available is True
+    assert status.ready is False
+    assert os.environ["SAGE_CODEX_COMMAND"] == str(installed)
+
+
 def test_chatgpt_connection_runs_login_not_codex_tui(monkeypatch, tmp_path: Path) -> None:
     """Verify ChatGPT authentication starts only the Codex login subcommand and returns to SAGE."""
     codex = tmp_path / "codex"

@@ -133,6 +133,35 @@ def test_setup_never_installs_codex_without_operator_confirmation(make_workspace
     assert result["available"] is False
 
 
+def test_first_run_setup_offers_sign_in_after_failed_install_check(make_workspace) -> None:
+    """A CLI left signed out by an install that could not self-verify still gets the sign-in offer."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    center = _center(root, ["y"])
+    center.dry_run_provider = False
+    probes = iter(
+        (
+            {"available": False, "ready": False},
+            {"available": True, "ready": False},
+            {"available": True, "ready": True},
+        )
+    )
+    connected: list[bool] = []
+    center._setup_model_probe = lambda *a, **k: next(probes)  # noqa: SLF001
+
+    def fail_install(service):
+        """Mimic an installer that wrote the binary but could not verify it."""
+        raise ValidationError("not verified", code="CODEX_INSTALL_PATH_REFRESH_REQUIRED")
+
+    center._setup_install_codex = fail_install  # noqa: SLF001
+    center._model_connect_chatgpt = lambda service: connected.append(True)  # noqa: SLF001
+
+    row = center._setup_first_run_ai(object())  # noqa: SLF001 - first-run contract test
+
+    assert connected == [True]
+    assert row["ready"] is True
+    assert "not signed in" in center.io.output.getvalue()
+
+
 def test_operator_cue_journal_is_append_only_and_not_workflow_state(make_workspace) -> None:
     """Verify high-level operator cues append independently from transactional workflow state."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")

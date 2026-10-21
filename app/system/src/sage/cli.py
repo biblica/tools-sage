@@ -74,6 +74,7 @@ from .human_output import (
 from .locking import WorkspaceLock
 from .llm_tasks import execute_task
 from .llm_settings import load_llm_settings
+from .model_policy import describe_catalog_change
 from .model_service import ModelService
 from .executors import PROVIDER_IDS
 from .sqs_cache import SqsBundleRejected, SqsCache, load_sqs_config
@@ -1941,6 +1942,8 @@ def command_model_refresh(args: argparse.Namespace) -> int:
     print(f"Models: {result['model_count']}")
     if result.get("catalog_cache"):
         print(f"Catalog cache: {result['catalog_cache']}")
+    for line in describe_catalog_change(result.get("catalog_changes")):
+        print(line)
     return 0
 
 

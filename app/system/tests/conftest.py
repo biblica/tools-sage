@@ -18,6 +18,12 @@ if str(CORE_ROOT) not in sys.path:
     sys.path.insert(0, str(CORE_ROOT))
 
 
+@pytest.fixture(autouse=True)
+def _no_provider_update_network_check(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep the provider CLI update check off the network in every test."""
+    monkeypatch.setenv("SAGE_DISABLE_UPDATE_CHECK", "1")
+
+
 def write_yaml(path: Path, value: dict[str, Any]) -> None:
     """Write stable UTF-8 YAML for one fixture file."""
     path.parent.mkdir(parents=True, exist_ok=True)

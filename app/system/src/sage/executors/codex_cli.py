@@ -332,7 +332,7 @@ class CodexCLIExecutor:
             )
         return "Install the Codex CLI (not the desktop app): curl -fsSL https://chatgpt.com/codex/install.sh | sh"
 
-    def quick_status(self) -> ProviderStatus:
+    def quick_status(self, *, version_timeout: int = 5, login_timeout: int = 8) -> ProviderStatus:
         """Check CLI presence and ChatGPT login without querying the live model catalog."""
         if not self.command:
             return ProviderStatus(
@@ -344,7 +344,7 @@ class CodexCLIExecutor:
                 capabilities=("chatgpt_login",),
             )
         try:
-            version = self._run(["--version"], timeout=5)
+            version = self._run(["--version"], timeout=version_timeout)
             version_text = ((version.stdout or version.stderr or "").strip() or None) if version.returncode == 0 else None
             if version.returncode != 0:
                 detail = (version.stderr or version.stdout).strip() or "Codex --version returned a non-zero status."
@@ -357,7 +357,7 @@ class CodexCLIExecutor:
                     diagnostic=f"Codex CLI was found but could not be verified: {detail}",
                     capabilities=("chatgpt_login",),
                 )
-            login = self._run(["login", "status"], timeout=8)
+            login = self._run(["login", "status"], timeout=login_timeout)
         except (subprocess.SubprocessError, OSError) as exc:
             return ProviderStatus(
                 provider=self.provider_id,
@@ -494,11 +494,15 @@ class CodexCLIExecutor:
         # interactive installer behavior may return non-zero after installing the binary.
         self.command = self._installed_command_candidate(env)
         if self.command:
-            status = self.quick_status()
-            if status.version:
-                # Keep this SAGE process connected to the newly installed binary even
-                # before the operator opens a fresh shell with the updated PATH.
-                os.environ["SAGE_CODEX_COMMAND"] = self.command
+            # A just-installed binary can take far longer than the startup budget to answer its
+            # first call (antivirus scan, first-run unpacking), so allow generous time here.
+            status = self.quick_status(version_timeout=60, login_timeout=30)
+            # Keep this SAGE process connected to the newly installed binary even
+            # before the operator opens a fresh shell with the updated PATH.
+            os.environ["SAGE_CODEX_COMMAND"] = self.command
+            if status.version or status.available:
+                # An unverified version still hands control back so Setup can offer sign-in,
+                # which re-verifies the CLI; a restart is never the operator's job here.
                 return status
 
         if completed.returncode != 0:
@@ -512,6 +516,41 @@ class CodexCLIExecutor:
             code="CODEX_INSTALL_PATH_REFRESH_REQUIRED",
             next_action="Close and reopen the terminal, then run SAGE again.",
         )
+
+    def update(self) -> ProviderStatus:
+        """Run `codex update` without its TUI or any prompt, then return the re-verified status."""
+        if not self.command:
+            raise ValidationError(
+                "Codex CLI is not installed; there is nothing to update.",
+                code="CODEX_CLI_NOT_FOUND",
+                next_action=self.installation_guidance(),
+            )
+        try:
+            completed = subprocess.run(
+                self._command_argv(["update"]),
+                check=False,
+                env=self._environment(),
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                encoding=self._TEXT_ENCODING,
+                errors="replace",
+                timeout=600,
+            )
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise ValidationError(
+                f"Codex CLI update could not run: {exc}",
+                code="CODEX_UPDATE_FAILED",
+                next_action=self.installation_guidance(),
+            ) from exc
+        if completed.returncode != 0:
+            detail = " ".join(((completed.stderr or completed.stdout) or "").split())[-400:]
+            raise ValidationError(
+                f"Codex CLI update ended with exit code {completed.returncode}. {detail}".strip(),
+                code="CODEX_UPDATE_FAILED",
+                next_action=f"Update manually, then run SAGE again. {self.installation_guidance()}",
+            )
+        return self.quick_status(version_timeout=60, login_timeout=30)
 
     def connect_chatgpt(self, *, device_auth: bool = False) -> ProviderStatus:
         """Run interactive ChatGPT sign-in through the local Codex CLI and verify the resulting account."""

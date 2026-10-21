@@ -9,6 +9,85 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261021-003 — Model catalog refresh records new models and reasoning levels (TODO-20261020-004)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261020-004`
+- **Commits:** the commit that introduced this entry.
+- **Finding:** the live model list was already read from the Codex CLI on every view (a live listing on
+  2026-10-21 showed all 7 models with `max` and `ultra`). What was stale was SAGE's own saved snapshot
+  (`state/model-catalog/codex.json`), written only at sign-in and task runs, and nothing told the
+  Operator what had changed after a CLI or SAGE update. Automatic routing never picks an unlisted model
+  (`release_preference` ranks listed models first), which is intended: new routes are
+  `PROVISIONAL_UNQUALIFIED` until evaluated.
+- **Implemented:**
+  - `model_policy.py`: `cache_provider_catalog` (schema 1.1) stores the Codex CLI and SAGE versions and
+    compares the new listing with the previous snapshot. A difference in models or reasoning levels is
+    kept as `last_change` with its trigger (`PROVIDER_CLI_VERSION`, `SAGE_VERSION`, or
+    `PROVIDER_CATALOG`) until a newer difference replaces it. The first snapshot is a baseline.
+    `describe_catalog_change` renders it for the Operator.
+  - `model_service.py`: `list_models` refreshes the snapshot on every live listing and returns
+    `catalog_changes`; `refresh` returns it too.
+  - `menu.py`: Available provider models shows what changed and marks new models `(NEW)`; Update Codex
+    CLI refreshes the list afterwards and says what is new or that nothing changed. `sage model refresh`
+    prints the same lines.
+  - No qualification evidence is created or changed and routing is unchanged.
+- **Verification:** new `test_model_catalog_refresh.py` (3 tests: baseline, CLI-update additions kept
+  across a re-listing, removals and server-side changes); `test_provider_updates.py` update flow shows the
+  new model; full suite run (see commit).
+  **Not covered:** the tester's exact complaint is unknown (`externaldata/user-feedback.md` is empty); if
+  they expected new models to be chosen automatically, that needs qualification (`TODO` for the routing
+  override), not a catalog change.
+
+### IMP-20261021-002 — Codex CLI update check at startup and in Configure AI (TODO-20261020-003)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261020-003`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - New `provider_updates.py`: reads the latest published Codex release tag (`openai/codex` GitHub
+    releases, GET only, nothing local sent, SAGE's CA-bundle policy), caches it in
+    `state/provider-update-check.json` for 12 hours, and compares it with the installed version. It never
+    raises: no network and no cache gives "unavailable". `SAGE_DISABLE_UPDATE_CHECK=1` turns the lookup
+    off (the test suite sets it).
+  - `menu.py`: the lookup starts in a background thread at SAGE start, so startup never waits on it (the
+    startup report waits at most 2 s for it). When an update exists, the startup report shows
+    `Codex CLI  UPDATE AVAILABLE - <latest> (installed <current>)` and where to update. Configure AI shows
+    the same line and has new item 9 "Update Codex CLI": forced check, shows installed and latest, asks
+    consent, runs the update, re-verifies the CLI and refreshes the model catalog view.
+  - `executors/codex_cli.py`: `update()` runs `codex update` with no stdin and 600 s limit, then
+    re-verifies; failure raises `CODEX_UPDATE_FAILED` with the CLI output and the manual install command.
+    `model_service.py`: `update_codex()`.
+  - Fixed a slip from `IMP-20261021-001`: a global replace had also put `version_timeout` into
+    `status()`, where it is undefined (caught by the full suite).
+- **Verification:** new `test_provider_updates.py` (7 tests: version parsing, newer-only comparison, cache
+  and offline fallback, `codex update` run and failure, consent flow). Live lookup returned
+  `rust-v0.163.0`, equal to the installed 0.163.0. `codex update` was not run against the real CLI.
+  **Not covered:** the latest-release source is the GitHub API; a host that blocks it shows "unavailable".
+
+### IMP-20261021-001 — First-run Setup offers Codex sign-in right after install (TODO-20261020-002)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261020-002`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - Likely cause (from code reading; not reproduced on Windows 11): the first `codex --version` after a
+    fresh install can exceed the 5 s startup budget, so `CodexCLIExecutor.install()` raised
+    `CODEX_INSTALL_PATH_REFRESH_REQUIRED` ("close and reopen the terminal") although the binary was
+    present, and guided Setup's single `try` block then skipped the sign-in offer.
+  - `executors/codex_cli.py`: `quick_status` takes `version_timeout` and `login_timeout`; `install()`
+    verifies with 60 s and 30 s, always points `SAGE_CODEX_COMMAND` at the installed binary, and returns
+    the status (available, not ready) instead of raising whenever the binary is present.
+  - `menu.py`: new `_setup_first_run_ai` replaces the inline install and sign-in block in
+    `guided_setup`. An install error is shown, then the CLI is re-probed, and a signed-out CLI always
+    gets "Connect ChatGPT now?" in the same flow.
+- **Verification:** two new tests (`test_parent_runtime.py` slow first version call on Windows;
+  `test_operator_ux.py` sign-in offered after a failed install check); `test_operator_ux.py` and
+  `test_parent_runtime.py` pass (54). Not yet confirmed on a real Windows 11 first run.
+
 ### IMP-20261020-003 — NCA: restructured quantities are consistency review (TODO-20261018-001)
 
 - **Version:** `0.02a3` (development branch)

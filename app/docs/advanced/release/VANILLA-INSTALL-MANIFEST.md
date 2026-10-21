@@ -850,6 +850,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/skills/stc/agents/openai.yaml`
 - `system/skills/stc/references`
 - `system/skills/stc/references/LEGACY-PLANNING-HANDOVER.md`
+- `system/src/sage/provider_updates.py`
 - `system/src`
 - `system/src/sage`
 - `system/src/sage/__init__.py`
@@ -1056,6 +1057,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/vrs.py`
 - `system/src/sage/work_units.py`
 - `system/src/sage/workflow_identity.py`
+- `system/tests/test_provider_updates.py`
 - `system/tests`
 - `system/tests/__init__.py`
 - `system/tests/conftest.py`
@@ -1161,6 +1163,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_memory_governance.py`
 - `system/tests/test_menu_localization.py`
 - `system/tests/test_menu_projects.py`
+- `system/tests/test_model_catalog_refresh.py`
 - `system/tests/test_model_evaluation.py`
 - `system/tests/test_model_language_competency.py`
 - `system/tests/test_name_alignment.py`
