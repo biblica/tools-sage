@@ -1766,7 +1766,11 @@ def _apply_bic_ol_micro_result(
             for item in grammar_document["rules"]
             if isinstance(item, dict) and str(item.get("rule_id", ""))
         }
-        allowed_rule_ids = set(rule_rows)
+        # The micro schema offers every routed rule, so a rule pass 1 left out may still carry an issue.
+        manifest_rule_ids = [
+            str(value) for value in dict(manifest.get("project_grammar") or {}).get("rule_ids", [])
+        ]
+        allowed_rule_ids = set(manifest_rule_ids) | set(rule_rows)
         issues = result.get("grammar_issues", [])
         if not isinstance(issues, list):
             raise ValidationError(
@@ -1786,15 +1790,18 @@ def _apply_bic_ol_micro_result(
                     "BIC OL micro-response cites an unknown grammar rule or empty issue evidence",
                     code="LLM_PROVIDER_RESPONSE_INVALID",
                 )
-            rule_rows[rule_id]["status"] = "ISSUE"
-            existing_evidence = str(rule_rows[rule_id].get("evidence", "")).strip()
+            row = rule_rows.setdefault(rule_id, {"rule_id": rule_id, "evidence": ""})
+            row["status"] = "ISSUE"
+            existing_evidence = str(row.get("evidence", "")).strip()
             micro_evidence = f"OL micro {request['scripture_reference']}: {evidence}"
-            rule_rows[rule_id]["evidence"] = (existing_evidence + "; " + micro_evidence).strip("; ")
-        grammar_document["rules"] = [
-            rule_rows[str(item.get("rule_id", ""))]
+            row["evidence"] = (existing_evidence + "; " + micro_evidence).strip("; ")
+        ordered_ids = [
+            str(item.get("rule_id", ""))
             for item in grammar_document["rules"]
             if isinstance(item, dict) and str(item.get("rule_id", "")) in rule_rows
         ]
+        ordered_ids.extend(rule_id for rule_id in rule_rows if rule_id not in ordered_ids)
+        grammar_document["rules"] = [rule_rows[rule_id] for rule_id in ordered_ids]
         unresolved = grammar_document.get("unresolved", [])
         if not isinstance(unresolved, list):
             unresolved = []

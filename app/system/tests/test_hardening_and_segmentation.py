@@ -9,6 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 from sage.storage import storage_layout
@@ -30,7 +31,7 @@ from sage.evidence_policy import (
     PROCESS_CONTROL,
 )
 from sage.errors import ValidationError
-from sage.llm_tasks import _conditional_requests, _micro_scope_reads
+from sage.llm_tasks import _apply_bic_ol_micro_result, _conditional_requests, _micro_scope_reads
 from sage.registry import load_ecosystem
 from sage.sections import index_usfm_structure
 from sage.usj import compile_usfm_text
@@ -777,3 +778,37 @@ def test_merge_keeps_dropped_verses_and_widens_drops_across_continuation_tails()
     drop = expand_unsafe_drops(candidate, "MAT 1:1-3", {(1, 2, 2)})
     merged = merge_bounded_usfm(before, drop_verse_blocks(candidate, drop), "MAT 1:1-3", keep_existing=drop)
     assert merged == before.replace("old three", "new three")
+
+
+def test_ol_micro_grammar_issue_may_cite_a_routed_rule_pass_one_left_out() -> None:
+    """An OL micro issue on a routed rule that pass 1 omitted is recorded, not rejected."""
+    files = {
+        "output/rewrite.usfm": "\\c 1\n\\v 1 current\n",
+        "output/translation-challenges.json": json.dumps({
+            "challenges": [{"challenge_id": "C1", "recommended_candidate_id": "A", "risk": {"before_ol": 3}}],
+        }),
+        "output/grammar-assessment.json": json.dumps({
+            "rules": [{"rule_id": "R1", "status": "PASS", "evidence": ""}],
+            "unresolved": [],
+        }),
+    }
+    manifest = {"project_grammar": {"rule_ids": ["R1", "R2"]}}
+    request = {"challenge_id": "C1", "scripture_reference": "MAT 1:1", "question": "Which verb sense?"}
+    result = {
+        "recommended_candidate_id": "A",
+        "replacement_usfm": "",
+        "after_ol_risk": 2,
+        "recommended_action": "Keep A.",
+        "ol_evidence_summary": "Aorist indicative.",
+        "ol_words": [],
+        "grammar_issues": [{"rule_id": "R2", "evidence": "Agreement lost."}],
+        "grammar_unresolved_additions": [],
+    }
+    updated = _apply_bic_ol_micro_result(files, manifest, request, result)
+    rules = json.loads(updated["output/grammar-assessment.json"])["rules"]
+    assert [row["rule_id"] for row in rules] == ["R1", "R2"]
+    assert rules[1]["status"] == "ISSUE"
+    assert "Agreement lost." in rules[1]["evidence"]
+    unknown = dict(result, grammar_issues=[{"rule_id": "R9", "evidence": "Not a routed rule."}])
+    with pytest.raises(ValidationError):
+        _apply_bic_ol_micro_result(files, manifest, request, unknown)

@@ -9,6 +9,20 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261022-004 — BIC OL micro step may cite any routed grammar rule (TODO-20261022-008)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261022`
+- **TODO:** `TODO-20261022-008` (now `DONE`); the OL-micro items of `TODO-20261013-004`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** `_apply_bic_ol_micro_result` takes its grammar-rule whitelist from the manifest
+  (`project_grammar.rule_ids`), matching the micro response schema, instead of from the pass-1 grammar
+  assessment. An issue on a routed rule that pass 1 left out is now added as an `ISSUE` row instead of
+  rejecting the whole OL answer; a rule outside the routed set is still rejected. DONOR vocabulary and
+  approved memory were reviewed for the micro reads and left out (see the TODO).
+- **Verification:** new `test_ol_micro_grammar_issue_may_cite_a_routed_rule_pass_one_left_out`; OL-step,
+  LLM-harness, and rewrite-risk tests pass (82).
+
 ### IMP-20261022-003 — SELF-CHECK sees REWRITE's challenges without its rationale (TODO-20261022-006)
 
 - **Version:** `0.02a3` (development branch)
