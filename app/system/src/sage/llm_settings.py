@@ -9,7 +9,7 @@ from typing import Any
 from .atomic import atomic_write_json
 from .storage import storage_layout
 from .errors import ConfigurationError
-from .build_policy import ENABLED_AUTOMATED_PROVIDER_IDS
+from .build_policy import GOVERNED_CLI_PROVIDER_IDS, disabled_provider_message, provider_is_enabled
 from .executors import PROVIDER_IDS
 from .executors.http import validate_local_endpoint
 from .ollama_policy import (
@@ -25,6 +25,7 @@ DEFAULT_LLM_SETTINGS: dict[str, Any] = {
     "selected_provider": "codex",
     "providers": {
         "codex": {"enabled": True},
+        "claude": {"enabled": True},
         "ollama": {
             "model": SAGE_LOCAL_ADMIN_MODEL,
             "endpoint": "http://127.0.0.1:11434",
@@ -35,9 +36,10 @@ DEFAULT_LLM_SETTINGS: dict[str, Any] = {
         },
     },
     "policy": {
-        "openai_api_keys": "PROHIBITED",
+        "provider_api_keys": "PROHIBITED",
         "remote_local_provider_endpoints": "PROHIBITED",
         "codex_required_auth": "CHATGPT",
+        "claude_required_auth": "CLAUDE_SUBSCRIPTION",
     },
 }
 
@@ -90,11 +92,9 @@ def load_llm_settings(root: Path) -> dict[str, Any]:
     selected = str(raw.get("selected_provider", merged["selected_provider"])).strip().lower()
     if selected not in PROVIDER_IDS:
         raise ConfigurationError(f"Unsupported selected LLM provider: {selected}")
-    # The current build policy activates CODEX only. Unsupported automated selections
-    # normalize to CODEX while retaining non-secret provisioning settings.
-    merged["selected_provider"] = (
-        selected if selected in ENABLED_AUTOMATED_PROVIDER_IDS else "codex"
-    )
+    # A selection the current build policy does not enable normalizes to CODEX while
+    # retaining non-secret provisioning settings.
+    merged["selected_provider"] = selected if provider_is_enabled(selected) else "codex"
     providers = raw.get("providers", {})
     if isinstance(providers, dict):
         for provider in PROVIDER_IDS:
@@ -102,7 +102,7 @@ def load_llm_settings(root: Path) -> dict[str, Any]:
             if isinstance(item, dict):
                 allowed = (
                     {"enabled"}
-                    if provider == "codex"
+                    if provider in GOVERNED_CLI_PROVIDER_IDS
                     else {
                         "endpoint",
                         "context_window",
@@ -114,7 +114,8 @@ def load_llm_settings(root: Path) -> dict[str, Any]:
                 merged["providers"][provider].update(
                     {key: value for key, value in item.items() if key in allowed}
                 )
-    merged["providers"]["codex"]["enabled"] = True
+    for provider in GOVERNED_CLI_PROVIDER_IDS:
+        merged["providers"][provider]["enabled"] = True
     merged["providers"]["ollama"]["endpoint"] = validate_local_endpoint(
         str(merged["providers"]["ollama"]["endpoint"]),
         provider="ollama",
@@ -143,17 +144,15 @@ def save_llm_settings(root: Path, value: dict[str, Any]) -> Path:
     selected = str(value.get("selected_provider", "")).strip().lower()
     if selected not in PROVIDER_IDS:
         raise ConfigurationError(f"Unsupported selected LLM provider: {selected}")
-    if selected not in ENABLED_AUTOMATED_PROVIDER_IDS:
-        raise ConfigurationError(
-            f"Selected provider {selected} is disabled by this build policy; CODEX is the only enabled automated provider"
-        )
-    codex = value.get("providers", {}).get("codex", {})
-    forbidden_selection = {"model", "reasoning_effort", "selection_mode"}.intersection(codex)
-    if forbidden_selection:
-        raise ConfigurationError(
-            "Normal provider settings cannot persist model or reasoning; use the advanced routing override"
-        )
-    codex["enabled"] = True
+    if not provider_is_enabled(selected):
+        raise ConfigurationError(disabled_provider_message(selected))
+    for provider in GOVERNED_CLI_PROVIDER_IDS:
+        item = value.setdefault("providers", {}).setdefault(provider, {})
+        if {"model", "reasoning_effort", "selection_mode"}.intersection(item):
+            raise ConfigurationError(
+                "Normal provider settings cannot persist model or reasoning; use the advanced routing override"
+            )
+        item["enabled"] = True
     ollama = value.get("providers", {}).get("ollama", {})
     validate_local_endpoint(str(ollama.get("endpoint", "")), provider="ollama")
     ollama.update(
@@ -193,8 +192,8 @@ def update_llm_selection(
     provider_id = provider.strip().lower()
     if provider_id not in PROVIDER_IDS:
         raise ConfigurationError(f"Unsupported LLM provider: {provider}")
-    if provider_id not in ENABLED_AUTOMATED_PROVIDER_IDS:
-        raise ConfigurationError(f"Provider {provider_id} is provisionable but disabled for automated execution in this build")
+    if not provider_is_enabled(provider_id):
+        raise ConfigurationError(disabled_provider_message(provider_id))
     del auto
     if model is not None or reasoning_effort is not None:
         raise ConfigurationError(
@@ -203,8 +202,8 @@ def update_llm_selection(
     value["selected_provider"] = provider_id
     item = value["providers"][provider_id]
     if endpoint is not None:
-        if provider_id == "codex":
-            raise ConfigurationError("Codex provider does not accept an endpoint")
+        if provider_id in GOVERNED_CLI_PROVIDER_IDS:
+            raise ConfigurationError(f"{provider_id} provider does not accept an endpoint")
         item["endpoint"] = validate_local_endpoint(endpoint, provider=provider_id)
     save_llm_settings(root, value)
     return value

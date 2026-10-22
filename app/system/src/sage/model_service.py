@@ -7,10 +7,9 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
-from .build_policy import ENABLED_AUTOMATED_PROVIDER_IDS, provider_is_enabled
+from .build_policy import GOVERNED_CLI_PROVIDER_IDS, disabled_provider_message, provider_is_enabled
 from .errors import ConfigurationError, ValidationError
-from .executors import PROVIDER_IDS, ProviderRequest, ProviderStatus, make_executor
-from .executors.codex_cli import CodexCLIExecutor
+from .executors import PROVIDER_IDS, ProviderRequest, ProviderStatus, cli_executor, make_executor, provider_labels
 from .llm_settings import (
     SAGE_LOCAL_ADMIN_MODEL,
     load_llm_settings,
@@ -61,6 +60,17 @@ class ModelService:
         """Return the current non-secret local provider settings."""
         return load_llm_settings(self.root)
 
+    def selected_provider(self) -> str:
+        """Return the one governed CLI provider that serves all governed LLM work."""
+        return str(self.settings()["selected_provider"])
+
+    def _governed_provider(self, provider: str | None) -> str:
+        """Resolve an explicit or the selected governed CLI provider."""
+        provider_id = (provider or self.selected_provider()).strip().lower()
+        if provider_id not in GOVERNED_CLI_PROVIDER_IDS:
+            raise ConfigurationError(f"Not a governed CLI provider: {provider_id}")
+        return provider_id
+
     def probe(
         self,
         provider: str,
@@ -69,7 +79,7 @@ class ModelService:
         settings: dict[str, Any] | None = None,
         cache_catalog: bool = True,
     ) -> tuple[ProviderStatus, Path | None]:
-        """Probe one provider and cache live Codex capability metadata when available."""
+        """Probe one provider and cache its model capability metadata when available."""
         provider_id = provider.strip().lower()
         if provider_id not in PROVIDER_IDS:
             raise ConfigurationError(f"Unsupported LLM provider: {provider}")
@@ -84,7 +94,7 @@ class ModelService:
                     auth_mode="LOCAL_NONE",
                     endpoint=item.get("endpoint"),
                     selected_model=item.get("model"),
-                    diagnostic=f"{provider_id} is provisionable but disabled by this build policy; CODEX is the only enabled automated provider.",
+                    diagnostic=disabled_provider_message(provider_id),
                     capabilities=("provisionable", "build_disabled"),
                 ),
                 None,
@@ -95,7 +105,7 @@ class ModelService:
             reasoning_effort=item.get("reasoning_effort") if use_selection else None,
         )
         cache_path = None
-        if provider_id == "codex" and status.model_capabilities and cache_catalog:
+        if provider_id in GOVERNED_CLI_PROVIDER_IDS and status.model_capabilities and cache_catalog:
             cache_path = cache_provider_catalog(self.root, status)
         return status, cache_path
 
@@ -132,34 +142,40 @@ class ModelService:
             "settings_path": str(storage_layout(self.root).state_root / "llm-settings.json"),
         }
 
-    def quick_codex_status(self) -> dict[str, Any]:
-        """Return a cheap Codex installation/authentication preflight for normal SAGE startup."""
-        status = CodexCLIExecutor().quick_status()
+    def quick_provider_status(self, provider: str | None = None) -> dict[str, Any]:
+        """Return a cheap CLI installation/sign-in preflight for the selected provider."""
+        status = cli_executor(self._governed_provider(provider)).quick_status()
         return status.to_dict()
 
-    def install_codex(self) -> dict[str, Any]:
-        """Install Codex CLI after the caller has obtained explicit operator consent."""
-        status = CodexCLIExecutor().install()
+    def install_provider(self, provider: str | None = None) -> dict[str, Any]:
+        """Install the provider CLI after the caller has obtained explicit operator consent."""
+        status = cli_executor(self._governed_provider(provider)).install()
         return status.to_dict()
 
-    def update_codex(self) -> dict[str, Any]:
-        """Update Codex CLI after the caller has obtained explicit operator consent."""
-        status = CodexCLIExecutor().update()
+    def update_provider(self, provider: str | None = None) -> dict[str, Any]:
+        """Update the provider CLI after the caller has obtained explicit operator consent."""
+        status = cli_executor(self._governed_provider(provider)).update()
         return status.to_dict()
 
-    def connect_chatgpt(self, *, device_auth: bool = False) -> dict[str, Any]:
-        """Connect Codex to OpenAI through ChatGPT-managed CLI sign-in; never accept API credentials."""
-        executor = CodexCLIExecutor()
-        status = executor.connect_chatgpt(device_auth=device_auth)
-        value = update_llm_selection(self.root, provider="codex", auto=True)
+    def connect_provider(self, provider: str | None = None, *, device_auth: bool = False) -> dict[str, Any]:
+        """Sign the provider CLI in with the Operator's own subscription; never accept API credentials."""
+        provider_id = self._governed_provider(provider)
+        status = cli_executor(provider_id).connect(device_auth=device_auth)
+        # Signing in selects the provider only when this build enables it for governed work.
+        value = (
+            update_llm_selection(self.root, provider=provider_id, auto=True)
+            if provider_is_enabled(provider_id)
+            else self.settings()
+        )
         cache_path = cache_provider_catalog(self.root, status) if status.model_capabilities else None
         return {
             "status": "READY",
-            "provider": "codex",
+            "provider": provider_id,
+            "provider_label": provider_labels(provider_id).service,
             "auth_mode": status.auth_mode,
             "account_plan_type": status.account_plan_type,
             "selected_provider": value["selected_provider"],
-            "selection_mode": value["providers"]["codex"].get("selection_mode"),
+            "selection_mode": value["providers"][provider_id].get("selection_mode"),
             "model_count": len(status.model_capabilities),
             "catalog_cache": str(cache_path) if cache_path else None,
             "diagnostic": status.diagnostic,
@@ -184,7 +200,7 @@ class ModelService:
         }
 
     def list_models(self, provider: str) -> dict[str, Any]:
-        """Return live model rows with Codex reasoning levels and SAGE qualification."""
+        """Return provider model rows with native reasoning levels and SAGE qualification."""
         provider_id = provider.strip().lower()
         settings = self.settings()
         # A live listing refreshes the saved snapshot so a changed model or reasoning list is recorded.
@@ -244,8 +260,8 @@ class ModelService:
         }
 
     def recommendation(self, workflow: str, operation: str) -> dict[str, Any]:
-        """Return the current live Codex recommendation for one governed task profile."""
-        status, cache_path = self.probe("codex", use_selection=False, cache_catalog=False)
+        """Return the current recommendation for one governed task profile from the selected provider."""
+        status, cache_path = self.probe(self.selected_provider(), use_selection=False, cache_catalog=False)
         if not status.ready:
             raise ValidationError(status.diagnostic, code="LLM_PROVIDER_NOT_READY")
         recommendation = recommend_model(
@@ -261,11 +277,8 @@ class ModelService:
         }
 
     def _routing_statuses(self) -> list[ProviderStatus]:
-        """Probe every build-enabled automated provider once for route resolution."""
-        return [
-            self.probe(provider_id, use_selection=False, cache_catalog=False)[0]
-            for provider_id in ENABLED_AUTOMATED_PROVIDER_IDS
-        ]
+        """Probe the one selected provider once for route resolution; others never route."""
+        return [self.probe(self.selected_provider(), use_selection=False, cache_catalog=False)[0]]
 
     def recommendation_for_skill(self, skill_id: str) -> dict[str, Any]:
         """Return the current exact qualified or truthfully provisional Skill route."""
@@ -426,17 +439,15 @@ class ModelService:
         provider_id = provider.strip().lower()
         if provider_id not in PROVIDER_IDS:
             raise ConfigurationError(f"Unsupported LLM provider: {provider}")
-        if provider_id not in ENABLED_AUTOMATED_PROVIDER_IDS:
-            raise ConfigurationError(
-                f"Provider {provider_id} is provisionable but disabled for automated execution in this build"
-            )
-        if auto and provider_id != "codex":
-            raise ConfigurationError("--auto is currently supported only for the codex provider")
+        if not provider_is_enabled(provider_id):
+            raise ConfigurationError(disabled_provider_message(provider_id))
+        if auto and provider_id not in GOVERNED_CLI_PROVIDER_IDS:
+            raise ConfigurationError("--auto is supported only for governed CLI providers")
         if auto and (model or reasoning_effort):
             raise ConfigurationError("--auto cannot be combined with --model or --reasoning")
-        if provider_id == "codex" and not auto and (model or reasoning_effort):
+        if provider_id in GOVERNED_CLI_PROVIDER_IDS and not auto and (model or reasoning_effort):
             current = self.settings()
-            live = make_executor("codex", current).status(
+            live = make_executor(provider_id, current).status(
                 model=model,
                 reasoning_effort=reasoning_effort.strip().lower() if reasoning_effort else None,
             )
@@ -464,9 +475,9 @@ class ModelService:
             "policy": value["policy"],
         }
 
-    def language_competency_status(self, provider: str = "codex") -> dict[str, Any]:
+    def language_competency_status(self, provider: str | None = None) -> dict[str, Any]:
         """Return versioned registry evidence for the current concrete model release."""
-        provider_id = provider.strip().lower()
+        provider_id = self._governed_provider(provider)
         settings = self.settings()
         item = settings["providers"].get(provider_id, {})
         executor = make_executor(provider_id, settings)
@@ -501,7 +512,7 @@ class ModelService:
         self,
         languages: list[dict[str, str]],
         *,
-        provider: str = "codex",
+        provider: str | None = None,
     ) -> dict[str, Any]:
         """Resolve requested languages from versioned evidence without model self-assessment."""
         status = self.language_competency_status(provider)
@@ -558,7 +569,7 @@ class ModelService:
             "assessment_source": "VERSIONED_REGISTRY_OR_MEASURED_EVALUATION",
         }
 
-    def lookup_current_model_languages(self, provider: str = "codex") -> dict[str, Any]:
+    def lookup_current_model_languages(self, provider: str | None = None) -> dict[str, Any]:
         """Resolve all SAGE-known languages from the versioned competency registry."""
         return self.lookup_language_competency(known_language_rows(self.root), provider=provider)
 
@@ -569,7 +580,7 @@ class ModelService:
         language_name: str,
         script: str = "",
         region: str = "",
-        provider: str = "codex",
+        provider: str | None = None,
     ) -> dict[str, Any]:
         """Resolve one imported language without asking a model to assess itself."""
         status = self.language_competency_status(provider)
@@ -653,10 +664,10 @@ class ModelService:
         provider_id = provider.strip().lower()
         if provider_id not in PROVIDER_IDS:
             raise ConfigurationError(f"Unsupported LLM provider: {provider}")
-        if provider_id == "codex":
+        if provider_id in GOVERNED_CLI_PROVIDER_IDS:
             raise ConfigurationError(
-                "Codex connection is configured through provider setup; model routes use automatic "
-                "Skill routing or the advanced routing override"
+                f"{provider_labels(provider_id).cli} is configured through provider setup; model routes use "
+                "automatic Skill routing or the advanced routing override"
             )
         value = self.settings()
         item = value["providers"][provider_id]

@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "provider": "claude",
+  "reviewed": "2026-10-22",
+  "source": "Anthropic model documentation (Claude API skill model table, cached 2026-10-06); effort levels as accepted by claude --effort",
+  "note": "The Claude Code CLI has no live model catalog. Each entry is reviewed by hand; a model absent here is not routable. Reasoning efforts are listed in provider progression order. No entry is classified Instant or administrative-only here; that is model-policy.yml's decision.",
+  "models": [
+    {
+      "id": "claude-opus-5-5",
+      "display_name": "Claude Opus 5.5",
+      "supported_reasoning_efforts": ["low", "medium", "high", "xhigh", "max"],
+      "default_reasoning_effort": "medium",
+      "is_default": true,
+      "input_modalities": ["text", "image"]
+    },
+    {
+      "id": "claude-sonnet-5-5",
+      "display_name": "Claude Sonnet 5.5",
+      "supported_reasoning_efforts": ["low", "medium", "high", "xhigh", "max"],
+      "default_reasoning_effort": "high",
+      "is_default": false,
+      "input_modalities": ["text", "image"]
+    },
+    {
+      "id": "claude-haiku-5-5",
+      "display_name": "Claude Haiku 5.5",
+      "supported_reasoning_efforts": ["low", "medium", "high", "xhigh", "max"],
+      "default_reasoning_effort": "medium",
+      "is_default": false,
+      "input_modalities": ["text", "image"]
+    },
+    {
+      "id": "claude-fable-5-1",
+      "display_name": "Claude Fable 5.1",
+      "supported_reasoning_efforts": ["low", "medium", "high", "xhigh", "max"],
+      "default_reasoning_effort": null,
+      "is_default": false,
+      "input_modalities": ["text", "image"]
+    }
+  ]
+}

@@ -423,7 +423,7 @@ def test_live_ai_probe_records_actual_model_and_reasoning_in_one_canonical_statu
     class FakeService:
         """Provide deterministic live AI-status responses for startup reporting."""
 
-        def quick_codex_status(self):
+        def quick_provider_status(self):
             """Return an authenticated provider status."""
             return {
                 "available": True,

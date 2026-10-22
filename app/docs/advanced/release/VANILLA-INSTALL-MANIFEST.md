@@ -149,6 +149,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/superpowers/plans/2026-09-23-LANGUAGE-PROFILE-VALIDATION-REQUEST-PLAN.md`
 - `docs/superpowers/plans/2026-09-28-NCA-BATCH-SIZE-OPTIMIZATION-PLAN.md`
 - `docs/superpowers/plans/2026-09-28-NCA-SIMPLIFIED-NUMERIC-CHECK-REWRITE-PLAN.md`
+- `docs/superpowers/plans/2026-10-22-CLAUDE-CODE-PROVIDER-PLAN.md`
 - `docs/superpowers/specs`
 - `docs/superpowers/specs/2026-08-31-SOURCE-TEXT-COVERAGE-ISSUES.md`
 - `docs/superpowers/specs/2026-09-01-RTC-STC-PRIMARY-WORKFLOWS-DESIGN.md`
@@ -859,6 +860,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/consolidation.py`
 - `system/src/sage/coverage.py`
 - `system/src/sage/data`
+- `system/src/sage/data/claude-catalog.json`
 - `system/src/sage/data/cldr-locale-facts.json`
 - `system/src/sage/data/iso-3166-1.json`
 - `system/src/sage/data/iso-639-3.json`
@@ -872,6 +874,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/executors`
 - `system/src/sage/executors/__init__.py`
 - `system/src/sage/executors/base.py`
+- `system/src/sage/executors/claude_cli.py`
+- `system/src/sage/executors/cli_process.py`
 - `system/src/sage/executors/codex_cli.py`
 - `system/src/sage/executors/http.py`
 - `system/src/sage/executors/ollama.py`
@@ -1121,6 +1125,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_bundled_regional_profiles.py`
 - `system/tests/test_candidates.py`
 - `system/tests/test_cardinality.py`
+- `system/tests/test_claude_cli_executor.py`
+- `system/tests/test_claude_provider_selection.py`
 - `system/tests/test_cli_dev3.py`
 - `system/tests/test_clone_and_install.py`
 - `system/tests/test_codex_app_server_session.py`

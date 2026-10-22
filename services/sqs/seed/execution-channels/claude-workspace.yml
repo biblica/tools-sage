@@ -1,0 +1,22 @@
+execution_channel: claude_workspace
+provider_family: anthropic
+display_name: Anthropic Claude subscription account (Claude Code CLI)
+provisioning_model: workspace
+capability_classes:
+- GRAMMAR_ANALYSIS
+- SEMANTIC_REWRITE
+reasoning_tier_taxonomy: anthropic-2026
+notes:
+- Staff sign in to the unmodified Claude Code CLI with their own Claude
+  subscription (claude.ai sign-in; Team/Enterprise seats are org-managed). An
+  API key, auth token, or Console sign-in is never used; SAGE strips
+  ANTHROPIC_API_KEY and related variables before every call because Claude Code
+  in -p mode would otherwise prefer the key over the subscription.
+- Reasoning tiers are Claude Code's native --effort levels (low, medium, high,
+  xhigh, max), listed per model in SAGE's reviewed catalog
+  (app/system/src/sage/data/claude-catalog.json); the CLI has no live model list.
+- availability_check is deliberately left unset -- Claude Code exposes no
+  non-interactive query of remaining subscription allowance.
+- The SQS service side (discovery, admin approvals, tier mapping) still assumes
+  provider_family openai; a Claude qualification cannot be approved until that
+  is generalized (Claude provider plan, Phase 4).

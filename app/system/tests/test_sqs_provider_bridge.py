@@ -8,7 +8,7 @@ from pathlib import Path
 from sage.errors import ValidationError
 from sage.executors.base import ModelCapability, ProviderStatus, ReasoningEffortOption
 from sage.executors.codex_cli import CodexCLIExecutor
-from sage.sqs_provider_bridge import CodexWorkspaceProviderAdapter, ensure_sage_sqs_importable
+from sage.sqs_provider_bridge import WorkspaceProviderAdapter, ensure_sage_sqs_importable
 
 _APP_ROOT = Path(__file__).resolve().parents[2]
 
@@ -76,7 +76,7 @@ def test_adapter_executes_through_codex_cli_executor_and_returns_a_provider_resu
     from sage_sqs.providers.base import ProviderResult
 
     executor = _executor_with_fake_run('{"finding": {"material": false, "relation": "none"}}')
-    adapter = CodexWorkspaceProviderAdapter(executor)
+    adapter = WorkspaceProviderAdapter(executor)
 
     result = adapter.execute(model_id="gpt-5.6-sol", reasoning="medium", prompt="check this")
 
@@ -91,7 +91,7 @@ def test_adapter_propagates_a_provider_failure_for_the_worker_to_catch():
     """A Codex execution failure raises SAGE's own ValidationError, which the SQS worker already catches broadly."""
     assert ensure_sage_sqs_importable(_APP_ROOT) is True
     executor = _executor_with_fake_run("Codex crashed: invalid sandbox configuration", returncode=1)
-    adapter = CodexWorkspaceProviderAdapter(executor)
+    adapter = WorkspaceProviderAdapter(executor)
 
     try:
         adapter.execute(model_id="gpt-5.6-sol", reasoning="medium", prompt="check this")

@@ -5,8 +5,8 @@ provider plan: the work-queue list (sqs_client.fetch_planned_evaluations),
 the validated local bundle cache (sqs_cache.SqsCache) for model/profile
 lookup, sage_sqs's own portable evaluation runner and qualification
 synthesis (made importable via sqs_provider_bridge.ensure_sage_sqs_importable),
-and the Codex-workspace provider bridge
-(sqs_provider_bridge.CodexWorkspaceProviderAdapter).
+and the workspace provider bridge
+(sqs_provider_bridge.WorkspaceProviderAdapter) over the selected provider.
 
 This module never writes to the SQS server's database -- it only produces a
 qualification-submission-1.0 file and SCPs it into the server's incoming/
@@ -23,7 +23,8 @@ from typing import Any, Callable
 
 from .atomic import atomic_write_json
 from .errors import ValidationError
-from .sqs_provider_bridge import CodexWorkspaceProviderAdapter, ensure_sage_sqs_importable
+from .llm_settings import load_llm_settings
+from .sqs_provider_bridge import WorkspaceProviderAdapter, ensure_sage_sqs_importable
 
 _SUBMISSION_SCHEMA = "sage-sqs-qualification-submission-1.0"
 
@@ -83,7 +84,7 @@ def prepare_submission(
     Does not write or upload anything -- callers pass the result to
     write_submission_file and then upload_submission_file. `provider` is
     injectable for tests; production callers leave it as None to use
-    CodexWorkspaceProviderAdapter.
+    WorkspaceProviderAdapter over the selected provider.
     """
     if not ensure_sage_sqs_importable(sage_root):
         raise PlannedEvaluationNotRunnable(
@@ -123,13 +124,17 @@ def prepare_submission(
         input_usd_per_mtok=float(model_row["input_usd_per_mtok"]),
         output_usd_per_mtok=float(model_row["output_usd_per_mtok"]),
     )
-    adapter = provider if provider is not None else CodexWorkspaceProviderAdapter()
+    adapter = (
+        provider
+        if provider is not None
+        else WorkspaceProviderAdapter(provider=load_llm_settings(sage_root)["selected_provider"])
+    )
 
     result = run_planned_test(pack=pack, provider=adapter, model=model, starting_reasoning=reasoning, scope=scope)
     qualification = synthesize_qualification(
         model=model, profile=profile, capability=capability, run=result,
         evidence_basis=EvidenceBasis.CONFIRMED if scope == "CONFIRMATION" else EvidenceBasis.MEASURED,
-        route_value="HIGH", execution_channel="codex_workspace",
+        route_value="HIGH", execution_channel=getattr(adapter, "execution_channel", "codex_workspace"),
     )
     return {
         "schema": _SUBMISSION_SCHEMA,

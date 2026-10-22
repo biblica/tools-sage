@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .errors import SageError, ValidationError
+from .executors import provider_labels
 from .hashing import sha256_file
 from .interface_localization import InterfaceLocalizer
 from .jobs import RUN_CLOSED_STATUSES, JobStore
@@ -104,7 +105,7 @@ def context_help_lines(title: str) -> tuple[str, ...]:
             "Full Scan opens and validates Project metadata, Scripture inventory, canon and VRS.",
             "Selecting a newly discovered Project validates that Project on demand.",
         )
-    if key == "AI" or "AI SETUP" in key or "MODEL" in key or "CODEX" in key or "CONFIGURE" in key:
+    if key == "AI" or "AI SETUP" in key or "MODEL" in key or "CODEX" in key or "CLAUDE" in key or "CONFIGURE" in key:
         return (
             "AI status verifies the configured provider, authentication, model and reasoning without generating output.",
             "Check LLM connection is the explicit end-to-end model-generation test.",
@@ -168,7 +169,7 @@ def probe_workflow_ai(
 
     model_service = service or ModelService(root)
     try:
-        preflight = dict(model_service.quick_codex_status())
+        preflight = dict(model_service.quick_provider_status())
     except SageError as exc:
         preflight = {
             "available": False,
@@ -177,10 +178,11 @@ def probe_workflow_ai(
             "reason_code": exc.code,
         }
     if not preflight.get("available") or not preflight.get("ready"):
+        selected = model_service.selected_provider()
         status = AIStatus(
             connection="ACTION NEEDED",
-            provider_id="codex",
-            provider="OpenAI / ChatGPT",
+            provider_id=selected,
+            provider=provider_labels(selected).service,
             model=None,
             reasoning_level=None,
             prerequisite_status="BLOCKED",
@@ -197,11 +199,11 @@ def probe_workflow_ai(
 
     try:
         result = model_service.readiness_check()
-        provider_id = str(result.get("provider") or "codex")
+        provider_id = str(result.get("provider") or model_service.selected_provider())
         status = AIStatus(
             connection="READY",
             provider_id=provider_id,
-            provider="OpenAI / ChatGPT" if provider_id == "codex" else provider_id,
+            provider=provider_labels(provider_id).service,
             model=str(result.get("model") or "PROVIDER DEFAULT"),
             reasoning_level=str(result.get("reasoning_effort") or "PROVIDER DEFAULT").upper(),
             prerequisite_status="READY",
@@ -213,12 +215,12 @@ def probe_workflow_ai(
         )
     except SageError as exc:
         settings = model_service.settings()
-        provider_id = str(settings.get("selected_provider") or "codex")
+        provider_id = str(settings["selected_provider"])
         item = dict(settings.get("providers", {}).get(provider_id, {}))
         status = AIStatus(
             connection="ACTION NEEDED",
             provider_id=provider_id,
-            provider="OpenAI / ChatGPT" if provider_id == "codex" else provider_id,
+            provider=provider_labels(provider_id).service,
             model=item.get("model"),
             reasoning_level=(str(item.get("reasoning_effort")).upper() if item.get("reasoning_effort") else None),
             prerequisite_status="BLOCKED",
@@ -407,10 +409,11 @@ class OperatorUIService:
         scripture_status = str((scripture_resources or {}).get("status") or "NOT CHECKED")
         if scripture_status == "BLOCKED":
             return "VALIDATE_SCRIPTURE", "Resolve Scripture resource validation"
+        labels = provider_labels(load_llm_settings(self.root)["selected_provider"])
         if not ai.get("available"):
-            return "INSTALL_CODEX", "Install Codex CLI"
+            return "INSTALL_PROVIDER_CLI", f"Install {labels.cli}"
         if not ai.get("ready"):
-            return "LOGIN_CHATGPT", "Sign in with ChatGPT"
+            return "SIGN_IN_PROVIDER", f"Sign in with {labels.account}"
         projects_root_status, _projects_root = self.projects_root_status()
         if projects_root_status == "NOT_CONFIGURED":
             return "CONFIGURE_PROJECT_ROOT", "Configure Paratext Projects root"

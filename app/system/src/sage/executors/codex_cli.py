@@ -23,6 +23,13 @@ from .base import (
     ProviderStatus,
     ReasoningEffortOption,
 )
+from .cli_process import (
+    normalize_command,
+    run_governed,
+    terminate_process_tree,
+    windows_command_argv,
+    windows_creationflags,
+)
 
 # Confirmed real Codex CLI failure message shapes (not assumed): plan/workspace
 # quota exhaustion reads "You've hit your usage limit ... try again at <time>";
@@ -63,18 +70,8 @@ class CodexCLIExecutor:
 
     @staticmethod
     def _normalize_command(command: str | None) -> str | None:
-        """Remove accidental shell quoting from one executable/shim path.
-
-        Windows command discovery and persisted environment overrides can contain a path
-        wrapped in quotes.  Passing those quote characters to ``cmd.exe`` makes the
-        quotes part of the command token, producing ``'\"...codex.CMD\"' is not
-        recognized``.  SAGE stores an executable path, never a pre-rendered shell
-        command, so matching outer quotes are always transport noise and are removed.
-        """
-        value = str(command or "").strip()
-        while len(value) >= 2 and value[0] == value[-1] and value[0] in {"\"", "'"}:
-            value = value[1:-1].strip()
-        return value or None
+        """Remove accidental shell quoting from one executable/shim path."""
+        return normalize_command(command)
 
     @classmethod
     def _windows_cli_candidates(cls, env: dict[str, str] | None = None) -> tuple[Path, ...]:
@@ -149,46 +146,18 @@ class CodexCLIExecutor:
         if not command:
             raise ValidationError("Codex CLI is not installed", code="CODEX_CLI_NOT_FOUND")
         if self._is_windows() and Path(command).suffix.casefold() in {".cmd", ".bat"}:
-            comspec = os.environ.get("COMSPEC", "").strip() or str(Path(os.environ.get("SYSTEMROOT", r"C:\Windows")) / "System32" / "cmd.exe")
-            # Do not pre-render a nested quoted command string and then pass that string
-            # as one argv element.  Python would escape the embedded quotes for
-            # CreateProcess and ``cmd /s /c`` can then treat them literally.  ``call``
-            # lets cmd.exe receive the shim path as a normal argument and correctly
-            # returns control to SAGE after the batch shim finishes.
-            return [comspec, "/d", "/c", "call", command, *args]
+            return windows_command_argv(command, args)
         return [command, *args]
 
     @staticmethod
     def _windows_creationflags() -> int:
         """Create a separable Windows process group where the host supports it."""
-        if os.name != "nt":
-            return 0
-        return int(getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0))
+        return windows_creationflags()
 
     @staticmethod
     def _terminate_process_tree(process: subprocess.Popen[str]) -> None:
         """Terminate one Codex process and its Windows descendants after timeout/cleanup."""
-        if process.poll() is not None:
-            return
-        if os.name == "nt":
-            system_root = os.environ.get("SYSTEMROOT", r"C:\Windows")
-            taskkill = Path(system_root) / "System32" / "taskkill.exe"
-            try:
-                subprocess.run(
-                    [str(taskkill), "/PID", str(process.pid), "/T", "/F"],
-                    check=False,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    timeout=10,
-                )
-            except (OSError, subprocess.SubprocessError):
-                pass
-        if process.poll() is None:
-            process.kill()
-        try:
-            process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            pass
+        terminate_process_tree(process)
 
     @staticmethod
     def _is_windows() -> bool:
@@ -255,46 +224,14 @@ class CodexCLIExecutor:
         """Run a governed Codex task without stdout/stderr pipe inheritance and clean its process tree."""
         if not self.command:
             raise ValidationError("Codex CLI is not installed", code="CODEX_CLI_NOT_FOUND")
-        stdout_path = cwd / "codex-stdout.log"
-        stderr_path = cwd / "codex-stderr.log"
-        argv = self._command_argv(args)
-        # Windows commonly defaults Python text pipes to a legacy code page such as
-        # cp1252. Workflow prompts can contain Scripture text in any Unicode script,
-        # so validate and force UTF-8 before the child is created.  Without this, a
-        # writer-thread UnicodeEncodeError can leave Codex alive waiting for stdin
-        # until SAGE's outer timeout expires.
-        input_text.encode(self._TEXT_ENCODING, errors="strict")
-        with (
-            stdout_path.open("w+", encoding=self._TEXT_ENCODING) as stdout_handle,
-            stderr_path.open("w+", encoding=self._TEXT_ENCODING) as stderr_handle,
-        ):
-            process = subprocess.Popen(
-                argv,
-                stdin=subprocess.PIPE,
-                stdout=stdout_handle,
-                stderr=stderr_handle,
-                text=True,
-                encoding=self._TEXT_ENCODING,
-                errors="strict",
-                env=self._environment(),
-                cwd=str(cwd),
-                creationflags=self._windows_creationflags(),
-            )
-            try:
-                process.communicate(input=input_text, timeout=timeout)
-            except subprocess.TimeoutExpired:
-                self._terminate_process_tree(process)
-                raise
-            finally:
-                if process.poll() is None:
-                    self._terminate_process_tree(process)
-            stdout_handle.flush()
-            stderr_handle.flush()
-            stdout_handle.seek(0)
-            stderr_handle.seek(0)
-            stdout = stdout_handle.read()
-            stderr = stderr_handle.read()
-        return subprocess.CompletedProcess(argv, int(process.returncode or 0), stdout=stdout, stderr=stderr)
+        return run_governed(
+            self._command_argv(args),
+            timeout=timeout,
+            input_text=input_text,
+            cwd=cwd,
+            env=self._environment(),
+            log_prefix="codex",
+        )
 
     @staticmethod
     def _execution_failure_detail(raw: str, prompt: str, *, limit: int = 2000) -> str:
@@ -619,6 +556,10 @@ class CodexCLIExecutor:
                 ),
             )
         return status
+
+    def connect(self, *, device_auth: bool = False) -> ProviderStatus:
+        """Provider-neutral name for ChatGPT sign-in, the only Codex account SAGE accepts."""
+        return self.connect_chatgpt(device_auth=device_auth)
 
     def _app_server_roundtrip(
         self,

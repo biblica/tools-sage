@@ -28,7 +28,8 @@ from .evidence_policy import (
     task_evidence_policy,
     validate_read_class,
 )
-from .executors import ProviderRequest, make_executor
+from .build_policy import GOVERNED_CLI_PROVIDER_IDS
+from .executors import ProviderRequest, make_executor, receipt_transport_policy
 from .hashing import sha256_bytes, sha256_file
 from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
@@ -2082,7 +2083,7 @@ def _resolve_task_route(
             "Provider status identity differs from the configured provider",
             code="PROVIDER_ROUTE_UNAVAILABLE",
         )
-    if provider == "codex":
+    if provider in GOVERNED_CLI_PROVIDER_IDS:
         cache_provider_catalog(config.root, status)
     route = resolve_routing_mode(config.root, skill_id, [status])
     if route.identity.provider != provider:
@@ -2460,13 +2461,7 @@ def execute_task(
             )
         ],
         "provider_metadata": final.metadata,
-        "policy": {
-            "openai_api_keys": "PROHIBITED",
-            "sealed_transport": True,
-            "sage_workspace_exposed_as_provider_cwd": False,
-            "filesystem_writes_by_provider": False,
-            "live_provider_catalog_required": True,
-        },
+        "policy": receipt_transport_policy(route_identity.provider),
     }
     validation_root = task_root / "validation"
     validation_root.mkdir(parents=True, exist_ok=True)

@@ -76,7 +76,8 @@ from .llm_tasks import execute_task
 from .llm_settings import load_llm_settings
 from .model_policy import describe_catalog_change
 from .model_service import ModelService
-from .executors import PROVIDER_IDS
+from .build_policy import GOVERNED_CLI_PROVIDER_IDS
+from .executors import PROVIDER_IDS, provider_labels
 from .sqs_cache import SqsBundleRejected, SqsCache, load_sqs_config
 from .sqs_client import SqsTransportError, fetch_bundle, fetch_planned_evaluations, resolve_endpoints
 from .sqs_discovery import flush_outbox
@@ -233,7 +234,7 @@ def _guide_payload(topic: str) -> dict[str, Any]:
             "summary": "Startup readiness is resumable and menu-driven rather than documentation-driven.",
             "steps": [
                 f"Run `{launcher}` and choose SAGE Maintenance when needed.",
-                "SAGE checks Codex CLI, ChatGPT sign-in, Jobs, Projects, and Project initialization in sequence.",
+                "SAGE checks the selected AI provider CLI and its sign-in, Jobs, Projects, and Project initialization in sequence.",
                 "Exit safely at any point; the next launch resumes from localdata/.system/state/setup-state.json.",
             ],
         },
@@ -242,8 +243,8 @@ def _guide_payload(topic: str) -> dict[str, Any]:
             "summary": "SAGE owns state and writes; the provider receives sealed governed tasks only.",
             "steps": [
                 "SAGE controller: project selection, evidence, task state, validation, commits, and recovery.",
-                "Codex CLI: OpenAI connection using ChatGPT sign-in; desktop app is not required.",
-                "API keys, service accounts, direct OpenAI API calls, and API fallback are prohibited.",
+                "AI provider: Codex CLI with ChatGPT sign-in, or Claude Code CLI with Claude subscription sign-in; desktop apps are not required.",
+                "API keys, service accounts, direct provider API calls, and API fallback are prohibited.",
             ],
         },
         "task": {
@@ -1899,9 +1900,9 @@ def command_model_status(args: argparse.Namespace) -> int:
         if row.get("selected_reasoning_effort"):
             print(f"  Reasoning: {row['selected_reasoning_effort']}")
         if row.get("account_plan_type"):
-            print(f"  ChatGPT plan/workspace: {row['account_plan_type']}")
+            print(f"  Plan: {row['account_plan_type']}")
         if row.get("model_capabilities"):
-            print(f"  Live models: {len(row['model_capabilities'])}")
+            print(f"  Models: {len(row['model_capabilities'])}")
         if row.get("endpoint"):
             print(f"  Endpoint: {row['endpoint']}")
         print(f"  Auth: {row.get('auth_mode', 'NONE')}")
@@ -1910,36 +1911,55 @@ def command_model_status(args: argparse.Namespace) -> int:
 
 
 def command_model_connect(args: argparse.Namespace) -> int:
-    """Connect OpenAI through interactive ChatGPT-managed Codex CLI sign-in."""
+    """Sign the selected (or named) provider CLI in with the Operator's own subscription."""
     if getattr(args, "json", False):
         raise ValidationError(
-            "Interactive ChatGPT sign-in cannot run with --json.",
+            "Interactive provider sign-in cannot run with --json.",
             code="INTERACTIVE_LOGIN_REQUIRED",
             next_action="Run `sage model connect` in an interactive terminal.",
         )
     config, _ = _load(args)
-    result = _model_service(config).connect_chatgpt(device_auth=bool(getattr(args, "device_auth", False)))
-    print("OpenAI and ChatGPT: CONNECTED")
-    print("Transport: local Codex CLI (Codex desktop app not required)")
+    result = _model_service(config).connect_provider(
+        getattr(args, "provider", None), device_auth=bool(getattr(args, "device_auth", False))
+    )
+    labels = provider_labels(result["provider"])
+    print(f"{labels.service}: CONNECTED")
+    print(f"Transport: local {labels.cli} (desktop app not required)")
     print(f"Auth: {result['auth_mode']}")
     if result.get("account_plan_type"):
-        print(f"ChatGPT plan/workspace: {result['account_plan_type']}")
-    print(f"Live models: {result['model_count']}")
+        print(f"{labels.account} plan: {result['account_plan_type']}")
+    print(f"Models: {result['model_count']}")
     print("Model routing: SAGE automatic task policy")
+    return 0
+
+
+def command_model_use(args: argparse.Namespace) -> int:
+    """Select the one governed provider that serves all governed LLM work."""
+    config, _ = _load(args)
+    result = _model_service(config).select(provider=args.provider, auto=True)
+    if args.json:
+        _print_json(result)
+        return 0
+    labels = provider_labels(result["selected_provider"])
+    print(f"Selected AI provider: {labels.service} ({labels.cli})")
+    print(f"Status: {result['status']}")
+    if result["status"] != "READY":
+        print(result["provider_status"].get("diagnostic", ""))
     return 0
 
 
 def command_model_refresh(args: argparse.Namespace) -> int:
     """Refresh the live model catalog exposed to the current provider account."""
     config, _ = _load(args)
-    result = _model_service(config).refresh(args.provider)
+    service = _model_service(config)
+    result = service.refresh(args.provider or service.selected_provider())
     if args.json:
         _print_json(result)
         return 0
     print(f"{result['provider']}: REFRESHED")
     print(f"Auth: {result['auth_mode']}")
     if result.get("account_plan_type"):
-        print(f"ChatGPT plan/workspace: {result['account_plan_type']}")
+        print(f"Plan: {result['account_plan_type']}")
     print(f"Models: {result['model_count']}")
     if result.get("catalog_cache"):
         print(f"Catalog cache: {result['catalog_cache']}")
@@ -2098,9 +2118,10 @@ def command_sqs_submit(args: argparse.Namespace) -> int:
 
 
 def command_model_list(args: argparse.Namespace) -> int:
-    """List live provider models with Codex reasoning and SAGE qualification metadata."""
+    """List provider models with native reasoning levels and SAGE qualification metadata."""
     config, _ = _load(args)
-    result = _model_service(config).list_models(args.provider)
+    service = _model_service(config)
+    result = service.list_models(args.provider or service.selected_provider())
     if args.json:
         _print_json(result)
         return 0
@@ -2125,7 +2146,7 @@ def command_model_list(args: argparse.Namespace) -> int:
                     for item in row["qualified_skill_routes"]
                 )
             )
-        elif result["provider"] == "codex":
+        elif result["provider"] in GOVERNED_CLI_PROVIDER_IDS:
             print("  Qualified Skills: none")
         if row.get("provisional_skill_routes"):
             print(
@@ -2236,6 +2257,7 @@ def command_model_evaluate(args: argparse.Namespace) -> int:
     """Evaluate exact or catalog routes against sealed synthetic Skill suites."""
     config, _ = _load(args)
     service = _model_service(config)
+    provider = args.provider or service.selected_provider()
     skill_ids = None if args.all_skills else list(args.skill or [])
     model_ids = None if args.all_models else list(args.model or [])
     if args.reasoning:
@@ -2246,13 +2268,13 @@ def command_model_evaluate(args: argparse.Namespace) -> int:
             )
         result = service.evaluate_skill_route(
             skill_id=skill_ids[0],
-            provider=args.provider,
+            provider=provider,
             model_id=model_ids[0],
             reasoning_id=args.reasoning,
         )
     else:
         result = service.evaluate_catalog_routes(
-            provider=args.provider,
+            provider=provider,
             skill_ids=skill_ids,
             model_ids=model_ids,
             comparison=bool(args.comparison),
@@ -5020,17 +5042,21 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
 
     model = subparsers.add_parser("model", help="Configure and diagnose SAGE LLM providers and models")
     model_actions = model.add_subparsers(dest="model_command", required=True)
-    model_connect = model_actions.add_parser("connect", help="Connect OpenAI through ChatGPT sign-in using the local Codex CLI; desktop app not required")
-    model_connect.add_argument("--device-auth", action="store_true", help="Use device-code sign-in instead of the normal browser flow")
+    model_connect = model_actions.add_parser("connect", help="Sign the provider CLI in with your own subscription (ChatGPT for Codex, Claude for Claude Code); desktop apps not required")
+    model_connect.add_argument("--provider", choices=GOVERNED_CLI_PROVIDER_IDS, help="Provider to sign in (default: the selected provider)")
+    model_connect.add_argument("--device-auth", action="store_true", help="Codex only: use device-code sign-in instead of the normal browser flow")
     model_connect.set_defaults(handler=command_model_connect)
+    model_use = model_actions.add_parser("select-provider", help="Select the AI provider for all governed work (one provider at a time); models stay with Skill routing")
+    model_use.add_argument("--provider", choices=GOVERNED_CLI_PROVIDER_IDS, required=True)
+    model_use.set_defaults(handler=command_model_use)
     model_status = model_actions.add_parser("status", help="Show provider readiness and current model capability state")
     model_status.add_argument("--provider", choices=PROVIDER_IDS)
     model_status.set_defaults(handler=command_model_status)
-    model_refresh = model_actions.add_parser("refresh", help="Refresh the live model catalog for the signed-in provider account")
-    model_refresh.add_argument("--provider", choices=PROVIDER_IDS, default="codex")
+    model_refresh = model_actions.add_parser("refresh", help="Refresh the model catalog for the signed-in provider account")
+    model_refresh.add_argument("--provider", choices=PROVIDER_IDS, help="Default: the selected provider")
     model_refresh.set_defaults(handler=command_model_refresh)
-    model_list = model_actions.add_parser("list", help="List live models, reasoning levels, and SAGE qualification")
-    model_list.add_argument("--provider", choices=PROVIDER_IDS, required=True)
+    model_list = model_actions.add_parser("list", help="List models, reasoning levels, and SAGE qualification")
+    model_list.add_argument("--provider", choices=PROVIDER_IDS, help="Default: the selected provider")
     model_list.set_defaults(handler=command_model_list)
     model_sqs_sync = model_actions.add_parser(
         "sqs-sync",
@@ -5060,7 +5086,7 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     evaluation_skills = model_evaluate.add_mutually_exclusive_group(required=True)
     evaluation_skills.add_argument("--skill", action="append", help="Registered Skill ID; repeat to evaluate several")
     evaluation_skills.add_argument("--all-skills", action="store_true", help="Evaluate every registered Skill")
-    model_evaluate.add_argument("--provider", default="codex")
+    model_evaluate.add_argument("--provider", help="Default: the selected provider")
     evaluation_models = model_evaluate.add_mutually_exclusive_group(required=True)
     evaluation_models.add_argument("--model", action="append", help="Provider model ID; repeat to compare several")
     evaluation_models.add_argument("--all-models", action="store_true", help="Evaluate every available provider model")

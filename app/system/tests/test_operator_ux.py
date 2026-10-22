@@ -115,19 +115,23 @@ def test_setup_never_installs_codex_without_operator_confirmation(make_workspace
     class FakeService:
         """Expose only the install/status methods used by the guided install action."""
 
+        def selected_provider(self):
+            """Report Codex as the selected governed provider."""
+            return "codex"
+
         installs = 0
 
-        def quick_codex_status(self):
+        def quick_provider_status(self):
             """Report the CLI as absent."""
             return {"available": False, "ready": False, "auth_mode": "NONE"}
 
-        def install_codex(self):
+        def install_provider(self):
             """Fail the test if installation occurs without consent."""
             self.installs += 1
             return {"available": True, "ready": False, "auth_mode": "UNVERIFIED"}
 
     service = FakeService()
-    result = center._setup_install_codex(service)  # noqa: SLF001 - intentional UI contract test
+    result = center._setup_install_provider(service)  # noqa: SLF001 - intentional UI contract test
 
     assert service.installs == 0
     assert result["available"] is False
@@ -152,10 +156,17 @@ def test_first_run_setup_offers_sign_in_after_failed_install_check(make_workspac
         """Mimic an installer that wrote the binary but could not verify it."""
         raise ValidationError("not verified", code="CODEX_INSTALL_PATH_REFRESH_REQUIRED")
 
-    center._setup_install_codex = fail_install  # noqa: SLF001
-    center._model_connect_chatgpt = lambda service: connected.append(True)  # noqa: SLF001
+    center._setup_install_provider = fail_install  # noqa: SLF001
+    center._model_connect_provider = lambda service: connected.append(True)  # noqa: SLF001
 
-    row = center._setup_first_run_ai(object())  # noqa: SLF001 - first-run contract test
+    class SelectedCodex:
+        """Report Codex as the selected governed provider and nothing else."""
+
+        def selected_provider(self):
+            """Return the selected provider."""
+            return "codex"
+
+    row = center._setup_first_run_ai(SelectedCodex())  # noqa: SLF001 - first-run contract test
 
     assert connected == [True]
     assert row["ready"] is True
@@ -766,7 +777,7 @@ def test_menu_declares_external_task_paths_at_controller_boundary(make_workspace
     manifest_path = run.root / "tasks" / "unit-1" / "task-manifest.json"
     commands: list[list[str]] = []
 
-    monkeypatch.setattr(center, "_ensure_codex_execution_transport", lambda: None)
+    monkeypatch.setattr(center, "_ensure_provider_execution_transport", lambda: None)
 
     def capture(_job, arguments):
         """Capture both controller commands without invoking a provider or validator."""
@@ -911,6 +922,10 @@ def test_codex_transport_preflight_fails_fast_with_network_diagnostic(make_works
     class FakeService:
         """Simulate a Codex service whose sampling transport stalls."""
 
+        def selected_provider(self):
+            """Report Codex as the selected governed provider."""
+            return "codex"
+
         def __init__(self, _root):
             """Accept the normal ModelService root argument."""
 
@@ -927,9 +942,9 @@ def test_codex_transport_preflight_fails_fast_with_network_diagnostic(make_works
 
     monkeypatch.setattr("sage.menu.ModelService", FakeService)
     with pytest.raises(ValidationError) as caught:
-        center._ensure_codex_execution_transport()  # noqa: SLF001 - governed transport contract
+        center._ensure_provider_execution_transport()  # noqa: SLF001 - governed transport contract
 
-    assert caught.value.code == "CODEX_EXECUTION_NOT_READY"
+    assert caught.value.code == "PROVIDER_EXECUTION_NOT_READY"
     assert "not ready" in caught.value.message
     assert "Check LLM connection" in (caught.value.next_action or "")
 
@@ -949,6 +964,10 @@ def test_codex_transport_preflight_is_cached_for_partitioned_work(make_workspace
     class FakeService:
         """Simulate a healthy Codex service for probe-cache verification."""
 
+        def selected_provider(self):
+            """Report Codex as the selected governed provider."""
+            return "codex"
+
         def __init__(self, _root):
             """Accept the normal ModelService root argument."""
 
@@ -962,8 +981,8 @@ def test_codex_transport_preflight_is_cached_for_partitioned_work(make_workspace
             return {"status": "READY"}
 
     monkeypatch.setattr("sage.menu.ModelService", FakeService)
-    center._ensure_codex_execution_transport()  # noqa: SLF001
-    center._ensure_codex_execution_transport()  # noqa: SLF001
+    center._ensure_provider_execution_transport()  # noqa: SLF001
+    center._ensure_provider_execution_transport()  # noqa: SLF001
     assert calls == [True]
 
 

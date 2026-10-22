@@ -1029,6 +1029,7 @@ def test_provider_configuration_and_controller_failures_stop_the_run() -> None:
     """A logged-out provider or a controller crash must not be retried into NOT_ASSESSED units."""
     for code in (
         "CODEX_EXECUTION_NOT_READY",
+        "PROVIDER_EXECUTION_NOT_READY",
         "MENU_CONTROLLER_COMMAND_FAILED",
         "CONFIGURATION_ERROR",
         "PROVIDER_ROUTE_UNAVAILABLE",

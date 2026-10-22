@@ -18,6 +18,7 @@ from uuid import uuid4
 from types import MappingProxyType
 from typing import Any, Callable, Generic, Mapping, TypeVar
 
+from sage.build_policy import GOVERNED_CLI_PROVIDER_IDS
 from sage.errors import ValidationError
 from sage.executors import Executor, ProviderRequest
 from sage.llm_settings import load_llm_settings
@@ -265,7 +266,7 @@ class NcaModelTasks:
                     "NCA transport status differs from configured provider",
                     "PROVIDER_ROUTE_UNAVAILABLE",
                 )
-            if provider == "codex":
+            if provider in GOVERNED_CLI_PROVIDER_IDS:
                 cache_provider_catalog(config.root, status)
             route = resolve_routing_mode(config.root, SKILL_ID, [status])
             if route.identity.provider != provider:

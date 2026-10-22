@@ -30,6 +30,7 @@ _SQS_EXECUTION_CHANNELS_DIR = _REPO_ROOT / "services" / "sqs" / "seed" / "execut
 
 SAGE_PROVIDER_TO_EXECUTION_CHANNEL: dict[str, str] = {
     "codex": "codex_workspace",
+    "claude": "claude_workspace",
 }
 
 

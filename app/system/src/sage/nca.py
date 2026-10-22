@@ -13,6 +13,7 @@ import yaml
 
 from .atomic import atomic_write_json, atomic_write_text
 from .errors import ValidationError
+from .executors import receipt_transport_policy
 from .hashing import sha256_bytes, sha256_file
 from .job_snapshots import verify_wip_snapshot
 from .jobs import Job, JobStore, Run
@@ -1003,13 +1004,7 @@ def _execution_receipt(
         "output_sha256": {"output/model-evidence.json": sha256_bytes(output_bytes) if output_bytes is not None else sha256_file(output_path)},
         "provider_metadata": {"phase_receipts": len(phases)},
         "model_policy": dict(route_identity),
-        "policy": {
-            "openai_api_keys": "PROHIBITED",
-            "sealed_transport": True,
-            "sage_workspace_exposed_as_provider_cwd": False,
-            "filesystem_writes_by_provider": False,
-            "live_provider_catalog_required": True,
-        },
+        "policy": receipt_transport_policy(str(route_identity.get("provider") or "")),
     }
 
 

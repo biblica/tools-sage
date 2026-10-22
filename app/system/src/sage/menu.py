@@ -53,7 +53,7 @@ from .task_retry import archive_rejected_task_output
 from .hashing import sha256_file
 from .grammar import load_grammar_profile, profile_roles_for_job_role
 from .llm_settings import load_llm_settings, local_ai_policy_status, update_llm_selection
-from .build_policy import ENABLED_AUTOMATED_PROVIDER_IDS
+from .build_policy import GOVERNED_CLI_PROVIDER_IDS, provider_is_enabled
 from .ollama_admin import OllamaAdminService, OllamaAdminStatus
 from .platform_commands import render_sage_command
 from .ollama_policy import (
@@ -77,7 +77,7 @@ from .interface_localization import (
 from .language_codes import canonical_language_tag, canonical_regional_language_tag, canonical_script_code
 from .model_policy import describe_catalog_change
 from .model_service import ModelService
-from .executors.codex_cli import CodexCLIExecutor
+from .executors import cli_executor, provider_labels
 from .provider_updates import compare_codex_version, latest_codex_release
 from .sqs_submission_key import generate_submission_keypair, submission_key_status
 from .sqs_client import SqsTransportError, fetch_language_request_status, resolve_endpoints
@@ -659,10 +659,9 @@ class SageControlCenter:
         self.ui_service = OperatorUIService(
             root=self.root, settings_path=self.store.settings_path, runtime_status=self.runtime_status
         )
-        # A successful Codex sampling probe is cached briefly so partitioned analysis/BIC
-        # work does not spend one extra model request on every work unit.  Login and
-        # catalog readiness alone do not prove the WebSocket sampling channel works.
-        self._codex_transport_verified_until = 0.0
+        # A successful provider readiness check is cached briefly so partitioned analysis/BIC
+        # work does not repeat it for every work unit.
+        self._provider_transport_verified_until = 0.0
         self._compact_saw_progress = False
         # While a plan runner owns retries, a failed attempt records its event instead of pausing.
         self._auto_retry_units = False
@@ -900,6 +899,8 @@ class SageControlCenter:
         """Look up the latest Codex release in the background so startup never waits on the network."""
         if self.dry_run_provider or self._latest_codex_thread is not None:
             return
+        if load_llm_settings(self.root)["selected_provider"] != "codex":
+            return
 
         def fetch() -> None:
             """Record the latest release for the startup report; failures leave it empty."""
@@ -924,32 +925,41 @@ class SageControlCenter:
             ai.get("version"), self._latest_codex.get("version"), str(self._latest_codex.get("source"))
         )
 
-    def _update_codex_cli(self, service: ModelService) -> None:
-        """Check for a newer Codex CLI and, with consent, update it and re-verify the connection."""
+    def _update_provider_cli(self, service: ModelService) -> None:
+        """Check for a newer provider CLI and, with consent, update it and re-verify the connection."""
         ai = self._setup_model_probe(service, refresh=True)
-        with self.io.working("Checking for a Codex CLI update"):
-            status = self._codex_update_status(ai, force=True)
-        if status is None:
-            self.io.write("Codex CLI is not installed; use Connect OpenAI and ChatGPT or Setup to install it.")
+        provider = service.selected_provider()
+        labels = provider_labels(provider)
+        if not ai.get("available"):
+            self.io.write(f"{labels.cli} is not installed; use Connect {labels.service} or Setup to install it.")
             return
-        if status.latest is None:
-            self.io.write("The latest Codex CLI version could not be checked (no network or release information).")
-            self.io.write(f"Installed: {status.installed or 'UNKNOWN'}. Try again later.")
+        installed = ai.get("version") or "UNKNOWN"
+        if provider == "codex":
+            with self.io.working(f"Checking for a {labels.cli} update"):
+                status = self._codex_update_status(ai, force=True)
+            if status is None or status.latest is None:
+                self.io.write(f"The latest {labels.cli} version could not be checked (no network or release information).")
+                self.io.write(f"Installed: {installed}. Try again later.")
+                return
+            if not status.update_available:
+                self.io.write(f"{labels.cli} {status.installed or 'UNKNOWN'} is up to date.")
+                return
+            self.io.write(f"{labels.cli} update available: {status.installed or 'UNKNOWN'} -> {status.latest}")
+            cue = {"installed": status.installed, "latest": status.latest}
+        else:
+            # Claude Code publishes no release feed SAGE polls; `claude update` checks and reports itself.
+            self.io.write(f"{labels.cli} installed: {installed}")
+            cue = {"installed": installed, "latest": None}
+        if not self.io.confirm(f"Update {labels.cli} now?", default=True):
             return
-        if not status.update_available:
-            self.io.write(f"Codex CLI {status.installed or 'UNKNOWN'} is up to date.")
-            return
-        self.io.write(f"Codex CLI update available: {status.installed or 'UNKNOWN'} -> {status.latest}")
-        if not self.io.confirm("Update Codex CLI now?", default=True):
-            return
-        self.store.record_cue("CODEX_UPDATE_APPROVED", installed=status.installed, latest=status.latest)
-        with self.io.working("Updating Codex CLI"):
-            service.update_codex()
+        self.store.record_cue("PROVIDER_CLI_UPDATE_APPROVED", provider=provider, **cue)
+        with self.io.working(f"Updating {labels.cli}"):
+            service.update_provider(provider)
         live = self._setup_model_probe(service, refresh=True)
-        self.io.write(f"Codex CLI: {live.get('version') or 'UNKNOWN'}")
+        self.io.write(f"{labels.cli}: {live.get('version') or 'UNKNOWN'}")
         try:
             with self.io.working("Refreshing the model list"):
-                changes = describe_catalog_change(service.list_models("codex").get("catalog_changes"))
+                changes = describe_catalog_change(service.list_models(provider).get("catalog_changes"))
         except SageError:
             changes = []
         for line in changes or ["No change in the available models or reasoning levels."]:
@@ -978,7 +988,7 @@ class SageControlCenter:
         update = self._codex_update_status(ai, wait=2.0)
         if update is not None and update.update_available:
             self.io.write(f"{'Codex CLI':<25}UPDATE AVAILABLE - {update.latest} (installed {update.installed})")
-            self.io.write(f"{'Update with':<25}SAGE Maintenance > Configure AI > Update Codex CLI")
+            self.io.write(f"{'Update with':<25}SAGE Maintenance > Configure AI > Update AI provider CLI")
         if stale_pointers:
             detail = ", ".join(f"{tool.upper()} {job_id}" for tool, job_id in sorted(stale_pointers.items()))
             self.io.write(f"{'Job state':<25}ACTION NEEDED - {detail} [manifest missing]")
@@ -1097,41 +1107,45 @@ class SageControlCenter:
             allow_dry_run=allow_dry_run,
         )
 
-    def _setup_install_codex(self, service: ModelService) -> dict[str, Any]:
-        """Offer an explicit, platform-aware Codex CLI install and return refreshed status."""
-        self.io.write("Codex CLI is required for SAGE AI work; the desktop app is not required.")
-        ready, missing = CodexCLIExecutor.installation_prerequisites()
+    def _setup_install_provider(self, service: ModelService) -> dict[str, Any]:
+        """Offer an explicit, platform-aware install of the selected provider CLI and return refreshed status."""
+        provider = service.selected_provider()
+        labels = provider_labels(provider)
+        executor = cli_executor(provider)
+        self.io.write(f"{labels.cli} is required for SAGE AI work; the desktop app is not required.")
+        ready, missing = executor.installation_prerequisites()
         if not ready:
             raise ValidationError(
-                f"Codex installer prerequisites are missing: {', '.join(missing)}",
-                code="CODEX_INSTALL_PREREQUISITE_MISSING",
-                next_action=CodexCLIExecutor.installation_guidance(),
+                f"{labels.cli} installer prerequisites are missing: {', '.join(missing)}",
+                code=f"{provider.upper()}_INSTALL_PREREQUISITE_MISSING",
+                next_action=executor.installation_guidance(),
             )
-        self.io.write(CodexCLIExecutor.installation_guidance())
-        if not self.io.confirm("Install Codex CLI now?", default=True):
+        self.io.write(executor.installation_guidance())
+        if not self.io.confirm(f"Install {labels.cli} now?", default=True):
             return self._setup_model_probe(service, refresh=True, allow_dry_run=False)
-        self.store.record_cue("CODEX_INSTALL_APPROVED")
-        self.io.write("Running the official Codex CLI installer in non-interactive mode...")
-        service.install_codex()
-        self.io.write("Codex CLI verified. Returning to SAGE; the Codex interactive shell was not launched.")
+        self.store.record_cue("PROVIDER_CLI_INSTALL_APPROVED", provider=provider)
+        self.io.write(f"Running the official {labels.cli} installer in non-interactive mode...")
+        service.install_provider(provider)
+        self.io.write(f"{labels.cli} verified. Returning to SAGE; its interactive shell was not launched.")
         return self._setup_model_probe(service, refresh=True)
 
     def _setup_first_run_ai(self, service: ModelService) -> dict[str, Any]:
-        """Install a missing Codex CLI, then offer sign-in in the same flow when it is signed out."""
+        """Install a missing provider CLI, then offer sign-in in the same flow when it is signed out."""
         model_row = self._setup_model_probe(service)
         try:
             if not model_row.get("available"):
-                model_row = self._setup_install_codex(service)
+                model_row = self._setup_install_provider(service)
         except SageError as exc:
             self.show_error(exc)
             # A failed or unverifiable install may still have left a usable CLI; look again
             # so a signed-out CLI is never skipped.
             model_row = self._setup_model_probe(service, refresh=True, allow_dry_run=False)
         if model_row.get("available") and not model_row.get("ready"):
-            self.io.write("Codex CLI is installed but not signed in to ChatGPT.")
+            labels = provider_labels(service.selected_provider())
+            self.io.write(f"{labels.cli} is installed but not signed in to {labels.account}.")
             try:
-                if self.io.confirm("Connect ChatGPT now?", default=True):
-                    self._model_connect_chatgpt(service)
+                if self.io.confirm(f"Connect {labels.account} now?", default=True):
+                    self._model_connect_provider(service)
                     model_row = self._setup_model_probe(service, refresh=True)
             except SageError as exc:
                 self.show_error(exc)
@@ -1208,7 +1222,7 @@ class SageControlCenter:
         )
         status = "COMPLETE" if next_step == "COMPLETE" else "INCOMPLETE"
         llm_settings = service.settings()
-        provider_item = dict(llm_settings["providers"].get("codex", {}))
+        provider_item = dict(llm_settings["providers"].get(llm_settings["selected_provider"], {}))
         self.store.write_setup_state(
             {
                 "status": status,
@@ -1638,7 +1652,7 @@ class SageControlCenter:
         """Return competency labels for the currently selected model keyed by configured profile tag."""
         _, _, competency_cfg = self._language_ui_config()
         try:
-            status = ModelService(self.root).language_competency_status("codex")
+            status = ModelService(self.root).language_competency_status()
         except SageError:
             status = {}
         result: dict[str, str] = {}
@@ -1932,7 +1946,7 @@ class SageControlCenter:
             self.io.write("No non-baseline configured languages require a competency lookup.")
             return
         with self.io.working("Loading competency evidence for configured languages", ellipsis=False):
-            result = ModelService(self.root).lookup_language_competency(rows, provider="codex")
+            result = ModelService(self.root).lookup_language_competency(rows)
         self._write_language_competency_evidence(result)
         self._offer_sqs_language_validation(result, {row["canonical_tag"]: row for row in rows})
 
@@ -2166,7 +2180,7 @@ class SageControlCenter:
             )
             choice = self.io.choose(
                 "SYSTEM CHECKS",
-                (("1", "Python environment"), ("2", "SAGE configuration"), ("3", "Scripture Projects"), ("4", "Original-language resources"), ("5", "OpenAI and ChatGPT"), ("6", "Complete system check"), ("B", "Back")),
+                (("1", "Python environment"), ("2", "SAGE configuration"), ("3", "Scripture Projects"), ("4", "Original-language resources"), ("5", provider_labels(service.selected_provider()).service), ("6", "Complete system check"), ("B", "Back")),
                 context=(
                     "CURRENT SYSTEM STATE [LAST KNOWN]",
                     f"{'Python':<28}{sys.version.split()[0]}",
@@ -2271,7 +2285,7 @@ class SageControlCenter:
         exit_requested = False
 
         # First launch is Q&A driven: offer missing prerequisites immediately, but never
-        # trap the operator and never enter the interactive Codex TUI.
+        # trap the operator and never enter the provider CLI's interactive shell.
         self._setup_first_run_ai(service)
 
         while True:
@@ -2290,8 +2304,8 @@ class SageControlCenter:
             self.io.write("JOB STATUS")
             self.io.write("-" * 72)
             system_action_needed = next_step in {
-                "INSTALL_CODEX",
-                "LOGIN_CHATGPT",
+                "INSTALL_PROVIDER_CLI",
+                "SIGN_IN_PROVIDER",
                 "VALIDATE_SCRIPTURE",
                 "CONFIGURE_PROJECT_ROOT",
                 "RECOVER_ACTIVE_JOB_POINTERS",
@@ -3669,35 +3683,33 @@ class SageControlCenter:
             )
         return run, result
 
-    def _ensure_codex_execution_transport(self) -> None:
-        """Verify Codex runtime readiness without sending a preliminary model prompt."""
+    def _ensure_provider_execution_transport(self) -> None:
+        """Verify the selected provider's runtime readiness without sending a preliminary model prompt."""
         run_id = self.runtime_status.current_run
-        if self.dry_run_provider or time.monotonic() < self._codex_transport_verified_until:
+        if self.dry_run_provider or time.monotonic() < self._provider_transport_verified_until:
             return
-        if run_id and run_id == getattr(self, "_codex_transport_verified_run", None):
+        if run_id and run_id == getattr(self, "_provider_transport_verified_run", None):
             # Checked once per Run; a later logout surfaces as a provider error that stops the Run.
             return
         service = ModelService(self.root)
-        settings = service.settings()
-        if str(settings.get("selected_provider") or "").strip().lower() != "codex":
-            return
+        labels = provider_labels(service.selected_provider())
         try:
             self._run_with_status(
-                "Checking Codex execution readiness...",
+                f"Checking {labels.cli} execution readiness...",
                 service.readiness_check,
             )
         except ValidationError as exc:
             raise ValidationError(
-                "Codex is not ready for governed task execution.",
-                code="CODEX_EXECUTION_NOT_READY",
+                f"{labels.cli} is not ready for governed task execution.",
+                code="PROVIDER_EXECUTION_NOT_READY",
                 next_action=(
                     "Open Configure AI, correct installation/login/model selection, and use "
                     "Check LLM connection only when an explicit end-to-end test is needed."
                 ),
                 details={"provider_error": exc.message, "provider_code": exc.code},
             ) from exc
-        self._codex_transport_verified_until = time.monotonic() + 600.0
-        self._codex_transport_verified_run = run_id
+        self._provider_transport_verified_until = time.monotonic() + 600.0
+        self._provider_transport_verified_run = run_id
 
     def _launch_task(
         self,
@@ -3729,7 +3741,7 @@ class SageControlCenter:
         self.runtime_status.stage = run.current_stage
         ready = True
         try:
-            self._ensure_codex_execution_transport()
+            self._ensure_provider_execution_transport()
             if preview is not None:
                 preflight = self._run_with_status(
                     f"Planning governed {project.tool.upper()} task...",
@@ -6746,26 +6758,33 @@ class SageControlCenter:
                 self.io.write("SAGE will exit. Relaunch SAGE to begin first-use Setup.")
                 raise MenuExitRequested()
 
-    def _model_connect_chatgpt(self, service: ModelService) -> None:
-        """Offer browser or device-code ChatGPT sign-in through Codex CLI, then verify readiness."""
-        choice = self.io.choose(
-            "Connect OpenAI and ChatGPT",
-            (
-                ("1", "Browser sign-in [recommended]"),
-                ("2", "Device-code sign-in"),
-                ("B", "Back"),
-            ),
-        )
-        if choice == "B":
+    def _model_connect_provider(self, service: ModelService) -> None:
+        """Offer the selected provider's subscription sign-in through its CLI, then verify readiness."""
+        provider = service.selected_provider()
+        labels = provider_labels(provider)
+        device_auth = False
+        if provider == "codex":
+            choice = self.io.choose(
+                f"Connect {labels.service}",
+                (
+                    ("1", "Browser sign-in [recommended]"),
+                    ("2", "Device-code sign-in"),
+                    ("B", "Back"),
+                ),
+            )
+            if choice == "B":
+                return
+            device_auth = choice == "2"
+        elif not self.io.confirm(f"Sign in to {labels.account} now?", default=True):
             return
-        self.io.write("SAGE will run the local Codex CLI sign-in. No OpenAI API key is used or accepted.")
-        result = service.connect_chatgpt(device_auth=(choice == "2"))
-        self.io.write("OpenAI and ChatGPT: CONNECTED")
-        self.io.write("Returned to SAGE. Codex was used only for sign-in; its interactive shell was not started.")
-        self.io.write("Transport: local Codex CLI; Codex desktop app not required")
+        self.io.write(f"SAGE will run the local {labels.cli} sign-in. No API key is used or accepted.")
+        result = service.connect_provider(provider, device_auth=device_auth)
+        self.io.write(f"{labels.service}: CONNECTED")
+        self.io.write(f"Returned to SAGE. {labels.cli} was used only for sign-in; its interactive shell was not started.")
+        self.io.write(f"Transport: local {labels.cli}; desktop app not required")
         if result.get("account_plan_type"):
-            self.io.write(f"ChatGPT plan or workspace: {result['account_plan_type']}")
-        self.io.write(f"Live models available: {result['model_count']}")
+            self.io.write(f"{labels.account} plan: {result['account_plan_type']}")
+        self.io.write(f"Models available: {result['model_count']}")
         self.io.write("Model routing: SAGE automatic task policy")
         live = self._setup_model_probe(service, refresh=True)
         if live.get("ready"):
@@ -6784,7 +6803,7 @@ class SageControlCenter:
             marker = " *" if row["provider"] == result["selected_provider"] else ""
             self.io.write(f"{row['provider']}{marker}: {'READY' if row['ready'] else 'NOT READY'}")
             if row.get("auth_mode"):
-                self.io.write(f"  ChatGPT: {row['auth_mode']}")
+                self.io.write(f"  Sign-in: {row['auth_mode']}")
             if row.get("selected_model"):
                 self.io.write(f"  model: {row['selected_model']}")
             if row.get("selected_reasoning_effort"):
@@ -6905,11 +6924,11 @@ class SageControlCenter:
             except SageError as exc:
                 self.show_error(exc)
 
-    def _model_show_codex_catalog(self, service: ModelService) -> None:
-        """Render the live provider catalog as read-only capability information."""
-        result = service.list_models("codex")
+    def _model_show_provider_catalog(self, service: ModelService) -> None:
+        """Render the selected provider's model catalog as read-only capability information."""
+        result = service.list_models(service.selected_provider())
         if not result["models"]:
-            self.io.write(result.get("diagnostic", "No live Codex catalog is available."))
+            self.io.write(result.get("diagnostic", "No provider model catalog is available."))
         change = result.get("catalog_changes")
         new_models = set((change or {}).get("added_models") or ())
         for line in describe_catalog_change(change):
@@ -7003,13 +7022,14 @@ class SageControlCenter:
             service.clear_provisional_override()
             self.io.write("No-data default: POLICY DEFAULT")
             return
-        catalog = service.list_models("codex")
+        provider = service.selected_provider()
+        catalog = service.list_models(provider)
         candidates: list[dict[str, Any]] = []
         for model_row in catalog.get("models", []):
             for route_row in model_row.get("qualified_skill_routes", []):
                 candidates.append(
                     {
-                        "provider": "codex",
+                        "provider": provider,
                         "model_id": model_row.get("model"),
                         "capability_fingerprint": model_row.get("capability_fingerprint"),
                         "reasoning_id": route_row.get("reasoning_id"),
@@ -7052,7 +7072,7 @@ class SageControlCenter:
         needs the chosen model/reasoning to be live right now, since it is exactly the fallback
         used when no Skill has any qualification evidence at all.
         """
-        provider = "codex"
+        provider = service.selected_provider()
         catalog = service.list_models(provider)
         # A row only carries capability_fingerprint when it came from a live model_capabilities
         # entry -- reasoning_efforts itself may legitimately be empty when the provider doesn't
@@ -7096,8 +7116,7 @@ class SageControlCenter:
         Advanced routing override has qualification evidence to offer; it still never
         selects a model by itself -- it only produces evidence for that separate step.
         """
-        settings = service.settings()
-        provider = str(settings.get("selected_provider") or "codex")
+        provider = service.selected_provider()
         self.io.write("Evaluate new or changed models")
         self.io.write(f"Runs SAGE's sealed synthetic Skill suites against live {provider} models to")
         self.io.write("produce qualification evidence for Advanced routing override.")
@@ -7127,12 +7146,12 @@ class SageControlCenter:
             result = self._setup_model_probe(service, refresh=True)
         else:
             tested = service.connectivity_test(timeout_seconds=120)
-            preflight = service.quick_codex_status()
-            provider_id = str(tested.get("provider") or "codex")
+            preflight = service.quick_provider_status()
+            provider_id = str(tested.get("provider") or service.selected_provider())
             status = AIStatus(
                 connection="READY",
                 provider_id=provider_id,
-                provider="OpenAI / ChatGPT" if provider_id == "codex" else provider_id,
+                provider=provider_labels(provider_id).service,
                 model=str(tested.get("model") or "PROVIDER DEFAULT"),
                 reasoning_level=str(tested.get("reasoning_effort") or "PROVIDER DEFAULT").upper(),
                 prerequisite_status="READY",
@@ -7191,12 +7210,12 @@ class SageControlCenter:
 
     def _show_language_competency_table(self, service: ModelService) -> None:
         """Show the concise per-model competency view; detailed evidence stays in YAML."""
-        result = service.language_competency_status("codex")
+        result = service.language_competency_status()
         self.io.write()
         self.io.write("REGISTERED LLM LANGUAGE COMPETENCY")
         self.io.write("-" * 72)
         self.io.write(str((result.get("policy") or {}).get("operator_disclaimer") or "Heuristic estimate; not a benchmark or guarantee."))
-        self.io.write(f"Provider: {result.get('provider') or 'codex'}")
+        self.io.write(f"Provider: {result.get('provider') or service.selected_provider()}")
         self.io.write(f"Model:    {result.get('model') or 'UNKNOWN'}")
         self.io.write(f"Release:  {result.get('model_version') or result.get('model') or 'UNKNOWN'}")
         self.io.write(f"Runtime:  {result.get('provider_runtime_version') or 'UNKNOWN'}")
@@ -7217,7 +7236,7 @@ class SageControlCenter:
 
     def _report_missing_model_competency_evidence(self, service: ModelService) -> None:
         """Report missing evidence for a newly observed concrete model release."""
-        status = service.language_competency_status("codex")
+        status = service.language_competency_status()
         if status.get("status") != "EVIDENCE_REQUIRED":
             return
         self.io.write()
@@ -7233,7 +7252,7 @@ class SageControlCenter:
         enabled = [
             provider
             for provider in settings.get("providers", {})
-            if provider in ENABLED_AUTOMATED_PROVIDER_IDS
+            if provider in GOVERNED_CLI_PROVIDER_IDS and provider_is_enabled(provider)
         ]
         enabled = [item for item in enabled if item]
         if not enabled:
@@ -7243,7 +7262,7 @@ class SageControlCenter:
             return False
         index = enabled.index(current) if current in enabled else -1
         selected = enabled[(index + 1) % len(enabled)]
-        update_llm_selection(self.root, provider=selected, auto=(selected == "codex"))
+        update_llm_selection(self.root, provider=selected, auto=True)
         return True
 
     def _show_configured_language_competency_table(self, service: ModelService) -> None:
@@ -7256,7 +7275,7 @@ class SageControlCenter:
         self.io.write()
         self.io.write("LANGUAGE COMPETENCY")
         self.io.write("=" * 72)
-        status = service.language_competency_status("codex")
+        status = service.language_competency_status()
         self.io.write(f"{'Model':<28}{status.get('model') or 'UNKNOWN'}")
         self.io.write()
         self.io.write(f"{'Language':<25}{'Profile':<13}{'Script':<12}Competency")
@@ -7274,10 +7293,11 @@ class SageControlCenter:
         ai: dict[str, Any],
     ) -> dict[str, Any]:
         """Load model capabilities from an already-ready provider state."""
-        if not ai.get("ready") or str(ai.get("provider_id") or "") != "codex":
+        provider = str(ai.get("provider_id") or "")
+        if not ai.get("ready") or provider not in GOVERNED_CLI_PROVIDER_IDS:
             return {"models": [], "diagnostic": ai.get("diagnostic")}
         try:
-            return service.list_models("codex")
+            return service.list_models(provider)
         except SageError as exc:
             return {"models": [], "diagnostic": exc.message, "reason_code": exc.code}
 
@@ -7290,7 +7310,8 @@ class SageControlCenter:
         selection_checked = True
         while True:
             settings = service.settings()
-            provider = str(settings.get("selected_provider") or "codex")
+            provider = str(settings["selected_provider"])
+            labels = provider_labels(provider)
             item = dict(settings.get("providers", {}).get(provider, {}) or {})
             override_state = service.routing_override_status()
             connection = (
@@ -7302,7 +7323,7 @@ class SageControlCenter:
 
             self.io.write_menu_header("CONFIGURE HOSTED AI")
             self.io.write(f"{'Connection':<28}{connection}")
-            self.io.write(f"{'Provider':<28}{provider.title()}")
+            self.io.write(f"{'Provider':<28}{labels.service}")
             self.io.write(f"{'AI Routing':<28}{override_state['routing_mode']}")
             policy_default = str(
                 service.policy()["provisional_routing"]["default_reasoning_by_provider"].get(
@@ -7313,7 +7334,7 @@ class SageControlCenter:
             self.io.write(
                 f"{'Auto / no data':<28}{policy_default} (POLICY DEFAULT)"
             )
-            self.io.write(f"{'Provider runtime':<28}{provider}-cli {runtime_version}" if provider == "codex" else f"{'Provider runtime':<28}{runtime_version}")
+            self.io.write(f"{'Provider runtime':<28}{labels.cli} {runtime_version}")
             update = self._codex_update_status(ai) if selection_checked else None
             if update is not None and update.update_available:
                 self.io.write(f"{'Codex CLI update':<28}AVAILABLE - {update.latest} (choose 9)")
@@ -7329,10 +7350,10 @@ class SageControlCenter:
             self.io.write_menu_item(4, "Advanced routing override")
             self.io.write_menu_item(5, "Evaluate new or changed models")
             self.io.write_menu_header("Provider management", major=False)
-            self.io.write_menu_item(6, "Connect OpenAI and ChatGPT")
+            self.io.write_menu_item(6, f"Connect {labels.service}")
             self.io.write_menu_item(7, "Configure Local AI")
             self.io.write_menu_item(8, "Check LLM connection")
-            self.io.write_menu_item(9, "Update Codex CLI")
+            self.io.write_menu_item(9, f"Update {labels.cli}")
             self.io.write_menu_footer(include_back=True)
             value = self.io.read("Choose: ").strip().casefold()
             if value == "a":
@@ -7355,7 +7376,7 @@ class SageControlCenter:
                     if self._cycle_ai_provider(service):
                         selection_checked = False
                 elif value == "2":
-                    self._model_show_codex_catalog(service)
+                    self._model_show_provider_catalog(service)
                 elif value == "3":
                     self._model_show_recommendation_status(service)
                 elif value == "4":
@@ -7364,7 +7385,7 @@ class SageControlCenter:
                 elif value == "5":
                     self._model_evaluate_menu(service)
                 elif value == "6":
-                    self._model_connect_chatgpt(service)
+                    self._model_connect_provider(service)
                     selection_checked = False
                 elif value == "7":
                     self.local_admin_assistant_menu()
@@ -7374,7 +7395,7 @@ class SageControlCenter:
                         catalog = self._load_ai_model_catalog(service, ai)
                     selection_checked = True
                 elif value == "9":
-                    self._update_codex_cli(service)
+                    self._update_provider_cli(service)
                     ai = self._setup_model_probe(service)
                     catalog = self._load_ai_model_catalog(service, ai)
                     selection_checked = True

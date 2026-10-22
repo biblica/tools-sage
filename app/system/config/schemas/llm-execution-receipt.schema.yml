@@ -45,13 +45,13 @@ constraints:
   provisional_selection_modes:
     - PROVISIONAL_PROVIDER_DEFAULT
   provider_identity: provider_advertised
-  openai_api_keys: PROHIBITED
+  provider_api_keys: PROHIBITED
   sage_workspace_exposed_as_provider_cwd: false
   provider_filesystem_writes: false
   model_web_access_as_task_evidence: false
   output_paths: exact_task_allowlist
   raw_provider_responses: preserved_verbatim_per_phase_and_archived_with_rejected_attempts
-  live_provider_catalog_required: true
+  provider_catalog: LIVE_or_REVIEWED_STATIC
   operator_policy_override_must_be_recorded: true
   provider_native_reasoning_identity_required: true
 

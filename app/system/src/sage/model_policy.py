@@ -188,7 +188,7 @@ def cache_provider_catalog(root: Path, status: ProviderStatus) -> Path:
     """Persist a non-secret provider capability snapshot and record what changed since the last one.
 
     The first snapshot is a baseline and records no change. Later snapshots keep ``last_change`` (the
-    most recent difference in models or reasoning levels, with the Codex CLI and SAGE versions it was
+    most recent difference in models or reasoning levels, with the provider CLI and SAGE versions it was
     seen under) until a newer difference replaces it. New routes stay unqualified: a change here never
     adds or alters qualification evidence.
     """

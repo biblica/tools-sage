@@ -122,9 +122,13 @@ def test_update_menu_action_asks_before_updating(make_workspace, monkeypatch) ->
     class FakeService:
         """Count update requests that reach the service."""
 
+        def selected_provider(self):
+            """Report Codex as the selected governed provider."""
+            return "codex"
+
         updates = 0
 
-        def update_codex(self):
+        def update_provider(self, _provider=None):
             """Record one update request."""
             self.updates += 1
             return {}
@@ -134,9 +138,9 @@ def test_update_menu_action_asks_before_updating(make_workspace, monkeypatch) ->
             return {"catalog_changes": {"detected_utc": "2026-10-21T10:00:00Z", "added_models": ["gpt-new"]}}
 
     service = FakeService()
-    center._update_codex_cli(service)  # noqa: SLF001 - operator declines
+    center._update_provider_cli(service)  # noqa: SLF001 - operator declines
     assert service.updates == 0
-    center._update_codex_cli(service)  # noqa: SLF001 - operator agrees
+    center._update_provider_cli(service)  # noqa: SLF001 - operator agrees
     assert service.updates == 1
     rendered = center.io.output.getvalue()
     assert "0.163.0 -> 0.164.0" in rendered

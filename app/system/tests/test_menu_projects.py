@@ -672,7 +672,7 @@ def test_direct_setup_returns_without_opening_control_center(make_workspace, cap
     ) == 0
     receipt = json.loads((storage_layout(root).state_root / "setup-state.json").read_text(encoding="utf-8"))
     assert receipt["status"] == "INCOMPLETE"
-    assert receipt["next_step"] == "INSTALL_CODEX"
+    assert receipt["next_step"] == "INSTALL_PROVIDER_CLI"
 
 def test_closed_menu_input_is_a_governed_cancellation() -> None:
     """Verify terminal EOF is converted to OperatorCancelledError rather than leaking a traceback."""
@@ -1183,7 +1183,7 @@ def test_ai_menu_probes_on_open_and_exposes_skill_routing_actions(make_workspace
     assert "Change provider         Codex" not in rendered
     assert "Change model            gpt-" not in rendered
     assert "Provider management" in rendered
-    assert "6. Connect OpenAI and ChatGPT" in rendered
+    assert "6. Connect OpenAI / ChatGPT" in rendered
     assert "7. Configure Local AI" in rendered
     assert "8. Check LLM connection" in rendered
     assert "Check competency for configured languages" not in rendered
@@ -1203,6 +1203,10 @@ def test_available_model_view_labels_provisional_skills_separately(make_workspac
 
     class FakeService:
         """Expose one catalog row with only a provisional Skill route."""
+
+        def selected_provider(self):
+            """Report Codex as the selected governed provider."""
+            return "codex"
 
         def list_models(self, _provider):
             """Return a truthful no-data catalog fixture."""
@@ -1224,7 +1228,7 @@ def test_available_model_view_labels_provisional_skills_separately(make_workspac
                 ]
             }
 
-    center._model_show_codex_catalog(FakeService())
+    center._model_show_provider_catalog(FakeService())
 
     rendered = output.getvalue()
     assert "Qualified Skills: none" in rendered
@@ -1315,6 +1319,10 @@ def test_ai_menu_checks_connection_only_on_entry_and_explicit_check(make_workspa
     class FakeService:
         """Expose one loaded catalog and count only explicit structured connection checks."""
 
+        def selected_provider(self):
+            """Report Codex as the selected governed provider."""
+            return "codex"
+
         def __init__(self, service_root):
             """Retain the fixture root used by persisted selection helpers."""
             self.root = service_root
@@ -1335,7 +1343,7 @@ def test_ai_menu_checks_connection_only_on_entry_and_explicit_check(make_workspa
                 }
             }
 
-        def quick_codex_status(self):
+        def quick_provider_status(self):
             """Report a ready authenticated runtime for each requested connection refresh."""
             return {
                 "available": True,

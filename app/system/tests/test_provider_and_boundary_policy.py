@@ -172,8 +172,8 @@ def _submit_empty_inspect(config, task: dict) -> Path:
 
 
 def test_provider_build_policy_enables_only_codex_and_preserves_ollama_admin(tmp_path: Path) -> None:
-    """Verify Codex-only workflow execution while retaining the governed Ollama assistant."""
-    assert PROVIDER_IDS == ("codex", "ollama")
+    """Verify Codex-only workflow execution while Claude stays implemented-but-disabled and Ollama assistive."""
+    assert PROVIDER_IDS == ("codex", "claude", "ollama")
     assert ENABLED_AUTOMATED_PROVIDER_IDS == ("codex",)
     assert set(FUTURE_PROVIDER_IDS) >= {"grok", "gemini"}
     with pytest.raises(ConfigurationError, match="disabled by the 0.02b1 build policy"):
