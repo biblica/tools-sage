@@ -7,7 +7,6 @@ workflow:
   execution_model: SAGE_GOVERNED_TASK_V1
 bindings: {}
 rtc_sizing:
-  provider: codex
   estimator: SAGE_MULTILINGUAL_HEURISTIC_2
   wip_target_min_tokens: 7500
   wip_target_max_tokens: 9000

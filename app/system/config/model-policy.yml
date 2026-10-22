@@ -8,10 +8,13 @@ provisional_routing:
   no_data_qualification_status: PROVISIONAL_UNQUALIFIED
   default_reasoning_by_provider:
     codex: medium
+    claude: medium
   prohibited_reasoning_by_provider:
     codex:
       - none
       - minimal
+      - low
+    claude:
       - low
   known_negative_effect: BLOCK
   stale_evidence_effect: BLOCK
@@ -24,12 +27,18 @@ recommendation_order:
 release_preference:
   providers:
     - codex
+    - claude
   models:
     codex:
       - gpt-5.6-sol
       - gpt-5.6-terra
       - gpt-5.5
       - gpt-5.6-luna
+    claude:
+      - claude-opus-5-5
+      - claude-sonnet-5-5
+      - claude-haiku-5-5
+      - claude-fable-5-1
 skill_routes:
   bic-inspect:
     suite_id: alpha1-bic-inspect

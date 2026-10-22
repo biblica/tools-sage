@@ -104,6 +104,14 @@ Scripture evidence is sent. Job menus show current routes when idle and actual e
 routes for active attempts. Direct task provider/model/reasoning flags cannot bypass this routing
 boundary.
 
+**Configure AI > Work-unit size** chooses how much Scripture each AI request carries: **Small** halves
+today's budgets (more requests, closer attention to each passage), **Medium** keeps them, and **Large**
+doubles them (fewer requests, less overhead). It applies to RTC, STC, and BIC; NCA is unaffected. Changing it
+makes approved RTC plans stale, so SAGE asks before saving. The same screen shows the learned token
+correction: when a provider's real token counts run above SAGE's estimate, SAGE plans slightly smaller units
+(at most 1.5x smaller) without changing the hard limits. The CLI equivalent is
+`sage model work-unit-size --size S|M|L`.
+
 Startup displays an empty valid inventory as **No SAGE Projects added yet**. The corresponding machine-record state is `READY_EMPTY`; it does not mean workstation configuration is complete. Until the Paratext Projects root is configured and available, startup and the complete system check report `INCOMPLETE` with `PROJECTS_ROOT_NOT_CONFIGURED` or `PROJECTS_ROOT_NOT_FOUND`.
 
 The workstation interface language is stored in the local `localdata/.system/config/local-settings.yml` overlay and is selectable in guided Setup or with `D. Language` from any menu. v0.02b1 ships complete editable menu-localization entries for `en-US`, `en-GB`, `id`, `fr`, `ru`, and `pt-BR`. Functional menu choices remain numeric. The global footer is two rows: `A. Back   B. Main menu   C. Exit SAGE`, then `D. Language   E. Help   F. Status`. Help and Status return to the same active menu. Localized labels never control navigation.

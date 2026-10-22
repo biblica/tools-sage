@@ -15,7 +15,7 @@ from .bounded_target import extract_scope_usfm, merge_bounded_usfm
 from .errors import ConfigurationError, EvidenceLimitError, SageError, ValidationError
 from .exception_reports import is_integrity_code
 from .execution_events import classify_exception
-from .evidence import TOKEN_ESTIMATOR
+from .evidence import TOKEN_ESTIMATOR, active_token_table, token_table_for
 from .ol_analysis import load_ol_analysis, ol_family_for_book, ol_words_schema
 from .evidence_policy import (
     AUTHORIZED_CONTENT_EVIDENCE,
@@ -30,6 +30,7 @@ from .evidence_policy import (
 )
 from .build_policy import GOVERNED_CLI_PROVIDER_IDS
 from .executors import ProviderRequest, make_executor, receipt_transport_policy
+from .token_calibration import observe_response
 from .hashing import sha256_bytes, sha256_file
 from .llm_settings import load_llm_settings
 from .language_codes import canonical_language_tag
@@ -1907,6 +1908,7 @@ def _route_measurement(
     transport_bytes = prompt_bytes + schema_bytes + int(projection["model_bytes"])
     return {
         "estimator": TOKEN_ESTIMATOR,
+        "token_table": active_token_table(),
         # Every routed read counts against the byte budget; token sizing stays SFM-only, as planned.
         "measurement_scope": "routed_reads_bytes_and_sfm_tokens",
         "total_bytes": int(projection["model_bytes"]),
@@ -2014,13 +2016,18 @@ def _execute_provider_request(
     request: ProviderRequest,
     *,
     prevalidated_status: Any | None = None,
+    root: Path | None = None,
 ):
     """Execute one provider request, reusing a task-scoped readiness snapshot when supported."""
-    if prevalidated_status is not None:
-        execute_prevalidated = getattr(executor, "execute_prevalidated", None)
-        if callable(execute_prevalidated):
-            return execute_prevalidated(request, prevalidated_status)
-    return executor.execute(request)
+    execute_prevalidated = getattr(executor, "execute_prevalidated", None)
+    if prevalidated_status is not None and callable(execute_prevalidated):
+        response = execute_prevalidated(request, prevalidated_status)
+    else:
+        response = executor.execute(request)
+    if root is not None:
+        # Real usage, where the provider reports it, teaches the unified estimator's correction.
+        observe_response(root, request, response)
+    return response
 
 
 @contextmanager
@@ -2248,6 +2255,7 @@ def execute_task(
             timeout_seconds=timeout_seconds,
         ),
         prevalidated_status=provider_status_snapshot,
+        root=config.root,
     )
     provider_responses = [first]
     # Every failure from here on has provider output in hand; keep it as evidence for the retry.
@@ -2299,6 +2307,7 @@ def execute_task(
                     timeout_seconds=timeout_seconds,
                 ),
                 prevalidated_status=provider_status_snapshot,
+                root=config.root,
             )
             provider_responses.append(final)
             _validate_provider_response_route(final, route)
@@ -2382,6 +2391,7 @@ def execute_task(
                         timeout_seconds=timeout_seconds,
                     ),
                     prevalidated_status=provider_status_snapshot,
+                    root=config.root,
                 )
                 provider_responses.append(final)
                 phase_count = phase_number
@@ -2461,6 +2471,12 @@ def execute_task(
             )
         ],
         "provider_metadata": final.metadata,
+        # The work-unit size and token table the Run was planned with; qualification evidence says
+        # nothing yet about sizes other than the one a Skill was evaluated at.
+        "sizing": {
+            "work_unit_size": load_llm_settings(config.root)["work_unit_size"],
+            "token_table": token_table_for(route_identity.provider),
+        },
         "policy": receipt_transport_policy(route_identity.provider),
     }
     validation_root = task_root / "validation"

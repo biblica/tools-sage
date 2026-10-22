@@ -9,6 +9,42 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261022-010 — Claude Code provider, provider-aware token tables, and S/M/L work-unit size (TODO-20261022-015)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261022-015` (now `DONE`); follow-ups `TODO-20261022-016` to `-019`
+- **Commits:** `9214fb1` (provider phases 1-2) and the commit that introduced this entry.
+- **Implemented:**
+  - `executors/claude_cli.py`: `claude -p` sealed like Codex (prompt on stdin, JSON schema, replaced system
+    prompt, `--tools "" --restricted`, no settings, MCP, or session state, one turn). Only `claude auth status`
+    `authMethod: claude.ai` is accepted; API keys, auth tokens, OAuth tokens, and cloud-provider switches never
+    reach the subprocess (in `-p` mode a key would silently replace the subscription). An answer from any model
+    other than the routed one is rejected; real token usage is recorded. Models come from the reviewed catalog
+    `data/claude-catalog.json`. Shared subprocess mechanics moved to `executors/cli_process.py`.
+  - One selected governed provider (`codex` or `claude`) serves all governed LLM work; route resolution probes
+    only that provider. Settings, `ModelService`, CLI (`sage model select-provider`, `sage model
+    work-unit-size`), Setup, and the Configure AI menu are provider-neutral. Claude is implemented but disabled
+    by the 0.02b1 build policy; a persisted Claude selection falls back to Codex.
+  - Receipts record `provider_api_keys: PROHIBITED`, `provider_catalog: LIVE | REVIEWED_STATIC`, and `sizing`
+    (work-unit size and token table). The SQS bridge wraps the selected provider and passes Claude token usage;
+    `claude_workspace` channel registered.
+  - Routing policy: `claude` default `medium`, `low` prohibited; a Claude no-data route is `claude-opus-5-5`.
+  - Token estimator: one table per tokenizer, picked from the selected provider: `o200k-2026-10-15` (Codex,
+    unchanged weights) and `claude-2026-10-22` (Opus 5.5 and Sonnet 5.5 measured identical). Measured with the
+    new `tools/calibrate_token_estimator.py`: the same Scripture costs Claude a median 1.6x the o200k tokens
+    (Indic scripts 2-3.9x). The RTC contract drops its provider binding and records `token_table`; Codex plans
+    approved before this change stay valid.
+  - S/M/L work-unit size (0.5x/1x/2x of every token and byte budget and the verse cap) in AI settings. A learned
+    token correction (median real/estimated prompt tokens, at least 20 calls per model, bounded 1.0-1.5x)
+    shrinks planning targets only; hard limits follow the size alone.
+  - Codex "out of credits" is classified as a usage limit instead of a generic failure.
+  - No Claude language-competency tiers were seeded: inventing them would be hand labelling.
+- **Verification:** new `test_claude_cli_executor.py`, `test_claude_provider_selection.py`, and
+  `test_token_sizing.py`; a live Haiku smoke call through the executor with a fake API key in the parent
+  environment authenticated by the Team subscription. Calibration evidence in
+  `docs/advanced/models-and-ai/token-calibration-2026-10-22/` (about 260,000 Claude tokens of quota).
+
 ### IMP-20261022-009 — A BIC Job can use the shipped language profiles (TODO-20261022-011)
 
 - **Version:** `0.02a3` (development branch)

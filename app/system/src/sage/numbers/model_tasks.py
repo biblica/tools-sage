@@ -25,6 +25,7 @@ from sage.llm_settings import load_llm_settings
 from sage.llm_tasks import _resolve_task_route, _validate_provider_response_route
 from sage.model_policy import cache_provider_catalog
 from sage.registry import EcosystemConfig
+from sage.token_calibration import observe_response
 from sage.routing_override import resolve_routing_mode
 
 from .batching import ExtractionBatch, _batch, split_batch
@@ -392,6 +393,7 @@ class NcaModelTasks:
             finally:
                 finished_ns = perf_counter_ns()
             _validate_provider_response_route(response, self._route)
+            observe_response(self._config.root, request, response)
             try:
                 raw = json.loads(response.content)
             except (TypeError, json.JSONDecodeError) as exc:

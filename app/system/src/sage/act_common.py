@@ -1319,7 +1319,9 @@ def _approved_rtc_work_plan(
         sizing.validate_active_provider(
             str(load_llm_settings(config.root).get("selected_provider") or "")
         )
-        if dict(plan.get("rtc_sizing") or {}) != sizing.to_dict():
+        # The learned token correction is frozen into the plan when it is built; only the
+        # profile, estimator, or work-unit size changing makes the approved plan stale.
+        if not sizing.same_contract(dict(plan.get("rtc_sizing") or {})):
             raise ValidationError(
                 f"{identity} RTC sizing policy changed after work-unit approval",
                 code=_analysis_code(workflow, "SAW_APPROVED_PLAN_STALE"),
@@ -1462,9 +1464,9 @@ def _approved_rtc_work_plan(
                         affected_scope=primary_scope,
                     )
             if (
-                wip_tokens >= rtc_sizing_contract.wip_hard_exclusive_tokens
-                or route_tokens > rtc_sizing_contract.route_hard_max_tokens
-                or route_bytes > rtc_sizing_contract.route_hard_serialized_bytes
+                wip_tokens >= rtc_sizing_contract.effective_wip_hard_exclusive_tokens
+                or route_tokens > rtc_sizing_contract.effective_route_hard_max_tokens
+                or route_bytes > rtc_sizing_contract.effective_route_hard_serialized_bytes
             ):
                 raise ValidationError(
                     f"Approved {identity} work unit {unit_id} no longer fits RTC sizing limits",

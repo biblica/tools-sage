@@ -3,7 +3,8 @@
 **Status:** Phase 1 implemented 2026-10-22 (`executors/claude_cli.py`, `executors/cli_process.py`,
 `data/claude-catalog.json`, `tests/test_claude_cli_executor.py`); one live Haiku smoke call passed
 with an API key present in the parent environment. Phase 2 implemented 2026-10-22 (see "Phase 2
-as built"). Phases 3-5 open.
+as built"). Phase 3 implemented 2026-10-22 (see "Phase 3 as built"); Codex token calibration
+waits for Codex credits. Phases 4-5 open.
 
 ## Decisions (PO, 2026-10-22)
 
@@ -122,6 +123,10 @@ threads, or resume, so a Claude adapter can satisfy every call site. The bulk of
   through; `claude_workspace` descriptor (`provider_family: anthropic`) and mapping added.
   **Open (Phase 4 prerequisite):** the SQS service itself (`discovery.py`, `admin.py`, `worker.py`)
   still assumes `provider_family: openai`, so a Claude qualification cannot yet be approved there.
+  The SQS service also needs, before Claude qualifications are trusted: provider-aware pack token
+  estimates (pack `estimated_input_tokens` are in o200k terms, ~1.6x low for Claude); real token
+  counts from Codex; dollar costs treated as notional for subscription channels; and the
+  work-unit size recorded on submissions (qualification is measured at pack size, not S/M/L).
 
 ## Phase 3 — Routing, estimation, competency
 
@@ -133,6 +138,32 @@ threads, or resume, so a Claude adapter can satisfy every call site. The bulk of
    `rtc_sizing.provider` in `rtc/profile.yml` and `saw/profile.yml` and
    `evidence.validate_active_provider` follow the selected provider.
 3. `model-language-competency.yml`: `claude:<model>` seed entries.
+
+### Phase 3 as built
+
+PO decisions 2026-10-22: one estimator for both providers, re-calibrated rather than pinned on the
+2026-10-15 o200k fit, self-correcting from real usage, plus an S/M/L work-unit size in AI settings
+(0.5x / 1x / 2x). Measurement then showed Claude spends a median 1.6x the o200k tokens on the same
+Scripture (Indic scripts 2-3.9x), so a single max table would have shrunk Codex units 1.5-4x; the PO
+chose **provider-aware tables**. Details: `docs/advanced/models-and-ai/TOKEN-ESTIMATOR-CALIBRATION.md`.
+
+1. Routing: `model-policy.yml` adds `claude` (default `medium`, `low` prohibited; preference Opus 5.5,
+   Sonnet 5.5, Haiku 5.5, Fable 5.1). A Claude no-data route is `claude-opus-5-5` at `medium`.
+2. Estimator: tables `o200k-2026-10-15` (Codex, unchanged weights) and `claude-2026-10-22` (Opus 5.5
+   and Sonnet 5.5 measured identical), chosen from the selected provider. `tools/calibrate_token_estimator.py`
+   recounts and refits; evidence in `docs/advanced/models-and-ai/token-calibration-2026-10-22/`.
+   The RTC contract drops its provider binding and records `token_table` and `work_unit_size`; Codex
+   plans approved earlier stay valid, a provider switch makes them stale.
+3. S/M/L: `work_unit_size` in LLM settings; Configure AI item 10 and `sage model work-unit-size`.
+   Scales every token/byte budget and the verse cap; receipts record `sizing`.
+4. Self-correction: `token_calibration.py` logs real/estimated prompt tokens per call (Claude reports
+   usage; Codex does not yet) and applies a bounded 1.0-1.5x correction to planning targets only.
+5. Language competency: no Claude seed tiers were written. Inventing tiers would be hand labelling;
+   Claude models show EVIDENCE REQUIRED (informational, blocks nothing) until measured.
+6. Codex `out of credits` is now classified as a usage limit (it was a generic failure).
+
+**Open:** count `gpt-6.1-sol` and `gpt-5.6-sol` with the calibration tool once Codex credits are refilled;
+capture Codex usage (`codex exec --json`) so the correction also learns for Codex.
 
 ## Phase 4 — Qualify, then enable
 

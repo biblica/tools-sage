@@ -1183,7 +1183,7 @@ def test_ai_menu_probes_on_open_and_exposes_skill_routing_actions(make_workspace
     assert "Change provider         Codex" not in rendered
     assert "Change model            gpt-" not in rendered
     assert "Provider management" in rendered
-    assert "6. Connect OpenAI / ChatGPT" in rendered
+    assert "6. Connect OpenAI and ChatGPT" in rendered
     assert "7. Configure Local AI" in rendered
     assert "8. Check LLM connection" in rendered
     assert "Check competency for configured languages" not in rendered

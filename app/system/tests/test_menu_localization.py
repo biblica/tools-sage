@@ -18,6 +18,11 @@ from sage.ui_format import display_width
 
 
 DYNAMIC_MENU_TEXT = {
+    "Anthropic and Claude",
+    "Connect Anthropic and Claude",
+    "Connect OpenAI and ChatGPT",
+    "OpenAI and ChatGPT",
+    "Work-unit size",
     "Add RTC Job <WIP PROJECT, REFERENCE PROJECT>",
     "Add STC Job <WIP PROJECT>",
     "Add another Project to SAGE",

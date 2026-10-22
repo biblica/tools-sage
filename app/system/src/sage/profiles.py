@@ -9,6 +9,7 @@ from typing import Any
 from .config import load_yaml, require_mapping, require_string
 from .errors import ConfigurationError, ValidationError
 from .evidence import EvidencePolicy, RTCSizingPolicy
+from .token_calibration import sizing_adjustment
 from .grammar import load_grammar_profile
 from .canon import PROJECT_ROLE_VALUES
 from .registry import EcosystemConfig, LanguageProfileVariantSpec, WorkflowSpec
@@ -373,21 +374,27 @@ def load_workflow_profile(config: EcosystemConfig, workflow: WorkflowSpec) -> Wo
             )
     if workflow.workflow_id == "bic" and may_write_projects and workflow.publication_root is None:
         raise ConfigurationError("BIC publication_root is required when it may write generated projects")
+    # The S/M/L work-unit size and the learned token correction apply to every budget here, so all
+    # planners and enforcement points read already-adjusted limits.
+    adjustment = sizing_adjustment(config.root)
     rtc_sizing = (
-        RTCSizingPolicy.from_mapping(raw.get("rtc_sizing"))
+        RTCSizingPolicy.from_mapping(raw.get("rtc_sizing")).adjusted(
+            adjustment.work_unit_size, adjustment.token_correction, adjustment.token_table
+        )
         if workflow.workflow_id in {"rtc", "saw"}
         else None
     )
+    evidence_policies = {
+        operation: policy.scaled(adjustment.size_multiplier, adjustment.target_scale)
+        for operation, policy in _parse_evidence_policies(workflow.workflow_id, raw.get("evidence_policies", {})).items()
+    }
     return WorkflowProfile(
         workflow_id=workflow.workflow_id,
         name=require_string(section.get("name"), f"{workflow.workflow_id} profile workflow.name"),
         qualification_status=qualification_status,
         bindings=bindings,
         language_profile_bindings=language_profile_bindings,
-        evidence_policies=_parse_evidence_policies(
-            workflow.workflow_id,
-            raw.get("evidence_policies", {}),
-        ),
+        evidence_policies=evidence_policies,
         rtc_sizing=rtc_sizing,
         may_write_projects=may_write_projects,
         publication_root=workflow.publication_root,

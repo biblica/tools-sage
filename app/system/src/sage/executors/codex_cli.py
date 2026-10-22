@@ -37,7 +37,9 @@ from .cli_process import (
 # Please try again in <N>s." Both are exit-code-1, plain-text failures -- SAGE's
 # `codex exec` invocation does not use --json, so there is no structured error
 # event to parse instead.
-_USAGE_LIMIT_PATTERN = re.compile(r"usage limit", re.IGNORECASE)
+# Workspace credit exhaustion reads "Your workspace is out of credits. Ask your workspace owner to
+# refill in order to continue." (observed 2026-10-22); it is the same wait-or-refill condition.
+_USAGE_LIMIT_PATTERN = re.compile(r"usage limit|out of credits", re.IGNORECASE)
 _TOKEN_RATE_LIMIT_PATTERN = re.compile(r"rate limit (?:reached|exceeded)", re.IGNORECASE)
 _RETRY_SECONDS_PATTERN = re.compile(r"try again in\s+([\d.]+)\s*s", re.IGNORECASE)
 _RETRY_AT_PATTERN = re.compile(r"try again at\s+([^.\n]+)", re.IGNORECASE)

@@ -59,14 +59,14 @@ def rtc_slicing_policy(base: EvidencePolicy, sizing: RTCSizingPolicy) -> Evidenc
         raise ConfigurationError(
             f"Unsupported RTC estimator {sizing.estimator!r}; expected {RTC_ESTIMATOR}"
         )
-    route_hard = min(base.hard_estimated_tokens, sizing.route_hard_max_tokens - RTC_PLAN_HEADROOM_TOKENS)
-    target = min(sizing.wip_target_min_tokens, max(1, route_hard - 1))
-    preferred = min(sizing.wip_target_max_tokens, route_hard)
+    route_hard = min(base.hard_estimated_tokens, sizing.effective_route_hard_max_tokens - RTC_PLAN_HEADROOM_TOKENS)
+    target = min(sizing.effective_wip_target_min_tokens, max(1, route_hard - 1))
+    preferred = min(sizing.effective_wip_target_max_tokens, route_hard)
     return EvidencePolicy(
         target_estimated_tokens=target,
         hard_estimated_tokens=route_hard,
-        hard_serialized_bytes=min(base.hard_serialized_bytes, sizing.route_hard_serialized_bytes),
-        minimum_target_tokens=min(max(1, sizing.wip_target_min_tokens - 1000), target),
+        hard_serialized_bytes=min(base.hard_serialized_bytes, sizing.effective_route_hard_serialized_bytes),
+        minimum_target_tokens=min(max(1, sizing.effective_wip_target_min_tokens - 1000), target),
         preferred_max_estimated_tokens=max(target, preferred),
         maximum_primary_verse_units=min(base.maximum_primary_verse_units, 80),
         context_before_verses=base.context_before_verses,

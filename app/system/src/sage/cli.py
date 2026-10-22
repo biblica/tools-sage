@@ -73,7 +73,8 @@ from .human_output import (
 )
 from .locking import WorkspaceLock
 from .llm_tasks import execute_task
-from .llm_settings import load_llm_settings
+from .llm_settings import load_llm_settings, set_work_unit_size
+from .token_calibration import correction_status
 from .model_policy import describe_catalog_change
 from .model_service import ModelService
 from .build_policy import GOVERNED_CLI_PROVIDER_IDS
@@ -1945,6 +1946,24 @@ def command_model_use(args: argparse.Namespace) -> int:
     print(f"Status: {result['status']}")
     if result["status"] != "READY":
         print(result["provider_status"].get("diagnostic", ""))
+    return 0
+
+
+def command_model_work_unit_size(args: argparse.Namespace) -> int:
+    """Show or set the S/M/L work-unit size and the learned token correction."""
+    config, _ = _load(args)
+    if args.size:
+        set_work_unit_size(config.root, args.size)
+    settings = load_llm_settings(config.root)
+    result = {"work_unit_size": settings["work_unit_size"],
+              **correction_status(config.root, str(settings["selected_provider"]))}
+    if args.json:
+        _print_json(result)
+        return 0
+    print(f"Work-unit size: {result['work_unit_size']}")
+    print(f"Token correction ({result['provider']}): {result['token_correction']:.2f}")
+    for model, row in result["models"].items():
+        print(f"  {model}: {row['observations']} calls, real/estimated {row['median_ratio']:.2f}")
     return 0
 
 
@@ -5049,6 +5068,9 @@ def build_parser(*, include_internal: bool = False) -> GuidedArgumentParser:
     model_use = model_actions.add_parser("select-provider", help="Select the AI provider for all governed work (one provider at a time); models stay with Skill routing")
     model_use.add_argument("--provider", choices=GOVERNED_CLI_PROVIDER_IDS, required=True)
     model_use.set_defaults(handler=command_model_use)
+    model_size = model_actions.add_parser("work-unit-size", help="Show or set the S/M/L work-unit size (0.5x/1x/2x budgets)")
+    model_size.add_argument("--size", choices=("S", "M", "L"), help="New size; approved RTC plans under another size become stale")
+    model_size.set_defaults(handler=command_model_work_unit_size)
     model_status = model_actions.add_parser("status", help="Show provider readiness and current model capability state")
     model_status.add_argument("--provider", choices=PROVIDER_IDS)
     model_status.set_defaults(handler=command_model_status)

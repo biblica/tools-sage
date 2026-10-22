@@ -36,7 +36,7 @@ from .effective_scope import without_excluded_chapters
 from .errors import EvidenceLimitError
 from .errors import SageError
 from .errors import ValidationError
-from .evidence import TOKEN_ESTIMATOR
+from .evidence import TOKEN_ESTIMATOR, active_token_table
 from .evidence_policy import AUTHORITY_INTERPRETATION_RULES
 from .evidence_policy import AUTHORIZED_CONTENT_EVIDENCE
 from .evidence_policy import LINGUISTIC_COMPETENCE_RULES
@@ -579,7 +579,7 @@ def _create_stc_task(
             "output_grammar": "STC_FINDINGS_1.0",
             "review_requirements": {"required_checks": ["STC_CORRESPONDENCE"], "controller_checks": [], "expected_work_unit_ids": [work_unit_id or task_id]},
             "context_budget": {
-                "estimator": TOKEN_ESTIMATOR, "measurement_scope": "routed_analysis_sfm",
+                "estimator": TOKEN_ESTIMATOR, "token_table": active_token_table(), "measurement_scope": "routed_analysis_sfm",
                 "planning_basis": "ROUTED_SFM_ONLY", "serialized_bytes": route_bytes, "estimated_tokens": route_tokens,
                 "final_serialized_bytes": route_bytes, "final_estimated_tokens": route_tokens, "policy": policy.to_dict(),
             },

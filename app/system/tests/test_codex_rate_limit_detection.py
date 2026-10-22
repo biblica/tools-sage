@@ -204,3 +204,10 @@ def test_execute_prevalidated_never_auto_retries_past_the_bounded_ceiling(monkey
     except ValidationError as exc:
         assert exc.code == "CODEX_RATE_LIMITED"
     assert calls == []
+
+
+def test_classifies_workspace_credit_exhaustion_as_a_usage_limit():
+    """A workspace out of credits is a wait-or-refill usage limit, not a task failure."""
+    text = "Your workspace is out of credits. Ask your workspace owner to refill in order to continue."
+    result = CodexCLIExecutor._classify_rate_limit(text)
+    assert result["kind"] == "USAGE_LIMIT"

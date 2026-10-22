@@ -52,6 +52,7 @@ constraints:
   output_paths: exact_task_allowlist
   raw_provider_responses: preserved_verbatim_per_phase_and_archived_with_rejected_attempts
   provider_catalog: LIVE_or_REVIEWED_STATIC
+  sizing_recorded: work_unit_size_and_token_table
   operator_policy_override_must_be_recorded: true
   provider_native_reasoning_identity_required: true
 

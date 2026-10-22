@@ -2,9 +2,66 @@
 
 SAGE sizes every model review item from the routed Scripture SFM only (see
 [Model Handoff Optimization](MODEL-HANDOFF-OPTIMIZATION.md)). The size unit is the estimated token. This page
-records how the estimator is calibrated and how far it is from real token counts.
+records how the estimator is calibrated, how far it is from real token counts, and the two adjustments the
+Operator and SAGE make on top of the workflow budgets.
 
-## Current estimator: `SAGE_MULTILINGUAL_HEURISTIC_2`
+## Provider-aware tables (2026-10-22)
+
+`sage.evidence.estimate_tokens` sums a cost per character by Unicode script block. Since 2026-10-22 there is one
+weight table per governed tokenizer, and SAGE uses the table of the selected provider:
+
+| Table | Used for | Calibrated |
+|---|---|---|
+| `o200k-2026-10-15` | Codex | 2026-10-15 (below); re-checked 2026-10-22 on fresh chapters: 0.94-1.28x of real o200k tokens |
+| `claude-2026-10-22` | Claude (Opus 5.5 and Sonnet 5.5 measured identical) | 2026-10-22; held-out chapters 0.88-1.37x of real tokens |
+
+The same Scripture costs Claude a median **1.6x** the o200k tokens: Russian/Ukrainian/Hebrew about 1.2-1.4x,
+Latin-script languages 1.4-1.9x, Indic scripts 2-3.9x (Punjabi 3.9x, Malayalam 2.8x), while Lao and Tigrinya
+cost slightly less. A single table cannot serve both providers: taking the higher weight per script would make
+Codex estimates 1.5-4x too high and shrink Codex work units by the same factor.
+
+Budgets therefore mean real tokens of the provider in use. At work-unit size M a Claude request carries about
+60% of the Scripture a Codex request carries; size L restores roughly the Codex amount.
+
+Every sizing contract and context budget records its `token_table`. An approved RTC plan stays valid while the
+table and work-unit size are unchanged (plans approved before tables existed count as `o200k-2026-10-15` at M);
+switching provider makes it stale, and SAGE asks for the plan to be rebuilt and approved.
+
+### Work-unit size (S/M/L)
+
+Configure AI > Work-unit size (or `sage model work-unit-size --size S|M|L`) scales every token and byte budget
+and the verse cap of RTC, STC, and BIC by 0.5 / 1 / 2. S means more, smaller requests with closer attention to
+each passage; L means fewer requests and less per-request overhead. NCA does not use the estimator. Changing
+the size makes approved RTC plans stale. Execution receipts record the size and token table under `sizing`.
+
+### Learned token correction
+
+Every governed call whose provider reports usage (Claude today) appends the estimate and the real prompt tokens
+(input + cache creation + cache reads) to `localdata/.system/state/token-observations.jsonl`; prompts under
+2,000 estimated tokens are skipped. Once a model has 20 observations, the provider's correction is the highest
+per-model median of real/estimated over its last 200 calls, bounded to 1.0-1.5x. The correction only shrinks
+planning targets; hard limits follow the work-unit size alone, so a unit planned under an older correction is
+never rejected later. An approved RTC plan keeps the correction it was built with.
+
+### Codex models: pending
+
+`gpt-6.1-sol` and `gpt-5.6-sol` were not measured: the Codex workspace was out of credits on 2026-10-22. The
+calibration tool can count Codex models through `codex exec --json` once credits are refilled; Codex governed
+calls do not report usage yet, so the learned correction applies to Claude only until they do.
+
+### Method and evidence
+
+`system/tools/calibrate_token_estimator.py` takes one chapter (3,500 characters of John; Psalms for Hebrew)
+from 24 local translations in 16 scripts plus `@GRK`/`@HEB`, and holds out 2,500 characters of Romans (Isaiah
+for Hebrew). o200k is counted locally with `tiktoken`; Claude is counted through SAGE's sealed Claude executor
+as the usage of a prompt carrying the sample minus the usage of the same prompt without it. The ASCII space
+weight stays at 0.4702 (per character, letters and spaces are almost collinear), punctuation is fitted by least
+squares, and the letter weight is raised to cover the worst Latin sample; every other script takes the highest
+per-sample value. Counts (keyed by sample hash, no Scripture text) and the fit report are in
+[`token-calibration-2026-10-22/`](token-calibration-2026-10-22/). The Claude counts used about 260,000 tokens
+of subscription quota across the two models.
+
+## The o200k table: `SAGE_MULTILINGUAL_HEURISTIC_2` (2026-10-15)
 
 `sage.evidence.estimate_tokens` sums a fixed cost per character. The cost depends on the character's Unicode
 script block:
@@ -97,7 +154,7 @@ conditional original-language reads are unchanged.
 
 ## Recalibrating
 
-Re-fit when the governed provider's tokenizer changes, or when a new script enters use and its estimates look
-wrong. Count real tokens for a few whole books per script, then repeat the two-stage fit above. Keep held-out
-books for checking. Change `TOKEN_ESTIMATOR` whenever the weights change, so approved plans that recorded the
-old estimator are rebuilt rather than reused.
+Re-run `calibrate_token_estimator.py` when a provider's tokenizer changes, when a new model line appears, or
+when the learned correction for a model sits at its 1.5x bound. Counts are cached, so only new tokenizers or
+samples spend quota. Add a new dated table rather than editing an existing one, so approved plans that recorded
+the old table are rebuilt rather than reused.

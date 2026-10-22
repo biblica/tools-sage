@@ -151,11 +151,28 @@ def test_runtime_policy_declares_universal_no_data_provisional_routing(package_r
 
     assert policy["provisional_routing"] == {
         "no_data_qualification_status": "PROVISIONAL_UNQUALIFIED",
-        "default_reasoning_by_provider": {"codex": "medium"},
-        "prohibited_reasoning_by_provider": {"codex": ["none", "minimal", "low"]},
+        "default_reasoning_by_provider": {"codex": "medium", "claude": "medium"},
+        "prohibited_reasoning_by_provider": {"codex": ["none", "minimal", "low"], "claude": ["low"]},
         "known_negative_effect": "BLOCK",
         "stale_evidence_effect": "BLOCK",
     }
+
+
+def test_claude_no_data_route_is_the_preferred_catalog_model_at_medium(package_root: Path, tmp_path: Path) -> None:
+    """Without evidence, a Claude selection routes to Opus 5.5 at medium and never to low."""
+    from sage.executors.claude_cli import load_catalog
+
+    routing = _routing_module()
+    root, _skill_sha256, _suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
+    status = ProviderStatus(provider="claude", available=True, ready=True, auth_mode="CLAUDE_SUBSCRIPTION",
+                            version="2.1.307 (Claude Code)", model_capabilities=load_catalog())
+
+    route = routing.resolve_skill_route(root, "rtc", [status])
+
+    assert route.qualification == "PROVISIONAL_UNQUALIFIED"
+    assert (route.identity.provider, route.identity.model_id, route.identity.reasoning_id) == (
+        "claude", "claude-opus-5-5", "medium"
+    )
 
 
 def _routing_module():

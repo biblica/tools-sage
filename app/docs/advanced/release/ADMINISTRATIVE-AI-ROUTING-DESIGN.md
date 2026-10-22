@@ -68,8 +68,10 @@ from provider metadata or a reviewed Core mapping. An unknown model or mode rema
 
 An exact provider-native reasoning setting that the provider adapter classifies as
 `ADMINISTRATIVE_ONLY`. The label is not normalized across providers. For the Codex adapter, the exact
-native `low` setting is administrative-only. Other providers require their own explicit reviewed
-mapping; SAGE must not classify a setting by approximate name matching.
+native `low` setting is administrative-only. For the Claude adapter (reviewed 2026-10-22), the exact native
+`--effort low` is administrative-only; `medium` is the provisional Skill default, and `high`, `xhigh`, and
+`max` remain Skill-eligible. Other providers require their own explicit reviewed mapping; SAGE must not
+classify a setting by approximate name matching.
 
 ## Authority model
 

@@ -65,6 +65,9 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/models-and-ai/MODEL-SELECTION-AND-REASONING.md`
 - `docs/advanced/models-and-ai/SKILL-ROUTING-AND-MODEL-QUALIFICATION.md`
 - `docs/advanced/models-and-ai/TOKEN-ESTIMATOR-CALIBRATION.md`
+- `docs/advanced/models-and-ai/token-calibration-2026-10-22`
+- `docs/advanced/models-and-ai/token-calibration-2026-10-22/counts.json`
+- `docs/advanced/models-and-ai/token-calibration-2026-10-22/report.json`
 - `docs/advanced/projects-and-resources`
 - `docs/advanced/projects-and-resources/FLEX-COMBINE-INTERCHANGE.md`
 - `docs/advanced/projects-and-resources/GRAMMAR-PROFILES.md`
@@ -1034,6 +1037,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/task_retry.py`
 - `system/src/sage/task_sealing.py`
 - `system/src/sage/text_coverage.py`
+- `system/src/sage/token_calibration.py`
 - `system/src/sage/transactions.py`
 - `system/src/sage/tui.py`
 - `system/src/sage/ui_format.py`
@@ -1231,6 +1235,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_structural_issues.py`
 - `system/tests/test_text_coverage.py`
 - `system/tests/test_token_estimator.py`
+- `system/tests/test_token_sizing.py`
 - `system/tests/test_transactions_and_memory.py`
 - `system/tests/test_tui_services.py`
 - `system/tests/test_tui_textual.py`
@@ -1250,6 +1255,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/build_numbers_index.py`
 - `system/tools/build_ol_analysis.py`
 - `system/tools/build_release.py`
+- `system/tools/calibrate_token_estimator.py`
 - `system/tools/clone_and_install.cmd`
 - `system/tools/clone_and_install.py`
 - `system/tools/clone_and_install.sh`

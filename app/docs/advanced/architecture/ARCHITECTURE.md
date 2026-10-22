@@ -10,7 +10,7 @@ Operator
   -> deterministic parsers + VRS + semantic indexes
   -> Run + immutable governed task + hashes
   -> provider registry + build policy
-  -> enabled executor (v0.02b1: Codex only)
+  -> selected executor (Codex or Claude; v0.02b1 enables Codex only)
   -> structured response gate
   -> deterministic validation / transaction / reporting
 ```
@@ -18,10 +18,10 @@ Operator
 A provider never becomes the workflow controller. SAGE remains the operating-system parent process during normal use:
 
 ```text
-shell -> SAGE -> Codex login / governed Codex subprocess
+shell -> SAGE -> provider CLI sign-in / governed provider CLI subprocess (Codex or Claude Code)
 ```
 
-Bare interactive `codex` is not a SAGE setup/runtime transition.
+Bare interactive `codex` or `claude` is not a SAGE setup/runtime transition.
 
 ### Filesystem ownership
 
@@ -73,10 +73,20 @@ BIC, RTC, and STC have no direct interface, automatic handoff, role conversion, 
 
 Adapters live under `system/src/sage/executors/`. `system/src/sage/build_policy.py` determines which implemented adapters may execute in the current release.
 
-v0.02b1 enables Codex only for governed BIC/RTC/STC execution. Ollama is also a
-host-local runtime for the optional capability-restricted admin assistant; that
-path cannot acquire workflow execution authority. Future providers can be added
-behind the same abstraction. No OpenAI API-key path exists.
+Two governed CLI providers are implemented: Codex (`codex_cli.py`, the Codex CLI with ChatGPT
+sign-in) and Claude (`claude_cli.py`, the unmodified Claude Code CLI with the Operator's own Claude
+subscription sign-in). Both run one sealed, stateless call per request through the shared
+`cli_process.py` mechanics: prompt on stdin, schema-constrained output, an empty temporary working
+directory, no tools or file writes, and a minimized environment that never carries an API key or token.
+Exactly one of them is the selected provider for all governed LLM work; route resolution probes only
+that provider. v0.02b1 enables Codex only; Claude is implemented but disabled by `build_policy.py`
+until it is qualified. Ollama is also a host-local runtime for the optional capability-restricted admin
+assistant; that path cannot acquire workflow execution authority. No API-key path exists for any
+provider.
+
+Work units are sized with one estimator whose weight table follows the selected provider's tokenizer,
+scaled by the Operator's S/M/L work-unit size and a correction learned from real usage (see
+`docs/advanced/models-and-ai/TOKEN-ESTIMATOR-CALIBRATION.md`).
 
 ## 5. Paratext discovery and external Scripture-project layer
 

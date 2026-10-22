@@ -52,7 +52,8 @@ from .references import atomic_reference_labels
 from .task_retry import archive_rejected_task_output
 from .hashing import sha256_file
 from .grammar import load_grammar_profile, profile_roles_for_job_role
-from .llm_settings import load_llm_settings, local_ai_policy_status, update_llm_selection
+from .llm_settings import load_llm_settings, local_ai_policy_status, set_work_unit_size, update_llm_selection
+from .token_calibration import correction_status
 from .build_policy import GOVERNED_CLI_PROVIDER_IDS, provider_is_enabled
 from .ollama_admin import OllamaAdminService, OllamaAdminStatus
 from .platform_commands import render_sage_command
@@ -931,7 +932,7 @@ class SageControlCenter:
         provider = service.selected_provider()
         labels = provider_labels(provider)
         if not ai.get("available"):
-            self.io.write(f"{labels.cli} is not installed; use Connect {labels.service} or Setup to install it.")
+            self.io.write(f"{labels.cli} is not installed; use Connect {labels.menu_name} or Setup to install it.")
             return
         installed = ai.get("version") or "UNKNOWN"
         if provider == "codex":
@@ -2180,7 +2181,7 @@ class SageControlCenter:
             )
             choice = self.io.choose(
                 "SYSTEM CHECKS",
-                (("1", "Python environment"), ("2", "SAGE configuration"), ("3", "Scripture Projects"), ("4", "Original-language resources"), ("5", provider_labels(service.selected_provider()).service), ("6", "Complete system check"), ("B", "Back")),
+                (("1", "Python environment"), ("2", "SAGE configuration"), ("3", "Scripture Projects"), ("4", "Original-language resources"), ("5", provider_labels(service.selected_provider()).menu_name), ("6", "Complete system check"), ("B", "Back")),
                 context=(
                     "CURRENT SYSTEM STATE [LAST KNOWN]",
                     f"{'Python':<28}{sys.version.split()[0]}",
@@ -6765,7 +6766,7 @@ class SageControlCenter:
         device_auth = False
         if provider == "codex":
             choice = self.io.choose(
-                f"Connect {labels.service}",
+                f"Connect {labels.menu_name}",
                 (
                     ("1", "Browser sign-in [recommended]"),
                     ("2", "Device-code sign-in"),
@@ -7335,6 +7336,11 @@ class SageControlCenter:
                 f"{'Auto / no data':<28}{policy_default} (POLICY DEFAULT)"
             )
             self.io.write(f"{'Provider runtime':<28}{labels.cli} {runtime_version}")
+            correction = correction_status(self.root, provider)
+            self.io.write(
+                f"{'Work-unit size':<28}{settings.get('work_unit_size', 'M')} "
+                f"(token correction {correction['token_correction']:.2f})"
+            )
             update = self._codex_update_status(ai) if selection_checked else None
             if update is not None and update.update_available:
                 self.io.write(f"{'Codex CLI update':<28}AVAILABLE - {update.latest} (choose 9)")
@@ -7349,8 +7355,9 @@ class SageControlCenter:
             self.io.write_menu_item(3, "Skill routing recommendations")
             self.io.write_menu_item(4, "Advanced routing override")
             self.io.write_menu_item(5, "Evaluate new or changed models")
+            self.io.write_menu_item(10, "Work-unit size")
             self.io.write_menu_header("Provider management", major=False)
-            self.io.write_menu_item(6, f"Connect {labels.service}")
+            self.io.write_menu_item(6, f"Connect {labels.menu_name}")
             self.io.write_menu_item(7, "Configure Local AI")
             self.io.write_menu_item(8, "Check LLM connection")
             self.io.write_menu_item(9, f"Update {labels.cli}")
@@ -7399,12 +7406,43 @@ class SageControlCenter:
                     ai = self._setup_model_probe(service)
                     catalog = self._load_ai_model_catalog(service, ai)
                     selection_checked = True
+                elif value == "10":
+                    self._work_unit_size_menu(service)
                 else:
-                    self.io.write("Invalid choice. Choose 1-9 or a footer action.")
+                    self.io.write("Invalid choice. Choose 1-10 or a footer action.")
                     continue
             except SageError as exc:
                 self.show_error(exc)
             self.io.pause()
+
+    def _work_unit_size_menu(self, service: ModelService) -> None:
+        """Choose the S/M/L work-unit size and show what the estimator has learned so far."""
+        settings = service.settings()
+        current = str(settings.get("work_unit_size") or "M")
+        status = correction_status(self.root, str(settings["selected_provider"]))
+        self.io.write("Work-unit size sets how much Scripture each AI request carries.")
+        self.io.write("Small: half of today's budgets - more requests, closer attention to each passage.")
+        self.io.write("Medium: today's budgets.  Large: double - fewer requests and lower cost per chapter.")
+        self.io.write(
+            f"Learned token correction for {status['provider']}: {status['token_correction']:.2f} "
+            f"(applies after {status['minimum_observations']} observed calls per model)"
+        )
+        for model, row in status["models"].items():
+            self.io.write(f"  {model}: {row['observations']} calls, real/estimated {row['median_ratio']:.2f}")
+        choice = self.io.choose(
+            f"Work-unit size [current {current}]",
+            (("S", "Small"), ("M", "Medium"), ("L", "Large"), ("B", "Back")),
+        )
+        if choice == "B" or choice == current:
+            return
+        if not self.io.confirm(
+            "Approved RTC plans built under another size must be rebuilt and approved again. Change it?",
+            default=True,
+        ):
+            return
+        set_work_unit_size(self.root, choice)
+        self.store.record_cue("WORK_UNIT_SIZE_CHANGED", previous=current, size=choice)
+        self.io.write(f"Work-unit size: {choice}")
 
     def _project_purposes(self, project_id: str) -> tuple[str, ...]:
         """Return Job IDs and bindings that currently use one SAGE Project."""

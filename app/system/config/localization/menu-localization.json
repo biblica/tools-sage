@@ -3730,6 +3730,54 @@
       "fr": "Versification de DONOR",
       "ru": "Версификация DONOR",
       "pt-BR": "Versificação do DONOR"
+    },
+    "menu.anthropic.and.claude": {
+      "en-US": "Anthropic and Claude",
+      "en-GB": "Anthropic and Claude",
+      "id": "Anthropic dan Claude",
+      "fr": "Anthropic et Claude",
+      "ru": "Anthropic и Claude",
+      "pt-BR": "Anthropic e Claude"
+    },
+    "menu.connect.anthropic.and.claude": {
+      "en-US": "Connect Anthropic and Claude",
+      "en-GB": "Connect Anthropic and Claude",
+      "id": "hubungkan Anthropic dan Claude",
+      "fr": "connecter Anthropic et Claude",
+      "ru": "подключить Anthropic и Claude",
+      "pt-BR": "conectar Anthropic e Claude"
+    },
+    "menu.large": {
+      "en-US": "Large",
+      "en-GB": "Large",
+      "id": "Besar",
+      "fr": "Grand",
+      "ru": "Большой",
+      "pt-BR": "Grande"
+    },
+    "menu.medium": {
+      "en-US": "Medium",
+      "en-GB": "Medium",
+      "id": "Sedang",
+      "fr": "Moyen",
+      "ru": "Средний",
+      "pt-BR": "Médio"
+    },
+    "menu.small": {
+      "en-US": "Small",
+      "en-GB": "Small",
+      "id": "Kecil",
+      "fr": "Petit",
+      "ru": "Малый",
+      "pt-BR": "Pequeno"
+    },
+    "menu.work.unit.size": {
+      "en-US": "Work-unit size",
+      "en-GB": "Work-unit size",
+      "id": "Ukuran unit kerja",
+      "fr": "Taille des unités de travail",
+      "ru": "Размер рабочей единицы",
+      "pt-BR": "Tamanho da unidade de trabalho"
     }
   }
 }

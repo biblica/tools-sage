@@ -12,6 +12,7 @@ from .errors import ConfigurationError
 from .build_policy import GOVERNED_CLI_PROVIDER_IDS, disabled_provider_message, provider_is_enabled
 from .executors import PROVIDER_IDS
 from .executors.http import validate_local_endpoint
+from .token_calibration import DEFAULT_WORK_UNIT_SIZE, WORK_UNIT_SIZES
 from .ollama_policy import (
     SAGE_LOCAL_ADMIN_CONCURRENCY,
     SAGE_LOCAL_ADMIN_CONTEXT_WINDOW,
@@ -23,6 +24,7 @@ from .ollama_policy import (
 DEFAULT_LLM_SETTINGS: dict[str, Any] = {
     "schema_version": "2.0",
     "selected_provider": "codex",
+    "work_unit_size": DEFAULT_WORK_UNIT_SIZE,
     "providers": {
         "codex": {"enabled": True},
         "claude": {"enabled": True},
@@ -95,6 +97,7 @@ def load_llm_settings(root: Path) -> dict[str, Any]:
     # A selection the current build policy does not enable normalizes to CODEX while
     # retaining non-secret provisioning settings.
     merged["selected_provider"] = selected if provider_is_enabled(selected) else "codex"
+    merged["work_unit_size"] = _work_unit_size(raw.get("work_unit_size", DEFAULT_WORK_UNIT_SIZE))
     providers = raw.get("providers", {})
     if isinstance(providers, dict):
         for provider in PROVIDER_IDS:
@@ -138,6 +141,14 @@ def load_llm_settings(root: Path) -> dict[str, Any]:
     return merged
 
 
+def _work_unit_size(value: Any) -> str:
+    """Return a validated S/M/L work-unit size."""
+    size = str(value or "").strip().upper()
+    if size not in WORK_UNIT_SIZES:
+        raise ConfigurationError(f"Work-unit size must be one of {', '.join(WORK_UNIT_SIZES)}: {value!r}")
+    return size
+
+
 def save_llm_settings(root: Path, value: dict[str, Any]) -> Path:
     """Persist validated non-secret provider connection settings atomically."""
     # Re-load through the same validation path by writing a temporary logical structure in memory.
@@ -146,6 +157,7 @@ def save_llm_settings(root: Path, value: dict[str, Any]) -> Path:
         raise ConfigurationError(f"Unsupported selected LLM provider: {selected}")
     if not provider_is_enabled(selected):
         raise ConfigurationError(disabled_provider_message(selected))
+    value["work_unit_size"] = _work_unit_size(value.get("work_unit_size", DEFAULT_WORK_UNIT_SIZE))
     for provider in GOVERNED_CLI_PROVIDER_IDS:
         item = value.setdefault("providers", {}).setdefault(provider, {})
         if {"model", "reasoning_effort", "selection_mode"}.intersection(item):
@@ -168,6 +180,14 @@ def save_llm_settings(root: Path, value: dict[str, Any]) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     atomic_write_json(path, value)
     return path
+
+
+def set_work_unit_size(root: Path, size: str) -> dict[str, Any]:
+    """Persist the S/M/L work-unit size; approved RTC plans built under another size become stale."""
+    value = load_llm_settings(root)
+    value["work_unit_size"] = _work_unit_size(size)
+    save_llm_settings(root, value)
+    return value
 
 
 def set_local_admin_enabled(root: Path, enabled: bool) -> dict[str, Any]:

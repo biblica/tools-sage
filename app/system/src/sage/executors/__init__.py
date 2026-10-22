@@ -20,15 +20,20 @@ class ProviderLabels:
     """Operator-facing names for one governed CLI provider."""
 
     service: str
+    menu_name: str
     cli: str
     account: str
     auth_mode: str
 
 
 PROVIDER_LABELS = {
-    "codex": ProviderLabels(service="OpenAI / ChatGPT", cli="Codex CLI", account="ChatGPT", auth_mode="CHATGPT"),
+    "codex": ProviderLabels(
+        service="OpenAI / ChatGPT", menu_name="OpenAI and ChatGPT", cli="Codex CLI", account="ChatGPT",
+        auth_mode="CHATGPT",
+    ),
     "claude": ProviderLabels(
-        service="Anthropic / Claude", cli="Claude Code CLI", account="Claude subscription", auth_mode="CLAUDE_SUBSCRIPTION"
+        service="Anthropic / Claude", menu_name="Anthropic and Claude", cli="Claude Code CLI",
+        account="Claude subscription", auth_mode="CLAUDE_SUBSCRIPTION",
     ),
 }
 
