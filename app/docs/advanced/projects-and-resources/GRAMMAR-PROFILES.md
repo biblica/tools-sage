@@ -10,6 +10,12 @@ Each YAML file is one executable language-and-role contract. The layout is:
 system/config/profiles/grammar/<regional-language-tag>/<role-or-project-variant>.yml
 ```
 
+A Job binding uses a variant whose role matches it exactly when the language has one (`CONTENT_SOURCE` for a
+BIC SOURCE; `GENERATED_TARGET` or `TARGET` for a BIC TARGET; `WIP` or `TARGET` for a WIP). When it has none,
+any variant that describes the language serves (`WIP`, `TARGET`, or `GENERATED_TARGET`). The bundled starters
+ship one `WIP` variant per language, so each can be a BIC SOURCE, DONOR, or TARGET without extra setup; a
+second variant in the same language would make that language's report profile ambiguous.
+
 ## Bundled regional WIP starters
 
 | Profile | Language / region | Script | Relationship |

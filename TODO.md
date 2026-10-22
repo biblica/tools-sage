@@ -12,3 +12,4 @@ This file is a short pointer list into that log.
 - [ ] RTC/STC review action plan 2026-10-14: `TODO-20261014-001` onward (milestone `MS-REVIEW-20261014`)
 - [ ] ATT (Advanced Term Tool) from `externaldata/att_handover`: Phase 1 `TODO-20261015-001`, Phase 2 (SQS) `TODO-20261015-002`; not started
 - [ ] MACULA name check: shipped for STC (`IMP-20261016-001`); follow-ups `TODO-20261016-001` to `-007` (self-qualification, audit misfires, prefixes, BIC experiment, RTC, unspaced scripts, SQS)
+- [ ] BIC review 2026-10-22 (milestone `MS-REVIEW-20261022`): code done through `IMP-20261022-009`. PARKED until the Codex workspace credits reset: finish the B re-pin and INSPECT-fold experiment (`TODO-20261022-009`, `-004`); resume steps in `app/system/config/project-management/private/bic-experiment/RESUME.md`

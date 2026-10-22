@@ -51,7 +51,7 @@ from .exception_reports import (
 from .references import atomic_reference_labels
 from .task_retry import archive_rejected_task_output
 from .hashing import sha256_file
-from .grammar import load_grammar_profile
+from .grammar import load_grammar_profile, profile_roles_for_job_role
 from .llm_settings import load_llm_settings, local_ai_policy_status, update_llm_selection
 from .build_policy import ENABLED_AUTOMATED_PROVIDER_IDS
 from .ollama_admin import OllamaAdminService, OllamaAdminStatus
@@ -5937,12 +5937,7 @@ class SageControlCenter:
     @staticmethod
     def _grammar_roles_for_job_role(role: str) -> set[str]:
         """Return grammar-profile roles compatible with one Job binding role."""
-        normalized = role.strip().upper()
-        return {
-            "CONTENT_SOURCE": {"CONTENT_SOURCE"},
-            "GENERATED_TARGET": {"GENERATED_TARGET", "TARGET"},
-            "WIP": {"WIP", "TARGET"},
-        }.get(normalized, {normalized})
+        return set(profile_roles_for_job_role(role))
 
     def _grammar_profile_library(
         self,
@@ -6497,11 +6492,7 @@ class SageControlCenter:
         if not language or not role:
             return False
 
-        wanted = {
-            "CONTENT_SOURCE": {"CONTENT_SOURCE"},
-            "GENERATED_TARGET": {"GENERATED_TARGET", "TARGET"},
-            "WIP": {"WIP", "TARGET"},
-        }.get(role, {role})
+        wanted = profile_roles_for_job_role(role)
         grammar_root = self.root / "system" / "config" / "profiles" / "grammar" / language
         if not grammar_root.is_dir():
             return False

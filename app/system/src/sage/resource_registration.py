@@ -7,19 +7,13 @@ from typing import Any, Mapping
 
 from .config import load_yaml
 from .errors import ValidationError
+from .grammar import compatible_variant_ids
 from .language_codes import canonical_language_tag
 from .project_inventory import detect_scripture_books, project_code_policy, register_project, scope_testament
 from .registry import EcosystemConfig, load_ecosystem
 from .resource_mounts import load_resource_mount_state
 from .scripture import detect_incomplete_portions
 
-_ROLE_PROFILE_EQUIVALENTS = {
-    "GENERATED_TARGET": {"GENERATED_TARGET", "TARGET"},
-    "WIP": {"WIP", "TARGET"},
-    "CONTENT_SOURCE": {"CONTENT_SOURCE"},
-    "REFERENCE": {"REFERENCE"},
-    "LEXICAL_DONOR": {"LEXICAL_DONOR"},
-}
 
 
 def compatible_language_options(settings_path: Path, role: str) -> tuple[tuple[str, str | None], ...]:
@@ -33,11 +27,10 @@ def compatible_language_options(settings_path: Path, role: str) -> tuple[tuple[s
         # Governed OL aliases are configured separately as @GRK/@HEB, never added as
         # ordinary translation Projects.
         return ()
-    wanted = _ROLE_PROFILE_EQUIVALENTS.get(role, {role})
     values: list[tuple[str, str | None]] = []
     required_variant = role in {"CONTENT_SOURCE", "GENERATED_TARGET", "WIP"}
     for code, namespace in sorted(config.language_profiles.items()):
-        variants = [item.variant_id for item in namespace.variants.values() if item.role in wanted]
+        variants = compatible_variant_ids(namespace.variants, role)
         if variants:
             values.extend((code, variant) for variant in variants)
         elif not required_variant:

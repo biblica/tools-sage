@@ -16,6 +16,39 @@ from .hashing import sha256_bytes, sha256_file
 
 GRAMMAR_STATUS_VALUES = {"ACTIVE", "PROJECT_REVIEW_REQUIRED", "AI_DRAFTED", "INACTIVE"}
 _TARGET_ROLES = {"TARGET", "WIP"}
+
+# Grammar-profile roles each Job binding role accepts: an exact role first, otherwise any profile that
+# describes the language. Packaged profiles ship one variant per language (role WIP), because a second
+# variant would make the report-language profile ambiguous; that one variant must serve every binding.
+_EXACT_PROFILE_ROLES: dict[str, frozenset[str]] = {
+    "CONTENT_SOURCE": frozenset({"CONTENT_SOURCE"}),
+    "GENERATED_TARGET": frozenset({"GENERATED_TARGET", "TARGET"}),
+    "WIP": frozenset({"WIP", "TARGET"}),
+    "LEXICAL_DONOR": frozenset({"LEXICAL_DONOR"}),
+    "REFERENCE": frozenset({"REFERENCE"}),
+}
+_LANGUAGE_PROFILE_ROLES = frozenset({"WIP", "TARGET", "GENERATED_TARGET"})
+
+
+def profile_roles_for_job_role(role: str) -> frozenset[str]:
+    """Return every grammar-profile role usable for one Job binding role."""
+    normalized = role.strip().upper()
+    return _EXACT_PROFILE_ROLES.get(normalized, frozenset({normalized})) | (
+        _LANGUAGE_PROFILE_ROLES if normalized in _EXACT_PROFILE_ROLES else frozenset()
+    )
+
+
+def compatible_variant_ids(variants: Any, role: str) -> list[str]:
+    """Return the variant IDs usable for a Job role: exact-role variants when any exist, else the rest.
+
+    ``variants`` maps variant ID to an object with a ``role``. A language that ships a dedicated SOURCE or
+    TARGET variant keeps using it without a new choice; a language with only its WIP variant uses that.
+    """
+    normalized = role.strip().upper()
+    exact = _EXACT_PROFILE_ROLES.get(normalized, frozenset({normalized}))
+    wider = profile_roles_for_job_role(normalized)
+    exact_ids = [variant_id for variant_id, variant in variants.items() if str(variant.role).upper() in exact]
+    return exact_ids or [variant_id for variant_id, variant in variants.items() if str(variant.role).upper() in wider]
 _PROFILE_REQUIRED = (
     "schema_version", "id", "language", "script", "role", "status",
     "purpose", "owner_role", "last_reviewed",

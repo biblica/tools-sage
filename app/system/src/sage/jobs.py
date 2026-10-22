@@ -19,6 +19,7 @@ from .atomic import atomic_write_json, atomic_write_text
 from .bic_output import ensure_generated_target_folder, generated_target_record, release_generated_target
 from .config import load_json, load_yaml, require_mapping, require_string
 from .errors import ConfigurationError, SageError, ValidationError
+from .grammar import compatible_variant_ids
 from .job_snapshots import capture_wip_snapshot, seal_run_snapshot, verify_wip_snapshot
 from .locking import WorkspaceLock
 from .registry import EcosystemConfig, load_ecosystem
@@ -745,17 +746,9 @@ class JobStore:
             namespace = config.language_profiles.get(project.language_code)
             if namespace is None:
                 return ()
-            wanted = {
-                "CONTENT_SOURCE": {"CONTENT_SOURCE"},
-                "GENERATED_TARGET": {"GENERATED_TARGET", "TARGET"},
-                "WIP": {"WIP", "TARGET"},
-                "LEXICAL_DONOR": {"LEXICAL_DONOR", "GENERATED_TARGET", "WIP", "TARGET"},
-                "REFERENCE": {"REFERENCE", "GENERATED_TARGET", "WIP", "TARGET"},
-            }.get(role, {role})
             values = tuple(
-                f"{project.language_code}/{variant.variant_id}"
-                for variant in namespace.variants.values()
-                if variant.role in wanted
+                f"{project.language_code}/{variant_id}"
+                for variant_id in compatible_variant_ids(namespace.variants, role)
             )
             if project.profile_variant:
                 preferred = f"{project.language_code}/{project.profile_variant}"

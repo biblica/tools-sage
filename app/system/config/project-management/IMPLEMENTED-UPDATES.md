@@ -9,6 +9,30 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261022-009 — A BIC Job can use the shipped language profiles (TODO-20261022-011)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261022`
+- **TODO:** `TODO-20261022-011` (now `DONE`)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - One rule in `grammar.py` (`profile_roles_for_job_role`, `compatible_variant_ids`) replaces four drifted
+    copies in `jobs.py`, `menu.py` (two), and `resource_registration.py` (which, unlike `jobs.py`, accepted
+    no `WIP` profile for DONOR or REFERENCE). A binding uses exact-role variants when the language has any;
+    otherwise any variant that describes the language (`WIP`, `TARGET`, `GENERATED_TARGET`) serves, so the
+    shipped one-`WIP`-variant-per-language starters can be a BIC SOURCE, DONOR, or TARGET. A language with a
+    dedicated SOURCE or TARGET variant keeps it with no new choice.
+  - Rejected alternatives: a second variant per language makes the report-language profile ambiguous
+    (`LINGUISTIC_PROFILE_AMBIGUOUS`); multi-role variants would touch registry parsing, profile loading, and
+    every role check for the same effect.
+  - `GRAMMAR-PROFILES.md` documents the rule.
+- **Verification:** new `test_bic_role_profiles.py` (exact-role preference; a BIC Job on WIP-only
+  languages resolves `source_grammar` and `target_grammar` itself). On a fresh clone of the Operator data, a
+  BIC Job `itaPEVt2` → `usNIVv2` → localdata is created from the shipped profiles alone (`it-IT/wip`,
+  `en-US/wip`) and its INSPECT task is created and dry-run ready; before, it needed hand-made profiles.
+  Full suite 2026-10-22: 2276 passed, 2 skipped (two source-audit failures came from experiment USFM
+  copied into the private PM folder; moved to localdata, package tests 19 passed).
+
 ### IMP-20261022-008 — BIC challenge routing: scoped, superseding, MACULA-anchored (TODO-20261022-013)
 
 - **Version:** `0.02a3` (development branch)
