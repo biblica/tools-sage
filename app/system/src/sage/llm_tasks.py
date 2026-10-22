@@ -7,9 +7,9 @@ import re
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterator, Mapping, Sequence
+from typing import Any, Callable, Iterator, Mapping, Sequence
 
-from . import bic_output_contract
+from . import bic_anchors, bic_output_contract
 from .atomic import atomic_write_json, atomic_write_text
 from .bounded_target import extract_scope_usfm, merge_bounded_usfm
 from .errors import ConfigurationError, EvidenceLimitError, SageError, ValidationError
@@ -1212,12 +1212,16 @@ def _parse_response(content: str, manifest: dict[str, Any]) -> dict[str, str]:
     return materialised
 
 
-def _conditional_requests(files: dict[str, str]) -> list[dict[str, str]]:
+def _conditional_requests(
+    files: dict[str, str],
+    anchor_verse: Callable[[str, str], str | None] | None = None,
+) -> list[dict[str, str]]:
     """Return one question-specific OL micro-scope request per material first-pass challenge.
 
-    A challenge whose reference is not one verse cannot get a single-verse OL check; its request carries
-    ``unavailable_code`` instead, so only that challenge is reported OL-unavailable and keeps its pass-1
-    candidate. The check is never broadened to several verses.
+    A challenge naming several verses is narrowed to the one verse ``anchor_verse`` derives from its own
+    text and the MACULA glosses (recorded as ``narrowed_from``). When that does not decide a verse, or the
+    reference is invalid, the request carries ``unavailable_code`` instead, so only that challenge is
+    reported OL-unavailable and keeps its pass-1 candidate. The check is never broadened to several verses.
     """
     raw = files.get("output/translation-challenges.json")
     if not raw:
@@ -1258,19 +1262,27 @@ def _conditional_requests(files: dict[str, str]) -> list[dict[str, str]]:
             continue
         end_chapter = parsed.end_chapter or parsed.start_chapter
         end_verse = parsed.end_verse or parsed.start_verse
+        narrowed_from = ""
         if (
             parsed.start_chapter is None
             or parsed.start_verse is None
             or end_chapter != parsed.start_chapter
             or end_verse != parsed.start_verse
         ):
-            requests.append({
-                "challenge_id": challenge_id,
-                "scripture_reference": reference,
-                "unavailable_code": "BIC_OL_MICROSCOPE_NOT_SINGLE_VERSE",
-                "message": f"OL check skipped: {reference!r} is not a single verse",
-            })
-            continue
+            hint = " ".join([
+                str(item.get("summary", "")),
+                *[str(row.get("form", "")) for row in item.get("candidates", []) if isinstance(row, dict)],
+            ])
+            narrowed = anchor_verse(reference, hint) if anchor_verse is not None else None
+            if not narrowed:
+                requests.append({
+                    "challenge_id": challenge_id,
+                    "scripture_reference": reference,
+                    "unavailable_code": "BIC_OL_MICROSCOPE_NOT_SINGLE_VERSE",
+                    "message": f"OL check skipped: {reference!r} is not a single verse and no one verse was identified",
+                })
+                continue
+            parsed, narrowed_from = parse_scope(narrowed), reference
         category = str(item.get("category", "MATERIAL_RISK")).strip().upper() or "MATERIAL_RISK"
         summary = str(item.get("summary", "")).strip()
         if category == "VERB_CHOICE":
@@ -1286,6 +1298,7 @@ def _conditional_requests(files: dict[str, str]) -> list[dict[str, str]]:
                 "scripture_reference": parsed.label(),
                 "category": category,
                 "question": question,
+                **({"narrowed_from": narrowed_from} if narrowed_from else {}),
             }
         )
     return requests
@@ -2303,7 +2316,14 @@ def execute_task(
             final_prompt_sha = sha256_bytes(correction_prompt.encode("utf-8"))
             phase_count = 2
         final_files = _materialize_provider_files(manifest, parsed_files)
-        conditional_requests = _conditional_requests(final_files) if conditional_reads else []
+        conditional_requests = (
+            _conditional_requests(
+                final_files,
+                anchor_verse=lambda reference, hint: bic_anchors.anchor_verse(config.root, reference, hint=hint),
+            )
+            if conditional_reads
+            else []
+        )
         for skipped in (row for row in conditional_requests if row.get("unavailable_code")):
             # A challenge that names several verses keeps its pass-1 candidate; the rest of REWRITE stands.
             skipped_exc = ValidationError(skipped["message"], code=skipped["unavailable_code"])

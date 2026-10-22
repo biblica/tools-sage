@@ -15,6 +15,7 @@ from .act_outputs import validate_bic_inspect_output
 from .act_outputs import validate_grammar_assessment
 from .atomic import atomic_write_json
 from .atomic import atomic_write_text
+from . import bic_anchors
 from .bic_memory import submit_inspect_transactionally
 from .bounded_target import drop_verse_blocks
 from .bounded_target import expand_unsafe_drops
@@ -541,6 +542,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                         for item in raw.get("conditional_reads", [])
                     ),
                     ol_checker=make_ol_checker(config.root, str(raw["scope"]).split(" ")[0])[0],
+                    ol_anchor=lambda reference, hint: bic_anchors.ol_anchor(config.root, reference, hint=hint),
                 )
             challenge_document["execution_route"] = execution_route
             _record_salvage_exceptions(

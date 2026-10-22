@@ -22,6 +22,13 @@ Every BIC model-facing stage receives the complete canonical `LANGUAGE_PROFILE` 
 - INSPECT routes bounded SOURCE evidence plus a decontextualized DONOR vocabulary packet; no donor verse text and no pre-existing TARGET Scripture are routed.
 - REWRITE requires a committed exact-scope INSPECT submission.
 - Only memory marked `APPROVED_FOR_USE` may influence REWRITE.
+- REWRITE and SELF-CHECK receive only the Job's current INSPECT challenges inside their own scope (a work unit's
+  scope when partitioned): a newer INSPECT of a verse supersedes earlier challenges there, duplicates merge, and at
+  most 3 per verse and 24 in all are routed, without provenance fields.
+- MACULA anchors (`bic_anchors.py`) work in the controller only: they key duplicate challenges by the
+  original-language word, narrow a range challenge's OL check to the one verse its own text points to (otherwise
+  the check is skipped), and show the lemma, Strong's number, and gloss in `TRANSLATION-CHALLENGES.md` with the
+  MACULA attribution. No MACULA text reaches INSPECT, REWRITE, or SELF-CHECK.
 - REWRITE and SELF-CHECK route the required source/target grammar contracts without changing content authority.
 - A BIC Job may configure one Greek resource and/or one Hebrew resource. Material semantic risk level 2 or higher plus the protected trigger may open one bounded OL packet; if the applicable OL resource is not configured or usable, the OL-dependent REWRITE cannot complete.
 - The protected rewrite-detail and verb-selection policies remain authoritative and unchanged.

@@ -847,6 +847,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/act_tasks.py`
 - `system/src/sage/atomic.py`
 - `system/src/sage/auto_resolution.py`
+- `system/src/sage/bic_anchors.py`
 - `system/src/sage/bic_memory.py`
 - `system/src/sage/bic_output.py`
 - `system/src/sage/bic_output_contract.py`
@@ -1111,6 +1112,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/test_authority_boundaries.py`
 - `system/tests/test_beta_saw_policy.py`
 - `system/tests/test_bic4_contract_and_vocabulary.py`
+- `system/tests/test_bic_challenge_routing.py`
 - `system/tests/test_bic_localdata_output.py`
 - `system/tests/test_bic_verse_alignment.py`
 - `system/tests/test_bootstrap_runtime.py`

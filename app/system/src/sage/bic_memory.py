@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from .errors import MemoryGovernanceError
-from .references import parse_scope
+from .references import parse_scope, reference_overlaps_scope
 from .vrs import VerseRef
 from .hashing import sha256_bytes
 from .locking import WorkspaceLock
@@ -927,6 +927,18 @@ def submit_inspect_transactionally(
             item["challenge_id"] for item in normalized["challenges"]
         ):
             raise MemoryGovernanceError("INSPECT challenge ID collision")
+        # A newer INSPECT of a scope replaces the Job's earlier challenges on the same verses; they stay as history.
+        committed_scope = parse_scope(normalized["scope"])
+        for row in challenges:
+            if (
+                row.get("bic_job_id") == normalized_project
+                and str(row.get("status", "OPEN")).upper() != "SUPERSEDED"
+                and reference_overlaps_scope(
+                    committed_scope, str(row.get("scripture_reference") or row.get("scope") or "")
+                )
+            ):
+                row["status"] = "SUPERSEDED"
+                row["superseded_by"] = normalized["operation_id"]
         proposals.extend(normalized["proposals"])
         challenges.extend(normalized["challenges"])
         operation_record = {

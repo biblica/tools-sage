@@ -9,6 +9,33 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261022-008 — BIC challenge routing: scoped, superseding, MACULA-anchored (TODO-20261022-013)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261022`
+- **TODO:** `TODO-20261022-013` (now `DONE`; PO decision 2026-10-22: phases 1+2, MACULA report-only)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - Supersede (`bic_memory.submit_inspect_transactionally`): committing an INSPECT marks the Job's earlier
+    challenges on the same verses `SUPERSEDED` (`superseded_by` the new operation); they stay as history.
+  - Scoped routing (`bic_anchors.routed_challenges`, used by `act_evidence._write_bic_governance_packets`):
+    REWRITE and SELF-CHECK receive only this Job's current challenges that overlap the task scope, newest
+    first among duplicates, at most 3 per verse and 24 in all, projected to `challenge_id`,
+    `scripture_reference`, `challenge_type`, `summary`, `recommended_action` (provenance was about 900 of
+    each row's roughly 2,000 bytes). `references.reference_overlaps_scope` is the shared overlap test.
+  - MACULA anchors (`bic_anchors.ol_anchor`, controller only): the content words of the cited verses, ranked
+    by matches between the challenge's own English (summary, candidate renderings) and MACULA's gloss, then
+    rarity, verbs first. Uses: duplicate key (same verse, type, anchored lemma); a range challenge's OL check
+    runs on the verse its text names ("verse 43") or whose word best matches, and is skipped when that is
+    undecided (`narrowed_from` records the original range); `TRANSLATION-CHALLENGES.md` shows "Original
+    language (MACULA)" with lemma, Strong's number, and gloss, and the MACULA attribution once. No MACULA text
+    is routed to a model. Checked against the experiment's real range challenges: MRK 1:43-44 narrows to 1:43
+    (ἐμβριμάομαι); MRK 1:40-44 and 10:29-30 stay undecided.
+- **Verification:** new `test_bic_challenge_routing.py` (8 tests: overlap, supersede, scoped compact
+  routing, dedupe and caps, MACULA merge, anchor narrowing, OL-step narrowing, report line with attribution);
+  BIC, harness, OL-analysis, documentation, and package tests pass (251 + 19). Full suite 2026-10-22: 2276
+  passed, 2 skipped.
+
 ### IMP-20261022-007 — BIC partitioned Runs work; a range challenge no longer rejects REWRITE (TODO-20261022-010, TODO-20261022-012)
 
 - **Version:** `0.02a3` (development branch)

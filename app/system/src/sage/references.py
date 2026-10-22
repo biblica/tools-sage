@@ -372,6 +372,32 @@ def atomic_reference_labels(values: str | Iterable[str]) -> tuple[str, ...]:
     """Return ordered atomic labels for a governed coverage inventory."""
     return tuple(ref.label() for ref in expand_reference_atoms(values))
 
+
+def reference_overlaps_scope(scope: ScriptureScope, reference: str) -> bool:
+    """Return whether a verse, range, chapter, or book reference shares any coordinate with a scope."""
+    try:
+        other = parse_scope(reference)
+    except ValidationError:
+        return False
+    if other.book != scope.book:
+        return False
+    if other.start_chapter is None or scope.start_chapter is None:
+        return True
+
+    def bounds(value: ScriptureScope) -> tuple[tuple[int, int], tuple[int, int]]:
+        """Return inclusive (chapter, verse) bounds; a chapter without verses spans the whole chapter."""
+        assert value.start_chapter is not None
+        end_chapter = value.end_chapter or value.start_chapter
+        if value.start_verse is None:
+            return (value.start_chapter, 0), (end_chapter, 10**6)
+        end_verse = value.end_verse if value.end_verse is not None else (
+            value.start_verse if value.end_chapter is None else 10**6
+        )
+        return (value.start_chapter, value.start_verse), (end_chapter, end_verse)
+
+    (left_start, left_end), (right_start, right_end) = bounds(scope), bounds(other)
+    return left_start <= right_end and right_start <= left_end
+
 def expand_scope(
     scope: ScriptureScope,
     available: Iterable[VerseRef],

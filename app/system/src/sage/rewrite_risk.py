@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 from .act_outputs import aggregate_execution_routes, render_execution_section
+from .bic_anchors import report_anchor_line
 from .errors import ValidationError
 from .hashing import sha256_file
 from .ol_analysis import render_ol_word_checks, summarize_ol_checks, unverified_message
@@ -169,6 +170,19 @@ def _validate_candidate(
     }
 
 
+def _anchor_field(
+    ol_anchor: Callable[[str, str], Mapping[str, Any] | None] | None,
+    reference: str,
+    summary: str,
+    candidates: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Return the controller-set ``ol_anchor`` field for one challenge, or nothing without an anchor."""
+    if ol_anchor is None:
+        return {}
+    anchor = ol_anchor(reference, " ".join([summary, *[str(row.get("form", "")) for row in candidates]]))
+    return {"ol_anchor": dict(anchor)} if anchor else {}
+
+
 def _default_human_output() -> HumanOutputSpec:
     """Return an English-only policy for direct validator callers without configuration."""
     return parse_human_output(
@@ -294,11 +308,13 @@ def validate_rewrite_challenges(
     target_language: str | None = None,
     ol_evidence_available: bool = True,
     ol_checker: Callable[[Sequence[Mapping[str, Any]], str], list[dict[str, Any]]] | None = None,
+    ol_anchor: Callable[[str, str], Mapping[str, Any] | None] | None = None,
 ) -> dict[str, Any]:
     """Validate REWRITE linguistic judgments while deriving workflow state locally.
 
     With an ``ol_checker``, the ``ol_words`` claims of a performed OL check are checked against MACULA here;
-    check results present in the file are ignored, so a model cannot certify its own analysis.
+    check results present in the file are ignored, so a model cannot certify its own analysis. With an
+    ``ol_anchor``, each challenge records the MACULA words it most likely concerns for the Operator report.
     """
     try:
         document = json.loads(path.read_text(encoding="utf-8"))
@@ -627,6 +643,7 @@ def validate_rewrite_challenges(
                     **({"ol_analysis_verified": ol_verdict} if ol_verdict is not None else {}),
                 },
                 "untranslated_languages": untranslated,
+                **_anchor_field(ol_anchor, reference, summary, candidates),
                 "inherited_challenge_ids": inherited_ids,
                 "recommended_action": recommended_action,
                 "consolidation_key": _normalise_consolidation_key(
@@ -861,6 +878,11 @@ def render_rewrite_challenge_report(
                 ],
                 f"- {label('label.risk')}: {risk_text}",
                 f"- {label('label.evidence')}: {evidence_text}",
+                *(
+                    [f"- {label('label.original_language')}: {report_anchor_line(first['ol_anchor'])}"]
+                    if first.get("ol_anchor")
+                    else []
+                ),
                 *[line for line in render_ol_word_checks(first.get("ol_referral", {}).get("ol_word_checks") or []) if line],
                 f"- {label('label.action')}: {action_text}",
                 *(
@@ -871,6 +893,15 @@ def render_rewrite_challenge_report(
                 "",
             ]
         )
+    attributions = sorted({
+        str(item["ol_anchor"]["attribution"])
+        for group in _group_material_challenges(document, channel)
+        for item in group[:1]
+        if (item.get("ol_anchor") or {}).get("attribution")
+    })
+    lines.extend(f"_{text}_" for text in attributions)
+    if attributions:
+        lines.append("")
     automatic_ids = set(reporting.get("automatic_resolution_ids", [])) - set(material_ids)
     if automatic_ids:
         lines.extend([f"## {label('label.automatic_resolutions')}", ""])

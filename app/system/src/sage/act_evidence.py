@@ -9,6 +9,7 @@ from .act_outputs import marker_sequence
 from .atomic import atomic_write_bytes
 from .atomic import atomic_write_json
 from .atomic import atomic_write_text
+from .bic_anchors import routed_challenges
 from .bic_memory import eligible_memory_records
 from .config import load_yaml
 from .errors import EvidenceLimitError
@@ -877,15 +878,10 @@ def _write_bic_governance_packets(
         if str(row.get("bic_job_id", "")) == job_id
         and str((row.get("provenance") or {}).get("submission_source", "")).upper() == "BIC_INSPECT"
     ]
-    challenges = [
-        row
-        for row in _load_list(memory_root / "translation-challenges.json")
-        if str(row.get("bic_job_id", "")) == job_id
-        and (
-            str(row.get("scope", "")) == scope.label()
-            or str(row.get("scripture_reference", "")).startswith(scope.book)
-        )
-    ]
+    # Only this scope's current challenges, deduplicated and capped; never the whole book's history.
+    challenges = routed_challenges(
+        _load_list(memory_root / "translation-challenges.json"), scope, job_id, root=config.root
+    )
     approved_path = packet_root / "approved-memory.json"
     challenges_path = packet_root / "translation-challenges.json"
     atomic_write_json(approved_path, approved)
