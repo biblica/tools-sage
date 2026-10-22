@@ -36,7 +36,7 @@ def test_admin_menu_is_locked_one_to_nine(tmp_path):
     _, app = setup(tmp_path)
     text = app.menu_text()
     for item in [
-        "1. Review attention items", "2. Language profiles", "3. OpenAI models",
+        "1. Review attention items", "2. Language profiles", "3. Provider models",
         "4. Qualifications", "5. Run / review evaluations", "6. Host discoveries",
         "7. Publish bundle", "8. Logs / audit", "9. Service status", "0. Exit",
     ]:

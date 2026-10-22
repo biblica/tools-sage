@@ -26,6 +26,7 @@ BENEFIT = {
 @dataclass(frozen=True)
 class PlannedTest:
     candidate_id: str
+    provider_family: str = "openai"
     profile_id: str = ""
     model_id: str = ""
     capability: str = ""
@@ -85,6 +86,7 @@ def _can_cluster_confirm(candidate: dict[str, Any]) -> bool:
 def _plan_candidate(candidate: dict[str, Any]) -> PlannedTest:
     common = {
         "candidate_id": str(candidate.get("candidate_id") or f"{candidate.get('model_id','')}:{candidate.get('profile_id','')}:{candidate.get('capability','')}"),
+        "provider_family": str(candidate.get("provider_family", "openai")),
         "profile_id": str(candidate.get("profile_id", "")),
         "model_id": str(candidate.get("model_id", "")),
         "capability": str(candidate.get("capability", "")),

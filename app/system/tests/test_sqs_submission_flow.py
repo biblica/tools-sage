@@ -86,6 +86,25 @@ def test_prepare_submission_runs_a_real_pack_and_builds_a_valid_submission():
     assert submission["attempt"]["total_input_tokens"] > 0
 
 
+def test_prepare_submission_refuses_a_family_the_selected_provider_cannot_reach():
+    """A Codex host must not run, and so mislabel, a planned evaluation of an Anthropic model."""
+    provider = FakeProvider()
+    provider.provider_family = "openai"
+    bundle = _bundle(model_id="claude-opus-5-5")
+    bundle["models"][0]["provider_family"] = "anthropic"
+    with pytest.raises(PlannedEvaluationNotRunnable) as caught:
+        prepare_submission(
+            planned_evaluation=_planned_evaluation(provider_family="anthropic", model_id="claude-opus-5-5"),
+            bundle=bundle,
+            pack_dir=_PACK_DIR,
+            sage_root=_APP_ROOT,
+            submitted_by="pieter.traut@biblica.com",
+            provider=provider,
+        )
+    assert caught.value.code == "SQS_PROVIDER_FAMILY_MISMATCH"
+    assert provider.calls == []
+
+
 def test_prepare_submission_raises_for_an_unknown_profile():
     """A planned evaluation naming a profile absent from the local bundle fails closed."""
     with pytest.raises(PlannedEvaluationNotRunnable):

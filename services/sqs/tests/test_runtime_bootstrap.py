@@ -14,4 +14,4 @@ def test_runtime_bootstraps_catalog_from_config_root(tmp_path):
     import sqlite3
     conn = sqlite3.connect(db_path)
     assert conn.execute("SELECT COUNT(*) FROM profiles").fetchone()[0] == 20
-    assert conn.execute("SELECT COUNT(*) FROM models").fetchone()[0] == 3
+    assert conn.execute("SELECT COUNT(*) FROM models").fetchone()[0] == 7

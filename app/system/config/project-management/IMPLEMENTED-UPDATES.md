@@ -9,6 +9,35 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261022-011 — SQS qualifies a second provider family (TODO-20261022-017)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-SQS`
+- **TODO:** `TODO-20261022-017` (now `DONE`)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - `sage_sqs/providers/catalog.py` takes the provider-neutral catalog loading and ADMIN-reviewed sync out of
+    `openai_provider.py` (old names re-exported). Each `<family>-provider.yml` declares its routine and premium
+    reasoning levels; bootstrap and refresh load every catalog in the config root. New `anthropic-provider.yml`
+    (Haiku, Sonnet, Opus 5.5, Fable 5.1 at list prices). OpenAI catalog fingerprints are byte-identical, so no
+    existing model is flagged for re-review.
+  - Fixed: the planner queued every planned test as `provider_family: openai`; it now carries each candidate's
+    family. ADMIN `queue_evaluation` takes a family; the home screen counts approved models per family;
+    menu item 3 is "Provider models". Discovery and its schema accept registered families
+    (`domain.PROVIDER_FAMILIES`).
+  - Planning cost: packs are sized in o200k tokens, so `ModelRecord.pack_token_scale` (Claude 1.61, measured for
+    Opus/Sonnet and assumed for Haiku/Fable) scales the input estimate. Dollar costs are list prices and only
+    rank candidates on subscription channels.
+  - SAGE: MODEL discoveries report the selected provider's family; a host refuses a planned evaluation for a
+    family its selected provider cannot reach (`SQS_PROVIDER_FAMILY_MISMATCH`) instead of submitting it under
+    the wrong channel.
+  - Not done, deliberately: the work-unit size is not recorded on submissions, because pack runs never use it
+    and `total_input_tokens` already records the measured prompt size.
+- **Verification:** new SQS `test_provider_families.py` (catalogs, unchanged OpenAI fingerprints, discovery,
+  family-correct queueing, pack cost scale, ADMIN queueing); SAGE `test_sqs_discovery.py` and
+  `test_sqs_submission_flow.py` additions. SQS suite 144 passed; SAGE SQS, package, and documentation tests pass
+  apart from two local-checkout artifacts.
+
 ### IMP-20261022-010 — Claude Code provider, provider-aware token tables, and S/M/L work-unit size (TODO-20261022-015)
 
 - **Version:** `0.02a3` (development branch)

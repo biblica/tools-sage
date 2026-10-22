@@ -15,12 +15,12 @@ import yaml
 from .db import Database
 from .domain import Qualification
 from .publisher import Publisher
-from .providers.openai_provider import load_openai_catalog, sync_provider_catalog
+from .providers.catalog import load_provider_catalog, sync_provider_catalog
 from .repository import Repository
 
 _MENU = """1. Review attention items
 2. Language profiles
-3. OpenAI models
+3. Provider models
 4. Qualifications
 5. Run / review evaluations
 6. Host discoveries
@@ -47,6 +47,12 @@ class AdminApp:
             "profiles_active": count("SELECT COUNT(*) FROM profiles WHERE status='ACTIVE'"),
             "profiles_review": count("SELECT COUNT(*) FROM profiles WHERE status='REVIEW_REQUIRED'"),
             "models_approved": count("SELECT COUNT(*) FROM models WHERE status='APPROVED'"),
+            "models_approved_by_family": {
+                str(row[0]): int(row[1]) for row in conn.execute(
+                    "SELECT provider_family, COUNT(*) FROM models WHERE status='APPROVED' "
+                    "GROUP BY provider_family ORDER BY provider_family"
+                ).fetchall()
+            },
             "models_disabled": count("SELECT COUNT(*) FROM models WHERE status='DISABLED'"),
             "qualified": count("SELECT COUNT(*) FROM qualifications WHERE json_extract(payload_json,'$.status')='QUALIFIED'"),
             "not_qualified": count("SELECT COUNT(*) FROM qualifications WHERE json_extract(payload_json,'$.status')='NOT_QUALIFIED'"),
@@ -75,8 +81,10 @@ class AdminApp:
         print(f"Active                  {s['profiles_active']}")
         print(f"Review required         {s['profiles_review']}")
         print()
-        print("OpenAI models")
-        print("-------------")
+        print("Provider models")
+        print("---------------")
+        for family, approved in s["models_approved_by_family"].items():
+            print(f"Approved ({family}){' ' * max(1, 13 - len(family))}{approved}")
         print(f"Approved                {s['models_approved']}")
         print(f"Disabled                {s['models_disabled']}")
         print()
@@ -148,7 +156,7 @@ class AdminApp:
         self.repo.audit("ADMIN", "DISABLE_MODEL", {"provider_family": provider_family, "model_id": model_id, "revision": model.revision})
 
     def refresh_provider_metadata(self, path: Path):
-        rows = sync_provider_catalog(self.repo, load_openai_catalog(path))
+        rows = sync_provider_catalog(self.repo, load_provider_catalog(path))
         self.repo.audit("ADMIN", "REFRESH_PROVIDER_METADATA", {
             "path": str(path),
             "models_seen": len(rows),
@@ -201,22 +209,24 @@ class AdminApp:
         return path
 
     def queue_evaluation(self, *, model_id: str, profile_id: str, capability: str,
-                         reasoning: str = "medium", scope: str = "FULL", force: bool = False) -> dict:
+                         reasoning: str = "medium", scope: str = "FULL", force: bool = False,
+                         provider_family: str = "openai") -> dict:
         profile = self.repo.latest_profile(profile_id)
-        model = self.repo.latest_model("openai", model_id)
+        model = self.repo.latest_model(provider_family, model_id)
         if profile is None or profile.status != "ACTIVE":
             raise ValueError("PROFILE_NOT_ACTIVE")
         if model is None or model.status != "APPROVED":
             raise ValueError("MODEL_NOT_APPROVED")
         item = self.repo.queue_test({
-            "provider_family": "openai",
+            "provider_family": provider_family,
             "profile_id": profile_id,
             "model_id": model_id,
             "capability": capability,
             "reasoning": reasoning,
             "scope": scope,
         }, force=force)
-        self.repo.audit("ADMIN", "QUEUE_EVALUATION", {"run_id": item["id"], "profile_id": profile_id, "model_id": model_id, "capability": capability})
+        self.repo.audit("ADMIN", "QUEUE_EVALUATION", {"run_id": item["id"], "provider_family": provider_family,
+                                                       "profile_id": profile_id, "model_id": model_id, "capability": capability})
         return item
 
     def revoke_qualification(self, *, model_id: str, profile_id: str, capability: str,

@@ -49,8 +49,9 @@ mkdir -p ~/sage-sqs-alpha/var/lib/sage-sqs/incoming-rejected
 ## 4. Start the API server
 
 The server auto-bootstraps its database from `services/sqs/seed/` (language
-profiles and the OpenAI model catalog) the first time it starts — nothing else to
-run first.
+profiles and every `*-provider.yml` model catalog: OpenAI and Anthropic) the first
+time it starts — nothing else to run first. New models arrive as `REVIEW_REQUIRED`
+and need ADMIN approval before SQS plans or publishes anything for them.
 
 ```sh
 cd services/sqs
@@ -154,8 +155,12 @@ submission:
 
 ```sh
 sage sqs list                       # what work is pending?
-sage sqs submit --run-id <id>       # run it through Codex, SCP the result
+sage sqs submit --run-id <id>       # run it through the selected provider, SCP the result
 ```
+
+A host runs only planned evaluations for the provider family its selected SAGE provider
+reaches (Codex: `openai`, Claude: `anthropic`); any other run is refused with
+`SQS_PROVIDER_FAMILY_MISMATCH` rather than submitted under the wrong channel.
 
 Then, back at the ADMIN console: menu item 6 (host discoveries) or the attention
 queue shows the staged `QUALIFICATION_SUBMISSION`; approving it publishes the

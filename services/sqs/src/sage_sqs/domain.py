@@ -9,6 +9,11 @@ from typing import Any
 
 
 
+# Model vendors SQS can qualify. Each has a `<family>-provider.yml` catalog and at least one
+# execution-channel descriptor (seed/execution-channels/).
+PROVIDER_FAMILIES = ("openai", "anthropic")
+
+
 class Capability(StrEnum):
     GRAMMAR_ANALYSIS = "GRAMMAR_ANALYSIS"
     SEMANTIC_REWRITE = "SEMANTIC_REWRITE"
@@ -149,6 +154,8 @@ class ModelRecord:
     tier_mapping_revision: int = 0
     tier_mapping_fingerprint: str = ""
     tier_mapping_approved: bool = True
+    # Tokens this model's tokenizer spends on pack text per o200k token; packs are sized in o200k.
+    pack_token_scale: float = 1.0
 
     def __post_init__(self) -> None:
         tiers = self.reasoning_tiers
@@ -165,7 +172,7 @@ class ModelRecord:
 
     @property
     def catalog_fingerprint(self) -> str:
-        return canonical_sha256({
+        value = {
             "provider_family": self.provider_family,
             "model_id": self.model_id,
             "reasoning_levels": list(self.reasoning_levels),
@@ -173,7 +180,12 @@ class ModelRecord:
             "cost_rank": self.cost_rank,
             "input_usd_per_mtok": self.input_usd_per_mtok,
             "output_usd_per_mtok": self.output_usd_per_mtok,
-        })
+        }
+        # Only a measured non-default scale is planning metadata; leaving 1.0 out keeps every
+        # catalog fingerprint recorded before the scale existed unchanged.
+        if self.pack_token_scale != 1.0:
+            value["pack_token_scale"] = self.pack_token_scale
+        return canonical_sha256(value)
 
     def public_dict(self) -> dict[str, Any]:
         return {

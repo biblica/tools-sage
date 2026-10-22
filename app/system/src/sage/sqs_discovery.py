@@ -30,23 +30,27 @@ from .atomic import atomic_write_json
 from .sqs_client import post_discovery
 
 
-def discovery_capability_fingerprint(*, model_id: str, reasoning_levels: Iterable[str]) -> str:
+def discovery_capability_fingerprint(*, model_id: str, reasoning_levels: Iterable[str],
+                                     provider_family: str = "openai") -> str:
     """Return SAGE's own observed-identity fingerprint for a model discovery."""
-    payload = {"provider_family": "openai", "model_id": model_id, "reasoning_levels": sorted(set(reasoning_levels))}
+    payload = {"provider_family": provider_family, "model_id": model_id, "reasoning_levels": sorted(set(reasoning_levels))}
     encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
 
 
-def build_model_discovery(*, model_id: str, reasoning_levels: Iterable[str], sage_version: str) -> dict[str, Any]:
+def build_model_discovery(*, model_id: str, reasoning_levels: Iterable[str], sage_version: str,
+                          provider_family: str = "openai") -> dict[str, Any]:
     """Build one MODEL discovery payload in the exact tested wire shape."""
     levels = sorted(set(reasoning_levels))
     return {
         "kind": "MODEL",
         "sage_version": sage_version,
         "observed": {
-            "provider_family": "openai",
+            "provider_family": provider_family,
             "model_id": model_id,
-            "capability_fingerprint": discovery_capability_fingerprint(model_id=model_id, reasoning_levels=levels),
+            "capability_fingerprint": discovery_capability_fingerprint(
+                model_id=model_id, reasoning_levels=levels, provider_family=provider_family
+            ),
             "reasoning_levels": levels,
         },
     }

@@ -33,7 +33,7 @@ from typing import Any
 
 from .executors import cli_executor
 from .executors.base import ProviderRequest, ProviderResponse
-from .sqs_provider_coverage import SAGE_PROVIDER_TO_EXECUTION_CHANNEL
+from .sqs_provider_coverage import SAGE_PROVIDER_TO_EXECUTION_CHANNEL, SAGE_PROVIDER_TO_PROVIDER_FAMILY
 
 _PASSTHROUGH_SCHEMA = {"type": "object"}
 
@@ -83,6 +83,7 @@ class WorkspaceProviderAdapter:
         """Wrap the given executor, or construct SAGE's default one for `provider`."""
         self.executor = executor or cli_executor(provider)
         self.execution_channel = SAGE_PROVIDER_TO_EXECUTION_CHANNEL[self.executor.provider_id]
+        self.provider_family = SAGE_PROVIDER_TO_PROVIDER_FAMILY[self.executor.provider_id]
 
     def execute(self, *, model_id: str, reasoning: str, prompt: str):
         """Run one workspace-channel prompt and return it as an SQS ProviderResult."""

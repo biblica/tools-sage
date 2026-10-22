@@ -56,7 +56,7 @@
           "additionalProperties": false,
           "required": ["provider_family", "model_id", "capability_fingerprint", "reasoning_levels"],
           "properties": {
-            "provider_family": {"const": "openai"},
+            "provider_family": {"enum": ["openai", "anthropic"]},
             "model_id": {"type": "string", "minLength": 1},
             "capability_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
             "reasoning_levels": {"type": "array", "items": {"enum": ["low", "medium", "high"]}, "minItems": 1, "uniqueItems": true}

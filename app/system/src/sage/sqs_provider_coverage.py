@@ -33,6 +33,12 @@ SAGE_PROVIDER_TO_EXECUTION_CHANNEL: dict[str, str] = {
     "claude": "claude_workspace",
 }
 
+# The SQS provider_family (model vendor) each SAGE governed provider reaches.
+SAGE_PROVIDER_TO_PROVIDER_FAMILY: dict[str, str] = {
+    "codex": "openai",
+    "claude": "anthropic",
+}
+
 
 def sage_governed_provider_ids() -> frozenset[str]:
     """Return SAGE's currently governed (automated, non-assistive) provider IDs."""

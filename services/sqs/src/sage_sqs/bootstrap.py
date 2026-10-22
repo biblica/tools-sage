@@ -3,9 +3,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Iterable
 
 from .profile_builder import load_seed_profiles
-from .providers.openai_provider import load_openai_catalog, sync_provider_catalog
+from .providers.catalog import catalog_paths, load_provider_catalog, sync_provider_catalog
 from .repository import Repository
 
 
@@ -15,7 +16,7 @@ class BootstrapResult:
     models_created: int
 
 
-def bootstrap_catalog(repo: Repository, *, language_dir: Path, provider_catalog: Path) -> BootstrapResult:
+def bootstrap_catalog(repo: Repository, *, language_dir: Path, provider_catalog: Path | Iterable[Path]) -> BootstrapResult:
     profiles_created = 0
     for draft in load_seed_profiles(language_dir):
         if repo.latest_profile(draft.profile_id) is not None:
@@ -34,16 +35,19 @@ def bootstrap_catalog(repo: Repository, *, language_dir: Path, provider_catalog:
             },
         )
 
-    catalog = load_openai_catalog(provider_catalog)
-    missing_before = sum(1 for model in catalog if repo.latest_model(model.provider_family, model.model_id) is None)
-    sync_provider_catalog(repo, catalog)
+    paths = [provider_catalog] if isinstance(provider_catalog, (str, Path)) else list(provider_catalog)
+    missing_before = 0
+    for path in paths:
+        catalog = load_provider_catalog(path)
+        missing_before += sum(1 for model in catalog if repo.latest_model(model.provider_family, model.model_id) is None)
+        sync_provider_catalog(repo, catalog)
     return BootstrapResult(profiles_created=profiles_created, models_created=missing_before)
 
 
 def bootstrap_from_config(repo: Repository, config_root: Path) -> BootstrapResult:
     """Bootstrap from the deployed config layout when the catalog files exist."""
     language_dir = Path(config_root) / "languages"
-    provider_catalog = Path(config_root) / "openai-provider.yml"
-    if not language_dir.is_dir() or not provider_catalog.is_file():
+    provider_catalogs = catalog_paths(config_root)
+    if not language_dir.is_dir() or not provider_catalogs:
         return BootstrapResult(profiles_created=0, models_created=0)
-    return bootstrap_catalog(repo, language_dir=language_dir, provider_catalog=provider_catalog)
+    return bootstrap_catalog(repo, language_dir=language_dir, provider_catalog=provider_catalogs)

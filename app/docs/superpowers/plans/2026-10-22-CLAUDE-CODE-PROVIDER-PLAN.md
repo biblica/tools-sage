@@ -123,6 +123,8 @@ threads, or resume, so a Claude adapter can satisfy every call site. The bulk of
   through; `claude_workspace` descriptor (`provider_family: anthropic`) and mapping added.
   **Open (Phase 4 prerequisite):** the SQS service itself (`discovery.py`, `admin.py`, `worker.py`)
   still assumes `provider_family: openai`, so a Claude qualification cannot yet be approved there.
+  Done 2026-10-22 (`IMP-20261022-011`): the SQS service qualifies `anthropic` models (catalog,
+  discovery, family-correct planning and ADMIN queueing, tokenizer-scaled pack costs). The original list:
   The SQS service also needs, before Claude qualifications are trusted: provider-aware pack token
   estimates (pack `estimated_input_tokens` are in o200k terms, ~1.6x low for Claude); real token
   counts from Codex; dollar costs treated as notional for subscription channels; and the

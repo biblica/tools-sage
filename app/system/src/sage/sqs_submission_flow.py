@@ -129,6 +129,13 @@ def prepare_submission(
         if provider is not None
         else WorkspaceProviderAdapter(provider=load_llm_settings(sage_root)["selected_provider"])
     )
+    adapter_family = getattr(adapter, "provider_family", provider_family)
+    if adapter_family != provider_family:
+        raise PlannedEvaluationNotRunnable(
+            f"Planned evaluation is for {provider_family}/{model_id}, but this host's selected provider "
+            f"reaches {adapter_family}; select the matching provider to run it",
+            code="SQS_PROVIDER_FAMILY_MISMATCH",
+        )
 
     result = run_planned_test(pack=pack, provider=adapter, model=model, starting_reasoning=reasoning, scope=scope)
     qualification = synthesize_qualification(

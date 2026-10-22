@@ -10,7 +10,9 @@ from ..repository import Repository
 
 
 def _estimated_pack_cost(pack, model) -> float:
-    input_tokens = sum(case.estimated_input_tokens for case in pack.cases)
+    """Return a planning cost at list prices; on subscription channels it only ranks candidates."""
+    # Pack token estimates are o200k-sized; a denser tokenizer (Claude: ~1.6x) costs more.
+    input_tokens = sum(case.estimated_input_tokens for case in pack.cases) * model.pack_token_scale
     output_tokens = sum(case.estimated_output_tokens for case in pack.cases)
     # Medium-first boundary normally executes at most two reasoning levels.
     return 2.0 * ((input_tokens / 1_000_000) * model.input_usd_per_mtok + (output_tokens / 1_000_000) * model.output_usd_per_mtok)
@@ -62,6 +64,7 @@ def replan_repository(repo: Repository, pack_dir: Path) -> list[PlannedTest]:
             reason_code=row.reason_code,
             payload={
                 "candidate_id": row.candidate_id,
+                "provider_family": row.provider_family,
                 "profile_id": row.profile_id,
                 "model_id": row.model_id,
                 "capability": row.capability,
@@ -73,7 +76,7 @@ def replan_repository(repo: Repository, pack_dir: Path) -> list[PlannedTest]:
         )
         if row.disposition.value == "TEST" and not queued_next:
             repo.queue_test({
-                "provider_family": "openai",
+                "provider_family": row.provider_family,
                 "profile_id": row.profile_id,
                 "model_id": row.model_id,
                 "capability": row.capability,

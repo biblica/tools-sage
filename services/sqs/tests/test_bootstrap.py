@@ -42,4 +42,8 @@ def test_bootstrap_from_config_root_uses_runtime_catalog_layout(tmp_path):
     repo = Repository(Database.open(tmp_path / "runtime.db"))
     result = bootstrap_from_config(repo, root() / "config")
     assert result.profiles_created == 20
-    assert result.models_created == 3
+    # Every `*-provider.yml` catalog in the config root: 3 OpenAI and 4 Anthropic models.
+    assert result.models_created == 7
+    families = {row[0]: row[1] for row in repo.db.connection.execute(
+        "SELECT provider_family, COUNT(*) FROM models GROUP BY provider_family").fetchall()}
+    assert families == {"anthropic": 4, "openai": 3}

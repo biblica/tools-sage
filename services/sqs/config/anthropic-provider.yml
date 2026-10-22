@@ -1,0 +1,80 @@
+schema_version: '1.0'
+provider_family: anthropic
+# Execution channels that reach this provider_family's models are described
+# separately in seed/execution-channels/*.yml (see claude-workspace.yml), not
+# here -- this file is the model vendor's catalog only.
+snapshot_date: '2026-10-22'
+source: Anthropic model documentation (list prices per million tokens); refresh through ADMIN when
+  provider metadata changes
+routine_reasoning_levels:
+- low
+- medium
+- high
+premium_reasoning_levels_not_routine:
+- xhigh
+- max
+models:
+- model_id: claude-haiku-5-5
+  provider_position: cost_sensitive
+  capability_rank: 1
+  cost_rank: 1
+  reasoning_levels:
+  - low
+  - medium
+  - high
+  - xhigh
+  - max
+  input_usd_per_mtok: 0.1
+  output_usd_per_mtok: 0.5
+  pack_token_scale: 1.61
+  status: CANDIDATE
+- model_id: claude-sonnet-5-5
+  provider_position: balanced
+  capability_rank: 2
+  cost_rank: 2
+  reasoning_levels:
+  - low
+  - medium
+  - high
+  - xhigh
+  - max
+  input_usd_per_mtok: 2.0
+  output_usd_per_mtok: 10.0
+  pack_token_scale: 1.61
+  status: CANDIDATE
+- model_id: claude-opus-5-5
+  provider_position: frontier
+  capability_rank: 3
+  cost_rank: 3
+  reasoning_levels:
+  - low
+  - medium
+  - high
+  - xhigh
+  - max
+  input_usd_per_mtok: 4.0
+  output_usd_per_mtok: 20.0
+  pack_token_scale: 1.61
+  status: CANDIDATE
+- model_id: claude-fable-5-1
+  provider_position: frontier
+  capability_rank: 4
+  cost_rank: 4
+  reasoning_levels:
+  - low
+  - medium
+  - high
+  - xhigh
+  - max
+  input_usd_per_mtok: 10.0
+  output_usd_per_mtok: 50.0
+  pack_token_scale: 1.61
+  status: CANDIDATE
+notes:
+- Provider hierarchy and price are planning priors, never qualification evidence.
+- A model must be ADMIN-approved before SQS evaluates or publishes it.
+- SAGE reaches these models through the claude_workspace channel (the Claude Code CLI with each
+  Operator's own subscription); dollar costs are list prices and only rank candidates there.
+- pack_token_scale is the median Claude/o200k token ratio on Scripture measured 2026-10-22 for
+  claude-opus-5-5 and claude-sonnet-5-5 (identical); for claude-haiku-5-5 and claude-fable-5-1 it is
+  assumed, not measured.

@@ -22,6 +22,7 @@
 - **BREAKING (Claude only):** token sizing uses the selected provider's tokenizer. Claude spends a median 1.6x the Codex tokens on the same Scripture, so switching provider makes approved RTC plans stale. Codex plans and budgets are unchanged.
 - Adds the S/M/L work-unit size (Configure AI, `sage model work-unit-size`), which scales every RTC, STC, and BIC budget by 0.5/1/2, and a learned token correction that shrinks planning targets when real usage runs above the estimate.
 - A Codex workspace that is out of credits is reported as a usage limit, not a task failure.
+- SQS qualifies a second provider family: an Anthropic model catalog, family-aware discovery, planning and ADMIN queueing (the planner previously queued every test as OpenAI), and pack cost estimates scaled to each tokenizer.
 
 Release gate (2026-10-18): the typed package failed live qualification on FAIL precision (60%; the bar is 90%); see `docs/advanced/release/NCA-RELEASE-GATE.md`. SQS confidence checks have not been performed.
 

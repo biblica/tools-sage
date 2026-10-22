@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .domain import PROVIDER_FAMILIES
+
 _PROHIBITED = {"scripture", "content", "text", "prompt", "project_id", "job_id", "user_id", "api_key", "token", "secret", "authorization"}
 
 
@@ -33,7 +35,7 @@ def validate_discovery(payload: Any) -> dict[str, Any]:
     elif kind == "MODEL":
         if set(observed) != {"provider_family", "model_id", "reasoning_levels", "capability_fingerprint"}:
             raise ValueError("INVALID_DISCOVERY")
-        if observed.get("provider_family") != "openai" or not isinstance(observed.get("reasoning_levels"), list):
+        if observed.get("provider_family") not in PROVIDER_FAMILIES or not isinstance(observed.get("reasoning_levels"), list):
             raise ValueError("INVALID_DISCOVERY")
         if not _is_sha256(observed.get("capability_fingerprint")):
             raise ValueError("INVALID_DISCOVERY")

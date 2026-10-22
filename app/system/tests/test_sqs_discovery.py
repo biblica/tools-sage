@@ -60,6 +60,16 @@ def test_model_discovery_matches_the_real_tested_wire_contract():
     assert discovery["observed"]["reasoning_levels"] == ["low", "medium"]
 
 
+def test_claude_model_discovery_reports_the_anthropic_family():
+    """A Claude host reports its models under provider_family anthropic, which SQS accepts."""
+    discovery = build_model_discovery(model_id="claude-opus-5-5", reasoning_levels=["medium"],
+                                      sage_version="0.02a3", provider_family="anthropic")
+    _assert_matches_schema_variant(discovery, _discovery_schema())
+    assert discovery["observed"]["provider_family"] == "anthropic"
+    openai = build_model_discovery(model_id="claude-opus-5-5", reasoning_levels=["medium"], sage_version="0.02a3")
+    assert discovery["observed"]["capability_fingerprint"] != openai["observed"]["capability_fingerprint"]
+
+
 def test_language_profile_discovery_matches_the_real_tested_wire_contract():
     """A built LANGUAGE_PROFILE discovery matches every required field in SQS's actual enforced schema."""
     discovery = build_language_profile_discovery(
