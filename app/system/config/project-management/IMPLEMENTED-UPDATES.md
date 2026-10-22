@@ -9,6 +9,40 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261022-005 — BIC protected contracts re-pinned: naturalness first, familiarity rule, model-only verb contract (TODO-20261022-003)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261022`
+- **TODO:** `TODO-20261022-003` (now `DONE`; PO decision 2026-10-22)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - Protected rewrite-detail rules (`BIC4_PROTECTED_REWRITE_DETAIL_RULES`, baseline 4.00 → 4.10, canonical and
+    SELF-CHECK mirror). B4: "Minimum-departure rule" becomes "Naturalness and minimum departure": the
+    rendering must be natural, idiomatic TARGET language a fluent reader would accept; within that, the
+    smallest sufficient restructuring, no restructuring for style alone, closer-to-source wins ties. B3: the
+    capitalization rule no longer cites Indonesian `Dia`, `Ia`, `-Nya`; a capitalized divine pronoun or
+    affix in SOURCE may require a capitalized TARGET equivalent. Every other line is unchanged.
+  - Verb-selection contract (`BIC_PROTECTED_VERB_SELECTION_POLICY`, baseline 1.00 → 2.00). B1: the five-part
+    lexical-burden score, its weights, and the Longman mapping are removed (the total was stored but nothing
+    read it, and no licensed Longman data was ever routed); `familiarity_tie_break` states the rule: among
+    candidates that preserve meaning, force, register, and discourse function equally, prefer the more
+    familiar wording, only after the semantic gate. B2: the contract now holds only what the model acts on
+    (semantic authority split, semantic gate, familiarity rule, OL trigger, completion, alternatives and
+    rejection codes). Controller-only fields (local-first execution, lemma indexing, calculation owners,
+    reporting tiers, completion per risk level, SELF-CHECK requirement) are dropped from it; the challenge
+    schema (`human_reporting`, `ol_policy`) and the local-first and semantic-index docs already hold them.
+  - Both pins carry the new hashes and baselines; the verb pin's `protects` list matches the new contract.
+  - Challenge ledger schema 1.3: candidates no longer carry `lexical_burden` or `frequency_evidence`; the
+    model response schema drops both; `rewrite_risk.py` loses the burden formula and Longman scoring and
+    still accepts a 1.2 ledger, ignoring its burden fields. REWRITE Process brief step 5 (score the
+    components) is removed; the rule reaches the model through the protected contract.
+  - BIC rewrite Skill, `REWRITE-RISK-AND-OL.md`, `REWRITE-LEXICAL-RISK-AND-OL.md`, BIC cheat sheet, docs
+    index, system grammar, local-first rule, and BIC profile (`rewrite_familiarity_and_risk_validation`)
+    updated. `skills.json` re-pinned. Tasks created before this change fail with
+    `BIC_PROTECTED_CONTRACT_STALE` and must be recreated.
+- **Verification:** contract, rewrite-risk, harness, OL-step, documentation, package, and Skill tests pass
+  (199); full suite 2026-10-22: 2262 passed, 2 skipped. Output effect is measured by `TODO-20261022-009`.
+
 ### IMP-20261022-004 — BIC OL micro step may cite any routed grammar rule (TODO-20261022-008)
 
 - **Version:** `0.02a3` (development branch)

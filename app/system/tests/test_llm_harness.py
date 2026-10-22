@@ -1162,24 +1162,14 @@ def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_wo
                 return ProviderResponse(
                     "codex", request.model, json.dumps(payload), {"phase": len(prompts)}, request.reasoning_effort
                 )
-            burden = {
-                "familiarity": 1,
-                "register_markedness": 1,
-                "sense_ambiguity": 1,
-                "construction_burden": 1,
-                "specialist_load": 1,
-            }
-
             def candidate(identifier: str, rendering: str) -> dict:
-                """Build one model-facing candidate without any derived burden total."""
+                """Build one model-facing candidate."""
                 return {
                     "candidate_id": identifier,
                     "form": rendering,
                     "meaning_features": ["event"],
                     "tone_and_force": "neutral",
                     "register": "plain",
-                    "lexical_burden": burden,
-                    "frequency_evidence": {"source": "PROJECT_ESTIMATE", "bands": [], "note": "estimate"},
                     "main_risk": "sense drift",
                     "rejection_code": "",
                     "rejection_reason": "",
@@ -1327,20 +1317,14 @@ def test_failed_ol_micro_check_keeps_the_pass_one_candidate_and_marks_only_that_
 
     def row(challenge_id: str) -> dict:
         """Build one risk-triggering first-pass challenge with two candidates."""
-        burden = {key: 1 for key in (
-            "familiarity", "register_markedness", "sense_ambiguity", "construction_burden", "specialist_load"
-        )}
-
         def candidate(identifier: str, rendering: str) -> dict:
-            """Build one model-facing candidate without any derived burden total."""
+            """Build one model-facing candidate."""
             return {
                 "candidate_id": identifier,
                 "form": rendering,
                 "meaning_features": ["event"],
                 "tone_and_force": "neutral",
                 "register": "plain",
-                "lexical_burden": burden,
-                "frequency_evidence": {"source": "PROJECT_ESTIMATE", "bands": [], "note": "estimate"},
                 "main_risk": "sense drift",
                 "rejection_code": "",
                 "rejection_reason": "",

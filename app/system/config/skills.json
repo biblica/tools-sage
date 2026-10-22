@@ -31,7 +31,7 @@
       "source_version": "4.00",
       "original_file": "system/skills/bic-rewrite/references/ORIGINAL-SKILL.md",
       "original_sha256": "5323c880a1d578db7e170b5c6c5f6b903be14894688aacd2d6b779115d038241",
-      "adapted_sha256": "2eb732bd7fb0fea95aec6892df7b69d10db839d19f14d3571baa371a737574f8",
+      "adapted_sha256": "72606624357a920f359d1439d6b69f5ae82da5d49af32700135896b1d86f048d",
       "qualification_status": "VALIDATED",
       "transformation_summary": "Aligned to current SAGE SOURCE/DONOR/TARGET authority boundaries, unified Project/Job/Run governance, local-first semantic evidence, protected BIC 4 policy, and deterministic submission validation, closed local-evidence boundary, and general-linguistic-competence limit.",
       "shared_references": [

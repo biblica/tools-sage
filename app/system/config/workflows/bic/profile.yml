@@ -88,7 +88,7 @@ qualification_gates:
 - isolated_rewrite_and_self_check_contexts
 - usfm_and_project_grammar_output_validation
 - journalled_atomic_target_commit
-- rewrite_lexical_burden_and_risk_validation
+- rewrite_familiarity_and_risk_validation
 - bounded_ol_referral_and_risk_rated_reporting
 process:
   stages:
@@ -109,8 +109,8 @@ process:
     validation.
   - REWRITE produces a staged candidate, complete grammar assessment, and translation-challenge
     report.
-  - Lexical burden is a tie-breaker only after semantic, force, agency, participant,
-    grammar, and discourse gates pass.
+  - Familiarity is a tie-breaker only after semantic, force, agency, participant,
+    grammar, and discourse gates pass; no lexical-burden score is recorded.
   - Material semantic risk level 2 or higher triggers one automatic question-specific
     original-language micro-check per material challenge. Raw SOURCE and OL Scripture
     are released to the provider only for that challenge's single verse; VERB_CHOICE

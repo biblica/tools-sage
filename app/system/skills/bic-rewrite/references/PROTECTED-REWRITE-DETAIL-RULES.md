@@ -21,13 +21,13 @@ Do not add, omit, infer, explain, harmonise, generalise, specify, intensify, sof
 
 Do not erase repetition, merge distinct source constructions, flatten discourse relationships, hide agency, change responsibility, normalize honorifics, or remove source-supported ambiguity.
 
-## Minimum-departure rule
+## Naturalness and minimum departure
 
-Use target-language grammar and function words only where required to express the same source content. Use the smallest sufficient restructuring. When two renderings are equally accurate and natural, choose the rendering closer to source structure and information order.
+The rendering must be natural, idiomatic TARGET language that a fluent reader would accept. Within that requirement, use the smallest sufficient restructuring: do not restructure for style alone, and when two renderings are equally accurate and natural, choose the one closer to source structure and information order.
 
 ## Capitalization
 
-Preserve source-significant capitalization contextually. Divine `Dia`, `Ia`, or `-Nya` may require capitalized target equivalents when local source evidence establishes a divine referent. Ordinary sentence-initial capitalization is not proof of divinity. When referent identity is genuinely ambiguous, preserve the ambiguity as far as the target language permits and record `CAPITALIZATION_OR_REFERENT_AMBIGUITY` rather than inventing a referent.
+Preserve source-significant capitalization contextually. A capitalized divine pronoun or affix in SOURCE may require a capitalized TARGET equivalent when local source evidence establishes a divine referent. Ordinary sentence-initial capitalization is not proof of divinity. When referent identity is genuinely ambiguous, preserve the ambiguity as far as the target language permits and record `CAPITALIZATION_OR_REFERENT_AMBIGUITY` rather than inventing a referent.
 
 ## Index and memory authority
 

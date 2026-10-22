@@ -155,7 +155,7 @@ A technical generation is not linguistic approval.
 - `APPROVED_FOR_USE` BIC memory must originate from governed INSPECT evidence for the same Job; generic lexicon imports cannot acquire Job content authority through approval.
 - Treat DONOR strictly as vocabulary evidence; never route donor Scripture text.
 - Never read pre-existing TARGET Scripture during INSPECT/REWRITE.
-- Treat lexical burden as a tie-breaker after semantic hard gates.
+- Prefer the more familiar wording only among candidates that pass the semantic hard gates equally.
 - Local semantic/index evidence is retrieval/triage evidence, not translation authority.
 - Recreate an invalid task instead of editing `ACT.md` or `task-manifest.json`.
 - Keep every conditional source-text adjudication isolated to its single material challenge; never

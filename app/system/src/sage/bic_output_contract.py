@@ -17,8 +17,6 @@ from .registry import EcosystemConfig
 from .rewrite_risk import (
     _ALLOWED_CATEGORIES,
     _ALLOWED_CONFIDENCE,
-    _ALLOWED_EVIDENCE_SOURCES,
-    _ALLOWED_LONGMAN_BANDS,
     _ALLOWED_REJECTION_CODES,
     _ALLOWED_TRIGGER_CODES,
 )
@@ -28,13 +26,6 @@ CHALLENGES_FILE = "output/translation-challenges.json"
 GRAMMAR_FILE = "output/grammar-assessment.json"
 CANDIDATE_FILES = {"rewrite": "output/rewrite.usfm", "self_check": "output/self-check.usfm"}
 BIC_MODEL_FILES = frozenset({INSPECT_FILE, CHALLENGES_FILE, GRAMMAR_FILE})
-_BURDEN_COMPONENTS = (
-    "familiarity",
-    "register_markedness",
-    "sense_ambiguity",
-    "construction_burden",
-    "specialist_load",
-)
 _SCORE = {"type": "integer", "enum": [0, 1, 2, 3, 4]}
 _STRING = {"type": "string"}
 
@@ -111,7 +102,7 @@ def _inspect_schema(narrative_note: str) -> dict[str, Any]:
 
 
 def _candidate_schema(narrative_note: str) -> dict[str, Any]:
-    """One candidate rendering without any locally derived burden total."""
+    """One candidate rendering; familiarity is a tie-break rule, not a recorded score."""
     return _object(
         {
             "candidate_id": _STRING,
@@ -119,14 +110,6 @@ def _candidate_schema(narrative_note: str) -> dict[str, Any]:
             "meaning_features": _array(_STRING),
             "tone_and_force": _prose("Describe tone and force.", narrative_note),
             "register": _prose("Describe register.", narrative_note),
-            "lexical_burden": _object({name: _SCORE for name in _BURDEN_COMPONENTS}),
-            "frequency_evidence": _object(
-                {
-                    "source": _enum(_ALLOWED_EVIDENCE_SOURCES),
-                    "bands": _array(_enum(_ALLOWED_LONGMAN_BANDS)),
-                    "note": _prose("Note the frequency evidence.", narrative_note),
-                }
-            ),
             "main_risk": _prose("State the main risk of this candidate.", narrative_note),
             "rejection_code": {
                 "type": "string",
@@ -391,7 +374,7 @@ def _materialize_challenges(
         "notes": list(minor.get("notes") or []),
     }
     return {
-        "schema_version": "1.2",
+        "schema_version": "1.3",
         "task_id": manifest.get("task_id"),
         "operation": manifest.get("operation"),
         "scope": manifest.get("scope"),

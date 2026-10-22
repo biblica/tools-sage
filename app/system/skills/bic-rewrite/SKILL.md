@@ -12,7 +12,7 @@ The model:
 
 1. Produces one bounded USFM candidate that preserves every bounded source content unit, exact coordinate coverage, and all protected semantic markers; layout markers are normalized only when the task marker policy permits it.
 2. Uses routed semantic/index evidence and approved memory before generating new lexical alternatives, compares only semantically viable verbs or constructions, and keeps semantic precision ahead of accessibility.
-3. Scores the five lexical-burden components (0-4) and records frequency evidence for each candidate. Longman bands are used only when licensed evidence is routed; otherwise the source is `UNKNOWN`. SAGE derives burden totals, OL authorization, candidate-change state, urgency, and reporting level.
+3. Applies the familiarity tie-break of the verb-selection contract: among candidates that preserve meaning, force, register, and discourse function equally, the more familiar wording wins. No burden score is recorded. SAGE derives OL authorization, candidate-change state, urgency, and reporting level.
 4. Records `risk.before_ol` and the material trigger codes for each challenge, and does not request, read, or simulate OL evidence. At material semantic-risk level 2 or higher with a material trigger, SAGE runs one automatic bounded OL check per challenge as a separate single-verse conditional OL question and merges any better candidate itself. Uncommon or formal wording alone is not a trigger.
 5. Completes risk 3 and 4 challenges with the recommended candidate and keeps the concise material alternatives considered, each with its rejection code and reason. REWRITE accepts no Operator candidate input.
 6. Assesses every governed grammar rule against the candidate.

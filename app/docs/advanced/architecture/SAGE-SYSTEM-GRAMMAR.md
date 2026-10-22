@@ -182,7 +182,7 @@ The prohibited target-text verb forms are enforced by the vocabulary audit and m
 
 ## REWRITE lexical-risk vocabulary
 
-Use `lexical burden` for audience processing difficulty and `semantic risk` for possible change to meaning, force, agency, participant relations, grammar, or discourse. Do not use `complexity` alone when the intended dimension is unclear.
+Use `familiarity` for how readily the audience processes a wording and `semantic risk` for possible change to meaning, force, agency, participant relations, grammar, or discourse. Do not use `complexity` alone when the intended dimension is unclear.
 
 Use `bounded OL check` for the automatic, tightly scoped original-language risk-control step. Use `original-language review` only for a distinct analytical review operation. A bounded OL check belongs inside the REWRITE flow; it is not a routine human gate.
 

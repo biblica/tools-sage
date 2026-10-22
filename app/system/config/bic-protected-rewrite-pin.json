@@ -1,19 +1,19 @@
 {
   "contract": {
     "id": "BIC4_PROTECTED_REWRITE_DETAIL_RULES",
-    "baseline": "4.00",
+    "baseline": "4.10",
     "status": "PINNED",
     "canonical_file": "system/skills/bic-rewrite/references/PROTECTED-REWRITE-DETAIL-RULES.md",
     "mirror_files": [
       "system/skills/bic-self-check/references/PROTECTED-REWRITE-DETAIL-RULES.md"
     ],
-    "sha256": "f2c8b9bc3d0626260021a042fdb3aed36909c13056156c3a7ea9bc6cc49b3aea",
+    "sha256": "a3fa31f83591d5b38e60e2d6c9d22993aa380f889037f265227cf8832888fa71",
     "permitted_adaptations": [
       "US_SYSTEM_SPELLING",
       "CANONICAL_REWRITE_ACTION_VOCABULARY",
       "GENERATED_LAYOUT_MARKER_POLICY_EXCEPTION",
       "USJ_COMPARISON_INPUT"
     ],
-    "release": "0.01beta"
+    "release": "0.02a3"
   }
 }

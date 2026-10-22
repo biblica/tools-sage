@@ -1,9 +1,8 @@
-"""Validate REWRITE lexical burden, controller-derived OL referrals, and concise risk reporting."""
+"""Validate REWRITE candidates, controller-derived OL referrals, and concise risk reporting."""
 
 from __future__ import annotations
 
 import json
-import math
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
@@ -47,8 +46,6 @@ _ALLOWED_TRIGGER_CODES = {
     "DISCOURSE_DEPENDENCY",
     "SIGNIFICANT_PROJECT_CONCEPT",
 }
-_ALLOWED_LONGMAN_BANDS = {"S1", "S2", "S3", "W1", "W2", "W3", "L3000", "L6000", "L9000", "UNLISTED", "UNKNOWN"}
-_ALLOWED_EVIDENCE_SOURCES = {"LONGMAN", "PROJECT_CORPUS", "AUDIENCE_TEST", "LEXICOGRAPHIC", "PROJECT_ESTIMATE", "UNKNOWN"}
 _ALLOWED_REJECTION_CODES = {
     "MEANING_LOSS",
     "FORCE_WEAKENED",
@@ -63,19 +60,6 @@ _ALLOWED_REJECTION_CODES = {
     "LESS_ACCESSIBLE_WITH_NO_SEMANTIC_GAIN",
     "OL_EVIDENCE_DISFAVOURS",
     "OTHER_MATERIAL_LOSS",
-}
-
-_LONGMAN_SCORE = {
-    "S1": 0,
-    "S2": 1,
-    "S3": 2,
-    "W1": 0,
-    "W2": 1,
-    "W3": 2,
-    "L3000": 2,
-    "L6000": 3,
-    "L9000": 4,
-    "UNLISTED": 4,
 }
 
 
@@ -131,32 +115,6 @@ def _scope_contains(parent: ScriptureScope, value: str) -> bool:
 
 
 
-def longman_familiarity_score(bands: Sequence[str]) -> int | None:
-    """Return the governed spoken-first familiarity score for licensed Longman bands."""
-    normalised = {str(item).strip().upper() for item in bands}
-    spoken = [band for band in ("S1", "S2", "S3") if band in normalised]
-    if spoken:
-        return min(_LONGMAN_SCORE[band] for band in spoken)
-    written = [band for band in ("W1", "W2", "W3") if band in normalised]
-    if written:
-        return min(_LONGMAN_SCORE[band] for band in written)
-    ranked = [band for band in ("L3000", "L6000", "L9000", "UNLISTED") if band in normalised]
-    if ranked:
-        return min(_LONGMAN_SCORE[band] for band in ranked)
-    return None
-
-def lexical_burden_total(components: Mapping[str, int]) -> int:
-    """Return the rounded governed burden score from the five component ratings."""
-    weighted = (
-        0.40 * components["familiarity"]
-        + 0.15 * components["register_markedness"]
-        + 0.15 * components["sense_ambiguity"]
-        + 0.15 * components["construction_burden"]
-        + 0.15 * components["specialist_load"]
-    )
-    return min(4, max(0, int(math.floor(weighted + 0.5))))
-
-
 def _correction(
     corrections: list[dict[str, Any]] | None,
     *,
@@ -185,63 +143,14 @@ def _validate_candidate(
     corrections: list[dict[str, Any]] | None = None,
     coordinate: str = "",
 ) -> dict[str, Any]:
-    """Validate one proposed verb or construction while deriving arithmetic locally.
+    """Validate one proposed verb or construction.
 
-    A supplied value that disagrees with its locally derived counterpart is overwritten and recorded.
+    Lexical-burden scores and frequency evidence in a schema 1.2 ledger are ignored: familiarity is a
+    tie-break rule in the verb-selection contract, not a recorded score.
     """
     row = _mapping(raw, label)
     candidate_id = _text(row.get("candidate_id"), f"{label}.candidate_id", maximum=80)
     form = _text(row.get("form"), f"{label}.form", maximum=160)
-    components_raw = _mapping(row.get("lexical_burden"), f"{label}.lexical_burden")
-    components = {
-        key: _score(components_raw.get(key), f"{label}.lexical_burden.{key}")
-        for key in (
-            "familiarity",
-            "register_markedness",
-            "sense_ambiguity",
-            "construction_burden",
-            "specialist_load",
-        )
-    }
-    frequency = _mapping(row.get("frequency_evidence"), f"{label}.frequency_evidence")
-    source = str(frequency.get("source", "")).strip().upper()
-    if source not in _ALLOWED_EVIDENCE_SOURCES:
-        raise ValidationError(f"{label}.frequency_evidence.source is unsupported: {source}")
-    bands = _string_list(
-        frequency.get("bands", []),
-        f"{label}.frequency_evidence.bands",
-        allowed=_ALLOWED_LONGMAN_BANDS,
-    )
-    longman_score = longman_familiarity_score(bands)
-    if source == "LONGMAN":
-        if longman_score is None:
-            raise ValidationError(
-                f"{label}.frequency_evidence requires a licensed Longman band or UNLISTED"
-            )
-        if components["familiarity"] != longman_score:
-            _correction(
-                corrections,
-                label=f"{label}.lexical_burden.familiarity",
-                supplied=components["familiarity"],
-                derived=longman_score,
-                coordinate=coordinate,
-            )
-            components["familiarity"] = longman_score
-    elif longman_score is not None:
-        raise ValidationError(
-            f"{label}.frequency_evidence Longman bands require source LONGMAN"
-        )
-    expected_total = lexical_burden_total(components)
-    if "overall" in components_raw:
-        supplied_total = _score(components_raw.get("overall"), f"{label}.lexical_burden.overall")
-        if supplied_total != expected_total:
-            _correction(
-                corrections,
-                label=f"{label}.lexical_burden.overall",
-                supplied=supplied_total,
-                derived=expected_total,
-                coordinate=coordinate,
-            )
     rejection_code_raw = str(row.get("rejection_code", "")).strip().upper()
     rejection_reason_raw = str(row.get("rejection_reason", "")).strip()
     if rejection_code_raw and rejection_code_raw not in _ALLOWED_REJECTION_CODES:
@@ -254,12 +163,6 @@ def _validate_candidate(
         "meaning_features": _string_list(row.get("meaning_features", []), f"{label}.meaning_features"),
         "tone_and_force": _text(row.get("tone_and_force"), f"{label}.tone_and_force"),
         "register": _text(row.get("register"), f"{label}.register"),
-        "lexical_burden": {**components, "overall": expected_total},
-        "frequency_evidence": {
-            "source": source,
-            "bands": bands,
-            "note": _text(frequency.get("note"), f"{label}.frequency_evidence.note"),
-        },
         "main_risk": _text(row.get("main_risk"), f"{label}.main_risk"),
         "rejection_code": rejection_code_raw or None,
         "rejection_reason": rejection_reason_raw or None,
@@ -404,8 +307,8 @@ def validate_rewrite_challenges(
     if not isinstance(document, dict):
         raise ValidationError("BIC translation-challenges output must be a JSON object")
     schema_version = str(document.get("schema_version", "")).strip()
-    if schema_version != "1.2":
-        raise ValidationError("BIC translation-challenges schema_version must be '1.2'")
+    if schema_version not in {"1.2", "1.3"}:
+        raise ValidationError("BIC translation-challenges schema_version must be '1.3'")
     policy = human_output or _default_human_output()
     languages = resolved_languages(
         policy.translation_challenges,
@@ -758,7 +661,7 @@ def validate_rewrite_challenges(
     highest_urgency = max((item["risk"]["urgency"] for item in normalised), default=0)
     return {
         **expected,
-        "schema_version": "1.2",
+        "schema_version": "1.3",
         "reporting_languages": list(languages),
         "status": "COMPLETED_WITH_CHALLENGES" if normalised or minor_total else "COMPLETED",
         "highest_urgency": highest_urgency,

@@ -41,11 +41,10 @@ def process_brief_lines(
             "2. SOURCE is the sole content authority; DONOR may suggest lexical forms only. Never derive content, propositions, participant structure, syntax, or verse wording from DONOR, and never read an existing TARGET as evidence.",
             "3. Produce one bounded USFM candidate with exact coordinate coverage and protected semantic-marker integrity.",
             "4. Use routed semantic packets and approved memory before generating new lexical alternatives, and compare only semantically viable verbs or constructions.",
-            "5. For each candidate, score the five lexical-burden components on the governed 0-4 rubric and record its frequency evidence; use Longman bands only when licensed evidence is routed, otherwise `UNKNOWN`, and never invent a band. SAGE derives the burden total.",
-            "6. For each challenge, record `risk.before_ol` (0-4) and its material trigger codes. Do not request, read, or simulate original-language evidence: at material semantic-risk level 2 or higher with a material trigger, SAGE runs one automatic bounded OL check for that challenge as a separate single-verse question and merges any better candidate itself. Uncommon or formal wording alone is not a trigger.",
-            "7. At risk 3 or 4, still complete the candidate with the recommended rendering, and keep the concise material alternatives considered, each with its rejection code and reason. REWRITE accepts no Operator candidate input.",
-            "8. Linguistic uncertainty elevates the report; it does not block completion of the current REWRITE operation.",
-            "9. Complete the rule-by-rule grammar assessment and concise translation-challenge report: list material urgency 2–4 items, consolidate repeated causes, and aggregate lower-level or automatically resolved matters.",
+            "5. For each challenge, record `risk.before_ol` (0-4) and its material trigger codes. Do not request, read, or simulate original-language evidence: at material semantic-risk level 2 or higher with a material trigger, SAGE runs one automatic bounded OL check for that challenge as a separate single-verse question and merges any better candidate itself. Uncommon or formal wording alone is not a trigger.",
+            "6. At risk 3 or 4, still complete the candidate with the recommended rendering, and keep the concise material alternatives considered, each with its rejection code and reason. REWRITE accepts no Operator candidate input.",
+            "7. Linguistic uncertainty elevates the report; it does not block completion of the current REWRITE operation.",
+            "8. Complete the rule-by-rule grammar assessment and concise translation-challenge report: list material urgency 2–4 items, consolidate repeated causes, and aggregate lower-level or automatically resolved matters.",
         ])
     elif workflow == "bic":
         lines.extend([

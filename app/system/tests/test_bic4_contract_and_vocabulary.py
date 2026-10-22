@@ -29,8 +29,8 @@ from sage.vocabulary import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_BIC4_CONTRACT_SHA256 = "f2c8b9bc3d0626260021a042fdb3aed36909c13056156c3a7ea9bc6cc49b3aea"
-EXPECTED_VERB_POLICY_SHA256 = "5bdc196242b320ec24273d48051e372a7a03c266ca4016b53517065cbfef6e53"
+EXPECTED_BIC4_CONTRACT_SHA256 = "a3fa31f83591d5b38e60e2d6c9d22993aa380f889037f265227cf8832888fa71"
+EXPECTED_VERB_POLICY_SHA256 = "817b17401002a71b830481727f13404f27732b9301f1ee475b49a1260417d0bb"
 PRIVATE_ALIAS_START = "# BEGIN PRIVATE OPERATOR INPUT ALIASES"
 PRIVATE_ALIAS_END = "# END PRIVATE OPERATOR INPUT ALIASES"
 
@@ -179,7 +179,7 @@ def test_bic_verb_selection_policy_is_hash_pinned_independently() -> None:
     pin_path = ROOT / "system" / "config" / "bic-protected-verb-selection-pin.json"
     pin = json.loads(pin_path.read_text(encoding="utf-8"))["contract"]
     assert pin["status"] == "PINNED"
-    assert pin["baseline"] == "1.00"
+    assert pin["baseline"] == "2.00"
     assert pin["sha256"] == EXPECTED_VERB_POLICY_SHA256
     assert sha256_file(policy_path) == EXPECTED_VERB_POLICY_SHA256
     assert pin["canonical_file"] == "system/config/contracts/bic-verb-selection-policy.yml"
@@ -207,9 +207,13 @@ def test_complete_bic4_contract_is_hash_pinned_without_abbreviation() -> None:
         "Retain the source content-marker sequence inside scope",
         "`START` content",
         "layout-only paragraph or poetry marker levels",
+        "natural, idiomatic TARGET language that a fluent reader would accept",
+        "do not restructure for style alone",
+        "A capitalized divine pronoun or affix in SOURCE",
     )
     for fragment in required_fragments:
         assert fragment in rewrite_text
+    assert "`Dia`" not in rewrite_text and "`-Nya`" not in rewrite_text
     pin = json.loads((ROOT / "system" / "config" / "bic-protected-rewrite-pin.json").read_text(encoding="utf-8"))["contract"]
     assert pin["sha256"] == EXPECTED_BIC4_CONTRACT_SHA256
     assert pin["canonical_file"] == rewrite_path.relative_to(ROOT).as_posix()

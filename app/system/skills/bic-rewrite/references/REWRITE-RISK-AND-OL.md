@@ -1,36 +1,14 @@
-# REWRITE lexical burden and bounded OL risk control
+# REWRITE familiarity and bounded OL risk control
 
 ## Principle
 
 Use the contemporary CONTENT_SOURCE, bounded context, approved memory, and project grammar as the normal basis for REWRITE. Original-language evidence is a targeted risk-control resource, not a routine competing layer.
 
-Lexical burden never overrides meaning. A less familiar verb remains required when it preserves a meaning component, semantic force, agency, participant relation, discourse function, or project term that an easier alternative loses.
+Familiarity never overrides meaning. A less familiar verb remains required when it preserves a meaning component, semantic force, agency, participant relation, discourse function, or project term that an easier alternative loses.
 
-## Lexical-burden scale
+## Familiarity tie-break
 
-Score every candidate from 0 to 4 on these dimensions:
-
-- familiarity: 40 per cent;
-- register markedness: 15 per cent;
-- sense ambiguity: 15 per cent;
-- construction burden: 15 per cent;
-- specialist load: 15 per cent.
-
-Record every component and its evidence. Do not supply the weighted result as workflow authority; SAGE calculates the governed total locally. Use Longman bands only when licensed evidence is routed. Never invent a frequency band. The noun `translation` is permitted in human-facing BIC explanation and tables; `REWRITE` remains the sole canonical target-text action.
-
-Lexical burden is a tie-breaker only among candidates that preserve the same meaning, force, tone, participant relationships, register, and discourse function.
-
-### Licensed Longman familiarity mapping
-
-| Band | Familiarity |
-|---|---:|
-| `S1` or `W1` | 0 |
-| `S2` or `W2` | 1 |
-| `S3`, `W3`, or `L3000` | 2 |
-| `L6000` | 3 |
-| `L9000` or `UNLISTED` | 4 |
-
-Use a spoken band when present; otherwise use the written or Longman 9000 fallback. Retain every routed band. Use `UNKNOWN` when no licensed band is available.
+Among candidates that preserve meaning, force, register, and discourse function equally, prefer the more familiar wording (`familiarity_tie_break` in the protected verb-selection contract). The rule applies only after the semantic gate passes. No lexical-burden score or frequency band is recorded. The noun `translation` is permitted in human-facing BIC explanation and tables; `REWRITE` remains the sole canonical target-text action.
 
 ## Automatic bounded OL referral
 

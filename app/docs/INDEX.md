@@ -36,7 +36,7 @@ in the `docs/` root. Technical and governance material is grouped under
 
 - [BIC, RTC, STC, and NCA Authority Boundaries](advanced/workflows/BIC-RTC-STC-AUTHORITY-BOUNDARIES.md) — independent workflows, role authority, and write limits.
 - [Full Process Flow](advanced/workflows/FULL-PROCESS-FLOW.md) — ordered BIC/RTC/STC controller flows and state transitions.
-- [REWRITE Lexical Risk and Bounded OL Flow](advanced/workflows/REWRITE-LEXICAL-RISK-AND-OL.md) — lexical burden, semantic risk, and conditional original-language checks.
+- [REWRITE Lexical Risk and Bounded OL Flow](advanced/workflows/REWRITE-LEXICAL-RISK-AND-OL.md) — familiarity tie-break, semantic risk, and conditional original-language checks.
 - [BIC Target Generations](advanced/workflows/TARGET-GENERATIONS.md) — immutable TARGET generations and verification.
 - [Structure and Work-Unit Planning](advanced/workflows/STRUCTURE-PLANNING.md) — deterministic segmentation and bounded work planning.
 - [INIT and Auto Resolution](advanced/workflows/AUTO-RESOLUTION.md) — automatic-setting resolution and override boundaries.

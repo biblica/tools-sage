@@ -6,7 +6,7 @@ SAGE MUST perform work locally and deterministically whenever the required resul
 
 ## Local controller responsibilities
 
-Use local code for USFM parsing, scope extraction, hashing, exact lookup, lemma and Semantic Domain retrieval, correspondence retrieval, occurrence counts, lexical-burden arithmetic, OL-trigger calculation, evidence-packet assembly, schema validation, report rendering, audit logging, and state transitions.
+Use local code for USFM parsing, scope extraction, hashing, exact lookup, lemma and Semantic Domain retrieval, correspondence retrieval, occurrence counts, OL-trigger calculation, evidence-packet assembly, schema validation, report rendering, audit logging, and state transitions.
 
 ## AI responsibilities
 

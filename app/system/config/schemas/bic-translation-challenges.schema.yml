@@ -1,4 +1,4 @@
-schema_id: sage-bic-translation-challenges-1.2
+schema_id: sage-bic-translation-challenges-1.3
 required:
 - schema_version
 - task_id
@@ -26,11 +26,7 @@ candidate_required:
 - meaning_features
 - tone_and_force
 - register
-- lexical_burden
-- frequency_evidence
 - main_risk
-candidate_derived:
-- lexical_burden.overall
 high_risk_rejected_candidate_required:
 - rejection_code
 - rejection_reason
@@ -64,32 +60,6 @@ human_reporting:
     risk_2: 2
     risk_3: 3
     risk_4: 4
-lexical_burden_scale:
-- 0
-- 1
-- 2
-- 3
-- 4
-longman_familiarity_mapping:
-  S1: 0
-  W1: 0
-  S2: 1
-  W2: 1
-  S3: 2
-  W3: 2
-  L3000: 2
-  L6000: 3
-  L9000: 4
-  UNLISTED: 4
-  spoken_band_precedence: true
-  licensed_evidence_required: true
-lexical_burden_formula:
-  owner: LOCAL_CONTROLLER
-  familiarity: 0.4
-  register_markedness: 0.15
-  sense_ambiguity: 0.15
-  construction_burden: 0.15
-  specialist_load: 0.15
 ol_policy:
   owner: LOCAL_CONTROLLER
   normal_levels:

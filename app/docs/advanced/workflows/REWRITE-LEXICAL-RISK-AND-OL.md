@@ -9,29 +9,16 @@ This document describes the current protected BIC verb/lexical-choice flow. REWR
 1. Establish source meaning, participant roles, force, tone, tense, aspect, mood, modality, voice, discourse function, terminology, and genuine ambiguity.
 2. Eliminate candidates that alter any required feature.
 3. Compare remaining candidates for grammar, valency, collocation, register, terminology, and relevant local semantic evidence.
-4. Assess lexical burden only among semantically viable candidates.
-5. The controller calculates lexical-burden totals locally.
-6. The model records semantic risk and any material semantic trigger.
-7. The controller opens one bounded OL check only when **risk >= 2 AND at least one material semantic trigger exists**.
-8. If OL evidence supports a better candidate, REWRITE updates the bounded candidate and revalidates it.
-9. REWRITE completes with the recommended candidate at every linguistic risk level.
-10. SELF-CHECK independently verifies the sealed completed candidate.
+4. Among semantically viable candidates that are equal in meaning, force, register, and discourse function, prefer the more familiar wording.
+5. The model records semantic risk and any material semantic trigger.
+6. The controller opens one bounded OL check only when **risk >= 2 AND at least one material semantic trigger exists**.
+7. If OL evidence supports a better candidate, the OL check returns a replacement for that one verse; SAGE merges it into the bounded candidate and revalidates it.
+8. REWRITE completes with the recommended candidate at every linguistic risk level.
+9. SELF-CHECK independently verifies the sealed completed candidate.
 
-## Lexical-burden vector
+## Familiarity tie-break
 
-Each semantically viable candidate records five component scores from 0 to 4:
-
-| Component | Weight | Evidence basis |
-|---|---:|---|
-| Familiarity | 40% | Authorized Longman evidence, project corpus, audience evidence, or explicit project estimate |
-| Register markedness | 15% | Distribution across conversational/formal/literary contexts |
-| Sense ambiguity | 15% | Likelihood of an unintended sense |
-| Construction burden | 15% | Valency, complement, particle, attachment, clause complexity |
-| Specialist load | 15% | Technical, theological, archaic, or project-specific knowledge |
-
-Python calculates the weighted total; the model does not author workflow arithmetic. The component vector remains the primary evidence. Lexical burden never overrides a semantic hard gate.
-
-Missing licensed Longman evidence is `UNKNOWN`; the model must not invent Longman bands.
+Among candidates that preserve meaning, force, register, and discourse function equally, REWRITE prefers the more familiar wording (`familiarity_tie_break` in the protected verb-selection contract). The rule applies only after the semantic gate passes; familiarity never overrides meaning. No lexical-burden score or frequency band is recorded: the five-part score and the Longman mapping were removed in the 2026-10-22 re-pin because nothing used the total and no licensed Longman data was ever routed.
 
 ## Risk and OL policy
 

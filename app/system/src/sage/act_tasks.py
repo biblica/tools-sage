@@ -2538,7 +2538,7 @@ def create_act_task(
                 "- The assessment must cover every project-grammar rule ID exactly once.",
                 "- Return only the semantic judgments of the supplied response schema; SAGE sets task identity, scope, profile, hashes, reporting languages, and every locally derived field.",
                 *( [
-                    "- Match `system/config/schemas/bic-translation-challenges.schema.yml` version 1.2 for `output/translation-challenges.json`.",
+                    "- Match `system/config/schemas/bic-translation-challenges.schema.yml` version 1.3 for `output/translation-challenges.json`.",
                     "- Record material challenges individually, consolidate repeated causes, and aggregate minor or automatically resolved matters in `minor_summary`.",
                     "- Supply `messages` in every configured translation-challenge language; preserve canonical codes, candidate forms, coordinates, and identifiers.",
                     "- Report candidate changes, risk increases, urgency 2-4 issues, and unresolved critical alternatives; an empty challenge list is valid.",

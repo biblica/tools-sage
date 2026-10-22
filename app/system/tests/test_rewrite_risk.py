@@ -1,4 +1,4 @@
-"""REWRITE lexical-burden, OL-risk, challenge, and decision regressions."""
+"""REWRITE candidate, OL-risk, challenge, and decision regressions."""
 
 from __future__ import annotations
 
@@ -18,8 +18,6 @@ from sage.errors import ValidationError
 from sage.hashing import sha256_file
 from sage.registry import load_ecosystem
 from sage.rewrite_risk import (
-    lexical_burden_total,
-    longman_familiarity_score,
     self_check_ledger_view,
     validate_rewrite_challenges,
 )
@@ -47,36 +45,14 @@ def _run_cli(package_root: Path, workspace: Path, *arguments: str) -> subprocess
     )
 
 
-def _candidate(
-    candidate_id: str,
-    form: str,
-    *,
-    familiarity: int,
-    register: int = 0,
-    ambiguity: int = 0,
-    construction: int = 0,
-    specialist: int = 0,
-) -> dict:
-    """Return one candidate fixture whose total follows the governed weighting formula."""
-    components = {
-        "familiarity": familiarity,
-        "register_markedness": register,
-        "sense_ambiguity": ambiguity,
-        "construction_burden": construction,
-        "specialist_load": specialist,
-    }
+def _candidate(candidate_id: str, form: str) -> dict:
+    """Return one candidate fixture; familiarity is a tie-break rule, not a recorded score."""
     return {
         "candidate_id": candidate_id,
         "form": form,
         "meaning_features": ["CONTINUATION"],
         "tone_and_force": "Neutral continuing relation.",
         "register": "Contemporary general English.",
-        "lexical_burden": {**components, "overall": lexical_burden_total(components)},
-        "frequency_evidence": {
-            "source": "PROJECT_ESTIMATE",
-            "bands": ["UNKNOWN"],
-            "note": "No licensed Longman band was routed; the project estimate is explicit.",
-        },
         "main_risk": "May underrepresent the relational component.",
     }
 
@@ -166,8 +142,8 @@ def _initialised_rewrite(package_root: Path, make_workspace) -> tuple[object, di
 def _challenge_document(task: dict, output: Path, *, resolved: bool) -> dict:
     """Build one resolved or unresolved current verb-choice challenge fixture."""
     candidates = [
-        _candidate("REMAIN", "remain", familiarity=0),
-        _candidate("ABIDE", "abide", familiarity=2, register=2),
+        _candidate("REMAIN", "remain"),
+        _candidate("ABIDE", "abide"),
     ]
     if resolved:
         before, after = 2, 1
@@ -184,7 +160,7 @@ def _challenge_document(task: dict, output: Path, *, resolved: bool) -> dict:
         rejected["rejection_code"] = "REGISTER_MISMATCH"
         rejected["rejection_reason"] = "The alternative is less accessible without a semantic gain in this context."
     document = {
-        "schema_version": "1.2",
+        "schema_version": "1.3",
         "task_id": task["task_id"],
         "operation": "rewrite",
         "scope": task["scope"],
@@ -232,19 +208,6 @@ def _challenge_document(task: dict, output: Path, *, resolved: bool) -> dict:
     if "human_output" in task:
         document["reporting_languages"] = ["en"]
     return document
-
-
-def test_lexical_burden_formula_uses_fixed_weights() -> None:
-    """Verify that lexical burden is reproducible rather than an intuitive single rating."""
-    assert lexical_burden_total(
-        {
-            "familiarity": 4,
-            "register_markedness": 2,
-            "sense_ambiguity": 1,
-            "construction_burden": 0,
-            "specialist_load": 0,
-        }
-    ) == 2
 
 
 def test_low_semantic_risk_does_not_count_a_claimed_ol_check(tmp_path: Path) -> None:
@@ -458,7 +421,8 @@ def test_generated_rewrite_act_and_skill_share_current_risk_contract(
     assert challenge_schema["ol_policy"]["risk_3_behavior"] == "REPORT_AND_CONTINUE"
     assert challenge_schema["ol_policy"]["risk_4_behavior"] == "CRITICAL_REPORT_AND_CONTINUE"
     assert challenge_schema["ol_policy"]["operator_input_during_rewrite"] == "prohibited"
-    assert policy["design_rules"]["operator_input_during_rewrite"] == "PROHIBITED"
+    assert policy["completion"]["operator_input_during_rewrite"] == "PROHIBITED"
+    assert "lexical_burden" not in policy and "familiarity_tie_break" in policy
     assert not (package_root / "system/config/schemas/bic-operator-decisions.schema.yml").exists()
 
 
@@ -470,16 +434,6 @@ def test_task_decide_command_is_removed(package_root: Path, make_workspace) -> N
     assert "invalid value for task_command" in (result.stderr + result.stdout).casefold()
 
 
-def test_longman_frequency_bands_map_to_governed_familiarity_scores() -> None:
-    """Verify the spoken-first Longman mapping and conservative fallback bands."""
-    assert longman_familiarity_score(["S1", "W3"]) == 0
-    assert longman_familiarity_score(["W2"]) == 1
-    assert longman_familiarity_score(["L3000"]) == 2
-    assert longman_familiarity_score(["L6000"]) == 3
-    assert longman_familiarity_score(["L9000"]) == 4
-    assert longman_familiarity_score(["UNKNOWN"]) is None
-
-
 def _validate_fixture(tmp_path: Path, document: dict, output: Path) -> dict:
     """Write one challenge fixture and run the REWRITE validator over it."""
     path = tmp_path / "translation-challenges.json"
@@ -489,26 +443,19 @@ def _validate_fixture(tmp_path: Path, document: dict, output: Path) -> dict:
     )
 
 
-def test_longman_evidence_overwrites_inconsistent_familiarity_score(tmp_path: Path) -> None:
-    """Licensed Longman evidence wins over a model familiarity score, and the correction is recorded."""
+def test_schema_1_2_ledger_with_burden_scores_is_accepted_without_them(tmp_path: Path) -> None:
+    """A ledger written before the familiarity re-pin still validates; its burden fields are dropped."""
     output = tmp_path / "candidate.usfm"
     output.write_text("fixture", encoding="utf-8")
     challenge = _challenge_document({"task_id": "TASK", "scope": "MAT 1:1"}, output, resolved=True)
+    challenge["schema_version"] = "1.2"
     candidate = challenge["challenges"][0]["candidates"][0]
-    candidate["frequency_evidence"] = {
-        "source": "LONGMAN",
-        "bands": ["S1", "W3"],
-        "note": "Licensed project evidence records the spoken and written bands.",
-    }
-    candidate["lexical_burden"]["familiarity"] = 2
-    candidate["lexical_burden"]["overall"] = lexical_burden_total(candidate["lexical_burden"])
+    candidate["lexical_burden"] = {"familiarity": 2, "register_markedness": 0, "overall": 1}
+    candidate["frequency_evidence"] = {"source": "LONGMAN", "bands": ["S1"], "note": "Legacy band."}
     result = _validate_fixture(tmp_path, challenge, output)
-    burden = result["challenges"][0]["candidates"][0]["lexical_burden"]
-    assert burden["familiarity"] == 0
-    assert burden["overall"] == lexical_burden_total({k: v for k, v in burden.items() if k != "overall"})
-    fields = {row["field"] for row in result["salvage_records"] if row["code"] == "VALUE_CORRECTED"}
-    assert "challenges[1].candidates[1].lexical_burden.familiarity" in fields
-    assert "challenges[1].candidates[1].lexical_burden.overall" in fields
+    assert result["schema_version"] == "1.3"
+    for row in result["challenges"][0]["candidates"]:
+        assert "lexical_burden" not in row and "frequency_evidence" not in row
 
 
 def test_model_values_that_disagree_with_derived_ones_are_corrected(tmp_path: Path) -> None:
