@@ -55,6 +55,7 @@ from .project_context import (
     resolve_project_identities,
 )
 from .registry import EcosystemConfig, ProjectSpec, load_ecosystem
+from .rewrite_risk import self_check_ledger_view
 from .runtime_paths import (
     plan_container,
     plan_is_governed,
@@ -1554,9 +1555,10 @@ def create_act_task(
         predecessor_governance_packets: list[Path] = []
         if predecessor and predecessor.get("challenge_path"):
             challenge_packet = packet_root / "predecessor-translation-challenges.json"
-            atomic_write_text(
+            # SELF-CHECK sees the challenges but never the first-pass rationale behind them.
+            atomic_write_json(
                 challenge_packet,
-                Path(predecessor["challenge_path"]).read_text(encoding="utf-8"),
+                self_check_ledger_view(load_json(Path(predecessor["challenge_path"]))),
             )
             predecessor_governance_packets.append(challenge_packet)
 

@@ -20,6 +20,7 @@ from sage.registry import load_ecosystem
 from sage.rewrite_risk import (
     lexical_burden_total,
     longman_familiarity_score,
+    self_check_ledger_view,
     validate_rewrite_challenges,
 )
 
@@ -675,3 +676,36 @@ def test_ol_check_claims_are_checked_against_macula_and_forged_results_ignored(t
     assert checked["ol_analysis_verified"] is False
     assert checked["ol_word_checks"][0]["differences"]["lemma"]["macula"] == "βίβλος"
     assert [row["code"] for row in result["salvage_records"]] == ["OL_CLAIM_UNVERIFIED"]
+
+
+def test_self_check_ledger_view_keeps_choices_without_first_pass_rationale(tmp_path: Path) -> None:
+    """SELF-CHECK sees each challenge and its selected rendering, never the reasoning behind it."""
+    output = tmp_path / "candidate.usfm"
+    output.write_text("fixture", encoding="utf-8")
+    path = tmp_path / "translation-challenges.json"
+    path.write_text(json.dumps(_challenge_document({"task_id": "TASK", "scope": "MAT 1:1"}, output, resolved=True)), encoding="utf-8")
+    ledger = validate_rewrite_challenges(
+        path, task_id="TASK", operation="rewrite", scope_value="MAT 1:1", output_path=output,
+    )
+    view = self_check_ledger_view(ledger)
+    source = ledger["challenges"][0]
+    item = view["challenges"][0]
+    assert set(item) == {
+        "challenge_id", "scripture_reference", "category", "material", "risk", "selected_form", "ol_checked",
+    }
+    assert item["challenge_id"] == source["challenge_id"]
+    assert item["selected_form"] == next(
+        row["form"] for row in source["candidates"] if row["candidate_id"] == source["selected_candidate_id"]
+    )
+    assert item["risk"] == {
+        "after_ol": source["risk"]["after_ol"],
+        "urgency": source["risk"]["urgency"],
+        "material_triggers": source["risk"]["material_triggers"],
+    }
+    text = json.dumps(view, ensure_ascii=False)
+    assert source["summary"] not in text
+    for candidate in source["candidates"]:
+        if candidate["candidate_id"] != source["selected_candidate_id"]:
+            assert candidate["form"] not in text
+        if candidate.get("rejection_reason"):
+            assert candidate["rejection_reason"] not in text

@@ -801,6 +801,39 @@ def _candidate_form(challenge: Mapping[str, Any], candidate_id: str) -> str:
     return candidate_id
 
 
+def self_check_ledger_view(document: Mapping[str, Any]) -> dict[str, Any]:
+    """Project the REWRITE challenge ledger to what SELF-CHECK may see: no first-pass rationale.
+
+    Summaries, alternatives, rejection reasons, risk notes, and OL evidence summaries stay in the
+    controller ledger; SELF-CHECK gets each challenge's identity, reference, category, risk, and the
+    selected rendering, so it re-checks the choice without inheriting the reasoning behind it.
+    """
+    material_ids = set(dict(document.get("reporting") or {}).get("material_challenge_ids", []))
+    challenges = []
+    for item in document.get("challenges", []):
+        risk = dict(item.get("risk") or {})
+        challenges.append(
+            {
+                "challenge_id": item.get("challenge_id"),
+                "scripture_reference": item.get("scripture_reference"),
+                "category": item.get("category"),
+                "material": item.get("challenge_id") in material_ids,
+                "risk": {
+                    "after_ol": risk.get("after_ol"),
+                    "urgency": risk.get("urgency"),
+                    "material_triggers": list(risk.get("material_triggers") or []),
+                },
+                "selected_form": _candidate_form(item, str(item.get("selected_candidate_id") or "")),
+                "ol_checked": bool(dict(item.get("ol_referral") or {}).get("performed")),
+            }
+        )
+    return {
+        "view": "SELF_CHECK_LEDGER_VIEW",
+        "highest_urgency": document.get("highest_urgency", 0),
+        "challenges": challenges,
+    }
+
+
 def _group_material_challenges(
     document: Mapping[str, Any],
     channel: TranslationChallengeChannel,

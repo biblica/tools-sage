@@ -9,6 +9,64 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261022-003 — SELF-CHECK sees REWRITE's challenges without its rationale (TODO-20261022-006)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261022`
+- **TODO:** `TODO-20261022-006` (now `DONE`); the ledger item of `TODO-20261013-004`
+- **Commits:** the commit that introduced this entry.
+- **Implemented:** the SELF-CHECK task no longer copies REWRITE's whole challenge ledger into
+  `predecessor-translation-challenges.json`. New `rewrite_risk.self_check_ledger_view` routes, per
+  challenge, only the ID, reference, category, material flag, risk (`after_ol`, `urgency`,
+  `material_triggers`), the selected rendering, and whether an OL check ran. Summaries, `main_risk`,
+  alternatives, rejection reasons, recommended actions, and OL evidence summaries stay in the controller
+  ledger, which the task still hashes from `validation/`. The BIC brief already told SELF-CHECK not to
+  use first-pass rationale; now it never receives any.
+- **Verification:** new `test_self_check_ledger_view_keeps_choices_without_first_pass_rationale`; every
+  test file that creates or runs a SELF-CHECK task passes (290 tests); full suite 2026-10-22: 2263 passed,
+  2 skipped.
+
+### IMP-20261022-002 — BIC Process brief carries what the model must apply; BIC Skills record it (TODO-20261022-001, TODO-20261022-002)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261022`
+- **TODO:** `TODO-20261022-001` and `TODO-20261022-002` (now `DONE`)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - A1 (`act_render.py`, BIC branches only). Of the BIC instructions, only the Process brief and the
+    pinned protected contracts reach the model; the Skill files do not. The brief now carries what only
+    the Skills stated:
+    - INSPECT: read semantic packets before forming lexical hypotheses (retrieval evidence, never
+      translation authority); keep evidence apart from inference and uncertainty; propose memory only
+      for reusable decisions the cited evidence supports.
+    - REWRITE: use semantic packets and approved memory before new alternatives; score the five burden
+      components with `UNKNOWN` when no licensed band is routed (SAGE derives the total); record
+      `risk.before_ol` and trigger codes without requesting or simulating OL evidence, because SAGE runs
+      the OL check as a separate single-verse question and merges the result. The old steps 6-7 told
+      the model to run that check itself. The step restating the protected contract ("do not add,
+      omit, harmonise") is dropped.
+    - SELF-CHECK: the verse-by-verse checklist (additions, omissions, semantic shifts, wrong senses,
+      referent errors, obscuring grammar, information order, USFM content), a re-check of every
+      material challenge in the ledger, and returning the complete corrected candidate.
+    - The protected contracts are unchanged; the OL micro-step prompt is unchanged.
+  - A2 (BIC Skills, no model effect). The three BIC `SKILL.md` files now state that they record what
+    the brief and contracts ask and are not sent to the model; lines addressed to a model reading files
+    ("read every listed Skill reference", "submit with the exact command") are gone. Removed references
+    that described controller work or duplicated global files: `BIC-WORKFLOW-CONTROLLER.md`,
+    `MEMORY-AND-OPERATOR-BOUNDARY.md`, `PROJECT-GRAMMAR-AND-RTC-STC.md`,
+    `LOCAL-EVIDENCE-AND-LINGUISTIC-COMPETENCE.md`, and `SEMANTIC-INDEX-AND-LOCAL-FIRST.md` from all three
+    Skills, and `REWRITE-RISK-AND-OL.md` from SELF-CHECK. The BIC Skills now declare the global
+    local-evidence and semantic-index references as `shared_references`, as the RTC and STC Skills do.
+    BIC hashes re-pinned in `skills.json`; no BIC qualification receipt or seed existed, so no evidence
+    was invalidated. `VANILLA-INSTALL-MANIFEST.md` updated; the retired-SAW audit test now edits
+    `INSPECT-CONTRACT.md`.
+  - Loose ends: `bic-rewrite/references/REWRITE-RISK-AND-OL.md` now says SAGE, not the model, runs the
+    OL check and merges its one-verse replacement; the uncalled `_conditional_trigger` is removed from
+    `llm_tasks.py`.
+- **Verification:** full suite 2026-10-22: 2262 passed, 2 skipped (15 min); targeted BIC, documentation-contract,
+  package, Skill-routing, rewrite-risk, and LLM-harness tests pass. After the loose ends: 170 targeted tests
+  pass (OL micro step, LLM harness, rewrite risk, BIC contract, documentation, package).
+
 ### IMP-20261021-006 — RTC: an original-language text defect no longer stops the Run (follow-up to IMP-20261021-005)
 
 - **Version:** `0.02a3` (development branch)

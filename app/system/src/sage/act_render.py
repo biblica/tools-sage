@@ -24,33 +24,38 @@ def process_brief_lines(
     # ACT rendering maintenance boundary: these steps are sealed into ACT.md, whose hash the control record
     # checks at submission; keep the step numbering contiguous within each branch.
     lines: list[str] = []
+    # Of the BIC instructions, only this brief and the pinned protected contracts reach the model; the Skill files do not.
     if workflow == "bic" and operation == "inspect":
         lines.extend([
             "1. Inspect only the bounded SOURCE packet, decontextualized DONOR vocabulary evidence, and routed source-language grammar evidence; routine INSPECT does not route OL Scripture.",
             "2. SOURCE is the sole content and translation authority. DONOR supplies vocabulary only and must not be reconstructed into verse wording, syntax, propositions, or sequence.",
-            "3. Existing TARGET Scripture is not input evidence and is not routed. Use approved memory as evidence; propose additions but never approve them.",
-            "4. Record translation challenges and memory proposals in one governed JSON object. Do not draft TARGET Scripture.",
+            "3. Existing TARGET Scripture is not input evidence and is not routed. Use approved memory as evidence.",
+            "4. Read any routed semantic packet before forming lexical hypotheses. Exact local matches, SEMDOM classes, seed forms, and indexed senses are retrieval evidence only, never translation authority.",
+            "5. In each challenge, keep what the routed evidence shows apart from inference and from unresolved uncertainty.",
+            "6. Propose a memory record only for a reusable project decision the routed evidence supports, and cite that evidence in `evidence_refs`. A proposal is never approved memory.",
+            "7. Record translation challenges and memory proposals in one governed JSON object. Do not draft TARGET Scripture.",
         ])
     elif workflow == "bic" and operation == "rewrite":
         lines.extend([
-            "1. Use the committed INSPECT record, SOURCE, decontextualized DONOR vocabulary evidence, applicable approved memory, routed source and target grammar contracts, and protected rewrite rules; do not open conditional OL files during ordinary drafting.",
+            "1. Use the committed INSPECT record, SOURCE, decontextualized DONOR vocabulary evidence, applicable approved memory, routed source and target grammar contracts, and the protected contracts.",
             "2. SOURCE is the sole content authority; DONOR may suggest lexical forms only. Never derive content, propositions, participant structure, syntax, or verse wording from DONOR, and never read an existing TARGET as evidence.",
             "3. Produce one bounded USFM candidate with exact coordinate coverage and protected semantic-marker integrity.",
-            "4. Preserve source content and genuine ambiguity; do not add, omit, harmonise, or doctrinally clarify.",
-            "5. Score candidate lexical burden on the governed 0-4 rubric; use Longman bands only when licensed evidence is routed and never invent a band.",
-            "6. At material semantic-risk level 2 or higher, run one automatic bounded OL check per material challenge when a trigger exists: it is question-specific, and raw SOURCE and OL Scripture are restricted to that challenge's single verse. For VERB_CHOICE resolve only the disputed verb's verbal sense/function. Do not route OL merely because a verb is uncommon.",
-            "7. If bounded OL evidence supports a better candidate, update the USFM candidate, recheck grammar, and report the before/after risk and candidate change.",
-            "8. If post-OL risk remains level 3 or 4, complete REWRITE with the recommended candidate, retain concise material alternatives and rejection reasons, and elevate the risk-rated report; REWRITE accepts no Operator candidate input.",
-            "9. Linguistic uncertainty elevates the report; it does not block completion of the current REWRITE operation.",
-            "10. Complete the rule-by-rule grammar assessment and concise translation-challenge report: list material urgency 2–4 items, consolidate repeated causes, and aggregate lower-level or automatically resolved matters.",
+            "4. Use routed semantic packets and approved memory before generating new lexical alternatives, and compare only semantically viable verbs or constructions.",
+            "5. For each candidate, score the five lexical-burden components on the governed 0-4 rubric and record its frequency evidence; use Longman bands only when licensed evidence is routed, otherwise `UNKNOWN`, and never invent a band. SAGE derives the burden total.",
+            "6. For each challenge, record `risk.before_ol` (0-4) and its material trigger codes. Do not request, read, or simulate original-language evidence: at material semantic-risk level 2 or higher with a material trigger, SAGE runs one automatic bounded OL check for that challenge as a separate single-verse question and merges any better candidate itself. Uncommon or formal wording alone is not a trigger.",
+            "7. At risk 3 or 4, still complete the candidate with the recommended rendering, and keep the concise material alternatives considered, each with its rejection code and reason. REWRITE accepts no Operator candidate input.",
+            "8. Linguistic uncertainty elevates the report; it does not block completion of the current REWRITE operation.",
+            "9. Complete the rule-by-rule grammar assessment and concise translation-challenge report: list material urgency 2–4 items, consolidate repeated causes, and aggregate lower-level or automatically resolved matters.",
         ])
     elif workflow == "bic":
         lines.extend([
             "1. Review only the sealed predecessor rewrite candidate in this fresh task context.",
             "2. Read the routed predecessor material-challenge ledger and verify the completed REWRITE candidate independently. REWRITE has no Operator candidate-selection path.",
             "3. Do not read or reproduce first-pass rationale.",
-            "4. Correct only supported fidelity, USFM, project-grammar, or governed candidate-decision issues.",
-            "5. Complete the rule-by-rule grammar assessment for the final candidate.",
+            "4. Compare the candidate directly with SOURCE, verse by verse, for additions, omissions, semantic shifts, wrong senses, referent errors, grammar that obscures meaning, information-order errors, and altered or missing USFM content.",
+            "5. Re-check every verb or construction choice behind a material challenge in the ledger, and resolve, revise, or carry it forward.",
+            "6. Correct only supported fidelity, USFM, project-grammar, or governed candidate-decision issues, and return the complete corrected candidate.",
+            "7. Complete the rule-by-rule grammar assessment for the final candidate.",
         ])
     elif operation == "rtc":
         lines.append(f"Composite RTC stage: `{rtc_stage}`.")

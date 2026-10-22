@@ -34,7 +34,7 @@ Use a spoken band when present; otherwise use the written or Longman 9000 fallba
 
 ## Automatic bounded OL referral
 
-Do not consult OL merely because a candidate is uncommon or formal. Run one bounded OL check only when semantic risk is level 2 or higher and a material trigger exists. Keep the referral limited to one explicit question, the exact coordinate or short range, relevant form, morphology, syntax, and contextually plausible senses.
+REWRITE records each challenge's semantic risk (`risk.before_ol`) and material trigger codes; it never requests or reads OL evidence itself. SAGE runs one bounded OL check per challenge only when semantic risk is level 2 or higher and a material trigger exists, as a separate single-verse question. An uncommon or formal candidate alone is not a trigger. The referral is limited to one explicit question, the exact coordinate, relevant form, morphology, syntax, and contextually plausible senses.
 
 ## Result handling
 
@@ -45,7 +45,7 @@ Do not consult OL merely because a candidate is uncommon or formal. Run one boun
 
 For risk 3-4, retain the material alternatives actually considered and a concise decisive rejection reason for each. The human report is capped and concise; the machine ledger retains full structured evidence.
 
-When OL evidence supports a better candidate, update and revalidate the bounded USFM candidate and record the before/after candidate and risk. Linguistic uncertainty never sets the operation to `BLOCKED` or `DECISION_REQUIRED`.
+When OL evidence supports a better candidate, the OL check returns a replacement for that one verse; SAGE merges it into the bounded USFM candidate, revalidates it, and records the before/after candidate and risk. Linguistic uncertainty never sets the operation to `BLOCKED` or `DECISION_REQUIRED`.
 
 ## Inter-task resolution
 

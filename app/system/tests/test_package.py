@@ -240,7 +240,7 @@ def test_source_audit_rejects_retired_saw_identity_in_current_skill(
         / "skills"
         / "bic-inspect"
         / "references"
-        / "PROJECT-GRAMMAR-AND-RTC-STC.md"
+        / "INSPECT-CONTRACT.md"
     )
     current_reference.write_text(
         current_reference.read_text(encoding="utf-8") + "\nSAW is the current analysis workflow.\n",

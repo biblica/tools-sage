@@ -1280,11 +1280,6 @@ def _conditional_requests(files: dict[str, str]) -> list[dict[str, str]]:
     return requests
 
 
-def _conditional_trigger(files: dict[str, str]) -> bool:
-    """Return whether first-pass rewrite evidence authorizes any conditional OL read."""
-    return bool(_conditional_requests(files))
-
-
 def _extract_scope_usj(content: str, reference: str) -> str:
     """Restrict one bounded comparison USJ document to the requested atomic coordinates."""
     try:
