@@ -395,6 +395,95 @@ def test_self_check_commits_only_passing_verses_and_reports_the_rest(
     ]
 
 
+def _self_check_against_target(package_root: Path, make_workspace, target_text: str):
+    """Stage a REWRITE, replace the TARGET book, then submit a SELF-CHECK that rewrites every verse."""
+    import re
+
+    config, rewrite, manifest = _initialised_rewrite(package_root, make_workspace)
+    rewrite_output = manifest.parent / "output" / "rewrite.usfm"
+    (manifest.parent / "output" / "translation-challenges.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "1.2",
+                "task_id": rewrite["task_id"],
+                "operation": "rewrite",
+                "scope": rewrite["scope"],
+                "output_sha256": sha256_file(rewrite_output),
+                "challenges": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    submit_act_task(config, manifest)
+    target_file = storage_layout(config.root).projects_root / "usBOLx1" / "41MAT.SFM"
+    target_file.write_text(target_text, encoding="utf-8")
+    self_check = create_act_task(
+        config, workflow="bic", operation="self_check", output_project_id="usBOLx1",
+        contemporary_source_id="idKKHv0", scope_value="MAT 1", predecessor_task=str(manifest),
+    )
+    self_manifest = Path(self_check["manifest_path"])
+    self_output = self_manifest.parent / "output" / "self-check.usfm"
+    self_output.write_text(
+        re.sub(r"^\\v (\d+) .*$", r"\g<0> REWRITTEN", rewrite_output.read_text(encoding="utf-8"), flags=re.MULTILINE),
+        encoding="utf-8",
+    )
+    grammar = self_check["project_grammar"]
+    (self_output.parent / "grammar-assessment.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "task_id": self_check["task_id"],
+                "scope": self_check["scope"],
+                "profile_id": grammar["profile_id"],
+                "profile_sha256": grammar["profile_sha256"],
+                "output_sha256": sha256_file(self_output),
+                "rules": [
+                    {"rule_id": rule_id, "status": "PASS", "evidence": "Checked."}
+                    for rule_id in grammar["rule_ids"]
+                ],
+                "unresolved": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return config, submit_act_task(config, self_manifest), target_file
+
+
+def test_self_check_leaves_out_verses_whose_target_shape_differs(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """A TARGET bridge BIC cannot reproduce keeps its text and is reported; the other verses commit."""
+    config, result, target_file = _self_check_against_target(
+        package_root, make_workspace, "\\id MAT\n\\c 1\n\\p\n\\v 1 Old one.\n\\v 2-3 Old bridge.\n"
+    )
+    assert result["status"] == "COMMITTED"
+    assert result["commit"]["not_committed"] == ["MAT 1:2", "MAT 1:3"]
+    target = target_file.read_text(encoding="utf-8")
+    assert "REWRITTEN" in target.split("\\v 2-3")[0]
+    assert "\\v 2-3 Old bridge." in target
+    reports = list(config.root.parent.rglob("EXCEPTION-REPORTS.jsonl"))
+    rows = [json.loads(line) for report in reports for line in report.read_text(encoding="utf-8").splitlines()]
+    assert [(row["code"], row["effect"], row["coordinates"]) for row in rows] == [
+        ("BIC_TARGET_SHAPE_MISMATCH", "NOT_ASSESSED", ["MAT 1:2"]),
+        ("BIC_TARGET_SHAPE_MISMATCH", "NOT_ASSESSED", ["MAT 1:3"]),
+    ]
+
+
+def test_self_check_with_every_verse_left_out_reports_and_keeps_target(
+    package_root: Path,
+    make_workspace,
+) -> None:
+    """When no verse can be committed the TARGET is left untouched and the task still completes."""
+    original = "\\id MAT\n\\c 1\n\\p\n\\v 1-3 Old bridge.\n"
+    _config, result, target_file = _self_check_against_target(package_root, make_workspace, original)
+    assert result["status"] == "COMMITTED"
+    assert result["commit"]["nothing_committed"] is True
+    assert result["commit"]["transaction_id"] is None
+    assert result["commit"]["not_committed"] == ["MAT 1:1", "MAT 1:2", "MAT 1:3"]
+    assert target_file.read_text(encoding="utf-8") == original
+
+
 def test_generated_rewrite_act_and_skill_share_current_risk_contract(
     package_root: Path,
     make_workspace,

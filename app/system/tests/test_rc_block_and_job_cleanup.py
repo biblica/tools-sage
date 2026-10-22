@@ -483,13 +483,45 @@ def test_windows_bic_saw_batch_wrappers_do_not_parse_with_shift(package_root: Pa
 from sage.bounded_target import preflight_bounded_target_commit
 
 
-def test_bic_target_commit_preflight_blocks_uncommittable_shape_before_provider() -> None:
-    """BIC detects deterministic TARGET bridge/shape impossibility before spending a provider call."""
+def test_bic_target_commit_preflight_leaves_out_uncommittable_shape() -> None:
+    """A TARGET bridge BIC cannot reproduce keeps its text; only those verses are left out."""
+    source = "\\id MAT\n\\c 1\n\\v 1 one\n\\v 2 two\n\\v 3 three\n"
+    target = "\\id MAT\n\\c 1\n\\v 1-2 existing bridge\n\\v 3 existing\n"
+    result = preflight_bounded_target_commit(target, source, "MAT 1:1-3")
+    assert result["status"] == "READY_WITH_EXCEPTIONS"
+    assert result["drop_shapes"] == [(1, 1, 1), (1, 2, 2)]
+    assert result["keep_existing"] == [(1, 1, 2)]
+    assert [row["reference"] for row in result["left_out"]] == ["MAT 1:1", "MAT 1:2"]
+    assert {row["code"] for row in result["left_out"]} == {"BIC_TARGET_SHAPE_MISMATCH"}
+
+
+def test_bic_target_commit_preflight_reports_nothing_to_commit() -> None:
+    """When every verse is left out, the scope is reported rather than stopped."""
     source = "\\id MAT\n\\c 1\n\\v 1 one\n\\v 2 two\n"
     target = "\\id MAT\n\\c 1\n\\v 1-2 existing bridge\n"
-    with pytest.raises(ValidationError) as caught:
-        preflight_bounded_target_commit(target, source, "MAT 1:1-2")
-    assert caught.value.code == "TARGET_SCOPE_VERSE_SHAPE_MISMATCH"
+    result = preflight_bounded_target_commit(target, source, "MAT 1:1-2")
+    assert result["status"] == "NOTHING_TO_COMMIT"
+    assert len(result["left_out"]) == 2
+
+
+def test_bic_shape_left_out_merge_keeps_target_bridge() -> None:
+    """Merging with the preflight's drop and keep sets commits the rest and keeps the TARGET bridge."""
+    from sage.bounded_target import drop_verse_blocks, merge_bounded_usfm
+
+    source = "\\id MAT\n\\c 1\n\\v 1 one\n\\v 2 two\n\\v 3 three\n"
+    target = "\\id MAT\n\\c 1\n\\v 1-2 existing bridge\n\\v 3 existing\n"
+    candidate = "\\id MAT\n\\c 1\n\\v 1 new one\n\\v 2 new two\n\\v 3 new three\n"
+    result = preflight_bounded_target_commit(target, source, "MAT 1:1-3")
+    drop = set(result["drop_shapes"])
+    merged = merge_bounded_usfm(
+        target,
+        drop_verse_blocks(candidate, drop),
+        "MAT 1:1-3",
+        keep_existing=drop | set(result["keep_existing"]),
+    )
+    assert "\\v 1-2 existing bridge" in merged
+    assert "\\v 3 new three" in merged
+    assert "new one" not in merged
 
 
 def test_bic_target_commit_preflight_allows_missing_ordinary_verse_in_existing_chapter() -> None:

@@ -19,7 +19,9 @@ from . import bic_anchors
 from .bic_memory import submit_inspect_transactionally
 from .bounded_target import drop_verse_blocks
 from .bounded_target import expand_unsafe_drops
+from .bounded_target import extract_scope_usfm
 from .bounded_target import merge_bounded_usfm
+from .bounded_target import preflight_bounded_target_commit
 from .bounded_target import record_target_commit
 from .errors import ValidationError
 from .evidence_policy import PROCESS_CONTROL
@@ -492,6 +494,40 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
         failed_keys = {
             (int(row["chapter"]), int(row["verse_start"]), int(row["verse_end"])) for row in failed_verses
         }
+        target_keep: set[tuple[int, int, int]] = set()
+        if operation == "self_check":
+            project = config.project(str(raw["output_project"]))
+            source_project = config.project(str(raw["contemporary_source"]))
+            source_file = _one_book_file(source_project, parse_scope(str(raw["scope"])).book)
+            assert source_file is not None
+            target_file = _one_book_file(project, target_scope.book, optional=True)
+            if target_file is None:
+                target_file = project.path / _target_book_filename(
+                    project, target_scope.book
+                )
+            if project.external:
+                if not project.external_writable_target:
+                    raise ValidationError(
+                        f"External BIC TARGET {project.project_id} is read-only",
+                        code="EXTERNAL_TARGET_WRITE_PROHIBITED",
+                    )
+                target_file = validate_external_file(target_file, roots=(project.path,), write=True)
+            before_text = target_file.read_text(encoding="utf-8") if target_file.is_file() else ""
+            if before_text.strip():
+                # Verses whose TARGET verse/bridge shape differs are left out; the TARGET keeps its own text.
+                shape_preflight = preflight_bounded_target_commit(
+                    before_text,
+                    source_file.read_text(encoding="utf-8"),
+                    target_scope_value,
+                    expected_shapes=dict(raw.get("bic_alignment") or {}).get("target_shapes"),
+                )
+                target_keep = {tuple(shape) for shape in shape_preflight["keep_existing"]}
+                failed_verses.extend(
+                    row
+                    for row in shape_preflight["left_out"]
+                    if (row["chapter"], row["verse_start"], row["verse_end"]) not in failed_keys
+                )
+                failed_keys |= {tuple(shape) for shape in shape_preflight["drop_shapes"]}
         # Never commit a kept verse joined to a failing neighbour's tail lines.
         committed_drop = expand_unsafe_drops(candidate_text, target_scope_value, failed_keys) if failed_keys else set()
         for chapter, verse_start, verse_end in sorted(committed_drop - failed_keys):
@@ -610,28 +646,25 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
             ),
         }
         if operation == "self_check":
-            project = config.project(str(raw["output_project"]))
-            source_project = config.project(str(raw["contemporary_source"]))
-            source_file = _one_book_file(source_project, parse_scope(str(raw["scope"])).book)
-            assert source_file is not None
-            target_file = _one_book_file(project, target_scope.book, optional=True)
-            if target_file is None:
-                target_file = project.path / _target_book_filename(
-                    project, target_scope.book
-                )
-            if project.external:
-                if not project.external_writable_target:
-                    raise ValidationError(
-                        f"External BIC TARGET {project.project_id} is read-only",
-                        code="EXTERNAL_TARGET_WRITE_PROHIBITED",
-                    )
-                target_file = validate_external_file(target_file, roots=(project.path,), write=True)
-            before_text = target_file.read_text(encoding="utf-8") if target_file.is_file() else ""
             # Only verses that passed SELF-CHECK are committed; failing verses keep their existing TARGET text.
             commit_text = drop_verse_blocks(candidate_text, committed_drop) if committed_drop else candidate_text
+            if not extract_scope_usfm(commit_text, target_scope_value).strip():
+                # Every verse was left out: report them all, change nothing in the TARGET.
+                commit = {
+                    "transaction_id": None,
+                    "target_file": str(target_file),
+                    "target_sha256": sha256_file(target_file) if target_file.is_file() else None,
+                    "bounded_scope": target_scope_value,
+                    "source_scope": str(raw["scope"]),
+                    "history": None,
+                    "nothing_committed": True,
+                    "not_committed": [str(row["reference"]) for row in failed_verses],
+                }
+                final_status = "COMMITTED"
+        if operation == "self_check" and commit is None:
             after_text = (
                 merge_bounded_usfm(
-                    before_text, commit_text, target_scope_value, keep_existing=committed_drop
+                    before_text, commit_text, target_scope_value, keep_existing=committed_drop | target_keep
                 )
                 if before_text.strip()
                 else commit_text
@@ -671,7 +704,7 @@ def submit_act_task(config: EcosystemConfig, task_manifest: Path) -> dict[str, A
                 "not_committed": [str(row["reference"]) for row in failed_verses],
             }
             final_status = "COMMITTED"
-        else:
+        elif operation != "self_check":
             if challenge_document and challenge_document["challenges"]:
                 final_status = "STAGED_VALIDATED_WITH_CHALLENGES"
             else:

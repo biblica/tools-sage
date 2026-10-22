@@ -557,6 +557,7 @@ def compile_project(
     project_issues: list[dict[str, str]] = []
     project_warnings: list[dict[str, str]] = []
     seen_books: dict[str, Path] = {}
+    undecodable_books: set[str] = set()
     total_verse_units = 0
     total_atomic = 0
     total_sections = 0
@@ -593,7 +594,18 @@ def compile_project(
                 )
                 atomic_write_json(cache_path, usj)
         except UnicodeError as exc:
-            raise ValidationError(f"Invalid UTF-8 or replacement character in {source}: {exc}") from exc
+            # An undecodable file is that book's defect, not the Project's; no character is ever substituted.
+            undecodable_book = _peek_book_code(source) or ""
+            undecodable_books.add(undecodable_book)
+            project_issues.append(
+                {
+                    "code": "INVALID_UTF8",
+                    "reference": undecodable_book,
+                    "message": f"Invalid UTF-8 or replacement character in {source.name}: {exc}",
+                    "file": str(source),
+                }
+            )
+            continue
         except json.JSONDecodeError:
             usj = compile_usfm_file(
                 source,
@@ -659,7 +671,7 @@ def compile_project(
     if filename_validation["template"] is not None:
         resource_files.append(Path(filename_validation["settings_file"]))
     resource_hash = sha256_paths(resource_files, relative_to=project.path)
-    missing_books = sorted(selected_books - set(seen_books))
+    missing_books = sorted(selected_books - set(seen_books) - undecodable_books)
     project_warnings.extend(
         {
             "code": "PROJECT_BOOK_MISSING",

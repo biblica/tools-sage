@@ -81,3 +81,83 @@ def test_capture_and_seal_wip_snapshot(make_workspace) -> None:
     )
     assert sealed_receipt["run_id"] == "RTC-usWIP_20260901-001"
     assert sealed_receipt["sealed_from_snapshot_date"] == "20260901"
+
+
+def _write_wip_book(root, filename: str, content: bytes) -> None:
+    """Write one WIP book and declare it in the usWIP Project scope."""
+    import yaml
+
+    from sage.storage import storage_layout
+
+    (storage_layout(root).projects_root / "usWIP" / filename).write_bytes(content)
+    settings = root / "ecosystem.yml"
+    raw = yaml.safe_load(settings.read_text(encoding="utf-8"))
+    book = filename[2:5]
+    projects = raw.get("projects") or raw["ecosystem"]["projects"]
+    scope = projects["usWIP"]["scope"]
+    if book not in scope["expected_books"]:
+        scope["expected_books"].append(book)
+    settings.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+
+
+def test_snapshot_keeps_chapter_defect_and_records_exception(make_workspace) -> None:
+    """A defect located in a chapter no longer stops the import; the chapter is reported not assessed."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    _write_wip_book(root, "41MAT.SFM", b"\\id MAT\n\\c 1\n\\p\n\\v 1 One.\n\\v 2 Two.\n\\v 2 Again.\n\\v 3 Three.\n")
+
+    receipt = capture_wip_snapshot(
+        root, settings_path=root / "ecosystem.yml", project_id="usWIP",
+        destination=root.parent / "chapter-defect-snapshot",
+    )
+
+    assert receipt["books"] == ["MAT"]
+    assert receipt["project_status"] == "READY_WITH_EXCEPTIONS"
+    assert receipt["left_out_books"] == []
+    row = next(row for row in receipt["exceptions"] if row["code"] == "DUPLICATE_VERSE_RANGE")
+    assert row["effect"] == "CHAPTER_NOT_ASSESSED"
+    assert row["chapters"] == [1]
+
+
+def test_snapshot_leaves_out_undecodable_book(make_workspace) -> None:
+    """An undecodable book is left out of the snapshot; the other books are imported."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    _write_wip_book(root, "42MRK.SFM", b"\\id MRK\n\\c 1\n\\p\n\\v 1 bad\xff\n")
+
+    receipt = capture_wip_snapshot(
+        root, settings_path=root / "ecosystem.yml", project_id="usWIP",
+        destination=root.parent / "undecodable-snapshot",
+    )
+
+    assert receipt["books"] == ["MAT"]
+    assert receipt["left_out_books"] == ["MRK"]
+    assert receipt["project_status"] == "READY_WITH_EXCEPTIONS"
+    row = next(row for row in receipt["exceptions"] if row["code"] == "INVALID_UTF8")
+    assert row["effect"] == "BOOK_LEFT_OUT"
+    assert row["file"] == "42MRK.SFM"
+    assert not (root.parent / "undecodable-snapshot" / "usj" / "MRK.json").exists()
+
+
+def test_snapshot_fails_when_every_book_is_left_out(make_workspace) -> None:
+    """With no usable book left there is nothing to import, so the import still stops."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    _write_wip_book(root, "41MAT.SFM", b"\\id MAT\n\\c 1\n\\p\n\\v 1 bad\xff\n")
+
+    with pytest.raises(ValidationError) as failure:
+        capture_wip_snapshot(
+            root, settings_path=root / "ecosystem.yml", project_id="usWIP",
+            destination=root.parent / "empty-snapshot",
+        )
+    assert failure.value.code == "WIP_SNAPSHOT_IMPORT_FAILED"
+    assert not (root.parent / "empty-snapshot").exists()
+
+
+def test_snapshot_exception_summary_names_books_and_chapters() -> None:
+    """The Job screen names left-out books and not-assessed chapters in one line."""
+    from sage.job_menus import snapshot_exception_summary
+
+    snapshot = {"exceptions": [
+        {"book": "MRK", "effect": "BOOK_LEFT_OUT", "chapters": []},
+        {"book": "MAT", "effect": "CHAPTER_NOT_ASSESSED", "chapters": [10, 2]},
+    ]}
+    assert snapshot_exception_summary(snapshot) == "books left out: MRK; chapters not assessed: MAT 2, MAT 10"
+    assert snapshot_exception_summary({}) == ""

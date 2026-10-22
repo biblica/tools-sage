@@ -620,6 +620,7 @@ _REASON_NAMES = {
     "COVERED_BY_WIP_GROUP": "checked with a neighbouring verse",
     "UNMAPPED": "no mapping to the source numbering",
     "CONTENT_UNREADABLE_BOOK": "book could not be read",
+    "BOOK_LEFT_OUT": "book left out of the WIP snapshot (defect in the book file)",
 }
 
 

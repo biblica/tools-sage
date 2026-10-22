@@ -153,14 +153,18 @@ def test_content_addressed_usj_cache_is_reused(make_workspace) -> None:
     assert first_cache.stat().st_mtime_ns == first_mtime
 
 
-def test_project_compile_wraps_invalid_utf8(make_workspace) -> None:
-    """Verify that project compile wraps invalid utf8."""
+def test_project_compile_reports_invalid_utf8_as_book_issue(make_workspace) -> None:
+    """An undecodable file blocks only its own book and is never compiled with guessed characters."""
     root = make_workspace()
     source = storage_layout(root).projects_root / "idKKHv0" / "41MAT.SFM"
     source.write_bytes(b"\\id MAT\n\\c 1\n\\v 1 bad\xff\n")
     config = load_ecosystem(root / "ecosystem.yml")
-    with pytest.raises(ValidationError, match="Invalid UTF-8"):
-        compile_project(config, config.project("idKKHv0"))
+    result = compile_project(config, config.project("idKKHv0"))
+    assert result["status"] == "BLOCKED"
+    assert result["files"] == []
+    issue = next(item for item in result["issues"] if item["code"] == "INVALID_UTF8")
+    assert issue["reference"] == "MAT"
+    assert "Invalid UTF-8" in issue["message"]
 
 
 def test_note_only_coordinate_is_recorded_as_warning(make_workspace) -> None:

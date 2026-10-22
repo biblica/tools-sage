@@ -214,6 +214,56 @@ lines record the suites re-run on 2026-10-13 against `6bce03f`.
   package, Skill-routing, rewrite-risk, and LLM-harness tests pass. After the loose ends: 170 targeted tests
   pass (OL micro step, LLM harness, rewrite risk, BIC contract, documentation, package).
 
+### IMP-20261022-001 — WIP snapshot import and BIC TARGET shape checks report instead of stopping (TODO-20261013-022)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261013`
+- **TODO:** `TODO-20261013-022` (now `DONE`; decided 2026-10-22)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - WIP snapshot import (`capture_wip_snapshot`) no longer refuses Job creation or refresh for content
+    defects. `SNAPSHOT.json` records every compile issue in `exceptions` (code, reference, file, effect,
+    chapters), lists `left_out_books`, and sets `project_status` to `READY_WITH_EXCEPTIONS`.
+    - A defect located in a chapter (parser error, duplicate or overlapping verse) keeps the book in the
+      snapshot (`CHAPTER_NOT_ASSESSED`). RTC and STC already leave such chapters out at plan time
+      (`IMP-20261021-005`); NCA already reports such verses `NOT_ASSESSED` per verse (`content_issues`).
+    - A defect no chapter owns (book header, missing `\id`, no verse units, duplicate book ID) or an
+      undecodable file leaves the book out of the snapshot (`BOOK_LEFT_OUT`).
+    - Import still stops when nothing compiled at all (missing root, no Scripture files, filename
+      settings) or no usable book remains.
+  - `compile_project` records an undecodable file as an `INVALID_UTF8` issue on its book instead of
+    raising for the whole Project; no character is substituted. The book is not also reported missing.
+  - NCA: verses of a book the snapshot left out are `NOT_ASSESSED` with reason `BOOK_LEFT_OUT` (was
+    "unmapped coordinate"), and the Run carries a `CONTENT_BOOK_LEFT_OUT` restriction.
+  - The RTC, STC and NCA Job screens and the refresh message name the books left out and the chapters
+    that will be reported not assessed.
+  - BIC: `preflight_bounded_target_commit` decides per verse block. A projected block outside the sealed
+    TARGET scope, or one overlapping an existing TARGET block of a different verse/bridge shape, is left
+    out (`drop_shapes`); the TARGET keeps its own block (`keep_existing`); one `BIC_TARGET_SHAPE_MISMATCH`
+    row per verse is returned. Malformed or duplicate projected shapes still stop (SAGE's own defect).
+  - BIC SELF-CHECK re-runs that decision against the TARGET as it is at commit time, commits the rest
+    with the existing keep/drop merge, and reports each left-out verse `NOT_ASSESSED` in the exception
+    report and in `not_committed`. When no verse remains, nothing is written and the task completes with
+    `nothing_committed` (this also covers a SELF-CHECK in which every verse failed, which used to raise an
+    uncoded error).
+- **Not changed:**
+  - The model still receives the left-out verses in REWRITE and SELF-CHECK: the routed SOURCE is the
+    sealed projection of the protected contract's input, so the verses are only kept out of the commit.
+  - Post-merge checks (`TARGET_SCOPE_KEPT_VERSE_CHANGED`, `TARGET_SCOPE_OUTSIDE_CONTENT_CHANGED`,
+    `TARGET_SCOPE_POST_MERGE_MISMATCH`) remain integrity stops, as do a TARGET bridge crossing the scope
+    boundary and complex verse labels inside the scope.
+  - A Settings.xml filename whose `\id` differs (`PARATEXT_FILENAME_BOOK_ID_MISMATCH`) still stops import.
+  - An RTC/STC Run whose book has a defect no chapter owns is still refused at plan time
+    (`decide_effective_scope`), because the live Project is compiled there, not the snapshot.
+- **Verification:** new tests in `test_job_snapshots.py` (chapter defect kept, undecodable book left out,
+  nothing usable still stops, Job screen summary), `test_usj_and_scripture.py` (undecodable file is a book
+  issue), `numbers/test_hybrid_execution.py` (`BOOK_LEFT_OUT` reason), `test_rc_block_and_job_cleanup.py`
+  (per-block preflight, nothing to commit, merge keeps the TARGET bridge), and `test_rewrite_risk.py`
+  (SELF-CHECK commits around a TARGET bridge; every verse left out leaves the TARGET untouched). Full
+  suite run in place: 2,261 passed, 2 skipped, 1 failed. The failure was
+  `test_runtime_roots_are_distribution_clean`, tripped by the `__pycache__` directories that running in
+  place writes; `test_documentation_contracts.py` passes (47) after clearing them.
+
 ### IMP-20261021-006 — RTC: an original-language text defect no longer stops the Run (follow-up to IMP-20261021-005)
 
 - **Version:** `0.02a3` (development branch)

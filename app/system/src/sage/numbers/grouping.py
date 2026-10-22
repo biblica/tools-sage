@@ -76,6 +76,10 @@ def evaluate_group(unit, *, inputs, by_owner, checks, mode, covered):
             return GroupResult(unit, Extraction((), 'NOT_REQUIRED', ('REGISTERED_ABSENCE',)),
                                compare_group((), [], mode=mode), ('REGISTERED_ABSENCE',),
                                notes_for(unit.western_references))
+        if unit.western_references and unit.western_references[0].book in inputs.left_out_books:
+            # The WIP snapshot left this book out for a defect no chapter owns; nothing here was read.
+            return GroupResult(unit, Extraction((), 'UNSUPPORTED', ('BOOK_LEFT_OUT',)), not_assessed(mode),
+                               ('BOOK_LEFT_OUT',), notes_for(unit.western_references))
         return GroupResult(unit, Extraction((), 'UNSUPPORTED', ('UNMAPPED_COORDINATE',)), not_assessed(mode),
                            ('UNMAPPED_COORDINATE',), notes_for(unit.western_references))
     if target.content_issues:

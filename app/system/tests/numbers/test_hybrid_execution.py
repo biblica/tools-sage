@@ -580,6 +580,29 @@ def test_missing_wip_remains_unsupported_and_visible_in_final_scope(make_workspa
     assert result.coverage['coverage'] == 'PARTIAL'
 
 
+def test_book_left_out_of_snapshot_is_not_assessed_with_its_reason(make_workspace, monkeypatch):
+    """A verse of a book the WIP snapshot left out is NOT_ASSESSED as BOOK_LEFT_OUT, not as unmapped."""
+    from sage.numbers.execution import prepare_execution_inputs
+    from sage.numbers.policy import load_nca_run_snapshot
+    from sage.numbers.replay import PhaseStore
+    from .test_nca_tasks import _run, _OfflineTasks
+    _root, config, job, run = _run(make_workspace, monkeypatch)
+    inputs = prepare_execution_inputs(config, job, run, load_nca_run_snapshot(run.root))
+    assert inputs.left_out_books == ()
+    original = inputs.projected_units[0]
+    ref = original.western_references[0]
+    absent = replace(original, target=TargetUnit('missing:' + ref.label(), (), '', (), '0' * 64, {}), status='UNMAPPED', target_western_mapping={})
+    projected = (absent,) + inputs.projected_units[1:]
+    inputs = replace(inputs, projected_units=projected, expected_unit_ids=tuple(x.target.unit_id for x in projected),
+                     left_out_books=(ref.book,))
+    tasks = _OfflineTasks(config, expected_route_id='nca-route-fixture')
+    result = engine.evaluate_optimized_run(inputs, model_tasks=tasks,
+        phase_store=PhaseStore(run.root, task_fingerprint='a' * 64), run_id=run.run_id)
+    group = result.groups[0]
+    assert group.comparison.outcome == 'NOT_ASSESSED'
+    assert group.limitations == ('BOOK_LEFT_OUT',)
+
+
 def test_damaged_verse_is_reported_and_the_run_still_assesses_the_rest(make_workspace, monkeypatch):
     """NCA never stops on content: a verse with broken markup is NOT_ASSESSED with its issue,
     is never sent for extraction, and every other verse is still compared."""

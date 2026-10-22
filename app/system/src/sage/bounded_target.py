@@ -190,6 +190,20 @@ def _scope_shape(text: str, scope: ScriptureScope) -> tuple[tuple[tuple[int, int
     return tuple(ranges), frozenset(chapters)
 
 
+BIC_TARGET_SHAPE_MISMATCH = "BIC_TARGET_SHAPE_MISMATCH"
+
+
+def _shapes_overlap(left: tuple[int, int, int], right: tuple[int, int, int]) -> bool:
+    """Return whether two (chapter, start, end) verse/bridge shapes share a coordinate."""
+    return left[0] == right[0] and left[1] <= right[2] and right[1] <= left[2]
+
+
+def _shape_label(book: str, shape: tuple[int, int, int]) -> str:
+    """Render one verse/bridge shape as a canonical reference label."""
+    chapter, start, end = shape
+    return f"{book} {chapter}:{start}" + (f"-{end}" if end != start else "")
+
+
 def preflight_bounded_target_commit(
     target_text: str,
     source_text: str,
@@ -197,8 +211,15 @@ def preflight_bounded_target_commit(
     *,
     expected_shapes: Iterable[Iterable[int]] | None = None,
 ) -> dict[str, Any]:
-    """Fail before execution when TARGET cannot accept the projected verse shape."""
+    """Decide before the commit which projected verse blocks the TARGET can accept.
+
+    A projected block outside the sealed TARGET scope, or one overlapping an existing TARGET block of a
+    different verse/bridge shape, is left out: it is never committed and the TARGET block stays unchanged
+    (``drop_shapes`` and ``keep_existing``; ``left_out`` holds one report row per affected verse). The rest
+    of the scope commits. Malformed or duplicate projected shapes are SAGE's own defect and still stop.
+    """
     scope = parse_scope(scope_value)
+    left_out: list[dict[str, Any]] = []
     if expected_shapes is None:
         source_ranges, _ = _scope_shape(source_text, scope)
     else:
@@ -212,14 +233,21 @@ def preflight_bounded_target_commit(
                     details={"scope": scope.label()},
                 )
             chapter, start, end = values
-            block = VerseBlock(chapter, start, end, ())
-            full, _ = _block_inside_scope(block, scope)
-            if start < 1 or end < start or not full:
+            if start < 1 or end < start:
                 raise ValidationError(
-                    "Projected BIC TARGET shape falls outside its sealed TARGET scope",
+                    "Projected BIC TARGET shape is not a verse or bridge",
                     code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
                     details={"scope": scope.label(), "shape": values},
                 )
+            full, _ = _block_inside_scope(VerseBlock(chapter, start, end, ()), scope)
+            if not full:
+                label = _shape_label(scope.book, values)
+                left_out.append({
+                    "reference": label, "chapter": chapter, "verse_start": start, "verse_end": end,
+                    "code": BIC_TARGET_SHAPE_MISMATCH, "target_shapes": [],
+                    "message": f"{label} falls outside the sealed TARGET scope {scope.label()}, so it is not committed.",
+                })
+                continue
             normalized_shapes.append(values)
         source_ranges = tuple(normalized_shapes)
         if len(source_ranges) != len(set(source_ranges)):
@@ -228,34 +256,67 @@ def preflight_bounded_target_commit(
                 code="BIC_TARGET_VRS_ALIGNMENT_REQUIRED",
                 details={"scope": scope.label()},
             )
-    if not source_ranges:
+    if not source_ranges and not left_out:
         raise ValidationError(
             f"BIC has no projected TARGET verse blocks for bounded scope {scope.label()}",
             code="TARGET_SCOPE_SOURCE_EMPTY",
             details={"scope": scope.label()},
         )
+    drop_shapes = {(row["chapter"], row["verse_start"], row["verse_end"]) for row in left_out}
     if not target_text.strip():
-        return {"status": "READY_NEW_TARGET", "scope": scope.label(), "source_shapes": list(source_ranges)}
+        return {
+            "status": "READY_NEW_TARGET" if source_ranges else "NOTHING_TO_COMMIT",
+            "scope": scope.label(),
+            "source_shapes": list(source_ranges),
+            "left_out": left_out,
+            "drop_shapes": sorted(drop_shapes),
+            "keep_existing": [],
+        }
     target_ranges, target_chapters = _scope_shape(target_text, scope)
-    required_chapters = {chapter for chapter, _start, _end in source_ranges}
-    # A book generated one scope at a time legitimately lacks later chapters; the merge creates them.
-    missing_chapters = sorted(required_chapters - set(target_chapters))
     source_set = set(source_ranges)
     target_set = set(target_ranges)
-    incompatible_existing = sorted(target_set - source_set)
-    if incompatible_existing:
-        raise ValidationError(
-            "Existing TARGET verse/bridge shape differs from the projected BIC output inside the bounded scope",
-            code="TARGET_SCOPE_VERSE_SHAPE_MISMATCH",
-            details={"scope": scope.label(), "target_only_shapes": incompatible_existing, "source_shapes": list(source_ranges)},
-        )
+    # SAGE never guesses a bridge split or merge: where the shapes differ, the TARGET keeps its own text.
+    keep_existing = sorted(target_set - source_set)
+    for target_shape in keep_existing:
+        target_label = _shape_label(scope.book, target_shape)
+        overlapping = [shape for shape in source_ranges if _shapes_overlap(shape, target_shape)]
+        if not overlapping:
+            left_out.append({
+                "reference": target_label, "chapter": target_shape[0], "verse_start": target_shape[1],
+                "verse_end": target_shape[2], "code": BIC_TARGET_SHAPE_MISMATCH, "target_shapes": [list(target_shape)],
+                "message": f"The TARGET has {target_label}, which BIC does not produce for {scope.label()}; "
+                           "the existing TARGET text is kept.",
+            })
+            continue
+        for shape in overlapping:
+            if shape in drop_shapes:
+                continue
+            drop_shapes.add(shape)
+            label = _shape_label(scope.book, shape)
+            left_out.append({
+                "reference": label, "chapter": shape[0], "verse_start": shape[1], "verse_end": shape[2],
+                "code": BIC_TARGET_SHAPE_MISMATCH, "target_shapes": [list(target_shape)],
+                "message": f"The TARGET has {target_label} where BIC produces {label}; SAGE will not guess a "
+                           "bridge split or merge, so the existing TARGET text is kept.",
+            })
+    commit_ranges = [shape for shape in source_ranges if shape not in drop_shapes]
+    required_chapters = {chapter for chapter, _start, _end in commit_ranges}
+    # A book generated one scope at a time legitimately lacks later chapters; the merge creates them.
+    missing_chapters = sorted(required_chapters - set(target_chapters))
+    if not commit_ranges:
+        status = "NOTHING_TO_COMMIT"
+    else:
+        status = "READY_WITH_EXCEPTIONS" if left_out else "READY"
     return {
-        "status": "READY",
+        "status": status,
         "scope": scope.label(),
         "source_shapes": list(source_ranges),
         "target_shapes": list(target_ranges),
-        "ordinary_insertions_allowed": [list(shape) for shape in sorted(source_set - target_set)],
+        "ordinary_insertions_allowed": [list(shape) for shape in sorted(set(commit_ranges) - target_set)],
         "chapters_to_create": missing_chapters,
+        "left_out": sorted(left_out, key=lambda row: (row["chapter"], row["verse_start"], row["verse_end"])),
+        "drop_shapes": sorted(drop_shapes),
+        "keep_existing": keep_existing,
     }
 
 

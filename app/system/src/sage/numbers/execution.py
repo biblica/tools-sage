@@ -9,6 +9,7 @@ import re
 
 from sage.errors import ValidationError
 from sage.hashing import sha256_bytes
+from sage.job_snapshots import verify_wip_snapshot
 from sage.jobs import Job, Run
 from sage.references import parse_scope
 from sage.registry import EcosystemConfig
@@ -43,6 +44,8 @@ class ExecutionInputs:
     evidence_policy: Mapping[str, object] = field(default_factory=dict)
     # Book-level content problems (unreadable book, markup outside any verse); reported, never blocking.
     content_advisories: tuple[str, ...] = ()
+    # Books the WIP snapshot left out for a defect no chapter owns; their verses are reported not assessed.
+    left_out_books: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         """Require concrete immutable model coverage and copy nested source evidence."""
@@ -147,6 +150,13 @@ def prepare_execution_inputs(
     body: list[TargetUnit] = []
     advisories: list[str] = []
     documents: dict[str, Mapping[str, object]] = {}
+    receipt = verify_wip_snapshot(run.root / "snapshot", require_file_inventory=True)
+    left_out = tuple(sorted(str(book) for book in receipt.get("left_out_books") or ()))
+    advisories.extend(
+        f"CONTENT_BOOK_LEFT_OUT:{row.get('book')}:{row.get('code')}"
+        for row in receipt.get("exceptions") or ()
+        if isinstance(row, Mapping) and row.get("effect") == "BOOK_LEFT_OUT" and row.get("book") == scope.book
+    )
     for relative, digest in sorted(wip["files"].items()):
         try:
             data = (run.root / "snapshot" / relative).read_bytes()
@@ -177,7 +187,7 @@ def prepare_execution_inputs(
     return ExecutionInputs(bundle, style_document, sealed, projected, (),
                            expected_ids, tuple(expected_refs), documents, run.scope,
                            (run.root / 'check-policy.json').read_bytes(), contracts, limits,
-                           tuple(dict.fromkeys(advisories)))
+                           tuple(dict.fromkeys(advisories)), left_out)
 
 
 def reference_restrictions(policy: Mapping[str, object]) -> tuple[str, ...]:

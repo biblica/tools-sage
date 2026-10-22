@@ -14,9 +14,49 @@ from .atomic import atomic_write_json
 from .errors import ValidationError
 from .generations import project_validation_fingerprint
 from .registry import load_ecosystem
-from .scripture import compile_project
+from .scripture import compile_project, issue_chapters
 
 READY_PROJECT_STATES = frozenset({"READY", "READY_WITH_WARNINGS"})
+SNAPSHOT_WITH_EXCEPTIONS = "READY_WITH_EXCEPTIONS"
+BOOK_LEFT_OUT = "BOOK_LEFT_OUT"
+CHAPTER_NOT_ASSESSED = "CHAPTER_NOT_ASSESSED"
+
+
+def _snapshot_exceptions(compiled: dict[str, Any]) -> tuple[list[dict[str, Any]], set[str]]:
+    """Turn compile issues into snapshot exception rows and the set of books to leave out.
+
+    A defect located in chapters stays in the snapshot: each Run leaves those chapters out and reports them
+    not assessed. A defect no chapter owns (book header, missing book ID, duplicate book, undecodable file)
+    leaves the whole book out of the snapshot.
+    """
+    book_by_file = {
+        str(entry.get("source", "")): str(entry.get("book", "")).strip().upper()
+        for entry in compiled.get("files", [])
+    }
+    rows: list[dict[str, Any]] = []
+    left_out: set[str] = set()
+    for issue in compiled.get("issues", []):
+        file_value = str(issue.get("file", ""))
+        book = book_by_file.get(file_value) or str(issue.get("reference", "")).split(" ")[0].strip().upper()
+        chapters = issue_chapters(issue, book) if book else None
+        if not chapters:
+            left_out.add(book)
+        rows.append(
+            {
+                "code": str(issue.get("code") or "UNKNOWN"),
+                "reference": str(issue.get("reference") or book),
+                "message": str(issue.get("message") or ""),
+                "file": Path(file_value).name if file_value else "",
+                "book": book,
+                "effect": CHAPTER_NOT_ASSESSED if chapters else BOOK_LEFT_OUT,
+                "chapters": sorted(chapters or ()),
+            }
+        )
+    # A book left out for one defect takes its located defects with it.
+    for row in rows:
+        if row["book"] in left_out:
+            row["effect"] = BOOK_LEFT_OUT
+    return rows, left_out
 
 
 def _snapshot_inventory(snapshot_root: Path) -> tuple[dict[str, str], str]:
@@ -112,7 +152,10 @@ def capture_wip_snapshot(
     project = replace(config.project(project_id), enabled=True)
     compiled = compile_project(config, project)
     status = str(compiled.get("status", ""))
-    if status not in READY_PROJECT_STATES:
+    file_entries = list(compiled.get("files", []))
+    if status not in READY_PROJECT_STATES and not file_entries:
+        # Nothing compiled at all (missing root, no Scripture files, filename settings): a configuration
+        # problem the Operator must fix, not a content defect a Run can report around.
         raise ValidationError(
             f"WIP Project {project_id} cannot be snapshotted: {status or 'UNKNOWN'}",
             code="WIP_SNAPSHOT_IMPORT_FAILED",
@@ -124,13 +167,18 @@ def capture_wip_snapshot(
             },
         )
 
-    file_entries = list(compiled.get("files", []))
+    exceptions, left_out = _snapshot_exceptions(compiled)
+    file_entries = [
+        entry for entry in file_entries if str(entry.get("book", "")).strip().upper() not in left_out
+    ]
     books = sorted(str(item.get("book", "")).strip().upper() for item in file_entries)
     if not books or any(not book for book in books):
         raise ValidationError(
             f"WIP Project {project_id} produced no complete Book cache set.",
             code="WIP_SNAPSHOT_EMPTY",
             affected_scope=project_id,
+            next_action="Correct the reported book defects, then refresh the Job snapshot.",
+            details={"exceptions": exceptions},
         )
 
     receipt: dict[str, Any] = {
@@ -142,11 +190,13 @@ def capture_wip_snapshot(
         "resource_sha256": str(compiled.get("resource_sha256", "")),
         "compiled_files_sha256": str(compiled.get("compiled_files_sha256", "")),
         "books": books,
-        "atomic_coordinates": int(compiled.get("summary", {}).get("atomic_coordinates", 0)),
+        "atomic_coordinates": sum(int(entry.get("atomic_coordinates", 0)) for entry in file_entries),
         "source_location": str(project.path),
-        "project_status": status,
+        "project_status": SNAPSHOT_WITH_EXCEPTIONS if exceptions else status,
         "warnings": list(compiled.get("warnings", [])),
         "filename_validation": dict(compiled.get("filename_validation", {})),
+        "exceptions": exceptions,
+        "left_out_books": sorted(left_out),
     }
 
     try:

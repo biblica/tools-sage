@@ -59,7 +59,27 @@ def _binding_lines(job: Job) -> list[str]:
         lines.append(f"REFERENCE Project            {job.bindings['reference']}")
     snapshot = dict(job.wip_snapshot or {})
     lines.append(f"WIP snapshot date            {snapshot.get('snapshot_date') or 'UNKNOWN'}")
+    exception_line = snapshot_exception_summary(snapshot)
+    if exception_line:
+        lines.append(f"WIP snapshot exceptions      {exception_line}")
     return lines
+
+
+def snapshot_exception_summary(snapshot: dict) -> str:
+    """Name what the WIP snapshot left out or will report not assessed; empty when nothing was."""
+    rows = [row for row in snapshot.get("exceptions") or () if isinstance(row, dict)]
+    books = sorted({str(row.get("book")) for row in rows if row.get("effect") == "BOOK_LEFT_OUT"})
+    chapters = sorted(
+        {f"{row.get('book')} {chapter}" for row in rows if row.get("effect") == "CHAPTER_NOT_ASSESSED"
+         for chapter in row.get("chapters") or ()},
+        key=lambda label: (label.split(" ")[0], int(label.split(" ")[1])),
+    )
+    parts = []
+    if books:
+        parts.append("books left out: " + ", ".join(book or "unnamed file" for book in books))
+    if chapters:
+        parts.append("chapters not assessed: " + ", ".join(chapters))
+    return "; ".join(parts)
 
 
 # ---------- [ JOB NAME (XXX) ] ----------
@@ -229,7 +249,11 @@ def refresh_source(center, job: Job) -> Job:
     try:
         job = center.store.refresh_job_snapshot(
             job, imported_at=center._required_project_imported_at(job.bindings["wip"]))
-        center.io.write(f"WIP snapshot refreshed: {dict(job.wip_snapshot or {}).get('snapshot_date')}")
+        snapshot = dict(job.wip_snapshot or {})
+        center.io.write(f"WIP snapshot refreshed: {snapshot.get('snapshot_date')}")
+        exception_line = snapshot_exception_summary(snapshot)
+        if exception_line:
+            center.io.write(f"WIP snapshot exceptions: {exception_line}")
     except SageError as exc:
         center.show_error(exc)
     center.io.pause()
